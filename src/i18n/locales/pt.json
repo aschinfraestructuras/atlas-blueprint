@@ -518,7 +518,8 @@
     "newSubcontractor": "Novo Subempreiteiro",
     "table": {
       "trade": "Especialidade",
-      "contactEmail": "E-mail"
+      "contactEmail": "E-mail",
+      "linkedSupplier": "Fornecedor"
     },
     "status": {
       "active": "Ativo",
@@ -533,11 +534,19 @@
       "trade": "Especialidade",
       "tradePlaceholder": "ex: Betão, Impermeabilização, AVAC",
       "contactEmail": "E-mail de contacto",
+      "linkedSupplier": "Fornecedor associado",
+      "linkedSupplierPlaceholder": "Selecionar fornecedor…",
+      "noSupplier": "Sem fornecedor",
       "createBtn": "Criar subempreiteiro"
+    },
+    "deleteConfirm": {
+      "title": "Eliminar subempreiteiro?",
+      "description": "O subempreiteiro «{{name}}» será eliminado permanentemente. Esta ação não pode ser revertida."
     },
     "toast": {
       "created": "Subempreiteiro criado com sucesso.",
       "updated": "Subempreiteiro atualizado com sucesso.",
+      "deleted": "Subempreiteiro eliminado.",
       "error": "Ocorreu um erro. Tente novamente."
     }
   },

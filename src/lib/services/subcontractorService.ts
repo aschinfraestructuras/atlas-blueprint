@@ -83,4 +83,19 @@ export const subcontractorService = {
     });
     return data as Subcontractor;
   },
+
+  async delete(id: string, projectId: string): Promise<void> {
+    const { error } = await supabase
+      .from("subcontractors")
+      .delete()
+      .eq("id", id);
+    if (error) throw error;
+    await auditService.log({
+      projectId,
+      entity: "subcontractors",
+      entityId: id,
+      action: "DELETE",
+      module: "subcontractors",
+    });
+  },
 };
