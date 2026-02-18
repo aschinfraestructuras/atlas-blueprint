@@ -2,102 +2,149 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
+/*
+  ATLAS Quality Platform — "Industrial-Tech Executive" Design System
+  All colors MUST be HSL. Use semantic tokens only in components.
 */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* ── Surface ──────────────────────────────────────────────────── */
+    --background:        210 20% 97%;
+    --foreground:        220 25% 12%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card:              0 0% 100%;
+    --card-foreground:   220 25% 12%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover:           0 0% 100%;
+    --popover-foreground: 220 25% 12%;
 
-    --primary: 222.2 47.4% 11.2%;
+    /* ── Brand / Primary ──────────────────────────────────────────── */
+    --primary:           221 65% 28%;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* ── Secondary ────────────────────────────────────────────────── */
+    --secondary:         215 20% 93%;
+    --secondary-foreground: 220 25% 20%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* ── Muted ────────────────────────────────────────────────────── */
+    --muted:             215 18% 92%;
+    --muted-foreground:  215 15% 50%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* ── Accent ───────────────────────────────────────────────────── */
+    --accent:            215 18% 92%;
+    --accent-foreground: 220 25% 15%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* ── Destructive ──────────────────────────────────────────────── */
+    --destructive:       2 72% 48%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* ── Borders / Inputs ─────────────────────────────────────────── */
+    --border:            215 18% 88%;
+    --input:             215 18% 88%;
+    --ring:              221 65% 28%;
 
-    --radius: 0.5rem;
+    /* ── Radius ───────────────────────────────────────────────────── */
+    --radius: 0.625rem;
 
-    /* ── Dashboard semantic colors ────────────────── */
-    --chart-blue: 217 91% 50%;
-    --chart-green: 142 71% 45%;
-    --chart-red: 0 84% 60%;
-    --chart-orange: 25 95% 53%;
-    --chart-muted: 215 16% 47%;
+    /* ══════════════════════════════════════════════════════════════════
+       MODULE SEMANTIC COLORS — "Industrial-Tech" palette
+       Each module has a controlled, desaturated professional tone.
+    ══════════════════════════════════════════════════════════════════ */
 
-    --sidebar-background: 0 0% 98%;
+    /* Documents — Deep institutional blue */
+    --module-documents:         215 70% 38%;
+    --module-documents-light:   215 70% 38% / 0.10;
 
-    --sidebar-foreground: 240 5.3% 26.1%;
+    /* Tests — Technical indigo-violet */
+    --module-tests:             252 55% 45%;
+    --module-tests-light:       252 55% 45% / 0.10;
 
-    --sidebar-primary: 240 5.9% 10%;
+    /* Non-Conformities — Controlled red */
+    --module-nc:                2 60% 44%;
+    --module-nc-light:          2 60% 44% / 0.10;
 
-    --sidebar-primary-foreground: 0 0% 98%;
+    /* Suppliers — Technical forest green */
+    --module-suppliers:         158 45% 32%;
+    --module-suppliers-light:   158 45% 32% / 0.10;
 
-    --sidebar-accent: 240 4.8% 95.9%;
+    /* Subcontractors — Dark amber */
+    --module-subcontractors:    33 75% 38%;
+    --module-subcontractors-light: 33 75% 38% / 0.10;
 
-    --sidebar-accent-foreground: 240 5.9% 10%;
+    /* Plans/Technical Office — Teal-cyan */
+    --module-plans:             188 55% 32%;
+    --module-plans-light:       188 55% 32% / 0.10;
 
-    --sidebar-border: 220 13% 91%;
+    /* Projects — Slate blue */
+    --module-projects:          221 50% 40%;
+    --module-projects-light:    221 50% 40% / 0.10;
 
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* ── Dashboard chart palette ──────────────────────────────────── */
+    --chart-1: 215 70% 38%;
+    --chart-2: 158 45% 32%;
+    --chart-3: 2 60% 44%;
+    --chart-4: 33 75% 38%;
+    --chart-5: 252 55% 45%;
+
+    /* ── Sidebar — Institutional dark ────────────────────────────── */
+    --sidebar-background:          224 30% 12%;
+    --sidebar-foreground:          215 20% 75%;
+    --sidebar-primary:             215 70% 55%;
+    --sidebar-primary-foreground:  0 0% 100%;
+    --sidebar-accent:              224 25% 18%;
+    --sidebar-accent-foreground:   215 20% 92%;
+    --sidebar-border:              224 20% 18%;
+    --sidebar-ring:                215 70% 55%;
+
+    /* ── Elevation / Shadow tokens ───────────────────────────────── */
+    --shadow-card: 0 1px 3px 0 hsl(220 25% 12% / 0.06), 0 1px 2px -1px hsl(220 25% 12% / 0.06);
+    --shadow-card-hover: 0 4px 12px 0 hsl(220 25% 12% / 0.10), 0 2px 4px -1px hsl(220 25% 12% / 0.06);
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background:        224 30% 9%;
+    --foreground:        215 20% 90%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card:              224 28% 12%;
+    --card-foreground:   215 20% 90%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover:           224 28% 12%;
+    --popover-foreground: 215 20% 90%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary:           215 70% 60%;
+    --primary-foreground: 224 30% 9%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary:         224 22% 18%;
+    --secondary-foreground: 215 20% 82%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted:             224 22% 18%;
+    --muted-foreground:  215 15% 55%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent:            224 22% 18%;
+    --accent-foreground: 215 20% 82%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive:       2 60% 44%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --border:            224 20% 20%;
+    --input:             224 20% 20%;
+    --ring:              215 70% 60%;
+
+    --chart-1: 215 70% 55%;
+    --chart-2: 158 45% 45%;
+    --chart-3: 2 60% 52%;
+    --chart-4: 33 75% 50%;
+    --chart-5: 252 55% 58%;
+
+    --sidebar-background:         224 30% 8%;
+    --sidebar-foreground:         215 20% 70%;
+    --sidebar-primary:            215 70% 60%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent:             224 25% 14%;
+    --sidebar-accent-foreground:  215 20% 90%;
+    --sidebar-border:             224 20% 14%;
+    --sidebar-ring:               215 70% 60%;
   }
 }
 
@@ -105,8 +152,18 @@ All colors MUST be HSL.
   * {
     @apply border-border;
   }
-
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* ── Utility: card shadow via CSS variable ───────────────────────────── */
+@layer utilities {
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+  .shadow-card-hover {
+    box-shadow: var(--shadow-card-hover);
   }
 }
