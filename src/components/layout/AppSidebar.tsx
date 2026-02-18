@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   FolderKanban,
@@ -77,14 +77,15 @@ const NAV_SECTIONS: SidebarSection[] = [
 /* ─── Section separator label ─── */
 function SectionLabel({ label, collapsed }: { label: string; collapsed: boolean }) {
   if (collapsed) {
-    return <div className="my-2 h-px bg-sidebar-border/60 mx-2" />;
+    return <div className="my-3 h-px mx-3" style={{ background: "hsl(var(--sidebar-border) / 0.5)" }} />;
   }
   return (
-    <div className="flex items-center gap-2 px-3 mb-1 mt-1">
-      <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-sidebar-foreground/35 whitespace-nowrap">
+    <div className="flex items-center gap-2.5 px-3 mb-1 mt-2">
+      <span className="text-[8.5px] font-bold uppercase tracking-[0.22em] whitespace-nowrap"
+        style={{ color: "hsl(var(--sidebar-foreground) / 0.3)" }}>
         {label}
       </span>
-      <div className="flex-1 h-px bg-sidebar-border/40" />
+      <div className="flex-1 h-px" style={{ background: "hsl(var(--sidebar-border) / 0.35)" }} />
     </div>
   );
 }
@@ -109,26 +110,30 @@ function NavItem({
       to={item.url}
       onClick={onClose}
       className={cn(
-        "relative flex items-center gap-3 rounded-lg text-sm font-medium transition-all duration-150 h-9",
-        collapsed ? "justify-center px-0 mx-1" : "px-3 mx-1",
+        "group relative flex items-center gap-3 rounded-lg text-sm font-medium transition-all duration-200 h-9",
+        collapsed ? "justify-center px-0 mx-1.5" : "px-3 mx-1.5",
         active
           ? "bg-sidebar-accent text-sidebar-accent-foreground"
-          : "text-sidebar-foreground/65 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground"
+          : "text-sidebar-foreground/60 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground/90"
       )}
     >
-      {/* Active indicator bar */}
+      {/* Active indicator bar — 3px left accent */}
       {active && (
-        <span className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-r-full bg-sidebar-primary" />
+        <span className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-r-full"
+          style={{ background: "hsl(var(--sidebar-primary))" }} />
       )}
       <Icon
         className={cn(
-          "h-[15px] w-[15px] flex-shrink-0 transition-colors",
+          "h-[15px] w-[15px] flex-shrink-0 transition-all duration-200",
           collapsed ? "" : "ml-1",
-          active ? "text-sidebar-primary" : "text-sidebar-foreground/45"
+          active
+            ? "opacity-100"
+            : "opacity-45 group-hover:opacity-75"
         )}
+        style={active ? { color: "hsl(var(--sidebar-primary))" } : undefined}
       />
       {!collapsed && (
-        <span className="truncate leading-none">{t(item.labelKey)}</span>
+        <span className="truncate leading-none text-[13px]">{t(item.labelKey)}</span>
       )}
     </NavLink>
   );
@@ -142,31 +147,45 @@ interface SidebarContentProps {
 
 function SidebarContent({ collapsed, onClose }: SidebarContentProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const location = useLocation();
 
   const isActive = (url: string, exact?: boolean) =>
     exact ? location.pathname === url : location.pathname.startsWith(url);
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full"
+      style={{
+        background: "linear-gradient(180deg, hsl(var(--sidebar-background)) 0%, hsl(224 32% 10%) 100%)",
+      }}>
       {/* ── Brand / Logo ─────────────────────────────────────────────── */}
       <div
         className={cn(
-          "flex items-center h-[60px] border-b border-sidebar-border/60 flex-shrink-0 px-4",
+          "flex items-center h-[60px] flex-shrink-0 px-4 cursor-pointer select-none",
           collapsed ? "justify-center px-3" : "gap-3"
         )}
+        style={{ borderBottom: "1px solid hsl(var(--sidebar-border) / 0.5)" }}
+        onClick={() => navigate("/")}
+        role="button"
+        aria-label="Go to Dashboard"
       >
         {/* Logo mark */}
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sidebar-primary/20 border border-sidebar-primary/30 flex-shrink-0">
-          <ShieldCheck className="h-4 w-4 text-sidebar-primary" />
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg flex-shrink-0"
+          style={{
+            background: "hsl(var(--sidebar-primary) / 0.15)",
+            border: "1px solid hsl(var(--sidebar-primary) / 0.28)",
+          }}>
+          <ShieldCheck className="h-4 w-4" style={{ color: "hsl(var(--sidebar-primary))" }} />
         </div>
 
         {!collapsed && (
           <div className="flex flex-col min-w-0">
-            <span className="text-[13px] font-black tracking-[0.22em] text-sidebar-accent-foreground uppercase leading-none">
+            <span className="text-[13px] font-black tracking-[0.24em] uppercase leading-none"
+              style={{ color: "hsl(var(--sidebar-accent-foreground))" }}>
               ATLAS
             </span>
-            <span className="text-[9px] font-medium tracking-[0.12em] text-sidebar-foreground/45 uppercase leading-none mt-0.5">
+            <span className="text-[8.5px] font-semibold tracking-[0.16em] uppercase leading-none mt-0.5"
+              style={{ color: "hsl(var(--sidebar-foreground) / 0.38)" }}>
               Quality Platform
             </span>
           </div>
@@ -177,8 +196,9 @@ function SidebarContent({ collapsed, onClose }: SidebarContentProps) {
           <Button
             variant="ghost"
             size="icon"
-            onClick={onClose}
-            className="ml-auto h-7 w-7 text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-accent"
+            onClick={(e) => { e.stopPropagation(); onClose(); }}
+            className="ml-auto h-7 w-7"
+            style={{ color: "hsl(var(--sidebar-foreground) / 0.5)" }}
           >
             <X className="h-4 w-4" />
           </Button>
@@ -188,7 +208,7 @@ function SidebarContent({ collapsed, onClose }: SidebarContentProps) {
       {/* ── Navigation ───────────────────────────────────────────────── */}
       <nav className="flex-1 overflow-y-auto py-3 space-y-0.5">
         {NAV_SECTIONS.map((section, sectionIdx) => (
-          <div key={section.sectionKey} className={sectionIdx > 0 ? "mt-1" : ""}>
+          <div key={section.sectionKey} className={sectionIdx > 0 ? "mt-0.5" : ""}>
             {sectionIdx > 0 && (
               <SectionLabel
                 label={t(`nav.sections.${section.sectionKey}`)}
@@ -210,11 +230,13 @@ function SidebarContent({ collapsed, onClose }: SidebarContentProps) {
         ))}
       </nav>
 
-      {/* ── Footer spacer (desktop only) ──────────────────────────────── */}
+      {/* ── Footer ────────────────────────────────────────────────────── */}
       {!onClose && (
-        <div className="flex-shrink-0 border-t border-sidebar-border/60 py-2 px-3">
+        <div className="flex-shrink-0 py-2.5 px-3"
+          style={{ borderTop: "1px solid hsl(var(--sidebar-border) / 0.4)" }}>
           {!collapsed && (
-            <p className="text-[9px] text-sidebar-foreground/25 uppercase tracking-widest">
+            <p className="text-[8.5px] uppercase tracking-widest"
+              style={{ color: "hsl(var(--sidebar-foreground) / 0.22)" }}>
               © {new Date().getFullYear()} Atlas QMS
             </p>
           )}
@@ -238,10 +260,11 @@ export function AppSidebar({ collapsed, onToggle, mobileOpen, onMobileClose }: A
       {/* ── Desktop sidebar ───────────────────────────────────────────── */}
       <aside
         className={cn(
-          "hidden lg:flex flex-col h-screen bg-sidebar border-r border-sidebar-border/60",
-          "transition-all duration-300 flex-shrink-0 relative",
+          "hidden lg:flex flex-col h-screen border-r flex-shrink-0 relative",
+          "transition-all duration-300",
           collapsed ? "w-[56px]" : "w-[220px]"
         )}
+        style={{ borderColor: "hsl(var(--sidebar-border) / 0.5)" }}
       >
         <SidebarContent collapsed={collapsed} />
 
@@ -251,9 +274,13 @@ export function AppSidebar({ collapsed, onToggle, mobileOpen, onMobileClose }: A
           className={cn(
             "absolute -right-3 top-[70px] z-10",
             "flex h-6 w-6 items-center justify-center rounded-full",
-            "bg-sidebar border border-sidebar-border/80 shadow-sm",
-            "text-sidebar-foreground/50 hover:text-sidebar-foreground transition-colors"
+            "shadow-sm transition-colors duration-150",
           )}
+          style={{
+            background: "hsl(var(--sidebar-background))",
+            border: "1px solid hsl(var(--sidebar-border) / 0.7)",
+            color: "hsl(var(--sidebar-foreground) / 0.5)",
+          }}
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           {collapsed
@@ -266,10 +293,12 @@ export function AppSidebar({ collapsed, onToggle, mobileOpen, onMobileClose }: A
       {mobileOpen && (
         <div className="lg:hidden fixed inset-0 z-50 flex">
           <div
-            className="fixed inset-0 bg-foreground/30 backdrop-blur-sm"
+            className="fixed inset-0 backdrop-blur-sm"
+            style={{ background: "hsl(var(--foreground) / 0.28)" }}
             onClick={onMobileClose}
           />
-          <aside className="relative flex w-[220px] flex-col h-full bg-sidebar border-r border-sidebar-border/60 shadow-2xl">
+          <aside className="relative flex w-[220px] flex-col h-full shadow-2xl"
+            style={{ borderRight: "1px solid hsl(var(--sidebar-border) / 0.5)" }}>
             <SidebarContent collapsed={false} onClose={onMobileClose} />
           </aside>
         </div>
