@@ -164,8 +164,8 @@ function SidebarContent({ collapsed, onClose }: SidebarContentProps) {
   return (
     <div className="flex flex-col h-full"
       style={{
-        /* Very subtle vertical gradient — almost imperceptible depth */
-        background: "linear-gradient(180deg, hsl(214 65% 20%) 0%, hsl(214 60% 15%) 100%)",
+        /* Subtle vertical gradient: top slightly lighter, bottom slightly deeper */
+        background: "linear-gradient(180deg, hsl(214 52% 26%) 0%, hsl(214 50% 21%) 100%)",
       }}>
 
       {/* ── Brand / Logo ─────────────────────────────────────────────── */}
@@ -292,10 +292,10 @@ export function AppSidebar({ collapsed, onToggle, mobileOpen, onMobileClose }: A
             "transition-all duration-150 hover:scale-110",
           )}
           style={{
-            background: "hsl(214 62% 22%)",
-            border: "1px solid hsl(var(--sidebar-primary) / 0.35)",
+            background: "hsl(214 52% 30%)",
+            border: "1px solid hsl(var(--sidebar-primary) / 0.40)",
             color: "hsl(var(--sidebar-primary))",
-            boxShadow: "0 2px 8px hsl(214 62% 10% / 0.30)",
+            boxShadow: "0 2px 8px hsl(214 52% 14% / 0.28)",
           }}
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
