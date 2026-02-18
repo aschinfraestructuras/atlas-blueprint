@@ -22,6 +22,8 @@ export type Database = {
           entity: string
           entity_id: string | null
           id: number
+          module: string | null
+          performed_by: string | null
           project_id: string | null
           user_id: string | null
         }
@@ -32,6 +34,8 @@ export type Database = {
           entity: string
           entity_id?: string | null
           id?: number
+          module?: string | null
+          performed_by?: string | null
           project_id?: string | null
           user_id?: string | null
         }
@@ -42,6 +46,8 @@ export type Database = {
           entity?: string
           entity_id?: string | null
           id?: number
+          module?: string | null
+          performed_by?: string | null
           project_id?: string | null
           user_id?: string | null
         }
@@ -117,9 +123,11 @@ export type Database = {
           created_at: string
           created_by: string
           doc_type: string
+          file_url: string | null
           id: string
           issued_at: string | null
           project_id: string
+          revision: string | null
           status: string
           tags: string[] | null
           title: string
@@ -130,9 +138,11 @@ export type Database = {
           created_at?: string
           created_by: string
           doc_type: string
+          file_url?: string | null
           id?: string
           issued_at?: string | null
           project_id: string
+          revision?: string | null
           status?: string
           tags?: string[] | null
           title: string
@@ -143,9 +153,11 @@ export type Database = {
           created_at?: string
           created_by?: string
           doc_type?: string
+          file_url?: string | null
           id?: string
           issued_at?: string | null
           project_id?: string
+          revision?: string | null
           status?: string
           tags?: string[] | null
           title?: string
@@ -155,6 +167,56 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "documents_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      non_conformities: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string
+          due_date: string | null
+          id: string
+          project_id: string
+          reference: string | null
+          responsible: string | null
+          severity: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description: string
+          due_date?: string | null
+          id?: string
+          project_id: string
+          reference?: string | null
+          responsible?: string | null
+          severity?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          due_date?: string | null
+          id?: string
+          project_id?: string
+          reference?: string | null
+          responsible?: string | null
+          severity?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "non_conformities_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
@@ -246,7 +308,9 @@ export type Database = {
         Row: {
           code: string
           created_at: string
+          created_by: string | null
           id: string
+          location: string | null
           name: string
           status: string
           tenant_id: string | null
@@ -255,7 +319,9 @@ export type Database = {
         Insert: {
           code: string
           created_at?: string
+          created_by?: string | null
           id?: string
+          location?: string | null
           name: string
           status?: string
           tenant_id?: string | null
@@ -264,7 +330,9 @@ export type Database = {
         Update: {
           code?: string
           created_at?: string
+          created_by?: string | null
           id?: string
+          location?: string | null
           name?: string
           status?: string
           tenant_id?: string | null
@@ -297,9 +365,11 @@ export type Database = {
       }
       suppliers: {
         Row: {
+          approval_status: string
           category: string | null
           contacts: Json | null
           created_at: string
+          created_by: string | null
           id: string
           name: string
           nif_cif: string | null
@@ -308,9 +378,11 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          approval_status?: string
           category?: string | null
           contacts?: Json | null
           created_at?: string
+          created_by?: string | null
           id?: string
           name: string
           nif_cif?: string | null
@@ -319,9 +391,11 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          approval_status?: string
           category?: string | null
           contacts?: Json | null
           created_at?: string
+          created_by?: string | null
           id?: string
           name?: string
           nif_cif?: string | null

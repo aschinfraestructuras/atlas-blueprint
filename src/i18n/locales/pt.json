@@ -81,9 +81,16 @@
       "noProjects": "Sem projetos disponíveis"
     }
   },
+  "noProject": {
+    "title": "Nenhum projeto selecionado",
+    "subtitle": "Selecione ou crie um projeto para aceder a este módulo.",
+    "cta": "Ver projetos"
+  },
   "dashboard": {
     "welcome": "Bem-vindo de volta",
     "subtitle": "Aqui está um resumo do estado atual dos seus projetos.",
+    "subtitleProject": "A visualizar dados do projeto: {{project}}",
+    "noProjectSelected": "Selecione um projeto no topo para filtrar os dados.",
     "stats": {
       "activeProjects": "Projetos Ativos",
       "openDocuments": "Documentos em Curso",
@@ -110,7 +117,13 @@
   "emptyState": {
     "title": "Ainda sem dados",
     "subtitle": "Esta secção ainda não tem conteúdo. Comece por criar um novo registo.",
-    "cta": "Criar novo"
+    "cta": "Criar novo",
+    "projects": { "subtitle": "Ainda não existem projetos. Crie o primeiro para começar." },
+    "documents": { "subtitle": "Este projeto ainda não tem documentos." },
+    "tests": { "subtitle": "Ainda não foram registados ensaios neste projeto." },
+    "suppliers": { "subtitle": "Ainda não existem fornecedores associados a este projeto." },
+    "nonConformities": { "subtitle": "Não existem não conformidades registadas. Excelente!" },
+    "auditLog": { "subtitle": "Nenhuma ação registada ainda para este projeto." }
   },
   "pages": {
     "projects": {
@@ -140,6 +153,79 @@
     "settings": {
       "title": "Definições",
       "subtitle": "Configurações da plataforma"
+    }
+  },
+  "projects": {
+    "status": {
+      "active": "Ativo",
+      "completed": "Concluído",
+      "archived": "Arquivado"
+    }
+  },
+  "documents": {
+    "table": {
+      "title": "Título",
+      "type": "Tipo",
+      "revision": "Revisão"
+    },
+    "status": {
+      "draft": "Rascunho",
+      "submitted": "Submetido",
+      "approved": "Aprovado",
+      "rejected": "Rejeitado"
+    }
+  },
+  "tests": {
+    "table": {
+      "name": "Ensaio",
+      "sampleRef": "Ref. Amostra",
+      "location": "Localização"
+    },
+    "status": {
+      "pending": "Pendente",
+      "compliant": "Conforme",
+      "non_compliant": "Não Conforme"
+    },
+    "unknownTest": "Ensaio desconhecido"
+  },
+  "suppliers": {
+    "table": {
+      "category": "Categoria",
+      "nifCif": "NIF/CIF",
+      "approvalStatus": "Estado de Aprovação"
+    },
+    "approvalStatus": {
+      "pending": "Pendente",
+      "approved": "Aprovado",
+      "rejected": "Rejeitado",
+      "conditional": "Condicional"
+    }
+  },
+  "nc": {
+    "table": {
+      "reference": "Referência",
+      "severity": "Gravidade",
+      "responsible": "Responsável",
+      "dueDate": "Prazo"
+    },
+    "severity": {
+      "low": "Baixa",
+      "medium": "Média",
+      "high": "Alta",
+      "critical": "Crítica"
+    },
+    "status": {
+      "open": "Aberta",
+      "under_review": "Em Análise",
+      "closed": "Fechada"
+    }
+  },
+  "audit": {
+    "table": {
+      "timestamp": "Data/Hora",
+      "entity": "Entidade",
+      "action": "Ação",
+      "user": "Utilizador"
     }
   }
 }
