@@ -2,13 +2,21 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { useSubcontractors } from "@/hooks/useSubcontractors";
-import { HardHat, Plus, Pencil } from "lucide-react";
+import { useSuppliers } from "@/hooks/useSuppliers";
+import { subcontractorService } from "@/lib/services/subcontractorService";
+import { classifySupabaseError } from "@/lib/utils/supabaseError";
+import { useToast } from "@/hooks/use-toast";
+import { HardHat, Plus, Pencil, Trash2 } from "lucide-react";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { EmptyState } from "@/components/EmptyState";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { SubcontractorFormDialog } from "@/components/subcontractors/SubcontractorFormDialog";
@@ -25,13 +33,35 @@ export default function SubcontractorsPage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
   const { data: subcontractors, loading, error, refetch } = useSubcontractors();
+  const { data: suppliers } = useSuppliers();
+  const { toast } = useToast();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingSub, setEditingSub] = useState<Subcontractor | null>(null);
+  const [deletingSub, setDeletingSub] = useState<Subcontractor | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   if (!activeProject) return <NoProjectBanner />;
 
   const handleNew = () => { setEditingSub(null); setDialogOpen(true); };
   const handleEdit = (sub: Subcontractor) => { setEditingSub(sub); setDialogOpen(true); };
+
+  const supplierMap = new Map(suppliers.map((s) => [s.id, s.name]));
+
+  const handleDeleteConfirm = async () => {
+    if (!deletingSub || !activeProject) return;
+    setDeleting(true);
+    try {
+      await subcontractorService.delete(deletingSub.id, activeProject.id);
+      toast({ title: t("subcontractors.toast.deleted") });
+      refetch();
+    } catch (err) {
+      const { title, description } = classifySupabaseError(err, t);
+      toast({ variant: "destructive", title, description });
+    } finally {
+      setDeleting(false);
+      setDeletingSub(null);
+    }
+  };
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
@@ -70,9 +100,10 @@ export default function SubcontractorsPage() {
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.name")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("subcontractors.table.trade")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("subcontractors.table.contactEmail")}</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("subcontractors.table.linkedSupplier")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.status")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.date")}</TableHead>
-                <TableHead className="w-10" />
+                <TableHead className="w-20" />
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -86,6 +117,9 @@ export default function SubcontractorsPage() {
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">{sub.trade ?? "—"}</TableCell>
                   <TableCell className="text-sm text-muted-foreground">{sub.contact_email ?? "—"}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground">
+                    {sub.supplier_id ? supplierMap.get(sub.supplier_id) ?? "—" : "—"}
+                  </TableCell>
                   <TableCell>
                     <Badge variant="secondary" className={cn("text-xs", STATUS_COLORS[sub.status] ?? "")}>
                       {t(`subcontractors.status.${sub.status}`, { defaultValue: sub.status })}
@@ -95,9 +129,14 @@ export default function SubcontractorsPage() {
                     {new Date(sub.created_at).toLocaleDateString()}
                   </TableCell>
                   <TableCell>
-                    <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={() => handleEdit(sub)}>
-                      <Pencil className="h-3.5 w-3.5" />
-                    </Button>
+                    <div className="flex items-center gap-1">
+                      <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={() => handleEdit(sub)}>
+                        <Pencil className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => setDeletingSub(sub)}>
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -106,7 +145,29 @@ export default function SubcontractorsPage() {
         </div>
       )}
 
-      <SubcontractorFormDialog open={dialogOpen} onOpenChange={setDialogOpen} subcontractor={editingSub} onSuccess={refetch} />
+      <SubcontractorFormDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        subcontractor={editingSub}
+        onSuccess={refetch}
+      />
+
+      <AlertDialog open={!!deletingSub} onOpenChange={(v) => { if (!v) setDeletingSub(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("subcontractors.deleteConfirm.title")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("subcontractors.deleteConfirm.description", { name: deletingSub?.name ?? "" })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>{t("common.cancel")}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteConfirm} disabled={deleting} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              {deleting ? t("common.loading") : t("common.delete")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

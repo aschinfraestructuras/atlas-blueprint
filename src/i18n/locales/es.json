@@ -518,7 +518,8 @@
     "newSubcontractor": "Nuevo Subcontratista",
     "table": {
       "trade": "Especialidad",
-      "contactEmail": "Correo"
+      "contactEmail": "Correo",
+      "linkedSupplier": "Proveedor"
     },
     "status": {
       "active": "Activo",
@@ -533,11 +534,19 @@
       "trade": "Especialidad",
       "tradePlaceholder": "ej: Hormigón, Impermeabilización, HVAC",
       "contactEmail": "Correo de contacto",
+      "linkedSupplier": "Proveedor asociado",
+      "linkedSupplierPlaceholder": "Seleccionar proveedor…",
+      "noSupplier": "Sin proveedor",
       "createBtn": "Crear subcontratista"
+    },
+    "deleteConfirm": {
+      "title": "¿Eliminar subcontratista?",
+      "description": "El subcontratista «{{name}}» se eliminará permanentemente. Esta acción no se puede deshacer."
     },
     "toast": {
       "created": "Subcontratista creado con éxito.",
       "updated": "Subcontratista actualizado con éxito.",
+      "deleted": "Subcontratista eliminado.",
       "error": "Ocurrió un error. Inténtelo de nuevo."
     }
   },
