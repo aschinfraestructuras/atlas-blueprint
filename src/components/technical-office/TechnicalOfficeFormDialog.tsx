@@ -20,6 +20,9 @@ import { Button } from "@/components/ui/button";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 
 const TYPES = ["RFI", "Submittal", "Clarification"] as const;
 const STATUSES = ["open", "in_progress", "closed", "cancelled"] as const;
@@ -46,6 +49,7 @@ export function TechnicalOfficeFormDialog({ open, onOpenChange, item, onSuccess 
   const { user } = useAuth();
   const { activeProject } = useProject();
   const { toast } = useToast();
+  const isEdit = !!item;
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -103,76 +107,96 @@ export function TechnicalOfficeFormDialog({ open, onOpenChange, item, onSuccess 
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>
-            {item ? t("technicalOffice.form.titleEdit") : t("technicalOffice.form.titleCreate")}
+            {isEdit ? t("technicalOffice.form.titleEdit") : t("technicalOffice.form.titleCreate")}
           </DialogTitle>
         </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <FormField control={form.control} name="type" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("technicalOffice.form.type")}</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                    <SelectContent>
-                      {TYPES.map((tp) => (
-                        <SelectItem key={tp} value={tp}>{t(`technicalOffice.types.${tp}`)}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="status" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("common.status")}</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                    <SelectContent>
-                      {STATUSES.map((s) => (
-                        <SelectItem key={s} value={s}>{t(`technicalOffice.status.${s}`)}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )} />
-            </div>
-            <FormField control={form.control} name="title" render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("technicalOffice.form.title")}</FormLabel>
-                <FormControl>
-                  <Input placeholder={t("technicalOffice.form.titlePlaceholder")} {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
-            <FormField control={form.control} name="description" render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("common.description")} <span className="text-muted-foreground text-xs">({t("common.optional")})</span></FormLabel>
-                <FormControl>
-                  <Textarea placeholder={t("technicalOffice.form.descriptionPlaceholder")} rows={3} {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
-            <FormField control={form.control} name="due_date" render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("technicalOffice.form.dueDate")} <span className="text-muted-foreground text-xs">({t("common.optional")})</span></FormLabel>
-                <FormControl>
-                  <Input type="date" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>{t("common.cancel")}</Button>
-              <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? t("common.loading") : item ? t("common.save") : t("technicalOffice.form.createBtn")}
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
+
+        <ScrollArea className="max-h-[75vh] pr-1">
+          <div className="space-y-4 pb-1">
+            <Form {...form}>
+              <form id="to-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField control={form.control} name="type" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("technicalOffice.form.type")}</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                        <SelectContent>
+                          {TYPES.map((tp) => (
+                            <SelectItem key={tp} value={tp}>{t(`technicalOffice.types.${tp}`)}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="status" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("common.status")}</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                        <SelectContent>
+                          {STATUSES.map((s) => (
+                            <SelectItem key={s} value={s}>{t(`technicalOffice.status.${s}`)}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                </div>
+
+                <FormField control={form.control} name="title" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("technicalOffice.form.title")}</FormLabel>
+                    <FormControl>
+                      <Input placeholder={t("technicalOffice.form.titlePlaceholder")} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+
+                <FormField control={form.control} name="description" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("common.description")} <span className="text-muted-foreground text-xs">({t("common.optional")})</span></FormLabel>
+                    <FormControl>
+                      <Textarea placeholder={t("technicalOffice.form.descriptionPlaceholder")} rows={3} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+
+                <FormField control={form.control} name="due_date" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("technicalOffice.form.dueDate")} <span className="text-muted-foreground text-xs">({t("common.optional")})</span></FormLabel>
+                    <FormControl>
+                      <Input type="date" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              </form>
+            </Form>
+
+            {isEdit && item && activeProject && (
+              <>
+                <Separator />
+                <AttachmentsPanel
+                  projectId={activeProject.id}
+                  entityType="technical_office"
+                  entityId={item.id}
+                />
+              </>
+            )}
+          </div>
+        </ScrollArea>
+
+        <DialogFooter>
+          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>{t("common.cancel")}</Button>
+          <Button type="submit" form="to-form" disabled={form.formState.isSubmitting}>
+            {form.formState.isSubmitting ? t("common.loading") : isEdit ? t("common.save") : t("technicalOffice.form.createBtn")}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

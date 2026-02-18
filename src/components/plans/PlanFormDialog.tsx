@@ -19,6 +19,9 @@ import { Button } from "@/components/ui/button";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 
 const PLAN_TYPES = ["PQO", "PIE", "PPI", "ITP", "MethodStatement", "TestPlan", "Schedule"] as const;
 const STATUSES = ["draft", "under_review", "approved", "superseded"] as const;
@@ -45,6 +48,7 @@ export function PlanFormDialog({ open, onOpenChange, plan, onSuccess }: Props) {
   const { user } = useAuth();
   const { activeProject } = useProject();
   const { toast } = useToast();
+  const isEdit = !!plan;
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -102,78 +106,97 @@ export function PlanFormDialog({ open, onOpenChange, plan, onSuccess }: Props) {
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>
-            {plan ? t("plans.form.titleEdit") : t("plans.form.titleCreate")}
+            {isEdit ? t("plans.form.titleEdit") : t("plans.form.titleCreate")}
           </DialogTitle>
         </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <FormField control={form.control} name="plan_type" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("plans.form.planType")}</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                    <SelectContent>
-                      {PLAN_TYPES.map((pt) => (
-                        <SelectItem key={pt} value={pt}>{t(`plans.types.${pt}`)}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="status" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("common.status")}</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                    <SelectContent>
-                      {STATUSES.map((s) => (
-                        <SelectItem key={s} value={s}>{t(`plans.status.${s}`)}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )} />
-            </div>
-            <FormField control={form.control} name="title" render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("plans.form.title")}</FormLabel>
-                <FormControl>
-                  <Input placeholder={t("plans.form.titlePlaceholder")} {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
-            <div className="grid grid-cols-2 gap-4">
-              <FormField control={form.control} name="revision" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("plans.form.revision")}</FormLabel>
-                  <FormControl>
-                    <Input placeholder="ex: A, 1, 01" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="file_url" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("plans.form.fileUrl")} <span className="text-muted-foreground text-xs">({t("common.optional")})</span></FormLabel>
-                  <FormControl>
-                    <Input placeholder="https://…" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-            </div>
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>{t("common.cancel")}</Button>
-              <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? t("common.loading") : plan ? t("common.save") : t("plans.form.createBtn")}
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
+
+        <ScrollArea className="max-h-[75vh] pr-1">
+          <div className="space-y-4 pb-1">
+            <Form {...form}>
+              <form id="plan-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField control={form.control} name="plan_type" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("plans.form.planType")}</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                        <SelectContent>
+                          {PLAN_TYPES.map((pt) => (
+                            <SelectItem key={pt} value={pt}>{t(`plans.types.${pt}`)}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="status" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("common.status")}</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                        <SelectContent>
+                          {STATUSES.map((s) => (
+                            <SelectItem key={s} value={s}>{t(`plans.status.${s}`)}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                </div>
+
+                <FormField control={form.control} name="title" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("plans.form.title")}</FormLabel>
+                    <FormControl>
+                      <Input placeholder={t("plans.form.titlePlaceholder")} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField control={form.control} name="revision" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("plans.form.revision")}</FormLabel>
+                      <FormControl>
+                        <Input placeholder="ex: A, 1, 01" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="file_url" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("plans.form.fileUrl")} <span className="text-muted-foreground text-xs">({t("common.optional")})</span></FormLabel>
+                      <FormControl>
+                        <Input placeholder="https://…" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                </div>
+              </form>
+            </Form>
+
+            {isEdit && plan && activeProject && (
+              <>
+                <Separator />
+                <AttachmentsPanel
+                  projectId={activeProject.id}
+                  entityType="ppi"
+                  entityId={plan.id}
+                />
+              </>
+            )}
+          </div>
+        </ScrollArea>
+
+        <DialogFooter>
+          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>{t("common.cancel")}</Button>
+          <Button type="submit" form="plan-form" disabled={form.formState.isSubmitting}>
+            {form.formState.isSubmitting ? t("common.loading") : isEdit ? t("common.save") : t("plans.form.createBtn")}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
