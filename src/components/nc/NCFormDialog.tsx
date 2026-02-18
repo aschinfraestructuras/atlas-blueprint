@@ -35,17 +35,20 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertCircle } from "lucide-react";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
+import { cn } from "@/lib/utils";
 
 const schema = (t: (k: string) => string) =>
   z.object({
-    description: z.string().trim().min(1, t("nc.form.validation.descriptionRequired")).max(1000),
-    severity:    z.string().min(1, t("nc.form.validation.severityRequired")),
-    status:      z.string().min(1),
-    reference:   z.string().trim().max(50).optional().or(z.literal("")),
-    responsible: z.string().trim().max(120).optional().or(z.literal("")),
-    due_date:    z.string().optional().or(z.literal("")),
+    description:        z.string().trim().min(1, t("nc.form.validation.descriptionRequired")).max(1000),
+    severity:           z.string().min(1, t("nc.form.validation.severityRequired")),
+    status:             z.string().min(1),
+    reference:          z.string().trim().max(50).optional().or(z.literal("")),
+    responsible:        z.string().trim().max(120).optional().or(z.literal("")),
+    due_date:           z.string().optional().or(z.literal("")),
+    root_cause:         z.string().trim().max(2000).optional().or(z.literal("")),
+    corrective_action:  z.string().trim().max(2000).optional().or(z.literal("")),
   });
 
 type FormValues = z.infer<ReturnType<typeof schema>>;
@@ -69,40 +72,77 @@ export function NCFormDialog({ open, onOpenChange, nc, onSuccess }: NCFormDialog
     defaultValues: {
       description: "", severity: "medium", status: "open",
       reference: "", responsible: "", due_date: "",
+      root_cause: "", corrective_action: "",
     },
   });
+
+  const watchedStatus = form.watch("status");
 
   useEffect(() => {
     if (open) {
       form.reset(
         nc
           ? {
-              description: nc.description, severity: nc.severity, status: nc.status,
-              reference: nc.reference ?? "", responsible: nc.responsible ?? "",
+              description: nc.description,
+              severity: nc.severity,
+              status: nc.status,
+              reference: nc.reference ?? "",
+              responsible: nc.responsible ?? "",
               due_date: nc.due_date ?? "",
+              root_cause: nc.root_cause ?? "",
+              corrective_action: nc.corrective_action ?? "",
             }
-          : { description: "", severity: "medium", status: "open", reference: "", responsible: "", due_date: "" }
+          : {
+              description: "", severity: "medium", status: "open",
+              reference: "", responsible: "", due_date: "",
+              root_cause: "", corrective_action: "",
+            }
       );
     }
   }, [open, nc, form]);
 
   const onSubmit = async (values: FormValues) => {
     if (!user || !activeProject) return;
+
+    // Validate: closing requires corrective_action
+    if (values.status === "closed" && !values.corrective_action?.trim()) {
+      form.setError("corrective_action", {
+        message: t("nc.form.validation.correctiveActionRequired"),
+      });
+      return;
+    }
+
     setSubmitting(true);
     try {
       if (isEdit && nc) {
-        await ncService.update(nc.id, activeProject.id, {
-          description: values.description, severity: values.severity, status: values.status,
-          reference: values.reference || undefined, responsible: values.responsible || undefined,
-          due_date: values.due_date || undefined,
-        });
+        await ncService.update(
+          nc.id,
+          activeProject.id,
+          {
+            description: values.description,
+            severity: values.severity,
+            status: values.status,
+            reference: values.reference || undefined,
+            responsible: values.responsible || undefined,
+            due_date: values.due_date || undefined,
+            root_cause: values.root_cause || undefined,
+            corrective_action: values.corrective_action || undefined,
+          },
+          nc.status
+        );
         toast({ title: t("nc.toast.updated") });
       } else {
         await ncService.create({
           project_id: activeProject.id,
-          description: values.description, severity: values.severity, status: values.status,
-          reference: values.reference || undefined, responsible: values.responsible || undefined,
-          due_date: values.due_date || undefined, created_by: user.id,
+          description: values.description,
+          severity: values.severity,
+          status: values.status,
+          reference: values.reference || undefined,
+          responsible: values.responsible || undefined,
+          due_date: values.due_date || undefined,
+          root_cause: values.root_cause || undefined,
+          corrective_action: values.corrective_action || undefined,
+          created_by: user.id,
         });
         toast({ title: t("nc.toast.created") });
       }
@@ -120,9 +160,11 @@ export function NCFormDialog({ open, onOpenChange, nc, onSuccess }: NCFormDialog
     }
   };
 
+  const isClosing = watchedStatus === "closed";
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[520px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[560px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-base font-semibold">
             {isEdit ? t("nc.form.titleEdit") : t("nc.form.titleCreate")}
@@ -169,7 +211,7 @@ export function NCFormDialog({ open, onOpenChange, nc, onSuccess }: NCFormDialog
                     <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                     <SelectContent>
                       <SelectItem value="open">{t("nc.status.open")}</SelectItem>
-                      <SelectItem value="under_review">{t("nc.status.under_review")}</SelectItem>
+                      <SelectItem value="in_progress">{t("nc.status.in_progress")}</SelectItem>
                       <SelectItem value="closed">{t("nc.status.closed")}</SelectItem>
                     </SelectContent>
                   </Select>
@@ -218,13 +260,59 @@ export function NCFormDialog({ open, onOpenChange, nc, onSuccess }: NCFormDialog
               </FormItem>
             )} />
 
-            {/* ── Attachments section (only for existing records) ── */}
+            <Separator />
+
+            {/* Root cause + Corrective action */}
+            <FormField control={form.control} name="root_cause" render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  {t("nc.form.rootCause")}{" "}
+                  <span className="text-xs text-muted-foreground font-normal">({t("common.optional")})</span>
+                </FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder={t("nc.form.rootCausePlaceholder")}
+                    className="resize-none" rows={2} {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+
+            <FormField control={form.control} name="corrective_action" render={({ field }) => (
+              <FormItem>
+                <FormLabel className={cn(isClosing && "text-foreground font-semibold")}>
+                  {t("nc.form.correctiveAction")}
+                  {isClosing
+                    ? <span className="ml-1 text-destructive text-xs">*</span>
+                    : <span className="text-xs text-muted-foreground font-normal ml-1">({t("common.optional")})</span>
+                  }
+                </FormLabel>
+                {isClosing && (
+                  <p className="flex items-center gap-1 text-xs text-destructive">
+                    <AlertCircle className="h-3 w-3" />
+                    {t("nc.form.correctiveActionRequired")}
+                  </p>
+                )}
+                <FormControl>
+                  <Textarea
+                    placeholder={t("nc.form.correctiveActionPlaceholder")}
+                    className={cn("resize-none", isClosing && "border-destructive/50 focus-visible:ring-destructive/30")}
+                    rows={2}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+
+            {/* Attachments */}
             {activeProject && (
               <>
                 <Separator />
                 <AttachmentsPanel
                   projectId={activeProject.id}
-                  entityType="non_conformity"
+                  entityType="non_conformities"
                   entityId={nc?.id ?? null}
                 />
               </>

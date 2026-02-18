@@ -10,17 +10,33 @@ export interface AuditEntry {
   diff: unknown;
   module: string | null;
   performed_by: string | null;
+  description: string | null;
   created_at: string;
 }
 
 export const auditService = {
-  async getByProject(projectId: string): Promise<AuditEntry[]> {
-    const { data, error } = await supabase
+  async getByProject(projectId: string, filters?: { module?: string; dateFrom?: string; dateTo?: string }): Promise<AuditEntry[]> {
+    let query = supabase
       .from("audit_log")
-      .select("id, project_id, user_id, entity, entity_id, action, diff, module, performed_by, created_at")
+      .select("id, project_id, user_id, entity, entity_id, action, diff, module, performed_by, description, created_at")
       .eq("project_id", projectId)
       .order("created_at", { ascending: false })
-      .limit(200);
+      .limit(500);
+
+    if (filters?.module) {
+      query = query.eq("module", filters.module);
+    }
+    if (filters?.dateFrom) {
+      query = query.gte("created_at", filters.dateFrom);
+    }
+    if (filters?.dateTo) {
+      // add 1 day to include the entire day
+      const d = new Date(filters.dateTo);
+      d.setDate(d.getDate() + 1);
+      query = query.lt("created_at", d.toISOString());
+    }
+
+    const { data, error } = await query;
     if (error) throw error;
     return (data ?? []) as AuditEntry[];
   },
@@ -31,6 +47,7 @@ export const auditService = {
     entityId,
     action,
     module,
+    description,
     diff,
   }: {
     projectId: string;
@@ -38,6 +55,7 @@ export const auditService = {
     entityId?: string | null;
     action: string;
     module?: string;
+    description?: string;
     diff?: Record<string, unknown>;
   }): Promise<void> {
     const { data: { user } } = await supabase.auth.getUser();
@@ -51,6 +69,7 @@ export const auditService = {
       entity_id: entityId ?? null,
       action,
       module: module ?? entity,
+      description: description ?? null,
       diff: diff ?? null,
     });
     if (error) console.error("Audit log error:", error.message);
