@@ -342,14 +342,15 @@ export default function DashboardPage() {
   const docApproved  = documents.filter((d) => d.status === "approved").length;
   const docRejected  = documents.filter((d) => d.status === "rejected").length;
 
-  // Tests
-  const testPending   = tests.filter((t) => t.status === "pending").length;
-  const testCompliant = tests.filter((t) => t.status === "compliant").length;
-  const testNonComp   = tests.filter((t) => t.status === "non_compliant").length;
+  // Tests — using canonical DB status values
+  const testPending     = tests.filter((t) => t.status === "pending").length;
+  const testPass        = tests.filter((t) => t.status === "pass").length;
+  const testFail        = tests.filter((t) => t.status === "fail").length;
+  const testInconclusive= tests.filter((t) => t.status === "inconclusive").length;
 
   // NCs
   const ncOpen       = ncs.filter((n) => n.status === "open").length;
-  const ncInProgress = ncs.filter((n) => n.status === "under_review").length;
+  const ncInProgress = ncs.filter((n) => n.status === "in_progress").length;
   const ncClosed     = ncs.filter((n) => n.status === "closed").length;
 
   const openNcs = ncs.filter((n) => n.status !== "closed");
@@ -380,23 +381,25 @@ export default function DashboardPage() {
   ].filter((d) => d.value > 0);
 
   const ncPieData = [
-    { name: t("nc.status.open"),         value: ncOpen,       color: C.red    },
-    { name: t("nc.status.under_review"), value: ncInProgress, color: C.orange },
-    { name: t("nc.status.closed"),       value: ncClosed,     color: C.green  },
+    { name: t("nc.status.open"),        value: ncOpen,       color: C.red    },
+    { name: t("nc.status.in_progress"), value: ncInProgress, color: C.orange },
+    { name: t("nc.status.closed"),      value: ncClosed,     color: C.green  },
   ].filter((d) => d.value > 0);
 
   const testBarData = [
     {
       name: t("dashboard.charts.tests"),
-      [t("tests.status.compliant")]:     testCompliant,
-      [t("tests.status.non_compliant")]: testNonComp,
-      [t("tests.status.pending")]:       testPending,
+      [t("tests.status.pass")]:        testPass,
+      [t("tests.status.fail")]:        testFail,
+      [t("tests.status.pending")]:     testPending,
+      [t("tests.status.inconclusive")]:testInconclusive,
     },
   ];
   const testBars = [
-    { key: t("tests.status.compliant"),     color: C.green,  label: t("tests.status.compliant")     },
-    { key: t("tests.status.non_compliant"), color: C.red,    label: t("tests.status.non_compliant") },
-    { key: t("tests.status.pending"),       color: C.orange, label: t("tests.status.pending")       },
+    { key: t("tests.status.pass"),        color: C.green,  label: t("tests.status.pass")        },
+    { key: t("tests.status.fail"),        color: C.red,    label: t("tests.status.fail")         },
+    { key: t("tests.status.pending"),     color: C.orange, label: t("tests.status.pending")      },
+    { key: t("tests.status.inconclusive"),color: C.muted,  label: t("tests.status.inconclusive") },
   ];
 
   const supBarData = [
@@ -460,7 +463,7 @@ export default function DashboardPage() {
           icon={FlaskConical}
           loading={testLoading}
           accent={C.blue}
-          sub={`${testCompliant} ${t("tests.status.compliant").toLowerCase()}`}
+          sub={`${testPass} ${t("tests.status.pass").toLowerCase()}`}
         />
         <StatCard
           label={t("dashboard.stats.openNCs")}

@@ -21,9 +21,10 @@ import { cn } from "@/lib/utils";
 import type { TestResult } from "@/lib/services/testService";
 
 const STATUS_COLORS: Record<string, string> = {
-  pending: "bg-muted text-muted-foreground",
-  compliant: "bg-primary/15 text-primary",
-  non_compliant: "bg-destructive/10 text-destructive",
+  pending:     "bg-muted text-muted-foreground",
+  pass:        "bg-primary/15 text-primary",
+  fail:        "bg-destructive/10 text-destructive",
+  inconclusive:"bg-orange-500/10 text-orange-600",
 };
 
 export default function TestsPage() {
