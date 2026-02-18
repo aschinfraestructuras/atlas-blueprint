@@ -113,14 +113,19 @@
       "avgAgingTitle": "Aging Medio NC",
       "days": "días abiertos",
       "openNcCount": "{{count}} NC abiertas",
-      "noOpenNcs": "Sin NCs abiertas"
+      "noOpenNcs": "Sin NCs abiertas",
+      "awaitingReview": "En revisión",
+      "approved": "Aprobados"
     },
     "charts": {
       "tests": "Ensayos",
       "suppliers": "Proveedores",
-      "ncTrend": "Tendencia de NC — últimos 6 meses"
+      "ncTrend": "Tendencia de NC — últimos 6 meses",
+      "docsByType": "Documentos por Tipo"
     },
     "recentActivity": "Actividad Reciente",
+    "nextActions": "Próximas Acciones",
+    "allClear": "Sin acciones pendientes 🎉",
     "quickActions": "Acciones Rápidas",
     "actions": {
       "newProject": "Nuevo Proyecto",
@@ -140,6 +145,7 @@
   "emptyState": {
     "title": "Aún sin datos",
     "subtitle": "Esta sección no tiene contenido todavía. Comience creando un nuevo registro.",
+    "noResults": "Ningún resultado para los filtros aplicados.",
     "cta": "Crear nuevo",
     "projects": {
       "subtitleActive": "No tiene proyectos activos. Cree el primero para comenzar.",
@@ -252,9 +258,11 @@
   "documents": {
     "newDocument": "Nuevo Documento",
     "noFile": "Sin archivo",
-    "allFiles": "archivos",
-    "searchPlaceholder": "Buscar por nombre o módulo…",
+    "allFiles": "documentos",
+    "searchPlaceholder": "Buscar por título, tipo o revisión…",
     "filterAll": "Todos los módulos",
+    "filterAllStatus": "Todos los estados",
+    "filterAllTypes": "Todos los tipos",
     "table": {
       "title": "Título",
       "type": "Tipo",
