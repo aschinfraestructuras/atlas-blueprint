@@ -57,18 +57,29 @@
     }
   },
   "nav": {
+    "sections": {
+      "core": "Core",
+      "projectManagement": "Gestão de Projeto",
+      "system": "Sistema"
+    },
     "dashboard": "Dashboard",
     "projects": "Projetos",
     "documents": "Documentos",
     "suppliers": "Fornecedores",
     "tests": "Ensaios",
     "nonConformities": "Não Conformidades",
+    "auditLog": "Registo de Auditoria",
     "settings": "Definições"
   },
   "topbar": {
     "language": "Idioma",
     "profile": "Perfil",
-    "signOut": "Terminar sessão"
+    "signOut": "Terminar sessão",
+    "projectSelector": {
+      "label": "Projeto ativo",
+      "placeholder": "Selecionar projeto…",
+      "noProjects": "Sem projetos disponíveis"
+    }
   },
   "dashboard": {
     "welcome": "Bem-vindo de volta",
@@ -96,6 +107,11 @@
     },
     "noActivity": "Sem atividade recente."
   },
+  "emptyState": {
+    "title": "Ainda sem dados",
+    "subtitle": "Esta secção ainda não tem conteúdo. Comece por criar um novo registo.",
+    "cta": "Criar novo"
+  },
   "pages": {
     "projects": {
       "title": "Projetos",
@@ -116,6 +132,10 @@
     "nonConformities": {
       "title": "Não Conformidades",
       "subtitle": "Registo e tratamento de não conformidades"
+    },
+    "auditLog": {
+      "title": "Registo de Auditoria",
+      "subtitle": "Histórico de todas as ações realizadas na plataforma"
     },
     "settings": {
       "title": "Definições",

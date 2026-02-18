@@ -6,12 +6,29 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { MainLayout } from "@/components/layout/MainLayout";
+import {
+  FolderKanban,
+  FileText,
+  Truck,
+  FlaskConical,
+  AlertTriangle,
+  ScrollText,
+  Settings,
+} from "lucide-react";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import PlaceholderPage from "./pages/PlaceholderPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
+
+function ProtectedLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <ProtectedRoute>
+      <MainLayout>{children}</MainLayout>
+    </ProtectedRoute>
+  );
+}
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -24,75 +41,97 @@ const App = () => (
             {/* Public */}
             <Route path="/login" element={<LoginPage />} />
 
-            {/* Protected – wrapped in MainLayout */}
+            {/* Protected – all share MainLayout */}
             <Route
               path="/"
               element={
-                <ProtectedRoute>
-                  <MainLayout>
-                    <DashboardPage />
-                  </MainLayout>
-                </ProtectedRoute>
+                <ProtectedLayout>
+                  <DashboardPage />
+                </ProtectedLayout>
               }
             />
             <Route
               path="/projects"
               element={
-                <ProtectedRoute>
-                  <MainLayout>
-                    <PlaceholderPage titleKey="pages.projects.title" subtitleKey="pages.projects.subtitle" />
-                  </MainLayout>
-                </ProtectedRoute>
+                <ProtectedLayout>
+                  <PlaceholderPage
+                    titleKey="pages.projects.title"
+                    subtitleKey="pages.projects.subtitle"
+                    icon={FolderKanban}
+                  />
+                </ProtectedLayout>
               }
             />
             <Route
               path="/documents"
               element={
-                <ProtectedRoute>
-                  <MainLayout>
-                    <PlaceholderPage titleKey="pages.documents.title" subtitleKey="pages.documents.subtitle" />
-                  </MainLayout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/suppliers"
-              element={
-                <ProtectedRoute>
-                  <MainLayout>
-                    <PlaceholderPage titleKey="pages.suppliers.title" subtitleKey="pages.suppliers.subtitle" />
-                  </MainLayout>
-                </ProtectedRoute>
+                <ProtectedLayout>
+                  <PlaceholderPage
+                    titleKey="pages.documents.title"
+                    subtitleKey="pages.documents.subtitle"
+                    icon={FileText}
+                  />
+                </ProtectedLayout>
               }
             />
             <Route
               path="/tests"
               element={
-                <ProtectedRoute>
-                  <MainLayout>
-                    <PlaceholderPage titleKey="pages.tests.title" subtitleKey="pages.tests.subtitle" />
-                  </MainLayout>
-                </ProtectedRoute>
+                <ProtectedLayout>
+                  <PlaceholderPage
+                    titleKey="pages.tests.title"
+                    subtitleKey="pages.tests.subtitle"
+                    icon={FlaskConical}
+                  />
+                </ProtectedLayout>
+              }
+            />
+            <Route
+              path="/suppliers"
+              element={
+                <ProtectedLayout>
+                  <PlaceholderPage
+                    titleKey="pages.suppliers.title"
+                    subtitleKey="pages.suppliers.subtitle"
+                    icon={Truck}
+                  />
+                </ProtectedLayout>
               }
             />
             <Route
               path="/non-conformities"
               element={
-                <ProtectedRoute>
-                  <MainLayout>
-                    <PlaceholderPage titleKey="pages.nonConformities.title" subtitleKey="pages.nonConformities.subtitle" />
-                  </MainLayout>
-                </ProtectedRoute>
+                <ProtectedLayout>
+                  <PlaceholderPage
+                    titleKey="pages.nonConformities.title"
+                    subtitleKey="pages.nonConformities.subtitle"
+                    icon={AlertTriangle}
+                  />
+                </ProtectedLayout>
+              }
+            />
+            <Route
+              path="/audit"
+              element={
+                <ProtectedLayout>
+                  <PlaceholderPage
+                    titleKey="pages.auditLog.title"
+                    subtitleKey="pages.auditLog.subtitle"
+                    icon={ScrollText}
+                  />
+                </ProtectedLayout>
               }
             />
             <Route
               path="/settings"
               element={
-                <ProtectedRoute>
-                  <MainLayout>
-                    <PlaceholderPage titleKey="pages.settings.title" subtitleKey="pages.settings.subtitle" />
-                  </MainLayout>
-                </ProtectedRoute>
+                <ProtectedLayout>
+                  <PlaceholderPage
+                    titleKey="pages.settings.title"
+                    subtitleKey="pages.settings.subtitle"
+                    icon={Settings}
+                  />
+                </ProtectedLayout>
               }
             />
 
