@@ -78,7 +78,7 @@
     "projectSelector": {
       "label": "Proyecto activo",
       "placeholder": "Seleccionar proyecto…",
-      "noProjects": "Sin proyectos disponibles"
+      "noProjects": "Sin proyectos activos"
     }
   },
   "noProject": {
@@ -118,7 +118,10 @@
     "title": "Aún sin datos",
     "subtitle": "Esta sección no tiene contenido todavía. Comience creando un nuevo registro.",
     "cta": "Crear nuevo",
-    "projects": { "subtitle": "Aún no existen proyectos. Cree el primero para comenzar." },
+    "projects": {
+      "subtitleActive": "No tiene proyectos activos. Cree el primero para comenzar.",
+      "subtitleArchived": "No tiene proyectos archivados."
+    },
     "documents": { "subtitle": "Este proyecto aún no tiene documentos." },
     "tests": { "subtitle": "Aún no se han registrado ensayos en este proyecto." },
     "suppliers": { "subtitle": "Aún no hay proveedores asociados a este proyecto." },
@@ -156,10 +159,51 @@
     }
   },
   "projects": {
+    "newProject": "Nuevo Proyecto",
+    "activeLabel": "Proyecto activo",
+    "tabs": {
+      "active": "Activos",
+      "archived": "Archivados"
+    },
     "status": {
       "active": "Activo",
       "completed": "Completado",
       "archived": "Archivado"
+    },
+    "actions": {
+      "setActive": "Establecer como activo",
+      "archive": "Archivar",
+      "unarchive": "Desarchivar"
+    },
+    "form": {
+      "titleCreate": "Nuevo Proyecto",
+      "titleEdit": "Editar Proyecto",
+      "name": "Nombre del proyecto",
+      "namePlaceholder": "ej: Obra Norte A2",
+      "code": "Código del proyecto",
+      "codePlaceholder": "ej: OBR-001",
+      "client": "Cliente",
+      "clientPlaceholder": "ej: Constructora XYZ",
+      "location": "Ubicación",
+      "locationPlaceholder": "ej: Madrid, España",
+      "startDate": "Fecha de inicio",
+      "createBtn": "Crear proyecto",
+      "validation": {
+        "nameRequired": "El nombre es obligatorio.",
+        "nameTooLong": "El nombre no puede tener más de 120 caracteres.",
+        "codeRequired": "El código es obligatorio.",
+        "codeTooLong": "El código no puede tener más de 30 caracteres.",
+        "codeFormat": "Solo se permiten letras, números, guiones y guiones bajos.",
+        "codeNotUnique": "Ya existe un proyecto con este código. Elija otro."
+      }
+    },
+    "toast": {
+      "created": "Proyecto creado con éxito.",
+      "updated": "Proyecto actualizado con éxito.",
+      "archived": "Proyecto archivado.",
+      "unarchived": "Proyecto reactivado.",
+      "activated": "Proyecto activo: {{name}}",
+      "error": "Ocurrió un error. Inténtelo de nuevo."
     }
   },
   "documents": {

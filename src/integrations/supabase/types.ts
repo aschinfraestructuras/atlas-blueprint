@@ -306,34 +306,40 @@ export type Database = {
       }
       projects: {
         Row: {
+          client: string | null
           code: string
           created_at: string
           created_by: string | null
           id: string
           location: string | null
           name: string
+          start_date: string | null
           status: string
           tenant_id: string | null
           updated_at: string
         }
         Insert: {
+          client?: string | null
           code: string
           created_at?: string
           created_by?: string | null
           id?: string
           location?: string | null
           name: string
+          start_date?: string | null
           status?: string
           tenant_id?: string | null
           updated_at?: string
         }
         Update: {
+          client?: string | null
           code?: string
           created_at?: string
           created_by?: string | null
           id?: string
           location?: string | null
           name?: string
+          start_date?: string | null
           status?: string
           tenant_id?: string | null
           updated_at?: string

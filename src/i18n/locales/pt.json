@@ -78,7 +78,7 @@
     "projectSelector": {
       "label": "Projeto ativo",
       "placeholder": "Selecionar projeto…",
-      "noProjects": "Sem projetos disponíveis"
+      "noProjects": "Sem projetos ativos"
     }
   },
   "noProject": {
@@ -118,7 +118,10 @@
     "title": "Ainda sem dados",
     "subtitle": "Esta secção ainda não tem conteúdo. Comece por criar um novo registo.",
     "cta": "Criar novo",
-    "projects": { "subtitle": "Ainda não existem projetos. Crie o primeiro para começar." },
+    "projects": {
+      "subtitleActive": "Não tem projetos ativos. Crie o primeiro para começar.",
+      "subtitleArchived": "Não tem projetos arquivados."
+    },
     "documents": { "subtitle": "Este projeto ainda não tem documentos." },
     "tests": { "subtitle": "Ainda não foram registados ensaios neste projeto." },
     "suppliers": { "subtitle": "Ainda não existem fornecedores associados a este projeto." },
@@ -156,10 +159,51 @@
     }
   },
   "projects": {
+    "newProject": "Novo Projeto",
+    "activeLabel": "Projeto ativo",
+    "tabs": {
+      "active": "Ativos",
+      "archived": "Arquivados"
+    },
     "status": {
       "active": "Ativo",
       "completed": "Concluído",
       "archived": "Arquivado"
+    },
+    "actions": {
+      "setActive": "Definir como ativo",
+      "archive": "Arquivar",
+      "unarchive": "Desarquivar"
+    },
+    "form": {
+      "titleCreate": "Novo Projeto",
+      "titleEdit": "Editar Projeto",
+      "name": "Nome do projeto",
+      "namePlaceholder": "ex: Obra Norte A2",
+      "code": "Código do projeto",
+      "codePlaceholder": "ex: OBR-001",
+      "client": "Cliente",
+      "clientPlaceholder": "ex: Construtora XYZ",
+      "location": "Localização",
+      "locationPlaceholder": "ex: Lisboa, Portugal",
+      "startDate": "Data de início",
+      "createBtn": "Criar projeto",
+      "validation": {
+        "nameRequired": "O nome é obrigatório.",
+        "nameTooLong": "O nome não pode ter mais de 120 caracteres.",
+        "codeRequired": "O código é obrigatório.",
+        "codeTooLong": "O código não pode ter mais de 30 caracteres.",
+        "codeFormat": "Apenas letras, números, hífens e underscores são permitidos.",
+        "codeNotUnique": "Já existe um projeto com este código. Escolha outro."
+      }
+    },
+    "toast": {
+      "created": "Projeto criado com sucesso.",
+      "updated": "Projeto atualizado com sucesso.",
+      "archived": "Projeto arquivado.",
+      "unarchived": "Projeto reativado.",
+      "activated": "Projeto ativo: {{name}}",
+      "error": "Ocorreu um erro. Tente novamente."
     }
   },
   "documents": {
