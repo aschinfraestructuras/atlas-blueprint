@@ -251,6 +251,7 @@
     },
     "actions": {
       "upload": "Carregar ficheiro",
+      "replace": "Substituir ficheiro",
       "download": "Transferir ficheiro",
       "view": "Ver em nova aba"
     },
@@ -293,7 +294,9 @@
     "toast": {
       "created": "Documento criado com sucesso.",
       "updated": "Documento atualizado com sucesso.",
-      "uploaded": "Ficheiro carregado com sucesso.",
+      "uploaded": "Ficheiro «{{name}}» carregado com sucesso.",
+      "uploadError": "Falha no upload",
+      "downloadError": "Falha no download",
       "error": "Ocorreu um erro. Tente novamente."
     }
   },

@@ -41,7 +41,6 @@ const schema = (t: (k: string) => string) =>
     doc_type: z.string().min(1, t("documents.form.validation.typeRequired")),
     status: z.string().min(1),
     revision: z.string().trim().max(20).optional().or(z.literal("")),
-    file_url: z.string().url(t("documents.form.validation.fileUrlInvalid")).optional().or(z.literal("")),
   });
 
 type FormValues = z.infer<ReturnType<typeof schema>>;
@@ -62,15 +61,15 @@ export function DocumentFormDialog({ open, onOpenChange, document: doc, onSucces
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema(t)),
-    defaultValues: { title: "", doc_type: "", status: "draft", revision: "", file_url: "" },
+    defaultValues: { title: "", doc_type: "", status: "draft", revision: "" },
   });
 
   useEffect(() => {
     if (open) {
       form.reset(
         doc
-          ? { title: doc.title, doc_type: doc.doc_type, status: doc.status, revision: doc.revision ?? "", file_url: doc.file_url ?? "" }
-          : { title: "", doc_type: "", status: "draft", revision: "", file_url: "" }
+          ? { title: doc.title, doc_type: doc.doc_type, status: doc.status, revision: doc.revision ?? "" }
+          : { title: "", doc_type: "", status: "draft", revision: "" }
       );
     }
   }, [open, doc, form]);
@@ -85,7 +84,6 @@ export function DocumentFormDialog({ open, onOpenChange, document: doc, onSucces
           doc_type: values.doc_type,
           status: values.status,
           revision: values.revision || undefined,
-          file_url: values.file_url || undefined,
         });
         toast({ title: t("documents.toast.updated") });
       } else {
@@ -95,7 +93,6 @@ export function DocumentFormDialog({ open, onOpenChange, document: doc, onSucces
           doc_type: values.doc_type,
           status: values.status,
           revision: values.revision || "0",
-          file_url: values.file_url || undefined,
           created_by: user.id,
         });
         toast({ title: t("documents.toast.created") });
@@ -206,23 +203,6 @@ export function DocumentFormDialog({ open, onOpenChange, document: doc, onSucces
                   </FormLabel>
                   <FormControl>
                     <Input placeholder={t("documents.form.revisionPlaceholder")} {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="file_url"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    {t("documents.form.fileUrl")}{" "}
-                    <span className="text-xs text-muted-foreground font-normal">({t("common.optional")})</span>
-                  </FormLabel>
-                  <FormControl>
-                    <Input placeholder={t("documents.form.fileUrlPlaceholder")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
