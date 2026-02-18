@@ -87,15 +87,16 @@
     --chart-4: 33 75% 38%;
     --chart-5: 252 55% 45%;
 
-    /* ── Sidebar — Institutional dark ────────────────────────────── */
-    --sidebar-background:          224 30% 12%;
-    --sidebar-foreground:          215 20% 75%;
-    --sidebar-primary:             215 70% 55%;
+    /* ── Sidebar — Institutional navy blue premium ───────────────── */
+    /* Navy blue: #0F2A4D area — warm institutional, not black       */
+    --sidebar-background:          214 62% 18%;
+    --sidebar-foreground:          210 30% 82%;
+    --sidebar-primary:             210 85% 68%;
     --sidebar-primary-foreground:  0 0% 100%;
-    --sidebar-accent:              224 25% 18%;
-    --sidebar-accent-foreground:   215 20% 92%;
-    --sidebar-border:              224 20% 18%;
-    --sidebar-ring:                215 70% 55%;
+    --sidebar-accent:              214 55% 24%;
+    --sidebar-accent-foreground:   210 25% 94%;
+    --sidebar-border:              214 45% 22%;
+    --sidebar-ring:                210 85% 68%;
 
     /* ── Elevation / Shadow tokens ───────────────────────────────── */
     --shadow-card: 0 1px 3px 0 hsl(220 25% 12% / 0.06), 0 1px 2px -1px hsl(220 25% 12% / 0.06);
