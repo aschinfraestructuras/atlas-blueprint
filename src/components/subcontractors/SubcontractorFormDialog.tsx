@@ -20,6 +20,9 @@ import { Button } from "@/components/ui/button";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 
 const STATUSES = ["active", "suspended", "concluded"] as const;
 
@@ -46,6 +49,7 @@ export function SubcontractorFormDialog({ open, onOpenChange, subcontractor, onS
   const { activeProject } = useProject();
   const { toast } = useToast();
   const { data: suppliers } = useSuppliers();
+  const isEdit = !!subcontractor;
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -104,97 +108,113 @@ export function SubcontractorFormDialog({ open, onOpenChange, subcontractor, onS
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>
-            {subcontractor ? t("subcontractors.form.titleEdit") : t("subcontractors.form.titleCreate")}
+            {isEdit ? t("subcontractors.form.titleEdit") : t("subcontractors.form.titleCreate")}
           </DialogTitle>
         </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField control={form.control} name="name" render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("subcontractors.form.name")}</FormLabel>
-                <FormControl>
-                  <Input placeholder={t("subcontractors.form.namePlaceholder")} {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
 
-            <div className="grid grid-cols-2 gap-4">
-              <FormField control={form.control} name="trade" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    {t("subcontractors.form.trade")}{" "}
-                    <span className="text-muted-foreground text-xs">({t("common.optional")})</span>
-                  </FormLabel>
-                  <FormControl>
-                    <Input placeholder={t("subcontractors.form.tradePlaceholder")} {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="status" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("common.status")}</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                    <SelectContent>
-                      {STATUSES.map((s) => (
-                        <SelectItem key={s} value={s}>{t(`subcontractors.status.${s}`)}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )} />
-            </div>
+        <ScrollArea className="max-h-[75vh] pr-1">
+          <div className="space-y-4 pb-1">
+            <Form {...form}>
+              <form id="sub-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField control={form.control} name="name" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("subcontractors.form.name")}</FormLabel>
+                    <FormControl>
+                      <Input placeholder={t("subcontractors.form.namePlaceholder")} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
 
-            <FormField control={form.control} name="contact_email" render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  {t("subcontractors.form.contactEmail")}{" "}
-                  <span className="text-muted-foreground text-xs">({t("common.optional")})</span>
-                </FormLabel>
-                <FormControl>
-                  <Input type="email" placeholder="email@empresa.com" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField control={form.control} name="trade" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        {t("subcontractors.form.trade")}{" "}
+                        <span className="text-muted-foreground text-xs">({t("common.optional")})</span>
+                      </FormLabel>
+                      <FormControl>
+                        <Input placeholder={t("subcontractors.form.tradePlaceholder")} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="status" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("common.status")}</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                        <SelectContent>
+                          {STATUSES.map((s) => (
+                            <SelectItem key={s} value={s}>{t(`subcontractors.status.${s}`)}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                </div>
 
-            {suppliers.length > 0 && (
-              <FormField control={form.control} name="supplier_id" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    {t("subcontractors.form.linkedSupplier")}{" "}
-                    <span className="text-muted-foreground text-xs">({t("common.optional")})</span>
-                  </FormLabel>
-                  <Select
-                    onValueChange={(v) => field.onChange(v === "__none__" ? "" : v)}
-                    value={field.value || "__none__"}
-                  >
-                    <FormControl><SelectTrigger><SelectValue placeholder={t("subcontractors.form.linkedSupplierPlaceholder")} /></SelectTrigger></FormControl>
-                    <SelectContent>
-                      <SelectItem value="__none__">{t("subcontractors.form.noSupplier")}</SelectItem>
-                      {suppliers.map((s) => (
-                        <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )} />
+                <FormField control={form.control} name="contact_email" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      {t("subcontractors.form.contactEmail")}{" "}
+                      <span className="text-muted-foreground text-xs">({t("common.optional")})</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input type="email" placeholder="email@empresa.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+
+                {suppliers.length > 0 && (
+                  <FormField control={form.control} name="supplier_id" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        {t("subcontractors.form.linkedSupplier")}{" "}
+                        <span className="text-muted-foreground text-xs">({t("common.optional")})</span>
+                      </FormLabel>
+                      <Select
+                        onValueChange={(v) => field.onChange(v === "__none__" ? "" : v)}
+                        value={field.value || "__none__"}
+                      >
+                        <FormControl><SelectTrigger><SelectValue placeholder={t("subcontractors.form.linkedSupplierPlaceholder")} /></SelectTrigger></FormControl>
+                        <SelectContent>
+                          <SelectItem value="__none__">{t("subcontractors.form.noSupplier")}</SelectItem>
+                          {suppliers.map((s) => (
+                            <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                )}
+              </form>
+            </Form>
+
+            {isEdit && subcontractor && activeProject && (
+              <>
+                <Separator />
+                <AttachmentsPanel
+                  projectId={activeProject.id}
+                  entityType="subcontractors"
+                  entityId={subcontractor.id}
+                />
+              </>
             )}
+          </div>
+        </ScrollArea>
 
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>{t("common.cancel")}</Button>
-              <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting
-                  ? t("common.loading")
-                  : subcontractor ? t("common.save") : t("subcontractors.form.createBtn")}
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
+        <DialogFooter>
+          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>{t("common.cancel")}</Button>
+          <Button type="submit" form="sub-form" disabled={form.formState.isSubmitting}>
+            {form.formState.isSubmitting
+              ? t("common.loading")
+              : isEdit ? t("common.save") : t("subcontractors.form.createBtn")}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
