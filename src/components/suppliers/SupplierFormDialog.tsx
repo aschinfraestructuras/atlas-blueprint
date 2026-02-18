@@ -8,6 +8,7 @@ import { useProject } from "@/contexts/ProjectContext";
 import { supplierService } from "@/lib/services/supplierService";
 import type { Supplier } from "@/lib/services/supplierService";
 import { toast } from "@/hooks/use-toast";
+import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import {
   Dialog,
   DialogContent,
@@ -99,9 +100,10 @@ export function SupplierFormDialog({ open, onOpenChange, supplier, onSuccess }: 
       onSuccess();
       onOpenChange(false);
     } catch (err) {
+      const info = classifySupabaseError(err);
       toast({
-        title: t("suppliers.toast.error"),
-        description: err instanceof Error ? err.message : t("auth.errors.unexpected"),
+        title: t(info.titleKey),
+        description: info.descriptionKey ? t(info.descriptionKey) : info.raw || t("auth.errors.unexpected"),
         variant: "destructive",
       });
     } finally {

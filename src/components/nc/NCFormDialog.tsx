@@ -8,6 +8,7 @@ import { useProject } from "@/contexts/ProjectContext";
 import { ncService } from "@/lib/services/ncService";
 import type { NonConformity } from "@/lib/services/ncService";
 import { toast } from "@/hooks/use-toast";
+import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import {
   Dialog,
   DialogContent,
@@ -113,9 +114,10 @@ export function NCFormDialog({ open, onOpenChange, nc, onSuccess }: NCFormDialog
       onSuccess();
       onOpenChange(false);
     } catch (err) {
+      const info = classifySupabaseError(err);
       toast({
-        title: t("nc.toast.error"),
-        description: err instanceof Error ? err.message : t("auth.errors.unexpected"),
+        title: t(info.titleKey),
+        description: info.descriptionKey ? t(info.descriptionKey) : info.raw || t("auth.errors.unexpected"),
         variant: "destructive",
       });
     } finally {

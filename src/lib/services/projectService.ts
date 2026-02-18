@@ -50,7 +50,17 @@ export const projectService = {
       .select()
       .single();
     if (error) throw error;
-    return data as Project;
+    const project = data as Project;
+
+    // Ensure creator is inserted as admin member (trigger also handles this,
+    // but explicit insert guarantees it in case trigger is delayed).
+    await supabase
+      .from("project_members")
+      .insert({ project_id: project.id, user_id: payload.created_by, role: "admin" })
+      .select()
+      .maybeSingle(); // ignore unique-conflict errors silently
+
+    return project;
   },
 
   async update(id: string, payload: ProjectUpdate): Promise<Project> {

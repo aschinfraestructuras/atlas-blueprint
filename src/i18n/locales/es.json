@@ -379,5 +379,27 @@
       "action": "Acción",
       "user": "Usuario"
     }
+  },
+  "errors": {
+    "rls": {
+      "title": "Sin permisos",
+      "description": "No tiene permisos para crear o editar registros en este proyecto. Verifique que es miembro del proyecto."
+    },
+    "unique": {
+      "title": "Registro duplicado",
+      "description": "Ya existe un registro con estos datos. Utilice valores únicos."
+    },
+    "notNull": {
+      "title": "Campo obligatorio faltante",
+      "description": "Un campo obligatorio no fue completado. Revise el formulario."
+    },
+    "fk": {
+      "title": "Referencia inválida",
+      "description": "Uno de los campos hace referencia a un registro que no existe."
+    },
+    "generic": {
+      "title": "Error al guardar",
+      "description": "Ocurrió un error inesperado. Inténtelo de nuevo."
+    }
   }
 }

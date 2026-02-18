@@ -7,6 +7,7 @@ import { useProject } from "@/contexts/ProjectContext";
 import { testService } from "@/lib/services/testService";
 import type { TestResult, TestCatalogEntry } from "@/lib/services/testService";
 import { toast } from "@/hooks/use-toast";
+import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import {
   Dialog,
   DialogContent,
@@ -126,9 +127,10 @@ export function TestFormDialog({ open, onOpenChange, testResult, onSuccess }: Te
       setNewTestCode("");
       toast({ title: t("tests.toast.catalogCreated") });
     } catch (err) {
+      const info = classifySupabaseError(err);
       toast({
-        title: t("tests.toast.error"),
-        description: err instanceof Error ? err.message : "",
+        title: t(info.titleKey),
+        description: info.descriptionKey ? t(info.descriptionKey) : info.raw || t("auth.errors.unexpected"),
         variant: "destructive",
       });
     } finally {
@@ -163,9 +165,10 @@ export function TestFormDialog({ open, onOpenChange, testResult, onSuccess }: Te
       onSuccess();
       onOpenChange(false);
     } catch (err) {
+      const info = classifySupabaseError(err);
       toast({
-        title: t("tests.toast.error"),
-        description: err instanceof Error ? err.message : t("auth.errors.unexpected"),
+        title: t(info.titleKey),
+        description: info.descriptionKey ? t(info.descriptionKey) : info.raw || t("auth.errors.unexpected"),
         variant: "destructive",
       });
     } finally {
