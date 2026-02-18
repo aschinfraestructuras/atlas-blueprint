@@ -208,10 +208,17 @@
   },
   "documents": {
     "newDocument": "Novo Documento",
+    "noFile": "Sem ficheiro",
     "table": {
       "title": "Título",
       "type": "Tipo",
-      "revision": "Revisão"
+      "revision": "Revisão",
+      "file": "Ficheiro"
+    },
+    "actions": {
+      "upload": "Carregar ficheiro",
+      "download": "Transferir ficheiro",
+      "view": "Ver em nova aba"
     },
     "status": {
       "draft": "Rascunho",
@@ -252,6 +259,7 @@
     "toast": {
       "created": "Documento criado com sucesso.",
       "updated": "Documento atualizado com sucesso.",
+      "uploaded": "Ficheiro carregado com sucesso.",
       "error": "Ocorreu um erro. Tente novamente."
     }
   },
