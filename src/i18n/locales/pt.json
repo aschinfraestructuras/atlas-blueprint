@@ -379,5 +379,27 @@
       "action": "Ação",
       "user": "Utilizador"
     }
+  },
+  "errors": {
+    "rls": {
+      "title": "Sem permissões",
+      "description": "Não tem permissões para criar ou editar registos neste projeto. Verifique se é membro do projeto."
+    },
+    "unique": {
+      "title": "Registo duplicado",
+      "description": "Já existe um registo com estes dados. Utilize valores únicos."
+    },
+    "notNull": {
+      "title": "Campo obrigatório em falta",
+      "description": "Um campo obrigatório não foi preenchido. Verifique o formulário."
+    },
+    "fk": {
+      "title": "Referência inválida",
+      "description": "Um dos campos faz referência a um registo que não existe."
+    },
+    "generic": {
+      "title": "Erro ao guardar",
+      "description": "Ocorreu um erro inesperado. Tente novamente."
+    }
   }
 }

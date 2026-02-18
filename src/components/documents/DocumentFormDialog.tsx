@@ -8,6 +8,7 @@ import { useProject } from "@/contexts/ProjectContext";
 import { documentService } from "@/lib/services/documentService";
 import type { Document } from "@/lib/services/documentService";
 import { toast } from "@/hooks/use-toast";
+import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import {
   Dialog,
   DialogContent,
@@ -102,9 +103,10 @@ export function DocumentFormDialog({ open, onOpenChange, document: doc, onSucces
       onSuccess();
       onOpenChange(false);
     } catch (err) {
+      const info = classifySupabaseError(err);
       toast({
-        title: t("documents.toast.error"),
-        description: err instanceof Error ? err.message : t("auth.errors.unexpected"),
+        title: t(info.titleKey),
+        description: info.descriptionKey ? t(info.descriptionKey) : info.raw || t("auth.errors.unexpected"),
         variant: "destructive",
       });
     } finally {
