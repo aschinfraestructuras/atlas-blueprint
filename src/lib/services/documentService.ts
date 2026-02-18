@@ -68,6 +68,7 @@ export function buildStoragePath(
 ): string {
   const safe = slugifyFilename(fileName);
   const ts = Date.now();
+  // First segment MUST be project UUID (RLS: storage_path_project_id)
   return `${projectId}/documents/${documentId}/${ts}_${safe}`;
 }
 
