@@ -224,6 +224,53 @@ export type Database = {
           },
         ]
       }
+      plans: {
+        Row: {
+          created_at: string
+          created_by: string
+          file_url: string | null
+          id: string
+          plan_type: string
+          project_id: string
+          revision: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          file_url?: string | null
+          id?: string
+          plan_type?: string
+          project_id: string
+          revision?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          file_url?: string | null
+          id?: string
+          plan_type?: string
+          project_id?: string
+          revision?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plans_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -369,6 +416,60 @@ export type Database = {
         }
         Relationships: []
       }
+      subcontractors: {
+        Row: {
+          contact_email: string | null
+          created_at: string
+          created_by: string
+          id: string
+          name: string
+          project_id: string
+          status: string
+          supplier_id: string | null
+          trade: string | null
+          updated_at: string
+        }
+        Insert: {
+          contact_email?: string | null
+          created_at?: string
+          created_by: string
+          id?: string
+          name: string
+          project_id: string
+          status?: string
+          supplier_id?: string | null
+          trade?: string | null
+          updated_at?: string
+        }
+        Update: {
+          contact_email?: string | null
+          created_at?: string
+          created_by?: string
+          id?: string
+          name?: string
+          project_id?: string
+          status?: string
+          supplier_id?: string | null
+          trade?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subcontractors_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subcontractors_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       suppliers: {
         Row: {
           approval_status: string
@@ -412,6 +513,100 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "suppliers_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      survey_records: {
+        Row: {
+          area_or_pk: string
+          created_at: string
+          created_by: string
+          date: string
+          description: string | null
+          file_url: string | null
+          id: string
+          project_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          area_or_pk: string
+          created_at?: string
+          created_by: string
+          date?: string
+          description?: string | null
+          file_url?: string | null
+          id?: string
+          project_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          area_or_pk?: string
+          created_at?: string
+          created_by?: string
+          date?: string
+          description?: string | null
+          file_url?: string | null
+          id?: string
+          project_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "survey_records_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      technical_office_items: {
+        Row: {
+          created_at: string
+          created_by: string
+          description: string | null
+          due_date: string | null
+          id: string
+          project_id: string
+          status: string
+          title: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          project_id: string
+          status?: string
+          title: string
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          project_id?: string
+          status?: string
+          title?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "technical_office_items_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"

@@ -60,6 +60,8 @@
     "sections": {
       "core": "Core",
       "projectManagement": "Gestão de Projeto",
+      "technicalOfficeSection": "Oficina Técnica",
+      "fieldSection": "Campo & Subempreiteiros",
       "system": "Sistema"
     },
     "dashboard": "Dashboard",
@@ -69,7 +71,11 @@
     "tests": "Ensaios",
     "nonConformities": "Não Conformidades",
     "auditLog": "Registo de Auditoria",
-    "settings": "Definições"
+    "settings": "Definições",
+    "technicalOffice": "Oficina Técnica",
+    "plans": "Planeamento & Planos",
+    "survey": "Topografia",
+    "subcontractors": "Subempreiteiros"
   },
   "topbar": {
     "language": "Idioma",
@@ -96,6 +102,14 @@
       "openDocuments": "Documentos em Curso",
       "pendingTests": "Ensaios Pendentes",
       "openNCs": "NCs Abertas"
+    },
+    "kpi": {
+      "title": "KPIs do Projeto",
+      "documents": "Documentos",
+      "tests": "Ensaios",
+      "ncs": "Não Conformidades",
+      "suppliers": "Fornecedores",
+      "avgAging": "Aging médio: {{days}} dias"
     },
     "recentActivity": "Atividade Recente",
     "quickActions": "Ações Rápidas",
@@ -126,7 +140,11 @@
     "tests": { "subtitle": "Ainda não foram registados ensaios neste projeto." },
     "suppliers": { "subtitle": "Ainda não existem fornecedores associados a este projeto." },
     "nonConformities": { "subtitle": "Não existem não conformidades registadas. Excelente!" },
-    "auditLog": { "subtitle": "Nenhuma ação registada ainda para este projeto." }
+    "auditLog": { "subtitle": "Nenhuma ação registada ainda para este projeto." },
+    "technicalOffice": { "subtitle": "Ainda não existem RFIs, Submittals ou Clarificações neste projeto." },
+    "plans": { "subtitle": "Ainda não existem planos associados a este projeto." },
+    "survey": { "subtitle": "Ainda não existem registos topográficos neste projeto." },
+    "subcontractors": { "subtitle": "Ainda não existem subempreiteiros associados a este projeto." }
   },
   "pages": {
     "projects": {
@@ -156,6 +174,22 @@
     "settings": {
       "title": "Definições",
       "subtitle": "Configurações da plataforma"
+    },
+    "technicalOffice": {
+      "title": "Oficina Técnica",
+      "subtitle": "Gestão de RFIs, Submittals e Clarificações"
+    },
+    "plans": {
+      "title": "Planeamento & Planos",
+      "subtitle": "Planos de qualidade, PIE, PPI, ITP e cronograma"
+    },
+    "survey": {
+      "title": "Topografia",
+      "subtitle": "Levantamentos topográficos e marcos"
+    },
+    "subcontractors": {
+      "title": "Subempreiteiros",
+      "subtitle": "Gestão de subempreiteiros do projeto"
     }
   },
   "projects": {
@@ -377,6 +411,130 @@
     "toast": {
       "created": "Não conformidade registada com sucesso.",
       "updated": "Não conformidade atualizada com sucesso.",
+      "error": "Ocorreu um erro. Tente novamente."
+    }
+  },
+  "technicalOffice": {
+    "newItem": "Novo Item",
+    "table": {
+      "type": "Tipo",
+      "title": "Título",
+      "dueDate": "Prazo"
+    },
+    "types": {
+      "RFI": "RFI",
+      "Submittal": "Submittal",
+      "Clarification": "Clarificação"
+    },
+    "status": {
+      "open": "Aberto",
+      "in_progress": "Em Curso",
+      "closed": "Fechado",
+      "cancelled": "Cancelado"
+    },
+    "form": {
+      "titleCreate": "Novo Item — Oficina Técnica",
+      "titleEdit": "Editar Item",
+      "type": "Tipo",
+      "title": "Título",
+      "titlePlaceholder": "ex: RFI sobre espessura de betão",
+      "descriptionPlaceholder": "Descreva o pedido ou clarificação…",
+      "dueDate": "Prazo de resposta",
+      "createBtn": "Criar item"
+    },
+    "toast": {
+      "created": "Item criado com sucesso.",
+      "updated": "Item atualizado com sucesso.",
+      "error": "Ocorreu um erro. Tente novamente."
+    }
+  },
+  "plans": {
+    "newPlan": "Novo Plano",
+    "table": {
+      "type": "Tipo",
+      "title": "Título",
+      "revision": "Rev."
+    },
+    "types": {
+      "PQO": "PQO",
+      "PIE": "PIE",
+      "PPI": "PPI",
+      "ITP": "ITP",
+      "MethodStatement": "Method Statement",
+      "TestPlan": "Plano de Ensaios",
+      "Schedule": "Cronograma"
+    },
+    "status": {
+      "draft": "Rascunho",
+      "under_review": "Em Revisão",
+      "approved": "Aprovado",
+      "superseded": "Superseded"
+    },
+    "form": {
+      "titleCreate": "Novo Plano",
+      "titleEdit": "Editar Plano",
+      "planType": "Tipo de plano",
+      "title": "Título",
+      "titlePlaceholder": "ex: Plano de Qualidade da Obra",
+      "revision": "Revisão",
+      "fileUrl": "URL do ficheiro",
+      "createBtn": "Criar plano"
+    },
+    "toast": {
+      "created": "Plano criado com sucesso.",
+      "updated": "Plano atualizado com sucesso.",
+      "error": "Ocorreu um erro. Tente novamente."
+    }
+  },
+  "survey": {
+    "newRecord": "Novo Levantamento",
+    "table": {
+      "areaPk": "Área / PK"
+    },
+    "status": {
+      "pending": "Pendente",
+      "validated": "Validado",
+      "rejected": "Rejeitado"
+    },
+    "form": {
+      "titleCreate": "Novo Registo Topográfico",
+      "titleEdit": "Editar Registo",
+      "areaPk": "Área / PK",
+      "areaPkPlaceholder": "ex: PK 1+500 ou Bloco A",
+      "descriptionPlaceholder": "Observações do levantamento…",
+      "fileUrl": "URL do ficheiro",
+      "createBtn": "Criar registo"
+    },
+    "toast": {
+      "created": "Registo criado com sucesso.",
+      "updated": "Registo atualizado com sucesso.",
+      "error": "Ocorreu um erro. Tente novamente."
+    }
+  },
+  "subcontractors": {
+    "newSubcontractor": "Novo Subempreiteiro",
+    "table": {
+      "trade": "Especialidade",
+      "contactEmail": "E-mail"
+    },
+    "status": {
+      "active": "Ativo",
+      "suspended": "Suspenso",
+      "concluded": "Concluído"
+    },
+    "form": {
+      "titleCreate": "Novo Subempreiteiro",
+      "titleEdit": "Editar Subempreiteiro",
+      "name": "Nome da empresa",
+      "namePlaceholder": "ex: Estruturas do Norte, Lda.",
+      "trade": "Especialidade",
+      "tradePlaceholder": "ex: Betão, Impermeabilização, AVAC",
+      "contactEmail": "E-mail de contacto",
+      "createBtn": "Criar subempreiteiro"
+    },
+    "toast": {
+      "created": "Subempreiteiro criado com sucesso.",
+      "updated": "Subempreiteiro atualizado com sucesso.",
       "error": "Ocorreu um erro. Tente novamente."
     }
   },

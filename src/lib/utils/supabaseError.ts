@@ -1,16 +1,33 @@
 /**
- * Classifies a Supabase/PostgreSQL error and returns an i18n key for the toast.
- * Falls back to a generic key if the error is unknown.
+ * Classifies a Supabase/PostgreSQL error and returns i18n keys + optionally resolved strings.
  */
 export interface SupabaseErrorInfo {
   titleKey: string;
   descriptionKey: string | null;
-  /** Raw technical message for console logging */
   raw: string;
+  title: string;
+  description: string | undefined;
 }
 
-export function classifySupabaseError(err: unknown): SupabaseErrorInfo {
-  // Log full error details for debugging
+function buildInfo(
+  titleKey: string,
+  descriptionKey: string | null,
+  raw: string,
+  t?: (key: string) => string
+): SupabaseErrorInfo {
+  return {
+    titleKey,
+    descriptionKey,
+    raw,
+    title: t ? t(titleKey) : titleKey,
+    description: descriptionKey && t ? t(descriptionKey) : undefined,
+  };
+}
+
+export function classifySupabaseError(
+  err: unknown,
+  t?: (key: string) => string
+): SupabaseErrorInfo {
   if (err && typeof err === "object") {
     const e = err as Record<string, unknown>;
     console.error("[Supabase Error]", {
@@ -42,44 +59,24 @@ export function classifySupabaseError(err: unknown): SupabaseErrorInfo {
     message.toLowerCase().includes("permission denied") ||
     message.toLowerCase().includes("new row violates")
   ) {
-    return {
-      titleKey: "errors.rls.title",
-      descriptionKey: "errors.rls.description",
-      raw: message,
-    };
+    return buildInfo("errors.rls.title", "errors.rls.description", message, t);
   }
 
   // Unique constraint violation
   if (code === "23505" || message.toLowerCase().includes("unique")) {
-    return {
-      titleKey: "errors.unique.title",
-      descriptionKey: "errors.unique.description",
-      raw: message,
-    };
+    return buildInfo("errors.unique.title", "errors.unique.description", message, t);
   }
 
   // Not-null constraint
   if (code === "23502" || message.toLowerCase().includes("not-null")) {
-    return {
-      titleKey: "errors.notNull.title",
-      descriptionKey: "errors.notNull.description",
-      raw: message,
-    };
+    return buildInfo("errors.notNull.title", "errors.notNull.description", message, t);
   }
 
   // Foreign key constraint
   if (code === "23503" || message.toLowerCase().includes("foreign key")) {
-    return {
-      titleKey: "errors.fk.title",
-      descriptionKey: "errors.fk.description",
-      raw: message,
-    };
+    return buildInfo("errors.fk.title", "errors.fk.description", message, t);
   }
 
   // Generic fallback
-  return {
-    titleKey: "errors.generic.title",
-    descriptionKey: null,
-    raw: message,
-  };
+  return buildInfo("errors.generic.title", null, message, t);
 }

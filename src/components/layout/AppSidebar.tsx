@@ -13,6 +13,10 @@ import {
   ChevronLeft,
   ChevronRight,
   X,
+  Inbox,
+  BookOpen,
+  Map,
+  HardHat,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { cn } from "@/lib/utils";
@@ -46,6 +50,20 @@ const NAV_SECTIONS: SidebarSection[] = [
       { labelKey: "nav.tests", url: "/tests", icon: FlaskConical },
       { labelKey: "nav.suppliers", url: "/suppliers", icon: Truck },
       { labelKey: "nav.nonConformities", url: "/non-conformities", icon: AlertTriangle },
+    ],
+  },
+  {
+    sectionKey: "technicalOfficeSection",
+    items: [
+      { labelKey: "nav.technicalOffice", url: "/technical-office", icon: Inbox },
+      { labelKey: "nav.plans", url: "/plans", icon: BookOpen },
+    ],
+  },
+  {
+    sectionKey: "fieldSection",
+    items: [
+      { labelKey: "nav.survey", url: "/survey", icon: Map },
+      { labelKey: "nav.subcontractors", url: "/subcontractors", icon: HardHat },
     ],
   },
   {
@@ -140,7 +158,7 @@ function SidebarContent({ collapsed, onClose }: SidebarContentProps) {
         ))}
       </nav>
 
-      {/* Collapse toggle (desktop only, no onClose means desktop) */}
+      {/* Collapse toggle (desktop only) */}
       {!onClose && (
         <div className="flex-shrink-0 border-t border-sidebar-border p-2">
           <div className={cn("flex", collapsed ? "justify-center" : "justify-end")}>

@@ -5,6 +5,7 @@ import { useProjects } from "@/hooks/useProjects";
 import { useDocuments } from "@/hooks/useDocuments";
 import { useTests } from "@/hooks/useTests";
 import { useNonConformities } from "@/hooks/useNonConformities";
+import { useSuppliers } from "@/hooks/useSuppliers";
 import {
   FolderKanban,
   FileText,
@@ -12,10 +13,13 @@ import {
   AlertTriangle,
   Plus,
   Clock,
-  TrendingUp,
   CheckCircle2,
   CircleDot,
   Building2,
+  Truck,
+  TrendingUp,
+  TrendingDown,
+  Minus,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -46,6 +50,29 @@ function StatSkeleton() {
   );
 }
 
+function KpiRow({
+  label,
+  value,
+  total,
+  color,
+}: {
+  label: string;
+  value: number;
+  total: number;
+  color: string;
+}) {
+  const pct = total > 0 ? Math.round((value / total) * 100) : 0;
+  return (
+    <div className="flex items-center gap-3">
+      <span className="text-xs text-muted-foreground w-28 truncate shrink-0">{label}</span>
+      <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden">
+        <div className={cn("h-full rounded-full transition-all", color)} style={{ width: `${pct}%` }} />
+      </div>
+      <span className="text-xs font-semibold text-foreground w-6 text-right">{value}</span>
+    </div>
+  );
+}
+
 export default function DashboardPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
@@ -57,23 +84,55 @@ export default function DashboardPage() {
   const { data: documents, loading: docLoading } = useDocuments();
   const { data: tests, loading: testLoading } = useTests();
   const { data: ncs, loading: ncLoading } = useNonConformities();
+  const { data: suppliers, loading: supLoading } = useSuppliers();
 
   const displayName = user?.email?.split("@")[0] ?? "—";
 
-  // Computed metrics
+  // ── KPI computations ──────────────────────────────────────────────────────
   const activeProjectsCount = allProjects.filter((p) => p.status === "active").length;
-  const pendingDocsCount = documents.filter((d) => d.status !== "approved").length;
-  const pendingTestsCount = tests.filter((t) => t.status === "pending").length;
-  const openNcsCount = ncs.filter((n) => n.status !== "closed").length;
+
+  // Documents by status
+  const docDraft    = documents.filter((d) => d.status === "draft").length;
+  const docSubmitted = documents.filter((d) => d.status === "submitted").length;
+  const docApproved  = documents.filter((d) => d.status === "approved").length;
+  const docRejected  = documents.filter((d) => d.status === "rejected").length;
+
+  // Tests
+  const testPending   = tests.filter((t) => t.status === "pending").length;
+  const testCompliant = tests.filter((t) => t.status === "compliant").length;
+  const testNonComp   = tests.filter((t) => t.status === "non_compliant").length;
+
+  // NCs
+  const ncOpen        = ncs.filter((n) => n.status === "open").length;
+  const ncInProgress  = ncs.filter((n) => n.status === "under_review").length;
+  const ncClosed      = ncs.filter((n) => n.status === "closed").length;
+  // NC aging (avg days open for non-closed)
+  const openNcs = ncs.filter((n) => n.status !== "closed");
+  const avgAgingDays =
+    openNcs.length > 0
+      ? Math.round(
+          openNcs.reduce((acc, n) => {
+            const days = Math.floor(
+              (Date.now() - new Date(n.created_at).getTime()) / (1000 * 60 * 60 * 24)
+            );
+            return acc + days;
+          }, 0) / openNcs.length
+        )
+      : 0;
+
+  // Suppliers
+  const supPending  = suppliers.filter((s) => s.approval_status === "pending").length;
+  const supApproved = suppliers.filter((s) => s.approval_status === "approved").length;
+  const supRejected = suppliers.filter((s) => s.approval_status === "rejected").length;
 
   const STATS = [
     { key: "activeProjects", value: activeProjectsCount, icon: FolderKanban, loading: projLoading },
-    { key: "openDocuments", value: pendingDocsCount, icon: FileText, loading: docLoading },
-    { key: "pendingTests", value: pendingTestsCount, icon: FlaskConical, loading: testLoading },
-    { key: "openNCs", value: openNcsCount, icon: AlertTriangle, loading: ncLoading },
+    { key: "openDocuments",  value: documents.filter((d) => d.status !== "approved").length, icon: FileText, loading: docLoading },
+    { key: "pendingTests",   value: testPending, icon: FlaskConical, loading: testLoading },
+    { key: "openNCs",        value: ncOpen + ncInProgress, icon: AlertTriangle, loading: ncLoading },
   ];
 
-  // Recent activity built from real data
+  // Recent activity
   const recentDocs = documents.slice(0, 2).map((d) => ({
     label: d.title,
     sub: t("dashboard.activity.documentApproved"),
@@ -89,6 +148,8 @@ export default function DashboardPage() {
     time: new Date(n.created_at).toLocaleDateString(),
   }));
   const recentActivity = [...recentDocs, ...recentNcs].slice(0, 5);
+
+  const anyLoading = docLoading || testLoading || ncLoading || supLoading;
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
@@ -113,7 +174,7 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Stats */}
+      {/* Summary stats */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {STATS.map((stat) =>
           stat.loading ? (
@@ -136,6 +197,96 @@ export default function DashboardPage() {
             </Card>
           )
         )}
+      </div>
+
+      {/* ── KPI Section ─────────────────────────────────────────────────── */}
+      <div>
+        <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
+          {t("dashboard.kpi.title")}
+        </h2>
+        <div className="grid gap-4 lg:grid-cols-4">
+          {/* Documents KPI */}
+          <Card className="border shadow-none">
+            <CardHeader className="pb-2 pt-4 px-4">
+              <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                <FileText className="h-3.5 w-3.5" />
+                {t("dashboard.kpi.documents")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="px-4 pb-4 space-y-2">
+              {docLoading ? <Skeleton className="h-16 w-full" /> : (
+                <>
+                  <KpiRow label={t("documents.status.draft")}     value={docDraft}     total={documents.length} color="bg-muted-foreground/50" />
+                  <KpiRow label={t("documents.status.submitted")} value={docSubmitted} total={documents.length} color="bg-primary/60" />
+                  <KpiRow label={t("documents.status.approved")}  value={docApproved}  total={documents.length} color="bg-primary" />
+                  <KpiRow label={t("documents.status.rejected")}  value={docRejected}  total={documents.length} color="bg-destructive" />
+                </>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Tests KPI */}
+          <Card className="border shadow-none">
+            <CardHeader className="pb-2 pt-4 px-4">
+              <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                <FlaskConical className="h-3.5 w-3.5" />
+                {t("dashboard.kpi.tests")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="px-4 pb-4 space-y-2">
+              {testLoading ? <Skeleton className="h-16 w-full" /> : (
+                <>
+                  <KpiRow label={t("tests.status.pending")}       value={testPending}   total={tests.length} color="bg-muted-foreground/50" />
+                  <KpiRow label={t("tests.status.compliant")}     value={testCompliant} total={tests.length} color="bg-primary" />
+                  <KpiRow label={t("tests.status.non_compliant")} value={testNonComp}   total={tests.length} color="bg-destructive" />
+                </>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* NCs KPI */}
+          <Card className="border shadow-none">
+            <CardHeader className="pb-2 pt-4 px-4">
+              <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                <AlertTriangle className="h-3.5 w-3.5" />
+                {t("dashboard.kpi.ncs")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="px-4 pb-4 space-y-2">
+              {ncLoading ? <Skeleton className="h-16 w-full" /> : (
+                <>
+                  <KpiRow label={t("nc.status.open")}         value={ncOpen}       total={ncs.length} color="bg-destructive" />
+                  <KpiRow label={t("nc.status.under_review")} value={ncInProgress} total={ncs.length} color="bg-primary/60" />
+                  <KpiRow label={t("nc.status.closed")}       value={ncClosed}     total={ncs.length} color="bg-primary" />
+                  {openNcs.length > 0 && (
+                    <p className="text-xs text-muted-foreground pt-1">
+                      {t("dashboard.kpi.avgAging", { days: avgAgingDays })}
+                    </p>
+                  )}
+                </>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Suppliers KPI */}
+          <Card className="border shadow-none">
+            <CardHeader className="pb-2 pt-4 px-4">
+              <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                <Truck className="h-3.5 w-3.5" />
+                {t("dashboard.kpi.suppliers")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="px-4 pb-4 space-y-2">
+              {supLoading ? <Skeleton className="h-16 w-full" /> : (
+                <>
+                  <KpiRow label={t("suppliers.approvalStatus.pending")}  value={supPending}  total={suppliers.length} color="bg-muted-foreground/50" />
+                  <KpiRow label={t("suppliers.approvalStatus.approved")} value={supApproved} total={suppliers.length} color="bg-primary" />
+                  <KpiRow label={t("suppliers.approvalStatus.rejected")} value={supRejected} total={suppliers.length} color="bg-destructive" />
+                </>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       {/* Bottom grid */}
