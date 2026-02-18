@@ -51,7 +51,7 @@ export default function AuditLogPage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
 
-  const [moduleFilter, setModuleFilter] = useState<string>("");
+  const [moduleFilter, setModuleFilter] = useState<string>("all");
   const [dateFrom, setDateFrom]         = useState("");
   const [dateTo, setDateTo]             = useState("");
   const [applied, setApplied]           = useState<{ module?: string; dateFrom?: string; dateTo?: string }>({});
@@ -62,14 +62,14 @@ export default function AuditLogPage() {
 
   const handleApply = () => {
     setApplied({
-      module: moduleFilter || undefined,
+      module: moduleFilter === "all" ? undefined : moduleFilter,
       dateFrom: dateFrom || undefined,
       dateTo: dateTo || undefined,
     });
   };
 
   const handleReset = () => {
-    setModuleFilter("");
+    setModuleFilter("all");
     setDateFrom("");
     setDateTo("");
     setApplied({});
@@ -93,7 +93,7 @@ export default function AuditLogPage() {
               <SelectValue placeholder={t("audit.filters.allModules")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">{t("audit.filters.allModules")}</SelectItem>
+              <SelectItem value="all">{t("audit.filters.allModules")}</SelectItem>
               {MODULES.map((m) => (
                 <SelectItem key={m} value={m}>{t(`audit.modules.${m}`, { defaultValue: m })}</SelectItem>
               ))}
