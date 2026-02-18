@@ -6,7 +6,9 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProject } from "@/contexts/ProjectContext";
 import { documentService, isDocumentEditable } from "@/lib/services/documentService";
-import type { Document, DocumentStatus } from "@/lib/services/documentService";
+import type { Document } from "@/lib/services/documentService";
+import { DOCUMENT_STATUSES } from "@/lib/services/documentService";
+import type { DocumentStatus } from "@/lib/services/documentService";
 import { toast } from "@/hooks/use-toast";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import {
@@ -42,19 +44,17 @@ import {
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { cn } from "@/lib/utils";
 
-const STATUS_COLORS: Record<string, string> = {
-  draft:     "bg-muted text-muted-foreground",
-  submitted: "bg-primary/10 text-primary",
-  in_review: "bg-primary/15 text-primary",
-  approved:  "bg-primary/20 text-primary font-semibold",
-  rejected:  "bg-destructive/10 text-destructive",
+const STATUS_COLORS: Record<DocumentStatus, string> = {
+  draft:    "bg-muted text-muted-foreground",
+  review:   "bg-primary/15 text-primary",
+  approved: "bg-primary/20 text-primary font-semibold",
 };
 
 const schema = (t: (k: string) => string) =>
   z.object({
     title:    z.string().trim().min(1, t("documents.form.validation.titleRequired")).max(200),
     doc_type: z.string().min(1, t("documents.form.validation.typeRequired")),
-    status:   z.string().min(1),
+    status:   z.enum(DOCUMENT_STATUSES),
     revision: z.string().trim().max(20).optional().or(z.literal("")),
   });
 
@@ -174,7 +174,7 @@ export function DocumentFormDialog({ open, onOpenChange, document: doc, onSucces
         await documentService.update(doc.id, activeProject.id, {
           title: values.title,
           doc_type: values.doc_type,
-          status: values.status,
+          status: values.status as DocumentStatus,
           revision: values.revision || undefined,
         });
         toast({ title: t("documents.toast.updated") });
@@ -183,7 +183,7 @@ export function DocumentFormDialog({ open, onOpenChange, document: doc, onSucces
           project_id: activeProject.id,
           title: values.title,
           doc_type: values.doc_type,
-          status: values.status,
+          status: values.status as DocumentStatus,
           revision: values.revision || "0",
           created_by: user.id,
         });
@@ -256,26 +256,26 @@ export function DocumentFormDialog({ open, onOpenChange, document: doc, onSucces
           <div className="flex flex-wrap gap-2 py-1">
             {doc.status === "draft" && (
               <Button type="button" size="sm" variant="outline" className="gap-1.5 text-xs"
-                onClick={() => handleStatusTransition("submitted")} disabled={transitioning}>
+                onClick={() => handleStatusTransition("review")} disabled={transitioning}>
                 {transitioning ? <Loader2 className="h-3 w-3 animate-spin" /> : <SendHorizontal className="h-3 w-3" />}
                 {t("documents.actions.submit")}
               </Button>
             )}
-            {(doc.status === "submitted" || doc.status === "in_review") && (
+            {doc.status === "review" && (
               <>
                 <Button type="button" size="sm" className="gap-1.5 text-xs bg-primary/90 hover:bg-primary"
                   onClick={() => handleStatusTransition("approved")} disabled={transitioning}>
                   {transitioning ? <Loader2 className="h-3 w-3 animate-spin" /> : <CheckCircle2 className="h-3 w-3" />}
                   {t("documents.actions.approve")}
                 </Button>
-                <Button type="button" size="sm" variant="destructive" className="gap-1.5 text-xs"
-                  onClick={() => handleStatusTransition("rejected")} disabled={transitioning}>
-                  {transitioning ? <Loader2 className="h-3 w-3 animate-spin" /> : <XCircle className="h-3 w-3" />}
-                  {t("documents.actions.reject")}
+                <Button type="button" size="sm" variant="ghost" className="gap-1.5 text-xs text-muted-foreground"
+                  onClick={() => handleStatusTransition("draft")} disabled={transitioning}>
+                  {transitioning ? <Loader2 className="h-3 w-3 animate-spin" /> : <RotateCcw className="h-3 w-3" />}
+                  {t("documents.actions.backToDraft")}
                 </Button>
               </>
             )}
-            {(doc.status === "approved" || doc.status === "rejected" || doc.status === "submitted") && (
+            {doc.status === "approved" && (
               <Button type="button" size="sm" variant="ghost" className="gap-1.5 text-xs text-muted-foreground"
                 onClick={() => handleStatusTransition("draft")} disabled={transitioning}>
                 {transitioning ? <Loader2 className="h-3 w-3 animate-spin" /> : <RotateCcw className="h-3 w-3" />}
@@ -329,10 +329,8 @@ export function DocumentFormDialog({ open, onOpenChange, document: doc, onSucces
                     <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                     <SelectContent>
                       <SelectItem value="draft">{t("documents.status.draft")}</SelectItem>
-                      <SelectItem value="submitted">{t("documents.status.submitted")}</SelectItem>
-                      <SelectItem value="in_review">{t("documents.status.in_review")}</SelectItem>
+                      <SelectItem value="review">{t("documents.status.review")}</SelectItem>
                       <SelectItem value="approved">{t("documents.status.approved")}</SelectItem>
-                      <SelectItem value="rejected">{t("documents.status.rejected")}</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
