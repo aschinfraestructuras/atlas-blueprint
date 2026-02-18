@@ -3,13 +3,21 @@ import { auditService } from "./auditService";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
+/**
+ * Canonical document statuses — must match the DB CHECK constraint
+ * documents_status_check: draft | review | approved
+ */
+export type DocumentStatus = "draft" | "review" | "approved";
+
+export const DOCUMENT_STATUSES = ["draft", "review", "approved"] as const satisfies readonly DocumentStatus[];
+
 export interface Document {
   id: string;
   project_id: string;
   title: string;
   doc_type: string;
   revision: string | null;
-  status: string;
+  status: DocumentStatus;
   /** @deprecated use file_path */
   file_url: string | null;
   file_path: string | null;
@@ -29,13 +37,11 @@ export interface DocumentInput {
   title: string;
   doc_type: string;
   revision?: string;
-  status?: string;
+  status?: DocumentStatus;
   created_by: string;
 }
 
 // ─── Workflow helpers ─────────────────────────────────────────────────────────
-
-export type DocumentStatus = "draft" | "submitted" | "in_review" | "approved" | "rejected";
 
 /** Returns true if the document's fields can still be edited */
 export function isDocumentEditable(status: string): boolean {
@@ -44,7 +50,7 @@ export function isDocumentEditable(status: string): boolean {
 
 /** Returns true if only attachments / comments can be added */
 export function isDocumentLockedForFields(status: string): boolean {
-  return ["submitted", "in_review", "approved", "rejected"].includes(status);
+  return ["review", "approved"].includes(status);
 }
 
 // ─── Storage constants ────────────────────────────────────────────────────────
@@ -86,6 +92,11 @@ export const documentService = {
   },
 
   async create(input: DocumentInput): Promise<Document> {
+    // Ensure status is always a valid DB value — never send a label
+    const safeStatus: DocumentStatus = DOCUMENT_STATUSES.includes(input.status as DocumentStatus)
+      ? (input.status as DocumentStatus)
+      : "draft";
+
     const { data, error } = await supabase
       .from("documents")
       .insert({
@@ -93,7 +104,7 @@ export const documentService = {
         title: input.title,
         doc_type: input.doc_type,
         revision: input.revision ?? "0",
-        status: input.status ?? "draft",
+        status: safeStatus,
         created_by: input.created_by,
       })
       .select()

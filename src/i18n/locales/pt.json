@@ -286,10 +286,8 @@
     },
     "status": {
       "draft": "Rascunho",
-      "submitted": "Submetido",
-      "in_review": "Em Revisão",
-      "approved": "Aprovado",
-      "rejected": "Rejeitado"
+      "review": "Em Revisão",
+      "approved": "Aprovado"
     },
     "docTypes": {
       "procedure": "Procedimento",
@@ -335,10 +333,8 @@
       "uploadError": "Falha no upload",
       "downloadError": "Falha no download",
       "error": "Ocorreu um erro. Tente novamente.",
-      "status_submitted": "Documento submetido para revisão.",
-      "status_in_review": "Documento em revisão.",
+      "status_review": "Documento enviado para revisão.",
       "status_approved": "Documento aprovado.",
-      "status_rejected": "Documento rejeitado.",
       "status_draft": "Documento voltou a Rascunho."
     },
     "deleteConfirm": {

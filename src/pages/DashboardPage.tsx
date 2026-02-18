@@ -337,10 +337,9 @@ export default function DashboardPage() {
   const activeProjectsCount = allProjects.filter((p) => p.status === "active").length;
 
   // Documents
-  const docDraft     = documents.filter((d) => d.status === "draft").length;
-  const docSubmitted = documents.filter((d) => d.status === "submitted").length;
-  const docApproved  = documents.filter((d) => d.status === "approved").length;
-  const docRejected  = documents.filter((d) => d.status === "rejected").length;
+  const docDraft    = documents.filter((d) => d.status === "draft").length;
+  const docReview   = documents.filter((d) => d.status === "review").length;
+  const docApproved = documents.filter((d) => d.status === "approved").length;
 
   // Tests — using canonical DB status values
   const testPending     = tests.filter((t) => t.status === "pending").length;
@@ -374,10 +373,9 @@ export default function DashboardPage() {
   // ── Chart data ───────────────────────────────────────────────────────────────
 
   const docPieData = [
-    { name: t("documents.status.draft"),     value: docDraft,     color: C.muted   },
-    { name: t("documents.status.submitted"), value: docSubmitted, color: C.blue    },
-    { name: t("documents.status.approved"),  value: docApproved,  color: C.green   },
-    { name: t("documents.status.rejected"),  value: docRejected,  color: C.red     },
+    { name: t("documents.status.draft"),    value: docDraft,    color: C.muted  },
+    { name: t("documents.status.review"),   value: docReview,   color: C.blue   },
+    { name: t("documents.status.approved"), value: docApproved, color: C.green  },
   ].filter((d) => d.value > 0);
 
   const ncPieData = [
