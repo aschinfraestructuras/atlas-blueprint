@@ -1,7 +1,8 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { useSuppliers } from "@/hooks/useSuppliers";
-import { Truck } from "lucide-react";
+import { Truck, Plus, Pencil } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -12,9 +13,12 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/EmptyState";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
+import { SupplierFormDialog } from "@/components/suppliers/SupplierFormDialog";
 import { cn } from "@/lib/utils";
+import type { Supplier } from "@/lib/services/supplierService";
 
 const APPROVAL_COLORS: Record<string, string> = {
   pending: "bg-muted text-muted-foreground",
@@ -26,17 +30,35 @@ const APPROVAL_COLORS: Record<string, string> = {
 export default function SuppliersPage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
-  const { data: suppliers, loading, error } = useSuppliers();
+  const { data: suppliers, loading, error, refetch } = useSuppliers();
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingSupplier, setEditingSupplier] = useState<Supplier | null>(null);
 
   if (!activeProject) return <NoProjectBanner />;
 
+  const handleEdit = (supplier: Supplier) => {
+    setEditingSupplier(supplier);
+    setDialogOpen(true);
+  };
+
+  const handleNew = () => {
+    setEditingSupplier(null);
+    setDialogOpen(true);
+  };
+
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
-      <div className="space-y-1">
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">
-          {t("pages.suppliers.title")}
-        </h1>
-        <p className="text-sm text-muted-foreground">{t("pages.suppliers.subtitle")}</p>
+      <div className="flex items-center justify-between">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">
+            {t("pages.suppliers.title")}
+          </h1>
+          <p className="text-sm text-muted-foreground">{t("pages.suppliers.subtitle")}</p>
+        </div>
+        <Button onClick={handleNew} size="sm" className="gap-1.5">
+          <Plus className="h-3.5 w-3.5" />
+          {t("suppliers.newSupplier")}
+        </Button>
       </div>
 
       {error && (
@@ -77,6 +99,7 @@ export default function SuppliersPage() {
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   {t("common.date")}
                 </TableHead>
+                <TableHead className="w-10" />
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -89,7 +112,9 @@ export default function SuppliersPage() {
                     </div>
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
-                    {supplier.category ?? "—"}
+                    {supplier.category
+                      ? t(`suppliers.categories.${supplier.category}`, { defaultValue: supplier.category })
+                      : "—"}
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground font-mono text-xs">
                     {supplier.nif_cif ?? "—"}
@@ -105,12 +130,30 @@ export default function SuppliersPage() {
                   <TableCell className="text-sm text-muted-foreground">
                     {new Date(supplier.created_at).toLocaleDateString()}
                   </TableCell>
+                  <TableCell>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                      onClick={() => handleEdit(supplier)}
+                      title={t("common.edit")}
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                    </Button>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </div>
       )}
+
+      <SupplierFormDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        supplier={editingSupplier}
+        onSuccess={refetch}
+      />
     </div>
   );
 }

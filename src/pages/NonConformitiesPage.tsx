@@ -1,7 +1,8 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { useNonConformities } from "@/hooks/useNonConformities";
-import { AlertTriangle, Calendar } from "lucide-react";
+import { AlertTriangle, Calendar, Plus, Pencil } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -12,9 +13,12 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/EmptyState";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
+import { NCFormDialog } from "@/components/nc/NCFormDialog";
 import { cn } from "@/lib/utils";
+import type { NonConformity } from "@/lib/services/ncService";
 
 const SEVERITY_COLORS: Record<string, string> = {
   low: "bg-muted text-muted-foreground",
@@ -32,17 +36,35 @@ const STATUS_COLORS: Record<string, string> = {
 export default function NonConformitiesPage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
-  const { data: ncs, loading, error } = useNonConformities();
+  const { data: ncs, loading, error, refetch } = useNonConformities();
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingNC, setEditingNC] = useState<NonConformity | null>(null);
 
   if (!activeProject) return <NoProjectBanner />;
 
+  const handleEdit = (nc: NonConformity) => {
+    setEditingNC(nc);
+    setDialogOpen(true);
+  };
+
+  const handleNew = () => {
+    setEditingNC(null);
+    setDialogOpen(true);
+  };
+
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
-      <div className="space-y-1">
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">
-          {t("pages.nonConformities.title")}
-        </h1>
-        <p className="text-sm text-muted-foreground">{t("pages.nonConformities.subtitle")}</p>
+      <div className="flex items-center justify-between">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">
+            {t("pages.nonConformities.title")}
+          </h1>
+          <p className="text-sm text-muted-foreground">{t("pages.nonConformities.subtitle")}</p>
+        </div>
+        <Button onClick={handleNew} size="sm" className="gap-1.5">
+          <Plus className="h-3.5 w-3.5" />
+          {t("nc.newNC")}
+        </Button>
       </div>
 
       {error && (
@@ -86,6 +108,7 @@ export default function NonConformitiesPage() {
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   {t("nc.table.dueDate")}
                 </TableHead>
+                <TableHead className="w-10" />
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -98,18 +121,12 @@ export default function NonConformitiesPage() {
                     <p className="truncate">{nc.description}</p>
                   </TableCell>
                   <TableCell>
-                    <Badge
-                      variant="secondary"
-                      className={cn("text-xs", SEVERITY_COLORS[nc.severity] ?? "")}
-                    >
+                    <Badge variant="secondary" className={cn("text-xs", SEVERITY_COLORS[nc.severity] ?? "")}>
                       {t(`nc.severity.${nc.severity}`)}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge
-                      variant="secondary"
-                      className={cn("text-xs", STATUS_COLORS[nc.status] ?? "")}
-                    >
+                    <Badge variant="secondary" className={cn("text-xs", STATUS_COLORS[nc.status] ?? "")}>
                       {t(`nc.status.${nc.status}`)}
                     </Badge>
                   </TableCell>
@@ -124,12 +141,30 @@ export default function NonConformitiesPage() {
                       </div>
                     ) : "—"}
                   </TableCell>
+                  <TableCell>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                      onClick={() => handleEdit(nc)}
+                      title={t("common.edit")}
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                    </Button>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </div>
       )}
+
+      <NCFormDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        nc={editingNC}
+        onSuccess={refetch}
+      />
     </div>
   );
 }

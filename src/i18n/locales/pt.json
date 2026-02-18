@@ -207,6 +207,7 @@
     }
   },
   "documents": {
+    "newDocument": "Novo Documento",
     "table": {
       "title": "Título",
       "type": "Tipo",
@@ -217,9 +218,45 @@
       "submitted": "Submetido",
       "approved": "Aprovado",
       "rejected": "Rejeitado"
+    },
+    "docTypes": {
+      "procedure": "Procedimento",
+      "instruction": "Instrução",
+      "plan": "Plano",
+      "report": "Relatório",
+      "certificate": "Certificado",
+      "drawing": "Desenho",
+      "specification": "Especificação",
+      "form": "Impresso",
+      "record": "Registo",
+      "other": "Outro"
+    },
+    "form": {
+      "titleCreate": "Novo Documento",
+      "titleEdit": "Editar Documento",
+      "title": "Título do documento",
+      "titlePlaceholder": "ex: Plano de Controlo de Qualidade",
+      "type": "Tipo de documento",
+      "typePlaceholder": "Selecionar tipo…",
+      "revision": "Revisão",
+      "revisionPlaceholder": "ex: A, 1, 01",
+      "fileUrl": "URL do ficheiro",
+      "fileUrlPlaceholder": "https://…",
+      "createBtn": "Criar documento",
+      "validation": {
+        "titleRequired": "O título é obrigatório.",
+        "typeRequired": "O tipo é obrigatório.",
+        "fileUrlInvalid": "Introduza um URL válido."
+      }
+    },
+    "toast": {
+      "created": "Documento criado com sucesso.",
+      "updated": "Documento atualizado com sucesso.",
+      "error": "Ocorreu um erro. Tente novamente."
     }
   },
   "tests": {
+    "newTest": "Novo Ensaio",
     "table": {
       "name": "Ensaio",
       "sampleRef": "Ref. Amostra",
@@ -230,9 +267,34 @@
       "compliant": "Conforme",
       "non_compliant": "Não Conforme"
     },
-    "unknownTest": "Ensaio desconhecido"
+    "unknownTest": "Ensaio desconhecido",
+    "form": {
+      "titleCreate": "Novo Ensaio",
+      "titleEdit": "Editar Ensaio",
+      "testType": "Tipo de ensaio",
+      "testTypePlaceholder": "Selecionar ensaio do catálogo…",
+      "addNewTestType": "Criar novo tipo de ensaio",
+      "newTestTypeLabel": "Novo tipo de ensaio",
+      "newTestCodePlaceholder": "Código (ex: ENS-01)",
+      "newTestNamePlaceholder": "Nome do ensaio",
+      "addTestTypeBtn": "Adicionar ao catálogo",
+      "sampleRefPlaceholder": "ex: AM-2024-001",
+      "locationPlaceholder": "ex: Piso 2 — Betão A",
+      "createBtn": "Registar ensaio",
+      "validation": {
+        "testRequired": "Selecione um tipo de ensaio.",
+        "dateRequired": "A data é obrigatória."
+      }
+    },
+    "toast": {
+      "created": "Ensaio registado com sucesso.",
+      "updated": "Ensaio atualizado com sucesso.",
+      "catalogCreated": "Tipo de ensaio adicionado ao catálogo.",
+      "error": "Ocorreu um erro. Tente novamente."
+    }
   },
   "suppliers": {
+    "newSupplier": "Novo Fornecedor",
     "table": {
       "category": "Categoria",
       "nifCif": "NIF/CIF",
@@ -243,9 +305,37 @@
       "approved": "Aprovado",
       "rejected": "Rejeitado",
       "conditional": "Condicional"
+    },
+    "categories": {
+      "materials": "Materiais",
+      "equipment": "Equipamentos",
+      "services": "Serviços",
+      "subcontractor": "Subempreiteiro",
+      "laboratory": "Laboratório",
+      "other": "Outro"
+    },
+    "form": {
+      "titleCreate": "Novo Fornecedor",
+      "titleEdit": "Editar Fornecedor",
+      "name": "Nome do fornecedor",
+      "namePlaceholder": "ex: Betões do Norte, Lda.",
+      "category": "Categoria",
+      "categoryPlaceholder": "Selecionar categoria…",
+      "nifCif": "NIF / CIF",
+      "nifCifPlaceholder": "ex: 500 123 456",
+      "createBtn": "Criar fornecedor",
+      "validation": {
+        "nameRequired": "O nome é obrigatório."
+      }
+    },
+    "toast": {
+      "created": "Fornecedor criado com sucesso.",
+      "updated": "Fornecedor atualizado com sucesso.",
+      "error": "Ocorreu um erro. Tente novamente."
     }
   },
   "nc": {
+    "newNC": "Nova NC",
     "table": {
       "reference": "Referência",
       "severity": "Gravidade",
@@ -262,6 +352,24 @@
       "open": "Aberta",
       "under_review": "Em Análise",
       "closed": "Fechada"
+    },
+    "form": {
+      "titleCreate": "Nova Não Conformidade",
+      "titleEdit": "Editar Não Conformidade",
+      "description": "Descrição",
+      "descriptionPlaceholder": "Descreva a não conformidade detetada…",
+      "referencePlaceholder": "ex: NC-2024-001",
+      "responsiblePlaceholder": "ex: João Silva",
+      "createBtn": "Registar NC",
+      "validation": {
+        "descriptionRequired": "A descrição é obrigatória.",
+        "severityRequired": "A gravidade é obrigatória."
+      }
+    },
+    "toast": {
+      "created": "Não conformidade registada com sucesso.",
+      "updated": "Não conformidade atualizada com sucesso.",
+      "error": "Ocorreu um erro. Tente novamente."
     }
   },
   "audit": {
