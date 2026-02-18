@@ -16,6 +16,10 @@ import SuppliersPage from "./pages/SuppliersPage";
 import NonConformitiesPage from "./pages/NonConformitiesPage";
 import AuditLogPage from "./pages/AuditLogPage";
 import SettingsPage from "./pages/SettingsPage";
+import TechnicalOfficePage from "./pages/TechnicalOfficePage";
+import PlansPage from "./pages/PlansPage";
+import SurveyPage from "./pages/SurveyPage";
+import SubcontractorsPage from "./pages/SubcontractorsPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -49,6 +53,12 @@ const App = () => (
               <Route path="/non-conformities" element={<ProtectedLayout><NonConformitiesPage /></ProtectedLayout>} />
               <Route path="/audit" element={<ProtectedLayout><AuditLogPage /></ProtectedLayout>} />
               <Route path="/settings" element={<ProtectedLayout><SettingsPage /></ProtectedLayout>} />
+
+              {/* New structural modules */}
+              <Route path="/technical-office" element={<ProtectedLayout><TechnicalOfficePage /></ProtectedLayout>} />
+              <Route path="/plans" element={<ProtectedLayout><PlansPage /></ProtectedLayout>} />
+              <Route path="/survey" element={<ProtectedLayout><SurveyPage /></ProtectedLayout>} />
+              <Route path="/subcontractors" element={<ProtectedLayout><SubcontractorsPage /></ProtectedLayout>} />
 
               {/* Catch-all */}
               <Route path="*" element={<NotFound />} />

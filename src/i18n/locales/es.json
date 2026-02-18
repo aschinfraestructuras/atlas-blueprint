@@ -60,6 +60,8 @@
     "sections": {
       "core": "Core",
       "projectManagement": "Gestión de Proyecto",
+      "technicalOfficeSection": "Oficina Técnica",
+      "fieldSection": "Campo y Subcontratistas",
       "system": "Sistema"
     },
     "dashboard": "Dashboard",
@@ -69,7 +71,11 @@
     "tests": "Ensayos",
     "nonConformities": "No Conformidades",
     "auditLog": "Registro de Auditoría",
-    "settings": "Configuración"
+    "settings": "Configuración",
+    "technicalOffice": "Oficina Técnica",
+    "plans": "Planificación & Planes",
+    "survey": "Topografía",
+    "subcontractors": "Subcontratistas"
   },
   "topbar": {
     "language": "Idioma",
@@ -96,6 +102,14 @@
       "openDocuments": "Documentos en Curso",
       "pendingTests": "Ensayos Pendientes",
       "openNCs": "NCs Abiertas"
+    },
+    "kpi": {
+      "title": "KPIs del Proyecto",
+      "documents": "Documentos",
+      "tests": "Ensayos",
+      "ncs": "No Conformidades",
+      "suppliers": "Proveedores",
+      "avgAging": "Aging medio: {{days}} días"
     },
     "recentActivity": "Actividad Reciente",
     "quickActions": "Acciones Rápidas",
@@ -126,7 +140,11 @@
     "tests": { "subtitle": "Aún no se han registrado ensayos en este proyecto." },
     "suppliers": { "subtitle": "Aún no hay proveedores asociados a este proyecto." },
     "nonConformities": { "subtitle": "No hay no conformidades registradas. ¡Excelente!" },
-    "auditLog": { "subtitle": "Ninguna acción registrada todavía para este proyecto." }
+    "auditLog": { "subtitle": "Ninguna acción registrada todavía para este proyecto." },
+    "technicalOffice": { "subtitle": "Aún no hay RFIs, Submittals ni Clarificaciones en este proyecto." },
+    "plans": { "subtitle": "Aún no hay planes asociados a este proyecto." },
+    "survey": { "subtitle": "Aún no hay registros topográficos en este proyecto." },
+    "subcontractors": { "subtitle": "Aún no hay subcontratistas asociados a este proyecto." }
   },
   "pages": {
     "projects": {
@@ -156,6 +174,22 @@
     "settings": {
       "title": "Configuración",
       "subtitle": "Ajustes de la plataforma"
+    },
+    "technicalOffice": {
+      "title": "Oficina Técnica",
+      "subtitle": "Gestión de RFIs, Submittals y Clarificaciones"
+    },
+    "plans": {
+      "title": "Planificación & Planes",
+      "subtitle": "Planes de calidad, PIE, PPI, ITP y cronograma"
+    },
+    "survey": {
+      "title": "Topografía",
+      "subtitle": "Levantamientos topográficos y marcos"
+    },
+    "subcontractors": {
+      "title": "Subcontratistas",
+      "subtitle": "Gestión de subcontratistas del proyecto"
     }
   },
   "projects": {
@@ -377,6 +411,130 @@
     "toast": {
       "created": "No conformidad registrada con éxito.",
       "updated": "No conformidad actualizada con éxito.",
+      "error": "Ocurrió un error. Inténtelo de nuevo."
+    }
+  },
+  "technicalOffice": {
+    "newItem": "Nuevo Ítem",
+    "table": {
+      "type": "Tipo",
+      "title": "Título",
+      "dueDate": "Plazo"
+    },
+    "types": {
+      "RFI": "RFI",
+      "Submittal": "Submittal",
+      "Clarification": "Aclaración"
+    },
+    "status": {
+      "open": "Abierto",
+      "in_progress": "En Curso",
+      "closed": "Cerrado",
+      "cancelled": "Cancelado"
+    },
+    "form": {
+      "titleCreate": "Nuevo Ítem — Oficina Técnica",
+      "titleEdit": "Editar Ítem",
+      "type": "Tipo",
+      "title": "Título",
+      "titlePlaceholder": "ej: RFI sobre espesor de hormigón",
+      "descriptionPlaceholder": "Describa la solicitud o aclaración…",
+      "dueDate": "Plazo de respuesta",
+      "createBtn": "Crear ítem"
+    },
+    "toast": {
+      "created": "Ítem creado con éxito.",
+      "updated": "Ítem actualizado con éxito.",
+      "error": "Ocurrió un error. Inténtelo de nuevo."
+    }
+  },
+  "plans": {
+    "newPlan": "Nuevo Plan",
+    "table": {
+      "type": "Tipo",
+      "title": "Título",
+      "revision": "Rev."
+    },
+    "types": {
+      "PQO": "PQO",
+      "PIE": "PIE",
+      "PPI": "PPI",
+      "ITP": "ITP",
+      "MethodStatement": "Method Statement",
+      "TestPlan": "Plan de Ensayos",
+      "Schedule": "Cronograma"
+    },
+    "status": {
+      "draft": "Borrador",
+      "under_review": "En Revisión",
+      "approved": "Aprobado",
+      "superseded": "Superado"
+    },
+    "form": {
+      "titleCreate": "Nuevo Plan",
+      "titleEdit": "Editar Plan",
+      "planType": "Tipo de plan",
+      "title": "Título",
+      "titlePlaceholder": "ej: Plan de Calidad de Obra",
+      "revision": "Revisión",
+      "fileUrl": "URL del archivo",
+      "createBtn": "Crear plan"
+    },
+    "toast": {
+      "created": "Plan creado con éxito.",
+      "updated": "Plan actualizado con éxito.",
+      "error": "Ocurrió un error. Inténtelo de nuevo."
+    }
+  },
+  "survey": {
+    "newRecord": "Nuevo Levantamiento",
+    "table": {
+      "areaPk": "Área / PK"
+    },
+    "status": {
+      "pending": "Pendiente",
+      "validated": "Validado",
+      "rejected": "Rechazado"
+    },
+    "form": {
+      "titleCreate": "Nuevo Registro Topográfico",
+      "titleEdit": "Editar Registro",
+      "areaPk": "Área / PK",
+      "areaPkPlaceholder": "ej: PK 1+500 o Bloque A",
+      "descriptionPlaceholder": "Observaciones del levantamiento…",
+      "fileUrl": "URL del archivo",
+      "createBtn": "Crear registro"
+    },
+    "toast": {
+      "created": "Registro creado con éxito.",
+      "updated": "Registro actualizado con éxito.",
+      "error": "Ocurrió un error. Inténtelo de nuevo."
+    }
+  },
+  "subcontractors": {
+    "newSubcontractor": "Nuevo Subcontratista",
+    "table": {
+      "trade": "Especialidad",
+      "contactEmail": "Correo"
+    },
+    "status": {
+      "active": "Activo",
+      "suspended": "Suspendido",
+      "concluded": "Concluido"
+    },
+    "form": {
+      "titleCreate": "Nuevo Subcontratista",
+      "titleEdit": "Editar Subcontratista",
+      "name": "Nombre de la empresa",
+      "namePlaceholder": "ej: Estructuras del Norte, S.L.",
+      "trade": "Especialidad",
+      "tradePlaceholder": "ej: Hormigón, Impermeabilización, HVAC",
+      "contactEmail": "Correo de contacto",
+      "createBtn": "Crear subcontratista"
+    },
+    "toast": {
+      "created": "Subcontratista creado con éxito.",
+      "updated": "Subcontratista actualizado con éxito.",
       "error": "Ocurrió un error. Inténtelo de nuevo."
     }
   },
