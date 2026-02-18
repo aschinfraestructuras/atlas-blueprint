@@ -100,7 +100,20 @@ export async function uploadDocumentFile(
     uploaded_by: uploadedBy,
   };
 
-  return supabase.from('document_files').insert(insert).select().single();
+  // Insert into attachments table instead of document_files
+  const attachmentInsert = {
+    project_id: projectId,
+    entity_type: "documents" as const,
+    entity_id: documentId,
+    file_path: path,
+    file_name: file.name,
+    file_size: file.size,
+    mime_type: file.type || null,
+    uploaded_by: uploadedBy,
+    created_by: uploadedBy,
+  };
+
+  return supabase.from('attachments').insert(attachmentInsert).select().single();
 }
 
 export async function getDocumentFileUrl(storagePath: string) {

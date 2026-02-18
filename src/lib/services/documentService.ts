@@ -49,7 +49,7 @@ export function isDocumentLockedForFields(status: string): boolean {
 
 // ─── Storage constants ────────────────────────────────────────────────────────
 
-const BUCKET = "project-files";
+const BUCKET = "qms-files";
 
 export function slugifyFilename(raw: string): string {
   return raw

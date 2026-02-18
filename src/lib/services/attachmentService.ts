@@ -27,7 +27,7 @@ export interface Attachment {
   created_at: string;
 }
 
-const BUCKET = "project-files";
+const BUCKET = "qms-files";
 
 // ─── Path helpers ─────────────────────────────────────────────────────────────
 
