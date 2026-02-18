@@ -1,12 +1,11 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
-import { useAuth } from "@/contexts/AuthContext";
-import { useDocuments } from "@/hooks/useDocuments";
-import { documentService } from "@/lib/services/documentService";
+import { useAllAttachments } from "@/hooks/useAllAttachments";
+import { attachmentService } from "@/lib/services/attachmentService";
 import { toast } from "@/hooks/use-toast";
 import {
-  FileText, Plus, Pencil, Upload, Download, ExternalLink, Loader2,
+  FileText, Download, ExternalLink, Loader2, Paperclip, Search,
 } from "lucide-react";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -14,138 +13,128 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select";
 import {
   Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { EmptyState } from "@/components/EmptyState";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
-import { DocumentFormDialog } from "@/components/documents/DocumentFormDialog";
-import { cn } from "@/lib/utils";
-import type { Document } from "@/lib/services/documentService";
+import type { Attachment } from "@/lib/services/attachmentService";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-const STATUS_COLORS: Record<string, string> = {
-  draft:     "bg-muted text-muted-foreground",
-  submitted: "bg-primary/10 text-primary",
-  approved:  "bg-primary/15 text-primary",
-  rejected:  "bg-destructive/10 text-destructive",
-};
-
-function formatBytes(bytes: number | null | undefined): string {
-  if (!bytes) return "";
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+function formatBytes(b: number | null | undefined): string {
+  if (!b) return "—";
+  if (b < 1024) return `${b} B`;
+  if (b < 1024 * 1024) return `${(b / 1024).toFixed(1)} KB`;
+  return `${(b / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-function getExtension(name: string | null | undefined): string {
-  if (!name) return "";
+function getExt(name: string): string {
   const parts = name.split(".");
   return parts.length > 1 ? parts[parts.length - 1].toLowerCase() : "";
 }
+
+const ENTITY_COLORS: Record<string, string> = {
+  documents:        "bg-primary/10 text-primary",
+  tests:            "bg-chart-2/10 text-chart-2",
+  non_conformities: "bg-destructive/10 text-destructive",
+  suppliers:        "bg-chart-3/10 text-chart-3",
+  subcontractors:   "bg-chart-4/10 text-chart-4",
+  survey:           "bg-chart-5/10 text-chart-5",
+  technical_office: "bg-muted text-muted-foreground",
+  ppi:              "bg-accent text-accent-foreground",
+};
+
+const ALL_ENTITY_TYPES = [
+  "documents", "tests", "non_conformities", "suppliers",
+  "subcontractors", "survey", "technical_office", "ppi",
+];
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export default function DocumentsPage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
-  const { user } = useAuth();
-  const { data: documents, loading, error, refetch } = useDocuments();
+  const { data: attachments, loading, error, refetch } = useAllAttachments(activeProject?.id);
 
-  const [dialogOpen, setDialogOpen]     = useState(false);
-  const [editingDoc, setEditingDoc]     = useState<Document | null>(null);
-  const [uploadingId, setUploadingId]   = useState<string | null>(null);
-  const [downloadingId, setDownloadingId] = useState<string | null>(null);
+  const [search, setSearch]           = useState("");
+  const [entityFilter, setEntityFilter] = useState("all");
+  const [actionId, setActionId]        = useState<string | null>(null);
 
-  // Hidden file input shared across all rows
-  const fileInputRef  = useRef<HTMLInputElement>(null);
-  const pendingDocRef = useRef<Document | null>(null);
+  // ── Filtered list ─────────────────────────────────────────────────────────
+  const filtered = attachments.filter((a) => {
+    const matchEntity = entityFilter === "all" || a.entity_type === entityFilter;
+    const matchSearch = !search
+      || a.file_name.toLowerCase().includes(search.toLowerCase())
+      || a.entity_type.toLowerCase().includes(search.toLowerCase());
+    return matchEntity && matchSearch;
+  });
 
-  const handleEdit = (doc: Document) => { setEditingDoc(doc); setDialogOpen(true); };
-  const handleNew  = () => { setEditingDoc(null); setDialogOpen(true); };
+  // ── Actions ───────────────────────────────────────────────────────────────
 
-  const triggerUpload = useCallback((doc: Document) => {
-    pendingDocRef.current = doc;
-    fileInputRef.current?.click();
-  }, []);
-
-  const handleFileSelected = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    const doc  = pendingDocRef.current;
-    if (!file || !doc || !activeProject || !user) return;
-    e.target.value = ""; // allow re-selection of the same file
-
-    setUploadingId(doc.id);
+  const handleDownload = useCallback(async (att: Attachment) => {
+    setActionId(att.id);
     try {
-      await documentService.uploadFile(file, activeProject.id, doc.id, user.id);
-      toast({ title: t("documents.toast.uploaded", { name: file.name }) });
-      refetch();
-    } catch (err) {
-      const raw = err instanceof Error ? err.message : String(err);
-      toast({
-        title: t("documents.toast.uploadError"),
-        description: raw,
-        variant: "destructive",
-      });
-    } finally {
-      setUploadingId(null);
-      pendingDocRef.current = null;
-    }
-  }, [activeProject, user, refetch, t]);
-
-  const handleDownload = useCallback(async (doc: Document) => {
-    const path = doc.file_path ?? doc.file_url; // fallback for legacy rows
-    if (!path) return;
-    setDownloadingId(doc.id);
-    try {
-      const signedUrl = await documentService.getSignedUrl(path, activeProject?.id, doc.id);
+      const url = await attachmentService.getSignedUrl(
+        att.file_path,
+        att.project_id,
+        att.entity_type as Parameters<typeof attachmentService.getSignedUrl>[2],
+        att.entity_id,
+        att.file_name
+      );
       const a = window.document.createElement("a");
-      a.href = signedUrl;
-      a.download = doc.file_name ?? path.split("/").pop() ?? doc.title;
+      a.href = url;
+      a.download = att.file_name;
       a.target = "_blank";
       a.rel = "noopener noreferrer";
       a.click();
-      await auditDownload(doc);
+      toast({ title: t("attachments.toast.downloaded") });
     } catch (err) {
-      const raw = err instanceof Error ? err.message : String(err);
-      toast({ title: t("documents.toast.downloadError"), description: raw, variant: "destructive" });
+      toast({
+        title: t("attachments.toast.downloadError"),
+        description: err instanceof Error ? err.message : String(err),
+        variant: "destructive",
+      });
     } finally {
-      setDownloadingId(null);
+      setActionId(null);
     }
-  }, [activeProject, t]);
+  }, [t]);
 
-  const handleView = useCallback(async (doc: Document) => {
-    const path = doc.file_path ?? doc.file_url;
-    if (!path) return;
-    setDownloadingId(doc.id);
+  const handleView = useCallback(async (att: Attachment) => {
+    setActionId(att.id + "_view");
     try {
-      const signedUrl = await documentService.getSignedUrl(path, activeProject?.id, doc.id);
-      window.open(signedUrl, "_blank", "noopener,noreferrer");
+      const url = await attachmentService.getSignedUrl(
+        att.file_path,
+        att.project_id,
+        att.entity_type as Parameters<typeof attachmentService.getSignedUrl>[2],
+        att.entity_id,
+        att.file_name
+      );
+      window.open(url, "_blank", "noopener,noreferrer");
     } catch (err) {
-      const raw = err instanceof Error ? err.message : String(err);
-      toast({ title: t("documents.toast.downloadError"), description: raw, variant: "destructive" });
+      toast({
+        title: t("attachments.toast.downloadError"),
+        description: err instanceof Error ? err.message : String(err),
+        variant: "destructive",
+      });
     } finally {
-      setDownloadingId(null);
+      setActionId(null);
     }
-  }, [activeProject, t]);
-
-  // No-op helper (audit is already handled inside getSignedUrl)
-  const auditDownload = async (_doc: Document) => { /* logged in service */ };
+  }, [t]);
 
   if (!activeProject) return <NoProjectBanner />;
+
+  // ── Entity-type label helper ───────────────────────────────────────────────
+  const entityLabel = (type: string) =>
+    t(`documents.entityTypes.${type}`, { defaultValue: type.replace(/_/g, " ") });
 
   return (
     <TooltipProvider>
       <div className="space-y-6 max-w-6xl mx-auto">
-        {/* Hidden file input – shared across all rows */}
-        <input
-          ref={fileInputRef}
-          type="file"
-          className="hidden"
-          accept="*/*"
-          onChange={handleFileSelected}
-        />
 
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -153,35 +142,65 @@ export default function DocumentsPage() {
             <h1 className="text-2xl font-bold tracking-tight text-foreground">
               {t("pages.documents.title")}
             </h1>
-            <p className="text-sm text-muted-foreground">{t("pages.documents.subtitle")}</p>
+            <p className="text-sm text-muted-foreground">
+              {t("pages.documents.subtitle")}
+            </p>
           </div>
-          <Button onClick={handleNew} size="sm" className="gap-1.5">
-            <Plus className="h-3.5 w-3.5" />
-            {t("documents.newDocument")}
-          </Button>
+          {/* summary chip */}
+          {!loading && (
+            <Badge variant="secondary" className="gap-1.5 px-3 py-1 text-sm">
+              <Paperclip className="h-3.5 w-3.5" />
+              {attachments.length} {t("documents.allFiles")}
+            </Badge>
+          )}
         </div>
 
-        {/* Error banner */}
+        {/* Filters */}
+        <div className="flex flex-col sm:flex-row gap-3">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <Input
+              placeholder={t("documents.searchPlaceholder")}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-9 h-9 text-sm"
+            />
+          </div>
+          <Select value={entityFilter} onValueChange={setEntityFilter}>
+            <SelectTrigger className="h-9 w-[200px] text-sm">
+              <SelectValue placeholder={t("documents.filterAll")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t("documents.filterAll")}</SelectItem>
+              {ALL_ENTITY_TYPES.map((et) => (
+                <SelectItem key={et} value={et}>{entityLabel(et)}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Error */}
         {error && (
           <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
             {error}
           </div>
         )}
 
-        {/* Loading skeletons */}
+        {/* Loading */}
         {loading ? (
           <div className="rounded-xl border border-border overflow-hidden">
             <div className="divide-y divide-border">
-              {Array.from({ length: 4 }).map((_, i) => (
+              {Array.from({ length: 5 }).map((_, i) => (
                 <div key={i} className="flex items-center gap-4 px-5 py-3">
-                  <Skeleton className="h-4 w-1/3" />
-                  <Skeleton className="h-4 w-1/4" />
-                  <Skeleton className="h-4 w-16" />
+                  <Skeleton className="h-4 w-5/12" />
+                  <Skeleton className="h-4 w-2/12" />
+                  <Skeleton className="h-4 w-1/12" />
+                  <Skeleton className="h-4 w-2/12" />
                 </div>
               ))}
             </div>
           </div>
-        ) : documents.length === 0 ? (
+        ) : filtered.length === 0 ? (
           <EmptyState icon={FileText} subtitleKey="emptyState.documents.subtitle" />
         ) : (
           <div className="rounded-xl border border-border overflow-hidden">
@@ -189,146 +208,80 @@ export default function DocumentsPage() {
               <TableHeader>
                 <TableRow className="bg-muted/40">
                   <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    {t("documents.table.title")}
+                    {t("documents.table.fileName")}
                   </TableHead>
                   <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    {t("documents.table.type")}
+                    {t("documents.table.module")}
                   </TableHead>
                   <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    {t("documents.table.revision")}
-                  </TableHead>
-                  <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    {t("common.status")}
-                  </TableHead>
-                  <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    {t("documents.table.file")}
+                    {t("documents.table.size")}
                   </TableHead>
                   <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                     {t("common.date")}
                   </TableHead>
-                  <TableHead className="w-[130px]" />
+                  <TableHead className="w-[90px]" />
                 </TableRow>
               </TableHeader>
+
               <TableBody>
-                {documents.map((doc) => {
-                  const storagePath = doc.file_path ?? doc.file_url; // support legacy rows
-                  const hasFile     = !!storagePath;
-                  const ext         = getExtension(doc.file_name ?? storagePath);
-                  const isPdf       = ext === "pdf";
-                  const isUploading = uploadingId === doc.id;
-                  const isDownloading = downloadingId === doc.id;
+                {filtered.map((att) => {
+                  const ext        = getExt(att.file_name);
+                  const isPdf      = ext === "pdf";
+                  const isActing   = actionId === att.id;
+                  const isViewing  = actionId === att.id + "_view";
 
                   return (
-                    <TableRow key={doc.id} className="hover:bg-muted/20 transition-colors">
-                      {/* Title */}
+                    <TableRow key={att.id} className="hover:bg-muted/20 transition-colors">
+
+                      {/* File name */}
                       <TableCell className="font-medium text-sm text-foreground">
-                        <div className="flex items-center gap-2">
-                          <FileText className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-                          <span className="truncate max-w-[200px]">{doc.title}</span>
+                        <div className="flex items-center gap-2 min-w-0">
+                          <FileText className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground" />
+                          {ext && (
+                            <span className="inline-flex items-center rounded bg-muted px-1.5 py-0.5 text-xs font-mono uppercase flex-shrink-0">
+                              {ext}
+                            </span>
+                          )}
+                          <span className="truncate max-w-[260px] text-sm" title={att.file_name}>
+                            {att.file_name}
+                          </span>
                         </div>
                       </TableCell>
 
-                      {/* Type */}
-                      <TableCell className="text-sm text-muted-foreground">
-                        {t(`documents.docTypes.${doc.doc_type}`, { defaultValue: doc.doc_type })}
-                      </TableCell>
-
-                      {/* Revision */}
-                      <TableCell className="text-sm text-muted-foreground">
-                        {doc.revision ?? doc.version}
-                      </TableCell>
-
-                      {/* Status badge */}
+                      {/* Module / entity type */}
                       <TableCell>
-                        <Badge variant="secondary" className={cn("text-xs", STATUS_COLORS[doc.status] ?? "")}>
-                          {t(`documents.status.${doc.status}`)}
+                        <Badge
+                          variant="secondary"
+                          className={`text-xs ${ENTITY_COLORS[att.entity_type] ?? "bg-muted text-muted-foreground"}`}
+                        >
+                          {entityLabel(att.entity_type)}
                         </Badge>
                       </TableCell>
 
-                      {/* File info */}
-                      <TableCell className="text-sm text-muted-foreground">
-                        {hasFile ? (
-                          <div className="flex items-center gap-1.5">
-                            {ext && (
-                              <span className="inline-flex items-center gap-1 rounded bg-muted px-1.5 py-0.5 text-xs font-mono uppercase">
-                                {ext}
-                              </span>
-                            )}
-                            {doc.file_name && (
-                              <span className="truncate max-w-[120px] text-xs text-muted-foreground" title={doc.file_name}>
-                                {doc.file_name}
-                              </span>
-                            )}
-                            {doc.file_size && (
-                              <span className="text-xs text-muted-foreground/60">
-                                {formatBytes(doc.file_size)}
-                              </span>
-                            )}
-                          </div>
-                        ) : (
-                          <span className="text-xs text-muted-foreground/60 italic">
-                            {t("documents.noFile")}
-                          </span>
-                        )}
+                      {/* Size */}
+                      <TableCell className="text-sm text-muted-foreground tabular-nums">
+                        {formatBytes(att.file_size)}
                       </TableCell>
 
-                      {/* Created at */}
+                      {/* Date */}
                       <TableCell className="text-sm text-muted-foreground">
-                        {new Date(doc.created_at).toLocaleDateString()}
+                        {new Date(att.created_at).toLocaleDateString()}
                       </TableCell>
 
-                      {/* Action buttons */}
+                      {/* Actions */}
                       <TableCell>
-                        <div className="flex items-center gap-1 justify-end">
-                          {/* Edit */}
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                variant="ghost" size="icon"
-                                className="h-7 w-7 text-muted-foreground hover:text-foreground"
-                                onClick={() => handleEdit(doc)}
-                              >
-                                <Pencil className="h-3.5 w-3.5" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent side="top">{t("common.edit")}</TooltipContent>
-                          </Tooltip>
-
-                          {/* Upload — always available so user can replace file */}
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                variant="ghost" size="icon"
-                                className={cn(
-                                  "h-7 w-7",
-                                  hasFile
-                                    ? "text-muted-foreground hover:text-primary"
-                                    : "text-primary hover:text-primary/80"
-                                )}
-                                onClick={() => triggerUpload(doc)}
-                                disabled={isUploading}
-                              >
-                                {isUploading
-                                  ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                                  : <Upload className="h-3.5 w-3.5" />}
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent side="top">
-                              {hasFile ? t("documents.actions.replace") : t("documents.actions.upload")}
-                            </TooltipContent>
-                          </Tooltip>
-
-                          {/* View in new tab (PDFs only) */}
-                          {hasFile && isPdf && (
+                        <div className="flex items-center gap-0.5 justify-end">
+                          {/* View (PDF only) */}
+                          {isPdf && (
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <Button
                                   variant="ghost" size="icon"
                                   className="h-7 w-7 text-muted-foreground hover:text-primary"
-                                  onClick={() => handleView(doc)}
-                                  disabled={isDownloading}
+                                  onClick={() => handleView(att)}
+                                  disabled={isViewing}
                                 >
-                                  {isDownloading
+                                  {isViewing
                                     ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
                                     : <ExternalLink className="h-3.5 w-3.5" />}
                                 </Button>
@@ -338,23 +291,21 @@ export default function DocumentsPage() {
                           )}
 
                           {/* Download */}
-                          {hasFile && (
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button
-                                  variant="ghost" size="icon"
-                                  className="h-7 w-7 text-muted-foreground hover:text-primary"
-                                  onClick={() => handleDownload(doc)}
-                                  disabled={isDownloading}
-                                >
-                                  {isDownloading
-                                    ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                                    : <Download className="h-3.5 w-3.5" />}
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent side="top">{t("documents.actions.download")}</TooltipContent>
-                            </Tooltip>
-                          )}
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost" size="icon"
+                                className="h-7 w-7 text-muted-foreground hover:text-primary"
+                                onClick={() => handleDownload(att)}
+                                disabled={isActing}
+                              >
+                                {isActing
+                                  ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                  : <Download className="h-3.5 w-3.5" />}
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent side="top">{t("documents.actions.download")}</TooltipContent>
+                          </Tooltip>
                         </div>
                       </TableCell>
                     </TableRow>
@@ -364,13 +315,6 @@ export default function DocumentsPage() {
             </Table>
           </div>
         )}
-
-        <DocumentFormDialog
-          open={dialogOpen}
-          onOpenChange={setDialogOpen}
-          document={editingDoc}
-          onSuccess={refetch}
-        />
       </div>
     </TooltipProvider>
   );

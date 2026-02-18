@@ -243,11 +243,27 @@
   "documents": {
     "newDocument": "Nuevo Documento",
     "noFile": "Sin archivo",
+    "allFiles": "archivos",
+    "searchPlaceholder": "Buscar por nombre o módulo…",
+    "filterAll": "Todos los módulos",
     "table": {
       "title": "Título",
       "type": "Tipo",
       "revision": "Revisión",
-      "file": "Archivo"
+      "file": "Archivo",
+      "fileName": "Archivo",
+      "module": "Módulo",
+      "size": "Tamaño"
+    },
+    "entityTypes": {
+      "documents": "Documentos",
+      "tests": "Ensayos",
+      "non_conformities": "No Conformidades",
+      "suppliers": "Proveedores",
+      "subcontractors": "Subcontratistas",
+      "survey": "Topografía",
+      "technical_office": "Of. Técnica",
+      "ppi": "PPI"
     },
     "actions": {
       "upload": "Subir archivo",
