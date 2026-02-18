@@ -5,7 +5,8 @@ import { z } from "zod";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { testService } from "@/lib/services/testService";
-import type { TestResult, TestCatalogEntry } from "@/lib/services/testService";
+import type { TestResult, TestCatalogEntry, TestResultStatus } from "@/lib/services/testService";
+import { TEST_RESULT_STATUS_LABELS, TEST_RESULT_STATUSES } from "@/lib/services/testService";
 import { toast } from "@/hooks/use-toast";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import {
@@ -40,7 +41,7 @@ const schema = (t: (k: string) => string) =>
   z.object({
     test_id:    z.string().min(1, t("tests.form.validation.testRequired")),
     date:       z.string().min(1, t("tests.form.validation.dateRequired")),
-    status:     z.string().min(1),
+    status:     z.enum(TEST_RESULT_STATUSES),
     sample_ref: z.string().trim().max(100).optional().or(z.literal("")),
     location:   z.string().trim().max(200).optional().or(z.literal("")),
   });
@@ -69,7 +70,7 @@ export function TestFormDialog({ open, onOpenChange, testResult, onSuccess }: Te
     resolver: zodResolver(schema(t)),
     defaultValues: {
       test_id: "", date: new Date().toISOString().split("T")[0],
-      status: "pending", sample_ref: "", location: "",
+      status: "pending" as TestResultStatus, sample_ref: "", location: "",
     },
   });
 
@@ -90,12 +91,15 @@ export function TestFormDialog({ open, onOpenChange, testResult, onSuccess }: Te
         testResult
           ? {
               test_id: testResult.test_id, date: testResult.date,
-              status: testResult.status, sample_ref: testResult.sample_ref ?? "",
+              status: (TEST_RESULT_STATUSES.includes(testResult.status as TestResultStatus)
+                ? testResult.status
+                : "pending") as TestResultStatus,
+              sample_ref: testResult.sample_ref ?? "",
               location: testResult.location ?? "",
             }
           : {
               test_id: "", date: new Date().toISOString().split("T")[0],
-              status: "pending", sample_ref: "", location: "",
+              status: "pending" as TestResultStatus, sample_ref: "", location: "",
             }
       );
       setCreatingNew(false);
@@ -264,9 +268,9 @@ export function TestFormDialog({ open, onOpenChange, testResult, onSuccess }: Te
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                     <SelectContent>
-                      <SelectItem value="pending">{t("tests.status.pending")}</SelectItem>
-                      <SelectItem value="compliant">{t("tests.status.compliant")}</SelectItem>
-                      <SelectItem value="non_compliant">{t("tests.status.non_compliant")}</SelectItem>
+                      {TEST_RESULT_STATUSES.map((s) => (
+                        <SelectItem key={s} value={s}>{t(TEST_RESULT_STATUS_LABELS[s])}</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />

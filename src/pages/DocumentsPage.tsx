@@ -1,13 +1,16 @@
 import { useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { useAllAttachments } from "@/hooks/useAllAttachments";
 import { useDocuments } from "@/hooks/useDocuments";
 import { attachmentService } from "@/lib/services/attachmentService";
 import { documentService } from "@/lib/services/documentService";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import {
   FileText, Download, ExternalLink, Loader2, Paperclip, Search,
+  Plus, Trash2,
 } from "lucide-react";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -22,9 +25,21 @@ import {
 import {
   Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { EmptyState } from "@/components/EmptyState";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
+import { DocumentFormDialog } from "@/components/documents/DocumentFormDialog";
 import type { Attachment } from "@/lib/services/attachmentService";
+import type { Document } from "@/lib/services/documentService";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -69,6 +84,8 @@ interface FileRow {
   created_at: string;
   /** Whether to use documentService or attachmentService for the signed URL */
   source: "document_main" | "attachment";
+  /** Original document record (for edit/delete) — only for document_main */
+  docRecord?: Document;
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -76,11 +93,12 @@ interface FileRow {
 export default function DocumentsPage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
+  const { user } = useAuth();
 
   // All generic attachments
-  const { data: attachments, loading: loadingAtt, error: errorAtt } = useAllAttachments(activeProject?.id);
+  const { data: attachments, loading: loadingAtt, error: errorAtt, refetch: refetchAtt } = useAllAttachments(activeProject?.id);
   // Documents with a file_path (main document file)
-  const { data: documents, loading: loadingDocs, error: errorDocs } = useDocuments();
+  const { data: documents, loading: loadingDocs, error: errorDocs, refetch: refetchDocs } = useDocuments();
 
   const loading = loadingAtt || loadingDocs;
   const error   = errorAtt || errorDocs;
@@ -88,6 +106,27 @@ export default function DocumentsPage() {
   const [search, setSearch]           = useState("");
   const [entityFilter, setEntityFilter] = useState("all");
   const [actionId, setActionId]        = useState<string | null>(null);
+
+  // ── Form dialog state ─────────────────────────────────────────────────────
+  const [formOpen, setFormOpen]           = useState(false);
+  const [editDoc, setEditDoc]             = useState<Document | null>(null);
+
+  // ── Delete confirm dialog ─────────────────────────────────────────────────
+  const [deleteRow, setDeleteRow]         = useState<FileRow | null>(null);
+  const [deleting, setDeleting]           = useState(false);
+
+  // ── Admin detection ───────────────────────────────────────────────────────
+  const [isAdmin, setIsAdmin]             = useState<boolean | null>(null);
+  useCallback(() => {
+    if (!activeProject || !user) return;
+    supabase.rpc("is_project_admin", { _project_id: activeProject.id, _user_id: user.id })
+      .then(({ data }) => setIsAdmin(!!data));
+  }, [activeProject, user])();
+
+  const handleRefresh = () => {
+    refetchDocs();
+    refetchAtt();
+  };
 
   // ── Build unified list ────────────────────────────────────────────────────
   const docRows: FileRow[] = (documents ?? [])
@@ -102,6 +141,7 @@ export default function DocumentsPage() {
       entity_id:   d.id,
       created_at:  d.created_at,
       source:      "document_main" as const,
+      docRecord:   d,
     }));
 
   const attRows: FileRow[] = (attachments ?? []).map((a: Attachment) => ({
@@ -189,6 +229,38 @@ export default function DocumentsPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [t]);
 
+  const handleDelete = async () => {
+    if (!deleteRow) return;
+    setDeleting(true);
+    try {
+      if (deleteRow.source === "document_main" && deleteRow.docRecord) {
+        // Delete file from storage (best effort)
+        await supabase.storage.from("qms-files").remove([deleteRow.file_path]).catch(() => null);
+        // Delete document record
+        const { error: dbErr } = await supabase.from("documents").delete().eq("id", deleteRow.entity_id);
+        if (dbErr) throw dbErr;
+        toast({ title: t("documents.toast.deleted") });
+      } else {
+        // It's an attachment
+        const att = attachments?.find((a) => a.id === deleteRow.id);
+        if (att) {
+          await attachmentService.delete(att);
+          toast({ title: t("attachments.toast.deleted") });
+        }
+      }
+      handleRefresh();
+      setDeleteRow(null);
+    } catch (err) {
+      toast({
+        title: deleteRow.source === "document_main" ? t("documents.toast.deleteError") : t("attachments.toast.deleteError"),
+        description: err instanceof Error ? err.message : String(err),
+        variant: "destructive",
+      });
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   if (!activeProject) return <NoProjectBanner />;
 
   const entityLabel = (type: string) =>
@@ -208,12 +280,22 @@ export default function DocumentsPage() {
               {t("pages.documents.subtitle")}
             </p>
           </div>
-          {!loading && (
-            <Badge variant="secondary" className="gap-1.5 px-3 py-1 text-sm">
-              <Paperclip className="h-3.5 w-3.5" />
-              {allRows.length} {t("documents.allFiles")}
-            </Badge>
-          )}
+          <div className="flex items-center gap-3">
+            {!loading && (
+              <Badge variant="secondary" className="gap-1.5 px-3 py-1 text-sm">
+                <Paperclip className="h-3.5 w-3.5" />
+                {allRows.length} {t("documents.allFiles")}
+              </Badge>
+            )}
+            <Button
+              size="sm"
+              className="gap-1.5"
+              onClick={() => { setEditDoc(null); setFormOpen(true); }}
+            >
+              <Plus className="h-4 w-4" />
+              {t("documents.form.createBtn")}
+            </Button>
+          </div>
         </div>
 
         {/* Filters */}
@@ -280,14 +362,13 @@ export default function DocumentsPage() {
                   <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                     {t("common.date")}
                   </TableHead>
-                  <TableHead className="w-[90px]" />
+                  <TableHead className="w-[120px]" />
                 </TableRow>
               </TableHeader>
 
               <TableBody>
                 {filtered.map((row) => {
                   const ext       = getExt(row.file_name);
-                  const isPdf     = ext === "pdf";
                   const isActing  = actionId === row.id;
                   const isViewing = actionId === row.id + "_view";
 
@@ -332,7 +413,7 @@ export default function DocumentsPage() {
                       {/* Actions */}
                       <TableCell>
                         <div className="flex items-center gap-0.5 justify-end">
-                          {/* View in new tab (PDF or all files) */}
+                          {/* View in new tab */}
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <Button
@@ -365,6 +446,23 @@ export default function DocumentsPage() {
                             </TooltipTrigger>
                             <TooltipContent side="top">{t("documents.actions.download")}</TooltipContent>
                           </Tooltip>
+
+                          {/* Delete (admin only) */}
+                          {isAdmin && (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="ghost" size="icon"
+                                  className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                                  onClick={() => setDeleteRow(row)}
+                                  disabled={isActing || isViewing}
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent side="top">{t("common.delete")}</TooltipContent>
+                            </Tooltip>
+                          )}
                         </div>
                       </TableCell>
                     </TableRow>
@@ -375,6 +473,43 @@ export default function DocumentsPage() {
           </div>
         )}
       </div>
+
+      {/* Create/Edit Document dialog */}
+      <DocumentFormDialog
+        open={formOpen}
+        onOpenChange={setFormOpen}
+        document={editDoc}
+        onSuccess={handleRefresh}
+      />
+
+      {/* Delete confirmation */}
+      <AlertDialog open={!!deleteRow} onOpenChange={(open) => { if (!open) setDeleteRow(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {deleteRow?.source === "document_main"
+                ? t("documents.deleteConfirm.title")
+                : t("attachments.deleteConfirm.title")}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {deleteRow?.source === "document_main"
+                ? t("documents.deleteConfirm.description", { name: deleteRow?.file_name })
+                : t("attachments.deleteConfirm.description", { name: deleteRow?.file_name })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>{t("common.cancel")}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={deleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleting ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-2" /> : null}
+              {t("common.delete")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </TooltipProvider>
   );
 }
