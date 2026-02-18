@@ -6,6 +6,7 @@ import { attachmentService, type EntityType } from "@/lib/services/attachmentSer
 import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
 import {
   Tooltip,
   TooltipContent,
@@ -44,16 +45,15 @@ function getExt(name: string): string {
 // ─── Props ────────────────────────────────────────────────────────────────────
 
 interface AttachmentsPanelProps {
-  /** ID do projeto ativo */
   projectId: string;
-  /** Tipo de entidade: 'test' | 'non_conformity' */
   entityType: EntityType;
   /**
    * UUID da entidade.
-   * Se null/undefined o painel mostra apenas a nota "guarde primeiro o registo".
+   * Se null/undefined mostra a nota "guarde o registo primeiro".
    */
   entityId: string | null | undefined;
-  /** Classe extra para o container */
+  /** Impede upload/delete (ex: documento aprovado) */
+  readOnly?: boolean;
   className?: string;
 }
 
@@ -63,14 +63,15 @@ export function AttachmentsPanel({
   projectId,
   entityType,
   entityId,
+  readOnly = false,
   className,
 }: AttachmentsPanelProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { data: attachments, loading, refetch } = useAttachments(entityType, entityId);
 
-  const fileInputRef     = useRef<HTMLInputElement>(null);
-  const [uploading, setUploading]   = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
 
   // ── Upload ────────────────────────────────────────────────────────────────
@@ -101,13 +102,20 @@ export function AttachmentsPanel({
   const handleDownload = async (att: Attachment) => {
     setDownloadingId(att.id);
     try {
-      const url = await attachmentService.getSignedUrl(att.file_path);
+      const url = await attachmentService.getSignedUrl(
+        att.file_path,
+        projectId,
+        entityType,
+        att.entity_id,
+        att.file_name
+      );
       const a = window.document.createElement("a");
       a.href = url;
       a.download = att.file_name;
       a.target = "_blank";
       a.rel = "noopener noreferrer";
       a.click();
+      toast({ title: t("attachments.toast.downloaded") });
     } catch (err) {
       toast({
         title: t("attachments.toast.downloadError"),
@@ -137,6 +145,8 @@ export function AttachmentsPanel({
 
   // ── Render ────────────────────────────────────────────────────────────────
 
+  const canUpload = !readOnly && !!entityId && !!user;
+
   return (
     <TooltipProvider>
       <div className={cn("space-y-3", className)}>
@@ -146,13 +156,13 @@ export function AttachmentsPanel({
             <Paperclip className="h-3.5 w-3.5 text-muted-foreground" />
             {t("attachments.title")}
             {attachments.length > 0 && (
-              <span className="ml-1 rounded-full bg-muted px-1.5 py-0.5 text-xs font-normal text-muted-foreground">
+              <Badge variant="secondary" className="ml-1 px-1.5 py-0 text-xs font-normal">
                 {attachments.length}
-              </span>
+              </Badge>
             )}
           </div>
 
-          {entityId && (
+          {canUpload && (
             <>
               <input
                 ref={fileInputRef}
@@ -238,41 +248,43 @@ export function AttachmentsPanel({
                       <TooltipContent side="top">{t("attachments.download")}</TooltipContent>
                     </Tooltip>
 
-                    {/* Delete with confirmation */}
-                    <AlertDialog>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <AlertDialogTrigger asChild>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                    {/* Delete with confirmation (only if not readOnly) */}
+                    {!readOnly && (
+                      <AlertDialog>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </Button>
+                            </AlertDialogTrigger>
+                          </TooltipTrigger>
+                          <TooltipContent side="top">{t("common.delete")}</TooltipContent>
+                        </Tooltip>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>{t("attachments.deleteConfirm.title")}</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              {t("attachments.deleteConfirm.description", { name: att.file_name })}
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+                            <AlertDialogAction
+                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              onClick={() => handleDelete(att)}
                             >
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </Button>
-                          </AlertDialogTrigger>
-                        </TooltipTrigger>
-                        <TooltipContent side="top">{t("common.delete")}</TooltipContent>
-                      </Tooltip>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>{t("attachments.deleteConfirm.title")}</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            {t("attachments.deleteConfirm.description", { name: att.file_name })}
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
-                          <AlertDialogAction
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                            onClick={() => handleDelete(att)}
-                          >
-                            {t("common.delete")}
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                              {t("common.delete")}
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    )}
                   </div>
                 </li>
               );

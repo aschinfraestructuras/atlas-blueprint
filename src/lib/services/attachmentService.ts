@@ -3,30 +3,38 @@ import { auditService } from "./auditService";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export type EntityType = "test" | "non_conformity";
+export type EntityType =
+  | "documents"
+  | "tests"
+  | "non_conformities"
+  | "suppliers"
+  | "subcontractors"
+  | "survey"
+  | "technical_office"
+  | "ppi";
 
 export interface Attachment {
   id: string;
   project_id: string;
-  entity_type: EntityType;
+  entity_type: string;
   entity_id: string;
-  file_path: string;
   file_name: string;
+  file_path: string;
   file_size: number | null;
   mime_type: string | null;
-  created_by: string | null;
+  uploaded_by: string | null;
+  created_by: string | null;  // legacy
   created_at: string;
 }
 
-const BUCKET = "atlas_files";
+const BUCKET = "project-files";
 
-// ─── Path helpers ──────────────────────────────────────────────────────────────
+// ─── Path helpers ─────────────────────────────────────────────────────────────
 
 /**
  * Remove accents, replace unsafe characters with underscores.
- * Reused from documentService pattern — duplicated here to keep services independent.
  */
-function slugifyFilename(raw: string): string {
+export function slugifyFilename(raw: string): string {
   return (
     raw
       .normalize("NFD")
@@ -38,7 +46,7 @@ function slugifyFilename(raw: string): string {
 }
 
 /**
- * Canonical path: projects/{project_id}/{entity_type}/{entity_id}/{ts}_{safe_name}
+ * Canonical path: {project_id}/{entity_type}/{entity_id}/{ts}_{safe_name}
  */
 export function buildAttachmentPath(
   projectId: string,
@@ -47,18 +55,13 @@ export function buildAttachmentPath(
   fileName: string
 ): string {
   const safe = slugifyFilename(fileName);
-  return `projects/${projectId}/${entityType}/${entityId}/${Date.now()}_${safe}`;
+  return `${projectId}/${entityType}/${entityId}/${Date.now()}_${safe}`;
 }
 
 // ─── Service ──────────────────────────────────────────────────────────────────
 
-const MODULE_MAP: Record<EntityType, string> = {
-  test: "tests",
-  non_conformity: "non_conformities",
-};
-
 export const attachmentService = {
-  // ── List ────────────────────────────────────────────────────────────────────
+  // ── List ───────────────────────────────────────────────────────────────────
 
   async list(entityType: EntityType, entityId: string): Promise<Attachment[]> {
     const { data, error } = await supabase
@@ -68,27 +71,33 @@ export const attachmentService = {
       .eq("entity_id", entityId)
       .order("created_at", { ascending: false });
     if (error) throw error;
-    return (data ?? []) as Attachment[];
+    return (data ?? []) as unknown as Attachment[];
   },
 
-  // ── Upload ──────────────────────────────────────────────────────────────────
+  // ── Count (for badges) ─────────────────────────────────────────────────────
 
-  /**
-   * Upload a file and register it in the attachments table.
-   * - If storage upload fails → DB is NOT touched.
-   * - If DB insert fails → storage file is cleaned up.
-   * - Audit log is non-blocking.
-   */
+  async countByEntity(entityType: EntityType, entityId: string): Promise<number> {
+    const { count, error } = await supabase
+      .from("attachments")
+      .select("*", { count: "exact", head: true })
+      .eq("entity_type", entityType)
+      .eq("entity_id", entityId);
+    if (error) return 0;
+    return count ?? 0;
+  },
+
+  // ── Upload ─────────────────────────────────────────────────────────────────
+
   async upload(
     file: File,
     projectId: string,
     entityType: EntityType,
     entityId: string,
-    createdBy: string
+    uploadedBy: string
   ): Promise<Attachment> {
     const storagePath = buildAttachmentPath(projectId, entityType, entityId, file.name);
 
-    // 1. Storage upload (bail early on error)
+    // 1. Storage upload
     const { error: storageErr } = await supabase.storage
       .from(BUCKET)
       .upload(storagePath, file, {
@@ -111,13 +120,13 @@ export const attachmentService = {
         file_name: file.name,
         file_size: file.size,
         mime_type: file.type || null,
-        created_by: createdBy,
+        uploaded_by: uploadedBy,
+        created_by: uploadedBy,
       })
       .select()
       .single();
 
     if (dbErr) {
-      // Cleanup orphaned storage object
       await supabase.storage.from(BUCKET).remove([storagePath]).catch(() => null);
       throw dbErr;
     }
@@ -126,40 +135,56 @@ export const attachmentService = {
     auditService
       .log({
         projectId,
-        entity: entityType === "test" ? "test_results" : "non_conformities",
+        entity: entityType,
         entityId,
-        action: "upload_attachment",
-        module: MODULE_MAP[entityType],
+        action: "attachment_add",
+        module: entityType,
+        description: `Added attachment: ${file.name}`,
         diff: {
           file_name: file.name,
           file_size: file.size,
           mime_type: file.type || null,
           storage_path: storagePath,
-          uploaded_by: createdBy,
         },
       })
       .catch(() => null);
 
-    return data as Attachment;
+    return data as unknown as Attachment;
   },
 
-  // ── Signed URL (download / view) ─────────────────────────────────────────────
+  // ── Signed URL ─────────────────────────────────────────────────────────────
 
-  async getSignedUrl(storagePath: string): Promise<string> {
+  async getSignedUrl(
+    storagePath: string,
+    projectId?: string,
+    entityType?: EntityType,
+    entityId?: string,
+    fileName?: string
+  ): Promise<string> {
     const { data, error } = await supabase.storage
       .from(BUCKET)
-      .createSignedUrl(storagePath, 3600); // 1 hour
+      .createSignedUrl(storagePath, 3600);
     if (error) throw error;
+
+    // Audit log download (non-blocking)
+    if (projectId && entityId && entityType) {
+      auditService
+        .log({
+          projectId,
+          entity: entityType,
+          entityId,
+          action: "attachment_download",
+          module: entityType,
+          description: `Downloaded attachment: ${fileName ?? storagePath.split("/").pop()}`,
+        })
+        .catch(() => null);
+    }
+
     return data.signedUrl;
   },
 
-  // ── Delete ───────────────────────────────────────────────────────────────────
+  // ── Delete ─────────────────────────────────────────────────────────────────
 
-  /**
-   * Delete an attachment row and its storage object.
-   * Storage removal is best-effort (non-blocking) to avoid blocking the user
-   * if the file was already removed manually.
-   */
   async delete(attachment: Attachment): Promise<void> {
     const { error: dbErr } = await supabase
       .from("attachments")
@@ -177,11 +202,11 @@ export const attachmentService = {
     auditService
       .log({
         projectId: attachment.project_id,
-        entity:
-          attachment.entity_type === "test" ? "test_results" : "non_conformities",
+        entity: attachment.entity_type as EntityType,
         entityId: attachment.entity_id,
-        action: "delete_attachment",
-        module: MODULE_MAP[attachment.entity_type as EntityType],
+        action: "attachment_delete",
+        module: attachment.entity_type,
+        description: `Deleted attachment: ${attachment.file_name}`,
         diff: { file_name: attachment.file_name, storage_path: attachment.file_path },
       })
       .catch(() => null);

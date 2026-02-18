@@ -10,9 +10,9 @@ import {
  * Only fetches when `entityId` is defined (i.e. the record already exists).
  */
 export function useAttachments(entityType: EntityType, entityId: string | null | undefined) {
-  const [data, setData]     = useState<Attachment[]>([]);
+  const [data, setData]       = useState<Attachment[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError]   = useState<string | null>(null);
+  const [error, setError]     = useState<string | null>(null);
 
   const fetch = useCallback(async () => {
     if (!entityId) { setData([]); return; }

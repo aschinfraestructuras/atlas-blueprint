@@ -10,6 +10,9 @@ export interface NonConformity {
   status: string;
   responsible: string | null;
   due_date: string | null;
+  root_cause: string | null;
+  corrective_action: string | null;
+  closure_date: string | null;
   created_by: string | null;
   created_at: string;
   updated_at: string;
@@ -23,6 +26,8 @@ export interface NCInput {
   reference?: string;
   responsible?: string;
   due_date?: string;
+  root_cause?: string;
+  corrective_action?: string;
   created_by: string;
 }
 
@@ -34,7 +39,7 @@ export const ncService = {
       .eq("project_id", projectId)
       .order("created_at", { ascending: false });
     if (error) throw error;
-    return (data ?? []) as NonConformity[];
+    return (data ?? []) as unknown as NonConformity[];
   },
 
   async create(input: NCInput): Promise<NonConformity> {
@@ -48,6 +53,8 @@ export const ncService = {
         reference: input.reference ?? null,
         responsible: input.responsible ?? null,
         due_date: input.due_date ?? null,
+        root_cause: input.root_cause ?? null,
+        corrective_action: input.corrective_action ?? null,
         created_by: input.created_by,
       })
       .select()
@@ -59,28 +66,51 @@ export const ncService = {
       entityId: (data as NonConformity).id,
       action: "INSERT",
       module: "non_conformities",
+      description: `NC criada: ${input.description.slice(0, 80)}`,
       diff: { description: input.description, severity: input.severity, status: input.status ?? "open" },
     });
-    return data as NonConformity;
+    return data as unknown as NonConformity;
   },
 
-  async update(id: string, projectId: string, updates: Partial<Omit<NCInput, "project_id" | "created_by">>): Promise<NonConformity> {
+  async update(
+    id: string,
+    projectId: string,
+    updates: Partial<Omit<NCInput, "project_id" | "created_by">>,
+    prevStatus?: string
+  ): Promise<NonConformity> {
+    // Auto-set closure_date when closing
+    const payload: Record<string, unknown> = { ...updates };
+    if (updates.status === "closed" && prevStatus !== "closed") {
+      payload.closure_date = new Date().toISOString().split("T")[0];
+    }
+    if (updates.status && updates.status !== "closed") {
+      payload.closure_date = null;
+    }
+
     const { data, error } = await supabase
       .from("non_conformities")
-      .update(updates)
+      .update(payload)
       .eq("id", id)
       .select()
       .single();
     if (error) throw error;
+
+    // Build description for status changes
+    let description: string | undefined;
+    if (updates.status && prevStatus && updates.status !== prevStatus) {
+      description = `NC status: ${prevStatus} → ${updates.status}`;
+    }
+
     await auditService.log({
       projectId,
       entity: "non_conformities",
       entityId: id,
-      action: "UPDATE",
+      action: updates.status && prevStatus && updates.status !== prevStatus ? "status_change" : "UPDATE",
       module: "non_conformities",
+      description,
       diff: updates as Record<string, unknown>,
     });
-    return data as NonConformity;
+    return data as unknown as NonConformity;
   },
 
   async getOpenCount(projectId: string): Promise<number> {

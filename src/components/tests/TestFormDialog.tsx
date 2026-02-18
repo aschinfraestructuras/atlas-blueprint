@@ -304,7 +304,7 @@ export function TestFormDialog({ open, onOpenChange, testResult, onSuccess }: Te
                 <Separator />
                 <AttachmentsPanel
                   projectId={activeProject.id}
-                  entityType="test"
+                  entityType="tests"
                   entityId={testResult?.id ?? null}
                 />
               </>

@@ -26,6 +26,7 @@ export type Database = {
           id: string
           mime_type: string | null
           project_id: string
+          uploaded_by: string | null
         }
         Insert: {
           created_at?: string
@@ -38,6 +39,7 @@ export type Database = {
           id?: string
           mime_type?: string | null
           project_id: string
+          uploaded_by?: string | null
         }
         Update: {
           created_at?: string
@@ -50,6 +52,7 @@ export type Database = {
           id?: string
           mime_type?: string | null
           project_id?: string
+          uploaded_by?: string | null
         }
         Relationships: [
           {
@@ -65,6 +68,7 @@ export type Database = {
         Row: {
           action: string
           created_at: string
+          description: string | null
           diff: Json | null
           entity: string
           entity_id: string | null
@@ -77,6 +81,7 @@ export type Database = {
         Insert: {
           action: string
           created_at?: string
+          description?: string | null
           diff?: Json | null
           entity: string
           entity_id?: string | null
@@ -89,6 +94,7 @@ export type Database = {
         Update: {
           action?: string
           created_at?: string
+          description?: string | null
           diff?: Json | null
           entity?: string
           entity_id?: string | null
@@ -235,6 +241,8 @@ export type Database = {
       }
       non_conformities: {
         Row: {
+          closure_date: string | null
+          corrective_action: string | null
           created_at: string
           created_by: string | null
           description: string
@@ -243,11 +251,14 @@ export type Database = {
           project_id: string
           reference: string | null
           responsible: string | null
+          root_cause: string | null
           severity: string
           status: string
           updated_at: string
         }
         Insert: {
+          closure_date?: string | null
+          corrective_action?: string | null
           created_at?: string
           created_by?: string | null
           description: string
@@ -256,11 +267,14 @@ export type Database = {
           project_id: string
           reference?: string | null
           responsible?: string | null
+          root_cause?: string | null
           severity?: string
           status?: string
           updated_at?: string
         }
         Update: {
+          closure_date?: string | null
+          corrective_action?: string | null
           created_at?: string
           created_by?: string | null
           description?: string
@@ -269,6 +283,7 @@ export type Database = {
           project_id?: string
           reference?: string | null
           responsible?: string | null
+          root_cause?: string | null
           severity?: string
           status?: string
           updated_at?: string

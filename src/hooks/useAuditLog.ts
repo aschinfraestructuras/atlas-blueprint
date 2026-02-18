@@ -2,7 +2,13 @@ import { useEffect, useState, useCallback } from "react";
 import { useProject } from "@/contexts/ProjectContext";
 import { auditService, type AuditEntry } from "@/lib/services/auditService";
 
-export function useAuditLog() {
+interface AuditFilters {
+  module?: string;
+  dateFrom?: string;
+  dateTo?: string;
+}
+
+export function useAuditLog(filters?: AuditFilters) {
   const { activeProject } = useProject();
   const [data, setData] = useState<AuditEntry[]>([]);
   const [loading, setLoading] = useState(false);
@@ -16,14 +22,15 @@ export function useAuditLog() {
     setLoading(true);
     setError(null);
     try {
-      const result = await auditService.getByProject(activeProject.id);
+      const result = await auditService.getByProject(activeProject.id, filters);
       setData(result);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error loading audit log");
     } finally {
       setLoading(false);
     }
-  }, [activeProject]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeProject, filters?.module, filters?.dateFrom, filters?.dateTo]);
 
   useEffect(() => { fetch(); }, [fetch]);
 

@@ -253,11 +253,16 @@
       "upload": "Carregar ficheiro",
       "replace": "Substituir ficheiro",
       "download": "Transferir ficheiro",
-      "view": "Ver em nova aba"
+      "view": "Ver em nova aba",
+      "submit": "Submeter",
+      "approve": "Aprovar",
+      "reject": "Rejeitar",
+      "backToDraft": "Voltar a Rascunho"
     },
     "status": {
       "draft": "Rascunho",
       "submitted": "Submetido",
+      "in_review": "Em Revisão",
       "approved": "Aprovado",
       "rejected": "Rejeitado"
     },
@@ -285,6 +290,7 @@
       "fileUrl": "URL do ficheiro",
       "fileUrlPlaceholder": "https://…",
       "createBtn": "Criar documento",
+      "lockedNotice": "Este documento está bloqueado para edição. Apenas anexos podem ser adicionados.",
       "validation": {
         "titleRequired": "O título é obrigatório.",
         "typeRequired": "O tipo é obrigatório.",
@@ -297,7 +303,12 @@
       "uploaded": "Ficheiro «{{name}}» carregado com sucesso.",
       "uploadError": "Falha no upload",
       "downloadError": "Falha no download",
-      "error": "Ocorreu um erro. Tente novamente."
+      "error": "Ocorreu um erro. Tente novamente.",
+      "status_submitted": "Documento submetido para revisão.",
+      "status_in_review": "Documento em revisão.",
+      "status_approved": "Documento aprovado.",
+      "status_rejected": "Documento rejeitado.",
+      "status_draft": "Documento voltou a Rascunho."
     }
   },
   "tests": {
@@ -395,6 +406,7 @@
     },
     "status": {
       "open": "Aberta",
+      "in_progress": "Em Curso",
       "under_review": "Em Análise",
       "closed": "Fechada"
     },
@@ -405,10 +417,16 @@
       "descriptionPlaceholder": "Descreva a não conformidade detetada…",
       "referencePlaceholder": "ex: NC-2024-001",
       "responsiblePlaceholder": "ex: João Silva",
+      "rootCause": "Causa Raiz",
+      "rootCausePlaceholder": "Descreva a causa raiz da não conformidade…",
+      "correctiveAction": "Ação Corretiva",
+      "correctiveActionPlaceholder": "Descreva a ação corretiva implementada…",
+      "correctiveActionRequired": "A ação corretiva é obrigatória para fechar a NC.",
       "createBtn": "Registar NC",
       "validation": {
         "descriptionRequired": "A descrição é obrigatória.",
-        "severityRequired": "A gravidade é obrigatória."
+        "severityRequired": "A gravidade é obrigatória.",
+        "correctiveActionRequired": "A ação corretiva é obrigatória para fechar a NC."
       }
     },
     "toast": {

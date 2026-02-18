@@ -395,6 +395,7 @@
     },
     "status": {
       "open": "Abierta",
+      "in_progress": "En Curso",
       "under_review": "En Revisión",
       "closed": "Cerrada"
     },
@@ -405,10 +406,16 @@
       "descriptionPlaceholder": "Describa la no conformidad detectada…",
       "referencePlaceholder": "ej: NC-2024-001",
       "responsiblePlaceholder": "ej: Juan García",
+      "rootCause": "Causa Raíz",
+      "rootCausePlaceholder": "Describa la causa raíz de la no conformidad…",
+      "correctiveAction": "Acción Correctiva",
+      "correctiveActionPlaceholder": "Describa la acción correctiva implementada…",
+      "correctiveActionRequired": "La acción correctiva es obligatoria para cerrar la NC.",
       "createBtn": "Registrar NC",
       "validation": {
         "descriptionRequired": "La descripción es obligatoria.",
-        "severityRequired": "La gravedad es obligatoria."
+        "severityRequired": "La gravedad es obligatoria.",
+        "correctiveActionRequired": "La acción correctiva es obligatoria para cerrar la NC."
       }
     },
     "toast": {
@@ -553,9 +560,38 @@
   "audit": {
     "table": {
       "timestamp": "Fecha/Hora",
+      "module": "Módulo",
       "entity": "Entidad",
       "action": "Acción",
+      "description": "Descripción",
       "user": "Usuario"
+    },
+    "filters": {
+      "module": "Módulo",
+      "allModules": "Todos los módulos",
+      "from": "Desde",
+      "to": "Hasta",
+      "apply": "Filtrar"
+    },
+    "modules": {
+      "documents": "Documentos",
+      "non_conformities": "No Conformidades",
+      "tests": "Ensayos",
+      "suppliers": "Proveedores",
+      "subcontractors": "Subcontratistas",
+      "survey": "Topografía",
+      "technical_office": "Oficina Técnica",
+      "plans": "Planificación"
+    },
+    "actions": {
+      "INSERT": "Creado",
+      "UPDATE": "Actualizado",
+      "DELETE": "Eliminado",
+      "status_change": "Cambio Estado",
+      "attachment_add": "Adjunto Añadido",
+      "attachment_download": "Adjunto Descargado",
+      "attachment_delete": "Adjunto Eliminado",
+      "upload_file": "Archivo Subido"
     }
   },
   "errors": {
@@ -579,8 +615,7 @@
       "title": "Error al guardar",
       "description": "Ocurrió un error inesperado. Inténtelo de nuevo."
     }
-  }
-,
+  },
   "attachments": {
     "title": "Adjuntos / Evidencias",
     "upload": "Añadir adjunto",
@@ -601,3 +636,4 @@
     }
   }
 }
+

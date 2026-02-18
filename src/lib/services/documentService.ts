@@ -33,30 +33,34 @@ export interface DocumentInput {
   created_by: string;
 }
 
+// ─── Workflow helpers ─────────────────────────────────────────────────────────
+
+export type DocumentStatus = "draft" | "submitted" | "in_review" | "approved" | "rejected";
+
+/** Returns true if the document's fields can still be edited */
+export function isDocumentEditable(status: string): boolean {
+  return status === "draft";
+}
+
+/** Returns true if only attachments / comments can be added */
+export function isDocumentLockedForFields(status: string): boolean {
+  return ["submitted", "in_review", "approved", "rejected"].includes(status);
+}
+
 // ─── Storage constants ────────────────────────────────────────────────────────
 
-const BUCKET = "atlas_files";
+const BUCKET = "project-files";
 
-/**
- * Normalise a filename so it is safe for Supabase Storage:
- * - decompose Unicode accents → strip combining characters
- * - replace spaces/slashes with "_"
- * - keep only [a-zA-Z0-9._-]
- */
 export function slugifyFilename(raw: string): string {
   return raw
-    .normalize("NFD")                        // decompose accented chars
-    .replace(/[\u0300-\u036f]/g, "")         // strip combining marks
-    .replace(/[\s/\\]+/g, "_")               // spaces & separators → _
-    .replace(/[^a-zA-Z0-9._-]/g, "")        // remove remaining unsafe chars
-    .replace(/^\.+/, "")                     // no leading dots
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[\s/\\]+/g, "_")
+    .replace(/[^a-zA-Z0-9._-]/g, "")
+    .replace(/^\.+/, "")
     || "file";
 }
 
-/**
- * Build a canonical, collision-resistant storage path.
- * Format: projects/{project_id}/documents/{document_id}/{timestamp}_{safe_name}
- */
 export function buildStoragePath(
   projectId: string,
   documentId: string,
@@ -64,14 +68,12 @@ export function buildStoragePath(
 ): string {
   const safe = slugifyFilename(fileName);
   const ts = Date.now();
-  return `projects/${projectId}/documents/${documentId}/${ts}_${safe}`;
+  return `${projectId}/documents/${documentId}/${ts}_${safe}`;
 }
 
 // ─── Service ──────────────────────────────────────────────────────────────────
 
 export const documentService = {
-  // ── Read ──────────────────────────────────────────────────────────────────
-
   async getByProject(projectId: string): Promise<Document[]> {
     const { data, error } = await supabase
       .from("documents")
@@ -81,8 +83,6 @@ export const documentService = {
     if (error) throw error;
     return (data ?? []) as Document[];
   },
-
-  // ── Create ────────────────────────────────────────────────────────────────
 
   async create(input: DocumentInput): Promise<Document> {
     const { data, error } = await supabase
@@ -105,13 +105,12 @@ export const documentService = {
       entityId: (data as Document).id,
       action: "INSERT",
       module: "documents",
+      description: `Documento criado: ${input.title}`,
       diff: { title: input.title, doc_type: input.doc_type, status: input.status ?? "draft" },
     });
 
     return data as Document;
   },
-
-  // ── Update ────────────────────────────────────────────────────────────────
 
   async update(
     id: string,
@@ -132,22 +131,41 @@ export const documentService = {
       entityId: id,
       action: "UPDATE",
       module: "documents",
+      description: updates.status ? undefined : `Documento atualizado`,
       diff: updates as Record<string, unknown>,
     });
 
     return data as Document;
   },
 
-  // ── Upload file ───────────────────────────────────────────────────────────
+  /** Transition document status with audit trail */
+  async changeStatus(
+    id: string,
+    projectId: string,
+    fromStatus: string,
+    toStatus: DocumentStatus
+  ): Promise<Document> {
+    const { data, error } = await supabase
+      .from("documents")
+      .update({ status: toStatus })
+      .eq("id", id)
+      .select()
+      .single();
+    if (error) throw error;
 
-  /**
-   * Upload a file to `atlas_files` bucket and update the document row.
-   *
-   * Steps (atomic-ish):
-   *  1. Upload to Storage (bail on error — document is NOT touched)
-   *  2. Update documents.file_path / file_name / file_size / mime_type
-   *  3. Write audit log
-   */
+    await auditService.log({
+      projectId,
+      entity: "documents",
+      entityId: id,
+      action: "status_change",
+      module: "documents",
+      description: `Document status: ${fromStatus} → ${toStatus}`,
+      diff: { from: fromStatus, to: toStatus },
+    });
+
+    return data as Document;
+  },
+
   async uploadFile(
     file: File,
     projectId: string,
@@ -156,7 +174,6 @@ export const documentService = {
   ): Promise<void> {
     const storagePath = buildStoragePath(projectId, documentId, file.name);
 
-    // 1. Upload to storage (upsert = overwrite same path)
     const { error: uploadError } = await supabase.storage
       .from(BUCKET)
       .upload(storagePath, file, {
@@ -165,12 +182,9 @@ export const documentService = {
       });
 
     if (uploadError) {
-      // Surface a readable message
-      const msg = uploadError.message ?? String(uploadError);
-      throw new Error(`Falha no upload: ${msg}`);
+      throw new Error(`Falha no upload: ${uploadError.message ?? String(uploadError)}`);
     }
 
-    // 2. Update document metadata
     const { error: updateError } = await supabase
       .from("documents")
       .update({
@@ -182,20 +196,18 @@ export const documentService = {
       .eq("id", documentId);
 
     if (updateError) {
-      // Storage upload succeeded but DB update failed.
-      // Best-effort: attempt to remove the orphaned file.
       await supabase.storage.from(BUCKET).remove([storagePath]).catch(() => null);
       throw updateError;
     }
 
-    // 3. Audit log — non-blocking
     await auditService
       .log({
         projectId,
         entity: "documents",
         entityId: documentId,
-        action: "upload_file",
+        action: "attachment_add",
         module: "documents",
+        description: `Added attachment: ${file.name}`,
         diff: {
           file_name: file.name,
           file_size: file.size,
@@ -207,12 +219,6 @@ export const documentService = {
       .catch(() => null);
   },
 
-  // ── Signed URL (download / view) ──────────────────────────────────────────
-
-  /**
-   * Create a signed URL valid for 1 hour.
-   * Logs a download_file audit entry (non-blocking).
-   */
   async getSignedUrl(
     storagePath: string,
     projectId?: string,
@@ -229,8 +235,9 @@ export const documentService = {
           projectId,
           entity: "documents",
           entityId: documentId,
-          action: "download_file",
+          action: "attachment_download",
           module: "documents",
+          description: `Downloaded document file`,
           diff: { storage_path: storagePath },
         })
         .catch(() => null);
@@ -238,8 +245,6 @@ export const documentService = {
 
     return data.signedUrl;
   },
-
-  // ── Legacy helpers (kept for document_files table compatibility) ───────────
 
   async getPendingCount(projectId: string): Promise<number> {
     const { count, error } = await supabase
