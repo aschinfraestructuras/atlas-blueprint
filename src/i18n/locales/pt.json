@@ -571,4 +571,24 @@
       "description": "Ocorreu um erro inesperado. Tente novamente."
     }
   }
+,
+  "attachments": {
+    "title": "Anexos / Evidências",
+    "upload": "Adicionar anexo",
+    "download": "Transferir",
+    "empty": "Sem anexos. Clique em «Adicionar anexo» para carregar o primeiro ficheiro.",
+    "saveFirst": "Guarde o registo antes de adicionar anexos.",
+    "deleteConfirm": {
+      "title": "Eliminar anexo?",
+      "description": "O ficheiro «{{name}}» será eliminado permanentemente. Esta ação não pode ser revertida."
+    },
+    "toast": {
+      "uploaded": "Anexo «{{name}}» carregado com sucesso.",
+      "uploadError": "Falha no upload do anexo",
+      "downloaded": "Download iniciado.",
+      "downloadError": "Falha no download",
+      "deleted": "Anexo eliminado.",
+      "deleteError": "Falha ao eliminar o anexo"
+    }
+  }
 }

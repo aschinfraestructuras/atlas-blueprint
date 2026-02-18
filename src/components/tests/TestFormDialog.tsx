@@ -32,15 +32,17 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import { Loader2 } from "lucide-react";
+import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 
 const schema = (t: (k: string) => string) =>
   z.object({
-    test_id: z.string().min(1, t("tests.form.validation.testRequired")),
-    date: z.string().min(1, t("tests.form.validation.dateRequired")),
-    status: z.string().min(1),
+    test_id:    z.string().min(1, t("tests.form.validation.testRequired")),
+    date:       z.string().min(1, t("tests.form.validation.dateRequired")),
+    status:     z.string().min(1),
     sample_ref: z.string().trim().max(100).optional().or(z.literal("")),
-    location: z.string().trim().max(200).optional().or(z.literal("")),
+    location:   z.string().trim().max(200).optional().or(z.literal("")),
   });
 
 type FormValues = z.infer<ReturnType<typeof schema>>;
@@ -55,26 +57,22 @@ interface TestFormDialogProps {
 export function TestFormDialog({ open, onOpenChange, testResult, onSuccess }: TestFormDialogProps) {
   const { t } = useTranslation();
   const { activeProject } = useProject();
-  const [submitting, setSubmitting] = useState(false);
-  const [catalog, setCatalog] = useState<TestCatalogEntry[]>([]);
+  const [submitting, setSubmitting]       = useState(false);
+  const [catalog, setCatalog]             = useState<TestCatalogEntry[]>([]);
   const [loadingCatalog, setLoadingCatalog] = useState(false);
-  const [newTestName, setNewTestName] = useState("");
-  const [newTestCode, setNewTestCode] = useState("");
-  const [creatingNew, setCreatingNew] = useState(false);
+  const [newTestName, setNewTestName]     = useState("");
+  const [newTestCode, setNewTestCode]     = useState("");
+  const [creatingNew, setCreatingNew]     = useState(false);
   const isEdit = !!testResult;
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema(t)),
     defaultValues: {
-      test_id: "",
-      date: new Date().toISOString().split("T")[0],
-      status: "pending",
-      sample_ref: "",
-      location: "",
+      test_id: "", date: new Date().toISOString().split("T")[0],
+      status: "pending", sample_ref: "", location: "",
     },
   });
 
-  // Load catalog whenever dialog opens
   useEffect(() => {
     if (open && activeProject) {
       setLoadingCatalog(true);
@@ -91,18 +89,13 @@ export function TestFormDialog({ open, onOpenChange, testResult, onSuccess }: Te
       form.reset(
         testResult
           ? {
-              test_id: testResult.test_id,
-              date: testResult.date,
-              status: testResult.status,
-              sample_ref: testResult.sample_ref ?? "",
+              test_id: testResult.test_id, date: testResult.date,
+              status: testResult.status, sample_ref: testResult.sample_ref ?? "",
               location: testResult.location ?? "",
             }
           : {
-              test_id: "",
-              date: new Date().toISOString().split("T")[0],
-              status: "pending",
-              sample_ref: "",
-              location: "",
+              test_id: "", date: new Date().toISOString().split("T")[0],
+              status: "pending", sample_ref: "", location: "",
             }
       );
       setCreatingNew(false);
@@ -144,9 +137,7 @@ export function TestFormDialog({ open, onOpenChange, testResult, onSuccess }: Te
     try {
       if (isEdit && testResult) {
         await testService.update(testResult.id, activeProject.id, {
-          test_id: values.test_id,
-          date: values.date,
-          status: values.status,
+          test_id: values.test_id, date: values.date, status: values.status,
           sample_ref: values.sample_ref || undefined,
           location: values.location || undefined,
         });
@@ -154,9 +145,7 @@ export function TestFormDialog({ open, onOpenChange, testResult, onSuccess }: Te
       } else {
         await testService.create({
           project_id: activeProject.id,
-          test_id: values.test_id,
-          date: values.date,
-          status: values.status,
+          test_id: values.test_id, date: values.date, status: values.status,
           sample_ref: values.sample_ref || undefined,
           location: values.location || undefined,
         });
@@ -178,7 +167,7 @@ export function TestFormDialog({ open, onOpenChange, testResult, onSuccess }: Te
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[520px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-base font-semibold">
             {isEdit ? t("tests.form.titleEdit") : t("tests.form.titleCreate")}
@@ -187,7 +176,7 @@ export function TestFormDialog({ open, onOpenChange, testResult, onSuccess }: Te
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-1">
-            {/* Test type from catalog */}
+            {/* Test type */}
             <FormField
               control={form.control}
               name="test_id"
@@ -247,102 +236,79 @@ export function TestFormDialog({ open, onOpenChange, testResult, onSuccess }: Te
                   />
                 </div>
                 <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    className="text-xs"
-                    onClick={() => { setCreatingNew(false); setNewTestName(""); setNewTestCode(""); }}
-                  >
+                  <Button type="button" size="sm" variant="outline" className="text-xs"
+                    onClick={() => { setCreatingNew(false); setNewTestName(""); setNewTestCode(""); }}>
                     {t("common.cancel")}
                   </Button>
-                  <Button
-                    type="button"
-                    size="sm"
-                    className="text-xs"
+                  <Button type="button" size="sm" className="text-xs"
                     onClick={handleCreateCatalogEntry}
-                    disabled={!newTestName.trim() || !newTestCode.trim() || submitting}
-                  >
+                    disabled={!newTestName.trim() || !newTestCode.trim() || submitting}>
                     {t("tests.form.addTestTypeBtn")}
                   </Button>
                 </div>
               </div>
             )}
 
+            {/* Date + Status */}
             <div className="grid grid-cols-2 gap-3">
-              <FormField
-                control={form.control}
-                name="date"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t("common.date")}</FormLabel>
-                    <FormControl>
-                      <Input type="date" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="status"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t("common.status")}</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="pending">{t("tests.status.pending")}</SelectItem>
-                        <SelectItem value="compliant">{t("tests.status.compliant")}</SelectItem>
-                        <SelectItem value="non_compliant">{t("tests.status.non_compliant")}</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <FormField control={form.control} name="date" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("common.date")}</FormLabel>
+                  <FormControl><Input type="date" {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="status" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("common.status")}</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                    <SelectContent>
+                      <SelectItem value="pending">{t("tests.status.pending")}</SelectItem>
+                      <SelectItem value="compliant">{t("tests.status.compliant")}</SelectItem>
+                      <SelectItem value="non_compliant">{t("tests.status.non_compliant")}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )} />
             </div>
 
+            {/* Sample ref + Location */}
             <div className="grid grid-cols-2 gap-3">
-              <FormField
-                control={form.control}
-                name="sample_ref"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      {t("tests.table.sampleRef")}{" "}
-                      <span className="text-xs text-muted-foreground font-normal">({t("common.optional")})</span>
-                    </FormLabel>
-                    <FormControl>
-                      <Input placeholder={t("tests.form.sampleRefPlaceholder")} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="location"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      {t("tests.table.location")}{" "}
-                      <span className="text-xs text-muted-foreground font-normal">({t("common.optional")})</span>
-                    </FormLabel>
-                    <FormControl>
-                      <Input placeholder={t("tests.form.locationPlaceholder")} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <FormField control={form.control} name="sample_ref" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    {t("tests.table.sampleRef")}{" "}
+                    <span className="text-xs text-muted-foreground font-normal">({t("common.optional")})</span>
+                  </FormLabel>
+                  <FormControl><Input placeholder={t("tests.form.sampleRefPlaceholder")} {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="location" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    {t("tests.table.location")}{" "}
+                    <span className="text-xs text-muted-foreground font-normal">({t("common.optional")})</span>
+                  </FormLabel>
+                  <FormControl><Input placeholder={t("tests.form.locationPlaceholder")} {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
             </div>
+
+            {/* ── Attachments section (only for existing records) ── */}
+            {activeProject && (
+              <>
+                <Separator />
+                <AttachmentsPanel
+                  projectId={activeProject.id}
+                  entityType="test"
+                  entityId={testResult?.id ?? null}
+                />
+              </>
+            )}
 
             <DialogFooter className="pt-2">
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={submitting}>

@@ -571,4 +571,24 @@
       "description": "Ocurrió un error inesperado. Inténtelo de nuevo."
     }
   }
+,
+  "attachments": {
+    "title": "Adjuntos / Evidencias",
+    "upload": "Añadir adjunto",
+    "download": "Descargar",
+    "empty": "Sin adjuntos. Haga clic en «Añadir adjunto» para subir el primer archivo.",
+    "saveFirst": "Guarde el registro antes de añadir adjuntos.",
+    "deleteConfirm": {
+      "title": "¿Eliminar adjunto?",
+      "description": "El archivo «{{name}}» se eliminará permanentemente. Esta acción no se puede deshacer."
+    },
+    "toast": {
+      "uploaded": "Adjunto «{{name}}» subido con éxito.",
+      "uploadError": "Error al subir el adjunto",
+      "downloaded": "Descarga iniciada.",
+      "downloadError": "Error al descargar",
+      "deleted": "Adjunto eliminado.",
+      "deleteError": "Error al eliminar el adjunto"
+    }
+  }
 }
