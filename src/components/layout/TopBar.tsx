@@ -37,6 +37,9 @@ export function TopBar({ onMobileMenuOpen }: TopBarProps) {
   const { user, signOut } = useAuth();
   const { projects, activeProject, setActiveProject, loading: projectsLoading } = useProject();
 
+  // Only show active (non-archived) projects in the selector
+  const activeProjects = projects.filter((p) => p.status !== "archived");
+
   const currentLang = LANGUAGES.find((l) => l.code === i18n.language) ?? LANGUAGES[0];
   const initials = user?.email?.slice(0, 2).toUpperCase() ?? "—";
 
@@ -82,12 +85,12 @@ export function TopBar({ onMobileMenuOpen }: TopBarProps) {
             {t("topbar.projectSelector.label")}
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          {projects.length === 0 ? (
+          {activeProjects.length === 0 ? (
             <DropdownMenuItem disabled className="text-sm text-muted-foreground">
               {t("topbar.projectSelector.noProjects")}
             </DropdownMenuItem>
           ) : (
-            projects.map((project) => (
+            activeProjects.map((project) => (
               <DropdownMenuItem
                 key={project.id}
                 onClick={() => setActiveProject(project)}
@@ -95,7 +98,7 @@ export function TopBar({ onMobileMenuOpen }: TopBarProps) {
               >
                 <div className="flex flex-col flex-1 min-w-0">
                   <span className="truncate font-medium">{project.name}</span>
-                  <span className="text-xs text-muted-foreground">{project.code}</span>
+                  <span className="text-xs text-muted-foreground font-mono">{project.code}</span>
                 </div>
                 {activeProject?.id === project.id && (
                   <Check className="h-3.5 w-3.5 text-primary flex-shrink-0" />

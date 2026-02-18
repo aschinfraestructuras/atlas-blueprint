@@ -4,12 +4,33 @@ export interface Project {
   id: string;
   code: string;
   name: string;
+  client: string | null;
   location: string | null;
+  start_date: string | null;
   status: string;
   tenant_id: string | null;
   created_by: string | null;
   created_at: string;
   updated_at: string;
+}
+
+export interface ProjectInsert {
+  name: string;
+  code: string;
+  client?: string;
+  location?: string;
+  start_date?: string;
+  status: string;
+  created_by: string;
+}
+
+export interface ProjectUpdate {
+  name?: string;
+  code?: string;
+  client?: string;
+  location?: string;
+  start_date?: string;
+  status?: string;
 }
 
 export const projectService = {
@@ -19,7 +40,55 @@ export const projectService = {
       .select("*")
       .order("created_at", { ascending: false });
     if (error) throw error;
-    return data as Project[];
+    return (data ?? []) as Project[];
+  },
+
+  async create(payload: ProjectInsert): Promise<Project> {
+    const { data, error } = await supabase
+      .from("projects")
+      .insert(payload)
+      .select()
+      .single();
+    if (error) throw error;
+    return data as Project;
+  },
+
+  async update(id: string, payload: ProjectUpdate): Promise<Project> {
+    const { data, error } = await supabase
+      .from("projects")
+      .update(payload)
+      .eq("id", id)
+      .select()
+      .single();
+    if (error) throw error;
+    return data as Project;
+  },
+
+  async archive(id: string): Promise<void> {
+    const { error } = await supabase
+      .from("projects")
+      .update({ status: "archived" })
+      .eq("id", id);
+    if (error) throw error;
+  },
+
+  async unarchive(id: string): Promise<void> {
+    const { error } = await supabase
+      .from("projects")
+      .update({ status: "active" })
+      .eq("id", id);
+    if (error) throw error;
+  },
+
+  async isCodeUnique(code: string, excludeId?: string): Promise<boolean> {
+    let query = supabase
+      .from("projects")
+      .select("id", { count: "exact", head: true })
+      .eq("code", code);
+    if (excludeId) query = query.neq("id", excludeId);
+    const { count, error } = await query;
+    if (error) throw error;
+    return (count ?? 0) === 0;
   },
 
   async getActiveCount(): Promise<number> {
