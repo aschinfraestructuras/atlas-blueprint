@@ -2,7 +2,9 @@ import { useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { useAllAttachments } from "@/hooks/useAllAttachments";
+import { useDocuments } from "@/hooks/useDocuments";
 import { attachmentService } from "@/lib/services/attachmentService";
+import { documentService } from "@/lib/services/documentService";
 import { toast } from "@/hooks/use-toast";
 import {
   FileText, Download, ExternalLink, Loader2, Paperclip, Search,
@@ -54,41 +56,106 @@ const ALL_ENTITY_TYPES = [
   "subcontractors", "survey", "technical_office", "ppi",
 ];
 
+// ─── Unified file row ─────────────────────────────────────────────────────────
+
+interface FileRow {
+  id: string;
+  file_name: string;
+  file_path: string;
+  file_size: number | null;
+  entity_type: string;
+  project_id: string;
+  entity_id: string;
+  created_at: string;
+  /** Whether to use documentService or attachmentService for the signed URL */
+  source: "document_main" | "attachment";
+}
+
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export default function DocumentsPage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
-  const { data: attachments, loading, error, refetch } = useAllAttachments(activeProject?.id);
+
+  // All generic attachments
+  const { data: attachments, loading: loadingAtt, error: errorAtt } = useAllAttachments(activeProject?.id);
+  // Documents with a file_path (main document file)
+  const { data: documents, loading: loadingDocs, error: errorDocs } = useDocuments();
+
+  const loading = loadingAtt || loadingDocs;
+  const error   = errorAtt || errorDocs;
 
   const [search, setSearch]           = useState("");
   const [entityFilter, setEntityFilter] = useState("all");
   const [actionId, setActionId]        = useState<string | null>(null);
 
+  // ── Build unified list ────────────────────────────────────────────────────
+  const docRows: FileRow[] = (documents ?? [])
+    .filter((d) => !!d.file_path)
+    .map((d) => ({
+      id:          `doc_${d.id}`,
+      file_name:   d.file_name ?? d.file_path!.split("/").pop() ?? "document",
+      file_path:   d.file_path!,
+      file_size:   d.file_size,
+      entity_type: "documents",
+      project_id:  d.project_id,
+      entity_id:   d.id,
+      created_at:  d.created_at,
+      source:      "document_main" as const,
+    }));
+
+  const attRows: FileRow[] = (attachments ?? []).map((a: Attachment) => ({
+    id:          a.id,
+    file_name:   a.file_name,
+    file_path:   a.file_path,
+    file_size:   a.file_size,
+    entity_type: a.entity_type,
+    project_id:  a.project_id,
+    entity_id:   a.entity_id,
+    created_at:  a.created_at,
+    source:      "attachment" as const,
+  }));
+
+  // Merge: doc main files first, then attachments; deduplicate by file_path
+  const seen = new Set<string>();
+  const allRows: FileRow[] = [...docRows, ...attRows].filter((r) => {
+    if (seen.has(r.file_path)) return false;
+    seen.add(r.file_path);
+    return true;
+  });
+
   // ── Filtered list ─────────────────────────────────────────────────────────
-  const filtered = attachments.filter((a) => {
-    const matchEntity = entityFilter === "all" || a.entity_type === entityFilter;
+  const filtered = allRows.filter((r) => {
+    const matchEntity = entityFilter === "all" || r.entity_type === entityFilter;
     const matchSearch = !search
-      || a.file_name.toLowerCase().includes(search.toLowerCase())
-      || a.entity_type.toLowerCase().includes(search.toLowerCase());
+      || r.file_name.toLowerCase().includes(search.toLowerCase())
+      || r.entity_type.toLowerCase().includes(search.toLowerCase());
     return matchEntity && matchSearch;
   });
 
+  // ── Signed URL helper ─────────────────────────────────────────────────────
+  const getSignedUrl = async (row: FileRow): Promise<string> => {
+    if (row.source === "document_main") {
+      return documentService.getSignedUrl(row.file_path, row.project_id, row.entity_id);
+    }
+    return attachmentService.getSignedUrl(
+      row.file_path,
+      row.project_id,
+      row.entity_type as Parameters<typeof attachmentService.getSignedUrl>[2],
+      row.entity_id,
+      row.file_name
+    );
+  };
+
   // ── Actions ───────────────────────────────────────────────────────────────
 
-  const handleDownload = useCallback(async (att: Attachment) => {
-    setActionId(att.id);
+  const handleDownload = useCallback(async (row: FileRow) => {
+    setActionId(row.id);
     try {
-      const url = await attachmentService.getSignedUrl(
-        att.file_path,
-        att.project_id,
-        att.entity_type as Parameters<typeof attachmentService.getSignedUrl>[2],
-        att.entity_id,
-        att.file_name
-      );
+      const url = await getSignedUrl(row);
       const a = window.document.createElement("a");
       a.href = url;
-      a.download = att.file_name;
+      a.download = row.file_name;
       a.target = "_blank";
       a.rel = "noopener noreferrer";
       a.click();
@@ -102,18 +169,13 @@ export default function DocumentsPage() {
     } finally {
       setActionId(null);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [t]);
 
-  const handleView = useCallback(async (att: Attachment) => {
-    setActionId(att.id + "_view");
+  const handleView = useCallback(async (row: FileRow) => {
+    setActionId(row.id + "_view");
     try {
-      const url = await attachmentService.getSignedUrl(
-        att.file_path,
-        att.project_id,
-        att.entity_type as Parameters<typeof attachmentService.getSignedUrl>[2],
-        att.entity_id,
-        att.file_name
-      );
+      const url = await getSignedUrl(row);
       window.open(url, "_blank", "noopener,noreferrer");
     } catch (err) {
       toast({
@@ -124,11 +186,11 @@ export default function DocumentsPage() {
     } finally {
       setActionId(null);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [t]);
 
   if (!activeProject) return <NoProjectBanner />;
 
-  // ── Entity-type label helper ───────────────────────────────────────────────
   const entityLabel = (type: string) =>
     t(`documents.entityTypes.${type}`, { defaultValue: type.replace(/_/g, " ") });
 
@@ -146,11 +208,10 @@ export default function DocumentsPage() {
               {t("pages.documents.subtitle")}
             </p>
           </div>
-          {/* summary chip */}
           {!loading && (
             <Badge variant="secondary" className="gap-1.5 px-3 py-1 text-sm">
               <Paperclip className="h-3.5 w-3.5" />
-              {attachments.length} {t("documents.allFiles")}
+              {allRows.length} {t("documents.allFiles")}
             </Badge>
           )}
         </div>
@@ -224,14 +285,14 @@ export default function DocumentsPage() {
               </TableHeader>
 
               <TableBody>
-                {filtered.map((att) => {
-                  const ext        = getExt(att.file_name);
-                  const isPdf      = ext === "pdf";
-                  const isActing   = actionId === att.id;
-                  const isViewing  = actionId === att.id + "_view";
+                {filtered.map((row) => {
+                  const ext       = getExt(row.file_name);
+                  const isPdf     = ext === "pdf";
+                  const isActing  = actionId === row.id;
+                  const isViewing = actionId === row.id + "_view";
 
                   return (
-                    <TableRow key={att.id} className="hover:bg-muted/20 transition-colors">
+                    <TableRow key={row.id} className="hover:bg-muted/20 transition-colors">
 
                       {/* File name */}
                       <TableCell className="font-medium text-sm text-foreground">
@@ -242,8 +303,8 @@ export default function DocumentsPage() {
                               {ext}
                             </span>
                           )}
-                          <span className="truncate max-w-[260px] text-sm" title={att.file_name}>
-                            {att.file_name}
+                          <span className="truncate max-w-[260px] text-sm" title={row.file_name}>
+                            {row.file_name}
                           </span>
                         </div>
                       </TableCell>
@@ -252,43 +313,41 @@ export default function DocumentsPage() {
                       <TableCell>
                         <Badge
                           variant="secondary"
-                          className={`text-xs ${ENTITY_COLORS[att.entity_type] ?? "bg-muted text-muted-foreground"}`}
+                          className={`text-xs ${ENTITY_COLORS[row.entity_type] ?? "bg-muted text-muted-foreground"}`}
                         >
-                          {entityLabel(att.entity_type)}
+                          {entityLabel(row.entity_type)}
                         </Badge>
                       </TableCell>
 
                       {/* Size */}
                       <TableCell className="text-sm text-muted-foreground tabular-nums">
-                        {formatBytes(att.file_size)}
+                        {formatBytes(row.file_size)}
                       </TableCell>
 
                       {/* Date */}
                       <TableCell className="text-sm text-muted-foreground">
-                        {new Date(att.created_at).toLocaleDateString()}
+                        {new Date(row.created_at).toLocaleDateString()}
                       </TableCell>
 
                       {/* Actions */}
                       <TableCell>
                         <div className="flex items-center gap-0.5 justify-end">
-                          {/* View (PDF only) */}
-                          {isPdf && (
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button
-                                  variant="ghost" size="icon"
-                                  className="h-7 w-7 text-muted-foreground hover:text-primary"
-                                  onClick={() => handleView(att)}
-                                  disabled={isViewing}
-                                >
-                                  {isViewing
-                                    ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                                    : <ExternalLink className="h-3.5 w-3.5" />}
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent side="top">{t("documents.actions.view")}</TooltipContent>
-                            </Tooltip>
-                          )}
+                          {/* View in new tab (PDF or all files) */}
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost" size="icon"
+                                className="h-7 w-7 text-muted-foreground hover:text-primary"
+                                onClick={() => handleView(row)}
+                                disabled={isViewing || isActing}
+                              >
+                                {isViewing
+                                  ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                  : <ExternalLink className="h-3.5 w-3.5" />}
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent side="top">{t("documents.actions.view")}</TooltipContent>
+                          </Tooltip>
 
                           {/* Download */}
                           <Tooltip>
@@ -296,8 +355,8 @@ export default function DocumentsPage() {
                               <Button
                                 variant="ghost" size="icon"
                                 className="h-7 w-7 text-muted-foreground hover:text-primary"
-                                onClick={() => handleDownload(att)}
-                                disabled={isActing}
+                                onClick={() => handleDownload(row)}
+                                disabled={isActing || isViewing}
                               >
                                 {isActing
                                   ? <Loader2 className="h-3.5 w-3.5 animate-spin" />

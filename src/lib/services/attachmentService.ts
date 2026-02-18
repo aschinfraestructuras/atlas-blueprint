@@ -47,6 +47,10 @@ export function slugifyFilename(raw: string): string {
 
 /**
  * Canonical path: {project_id}/{entity_type}/{entity_id}/{ts}_{safe_name}
+ *
+ * The first segment MUST be the project UUID — RLS uses storage_path_project_id()
+ * which calls split_part(name, '/', 1) to extract it.
+ * Do NOT add any prefix before the project_id.
  */
 export function buildAttachmentPath(
   projectId: string,
@@ -56,6 +60,18 @@ export function buildAttachmentPath(
 ): string {
   const safe = slugifyFilename(fileName);
   return `${projectId}/${entityType}/${entityId}/${Date.now()}_${safe}`;
+}
+
+/**
+ * Generate a signed URL for any storage path in qms-files.
+ * Convenience wrapper usable outside the full attachment context.
+ */
+export async function getSignedUrlForPath(storagePath: string, expiresIn = 3600): Promise<string> {
+  const { data, error } = await supabase.storage
+    .from(BUCKET)
+    .createSignedUrl(storagePath, expiresIn);
+  if (error) throw new Error(`Falha a gerar URL: ${error.message}`);
+  return data.signedUrl;
 }
 
 // ─── Service ──────────────────────────────────────────────────────────────────

@@ -314,6 +314,9 @@
       "revisionPlaceholder": "ex: A, 1, 01",
       "fileUrl": "URL do ficheiro",
       "fileUrlPlaceholder": "https://…",
+      "mainFile": "Ficheiro principal",
+      "attachFile": "Anexar ficheiro…",
+      "replaceFile": "Substituir ficheiro…",
       "createBtn": "Criar documento",
       "lockedNotice": "Este documento está bloqueado para edição. Apenas anexos podem ser adicionados.",
       "validation": {
@@ -325,6 +328,7 @@
     "toast": {
       "created": "Documento criado com sucesso.",
       "updated": "Documento atualizado com sucesso.",
+      "fileUploaded": "Ficheiro «{{name}}» carregado com sucesso.",
       "uploaded": "Ficheiro «{{name}}» carregado com sucesso.",
       "uploadError": "Falha no upload",
       "downloadError": "Falha no download",
@@ -335,6 +339,7 @@
       "status_rejected": "Documento rejeitado.",
       "status_draft": "Documento voltou a Rascunho."
     }
+
   },
   "tests": {
     "newTest": "Novo Ensaio",

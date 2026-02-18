@@ -309,7 +309,11 @@
       "revisionPlaceholder": "ej: A, 1, 01",
       "fileUrl": "URL del archivo",
       "fileUrlPlaceholder": "https://…",
+      "mainFile": "Archivo principal",
+      "attachFile": "Adjuntar archivo…",
+      "replaceFile": "Reemplazar archivo…",
       "createBtn": "Crear documento",
+      "lockedNotice": "Este documento está bloqueado para edición. Solo se pueden añadir adjuntos.",
       "validation": {
         "titleRequired": "El título es obligatorio.",
         "typeRequired": "El tipo es obligatorio.",
@@ -319,10 +323,16 @@
     "toast": {
       "created": "Documento creado con éxito.",
       "updated": "Documento actualizado con éxito.",
+      "fileUploaded": "Archivo «{{name}}» subido con éxito.",
       "uploaded": "Archivo «{{name}}» subido con éxito.",
       "uploadError": "Error al subir el archivo",
       "downloadError": "Error al descargar el archivo",
-      "error": "Ocurrió un error. Inténtelo de nuevo."
+      "error": "Ocurrió un error. Inténtelo de nuevo.",
+      "status_submitted": "Documento enviado para revisión.",
+      "status_in_review": "Documento en revisión.",
+      "status_approved": "Documento aprobado.",
+      "status_rejected": "Documento rechazado.",
+      "status_draft": "Documento vuelto a Borrador."
     }
   },
   "tests": {
