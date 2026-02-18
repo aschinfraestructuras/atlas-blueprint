@@ -188,7 +188,69 @@
     },
     "settings": {
       "title": "Configuración",
-      "subtitle": "Ajustes de la plataforma"
+      "subtitle": "Ajustes de la plataforma",
+      "system": "Sistema",
+      "version": "v0.1 MVP",
+      "comingSoon": "Próximamente",
+      "sections": {
+        "project": {
+          "title": "Configuración del Proyecto",
+          "subtitle": "Datos del proyecto activo y configuración general",
+          "badgeActive": "Activo",
+          "activeProject": "Proyecto activo",
+          "noProject": "Ningún proyecto seleccionado",
+          "location": "Ubicación",
+          "notifications": "Notificaciones del proyecto",
+          "notificationsDesc": "Alertas de NC, ensayos y documentos",
+          "exportData": "Exportar datos del proyecto",
+          "exportDataDesc": "Exportar registros en CSV / PDF"
+        },
+        "profile": {
+          "title": "Perfil de Usuario",
+          "subtitle": "Su cuenta y credenciales de acceso",
+          "changeEmail": "Cambiar correo",
+          "changeEmailDesc": "Actualizar la dirección de correo de la cuenta",
+          "changePassword": "Cambiar contraseña",
+          "changePasswordDesc": "Actualizar credenciales de acceso"
+        },
+        "users": {
+          "title": "Gestión de Usuarios",
+          "subtitle": "Miembros del equipo e invitaciones",
+          "invite": "Invitar usuario",
+          "inviteDesc": "Enviar invitación por correo a la plataforma",
+          "members": "Lista de miembros",
+          "membersDesc": "Gestionar usuarios y accesos por proyecto",
+          "removeAccess": "Eliminar acceso",
+          "removeAccessDesc": "Revocar acceso de un miembro"
+        },
+        "permissions": {
+          "title": "Perfiles y Permisos",
+          "subtitle": "Control de acceso basado en roles (RBAC)",
+          "roles": {
+            "super_admin": "Acceso total a la plataforma y todos los tenants",
+            "tenant_admin": "Gestión completa de la organización",
+            "project_manager": "Gestión completa del proyecto asignado",
+            "quality_manager": "Gestión documental, ensayos y NCs",
+            "technician": "Registro de ensayos y consulta de documentos",
+            "viewer": "Solo lectura, sin permiso de escritura"
+          }
+        },
+        "preferences": {
+          "title": "Preferencias",
+          "subtitle": "Configuración de la interfaz y localización",
+          "language": "Idioma",
+          "languageDesc": "Idioma de la interfaz",
+          "languageValue": "Español",
+          "timezone": "Zona horaria",
+          "timezoneDesc": "Ajustar hora local",
+          "theme": "Tema",
+          "themeDesc": "Modo claro / oscuro"
+        }
+      },
+      "roles": {
+        "technician": "Técnico",
+        "viewer": "Visualizador"
+      }
     },
     "technicalOffice": {
       "title": "Oficina Técnica",
