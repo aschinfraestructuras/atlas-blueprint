@@ -1,11 +1,25 @@
 import { supabase } from "@/integrations/supabase/client";
 import { auditService } from "./auditService";
 
+// ─── Status constants (must match DB check constraint) ────────────────────────
+
+/** Values allowed by the `test_results_status_check` constraint */
+export const TEST_RESULT_STATUSES = ["pending", "pass", "fail", "inconclusive"] as const;
+export type TestResultStatus = typeof TEST_RESULT_STATUSES[number];
+
+/** Human-readable labels for the test result status */
+export const TEST_RESULT_STATUS_LABELS: Record<TestResultStatus, string> = {
+  pending:     "tests.status.pending",
+  pass:        "tests.status.pass",
+  fail:        "tests.status.fail",
+  inconclusive:"tests.status.inconclusive",
+};
+
 export interface TestResult {
   id: string;
   project_id: string;
   test_id: string;
-  status: string;
+  status: TestResultStatus | string;
   sample_ref: string | null;
   result: Record<string, unknown> | null;
   date: string;
@@ -36,7 +50,7 @@ export interface TestResultInput {
   project_id: string;
   test_id: string;
   date: string;
-  status?: string;
+  status?: TestResultStatus;
   sample_ref?: string;
   location?: string;
   supplier_id?: string;

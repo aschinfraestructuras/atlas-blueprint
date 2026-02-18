@@ -323,6 +323,8 @@
     "toast": {
       "created": "Documento creado con éxito.",
       "updated": "Documento actualizado con éxito.",
+      "deleted": "Documento eliminado.",
+      "deleteError": "Error al eliminar el documento.",
       "fileUploaded": "Archivo «{{name}}» subido con éxito.",
       "uploaded": "Archivo «{{name}}» subido con éxito.",
       "uploadError": "Error al subir el archivo",
@@ -333,6 +335,10 @@
       "status_approved": "Documento aprobado.",
       "status_rejected": "Documento rechazado.",
       "status_draft": "Documento vuelto a Borrador."
+    },
+    "deleteConfirm": {
+      "title": "¿Eliminar documento?",
+      "description": "El documento «{{name}}» y su archivo serán eliminados permanentemente. Esta acción no se puede revertir."
     }
   },
   "tests": {
@@ -344,8 +350,9 @@
     },
     "status": {
       "pending": "Pendiente",
-      "compliant": "Conforme",
-      "non_compliant": "No Conforme"
+      "pass": "Conforme",
+      "fail": "No Conforme",
+      "inconclusive": "Inconclusivo"
     },
     "unknownTest": "Ensayo desconocido",
     "form": {
