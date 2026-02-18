@@ -28,9 +28,9 @@ const SEVERITY_COLORS: Record<string, string> = {
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  open: "bg-destructive/10 text-destructive",
-  under_review: "bg-primary/10 text-primary",
-  closed: "bg-muted text-muted-foreground",
+  open:        "bg-destructive/10 text-destructive",
+  in_progress: "bg-primary/10 text-primary",
+  closed:      "bg-muted text-muted-foreground",
 };
 
 export default function NonConformitiesPage() {
