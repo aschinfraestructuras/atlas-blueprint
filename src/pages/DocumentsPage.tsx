@@ -1,7 +1,8 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { useDocuments } from "@/hooks/useDocuments";
-import { FileText, Tag } from "lucide-react";
+import { FileText, Plus, Pencil } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -12,9 +13,12 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/EmptyState";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
+import { DocumentFormDialog } from "@/components/documents/DocumentFormDialog";
 import { cn } from "@/lib/utils";
+import type { Document } from "@/lib/services/documentService";
 
 const STATUS_COLORS: Record<string, string> = {
   draft: "bg-muted text-muted-foreground",
@@ -26,17 +30,35 @@ const STATUS_COLORS: Record<string, string> = {
 export default function DocumentsPage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
-  const { data: documents, loading, error } = useDocuments();
+  const { data: documents, loading, error, refetch } = useDocuments();
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingDoc, setEditingDoc] = useState<Document | null>(null);
 
   if (!activeProject) return <NoProjectBanner />;
 
+  const handleEdit = (doc: Document) => {
+    setEditingDoc(doc);
+    setDialogOpen(true);
+  };
+
+  const handleNew = () => {
+    setEditingDoc(null);
+    setDialogOpen(true);
+  };
+
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
-      <div className="space-y-1">
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">
-          {t("pages.documents.title")}
-        </h1>
-        <p className="text-sm text-muted-foreground">{t("pages.documents.subtitle")}</p>
+      <div className="flex items-center justify-between">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">
+            {t("pages.documents.title")}
+          </h1>
+          <p className="text-sm text-muted-foreground">{t("pages.documents.subtitle")}</p>
+        </div>
+        <Button onClick={handleNew} size="sm" className="gap-1.5">
+          <Plus className="h-3.5 w-3.5" />
+          {t("documents.newDocument")}
+        </Button>
       </div>
 
       {error && (
@@ -79,6 +101,7 @@ export default function DocumentsPage() {
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   {t("common.date")}
                 </TableHead>
+                <TableHead className="w-10" />
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -90,18 +113,28 @@ export default function DocumentsPage() {
                       <span className="truncate max-w-[220px]">{doc.title}</span>
                     </div>
                   </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">{doc.doc_type}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground">
+                    {t(`documents.docTypes.${doc.doc_type}`, { defaultValue: doc.doc_type })}
+                  </TableCell>
                   <TableCell className="text-sm text-muted-foreground">{doc.revision ?? doc.version}</TableCell>
                   <TableCell>
-                    <Badge
-                      variant="secondary"
-                      className={cn("text-xs", STATUS_COLORS[doc.status] ?? "")}
-                    >
+                    <Badge variant="secondary" className={cn("text-xs", STATUS_COLORS[doc.status] ?? "")}>
                       {t(`documents.status.${doc.status}`)}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
                     {new Date(doc.created_at).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                      onClick={() => handleEdit(doc)}
+                      title={t("common.edit")}
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
@@ -109,6 +142,13 @@ export default function DocumentsPage() {
           </Table>
         </div>
       )}
+
+      <DocumentFormDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        document={editingDoc}
+        onSuccess={refetch}
+      />
     </div>
   );
 }
