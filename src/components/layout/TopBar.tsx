@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/contexts/AuthContext";
+import { useProject } from "@/contexts/ProjectContext";
 import {
   LogOut,
   User,
@@ -9,6 +10,7 @@ import {
   ChevronDown,
   Building2,
   Check,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,13 +28,6 @@ const LANGUAGES = [
   { code: "es", label: "ES", name: "Español" },
 ];
 
-// Mock projects — replace with real data when Projects module is built
-const MOCK_PROJECTS = [
-  { id: "p1", code: "OBR-001", name: "Obra Norte A2" },
-  { id: "p2", code: "OBR-002", name: "Viaduto Sul" },
-  { id: "p3", code: "OBR-003", name: "Edifício Central" },
-];
-
 interface TopBarProps {
   onMobileMenuOpen: () => void;
 }
@@ -40,7 +35,7 @@ interface TopBarProps {
 export function TopBar({ onMobileMenuOpen }: TopBarProps) {
   const { t, i18n } = useTranslation();
   const { user, signOut } = useAuth();
-  const [activeProject, setActiveProject] = useState(MOCK_PROJECTS[0]);
+  const { projects, activeProject, setActiveProject, loading: projectsLoading } = useProject();
 
   const currentLang = LANGUAGES.find((l) => l.code === i18n.language) ?? LANGUAGES[0];
   const initials = user?.email?.slice(0, 2).toUpperCase() ?? "—";
@@ -65,32 +60,49 @@ export function TopBar({ onMobileMenuOpen }: TopBarProps) {
             variant="outline"
             size="sm"
             className="gap-2 h-8 max-w-[240px] font-normal text-sm border-border/70"
+            disabled={projectsLoading}
           >
-            <Building2 className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-            <span className="truncate text-foreground">{activeProject.name}</span>
+            {projectsLoading ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground flex-shrink-0" />
+            ) : (
+              <Building2 className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+            )}
+            <span className="truncate text-foreground">
+              {projectsLoading
+                ? t("common.loading")
+                : activeProject
+                ? activeProject.name
+                : t("topbar.projectSelector.placeholder")}
+            </span>
             <ChevronDown className="h-3 w-3 text-muted-foreground flex-shrink-0 ml-auto" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-60">
+        <DropdownMenuContent align="start" className="w-64">
           <DropdownMenuLabel className="text-xs text-muted-foreground font-medium">
             {t("topbar.projectSelector.label")}
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          {MOCK_PROJECTS.map((project) => (
-            <DropdownMenuItem
-              key={project.id}
-              onClick={() => setActiveProject(project)}
-              className="gap-2 text-sm"
-            >
-              <div className="flex flex-col flex-1 min-w-0">
-                <span className="truncate font-medium">{project.name}</span>
-                <span className="text-xs text-muted-foreground">{project.code}</span>
-              </div>
-              {activeProject.id === project.id && (
-                <Check className="h-3.5 w-3.5 text-primary flex-shrink-0" />
-              )}
+          {projects.length === 0 ? (
+            <DropdownMenuItem disabled className="text-sm text-muted-foreground">
+              {t("topbar.projectSelector.noProjects")}
             </DropdownMenuItem>
-          ))}
+          ) : (
+            projects.map((project) => (
+              <DropdownMenuItem
+                key={project.id}
+                onClick={() => setActiveProject(project)}
+                className="gap-2 text-sm"
+              >
+                <div className="flex flex-col flex-1 min-w-0">
+                  <span className="truncate font-medium">{project.name}</span>
+                  <span className="text-xs text-muted-foreground">{project.code}</span>
+                </div>
+                {activeProject?.id === project.id && (
+                  <Check className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+                )}
+              </DropdownMenuItem>
+            ))
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
 
