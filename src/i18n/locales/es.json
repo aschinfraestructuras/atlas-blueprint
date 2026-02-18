@@ -109,7 +109,16 @@
       "tests": "Ensayos",
       "ncs": "No Conformidades",
       "suppliers": "Proveedores",
-      "avgAging": "Aging medio: {{days}} días"
+      "avgAging": "Aging medio: {{days}} días",
+      "avgAgingTitle": "Aging Medio NC",
+      "days": "días abiertos",
+      "openNcCount": "{{count}} NC abiertas",
+      "noOpenNcs": "Sin NCs abiertas"
+    },
+    "charts": {
+      "tests": "Ensayos",
+      "suppliers": "Proveedores",
+      "ncTrend": "Tendencia de NC — últimos 6 meses"
     },
     "recentActivity": "Actividad Reciente",
     "quickActions": "Acciones Rápidas",

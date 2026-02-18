@@ -38,6 +38,13 @@ All colors MUST be HSL.
 
     --radius: 0.5rem;
 
+    /* ── Dashboard semantic colors ────────────────── */
+    --chart-blue: 217 91% 50%;
+    --chart-green: 142 71% 45%;
+    --chart-red: 0 84% 60%;
+    --chart-orange: 25 95% 53%;
+    --chart-muted: 215 16% 47%;
+
     --sidebar-background: 0 0% 98%;
 
     --sidebar-foreground: 240 5.3% 26.1%;
