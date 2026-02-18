@@ -4,7 +4,6 @@ import { useProject } from "@/contexts/ProjectContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useDocuments } from "@/hooks/useDocuments";
 import { documentService } from "@/lib/services/documentService";
-import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { toast } from "@/hooks/use-toast";
 import {
   FileText, Plus, Pencil, Upload, Download, ExternalLink, Loader2,
@@ -24,26 +23,29 @@ import { DocumentFormDialog } from "@/components/documents/DocumentFormDialog";
 import { cn } from "@/lib/utils";
 import type { Document } from "@/lib/services/documentService";
 
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
 const STATUS_COLORS: Record<string, string> = {
-  draft: "bg-muted text-muted-foreground",
+  draft:     "bg-muted text-muted-foreground",
   submitted: "bg-primary/10 text-primary",
-  approved: "bg-primary/15 text-primary",
-  rejected: "bg-destructive/10 text-destructive",
+  approved:  "bg-primary/15 text-primary",
+  rejected:  "bg-destructive/10 text-destructive",
 };
 
 function formatBytes(bytes: number | null | undefined): string {
-  if (!bytes) return "—";
+  if (!bytes) return "";
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-function getExtension(path: string | null): string {
-  if (!path) return "";
-  const parts = path.split(".");
-  if (parts.length < 2) return "";
-  return parts[parts.length - 1].toLowerCase();
+function getExtension(name: string | null | undefined): string {
+  if (!name) return "";
+  const parts = name.split(".");
+  return parts.length > 1 ? parts[parts.length - 1].toLowerCase() : "";
 }
+
+// ─── Component ───────────────────────────────────────────────────────────────
 
 export default function DocumentsPage() {
   const { t } = useTranslation();
@@ -51,18 +53,17 @@ export default function DocumentsPage() {
   const { user } = useAuth();
   const { data: documents, loading, error, refetch } = useDocuments();
 
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingDoc, setEditingDoc] = useState<Document | null>(null);
-  // Track which doc is currently uploading/downloading
-  const [uploadingId, setUploadingId] = useState<string | null>(null);
+  const [dialogOpen, setDialogOpen]     = useState(false);
+  const [editingDoc, setEditingDoc]     = useState<Document | null>(null);
+  const [uploadingId, setUploadingId]   = useState<string | null>(null);
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
 
-  // Hidden file input — reused for every row
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  // Hidden file input shared across all rows
+  const fileInputRef  = useRef<HTMLInputElement>(null);
   const pendingDocRef = useRef<Document | null>(null);
 
   const handleEdit = (doc: Document) => { setEditingDoc(doc); setDialogOpen(true); };
-  const handleNew = () => { setEditingDoc(null); setDialogOpen(true); };
+  const handleNew  = () => { setEditingDoc(null); setDialogOpen(true); };
 
   const triggerUpload = useCallback((doc: Document) => {
     pendingDocRef.current = doc;
@@ -71,22 +72,20 @@ export default function DocumentsPage() {
 
   const handleFileSelected = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    const doc = pendingDocRef.current;
+    const doc  = pendingDocRef.current;
     if (!file || !doc || !activeProject || !user) return;
-
-    // Reset input so the same file can be re-selected if needed
-    e.target.value = "";
+    e.target.value = ""; // allow re-selection of the same file
 
     setUploadingId(doc.id);
     try {
       await documentService.uploadFile(file, activeProject.id, doc.id, user.id);
-      toast({ title: t("documents.toast.uploaded") });
+      toast({ title: t("documents.toast.uploaded", { name: file.name }) });
       refetch();
     } catch (err) {
-      const info = classifySupabaseError(err);
+      const raw = err instanceof Error ? err.message : String(err);
       toast({
-        title: t(info.titleKey),
-        description: info.descriptionKey ? t(info.descriptionKey) : info.raw,
+        title: t("documents.toast.uploadError"),
+        description: raw,
         variant: "destructive",
       });
     } finally {
@@ -96,53 +95,50 @@ export default function DocumentsPage() {
   }, [activeProject, user, refetch, t]);
 
   const handleDownload = useCallback(async (doc: Document) => {
-    if (!doc.file_url) return;
+    const path = doc.file_path ?? doc.file_url; // fallback for legacy rows
+    if (!path) return;
     setDownloadingId(doc.id);
     try {
-      const signedUrl = await documentService.getSignedUrl(doc.file_url);
-      // Trigger download via temporary anchor
+      const signedUrl = await documentService.getSignedUrl(path, activeProject?.id, doc.id);
       const a = window.document.createElement("a");
       a.href = signedUrl;
-      a.download = doc.file_url.split("/").pop() ?? doc.title;
+      a.download = doc.file_name ?? path.split("/").pop() ?? doc.title;
       a.target = "_blank";
       a.rel = "noopener noreferrer";
       a.click();
+      await auditDownload(doc);
     } catch (err) {
-      const info = classifySupabaseError(err);
-      toast({
-        title: t(info.titleKey),
-        description: info.descriptionKey ? t(info.descriptionKey) : info.raw,
-        variant: "destructive",
-      });
+      const raw = err instanceof Error ? err.message : String(err);
+      toast({ title: t("documents.toast.downloadError"), description: raw, variant: "destructive" });
     } finally {
       setDownloadingId(null);
     }
-  }, [t]);
+  }, [activeProject, t]);
 
   const handleView = useCallback(async (doc: Document) => {
-    if (!doc.file_url) return;
+    const path = doc.file_path ?? doc.file_url;
+    if (!path) return;
     setDownloadingId(doc.id);
     try {
-      const signedUrl = await documentService.getSignedUrl(doc.file_url);
+      const signedUrl = await documentService.getSignedUrl(path, activeProject?.id, doc.id);
       window.open(signedUrl, "_blank", "noopener,noreferrer");
     } catch (err) {
-      const info = classifySupabaseError(err);
-      toast({
-        title: t(info.titleKey),
-        description: info.descriptionKey ? t(info.descriptionKey) : info.raw,
-        variant: "destructive",
-      });
+      const raw = err instanceof Error ? err.message : String(err);
+      toast({ title: t("documents.toast.downloadError"), description: raw, variant: "destructive" });
     } finally {
       setDownloadingId(null);
     }
-  }, [t]);
+  }, [activeProject, t]);
+
+  // No-op helper (audit is already handled inside getSignedUrl)
+  const auditDownload = async (_doc: Document) => { /* logged in service */ };
 
   if (!activeProject) return <NoProjectBanner />;
 
   return (
     <TooltipProvider>
       <div className="space-y-6 max-w-6xl mx-auto">
-        {/* Hidden file input shared across all rows */}
+        {/* Hidden file input – shared across all rows */}
         <input
           ref={fileInputRef}
           type="file"
@@ -151,6 +147,7 @@ export default function DocumentsPage() {
           onChange={handleFileSelected}
         />
 
+        {/* Header */}
         <div className="flex items-center justify-between">
           <div className="space-y-1">
             <h1 className="text-2xl font-bold tracking-tight text-foreground">
@@ -164,12 +161,14 @@ export default function DocumentsPage() {
           </Button>
         </div>
 
+        {/* Error banner */}
         {error && (
           <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
             {error}
           </div>
         )}
 
+        {/* Loading skeletons */}
         {loading ? (
           <div className="rounded-xl border border-border overflow-hidden">
             <div className="divide-y divide-border">
@@ -207,47 +206,73 @@ export default function DocumentsPage() {
                   <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                     {t("common.date")}
                   </TableHead>
-                  <TableHead className="w-[120px]" />
+                  <TableHead className="w-[130px]" />
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {documents.map((doc) => {
-                  const ext = getExtension(doc.file_url);
-                  const isPdf = ext === "pdf";
-                  const hasFile = !!doc.file_url;
+                  const storagePath = doc.file_path ?? doc.file_url; // support legacy rows
+                  const hasFile     = !!storagePath;
+                  const ext         = getExtension(doc.file_name ?? storagePath);
+                  const isPdf       = ext === "pdf";
                   const isUploading = uploadingId === doc.id;
                   const isDownloading = downloadingId === doc.id;
 
                   return (
                     <TableRow key={doc.id} className="hover:bg-muted/20 transition-colors">
+                      {/* Title */}
                       <TableCell className="font-medium text-sm text-foreground">
                         <div className="flex items-center gap-2">
                           <FileText className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
                           <span className="truncate max-w-[200px]">{doc.title}</span>
                         </div>
                       </TableCell>
+
+                      {/* Type */}
                       <TableCell className="text-sm text-muted-foreground">
                         {t(`documents.docTypes.${doc.doc_type}`, { defaultValue: doc.doc_type })}
                       </TableCell>
+
+                      {/* Revision */}
                       <TableCell className="text-sm text-muted-foreground">
                         {doc.revision ?? doc.version}
                       </TableCell>
+
+                      {/* Status badge */}
                       <TableCell>
                         <Badge variant="secondary" className={cn("text-xs", STATUS_COLORS[doc.status] ?? "")}>
                           {t(`documents.status.${doc.status}`)}
                         </Badge>
                       </TableCell>
+
+                      {/* File info */}
                       <TableCell className="text-sm text-muted-foreground">
                         {hasFile ? (
-                          <span className="inline-flex items-center gap-1 rounded bg-muted px-1.5 py-0.5 text-xs font-mono uppercase">
-                            {ext || "—"}
-                          </span>
+                          <div className="flex items-center gap-1.5">
+                            {ext && (
+                              <span className="inline-flex items-center gap-1 rounded bg-muted px-1.5 py-0.5 text-xs font-mono uppercase">
+                                {ext}
+                              </span>
+                            )}
+                            {doc.file_name && (
+                              <span className="truncate max-w-[120px] text-xs text-muted-foreground" title={doc.file_name}>
+                                {doc.file_name}
+                              </span>
+                            )}
+                            {doc.file_size && (
+                              <span className="text-xs text-muted-foreground/60">
+                                {formatBytes(doc.file_size)}
+                              </span>
+                            )}
+                          </div>
                         ) : (
                           <span className="text-xs text-muted-foreground/60 italic">
                             {t("documents.noFile")}
                           </span>
                         )}
                       </TableCell>
+
+                      {/* Created at */}
                       <TableCell className="text-sm text-muted-foreground">
                         {new Date(doc.created_at).toLocaleDateString()}
                       </TableCell>
@@ -259,8 +284,7 @@ export default function DocumentsPage() {
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <Button
-                                variant="ghost"
-                                size="icon"
+                                variant="ghost" size="icon"
                                 className="h-7 w-7 text-muted-foreground hover:text-foreground"
                                 onClick={() => handleEdit(doc)}
                               >
@@ -270,33 +294,36 @@ export default function DocumentsPage() {
                             <TooltipContent side="top">{t("common.edit")}</TooltipContent>
                           </Tooltip>
 
-                          {/* Upload (if no file yet) */}
-                          {!hasFile && (
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-7 w-7 text-muted-foreground hover:text-primary"
-                                  onClick={() => triggerUpload(doc)}
-                                  disabled={isUploading}
-                                >
-                                  {isUploading
-                                    ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                                    : <Upload className="h-3.5 w-3.5" />}
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent side="top">{t("documents.actions.upload")}</TooltipContent>
-                            </Tooltip>
-                          )}
+                          {/* Upload — always available so user can replace file */}
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost" size="icon"
+                                className={cn(
+                                  "h-7 w-7",
+                                  hasFile
+                                    ? "text-muted-foreground hover:text-primary"
+                                    : "text-primary hover:text-primary/80"
+                                )}
+                                onClick={() => triggerUpload(doc)}
+                                disabled={isUploading}
+                              >
+                                {isUploading
+                                  ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                  : <Upload className="h-3.5 w-3.5" />}
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent side="top">
+                              {hasFile ? t("documents.actions.replace") : t("documents.actions.upload")}
+                            </TooltipContent>
+                          </Tooltip>
 
-                          {/* View in new tab (PDF) */}
+                          {/* View in new tab (PDFs only) */}
                           {hasFile && isPdf && (
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <Button
-                                  variant="ghost"
-                                  size="icon"
+                                  variant="ghost" size="icon"
                                   className="h-7 w-7 text-muted-foreground hover:text-primary"
                                   onClick={() => handleView(doc)}
                                   disabled={isDownloading}
@@ -315,13 +342,12 @@ export default function DocumentsPage() {
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <Button
-                                  variant="ghost"
-                                  size="icon"
+                                  variant="ghost" size="icon"
                                   className="h-7 w-7 text-muted-foreground hover:text-primary"
                                   onClick={() => handleDownload(doc)}
                                   disabled={isDownloading}
                                 >
-                                  {isDownloading && !isPdf
+                                  {isDownloading
                                     ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
                                     : <Download className="h-3.5 w-3.5" />}
                                 </Button>

@@ -123,9 +123,13 @@ export type Database = {
           created_at: string
           created_by: string
           doc_type: string
+          file_name: string | null
+          file_path: string | null
+          file_size: number | null
           file_url: string | null
           id: string
           issued_at: string | null
+          mime_type: string | null
           project_id: string
           revision: string | null
           status: string
@@ -138,9 +142,13 @@ export type Database = {
           created_at?: string
           created_by: string
           doc_type: string
+          file_name?: string | null
+          file_path?: string | null
+          file_size?: number | null
           file_url?: string | null
           id?: string
           issued_at?: string | null
+          mime_type?: string | null
           project_id: string
           revision?: string | null
           status?: string
@@ -153,9 +161,13 @@ export type Database = {
           created_at?: string
           created_by?: string
           doc_type?: string
+          file_name?: string | null
+          file_path?: string | null
+          file_size?: number | null
           file_url?: string | null
           id?: string
           issued_at?: string | null
+          mime_type?: string | null
           project_id?: string
           revision?: string | null
           status?: string

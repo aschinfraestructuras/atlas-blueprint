@@ -251,6 +251,7 @@
     },
     "actions": {
       "upload": "Subir archivo",
+      "replace": "Reemplazar archivo",
       "download": "Descargar archivo",
       "view": "Ver en nueva pestaña"
     },
@@ -293,7 +294,9 @@
     "toast": {
       "created": "Documento creado con éxito.",
       "updated": "Documento actualizado con éxito.",
-      "uploaded": "Archivo subido con éxito.",
+      "uploaded": "Archivo «{{name}}» subido con éxito.",
+      "uploadError": "Error al subir el archivo",
+      "downloadError": "Error al descargar el archivo",
       "error": "Ocurrió un error. Inténtelo de nuevo."
     }
   },
