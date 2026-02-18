@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Navigate } from "react-router-dom";
@@ -6,28 +7,38 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Eye, EyeOff, ShieldCheck, Loader2 } from "lucide-react";
+import { Eye, EyeOff, ShieldCheck, Loader2, Globe } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 
 type Mode = "login" | "signup";
 
-const MESSAGES = {
-  "Invalid login credentials": "Incorrect email or password. Please try again.",
-  "Email not confirmed":
-    "Please confirm your email address before signing in. Check your inbox.",
-  "User already registered":
-    "An account with this email already exists. Please sign in.",
-  "Password should be at least 6 characters":
-    "Password must be at least 6 characters.",
-} as const;
+const LANGUAGES = [
+  { code: "pt", label: "PT" },
+  { code: "es", label: "ES" },
+];
 
-function friendlyError(msg: string): string {
-  for (const [key, friendly] of Object.entries(MESSAGES)) {
-    if (msg.includes(key)) return friendly;
+const RAW_ERRORS: Record<string, string> = {
+  "Invalid login credentials": "errors.invalidCredentials",
+  "Email not confirmed": "errors.emailNotConfirmed",
+  "User already registered": "errors.userAlreadyRegistered",
+  "Password should be at least 6 characters": "errors.passwordTooShort",
+};
+
+function mapError(msg: string, t: (k: string) => string): string {
+  for (const [raw, key] of Object.entries(RAW_ERRORS)) {
+    if (msg.includes(raw)) return t(`auth.${key}`);
   }
-  return msg || "An unexpected error occurred. Please try again.";
+  return msg || t("auth.errors.unexpected");
 }
 
 export default function LoginPage() {
+  const { t, i18n } = useTranslation();
   const { user, loading } = useAuth();
   const [mode, setMode] = useState<Mode>("login");
   const [email, setEmail] = useState("");
@@ -37,7 +48,6 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [confirmationSent, setConfirmationSent] = useState(false);
 
-  // Redirect already authenticated users
   if (!loading && user) {
     return <Navigate to="/" replace />;
   }
@@ -46,7 +56,6 @@ export default function LoginPage() {
     e.preventDefault();
     setError(null);
     setSubmitting(true);
-
     try {
       if (mode === "login") {
         const { error } = await supabase.auth.signInWithPassword({
@@ -54,21 +63,18 @@ export default function LoginPage() {
           password,
         });
         if (error) throw error;
-        // AuthProvider's onAuthStateChange handles redirect
       } else {
         const { error } = await supabase.auth.signUp({
           email: email.trim(),
           password,
-          options: {
-            emailRedirectTo: window.location.origin,
-          },
+          options: { emailRedirectTo: window.location.origin },
         });
         if (error) throw error;
         setConfirmationSent(true);
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Unknown error";
-      setError(friendlyError(msg));
+      setError(mapError(msg, t));
     } finally {
       setSubmitting(false);
     }
@@ -82,13 +88,10 @@ export default function LoginPage() {
             <ShieldCheck className="h-7 w-7 text-primary" />
           </div>
           <h2 className="mb-2 text-xl font-semibold tracking-tight text-card-foreground">
-            Check your inbox
+            {t("auth.confirmEmailTitle")}
           </h2>
           <p className="text-sm text-muted-foreground">
-            A confirmation link has been sent to{" "}
-            <span className="font-medium text-foreground">{email}</span>.
-            <br />
-            Click the link in the email to activate your account.
+            {t("auth.confirmEmailText", { email })}
           </p>
           <button
             className="mt-6 text-sm text-primary underline-offset-4 hover:underline"
@@ -98,7 +101,7 @@ export default function LoginPage() {
               setPassword("");
             }}
           >
-            Back to sign in
+            {t("auth.backToSignIn")}
           </button>
         </div>
       </div>
@@ -112,150 +115,164 @@ export default function LoginPage() {
         <div className="flex items-center gap-2">
           <ShieldCheck className="h-6 w-6 text-primary-foreground/80" />
           <span className="text-lg font-semibold tracking-widest text-primary-foreground/80 uppercase">
-            Atlas
+            {t("common.appName")}
           </span>
         </div>
         <div>
           <blockquote className="space-y-2">
             <p className="text-2xl font-light leading-relaxed text-primary-foreground">
-              "Quality is not an act, it is a habit."
+              {t("auth.qualityQuote")}
             </p>
             <footer className="text-sm text-primary-foreground/60">
-              — Aristotle
+              {t("auth.qualityQuoteAuthor")}
             </footer>
           </blockquote>
         </div>
         <p className="text-xs text-primary-foreground/40 uppercase tracking-widest">
-          Quality Management System
+          {t("auth.qmsLabel")}
         </p>
       </div>
 
-      {/* Right panel – form */}
-      <div className="flex flex-1 items-center justify-center px-6 py-12">
-        <div className="w-full max-w-sm space-y-8">
-          {/* Mobile logo */}
-          <div className="flex items-center gap-2 lg:hidden">
-            <ShieldCheck className="h-5 w-5 text-foreground" />
-            <span className="text-base font-semibold tracking-widest uppercase">
-              Atlas
-            </span>
-          </div>
+      {/* Right panel */}
+      <div className="flex flex-1 flex-col">
+        {/* Language switcher top-right */}
+        <div className="flex justify-end p-4">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="gap-1.5 text-xs font-semibold text-muted-foreground">
+                <Globe className="h-3.5 w-3.5" />
+                {LANGUAGES.find((l) => l.code === i18n.language)?.label ?? "PT"}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-28">
+              {LANGUAGES.map((lang) => (
+                <DropdownMenuItem
+                  key={lang.code}
+                  onClick={() => i18n.changeLanguage(lang.code)}
+                  className={cn(
+                    "text-sm",
+                    i18n.language === lang.code && "font-semibold text-primary"
+                  )}
+                >
+                  {lang.label}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
 
-          <div className="space-y-1">
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-              {mode === "login" ? "Sign in to your account" : "Create an account"}
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              {mode === "login"
-                ? "Enter your credentials to access the platform."
-                : "Fill in the details below to get started."}
-            </p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-5" noValidate>
-            {error && (
-              <Alert variant="destructive">
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-
-            <div className="space-y-2">
-              <Label htmlFor="email">Email address</Label>
-              <Input
-                id="email"
-                type="email"
-                autoComplete="email"
-                placeholder="you@organisation.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                disabled={submitting}
-              />
+        <div className="flex flex-1 items-center justify-center px-6 pb-12">
+          <div className="w-full max-w-sm space-y-8">
+            {/* Mobile logo */}
+            <div className="flex items-center gap-2 lg:hidden">
+              <ShieldCheck className="h-5 w-5 text-foreground" />
+              <span className="text-base font-semibold tracking-widest uppercase">
+                {t("common.appName")}
+              </span>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <div className="relative">
+            <div className="space-y-1">
+              <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+                {mode === "login" ? t("auth.signInTitle") : t("auth.signUpTitle")}
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                {mode === "login" ? t("auth.signInSubtitle") : t("auth.signUpSubtitle")}
+              </p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+              {error && (
+                <Alert variant="destructive">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+
+              <div className="space-y-2">
+                <Label htmlFor="email">{t("auth.email")}</Label>
                 <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  autoComplete={
-                    mode === "login" ? "current-password" : "new-password"
-                  }
-                  placeholder={
-                    mode === "signup" ? "Min. 6 characters" : "••••••••"
-                  }
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  id="email"
+                  type="email"
+                  autoComplete="email"
+                  placeholder={t("auth.emailPlaceholder")}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                   disabled={submitting}
-                  className="pr-10"
                 />
-                <button
-                  type="button"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                  onClick={() => setShowPassword((v) => !v)}
-                  tabIndex={-1}
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </button>
               </div>
-            </div>
 
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={submitting || !email || !password}
-            >
-              {submitting ? (
+              <div className="space-y-2">
+                <Label htmlFor="password">{t("auth.password")}</Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    autoComplete={mode === "login" ? "current-password" : "new-password"}
+                    placeholder={
+                      mode === "signup"
+                        ? t("auth.passwordPlaceholderSignup")
+                        : t("auth.passwordPlaceholder")
+                    }
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    disabled={submitting}
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    onClick={() => setShowPassword((v) => !v)}
+                    tabIndex={-1}
+                    aria-label={showPassword ? t("auth.hidePassword") : t("auth.showPassword")}
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={submitting || !email || !password}
+              >
+                {submitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    {mode === "login" ? t("auth.signingIn") : t("auth.signingUp")}
+                  </>
+                ) : mode === "login" ? (
+                  t("auth.signIn")
+                ) : (
+                  t("auth.signUp")
+                )}
+              </Button>
+            </form>
+
+            <p className="text-center text-sm text-muted-foreground">
+              {mode === "login" ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  {mode === "login" ? "Signing in…" : "Creating account…"}
+                  {t("auth.noAccount")}{" "}
+                  <button
+                    className="font-medium text-foreground underline-offset-4 hover:underline"
+                    onClick={() => { setMode("signup"); setError(null); setPassword(""); }}
+                  >
+                    {t("auth.signUp")}
+                  </button>
                 </>
-              ) : mode === "login" ? (
-                "Sign in"
               ) : (
-                "Create account"
+                <>
+                  {t("auth.haveAccount")}{" "}
+                  <button
+                    className="font-medium text-foreground underline-offset-4 hover:underline"
+                    onClick={() => { setMode("login"); setError(null); setPassword(""); }}
+                  >
+                    {t("auth.signIn")}
+                  </button>
+                </>
               )}
-            </Button>
-          </form>
-
-          <p className="text-center text-sm text-muted-foreground">
-            {mode === "login" ? (
-              <>
-                Don't have an account?{" "}
-                <button
-                  className="font-medium text-foreground underline-offset-4 hover:underline"
-                  onClick={() => {
-                    setMode("signup");
-                    setError(null);
-                    setPassword("");
-                  }}
-                >
-                  Sign up
-                </button>
-              </>
-            ) : (
-              <>
-                Already have an account?{" "}
-                <button
-                  className="font-medium text-foreground underline-offset-4 hover:underline"
-                  onClick={() => {
-                    setMode("login");
-                    setError(null);
-                    setPassword("");
-                  }}
-                >
-                  Sign in
-                </button>
-              </>
-            )}
-          </p>
+            </p>
+          </div>
         </div>
       </div>
     </div>

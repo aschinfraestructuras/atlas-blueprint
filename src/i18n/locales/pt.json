@@ -1,0 +1,125 @@
+{
+  "common": {
+    "appName": "Atlas",
+    "loading": "A carregar…",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "view": "Ver",
+    "create": "Criar",
+    "search": "Pesquisar",
+    "noData": "Sem dados disponíveis",
+    "actions": "Ações",
+    "status": "Estado",
+    "date": "Data",
+    "name": "Nome",
+    "description": "Descrição",
+    "back": "Voltar",
+    "next": "Seguinte",
+    "confirm": "Confirmar",
+    "close": "Fechar",
+    "required": "Obrigatório",
+    "optional": "Opcional"
+  },
+  "auth": {
+    "signIn": "Iniciar sessão",
+    "signUp": "Criar conta",
+    "signOut": "Terminar sessão",
+    "signingIn": "A autenticar…",
+    "signingUp": "A criar conta…",
+    "email": "Endereço de e-mail",
+    "emailPlaceholder": "voce@organizacao.com",
+    "password": "Password",
+    "passwordPlaceholder": "••••••••",
+    "passwordPlaceholderSignup": "Mín. 6 caracteres",
+    "showPassword": "Mostrar password",
+    "hidePassword": "Ocultar password",
+    "noAccount": "Não tem conta?",
+    "haveAccount": "Já tem conta?",
+    "signInTitle": "Iniciar sessão",
+    "signInSubtitle": "Introduza as suas credenciais para aceder à plataforma.",
+    "signUpTitle": "Criar conta",
+    "signUpSubtitle": "Preencha os dados abaixo para começar.",
+    "confirmEmailTitle": "Verifique o seu e-mail",
+    "confirmEmailText": "Um link de confirmação foi enviado para {{email}}. Clique no link para ativar a sua conta.",
+    "backToSignIn": "Voltar ao início de sessão",
+    "qualityQuote": "\"A qualidade não é um ato, é um hábito.\"",
+    "qualityQuoteAuthor": "— Aristóteles",
+    "qmsLabel": "Sistema de Gestão da Qualidade",
+    "activeSession": "Sessão ativa",
+    "errors": {
+      "invalidCredentials": "E-mail ou password incorretos. Tente novamente.",
+      "emailNotConfirmed": "Confirme o seu endereço de e-mail antes de iniciar sessão. Verifique a sua caixa de entrada.",
+      "userAlreadyRegistered": "Já existe uma conta com este e-mail. Por favor, inicie sessão.",
+      "passwordTooShort": "A password deve ter pelo menos 6 caracteres.",
+      "unexpected": "Ocorreu um erro inesperado. Tente novamente."
+    }
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "projects": "Projetos",
+    "documents": "Documentos",
+    "suppliers": "Fornecedores",
+    "tests": "Ensaios",
+    "nonConformities": "Não Conformidades",
+    "settings": "Definições"
+  },
+  "topbar": {
+    "language": "Idioma",
+    "profile": "Perfil",
+    "signOut": "Terminar sessão"
+  },
+  "dashboard": {
+    "welcome": "Bem-vindo de volta",
+    "subtitle": "Aqui está um resumo do estado atual dos seus projetos.",
+    "stats": {
+      "activeProjects": "Projetos Ativos",
+      "openDocuments": "Documentos em Curso",
+      "pendingTests": "Ensaios Pendentes",
+      "openNCs": "NCs Abertas"
+    },
+    "recentActivity": "Atividade Recente",
+    "quickActions": "Ações Rápidas",
+    "actions": {
+      "newProject": "Novo Projeto",
+      "newDocument": "Novo Documento",
+      "newTest": "Novo Ensaio",
+      "newNC": "Nova NC"
+    },
+    "activity": {
+      "documentApproved": "Documento aprovado",
+      "testCompleted": "Ensaio concluído",
+      "ncOpened": "NC aberta",
+      "projectCreated": "Projeto criado",
+      "supplierAdded": "Fornecedor adicionado"
+    },
+    "noActivity": "Sem atividade recente."
+  },
+  "pages": {
+    "projects": {
+      "title": "Projetos",
+      "subtitle": "Gestão de projetos de construção"
+    },
+    "documents": {
+      "title": "Documentos",
+      "subtitle": "Gestão documental do projeto"
+    },
+    "suppliers": {
+      "title": "Fornecedores",
+      "subtitle": "Registo e avaliação de fornecedores"
+    },
+    "tests": {
+      "title": "Ensaios",
+      "subtitle": "Catálogo e resultados de ensaios"
+    },
+    "nonConformities": {
+      "title": "Não Conformidades",
+      "subtitle": "Registo e tratamento de não conformidades"
+    },
+    "settings": {
+      "title": "Definições",
+      "subtitle": "Configurações da plataforma"
+    }
+  }
+}

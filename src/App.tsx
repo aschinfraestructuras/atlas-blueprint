@@ -2,11 +2,13 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { MainLayout } from "@/components/layout/MainLayout";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
+import PlaceholderPage from "./pages/PlaceholderPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -19,15 +21,77 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <Routes>
-            {/* Public routes */}
+            {/* Public */}
             <Route path="/login" element={<LoginPage />} />
 
-            {/* Protected routes */}
+            {/* Protected – wrapped in MainLayout */}
             <Route
               path="/"
               element={
                 <ProtectedRoute>
-                  <DashboardPage />
+                  <MainLayout>
+                    <DashboardPage />
+                  </MainLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/projects"
+              element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <PlaceholderPage titleKey="pages.projects.title" subtitleKey="pages.projects.subtitle" />
+                  </MainLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/documents"
+              element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <PlaceholderPage titleKey="pages.documents.title" subtitleKey="pages.documents.subtitle" />
+                  </MainLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/suppliers"
+              element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <PlaceholderPage titleKey="pages.suppliers.title" subtitleKey="pages.suppliers.subtitle" />
+                  </MainLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tests"
+              element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <PlaceholderPage titleKey="pages.tests.title" subtitleKey="pages.tests.subtitle" />
+                  </MainLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/non-conformities"
+              element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <PlaceholderPage titleKey="pages.nonConformities.title" subtitleKey="pages.nonConformities.subtitle" />
+                  </MainLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <PlaceholderPage titleKey="pages.settings.title" subtitleKey="pages.settings.subtitle" />
+                  </MainLayout>
                 </ProtectedRoute>
               }
             />

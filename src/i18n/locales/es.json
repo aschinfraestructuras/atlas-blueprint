@@ -1,0 +1,125 @@
+{
+  "common": {
+    "appName": "Atlas",
+    "loading": "Cargando…",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "view": "Ver",
+    "create": "Crear",
+    "search": "Buscar",
+    "noData": "Sin datos disponibles",
+    "actions": "Acciones",
+    "status": "Estado",
+    "date": "Fecha",
+    "name": "Nombre",
+    "description": "Descripción",
+    "back": "Volver",
+    "next": "Siguiente",
+    "confirm": "Confirmar",
+    "close": "Cerrar",
+    "required": "Obligatorio",
+    "optional": "Opcional"
+  },
+  "auth": {
+    "signIn": "Iniciar sesión",
+    "signUp": "Crear cuenta",
+    "signOut": "Cerrar sesión",
+    "signingIn": "Autenticando…",
+    "signingUp": "Creando cuenta…",
+    "email": "Dirección de correo",
+    "emailPlaceholder": "tu@organizacion.com",
+    "password": "Contraseña",
+    "passwordPlaceholder": "••••••••",
+    "passwordPlaceholderSignup": "Mín. 6 caracteres",
+    "showPassword": "Mostrar contraseña",
+    "hidePassword": "Ocultar contraseña",
+    "noAccount": "¿No tiene cuenta?",
+    "haveAccount": "¿Ya tiene cuenta?",
+    "signInTitle": "Iniciar sesión",
+    "signInSubtitle": "Introduzca sus credenciales para acceder a la plataforma.",
+    "signUpTitle": "Crear cuenta",
+    "signUpSubtitle": "Complete los datos a continuación para comenzar.",
+    "confirmEmailTitle": "Revise su correo",
+    "confirmEmailText": "Se ha enviado un enlace de confirmación a {{email}}. Haga clic en el enlace para activar su cuenta.",
+    "backToSignIn": "Volver al inicio de sesión",
+    "qualityQuote": "\"La calidad no es un acto, es un hábito.\"",
+    "qualityQuoteAuthor": "— Aristóteles",
+    "qmsLabel": "Sistema de Gestión de Calidad",
+    "activeSession": "Sesión activa",
+    "errors": {
+      "invalidCredentials": "Correo o contraseña incorrectos. Inténtelo de nuevo.",
+      "emailNotConfirmed": "Confirme su dirección de correo antes de iniciar sesión. Revise su bandeja de entrada.",
+      "userAlreadyRegistered": "Ya existe una cuenta con este correo. Por favor, inicie sesión.",
+      "passwordTooShort": "La contraseña debe tener al menos 6 caracteres.",
+      "unexpected": "Ocurrió un error inesperado. Inténtelo de nuevo."
+    }
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "projects": "Proyectos",
+    "documents": "Documentos",
+    "suppliers": "Proveedores",
+    "tests": "Ensayos",
+    "nonConformities": "No Conformidades",
+    "settings": "Configuración"
+  },
+  "topbar": {
+    "language": "Idioma",
+    "profile": "Perfil",
+    "signOut": "Cerrar sesión"
+  },
+  "dashboard": {
+    "welcome": "Bienvenido de nuevo",
+    "subtitle": "Aquí tiene un resumen del estado actual de sus proyectos.",
+    "stats": {
+      "activeProjects": "Proyectos Activos",
+      "openDocuments": "Documentos en Curso",
+      "pendingTests": "Ensayos Pendientes",
+      "openNCs": "NCs Abiertas"
+    },
+    "recentActivity": "Actividad Reciente",
+    "quickActions": "Acciones Rápidas",
+    "actions": {
+      "newProject": "Nuevo Proyecto",
+      "newDocument": "Nuevo Documento",
+      "newTest": "Nuevo Ensayo",
+      "newNC": "Nueva NC"
+    },
+    "activity": {
+      "documentApproved": "Documento aprobado",
+      "testCompleted": "Ensayo completado",
+      "ncOpened": "NC abierta",
+      "projectCreated": "Proyecto creado",
+      "supplierAdded": "Proveedor añadido"
+    },
+    "noActivity": "Sin actividad reciente."
+  },
+  "pages": {
+    "projects": {
+      "title": "Proyectos",
+      "subtitle": "Gestión de proyectos de construcción"
+    },
+    "documents": {
+      "title": "Documentos",
+      "subtitle": "Gestión documental del proyecto"
+    },
+    "suppliers": {
+      "title": "Proveedores",
+      "subtitle": "Registro y evaluación de proveedores"
+    },
+    "tests": {
+      "title": "Ensayos",
+      "subtitle": "Catálogo y resultados de ensayos"
+    },
+    "nonConformities": {
+      "title": "No Conformidades",
+      "subtitle": "Registro y tratamiento de no conformidades"
+    },
+    "settings": {
+      "title": "Configuración",
+      "subtitle": "Ajustes de la plataforma"
+    }
+  }
+}
