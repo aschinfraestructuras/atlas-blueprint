@@ -1,16 +1,16 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { useAllAttachments } from "@/hooks/useAllAttachments";
 import { useDocuments } from "@/hooks/useDocuments";
-import { attachmentService } from "@/lib/services/attachmentService";
 import { documentService } from "@/lib/services/documentService";
+import type { Document } from "@/lib/services/documentService";
+import type { DocumentStatus } from "@/lib/services/documentService";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  FileText, Download, ExternalLink, Loader2, Paperclip, Search,
-  Plus, Trash2,
+  FileText, Download, ExternalLink, Loader2, Search,
+  Plus, Trash2, Pencil, CheckCircle2, Clock, RotateCcw,
 } from "lucide-react";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -38,8 +38,7 @@ import {
 import { EmptyState } from "@/components/EmptyState";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { DocumentFormDialog } from "@/components/documents/DocumentFormDialog";
-import type { Attachment } from "@/lib/services/attachmentService";
-import type { Document } from "@/lib/services/documentService";
+import { cn } from "@/lib/utils";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -50,43 +49,20 @@ function formatBytes(b: number | null | undefined): string {
   return `${(b / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-function getExt(name: string): string {
-  const parts = name.split(".");
-  return parts.length > 1 ? parts[parts.length - 1].toLowerCase() : "";
-}
+// ─── Status badge config ──────────────────────────────────────────────────────
 
-const ENTITY_COLORS: Record<string, string> = {
-  documents:        "bg-primary/10 text-primary",
-  tests:            "bg-chart-2/10 text-chart-2",
-  non_conformities: "bg-destructive/10 text-destructive",
-  suppliers:        "bg-chart-3/10 text-chart-3",
-  subcontractors:   "bg-chart-4/10 text-chart-4",
-  survey:           "bg-chart-5/10 text-chart-5",
-  technical_office: "bg-muted text-muted-foreground",
-  ppi:              "bg-accent text-accent-foreground",
+const STATUS_BADGE: Record<DocumentStatus, { cls: string; icon: React.ElementType }> = {
+  draft:    { cls: "bg-muted text-muted-foreground border-border",     icon: RotateCcw    },
+  review:   { cls: "bg-primary/10 text-primary border-primary/20",     icon: Clock        },
+  approved: { cls: "bg-chart-2/10 text-chart-2 border-chart-2/20",    icon: CheckCircle2 },
 };
 
-const ALL_ENTITY_TYPES = [
-  "documents", "tests", "non_conformities", "suppliers",
-  "subcontractors", "survey", "technical_office", "ppi",
+// ─── DOC TYPE config (canonical values → display) ─────────────────────────────
+
+const DOC_TYPES = [
+  "procedure", "instruction", "plan", "report", "certificate",
+  "drawing", "specification", "form", "record", "other",
 ];
-
-// ─── Unified file row ─────────────────────────────────────────────────────────
-
-interface FileRow {
-  id: string;
-  file_name: string;
-  file_path: string;
-  file_size: number | null;
-  entity_type: string;
-  project_id: string;
-  entity_id: string;
-  created_at: string;
-  /** Whether to use documentService or attachmentService for the signed URL */
-  source: "document_main" | "attachment";
-  /** Original document record (for edit/delete) — only for document_main */
-  docRecord?: Document;
-}
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
@@ -95,111 +71,62 @@ export default function DocumentsPage() {
   const { activeProject } = useProject();
   const { user } = useAuth();
 
-  // All generic attachments
-  const { data: attachments, loading: loadingAtt, error: errorAtt, refetch: refetchAtt } = useAllAttachments(activeProject?.id);
-  // Documents with a file_path (main document file)
-  const { data: documents, loading: loadingDocs, error: errorDocs, refetch: refetchDocs } = useDocuments();
-
-  const loading = loadingAtt || loadingDocs;
-  const error   = errorAtt || errorDocs;
+  const { data: documents, loading, error, refetch } = useDocuments();
 
   const [search, setSearch]           = useState("");
-  const [entityFilter, setEntityFilter] = useState("all");
-  const [actionId, setActionId]        = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<DocumentStatus | "all">("all");
+  const [typeFilter, setTypeFilter]   = useState<string>("all");
+  const [actionId, setActionId]       = useState<string | null>(null);
 
-  // ── Form dialog state ─────────────────────────────────────────────────────
-  const [formOpen, setFormOpen]           = useState(false);
-  const [editDoc, setEditDoc]             = useState<Document | null>(null);
+  // ── Form dialog ───────────────────────────────────────────────────────────
+  const [formOpen, setFormOpen] = useState(false);
+  const [editDoc, setEditDoc]   = useState<Document | null>(null);
 
-  // ── Delete confirm dialog ─────────────────────────────────────────────────
-  const [deleteRow, setDeleteRow]         = useState<FileRow | null>(null);
-  const [deleting, setDeleting]           = useState(false);
+  // ── Delete confirm ────────────────────────────────────────────────────────
+  const [deleteDoc, setDeleteDoc] = useState<Document | null>(null);
+  const [deleting, setDeleting]   = useState(false);
 
-  // ── Admin detection ───────────────────────────────────────────────────────
-  const [isAdmin, setIsAdmin]             = useState<boolean | null>(null);
-  useCallback(() => {
+  // ── Admin check ───────────────────────────────────────────────────────────
+  const [isAdmin, setIsAdmin] = useState(false);
+  useEffect(() => {
     if (!activeProject || !user) return;
-    supabase.rpc("is_project_admin", { _project_id: activeProject.id, _user_id: user.id })
+    supabase
+      .rpc("is_project_admin", { _project_id: activeProject.id, _user_id: user.id })
       .then(({ data }) => setIsAdmin(!!data));
-  }, [activeProject, user])();
-
-  const handleRefresh = () => {
-    refetchDocs();
-    refetchAtt();
-  };
-
-  // ── Build unified list ────────────────────────────────────────────────────
-  const docRows: FileRow[] = (documents ?? [])
-    .filter((d) => !!d.file_path)
-    .map((d) => ({
-      id:          `doc_${d.id}`,
-      file_name:   d.file_name ?? d.file_path!.split("/").pop() ?? "document",
-      file_path:   d.file_path!,
-      file_size:   d.file_size,
-      entity_type: "documents",
-      project_id:  d.project_id,
-      entity_id:   d.id,
-      created_at:  d.created_at,
-      source:      "document_main" as const,
-      docRecord:   d,
-    }));
-
-  const attRows: FileRow[] = (attachments ?? []).map((a: Attachment) => ({
-    id:          a.id,
-    file_name:   a.file_name,
-    file_path:   a.file_path,
-    file_size:   a.file_size,
-    entity_type: a.entity_type,
-    project_id:  a.project_id,
-    entity_id:   a.entity_id,
-    created_at:  a.created_at,
-    source:      "attachment" as const,
-  }));
-
-  // Merge: doc main files first, then attachments; deduplicate by file_path
-  const seen = new Set<string>();
-  const allRows: FileRow[] = [...docRows, ...attRows].filter((r) => {
-    if (seen.has(r.file_path)) return false;
-    seen.add(r.file_path);
-    return true;
-  });
+  }, [activeProject, user]);
 
   // ── Filtered list ─────────────────────────────────────────────────────────
-  const filtered = allRows.filter((r) => {
-    const matchEntity = entityFilter === "all" || r.entity_type === entityFilter;
+  const filtered = documents.filter((d) => {
+    const matchStatus = statusFilter === "all" || d.status === statusFilter;
+    const matchType   = typeFilter === "all" || d.doc_type === typeFilter;
     const matchSearch = !search
-      || r.file_name.toLowerCase().includes(search.toLowerCase())
-      || r.entity_type.toLowerCase().includes(search.toLowerCase());
-    return matchEntity && matchSearch;
+      || d.title.toLowerCase().includes(search.toLowerCase())
+      || d.doc_type.toLowerCase().includes(search.toLowerCase())
+      || (d.revision ?? "").toLowerCase().includes(search.toLowerCase());
+    return matchStatus && matchType && matchSearch;
   });
 
-  // ── Signed URL helper ─────────────────────────────────────────────────────
-  const getSignedUrl = async (row: FileRow): Promise<string> => {
-    if (row.source === "document_main") {
-      return documentService.getSignedUrl(row.file_path, row.project_id, row.entity_id);
-    }
-    return attachmentService.getSignedUrl(
-      row.file_path,
-      row.project_id,
-      row.entity_type as Parameters<typeof attachmentService.getSignedUrl>[2],
-      row.entity_id,
-      row.file_name
-    );
-  };
+  // ── Counts for header badges ──────────────────────────────────────────────
+  const totalDocs    = documents.length;
+  const reviewCount  = documents.filter((d) => d.status === "review").length;
+  const approvedCount= documents.filter((d) => d.status === "approved").length;
 
-  // ── Actions ───────────────────────────────────────────────────────────────
-
-  const handleDownload = useCallback(async (row: FileRow) => {
-    setActionId(row.id);
+  // ── Download ──────────────────────────────────────────────────────────────
+  const handleDownload = useCallback(async (doc: Document, openInTab = false) => {
+    if (!doc.file_path) return;
+    setActionId(doc.id + (openInTab ? "_view" : "_dl"));
     try {
-      const url = await getSignedUrl(row);
-      const a = window.document.createElement("a");
-      a.href = url;
-      a.download = row.file_name;
-      a.target = "_blank";
-      a.rel = "noopener noreferrer";
-      a.click();
-      toast({ title: t("attachments.toast.downloaded") });
+      const url = await documentService.getSignedUrl(doc.file_path, activeProject?.id, doc.id);
+      if (openInTab) {
+        window.open(url, "_blank", "noopener,noreferrer");
+      } else {
+        const a = window.document.createElement("a");
+        a.href = url;
+        a.download = doc.file_name ?? "document";
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.click();
+      }
     } catch (err) {
       toast({
         title: t("attachments.toast.downloadError"),
@@ -210,49 +137,24 @@ export default function DocumentsPage() {
       setActionId(null);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [t]);
+  }, [activeProject, t]);
 
-  const handleView = useCallback(async (row: FileRow) => {
-    setActionId(row.id + "_view");
-    try {
-      const url = await getSignedUrl(row);
-      window.open(url, "_blank", "noopener,noreferrer");
-    } catch (err) {
-      toast({
-        title: t("attachments.toast.downloadError"),
-        description: err instanceof Error ? err.message : String(err),
-        variant: "destructive",
-      });
-    } finally {
-      setActionId(null);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [t]);
-
+  // ── Delete ────────────────────────────────────────────────────────────────
   const handleDelete = async () => {
-    if (!deleteRow) return;
+    if (!deleteDoc) return;
     setDeleting(true);
     try {
-      if (deleteRow.source === "document_main" && deleteRow.docRecord) {
-        // Delete file from storage (best effort)
-        await supabase.storage.from("qms-files").remove([deleteRow.file_path]).catch(() => null);
-        // Delete document record
-        const { error: dbErr } = await supabase.from("documents").delete().eq("id", deleteRow.entity_id);
-        if (dbErr) throw dbErr;
-        toast({ title: t("documents.toast.deleted") });
-      } else {
-        // It's an attachment
-        const att = attachments?.find((a) => a.id === deleteRow.id);
-        if (att) {
-          await attachmentService.delete(att);
-          toast({ title: t("attachments.toast.deleted") });
-        }
+      if (deleteDoc.file_path) {
+        await supabase.storage.from("qms-files").remove([deleteDoc.file_path]).catch(() => null);
       }
-      handleRefresh();
-      setDeleteRow(null);
+      const { error: dbErr } = await supabase.from("documents").delete().eq("id", deleteDoc.id);
+      if (dbErr) throw dbErr;
+      toast({ title: t("documents.toast.deleted") });
+      refetch();
+      setDeleteDoc(null);
     } catch (err) {
       toast({
-        title: deleteRow.source === "document_main" ? t("documents.toast.deleteError") : t("attachments.toast.deleteError"),
+        title: t("documents.toast.deleteError"),
         description: err instanceof Error ? err.message : String(err),
         variant: "destructive",
       });
@@ -263,15 +165,12 @@ export default function DocumentsPage() {
 
   if (!activeProject) return <NoProjectBanner />;
 
-  const entityLabel = (type: string) =>
-    t(`documents.entityTypes.${type}`, { defaultValue: type.replace(/_/g, " ") });
-
   return (
     <TooltipProvider>
       <div className="space-y-6 max-w-6xl mx-auto">
 
-        {/* Header */}
-        <div className="flex items-center justify-between">
+        {/* ── Header ─────────────────────────────────────────────────────── */}
+        <div className="flex items-start justify-between gap-4">
           <div className="space-y-1">
             <h1 className="text-2xl font-bold tracking-tight text-foreground">
               {t("pages.documents.title")}
@@ -280,12 +179,28 @@ export default function DocumentsPage() {
               {t("pages.documents.subtitle")}
             </p>
           </div>
-          <div className="flex items-center gap-3">
+
+          {/* Summary badges + CTA */}
+          <div className="flex items-center gap-2 flex-wrap justify-end">
             {!loading && (
-              <Badge variant="secondary" className="gap-1.5 px-3 py-1 text-sm">
-                <Paperclip className="h-3.5 w-3.5" />
-                {allRows.length} {t("documents.allFiles")}
-              </Badge>
+              <>
+                <Badge variant="outline" className="gap-1.5 text-xs">
+                  <FileText className="h-3 w-3" />
+                  {totalDocs} {t("documents.allFiles")}
+                </Badge>
+                {reviewCount > 0 && (
+                  <Badge variant="outline" className="gap-1.5 text-xs bg-primary/10 text-primary border-primary/20">
+                    <Clock className="h-3 w-3" />
+                    {reviewCount} {t("documents.status.review")}
+                  </Badge>
+                )}
+                {approvedCount > 0 && (
+                  <Badge variant="outline" className="gap-1.5 text-xs bg-chart-2/10 text-chart-2 border-chart-2/20">
+                    <CheckCircle2 className="h-3 w-3" />
+                    {approvedCount} {t("documents.status.approved")}
+                  </Badge>
+                )}
+              </>
             )}
             <Button
               size="sm"
@@ -298,7 +213,7 @@ export default function DocumentsPage() {
           </div>
         </div>
 
-        {/* Filters */}
+        {/* ── Filters ────────────────────────────────────────────────────── */}
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
@@ -309,118 +224,159 @@ export default function DocumentsPage() {
               className="pl-9 h-9 text-sm"
             />
           </div>
-          <Select value={entityFilter} onValueChange={setEntityFilter}>
-            <SelectTrigger className="h-9 w-[200px] text-sm">
-              <SelectValue placeholder={t("documents.filterAll")} />
+
+          {/* Status filter */}
+          <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as DocumentStatus | "all")}>
+            <SelectTrigger className="h-9 w-[170px] text-sm">
+              <SelectValue placeholder={t("common.status")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{t("documents.filterAll")}</SelectItem>
-              {ALL_ENTITY_TYPES.map((et) => (
-                <SelectItem key={et} value={et}>{entityLabel(et)}</SelectItem>
+              <SelectItem value="all">{t("documents.filterAllStatus")}</SelectItem>
+              <SelectItem value="draft">{t("documents.status.draft")}</SelectItem>
+              <SelectItem value="review">{t("documents.status.review")}</SelectItem>
+              <SelectItem value="approved">{t("documents.status.approved")}</SelectItem>
+            </SelectContent>
+          </Select>
+
+          {/* Type filter */}
+          <Select value={typeFilter} onValueChange={setTypeFilter}>
+            <SelectTrigger className="h-9 w-[170px] text-sm">
+              <SelectValue placeholder={t("documents.form.typePlaceholder")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t("documents.filterAllTypes")}</SelectItem>
+              {DOC_TYPES.map((dt) => (
+                <SelectItem key={dt} value={dt}>{t(`documents.docTypes.${dt}`)}</SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
 
-        {/* Error */}
+        {/* ── Error ──────────────────────────────────────────────────────── */}
         {error && (
           <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
             {error}
           </div>
         )}
 
-        {/* Loading */}
+        {/* ── Table ──────────────────────────────────────────────────────── */}
         {loading ? (
           <div className="rounded-xl border border-border overflow-hidden">
-            <div className="divide-y divide-border">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="flex items-center gap-4 px-5 py-3">
-                  <Skeleton className="h-4 w-5/12" />
-                  <Skeleton className="h-4 w-2/12" />
-                  <Skeleton className="h-4 w-1/12" />
-                  <Skeleton className="h-4 w-2/12" />
-                </div>
-              ))}
-            </div>
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="flex items-center gap-4 px-5 py-3 border-b border-border last:border-0">
+                <Skeleton className="h-4 w-5/12" />
+                <Skeleton className="h-4 w-2/12" />
+                <Skeleton className="h-4 w-1/12" />
+                <Skeleton className="h-4 w-2/12" />
+              </div>
+            ))}
           </div>
         ) : filtered.length === 0 ? (
-          <EmptyState icon={FileText} subtitleKey="emptyState.documents.subtitle" />
+          <EmptyState
+            icon={FileText}
+            subtitleKey={documents.length === 0 ? "emptyState.documents.subtitle" : "emptyState.noResults"}
+          />
         ) : (
           <div className="rounded-xl border border-border overflow-hidden">
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/40">
                   <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    {t("documents.table.fileName")}
+                    {t("documents.table.title")}
                   </TableHead>
-                  <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    {t("documents.table.module")}
+                  <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground hidden md:table-cell">
+                    {t("documents.table.type")}
                   </TableHead>
-                  <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground hidden sm:table-cell">
+                    {t("common.status")}
+                  </TableHead>
+                  <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground hidden lg:table-cell">
+                    {t("documents.table.revision")}
+                  </TableHead>
+                  <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground hidden lg:table-cell">
                     {t("documents.table.size")}
                   </TableHead>
-                  <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground hidden md:table-cell">
                     {t("common.date")}
                   </TableHead>
-                  <TableHead className="w-[120px]" />
+                  <TableHead className="w-[130px]" />
                 </TableRow>
               </TableHeader>
 
               <TableBody>
-                {filtered.map((row) => {
-                  const ext       = getExt(row.file_name);
-                  const isActing  = actionId === row.id;
-                  const isViewing = actionId === row.id + "_view";
+                {filtered.map((doc) => {
+                  const statusCfg = STATUS_BADGE[doc.status as DocumentStatus] ?? STATUS_BADGE.draft;
+                  const StatusIcon = statusCfg.icon;
+                  const isDownloading = actionId === doc.id + "_dl";
+                  const isViewing     = actionId === doc.id + "_view";
+                  const hasFile       = !!doc.file_path;
 
                   return (
-                    <TableRow key={row.id} className="hover:bg-muted/20 transition-colors">
+                    <TableRow key={doc.id} className="hover:bg-muted/20 transition-colors group">
 
-                      {/* File name */}
+                      {/* Title + file indicator */}
                       <TableCell className="font-medium text-sm text-foreground">
                         <div className="flex items-center gap-2 min-w-0">
-                          <FileText className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground" />
-                          {ext && (
-                            <span className="inline-flex items-center rounded bg-muted px-1.5 py-0.5 text-xs font-mono uppercase flex-shrink-0">
-                              {ext}
+                          <FileText className={cn(
+                            "h-3.5 w-3.5 flex-shrink-0",
+                            hasFile ? "text-primary" : "text-muted-foreground"
+                          )} />
+                          <span className="truncate max-w-[240px]" title={doc.title}>
+                            {doc.title}
+                          </span>
+                          {doc.file_name && (
+                            <span className="hidden xl:inline text-xs text-muted-foreground truncate max-w-[120px]" title={doc.file_name}>
+                              · {doc.file_name.split("/").pop()}
                             </span>
                           )}
-                          <span className="truncate max-w-[260px] text-sm" title={row.file_name}>
-                            {row.file_name}
-                          </span>
                         </div>
                       </TableCell>
 
-                      {/* Module / entity type */}
-                      <TableCell>
+                      {/* Type */}
+                      <TableCell className="hidden md:table-cell">
+                        <span className="text-xs text-muted-foreground">
+                          {t(`documents.docTypes.${doc.doc_type}`, { defaultValue: doc.doc_type })}
+                        </span>
+                      </TableCell>
+
+                      {/* Status badge */}
+                      <TableCell className="hidden sm:table-cell">
                         <Badge
-                          variant="secondary"
-                          className={`text-xs ${ENTITY_COLORS[row.entity_type] ?? "bg-muted text-muted-foreground"}`}
+                          variant="outline"
+                          className={cn("gap-1 text-xs font-medium", statusCfg.cls)}
                         >
-                          {entityLabel(row.entity_type)}
+                          <StatusIcon className="h-3 w-3" />
+                          {t(`documents.status.${doc.status}`, { defaultValue: doc.status })}
                         </Badge>
                       </TableCell>
 
-                      {/* Size */}
-                      <TableCell className="text-sm text-muted-foreground tabular-nums">
-                        {formatBytes(row.file_size)}
+                      {/* Revision */}
+                      <TableCell className="hidden lg:table-cell text-xs text-muted-foreground tabular-nums">
+                        {doc.revision ? `Rev. ${doc.revision}` : "—"}
+                      </TableCell>
+
+                      {/* File size */}
+                      <TableCell className="hidden lg:table-cell text-xs text-muted-foreground tabular-nums">
+                        {formatBytes(doc.file_size)}
                       </TableCell>
 
                       {/* Date */}
-                      <TableCell className="text-sm text-muted-foreground">
-                        {new Date(row.created_at).toLocaleDateString()}
+                      <TableCell className="hidden md:table-cell text-xs text-muted-foreground">
+                        {new Date(doc.created_at).toLocaleDateString()}
                       </TableCell>
 
                       {/* Actions */}
                       <TableCell>
                         <div className="flex items-center gap-0.5 justify-end">
+
                           {/* View in new tab */}
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <Button
                                 variant="ghost" size="icon"
                                 className="h-7 w-7 text-muted-foreground hover:text-primary"
-                                onClick={() => handleView(row)}
-                                disabled={isViewing || isActing}
+                                onClick={() => handleDownload(doc, true)}
+                                disabled={!hasFile || isViewing || isDownloading}
                               >
                                 {isViewing
                                   ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -436,15 +392,29 @@ export default function DocumentsPage() {
                               <Button
                                 variant="ghost" size="icon"
                                 className="h-7 w-7 text-muted-foreground hover:text-primary"
-                                onClick={() => handleDownload(row)}
-                                disabled={isActing || isViewing}
+                                onClick={() => handleDownload(doc, false)}
+                                disabled={!hasFile || isDownloading || isViewing}
                               >
-                                {isActing
+                                {isDownloading
                                   ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
                                   : <Download className="h-3.5 w-3.5" />}
                               </Button>
                             </TooltipTrigger>
                             <TooltipContent side="top">{t("documents.actions.download")}</TooltipContent>
+                          </Tooltip>
+
+                          {/* Edit */}
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost" size="icon"
+                                className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                                onClick={() => { setEditDoc(doc); setFormOpen(true); }}
+                              >
+                                <Pencil className="h-3.5 w-3.5" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent side="top">{t("common.edit")}</TooltipContent>
                           </Tooltip>
 
                           {/* Delete (admin only) */}
@@ -454,8 +424,7 @@ export default function DocumentsPage() {
                                 <Button
                                   variant="ghost" size="icon"
                                   className="h-7 w-7 text-muted-foreground hover:text-destructive"
-                                  onClick={() => setDeleteRow(row)}
-                                  disabled={isActing || isViewing}
+                                  onClick={() => setDeleteDoc(doc)}
                                 >
                                   <Trash2 className="h-3.5 w-3.5" />
                                 </Button>
@@ -472,44 +441,39 @@ export default function DocumentsPage() {
             </Table>
           </div>
         )}
+
+        {/* ── Create / Edit dialog ────────────────────────────────────────── */}
+        <DocumentFormDialog
+          open={formOpen}
+          onOpenChange={setFormOpen}
+          document={editDoc}
+          onSuccess={() => { refetch(); setFormOpen(false); }}
+        />
+
+        {/* ── Delete confirmation ─────────────────────────────────────────── */}
+        <AlertDialog open={!!deleteDoc} onOpenChange={(o) => { if (!o) setDeleteDoc(null); }}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{t("documents.deleteConfirm.title")}</AlertDialogTitle>
+              <AlertDialogDescription>
+                {t("documents.deleteConfirm.description", { name: deleteDoc?.title ?? "" })}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={deleting}>{t("common.cancel")}</AlertDialogCancel>
+              <AlertDialogAction
+                className="bg-destructive hover:bg-destructive/90"
+                onClick={handleDelete}
+                disabled={deleting}
+              >
+                {deleting && <Loader2 className="h-3.5 w-3.5 animate-spin mr-2" />}
+                {t("common.delete")}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
       </div>
-
-      {/* Create/Edit Document dialog */}
-      <DocumentFormDialog
-        open={formOpen}
-        onOpenChange={setFormOpen}
-        document={editDoc}
-        onSuccess={handleRefresh}
-      />
-
-      {/* Delete confirmation */}
-      <AlertDialog open={!!deleteRow} onOpenChange={(open) => { if (!open) setDeleteRow(null); }}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              {deleteRow?.source === "document_main"
-                ? t("documents.deleteConfirm.title")
-                : t("attachments.deleteConfirm.title")}
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              {deleteRow?.source === "document_main"
-                ? t("documents.deleteConfirm.description", { name: deleteRow?.file_name })
-                : t("attachments.deleteConfirm.description", { name: deleteRow?.file_name })}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={deleting}>{t("common.cancel")}</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              disabled={deleting}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              {deleting ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-2" /> : null}
-              {t("common.delete")}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </TooltipProvider>
   );
 }

@@ -113,14 +113,19 @@
       "avgAgingTitle": "Aging Médio NC",
       "days": "dias em aberto",
       "openNcCount": "{{count}} NC abertas",
-      "noOpenNcs": "Sem NCs abertas"
+      "noOpenNcs": "Sem NCs abertas",
+      "awaitingReview": "Em revisão",
+      "approved": "Aprovados"
     },
     "charts": {
       "tests": "Ensaios",
       "suppliers": "Fornecedores",
-      "ncTrend": "Tendência de NC — últimos 6 meses"
+      "ncTrend": "Tendência de NC — últimos 6 meses",
+      "docsByType": "Documentos por Tipo"
     },
     "recentActivity": "Atividade Recente",
+    "nextActions": "Próximas Ações",
+    "allClear": "Sem ações pendentes 🎉",
     "quickActions": "Ações Rápidas",
     "actions": {
       "newProject": "Novo Projeto",
@@ -140,12 +145,13 @@
   "emptyState": {
     "title": "Ainda sem dados",
     "subtitle": "Esta secção ainda não tem conteúdo. Comece por criar um novo registo.",
+    "noResults": "Nenhum resultado para os filtros aplicados.",
     "cta": "Criar novo",
     "projects": {
       "subtitleActive": "Não tem projetos ativos. Crie o primeiro para começar.",
       "subtitleArchived": "Não tem projetos arquivados."
     },
-    "documents": { "subtitle": "Este projeto ainda não tem documentos." },
+    "documents": { "subtitle": "Este projeto ainda não tem documentos. Crie o primeiro." },
     "tests": { "subtitle": "Ainda não foram registados ensaios neste projeto." },
     "suppliers": { "subtitle": "Ainda não existem fornecedores associados a este projeto." },
     "nonConformities": { "subtitle": "Não existem não conformidades registadas. Excelente!" },
@@ -252,9 +258,11 @@
   "documents": {
     "newDocument": "Novo Documento",
     "noFile": "Sem ficheiro",
-    "allFiles": "ficheiros",
-    "searchPlaceholder": "Pesquisar por nome ou módulo…",
+    "allFiles": "documentos",
+    "searchPlaceholder": "Pesquisar por título, tipo ou revisão…",
     "filterAll": "Todos os módulos",
+    "filterAllStatus": "Todos os estados",
+    "filterAllTypes": "Todos os tipos",
     "table": {
       "title": "Título",
       "type": "Tipo",
