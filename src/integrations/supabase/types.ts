@@ -436,6 +436,7 @@ export type Database = {
           created_by: string | null
           disciplina_outro: string | null
           id: string
+          inspection_date: string | null
           inspector_id: string | null
           opened_at: string
           project_id: string
@@ -451,6 +452,7 @@ export type Database = {
           created_by?: string | null
           disciplina_outro?: string | null
           id?: string
+          inspection_date?: string | null
           inspector_id?: string | null
           opened_at?: string
           project_id: string
@@ -466,6 +468,7 @@ export type Database = {
           created_by?: string | null
           disciplina_outro?: string | null
           id?: string
+          inspection_date?: string | null
           inspector_id?: string | null
           opened_at?: string
           project_id?: string
@@ -1115,6 +1118,7 @@ export type Database = {
           created_at: string
           created_by: string | null
           disciplina: string
+          disciplina_outro: string | null
           elemento: string | null
           id: string
           lote: string | null
@@ -1131,6 +1135,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           disciplina?: string
+          disciplina_outro?: string | null
           elemento?: string | null
           id?: string
           lote?: string | null
@@ -1147,6 +1152,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           disciplina?: string
+          disciplina_outro?: string | null
           elemento?: string | null
           id?: string
           lote?: string | null
@@ -1174,23 +1180,42 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      fn_create_ppi_instance: {
-        Args: {
-          p_code?: string
-          p_created_by?: string
-          p_disciplina_outro?: string
-          p_inspector_id?: string
-          p_project_id: string
-          p_template_id?: string
-          p_work_item_id: string
-        }
-        Returns: {
-          generated_code: string
-          had_existing_items: boolean
-          instance_id: string
-          items_created: number
-        }[]
-      }
+      fn_create_ppi_instance:
+        | {
+            Args: {
+              p_code?: string
+              p_created_by?: string
+              p_disciplina_outro?: string
+              p_inspector_id?: string
+              p_project_id: string
+              p_template_id?: string
+              p_work_item_id: string
+            }
+            Returns: {
+              generated_code: string
+              had_existing_items: boolean
+              instance_id: string
+              items_created: number
+            }[]
+          }
+        | {
+            Args: {
+              p_code?: string
+              p_created_by?: string
+              p_disciplina_outro?: string
+              p_inspection_date?: string
+              p_inspector_id?: string
+              p_project_id: string
+              p_template_id?: string
+              p_work_item_id: string
+            }
+            Returns: {
+              generated_code: string
+              had_existing_items: boolean
+              instance_id: string
+              items_created: number
+            }[]
+          }
       fn_next_ppi_code: { Args: { p_project_id: string }; Returns: string }
       fn_ppi_bulk_mark_ok: { Args: { p_instance_id: string }; Returns: number }
       fn_ppi_bulk_save_items: {
@@ -1206,6 +1231,7 @@ export type Database = {
           created_by: string | null
           disciplina_outro: string | null
           id: string
+          inspection_date: string | null
           inspector_id: string | null
           opened_at: string
           project_id: string

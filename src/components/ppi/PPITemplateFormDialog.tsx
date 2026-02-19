@@ -185,9 +185,12 @@ export function PPITemplateFormDialog({ open, onOpenChange, template, onSuccess 
       onOpenChange(false);
       onSuccess();
     } catch (err) {
+      const { classifySupabaseError } = await import("@/lib/utils/supabaseError");
+      const info = classifySupabaseError(err, t);
+      console.error("[PPITemplateFormDialog] error:", err);
       toast({
-        title: t("ppi.templates.toast.error"),
-        description: err instanceof Error ? err.message : String(err),
+        title: info.title,
+        description: info.description ?? info.raw,
         variant: "destructive",
       });
     }

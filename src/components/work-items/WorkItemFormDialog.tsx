@@ -11,6 +11,7 @@ import {
   type WorkItem,
   type WorkItemStatus,
 } from "@/lib/services/workItemService";
+import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -26,22 +27,30 @@ const DISCIPLINE_CODES = [
   "estruturas", "ferrovia", "instalacoes", "outros",
 ] as const;
 
-// ─── Schema factory (receives t() so messages are i18n) ───────────────────────
+// ─── Schema factory ───────────────────────────────────────────────────────────
 
 const makeSchema = (t: (k: string) => string) =>
   z
     .object({
-      sector:     z.string().min(1, t("workItems.form.validation.sectorRequired")),
-      disciplina: z.string().min(1, t("workItems.form.validation.disciplineRequired")),
-      obra:       z.string().optional(),
-      lote:       z.string().optional(),
-      elemento:   z.string().optional(),
-      parte:      z.string().optional(),
-      pk_inicio:  z.coerce.number().nullable().optional(),
-      pk_fim:     z.coerce.number().nullable().optional(),
-      status:     z.string().min(1),
+      sector:          z.string().min(1, t("workItems.form.validation.sectorRequired")),
+      disciplina:      z.string().min(1, t("workItems.form.validation.disciplineRequired")),
+      disciplina_outro:z.string().optional(),
+      obra:            z.string().optional(),
+      lote:            z.string().optional(),
+      elemento:        z.string().optional(),
+      parte:           z.string().optional(),
+      pk_inicio:       z.coerce.number().nullable().optional(),
+      pk_fim:          z.coerce.number().nullable().optional(),
+      status:          z.string().min(1),
     })
     .superRefine((val, ctx) => {
+      if (val.disciplina === "outros" && !val.disciplina_outro?.trim()) {
+        ctx.addIssue({
+          path: ["disciplina_outro"],
+          code: z.ZodIssueCode.custom,
+          message: t("workItems.form.validation.disciplinaOutroRequired"),
+        });
+      }
       if (val.pk_inicio != null && val.pk_fim != null && val.pk_fim < val.pk_inicio) {
         ctx.addIssue({
           path: ["pk_fim"],
@@ -74,28 +83,31 @@ export function WorkItemFormDialog({ open, onOpenChange, item, onSuccess }: Prop
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      sector: "", disciplina: "geral", obra: "", lote: "",
+      sector: "", disciplina: "geral", disciplina_outro: "", obra: "", lote: "",
       elemento: "", parte: "", pk_inicio: undefined, pk_fim: undefined, status: "planned",
     },
   });
+
+  const watchedDisciplina = form.watch("disciplina");
 
   useEffect(() => {
     if (!open) return;
     form.reset(
       item
         ? {
-            sector:    item.sector ?? "",
-            disciplina:(item.disciplina as string) ?? "geral",
-            obra:      item.obra      ?? "",
-            lote:      item.lote      ?? "",
-            elemento:  item.elemento  ?? "",
-            parte:     item.parte     ?? "",
-            pk_inicio: item.pk_inicio ?? undefined,
-            pk_fim:    item.pk_fim    ?? undefined,
-            status:    item.status    ?? "planned",
+            sector:          item.sector ?? "",
+            disciplina:      (item.disciplina as string) ?? "geral",
+            disciplina_outro:(item as any).disciplina_outro ?? "",
+            obra:            item.obra      ?? "",
+            lote:            item.lote      ?? "",
+            elemento:        item.elemento  ?? "",
+            parte:           item.parte     ?? "",
+            pk_inicio:       item.pk_inicio ?? undefined,
+            pk_fim:          item.pk_fim    ?? undefined,
+            status:          item.status    ?? "planned",
           }
         : {
-            sector: "", disciplina: "geral", obra: "", lote: "",
+            sector: "", disciplina: "geral", disciplina_outro: "", obra: "", lote: "",
             elemento: "", parte: "", pk_inicio: undefined, pk_fim: undefined, status: "planned",
           },
     );
@@ -107,15 +119,16 @@ export function WorkItemFormDialog({ open, onOpenChange, item, onSuccess }: Prop
     if (!activeProject || !user) return;
     try {
       const payload = {
-        sector:    values.sector,
-        disciplina:values.disciplina,
-        obra:      values.obra      || undefined,
-        lote:      values.lote      || undefined,
-        elemento:  values.elemento  || undefined,
-        parte:     values.parte     || undefined,
-        pk_inicio: values.pk_inicio ?? null,
-        pk_fim:    values.pk_fim    ?? null,
-        status:    values.status as WorkItemStatus,
+        sector:          values.sector,
+        disciplina:      values.disciplina,
+        disciplina_outro:values.disciplina === "outros" ? (values.disciplina_outro?.trim() || null) : null,
+        obra:            values.obra      || undefined,
+        lote:            values.lote      || undefined,
+        elemento:        values.elemento  || undefined,
+        parte:           values.parte     || undefined,
+        pk_inicio:       values.pk_inicio ?? null,
+        pk_fim:          values.pk_fim    ?? null,
+        status:          values.status as WorkItemStatus,
       };
 
       if (isEdit && item) {
@@ -129,9 +142,11 @@ export function WorkItemFormDialog({ open, onOpenChange, item, onSuccess }: Prop
       onSuccess();
       onOpenChange(false);
     } catch (err) {
+      const info = classifySupabaseError(err, t);
+      console.error("[WorkItemFormDialog] error:", err);
       toast({
-        title: t("workItems.toast.error"),
-        description: err instanceof Error ? err.message : String(err),
+        title: info.title,
+        description: info.description ?? info.raw,
         variant: "destructive",
       });
     }
@@ -188,6 +203,25 @@ export function WorkItemFormDialog({ open, onOpenChange, item, onSuccess }: Prop
                 </FormItem>
               )} />
             </div>
+
+            {/* disciplina_outro — shown only when disciplina = 'outros' */}
+            {watchedDisciplina === "outros" && (
+              <FormField control={form.control} name="disciplina_outro" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    {t("workItems.form.disciplinaOutro")}{" "}
+                    <span className="text-destructive">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={t("workItems.form.disciplinaOutroPlaceholder")}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            )}
 
             {/* Row 2: Obra + Lote */}
             <div className="grid grid-cols-2 gap-4">
