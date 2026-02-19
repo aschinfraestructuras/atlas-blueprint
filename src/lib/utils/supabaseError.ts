@@ -40,12 +40,20 @@ export function classifySupabaseError(
     console.error("[Supabase Error]", err);
   }
 
-  const message =
-    err instanceof Error
-      ? err.message
-      : typeof err === "object" && err !== null
-      ? String((err as Record<string, unknown>).message ?? "")
-      : String(err);
+  // Extract the most meaningful message from Supabase/PostgrestError objects
+  let message: string;
+  if (err instanceof Error) {
+    message = err.message;
+  } else if (typeof err === "object" && err !== null) {
+    const e = err as Record<string, unknown>;
+    // PostgrestError has .message, .details, .hint — prefer message then details
+    const msg     = typeof e.message === "string" ? e.message.trim() : "";
+    const details = typeof e.details === "string" ? e.details.trim() : "";
+    const hint    = typeof e.hint    === "string" ? e.hint.trim()    : "";
+    message = msg || details || hint || JSON.stringify(err);
+  } else {
+    message = String(err);
+  }
 
   const code =
     typeof err === "object" && err !== null
