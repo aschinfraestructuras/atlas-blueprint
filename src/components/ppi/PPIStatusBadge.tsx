@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
-import type { PpiInstanceStatus } from "@/lib/services/ppiService";
+import type { PpiInstanceStatus, PpiItemResult } from "@/lib/services/ppiService";
 
 const STATUS_VARIANT: Record<PpiInstanceStatus, "default" | "secondary" | "destructive" | "outline"> = {
   draft:       "outline",
@@ -28,6 +28,27 @@ export function PPIStatusBadge({ status }: { status: PpiInstanceStatus | string 
   return (
     <Badge variant={variant} className={`text-xs ${extraCls}`}>
       {t(`ppi.status.${status}`, { defaultValue: status })}
+    </Badge>
+  );
+}
+
+// ─── Result badge for item-level results ──────────────────────────────────────
+
+const RESULT_COLORS: Partial<Record<PpiItemResult, string>> = {
+  ok:      "border-emerald-400/40 bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400",
+  pass:    "border-emerald-400/40 bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400",
+  nok:     "border-destructive/40 bg-destructive/10 text-destructive",
+  fail:    "border-destructive/40 bg-destructive/10 text-destructive",
+  na:      "border-border text-muted-foreground bg-muted/40",
+  pending: "border-amber-300/60 bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-300",
+};
+
+export function PPIResultBadge({ result }: { result: PpiItemResult | string }) {
+  const { t } = useTranslation();
+  const cls = RESULT_COLORS[result as PpiItemResult] ?? "";
+  return (
+    <Badge variant="outline" className={`text-xs ${cls}`}>
+      {t(`ppi.instances.results.${result}`, { defaultValue: result })}
     </Badge>
   );
 }

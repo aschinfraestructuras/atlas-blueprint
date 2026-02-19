@@ -371,7 +371,9 @@ export type Database = {
           instance_id: string
           item_no: number
           label: string
+          nc_id: string | null
           notes: string | null
+          requires_nc: boolean
           result: string
         }
         Insert: {
@@ -383,7 +385,9 @@ export type Database = {
           instance_id: string
           item_no: number
           label: string
+          nc_id?: string | null
           notes?: string | null
+          requires_nc?: boolean
           result?: string
         }
         Update: {
@@ -395,7 +399,9 @@ export type Database = {
           instance_id?: string
           item_no?: number
           label?: string
+          nc_id?: string | null
           notes?: string | null
+          requires_nc?: boolean
           result?: string
         }
         Relationships: [
@@ -411,6 +417,13 @@ export type Database = {
             columns: ["instance_id"]
             isOneToOne: false
             referencedRelation: "ppi_instances"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ppi_instance_items_nc_id_fkey"
+            columns: ["nc_id"]
+            isOneToOne: false
+            referencedRelation: "non_conformities"
             referencedColumns: ["id"]
           },
         ]
@@ -1179,6 +1192,35 @@ export type Database = {
         }[]
       }
       fn_next_ppi_code: { Args: { p_project_id: string }; Returns: string }
+      fn_ppi_bulk_mark_ok: { Args: { p_instance_id: string }; Returns: number }
+      fn_ppi_bulk_save_items: {
+        Args: { p_instance_id: string; p_items: Json }
+        Returns: number
+      }
+      fn_ppi_instance_transition: {
+        Args: { p_instance_id: string; p_to_status: string }
+        Returns: {
+          closed_at: string | null
+          code: string
+          created_at: string
+          created_by: string | null
+          disciplina_outro: string | null
+          id: string
+          inspector_id: string | null
+          opened_at: string
+          project_id: string
+          status: string
+          template_id: string | null
+          updated_at: string
+          work_item_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "ppi_instances"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       get_project_role: {
         Args: { _project_id: string; _user_id: string }
         Returns: string

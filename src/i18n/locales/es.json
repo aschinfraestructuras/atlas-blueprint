@@ -958,7 +958,16 @@
         "submitForApproval": "Enviar para Aprobación",
         "approve": "Aprobar",
         "reject": "Rechazar",
-        "archive": "Archivar"
+        "archive": "Archivar",
+        "markAllOk": "Marcar todos OK",
+        "bulkSave": "Guardar cambios",
+        "reviewed": "verificados",
+        "unsavedChanges": "{{count}} cambio(s) sin guardar",
+        "createNc": "Crear NC",
+        "createNcTitle": "Crear No Conformidad",
+        "createNcDescription": "El punto {{item}} fue marcado como No Conforme. ¿Desea crear una NC asociada?",
+        "createNcConfirm": "Crear NC",
+        "createNcSkip": "Omitir"
       },
       "form": {
         "titleCreate": "Nueva Inspección PPI",
@@ -986,13 +995,16 @@
         "notesPlaceholder": "Observaciones adicionales…",
         "evidence": "Evidencia",
         "checkedBy": "Verificado por",
-        "checkedAt": "Verificado el"
+        "checkedAt": "Verificado el",
+        "requiresNc": "Requiere NC"
       },
       "results": {
         "pending": "Pendiente",
-        "na": "N/A",
-        "pass": "Conforme",
-        "fail": "No Conforme"
+        "ok":      "Conforme",
+        "nok":     "No Conforme",
+        "na":      "N/A",
+        "pass":    "Conforme",
+        "fail":    "No Conforme"
       },
       "validation": {
         "codeRequired": "El código de la inspección es obligatorio.",
@@ -1004,10 +1016,21 @@
         "updated": "Inspección actualizada.",
         "statusChanged": "Estado cambiado a {{status}}.",
         "itemSaved": "Resultado guardado.",
+        "bulkSaved": "{{count}} resultado(s) guardados.",
+        "allMarkedOk": "{{count}} elemento(s) marcados como OK.",
+        "ncCreated": "NC creada y vinculada al elemento.",
         "deleted": "Inspección eliminada.",
         "hadExistingItems": "Los puntos de inspección ya existían y no fueron duplicados.",
         "error": "Ocurrió un error. Inténtelo de nuevo."
       }
+    },
+    "transitions": {
+      "start":   "Iniciar",
+      "submit":  "Enviar",
+      "approve": "Aprobar",
+      "reject":  "Rechazar",
+      "reopen":  "Reabrir",
+      "archive": "Archivar"
     },
     "disciplinas": {
       "geral":       "General",

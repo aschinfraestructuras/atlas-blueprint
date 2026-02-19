@@ -935,7 +935,16 @@
         "submitForApproval": "Submeter para Aprovação",
         "approve": "Aprovar",
         "reject": "Rejeitar",
-        "archive": "Arquivar"
+        "archive": "Arquivar",
+        "markAllOk": "Marcar todos OK",
+        "bulkSave": "Guardar alterações",
+        "reviewed": "verificados",
+        "unsavedChanges": "{{count}} alteração(ões) por guardar",
+        "createNc": "Criar NC",
+        "createNcTitle": "Criar Não Conformidade",
+        "createNcDescription": "O item {{item}} foi marcado como Não Conforme. Deseja criar uma NC associada?",
+        "createNcConfirm": "Criar NC",
+        "createNcSkip": "Ignorar"
       },
       "form": {
         "titleCreate": "Nova Inspeção PPI",
@@ -963,13 +972,16 @@
         "notesPlaceholder": "Observações adicionais…",
         "evidence": "Evidência",
         "checkedBy": "Verificado por",
-        "checkedAt": "Verificado em"
+        "checkedAt": "Verificado em",
+        "requiresNc": "Requer NC"
       },
       "results": {
         "pending": "Pendente",
-        "na": "N/A",
-        "pass": "Conforme",
-        "fail": "Não Conforme"
+        "ok":      "Conforme",
+        "nok":     "Não Conforme",
+        "na":      "N/A",
+        "pass":    "Conforme",
+        "fail":    "Não Conforme"
       },
       "validation": {
         "codeRequired": "O código da inspeção é obrigatório.",
@@ -981,10 +993,21 @@
         "updated": "Inspeção atualizada.",
         "statusChanged": "Estado alterado para {{status}}.",
         "itemSaved": "Resultado guardado.",
+        "bulkSaved": "{{count}} resultado(s) guardados.",
+        "allMarkedOk": "{{count}} item(s) marcados como OK.",
+        "ncCreated": "NC criada e associada ao item.",
         "deleted": "Inspeção eliminada.",
         "hadExistingItems": "Os pontos de inspeção já existiam e não foram duplicados.",
         "error": "Ocorreu um erro. Tente novamente."
       }
+    },
+    "transitions": {
+      "start":   "Iniciar",
+      "submit":  "Submeter",
+      "approve": "Aprovar",
+      "reject":  "Rejeitar",
+      "reopen":  "Reabrir",
+      "archive": "Arquivar"
     },
     "disciplinas": {
       "geral":       "Geral",
