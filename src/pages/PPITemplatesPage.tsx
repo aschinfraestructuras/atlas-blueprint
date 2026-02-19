@@ -28,6 +28,7 @@ import { ArrowLeft } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { classifySupabaseError } from "@/lib/utils/supabaseError";
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
@@ -80,11 +81,8 @@ export default function PPITemplatesPage() {
       }
       refetch();
     } catch (err) {
-      toast({
-        title: t("ppi.templates.toast.error"),
-        description: err instanceof Error ? err.message : String(err),
-        variant: "destructive",
-      });
+      const info = classifySupabaseError(err, t);
+      toast({ title: info.title, description: info.description ?? info.raw, variant: "destructive" });
     }
   }
 
@@ -138,11 +136,8 @@ export default function PPITemplatesPage() {
       toast({ title: t("ppi.templates.toast.created") });
       refetch();
     } catch (err) {
-      toast({
-        title: t("ppi.templates.toast.error"),
-        description: err instanceof Error ? err.message : String(err),
-        variant: "destructive",
-      });
+      const info = classifySupabaseError(err, t);
+      toast({ title: info.title, description: info.description ?? info.raw, variant: "destructive" });
     } finally {
       setDuplicating(false);
       setDupTemplate(null);
@@ -163,11 +158,8 @@ export default function PPITemplatesPage() {
       }
       refetch();
     } catch (err) {
-      toast({
-        title: t("ppi.demo.error"),
-        description: err instanceof Error ? err.message : String(err),
-        variant: "destructive",
-      });
+      const info = classifySupabaseError(err, t);
+      toast({ title: info.title, description: info.description ?? info.raw, variant: "destructive" });
     } finally {
       setSeeding(false);
     }

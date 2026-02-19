@@ -27,6 +27,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { supabase } from "@/integrations/supabase/client";
 import type { PpiInstanceForExport } from "@/lib/services/ppiExportService";
 
@@ -132,9 +133,10 @@ export default function PPIPage() {
       toast({ title: t("ppi.instances.toast.statusChanged", { status: t("ppi.status.archived") }) });
       refetch();
     } catch (err) {
+      const info = classifySupabaseError(err, t);
       toast({
-        title: t("ppi.instances.toast.error"),
-        description: err instanceof Error ? err.message : String(err),
+        title: info.title,
+        description: info.description ?? info.raw,
         variant: "destructive",
       });
     } finally {

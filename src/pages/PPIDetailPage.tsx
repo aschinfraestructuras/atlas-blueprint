@@ -34,6 +34,7 @@ import { Progress } from "@/components/ui/progress";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
+import { classifySupabaseError } from "@/lib/utils/supabaseError";
 
 // ─── Info row ─────────────────────────────────────────────────────────────────
 
@@ -204,13 +205,9 @@ export default function PPIDetailPage() {
 
       toast({ title: t("ppi.instances.toast.bulkSaved", { count: payload.length }) });
     } catch (err) {
-      toast({
-        title: t("ppi.instances.toast.error"),
-        description: err instanceof Error ? err.message : String(err),
-        variant: "destructive",
-      });
+      const info = classifySupabaseError(err, t);
+      toast({ title: info.title, description: info.description ?? info.raw, variant: "destructive" });
     } finally {
-      setBulkSaving(false);
     }
   }
 
@@ -239,11 +236,8 @@ export default function PPIDetailPage() {
 
       toast({ title: t("ppi.instances.toast.allMarkedOk", { count }) });
     } catch (err) {
-      toast({
-        title: t("ppi.instances.toast.error"),
-        description: err instanceof Error ? err.message : String(err),
-        variant: "destructive",
-      });
+      const info = classifySupabaseError(err, t);
+      toast({ title: info.title, description: info.description ?? info.raw, variant: "destructive" });
     } finally {
       setBulkSaving(false);
     }
@@ -261,11 +255,8 @@ export default function PPIDetailPage() {
       toast({ title: t("ppi.instances.toast.statusChanged", { status: t(`ppi.status.${pendingTransition.to}`) }) });
       load();
     } catch (err) {
-      toast({
-        title: t("ppi.instances.toast.error"),
-        description: err instanceof Error ? err.message : String(err),
-        variant: "destructive",
-      });
+      const info = classifySupabaseError(err, t);
+      toast({ title: info.title, description: info.description ?? info.raw, variant: "destructive" });
     } finally {
       setTransitioning(false);
       setPendingTransition(null);
@@ -298,11 +289,8 @@ export default function PPIDetailPage() {
       toast({ title: t("ppi.instances.toast.ncCreated") });
       setNcDialogItem(null);
     } catch (err) {
-      toast({
-        title: t("ppi.instances.toast.error"),
-        description: err instanceof Error ? err.message : String(err),
-        variant: "destructive",
-      });
+      const info = classifySupabaseError(err, t);
+      toast({ title: info.title, description: info.description ?? info.raw, variant: "destructive" });
     } finally {
       setCreatingNc(false);
     }
