@@ -17,6 +17,7 @@ import {
   BookOpen,
   Map,
   HardHat,
+  Construction,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { cn } from "@/lib/utils";
@@ -61,8 +62,9 @@ const NAV_SECTIONS: SidebarSection[] = [
   {
     sectionKey: "fieldSection",
     items: [
-      { labelKey: "nav.survey",          url: "/survey",          icon: Map     },
-      { labelKey: "nav.subcontractors",  url: "/subcontractors",  icon: HardHat },
+      { labelKey: "nav.survey",          url: "/survey",          icon: Map         },
+      { labelKey: "nav.subcontractors",  url: "/subcontractors",  icon: HardHat     },
+      { labelKey: "nav.workItems",       url: "/work-items",      icon: Construction},
     ],
   },
   {

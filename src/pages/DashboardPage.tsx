@@ -8,10 +8,11 @@ import { useTests } from "@/hooks/useTests";
 import { useNonConformities } from "@/hooks/useNonConformities";
 import { useSuppliers } from "@/hooks/useSuppliers";
 import { useAuditLog } from "@/hooks/useAuditLog";
+import { useWorkItems } from "@/hooks/useWorkItems";
 import {
   FolderKanban, FileText, FlaskConical, AlertTriangle,
   Clock, Building2, Timer, CheckCircle2, TrendingUp, Activity,
-  ChevronRight, RotateCcw, ShieldCheck,
+  ChevronRight, RotateCcw, ShieldCheck, Construction,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -533,6 +534,7 @@ export default function DashboardPage() {
   const { data: ncs, loading: ncLoading } = useNonConformities();
   const { data: suppliers, loading: supLoading } = useSuppliers();
   const { data: auditEntries, loading: auditLoading } = useAuditLog();
+  const { data: workItems, loading: wiLoading } = useWorkItems();
 
   const displayName = user?.email?.split("@")[0] ?? "—";
 
@@ -555,6 +557,12 @@ export default function DashboardPage() {
   const supPending  = suppliers.filter((s) => s.approval_status === "pending").length;
   const supApproved = suppliers.filter((s) => s.approval_status === "approved").length;
   const supRejected = suppliers.filter((s) => s.approval_status === "rejected").length;
+
+  // ── Work Items KPIs ───────────────────────────────────────────────────────────
+  const wiTotal  = workItems.length;
+  const wiOpen   = workItems.filter((w) => w.status === "planned" || w.status === "in_progress").length;
+  const wiNcIds  = new Set(ncs.filter((n: any) => n.status !== "closed" && n.work_item_id).map((n: any) => n.work_item_id as string));
+  const wiWithNC = workItems.filter((w) => wiNcIds.has(w.id)).length;
 
   // ── Chart data ────────────────────────────────────────────────────────────────
   const docPieData = [
@@ -666,6 +674,33 @@ export default function DashboardPage() {
           loading={ncLoading}
           moduleColor={MOD.nc}
           sub={`${ncClosed} ${t("nc.status.closed").toLowerCase()}`}
+        />
+      </div>
+
+      {/* ── Row 1b: Work Items KPI row (3 cols) ───────────────────────── */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <StatCard
+          label={t("dashboard.stats.totalWorkItems")}
+          value={wiTotal}
+          icon={Construction}
+          loading={wiLoading}
+          moduleColor="hsl(212, 43%, 40%)"
+        />
+        <StatCard
+          label={t("dashboard.stats.openWorkItems")}
+          value={wiOpen}
+          icon={Construction}
+          loading={wiLoading}
+          moduleColor="hsl(33, 75%, 38%)"
+          sub={`${wiTotal - wiOpen} concluídos/cancelados`}
+        />
+        <StatCard
+          label={t("dashboard.stats.workItemsWithNC")}
+          value={wiWithNC}
+          icon={AlertTriangle}
+          loading={wiLoading || ncLoading}
+          moduleColor="hsl(2, 60%, 44%)"
+          sub={wiWithNC > 0 ? "Com NCs abertas" : "Sem NCs abertas"}
         />
       </div>
 

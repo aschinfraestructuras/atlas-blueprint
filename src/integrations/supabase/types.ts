@@ -248,6 +248,8 @@ export type Database = {
           description: string
           due_date: string | null
           id: string
+          origin_entity_id: string | null
+          origin_entity_type: string | null
           project_id: string
           reference: string | null
           responsible: string | null
@@ -255,6 +257,7 @@ export type Database = {
           severity: string
           status: string
           updated_at: string
+          work_item_id: string | null
         }
         Insert: {
           closure_date?: string | null
@@ -264,6 +267,8 @@ export type Database = {
           description: string
           due_date?: string | null
           id?: string
+          origin_entity_id?: string | null
+          origin_entity_type?: string | null
           project_id: string
           reference?: string | null
           responsible?: string | null
@@ -271,6 +276,7 @@ export type Database = {
           severity?: string
           status?: string
           updated_at?: string
+          work_item_id?: string | null
         }
         Update: {
           closure_date?: string | null
@@ -280,6 +286,8 @@ export type Database = {
           description?: string
           due_date?: string | null
           id?: string
+          origin_entity_id?: string | null
+          origin_entity_type?: string | null
           project_id?: string
           reference?: string | null
           responsible?: string | null
@@ -287,6 +295,7 @@ export type Database = {
           severity?: string
           status?: string
           updated_at?: string
+          work_item_id?: string | null
         }
         Relationships: [
           {
@@ -294,6 +303,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "non_conformities_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
             referencedColumns: ["id"]
           },
         ]
@@ -728,6 +744,7 @@ export type Database = {
           supplier_id: string | null
           test_id: string
           updated_at: string
+          work_item_id: string | null
         }
         Insert: {
           created_at?: string
@@ -741,6 +758,7 @@ export type Database = {
           supplier_id?: string | null
           test_id: string
           updated_at?: string
+          work_item_id?: string | null
         }
         Update: {
           created_at?: string
@@ -754,6 +772,7 @@ export type Database = {
           supplier_id?: string | null
           test_id?: string
           updated_at?: string
+          work_item_id?: string | null
         }
         Relationships: [
           {
@@ -775,6 +794,13 @@ export type Database = {
             columns: ["test_id"]
             isOneToOne: false
             referencedRelation: "tests_catalog"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_results_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
             referencedColumns: ["id"]
           },
         ]
@@ -846,6 +872,65 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      work_items: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          disciplina: string
+          elemento: string | null
+          id: string
+          lote: string | null
+          obra: string | null
+          parte: string | null
+          pk_fim: number | null
+          pk_inicio: number | null
+          project_id: string
+          sector: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          disciplina?: string
+          elemento?: string | null
+          id?: string
+          lote?: string | null
+          obra?: string | null
+          parte?: string | null
+          pk_fim?: number | null
+          pk_inicio?: number | null
+          project_id: string
+          sector: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          disciplina?: string
+          elemento?: string | null
+          id?: string
+          lote?: string | null
+          obra?: string | null
+          parte?: string | null
+          pk_fim?: number | null
+          pk_inicio?: number | null
+          project_id?: string
+          sector?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

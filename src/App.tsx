@@ -20,6 +20,8 @@ import TechnicalOfficePage from "./pages/TechnicalOfficePage";
 import PlansPage from "./pages/PlansPage";
 import SurveyPage from "./pages/SurveyPage";
 import SubcontractorsPage from "./pages/SubcontractorsPage";
+import WorkItemsPage from "./pages/WorkItemsPage";
+import WorkItemDetailPage from "./pages/WorkItemDetailPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -59,6 +61,8 @@ const App = () => (
               <Route path="/plans" element={<ProtectedLayout><PlansPage /></ProtectedLayout>} />
               <Route path="/survey" element={<ProtectedLayout><SurveyPage /></ProtectedLayout>} />
               <Route path="/subcontractors" element={<ProtectedLayout><SubcontractorsPage /></ProtectedLayout>} />
+              <Route path="/work-items" element={<ProtectedLayout><WorkItemsPage /></ProtectedLayout>} />
+              <Route path="/work-items/:id" element={<ProtectedLayout><WorkItemDetailPage /></ProtectedLayout>} />
 
               {/* Catch-all */}
               <Route path="*" element={<NotFound />} />
