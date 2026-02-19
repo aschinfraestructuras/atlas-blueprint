@@ -11,6 +11,7 @@ export type EntityType =
   | "subcontractors"
   | "survey"
   | "technical_office"
+  | "work_items"
   | "ppi";
 
 export interface Attachment {

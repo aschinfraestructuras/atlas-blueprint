@@ -75,7 +75,8 @@
     "technicalOffice": "Oficina Técnica",
     "plans": "Planeamento & Planos",
     "survey": "Topografia",
-    "subcontractors": "Subempreiteiros"
+    "subcontractors": "Subempreiteiros",
+    "workItems": "Work Items"
   },
   "topbar": {
     "language": "Idioma",
@@ -101,7 +102,10 @@
       "activeProjects": "Projetos Ativos",
       "openDocuments": "Documentos em Curso",
       "pendingTests": "Ensaios Pendentes",
-      "openNCs": "NCs Abertas"
+      "openNCs": "NCs Abertas",
+      "totalWorkItems": "Total Work Items",
+      "openWorkItems": "Work Items Abertos",
+      "workItemsWithNC": "Work Items c/ NC Aberta"
     },
     "kpi": {
       "title": "KPIs do Projeto",
