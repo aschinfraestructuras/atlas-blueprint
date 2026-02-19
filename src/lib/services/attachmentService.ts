@@ -12,7 +12,8 @@ export type EntityType =
   | "survey"
   | "technical_office"
   | "work_items"
-  | "ppi";
+  | "ppi"
+  | "ppi_instances";
 
 export interface Attachment {
   id: string;

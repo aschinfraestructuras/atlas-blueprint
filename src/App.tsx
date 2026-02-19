@@ -22,6 +22,9 @@ import SurveyPage from "./pages/SurveyPage";
 import SubcontractorsPage from "./pages/SubcontractorsPage";
 import WorkItemsPage from "./pages/WorkItemsPage";
 import WorkItemDetailPage from "./pages/WorkItemDetailPage";
+import PPIPage from "./pages/PPIPage";
+import PPITemplatesPage from "./pages/PPITemplatesPage";
+import PPIDetailPage from "./pages/PPIDetailPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -63,6 +66,9 @@ const App = () => (
               <Route path="/subcontractors" element={<ProtectedLayout><SubcontractorsPage /></ProtectedLayout>} />
               <Route path="/work-items" element={<ProtectedLayout><WorkItemsPage /></ProtectedLayout>} />
               <Route path="/work-items/:id" element={<ProtectedLayout><WorkItemDetailPage /></ProtectedLayout>} />
+              <Route path="/ppi" element={<ProtectedLayout><PPIPage /></ProtectedLayout>} />
+              <Route path="/ppi/templates" element={<ProtectedLayout><PPITemplatesPage /></ProtectedLayout>} />
+              <Route path="/ppi/:id" element={<ProtectedLayout><PPIDetailPage /></ProtectedLayout>} />
 
               {/* Catch-all */}
               <Route path="*" element={<NotFound />} />
