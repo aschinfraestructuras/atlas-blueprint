@@ -17,9 +17,10 @@ export const PPI_INSTANCE_STATUSES = [
 export type PpiInstanceStatus = typeof PPI_INSTANCE_STATUSES[number];
 
 // 'pending' = not yet reviewed (initial state from template clone)
-// 'na'      = not applicable (user explicitly marks N/A)
-// 'pass'/'fail' = reviewed outcome
-export const PPI_ITEM_RESULTS = ["pending", "na", "pass", "fail"] as const;
+// 'ok'/'nok' = new canonical values (ok = pass, nok = fail with NC flag)
+// 'na'       = not applicable (user explicitly marks N/A)
+// 'pass'/'fail' = legacy aliases (kept for backward compat)
+export const PPI_ITEM_RESULTS = ["pending", "ok", "nok", "na", "pass", "fail"] as const;
 export type PpiItemResult = typeof PPI_ITEM_RESULTS[number];
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -81,6 +82,8 @@ export interface PpiInstanceItem {
   evidence_file_id: string | null;
   checked_by: string | null;
   checked_at: string | null;
+  requires_nc: boolean;
+  nc_id: string | null;
 }
 
 // ─── Input types ──────────────────────────────────────────────────────────────
@@ -131,6 +134,12 @@ export interface UpdateInstanceItemInput {
   evidence_file_id?: string | null;
   checked_by?: string | null;
   checked_at?: string | null;
+}
+
+export interface BulkItemUpdate {
+  id: string;
+  result: PpiItemResult;
+  notes?: string | null;
 }
 
 // ─── Service ──────────────────────────────────────────────────────────────────
@@ -236,7 +245,6 @@ export const ppiService = {
     projectId: string,
     updates: Partial<Pick<PpiTemplate, "title" | "description" | "disciplina" | "disciplina_outro" | "version" | "is_active">>
   ): Promise<PpiTemplate> {
-    // Auto-clear disciplina_outro when disciplina changes away from 'outros'
     const payload: typeof updates = {
       ...updates,
       disciplina_outro: updates.disciplina && updates.disciplina !== "outros"
@@ -335,13 +343,8 @@ export const ppiService = {
     return { ...(inst as PpiInstance), items: (items ?? []) as PpiInstanceItem[] };
   },
 
-
   /**
    * Create a PPI instance via the atomic DB function fn_create_ppi_instance.
-   * - If template_id provided: items cloned with result='pending', order preserved
-   * - If code is empty: auto-generated as PPI-{PROJECT_CODE}-{0001}
-   * - Fully transactional: any failure rolls back the entire creation
-   * - Guard: if instance already has items, no duplicate copy is made
    */
   async createInstanceFromTemplate(
     input: PpiInstanceInput,
@@ -359,11 +362,10 @@ export const ppiService = {
     if (error) throw error;
 
     const row = (data as any[])[0];
-    const instanceId   = row.instance_id    as string;
+    const instanceId    = row.instance_id    as string;
     const generatedCode = row.generated_code as string;
-    const hadExisting  = row.had_existing_items as boolean;
+    const hadExisting   = row.had_existing_items as boolean;
 
-    // Fetch the created instance + its items
     const { items, ...instance } = await this.getInstance(instanceId);
 
     await auditService.log({
@@ -398,11 +400,10 @@ export const ppiService = {
     });
     if (error) throw error;
 
-    const row = (data as any[])[0];
+    const row           = (data as any[])[0];
     const instanceId    = row.instance_id    as string;
     const generatedCode = row.generated_code as string;
 
-    // Fetch the created instance
     const { data: inst, error: fetchErr } = await supabase
       .from("ppi_instances")
       .select("*")
@@ -423,8 +424,8 @@ export const ppiService = {
   },
 
   /**
-   * Transition instance status.
-   * Auto-sets closed_at when moving to 'approved' | 'rejected' | 'archived'.
+   * Transition instance status via server-side validated DB function.
+   * The DB function enforces allowed transitions and sets closed_at automatically.
    */
   async updateInstanceStatus(
     instanceId: string,
@@ -432,31 +433,15 @@ export const ppiService = {
     fromStatus: PpiInstanceStatus,
     toStatus: PpiInstanceStatus
   ): Promise<PpiInstance> {
-    const isTerminal = ["approved", "rejected", "archived"].includes(toStatus);
-    const payload: Record<string, unknown> = {
-      status: toStatus,
-      closed_at: isTerminal ? new Date().toISOString() : null,
-    };
-
-    const { data, error } = await supabase
-      .from("ppi_instances")
-      .update(payload)
-      .eq("id", instanceId)
-      .select()
-      .single();
+    // Use server-side validated transition function
+    const { data, error } = await supabase.rpc("fn_ppi_instance_transition" as any, {
+      p_instance_id: instanceId,
+      p_to_status:   toStatus,
+    });
     if (error) throw error;
 
-    await auditService.log({
-      projectId,
-      entity: "ppi_instances",
-      entityId: instanceId,
-      action: "status_change",
-      module: "ppi",
-      description: `PPI status: ${fromStatus} → ${toStatus}`,
-      diff: { from: fromStatus, to: toStatus },
-    });
-
-    return data as PpiInstance;
+    // fn_ppi_instance_transition returns the updated row directly
+    return (Array.isArray(data) ? data[0] : data) as PpiInstance;
   },
 
   /** Update a single inspection item result. */
@@ -467,12 +452,14 @@ export const ppiService = {
     updates: UpdateInstanceItemInput
   ): Promise<PpiInstanceItem> {
     const { data: { user } } = await supabase.auth.getUser();
+    const isNok = updates.result === "nok" || updates.result === "fail";
     const payload = {
       result:           updates.result,
       notes:            updates.notes            ?? null,
       evidence_file_id: updates.evidence_file_id ?? null,
       checked_by:       updates.checked_by       ?? user?.id ?? null,
       checked_at:       updates.checked_at       ?? new Date().toISOString(),
+      requires_nc:      isNok,
     };
 
     const { data, error } = await supabase
@@ -489,8 +476,84 @@ export const ppiService = {
       entityId: itemId,
       action: "UPDATE",
       module: "ppi",
-      description: `Item resultado: ${updates.result}`,
-      diff: { instance_id: instanceId, result: updates.result },
+      description: `Item resultado: ${updates.result}${isNok ? " (requer NC)" : ""}`,
+      diff: { instance_id: instanceId, result: updates.result, requires_nc: isNok },
+    });
+
+    return data as PpiInstanceItem;
+  },
+
+  /**
+   * Bulk mark all pending items as 'ok' via server-side function.
+   * Returns the number of items updated.
+   */
+  async bulkMarkAllOk(instanceId: string, projectId: string): Promise<number> {
+    const { data, error } = await supabase.rpc("fn_ppi_bulk_mark_ok" as any, {
+      p_instance_id: instanceId,
+    });
+    if (error) throw error;
+
+    await auditService.log({
+      projectId,
+      entity: "ppi_instances",
+      entityId: instanceId,
+      action: "BULK_MARK_OK",
+      module: "ppi",
+      description: `${data} itens marcados como OK`,
+    });
+
+    return data as number;
+  },
+
+  /**
+   * Bulk save multiple item results in one transaction.
+   */
+  async bulkSaveItems(
+    instanceId: string,
+    projectId: string,
+    items: BulkItemUpdate[]
+  ): Promise<number> {
+    const { data, error } = await supabase.rpc("fn_ppi_bulk_save_items" as any, {
+      p_instance_id: instanceId,
+      p_items:       items,
+    });
+    if (error) throw error;
+
+    await auditService.log({
+      projectId,
+      entity: "ppi_instances",
+      entityId: instanceId,
+      action: "BULK_SAVE",
+      module: "ppi",
+      description: `${items.length} itens guardados em bloco`,
+    });
+
+    return data as number;
+  },
+
+  /**
+   * Link an NC to a specific instance item.
+   */
+  async linkNcToItem(
+    itemId: string,
+    ncId: string,
+    projectId: string
+  ): Promise<PpiInstanceItem> {
+    const { data, error } = await supabase
+      .from("ppi_instance_items")
+      .update({ nc_id: ncId, requires_nc: true })
+      .eq("id", itemId)
+      .select()
+      .single();
+    if (error) throw error;
+
+    await auditService.log({
+      projectId,
+      entity: "ppi_instance_items",
+      entityId: itemId,
+      action: "LINK_NC",
+      module: "ppi",
+      diff: { nc_id: ncId },
     });
 
     return data as PpiInstanceItem;

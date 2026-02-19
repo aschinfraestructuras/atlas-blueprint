@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   ArrowLeft, ClipboardCheck, CheckCircle2, XCircle,
-  Clock, Loader2, Construction, Calendar,
+  Clock, Loader2, Construction, Calendar, CheckCheck,
+  Save, AlertTriangle, Link2,
 } from "lucide-react";
 import {
   ppiService,
@@ -12,9 +13,11 @@ import {
   type PpiInstanceStatus,
   type PpiItemResult,
 } from "@/lib/services/ppiService";
+import { ncService } from "@/lib/services/ncService";
 import { PPIStatusBadge } from "@/components/ppi/PPIStatusBadge";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { useProject } from "@/contexts/ProjectContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -25,9 +28,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/components/ui/select";
+import { Progress } from "@/components/ui/progress";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -45,10 +46,12 @@ function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
   );
 }
 
-// ─── Result pill ──────────────────────────────────────────────────────────────
+// ─── Result styles ────────────────────────────────────────────────────────────
 
 const RESULT_STYLES: Record<PpiItemResult, string> = {
   pending: "border-amber-300/60 bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-300",
+  ok:      "border-emerald-400/40 bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400",
+  nok:     "border-destructive/40 bg-destructive/10 text-destructive",
   na:      "border-border text-muted-foreground bg-muted/40",
   pass:    "border-emerald-400/40 bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400",
   fail:    "border-destructive/40 bg-destructive/10 text-destructive",
@@ -64,16 +67,24 @@ function ResultBadge({ result, t }: { result: PpiItemResult; t: (k: string) => s
 
 // ─── Status workflow config ───────────────────────────────────────────────────
 
-type Transition = { from: PpiInstanceStatus; to: PpiInstanceStatus; labelKey: string; variant: "default" | "secondary" | "destructive" | "outline" };
+type Transition = {
+  from: PpiInstanceStatus;
+  to: PpiInstanceStatus;
+  labelKey: string;
+  variant: "default" | "secondary" | "destructive" | "outline";
+};
 
 const TRANSITIONS: Transition[] = [
-  { from: "draft",       to: "in_progress", labelKey: "ppi.status.in_progress", variant: "default"     },
-  { from: "in_progress", to: "submitted",   labelKey: "ppi.status.submitted",   variant: "default"     },
-  { from: "submitted",   to: "approved",    labelKey: "ppi.status.approved",    variant: "secondary"   },
-  { from: "submitted",   to: "rejected",    labelKey: "ppi.status.rejected",    variant: "destructive" },
-  { from: "rejected",    to: "in_progress", labelKey: "ppi.status.in_progress", variant: "default"     },
-  { from: "approved",    to: "archived",    labelKey: "ppi.status.archived",    variant: "outline"     },
+  { from: "draft",       to: "in_progress", labelKey: "ppi.transitions.start",    variant: "default"     },
+  { from: "in_progress", to: "submitted",   labelKey: "ppi.transitions.submit",   variant: "default"     },
+  { from: "submitted",   to: "approved",    labelKey: "ppi.transitions.approve",  variant: "secondary"   },
+  { from: "submitted",   to: "rejected",    labelKey: "ppi.transitions.reject",   variant: "destructive" },
+  { from: "rejected",    to: "in_progress", labelKey: "ppi.transitions.reopen",   variant: "default"     },
+  { from: "approved",    to: "archived",    labelKey: "ppi.transitions.archive",  variant: "outline"     },
 ];
+
+// Editable statuses
+const EDITABLE_STATUSES: PpiInstanceStatus[] = ["draft", "in_progress", "rejected"];
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
@@ -82,23 +93,30 @@ export default function PPIDetailPage() {
   const { id }            = useParams<{ id: string }>();
   const navigate          = useNavigate();
   const { activeProject } = useProject();
+  const { user }          = useAuth();
 
   const [instance,    setInstance]    = useState<PpiInstance | null>(null);
   const [items,       setItems]       = useState<PpiInstanceItem[]>([]);
   const [loading,     setLoading]     = useState(true);
-  const [saving,      setSaving]      = useState<string | null>(null); // itemId being saved
+  const [saving,      setSaving]      = useState<string | null>(null);
+  const [bulkSaving,  setBulkSaving]  = useState(false);
   const [workItem,    setWorkItem]    = useState<{ sector: string; disciplina: string } | null>(null);
 
-  // Notes state per item
-  const [notes, setNotes] = useState<Record<string, string>>({});
+  // Local draft for bulk editing: itemId → {result, notes}
+  const [draft, setDraft] = useState<Record<string, { result: PpiItemResult; notes: string }>>({});
+  const [dirtyItems, setDirtyItems] = useState<Set<string>>(new Set());
 
   // Status transition confirm
   const [pendingTransition, setPendingTransition] = useState<Transition | null>(null);
   const [transitioning,     setTransitioning]     = useState(false);
 
+  // NOK → NC dialog
+  const [ncDialogItem, setNcDialogItem] = useState<PpiInstanceItem | null>(null);
+  const [creatingNc,   setCreatingNc]   = useState(false);
+
   // ── Load ───────────────────────────────────────────────────────────────────
 
-  async function load() {
+  const load = useCallback(async () => {
     if (!id) return;
     setLoading(true);
     try {
@@ -106,11 +124,12 @@ export default function PPIDetailPage() {
       setInstance(inst);
       setItems(its);
 
-      const initialNotes: Record<string, string> = {};
-      its.forEach((it) => { initialNotes[it.id] = it.notes ?? ""; });
-      setNotes(initialNotes);
+      // Initialize draft from current values
+      const initialDraft: Record<string, { result: PpiItemResult; notes: string }> = {};
+      its.forEach((it) => { initialDraft[it.id] = { result: it.result, notes: it.notes ?? "" }; });
+      setDraft(initialDraft);
+      setDirtyItems(new Set());
 
-      // Load work item info
       const { data: wi } = await supabase
         .from("work_items")
         .select("sector, disciplina")
@@ -123,22 +142,56 @@ export default function PPIDetailPage() {
     } finally {
       setLoading(false);
     }
+  }, [id, t, navigate]);
+
+  useEffect(() => { load(); }, [load]);
+
+  // ── Draft edit helpers ─────────────────────────────────────────────────────
+
+  const isReadOnly = instance ? !EDITABLE_STATUSES.includes(instance.status) : true;
+
+  function setItemResult(itemId: string, result: PpiItemResult) {
+    setDraft((prev) => ({ ...prev, [itemId]: { ...prev[itemId], result } }));
+    setDirtyItems((prev) => new Set(prev).add(itemId));
   }
 
-  useEffect(() => { load(); }, [id]);
+  function setItemNotes(itemId: string, notes: string) {
+    setDraft((prev) => ({ ...prev, [itemId]: { ...prev[itemId], notes } }));
+    setDirtyItems((prev) => new Set(prev).add(itemId));
+  }
 
-  // ── Update item result ─────────────────────────────────────────────────────
+  // ── Bulk save ──────────────────────────────────────────────────────────────
 
-  async function handleResultChange(item: PpiInstanceItem, result: PpiItemResult) {
-    if (!activeProject) return;
-    setSaving(item.id);
+  async function handleBulkSave() {
+    if (!activeProject || !instance || dirtyItems.size === 0) return;
+    setBulkSaving(true);
     try {
-      const updated = await ppiService.updateInstanceItemResult(
-        item.id, instance!.id, activeProject.id,
-        { result, notes: notes[item.id] || null }
-      );
-      setItems((prev) => prev.map((it) => it.id === item.id ? { ...it, ...updated } : it));
-      toast({ title: t("ppi.instances.toast.itemSaved") });
+      const payload = Array.from(dirtyItems).map((id) => ({
+        id,
+        result: draft[id].result,
+        notes:  draft[id].notes || null,
+      }));
+
+      await ppiService.bulkSaveItems(instance.id, activeProject.id, payload);
+
+      // Refresh items from server
+      const { data: freshItems } = await supabase
+        .from("ppi_instance_items")
+        .select("*")
+        .eq("instance_id", instance.id)
+        .order("item_no", { ascending: true });
+
+      const updated = (freshItems ?? []) as PpiInstanceItem[];
+      setItems(updated);
+      setDirtyItems(new Set());
+
+      // Check if any NOK items were saved — open NC prompt for the first one
+      const nokItems = updated.filter((it) => (it.result === "nok" || it.result === "fail") && !it.nc_id);
+      if (nokItems.length > 0) {
+        setNcDialogItem(nokItems[0]);
+      }
+
+      toast({ title: t("ppi.instances.toast.bulkSaved", { count: payload.length }) });
     } catch (err) {
       toast({
         title: t("ppi.instances.toast.error"),
@@ -146,24 +199,42 @@ export default function PPIDetailPage() {
         variant: "destructive",
       });
     } finally {
-      setSaving(null);
+      setBulkSaving(false);
     }
   }
 
-  async function handleNotesSave(item: PpiInstanceItem) {
-    if (!activeProject) return;
-    setSaving(item.id + "_note");
+  // ── Mark all OK ────────────────────────────────────────────────────────────
+
+  async function handleMarkAllOk() {
+    if (!activeProject || !instance) return;
+    setBulkSaving(true);
     try {
-      await ppiService.updateInstanceItemResult(
-        item.id, instance!.id, activeProject.id,
-        { result: item.result, notes: notes[item.id] || null }
-      );
-      setItems((prev) => prev.map((it) => it.id === item.id ? { ...it, notes: notes[item.id] } : it));
-      toast({ title: t("ppi.instances.toast.itemSaved") });
+      const count = await ppiService.bulkMarkAllOk(instance.id, activeProject.id);
+
+      const { data: freshItems } = await supabase
+        .from("ppi_instance_items")
+        .select("*")
+        .eq("instance_id", instance.id)
+        .order("item_no", { ascending: true });
+
+      const updated = (freshItems ?? []) as PpiInstanceItem[];
+      setItems(updated);
+
+      // Sync draft
+      const newDraft: Record<string, { result: PpiItemResult; notes: string }> = {};
+      updated.forEach((it) => { newDraft[it.id] = { result: it.result, notes: it.notes ?? "" }; });
+      setDraft(newDraft);
+      setDirtyItems(new Set());
+
+      toast({ title: t("ppi.instances.toast.allMarkedOk", { count }) });
     } catch (err) {
-      toast({ title: t("ppi.instances.toast.error"), variant: "destructive" });
+      toast({
+        title: t("ppi.instances.toast.error"),
+        description: err instanceof Error ? err.message : String(err),
+        variant: "destructive",
+      });
     } finally {
-      setSaving(null);
+      setBulkSaving(false);
     }
   }
 
@@ -179,19 +250,61 @@ export default function PPIDetailPage() {
       toast({ title: t("ppi.instances.toast.statusChanged", { status: t(`ppi.status.${pendingTransition.to}`) }) });
       load();
     } catch (err) {
-      toast({ title: t("ppi.instances.toast.error"), variant: "destructive" });
+      toast({
+        title: t("ppi.instances.toast.error"),
+        description: err instanceof Error ? err.message : String(err),
+        variant: "destructive",
+      });
     } finally {
       setTransitioning(false);
       setPendingTransition(null);
     }
   }
 
+  // ── Create NC from NOK item ────────────────────────────────────────────────
+
+  async function handleCreateNc() {
+    if (!ncDialogItem || !instance || !activeProject || !user) return;
+    setCreatingNc(true);
+    try {
+      const nc = await ncService.create({
+        project_id:  activeProject.id,
+        description: `NC gerada a partir de PPI ${instance.code} — item #${ncDialogItem.item_no}: ${ncDialogItem.label}`,
+        severity:    "medium",
+        status:      "open",
+        created_by:  user.id,
+        reference:   instance.code,
+      });
+
+      // Link NC to item
+      await ppiService.linkNcToItem(ncDialogItem.id, nc.id, activeProject.id);
+
+      // Update local state
+      setItems((prev) =>
+        prev.map((it) => it.id === ncDialogItem.id ? { ...it, nc_id: nc.id, requires_nc: true } : it)
+      );
+
+      toast({ title: t("ppi.instances.toast.ncCreated") });
+      setNcDialogItem(null);
+    } catch (err) {
+      toast({
+        title: t("ppi.instances.toast.error"),
+        description: err instanceof Error ? err.message : String(err),
+        variant: "destructive",
+      });
+    } finally {
+      setCreatingNc(false);
+    }
+  }
+
   // ── Progress ───────────────────────────────────────────────────────────────
 
   const pendingCount = items.filter((it) => it.result === "pending").length;
-  const passCount    = items.filter((it) => it.result === "pass").length;
-  const failCount    = items.filter((it) => it.result === "fail").length;
+  const okCount      = items.filter((it) => it.result === "ok" || it.result === "pass").length;
+  const nokCount     = items.filter((it) => it.result === "nok" || it.result === "fail").length;
   const naCount      = items.filter((it) => it.result === "na").length;
+  const totalReviewed = okCount + nokCount + naCount;
+  const progressPct   = items.length > 0 ? Math.round((totalReviewed / items.length) * 100) : 0;
 
   const availableTransitions = instance
     ? TRANSITIONS.filter((tr) => tr.from === instance.status)
@@ -213,7 +326,7 @@ export default function PPIDetailPage() {
   return (
     <div className="space-y-6 max-w-5xl mx-auto animate-fade-in">
       {/* ── Back + Header ────────────────────────────────────────────── */}
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex items-start justify-between gap-4 flex-wrap">
         <div className="flex items-start gap-3">
           <Button variant="ghost" size="icon" onClick={() => navigate("/ppi")} className="mt-0.5">
             <ArrowLeft className="h-4 w-4" />
@@ -226,7 +339,7 @@ export default function PPIDetailPage() {
               <ClipboardCheck className="h-5 w-5 text-muted-foreground" />
               <span className="font-mono">{instance.code}</span>
             </h1>
-            <div className="flex items-center gap-2 mt-1.5">
+            <div className="flex items-center gap-2 mt-1.5 flex-wrap">
               <PPIStatusBadge status={instance.status} />
               {workItem && (
                 <span className="text-xs text-muted-foreground">
@@ -237,24 +350,58 @@ export default function PPIDetailPage() {
           </div>
         </div>
 
-        {/* Status transition buttons */}
-        {availableTransitions.length > 0 && (
-          <div className="flex items-center gap-2 flex-wrap">
-            {availableTransitions.map((tr) => (
+        {/* Action buttons area */}
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* Bulk actions (only when editable) */}
+          {!isReadOnly && items.length > 0 && (
+            <>
+              {dirtyItems.size > 0 && (
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={handleBulkSave}
+                  disabled={bulkSaving}
+                  className="gap-1.5"
+                >
+                  {bulkSaving
+                    ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    : <Save className="h-3.5 w-3.5" />}
+                  {t("ppi.instances.detail.bulkSave")}
+                  <Badge variant="secondary" className="ml-1 text-[10px] px-1.5 py-px">
+                    {dirtyItems.size}
+                  </Badge>
+                </Button>
+              )}
               <Button
-                key={tr.to}
-                variant={tr.variant}
+                variant="outline"
                 size="sm"
-                onClick={() => setPendingTransition(tr)}
+                onClick={handleMarkAllOk}
+                disabled={bulkSaving || pendingCount === 0}
                 className="gap-1.5"
               >
-                {tr.to === "approved" && <CheckCircle2 className="h-3.5 w-3.5" />}
-                {tr.to === "rejected" && <XCircle className="h-3.5 w-3.5" />}
-                {t(tr.labelKey)}
+                {bulkSaving
+                  ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  : <CheckCheck className="h-3.5 w-3.5" />}
+                {t("ppi.instances.detail.markAllOk")}
               </Button>
-            ))}
-          </div>
-        )}
+            </>
+          )}
+
+          {/* Status transition buttons */}
+          {availableTransitions.map((tr) => (
+            <Button
+              key={tr.to}
+              variant={tr.variant}
+              size="sm"
+              onClick={() => setPendingTransition(tr)}
+              className="gap-1.5"
+            >
+              {tr.to === "approved"  && <CheckCircle2 className="h-3.5 w-3.5" />}
+              {tr.to === "rejected"  && <XCircle      className="h-3.5 w-3.5" />}
+              {t(tr.labelKey)}
+            </Button>
+          ))}
+        </div>
       </div>
 
       {/* ── Info card ────────────────────────────────────────────────── */}
@@ -296,34 +443,43 @@ export default function PPIDetailPage() {
                 </span>
               }
             />
-          </div>
-          <div>
             {instance.closed_at && (
               <InfoRow
                 label={t("ppi.instances.detail.closedAt")}
                 value={new Date(instance.closed_at).toLocaleDateString()}
               />
             )}
+          </div>
+          <div>
             {/* Progress summary */}
             <div className="py-2">
               <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground mb-2">
                 {t("ppi.instances.table.progress")}
               </p>
-              <div className="flex items-center gap-2 flex-wrap">
-                {pendingCount > 0 && (
-                  <Badge variant="outline" className="gap-1 text-xs border-amber-300/60 bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-300">
-                    <Clock className="h-3 w-3" /> {pendingCount} {t("ppi.instances.results.pending")}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span>{totalReviewed}/{items.length} {t("ppi.instances.detail.reviewed")}</span>
+                  <span className="font-bold">{progressPct}%</span>
+                </div>
+                <Progress value={progressPct} className="h-1.5" />
+                <div className="flex items-center gap-2 flex-wrap mt-1">
+                  {pendingCount > 0 && (
+                    <Badge variant="outline" className="gap-1 text-xs border-amber-300/60 bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-300">
+                      <Clock className="h-3 w-3" /> {pendingCount} {t("ppi.instances.results.pending")}
+                    </Badge>
+                  )}
+                  <Badge variant="outline" className="gap-1 text-xs border-emerald-400/40 bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400">
+                    <CheckCircle2 className="h-3 w-3" /> {okCount} {t("ppi.instances.results.ok")}
                   </Badge>
-                )}
-                <Badge variant="outline" className="gap-1 text-xs border-emerald-400/40 bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400">
-                  <CheckCircle2 className="h-3 w-3" /> {passCount} {t("ppi.instances.results.pass")}
-                </Badge>
-                <Badge variant="outline" className="gap-1 text-xs border-destructive/40 text-destructive">
-                  <XCircle className="h-3 w-3" /> {failCount} {t("ppi.instances.results.fail")}
-                </Badge>
-                <Badge variant="outline" className="text-xs text-muted-foreground">
-                  {naCount} {t("ppi.instances.results.na")}
-                </Badge>
+                  {nokCount > 0 && (
+                    <Badge variant="outline" className="gap-1 text-xs border-destructive/40 text-destructive">
+                      <XCircle className="h-3 w-3" /> {nokCount} {t("ppi.instances.results.nok")}
+                    </Badge>
+                  )}
+                  <Badge variant="outline" className="text-xs text-muted-foreground">
+                    {naCount} {t("ppi.instances.results.na")}
+                  </Badge>
+                </div>
               </div>
             </div>
           </div>
@@ -365,93 +521,155 @@ export default function PPIDetailPage() {
                         <th className="text-left px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                           {t("ppi.instances.items.label")}
                         </th>
-                        <th className="text-left px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground w-36">
+                        <th className="text-left px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground w-44">
                           {t("ppi.instances.items.result")}
                         </th>
                         <th className="text-left px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground hidden md:table-cell">
                           {t("ppi.instances.items.notes")}
                         </th>
-                        <th className="w-8" />
+                        <th className="w-10 px-2" />
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-border">
                       {items.map((item) => {
-                        const isSaving = saving === item.id || saving === item.id + "_note";
-                        const isReadOnly = ["approved", "archived"].includes(instance.status);
+                        const d = draft[item.id] ?? { result: item.result, notes: item.notes ?? "" };
+                        const isDirty    = dirtyItems.has(item.id);
+                        const isNok      = d.result === "nok" || d.result === "fail";
+                        const hasNc      = !!item.nc_id;
+                        const itemSaving = saving === item.id;
+
                         return (
-                          <tr key={item.id} className="hover:bg-muted/10 transition-colors">
-                            <td className="px-4 py-3 text-xs font-mono text-muted-foreground">
+                          <tr
+                            key={item.id}
+                            className={cn(
+                              "transition-colors",
+                              isDirty ? "bg-primary/5" : "hover:bg-muted/10",
+                              isNok && !hasNc && "bg-destructive/5"
+                            )}
+                          >
+                            {/* # */}
+                            <td className="px-4 py-3 text-xs font-mono text-muted-foreground align-top pt-4">
                               {item.item_no}
                             </td>
-                            <td className="px-4 py-3">
+
+                            {/* Label */}
+                            <td className="px-4 py-3 align-top pt-4">
                               <p className="font-medium text-foreground text-sm">{item.label}</p>
                               <p className="text-[10px] font-mono text-muted-foreground/70 mt-0.5">{item.check_code}</p>
+                              {isNok && (
+                                <div className="mt-1.5 flex items-center gap-1">
+                                  {hasNc ? (
+                                    <Badge variant="outline" className="gap-1 text-[10px] border-destructive/40 text-destructive">
+                                      <Link2 className="h-2.5 w-2.5" />
+                                      NC {item.nc_id!.slice(0, 6)}…
+                                    </Badge>
+                                  ) : (
+                                    <Badge variant="outline" className="gap-1 text-[10px] border-amber-400/40 bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400">
+                                      <AlertTriangle className="h-2.5 w-2.5" />
+                                      {t("ppi.instances.items.requiresNc")}
+                                    </Badge>
+                                  )}
+                                </div>
+                              )}
                             </td>
-                            <td className="px-4 py-3">
+
+                            {/* Result selector */}
+                            <td className="px-4 py-3 align-top pt-4">
                               {isReadOnly ? (
-                                <ResultBadge result={item.result} t={t} />
+                                <ResultBadge result={d.result} t={t} />
                               ) : (
                                 <div className="flex gap-1 flex-wrap">
-                                  {/* 'pending' is initial-only; reviewers choose na/pass/fail */}
-                                  {item.result === "pending" && (
+                                  {/* If still pending, show grey pill */}
+                                  {d.result === "pending" && !isDirty && (
                                     <span className={cn("rounded-md border px-2 py-0.5 text-xs font-medium", RESULT_STYLES["pending"])}>
                                       {t("ppi.instances.results.pending")}
                                     </span>
                                   )}
-                                  {(["na", "pass", "fail"] as PpiItemResult[]).map((r) => (
+                                  {(["ok", "nok", "na"] as PpiItemResult[]).map((r) => (
                                     <button
                                       key={r}
-                                      disabled={isSaving}
-                                      onClick={() => handleResultChange(item, r)}
+                                      disabled={itemSaving || bulkSaving}
+                                      onClick={() => setItemResult(item.id, r)}
                                       className={cn(
                                         "rounded-md border px-2 py-0.5 text-xs font-medium transition-all",
-                                        item.result === r
+                                        d.result === r
                                           ? RESULT_STYLES[r]
-                                          : "border-border text-muted-foreground hover:border-primary/40",
-                                        isSaving && "opacity-50 cursor-not-allowed"
+                                          : "border-border text-muted-foreground hover:border-primary/40 hover:text-foreground",
+                                        (itemSaving || bulkSaving) && "opacity-50 cursor-not-allowed"
                                       )}
                                     >
                                       {t(`ppi.instances.results.${r}`)}
                                     </button>
                                   ))}
-                                  {isSaving && <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground self-center" />}
                                 </div>
                               )}
                             </td>
-                            <td className="px-4 py-3 hidden md:table-cell">
+
+                            {/* Notes */}
+                            <td className="px-4 py-3 hidden md:table-cell align-top pt-4">
                               {isReadOnly ? (
                                 <span className="text-xs text-muted-foreground">{item.notes || "—"}</span>
                               ) : (
-                                <div className="flex gap-2 items-start">
-                                  <Textarea
-                                    rows={1}
-                                    value={notes[item.id] ?? ""}
-                                    onChange={(e) =>
-                                      setNotes((prev) => ({ ...prev, [item.id]: e.target.value }))
-                                    }
-                                    placeholder={t("ppi.instances.items.notesPlaceholder")}
-                                    className="text-xs min-w-[140px] resize-none h-8 py-1"
-                                  />
-                                  <Button
-                                    size="icon"
-                                    variant="ghost"
-                                    className="h-8 w-8 flex-shrink-0"
-                                    onClick={() => handleNotesSave(item)}
-                                    disabled={saving === item.id + "_note"}
-                                  >
-                                    {saving === item.id + "_note"
-                                      ? <Loader2 className="h-3 w-3 animate-spin" />
-                                      : <CheckCircle2 className="h-3.5 w-3.5 text-muted-foreground" />}
-                                  </Button>
-                                </div>
+                                <Textarea
+                                  rows={1}
+                                  value={d.notes}
+                                  onChange={(e) => setItemNotes(item.id, e.target.value)}
+                                  placeholder={t("ppi.instances.items.notesPlaceholder")}
+                                  className="text-xs min-w-[140px] resize-none h-8 py-1"
+                                />
                               )}
                             </td>
-                            <td />
+
+                            {/* NOK → NC button */}
+                            <td className="px-2 py-3 align-top pt-4">
+                              {!isReadOnly && isNok && !hasNc && (
+                                <Button
+                                  size="icon"
+                                  variant="ghost"
+                                  className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10"
+                                  title={t("ppi.instances.detail.createNc")}
+                                  onClick={() => setNcDialogItem(item)}
+                                >
+                                  <AlertTriangle className="h-3.5 w-3.5" />
+                                </Button>
+                              )}
+                            </td>
                           </tr>
                         );
                       })}
                     </tbody>
                   </table>
+
+                  {/* Sticky bulk-save footer when there are dirty items */}
+                  {!isReadOnly && dirtyItems.size > 0 && (
+                    <div className="sticky bottom-0 border-t border-border bg-background/95 backdrop-blur px-4 py-3 flex items-center justify-between gap-3">
+                      <p className="text-xs text-muted-foreground">
+                        {t("ppi.instances.detail.unsavedChanges", { count: dirtyItems.size })}
+                      </p>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={load}
+                          disabled={bulkSaving}
+                        >
+                          {t("common.cancel")}
+                        </Button>
+                        <Button
+                          variant="default"
+                          size="sm"
+                          onClick={handleBulkSave}
+                          disabled={bulkSaving}
+                          className="gap-1.5"
+                        >
+                          {bulkSaving
+                            ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                            : <Save className="h-3.5 w-3.5" />}
+                          {t("ppi.instances.detail.bulkSave")}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </CardContent>
@@ -477,7 +695,7 @@ export default function PPIDetailPage() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {t("ppi.status." + (pendingTransition?.to ?? "draft"))}
+              {pendingTransition ? t(pendingTransition.labelKey) : ""}
             </AlertDialogTitle>
             <AlertDialogDescription>
               {instance.code} · {t("ppi.status." + instance.status)} → {t("ppi.status." + (pendingTransition?.to ?? "draft"))}
@@ -489,6 +707,40 @@ export default function PPIDetailPage() {
               {transitioning
                 ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
                 : t("common.confirm")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* ── NOK → Create NC dialog ─────────────────────────────────────── */}
+      <AlertDialog
+        open={!!ncDialogItem}
+        onOpenChange={(v) => { if (!v) setNcDialogItem(null); }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 text-destructive" />
+              {t("ppi.instances.detail.createNcTitle")}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("ppi.instances.detail.createNcDescription", {
+                item: ncDialogItem ? `#${ncDialogItem.item_no} ${ncDialogItem.label}` : "",
+              })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setNcDialogItem(null)}>
+              {t("ppi.instances.detail.createNcSkip")}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleCreateNc}
+              disabled={creatingNc}
+              className="bg-destructive hover:bg-destructive/90"
+            >
+              {creatingNc
+                ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                : t("ppi.instances.detail.createNcConfirm")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
