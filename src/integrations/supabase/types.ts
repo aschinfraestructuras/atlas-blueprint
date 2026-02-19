@@ -421,6 +421,7 @@ export type Database = {
           code: string
           created_at: string
           created_by: string | null
+          disciplina_outro: string | null
           id: string
           inspector_id: string | null
           opened_at: string
@@ -435,6 +436,7 @@ export type Database = {
           code: string
           created_at?: string
           created_by?: string | null
+          disciplina_outro?: string | null
           id?: string
           inspector_id?: string | null
           opened_at?: string
@@ -449,6 +451,7 @@ export type Database = {
           code?: string
           created_at?: string
           created_by?: string | null
+          disciplina_outro?: string | null
           id?: string
           inspector_id?: string | null
           opened_at?: string
@@ -536,6 +539,7 @@ export type Database = {
           created_by: string | null
           description: string | null
           disciplina: string
+          disciplina_outro: string | null
           id: string
           is_active: boolean
           project_id: string
@@ -549,6 +553,7 @@ export type Database = {
           created_by?: string | null
           description?: string | null
           disciplina: string
+          disciplina_outro?: string | null
           id?: string
           is_active?: boolean
           project_id: string
@@ -562,6 +567,7 @@ export type Database = {
           created_by?: string | null
           description?: string | null
           disciplina?: string
+          disciplina_outro?: string | null
           id?: string
           is_active?: boolean
           project_id?: string
