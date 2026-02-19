@@ -1069,6 +1069,27 @@
       "error": "Error al crear datos demo. Verifique los permisos o si existe una plantilla activa."
     }
   },
+  "export": {
+    "button": "Exportar",
+    "menuTitle": "Opciones de exportación",
+    "reportTitle": "Informe de Inspección PPI",
+    "bulkReportTitle": "Informe PPI Consolidado",
+    "generatedOn": "Generado el",
+    "page": "Página",
+    "of": "de",
+    "pdfSingle": "PDF — Esta inspección",
+    "pdfBulk": "PDF — Combinado",
+    "csvInstances": "CSV — Lista de inspecciones",
+    "csvItems": "CSV — Puntos de inspección",
+    "noData": "No hay inspecciones para exportar.",
+    "error": "Error al exportar.",
+    "fields": {
+      "project": "Proyecto",
+      "discipline": "Disciplina",
+      "linkedNc": "NC Vinculada",
+      "attachmentCount": "Nº Adjuntos"
+    }
+  },
   "attachments": {
     "title": "Adjuntos / Evidencias",
     "upload": "Añadir adjunto",

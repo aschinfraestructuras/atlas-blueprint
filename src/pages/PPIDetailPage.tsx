@@ -6,6 +6,8 @@ import {
   Clock, Loader2, Construction, Calendar, CheckCheck,
   Save, AlertTriangle, Link2,
 } from "lucide-react";
+import { PPIExportMenu } from "@/components/ppi/PPIExportMenu";
+import type { PpiInstanceForExport } from "@/lib/services/ppiExportService";
 import {
   ppiService,
   type PpiInstance,
@@ -101,6 +103,7 @@ export default function PPIDetailPage() {
   const [saving,      setSaving]      = useState<string | null>(null);
   const [bulkSaving,  setBulkSaving]  = useState(false);
   const [workItem,    setWorkItem]    = useState<{ sector: string; disciplina: string } | null>(null);
+  const [exportInst,  setExportInst]  = useState<PpiInstanceForExport | null>(null);
 
   // Local draft for bulk editing: itemId → {result, notes}
   const [draft, setDraft] = useState<Record<string, { result: PpiItemResult; notes: string }>>({});
@@ -136,6 +139,14 @@ export default function PPIDetailPage() {
         .eq("id", inst.work_item_id)
         .single();
       setWorkItem(wi ?? null);
+
+      // Build enriched instance for export
+      setExportInst({
+        ...inst,
+        items: its,
+        work_item_sector: wi?.sector ?? null,
+        work_item_disciplina: wi?.disciplina ?? null,
+      });
     } catch {
       toast({ title: t("ppi.instances.toast.error"), variant: "destructive" });
       navigate("/ppi");
@@ -352,6 +363,14 @@ export default function PPIDetailPage() {
 
         {/* Action buttons area */}
         <div className="flex items-center gap-2 flex-wrap">
+          {/* Export */}
+          {exportInst && (
+            <PPIExportMenu
+              instances={[exportInst]}
+              projectName={activeProject?.name ?? ""}
+              variant="single"
+            />
+          )}
           {/* Bulk actions (only when editable) */}
           {!isReadOnly && items.length > 0 && (
             <>
