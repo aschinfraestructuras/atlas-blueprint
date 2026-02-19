@@ -16,7 +16,10 @@ export const PPI_INSTANCE_STATUSES = [
 
 export type PpiInstanceStatus = typeof PPI_INSTANCE_STATUSES[number];
 
-export const PPI_ITEM_RESULTS = ["na", "pass", "fail"] as const;
+// 'pending' = not yet reviewed (initial state from template clone)
+// 'na'      = not applicable (user explicitly marks N/A)
+// 'pass'/'fail' = reviewed outcome
+export const PPI_ITEM_RESULTS = ["pending", "na", "pass", "fail"] as const;
 export type PpiItemResult = typeof PPI_ITEM_RESULTS[number];
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -332,111 +335,91 @@ export const ppiService = {
     return { ...(inst as PpiInstance), items: (items ?? []) as PpiInstanceItem[] };
   },
 
+
   /**
-   * Create a PPI instance from a template:
-   * 1. Insert the ppi_instance row.
-   * 2. Clone all ppi_template_items → ppi_instance_items (result = 'na').
+   * Create a PPI instance via the atomic DB function fn_create_ppi_instance.
+   * - If template_id provided: items cloned with result='pending', order preserved
+   * - If code is empty: auto-generated as PPI-{PROJECT_CODE}-{0001}
+   * - Fully transactional: any failure rolls back the entire creation
+   * - Guard: if instance already has items, no duplicate copy is made
    */
   async createInstanceFromTemplate(
     input: PpiInstanceInput,
     templateId: string
-  ): Promise<PpiInstance & { items: PpiInstanceItem[] }> {
-    // 1. Fetch template items first
-    const { data: tplItems, error: tplErr } = await supabase
-      .from("ppi_template_items")
-      .select("*")
-      .eq("template_id", templateId)
-      .order("sort_order", { ascending: true })
-      .order("item_no", { ascending: true });
-    if (tplErr) throw tplErr;
+  ): Promise<PpiInstance & { items: PpiInstanceItem[]; hadExistingItems: boolean }> {
+    const { data, error } = await supabase.rpc("fn_create_ppi_instance", {
+      p_project_id:       input.project_id,
+      p_work_item_id:     input.work_item_id,
+      p_template_id:      templateId,
+      p_code:             input.code || null,
+      p_inspector_id:     input.inspector_id    ?? null,
+      p_created_by:       input.created_by      ?? null,
+      p_disciplina_outro: input.disciplina_outro ?? null,
+    });
+    if (error) throw error;
 
-    // 2. Insert instance
-    const { data: inst, error: instErr } = await supabase
-      .from("ppi_instances")
-      .insert({
-        project_id:       input.project_id,
-        work_item_id:     input.work_item_id,
-        template_id:      templateId,
-        code:             input.code,
-        status:           "draft",
-        disciplina_outro: input.disciplina_outro ?? null,
-        inspector_id:     input.inspector_id ?? null,
-        created_by:       input.created_by   ?? null,
-      })
-      .select()
-      .single();
-    if (instErr) throw instErr;
+    const row = (data as any[])[0];
+    const instanceId   = row.instance_id    as string;
+    const generatedCode = row.generated_code as string;
+    const hadExisting  = row.had_existing_items as boolean;
 
-    const instance = inst as PpiInstance;
-
-    // 3. Clone items
-    const itemRows = ((tplItems ?? []) as PpiTemplateItem[]).map((ti) => ({
-      instance_id: instance.id,
-      item_no:     ti.item_no,
-      check_code:  ti.check_code,
-      label:       ti.label,
-      result:      "na" as PpiItemResult,
-      notes:       null,
-      checked_by:  null,
-      checked_at:  null,
-    }));
-
-    let clonedItems: PpiInstanceItem[] = [];
-    if (itemRows.length > 0) {
-      const { data: iItems, error: iErr } = await supabase
-        .from("ppi_instance_items")
-        .insert(itemRows)
-        .select();
-      if (iErr) throw iErr;
-      clonedItems = (iItems ?? []) as PpiInstanceItem[];
-    }
+    // Fetch the created instance + its items
+    const { items, ...instance } = await this.getInstance(instanceId);
 
     await auditService.log({
-      projectId:  input.project_id,
-      entity:     "ppi_instances",
-      entityId:   instance.id,
-      action:     "INSERT",
-      module:     "ppi",
-      description: `PPI criado: ${input.code} a partir do template ${templateId}`,
+      projectId:   input.project_id,
+      entity:      "ppi_instances",
+      entityId:    instanceId,
+      action:      "INSERT",
+      module:      "ppi",
+      description: `PPI criado: ${generatedCode} a partir do template ${templateId}`,
       diff: {
-        code:         input.code,
-        work_item_id: input.work_item_id,
-        template_id:  templateId,
-        items_cloned: clonedItems.length,
+        code:          generatedCode,
+        work_item_id:  input.work_item_id,
+        template_id:   templateId,
+        items_created: row.items_created,
+        had_existing:  hadExisting,
       },
     });
 
-    return { ...instance, items: clonedItems };
+    return { ...instance, items, hadExistingItems: hadExisting };
   },
 
-  /** Create a blank PPI instance (no template). */
-  async createBlankInstance(input: PpiInstanceInput): Promise<PpiInstance> {
-    const { data, error } = await supabase
-      .from("ppi_instances")
-      .insert({
-        project_id:       input.project_id,
-        work_item_id:     input.work_item_id,
-        template_id:      input.template_id      ?? null,
-        code:             input.code,
-        status:           "draft",
-        disciplina_outro: input.disciplina_outro ?? null,
-        inspector_id:     input.inspector_id     ?? null,
-        created_by:       input.created_by       ?? null,
-      })
-      .select()
-      .single();
+  /** Create a blank PPI instance (no template) via the atomic DB function. */
+  async createBlankInstance(input: PpiInstanceInput): Promise<PpiInstance & { generatedCode: string }> {
+    const { data, error } = await supabase.rpc("fn_create_ppi_instance", {
+      p_project_id:       input.project_id,
+      p_work_item_id:     input.work_item_id,
+      p_template_id:      null,
+      p_code:             input.code || null,
+      p_inspector_id:     input.inspector_id    ?? null,
+      p_created_by:       input.created_by      ?? null,
+      p_disciplina_outro: input.disciplina_outro ?? null,
+    });
     if (error) throw error;
 
+    const row = (data as any[])[0];
+    const instanceId    = row.instance_id    as string;
+    const generatedCode = row.generated_code as string;
+
+    // Fetch the created instance
+    const { data: inst, error: fetchErr } = await supabase
+      .from("ppi_instances")
+      .select("*")
+      .eq("id", instanceId)
+      .single();
+    if (fetchErr) throw fetchErr;
+
     await auditService.log({
-      projectId:  input.project_id,
-      entity:     "ppi_instances",
-      entityId:   (data as PpiInstance).id,
-      action:     "INSERT",
-      module:     "ppi",
-      description: `PPI criado (em branco): ${input.code}`,
+      projectId:   input.project_id,
+      entity:      "ppi_instances",
+      entityId:    instanceId,
+      action:      "INSERT",
+      module:      "ppi",
+      description: `PPI criado (em branco): ${generatedCode}`,
     });
 
-    return data as PpiInstance;
+    return { ...(inst as PpiInstance), generatedCode };
   },
 
   /**

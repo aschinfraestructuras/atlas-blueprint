@@ -1161,6 +1161,24 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      fn_create_ppi_instance: {
+        Args: {
+          p_code?: string
+          p_created_by?: string
+          p_disciplina_outro?: string
+          p_inspector_id?: string
+          p_project_id: string
+          p_template_id?: string
+          p_work_item_id: string
+        }
+        Returns: {
+          generated_code: string
+          had_existing_items: boolean
+          instance_id: string
+          items_created: number
+        }[]
+      }
+      fn_next_ppi_code: { Args: { p_project_id: string }; Returns: string }
       get_project_role: {
         Args: { _project_id: string; _user_id: string }
         Returns: string
