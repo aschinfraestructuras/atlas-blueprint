@@ -361,6 +361,224 @@ export type Database = {
           },
         ]
       }
+      ppi_instance_items: {
+        Row: {
+          check_code: string
+          checked_at: string | null
+          checked_by: string | null
+          evidence_file_id: string | null
+          id: string
+          instance_id: string
+          item_no: number
+          label: string
+          notes: string | null
+          result: string
+        }
+        Insert: {
+          check_code: string
+          checked_at?: string | null
+          checked_by?: string | null
+          evidence_file_id?: string | null
+          id?: string
+          instance_id: string
+          item_no: number
+          label: string
+          notes?: string | null
+          result?: string
+        }
+        Update: {
+          check_code?: string
+          checked_at?: string | null
+          checked_by?: string | null
+          evidence_file_id?: string | null
+          id?: string
+          instance_id?: string
+          item_no?: number
+          label?: string
+          notes?: string | null
+          result?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ppi_instance_items_evidence_file_id_fkey"
+            columns: ["evidence_file_id"]
+            isOneToOne: false
+            referencedRelation: "document_files"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ppi_instance_items_instance_id_fkey"
+            columns: ["instance_id"]
+            isOneToOne: false
+            referencedRelation: "ppi_instances"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ppi_instances: {
+        Row: {
+          closed_at: string | null
+          code: string
+          created_at: string
+          created_by: string | null
+          id: string
+          inspector_id: string | null
+          opened_at: string
+          project_id: string
+          status: string
+          template_id: string | null
+          updated_at: string
+          work_item_id: string
+        }
+        Insert: {
+          closed_at?: string | null
+          code: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          inspector_id?: string | null
+          opened_at?: string
+          project_id: string
+          status?: string
+          template_id?: string | null
+          updated_at?: string
+          work_item_id: string
+        }
+        Update: {
+          closed_at?: string | null
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          inspector_id?: string | null
+          opened_at?: string
+          project_id?: string
+          status?: string
+          template_id?: string | null
+          updated_at?: string
+          work_item_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ppi_instances_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ppi_instances_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "ppi_templates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ppi_instances_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ppi_template_items: {
+        Row: {
+          acceptance_criteria: string | null
+          check_code: string
+          evidence_required: boolean
+          id: string
+          item_no: number
+          label: string
+          method: string | null
+          required: boolean
+          sort_order: number
+          template_id: string
+        }
+        Insert: {
+          acceptance_criteria?: string | null
+          check_code: string
+          evidence_required?: boolean
+          id?: string
+          item_no: number
+          label: string
+          method?: string | null
+          required?: boolean
+          sort_order?: number
+          template_id: string
+        }
+        Update: {
+          acceptance_criteria?: string | null
+          check_code?: string
+          evidence_required?: boolean
+          id?: string
+          item_no?: number
+          label?: string
+          method?: string | null
+          required?: boolean
+          sort_order?: number
+          template_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ppi_template_items_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "ppi_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ppi_templates: {
+        Row: {
+          code: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          disciplina: string
+          id: string
+          is_active: boolean
+          project_id: string
+          title: string
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          disciplina: string
+          id?: string
+          is_active?: boolean
+          project_id: string
+          title: string
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          disciplina?: string
+          id?: string
+          is_active?: boolean
+          project_id?: string
+          title?: string
+          updated_at?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ppi_templates_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null

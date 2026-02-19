@@ -76,7 +76,8 @@
     "plans": "Planeamento & Planos",
     "survey": "Topografia",
     "subcontractors": "Subempreiteiros",
-    "workItems": "Work Items"
+    "workItems": "Work Items",
+    "ppi": "PPI"
   },
   "topbar": {
     "language": "Idioma",
@@ -809,6 +810,191 @@
     },
     "emptyState": {
       "subtitle": "Este projeto ainda não tem work items. Crie o primeiro."
+    }
+  },
+  "ppi": {
+    "title": "Planos de Pontos de Inspeção (PPI)",
+    "subtitle": "Gerir templates e instâncias de inspeção por work item",
+    "nav": "PPI",
+    "templates": {
+      "title": "Templates PPI",
+      "subtitle": "Templates reutilizáveis de pontos de inspeção",
+      "new": "Novo Template",
+      "edit": "Editar Template",
+      "archive": "Arquivar",
+      "activate": "Ativar",
+      "addItems": "Adicionar Pontos",
+      "noItems": "Este template não tem pontos de inspeção.",
+      "empty": "Nenhum template encontrado para este projeto.",
+      "searchPlaceholder": "Pesquisar por código ou título…",
+      "filters": {
+        "allDisciplines": "Todas as disciplinas",
+        "activeOnly": "Apenas ativos",
+        "all": "Todos"
+      },
+      "table": {
+        "code": "Código",
+        "title": "Título",
+        "disciplina": "Disciplina",
+        "version": "Versão",
+        "items": "Nº Pontos",
+        "status": "Estado",
+        "actions": "Ações"
+      },
+      "form": {
+        "titleCreate": "Novo Template PPI",
+        "titleEdit": "Editar Template PPI",
+        "code": "Código do Template",
+        "codePlaceholder": "ex: PPI-EST-FOUND",
+        "title": "Título",
+        "titlePlaceholder": "ex: Inspeção de Fundações",
+        "disciplina": "Disciplina",
+        "description": "Descrição",
+        "descriptionPlaceholder": "Âmbito e objetivo do template…",
+        "version": "Versão",
+        "isActive": "Template ativo",
+        "saving": "A guardar…",
+        "createBtn": "Criar Template",
+        "saveBtn": "Guardar alterações",
+        "cancel": "Cancelar"
+      },
+      "items": {
+        "itemNo": "Nº",
+        "checkCode": "Código",
+        "label": "Descrição",
+        "method": "Método",
+        "criteria": "Critérios de Aceitação",
+        "required": "Obrigatório",
+        "evidenceRequired": "Evidência Obrigatória",
+        "sortOrder": "Ordem"
+      },
+      "validation": {
+        "codeRequired": "O código do template é obrigatório.",
+        "titleRequired": "O título é obrigatório.",
+        "disciplinaRequired": "A disciplina é obrigatória.",
+        "codeUnique": "Já existe um template com este código neste projeto.",
+        "itemLabelRequired": "A descrição do ponto é obrigatória.",
+        "itemCheckCodeRequired": "O código de verificação é obrigatório."
+      },
+      "toast": {
+        "created": "Template PPI criado com sucesso.",
+        "updated": "Template atualizado com sucesso.",
+        "archived": "Template arquivado.",
+        "activated": "Template ativado.",
+        "error": "Ocorreu um erro. Tente novamente."
+      },
+      "status": {
+        "active": "Ativo",
+        "inactive": "Arquivado"
+      }
+    },
+    "instances": {
+      "title": "Instâncias PPI",
+      "subtitle": "Registos de inspeção ativos",
+      "new": "Nova Inspeção",
+      "newFromTemplate": "Nova Inspeção (de Template)",
+      "newBlank": "Nova Inspeção (em Branco)",
+      "empty": "Nenhuma inspeção encontrada.",
+      "searchPlaceholder": "Pesquisar por código…",
+      "filters": {
+        "allStatuses": "Todos os estados",
+        "allDisciplines": "Todas as disciplinas",
+        "allWorkItems": "Todos os work items"
+      },
+      "table": {
+        "code": "Código PPI",
+        "workItem": "Work Item",
+        "template": "Template",
+        "status": "Estado",
+        "openedAt": "Aberto em",
+        "closedAt": "Fechado em",
+        "inspector": "Inspetor",
+        "actions": "Ações",
+        "progress": "Progresso"
+      },
+      "detail": {
+        "back": "Voltar",
+        "title": "Detalhe PPI",
+        "generalInfo": "Informação Geral",
+        "workItem": "Work Item",
+        "template": "Template",
+        "inspector": "Inspetor",
+        "openedAt": "Aberto em",
+        "closedAt": "Fechado em",
+        "checklistTitle": "Pontos de Inspeção",
+        "noItems": "Nenhum ponto de inspeção nesta instância.",
+        "saveResults": "Guardar Resultados",
+        "submitForApproval": "Submeter para Aprovação",
+        "approve": "Aprovar",
+        "reject": "Rejeitar",
+        "archive": "Arquivar"
+      },
+      "form": {
+        "titleCreate": "Nova Inspeção PPI",
+        "code": "Código",
+        "codePlaceholder": "ex: PPI-000001",
+        "workItem": "Work Item",
+        "selectWorkItem": "Selecione um work item…",
+        "template": "Template",
+        "selectTemplate": "Selecione um template…",
+        "noTemplate": "Sem template (em branco)",
+        "inspector": "Inspetor",
+        "saving": "A guardar…",
+        "createBtn": "Criar Inspeção",
+        "cancel": "Cancelar"
+      },
+      "items": {
+        "itemNo": "Nº",
+        "checkCode": "Código",
+        "label": "Ponto de Inspeção",
+        "result": "Resultado",
+        "notes": "Observações",
+        "notesPlaceholder": "Observações adicionais…",
+        "evidence": "Evidência",
+        "checkedBy": "Verificado por",
+        "checkedAt": "Verificado em"
+      },
+      "results": {
+        "na": "N/A",
+        "pass": "Conforme",
+        "fail": "Não Conforme"
+      },
+      "validation": {
+        "codeRequired": "O código da inspeção é obrigatório.",
+        "workItemRequired": "O work item é obrigatório.",
+        "codeUnique": "Já existe uma inspeção com este código neste projeto."
+      },
+      "toast": {
+        "created": "Inspeção PPI criada com sucesso.",
+        "updated": "Inspeção atualizada.",
+        "statusChanged": "Estado alterado para {{status}}.",
+        "itemSaved": "Resultado guardado.",
+        "deleted": "Inspeção eliminada.",
+        "error": "Ocorreu um erro. Tente novamente."
+      }
+    },
+    "disciplinas": {
+      "geral":       "Geral",
+      "terras":      "Terraplenagem",
+      "firmes":      "Pavimentação",
+      "betao":       "Betão",
+      "estruturas":  "Estruturas",
+      "drenagem":    "Drenagem",
+      "ferrovia":    "Ferrovia",
+      "instalacoes": "Instalações",
+      "outros":      "Outros"
+    },
+    "status": {
+      "draft":       "Rascunho",
+      "in_progress": "Em Curso",
+      "submitted":   "Submetido",
+      "approved":    "Aprovado",
+      "rejected":    "Rejeitado",
+      "archived":    "Arquivado"
+    },
+    "templateStatus": {
+      "active":   "Ativo",
+      "inactive": "Arquivado"
     }
   },
   "attachments": {
