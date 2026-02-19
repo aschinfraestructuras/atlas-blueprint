@@ -940,7 +940,9 @@
       "form": {
         "titleCreate": "Nova Inspeção PPI",
         "code": "Código",
-        "codePlaceholder": "ex: PPI-000001",
+        "codeAutoHint": "opcional",
+        "codeAutoDescription": "Deixe vazio para gerar automaticamente (ex: {{example}})",
+        "codePlaceholder": "ex: PPI-PROJ-0001 (ou deixe vazio)",
         "workItem": "Work Item",
         "selectWorkItem": "Selecione um work item…",
         "template": "Template",
@@ -949,7 +951,8 @@
         "inspector": "Inspetor",
         "saving": "A guardar…",
         "createBtn": "Criar Inspeção",
-        "cancel": "Cancelar"
+        "cancel": "Cancelar",
+        "disciplineMismatch": "Atenção: a disciplina do work item ({{workItem}}) é diferente da disciplina do template ({{template}}). Pode continuar, mas verifique se a seleção está correta."
       },
       "items": {
         "itemNo": "Nº",
@@ -963,6 +966,7 @@
         "checkedAt": "Verificado em"
       },
       "results": {
+        "pending": "Pendente",
         "na": "N/A",
         "pass": "Conforme",
         "fail": "Não Conforme"
@@ -978,6 +982,7 @@
         "statusChanged": "Estado alterado para {{status}}.",
         "itemSaved": "Resultado guardado.",
         "deleted": "Inspeção eliminada.",
+        "hadExistingItems": "Os pontos de inspeção já existiam e não foram duplicados.",
         "error": "Ocorreu um erro. Tente novamente."
       }
     },

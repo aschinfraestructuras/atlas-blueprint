@@ -48,9 +48,10 @@ function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
 // ─── Result pill ──────────────────────────────────────────────────────────────
 
 const RESULT_STYLES: Record<PpiItemResult, string> = {
-  na:   "border-muted text-muted-foreground bg-muted/40",
-  pass: "border-emerald-400/40 bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400",
-  fail: "border-destructive/40 bg-destructive/10 text-destructive",
+  pending: "border-amber-300/60 bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-300",
+  na:      "border-border text-muted-foreground bg-muted/40",
+  pass:    "border-emerald-400/40 bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400",
+  fail:    "border-destructive/40 bg-destructive/10 text-destructive",
 };
 
 function ResultBadge({ result, t }: { result: PpiItemResult; t: (k: string) => string }) {
@@ -187,9 +188,10 @@ export default function PPIDetailPage() {
 
   // ── Progress ───────────────────────────────────────────────────────────────
 
-  const passCount = items.filter((it) => it.result === "pass").length;
-  const failCount = items.filter((it) => it.result === "fail").length;
-  const naCount   = items.filter((it) => it.result === "na").length;
+  const pendingCount = items.filter((it) => it.result === "pending").length;
+  const passCount    = items.filter((it) => it.result === "pass").length;
+  const failCount    = items.filter((it) => it.result === "fail").length;
+  const naCount      = items.filter((it) => it.result === "na").length;
 
   const availableTransitions = instance
     ? TRANSITIONS.filter((tr) => tr.from === instance.status)
@@ -308,6 +310,11 @@ export default function PPIDetailPage() {
                 {t("ppi.instances.table.progress")}
               </p>
               <div className="flex items-center gap-2 flex-wrap">
+                {pendingCount > 0 && (
+                  <Badge variant="outline" className="gap-1 text-xs border-amber-300/60 bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-300">
+                    <Clock className="h-3 w-3" /> {pendingCount} {t("ppi.instances.results.pending")}
+                  </Badge>
+                )}
                 <Badge variant="outline" className="gap-1 text-xs border-emerald-400/40 bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400">
                   <CheckCircle2 className="h-3 w-3" /> {passCount} {t("ppi.instances.results.pass")}
                 </Badge>
@@ -384,7 +391,13 @@ export default function PPIDetailPage() {
                               {isReadOnly ? (
                                 <ResultBadge result={item.result} t={t} />
                               ) : (
-                                <div className="flex gap-1">
+                                <div className="flex gap-1 flex-wrap">
+                                  {/* 'pending' is initial-only; reviewers choose na/pass/fail */}
+                                  {item.result === "pending" && (
+                                    <span className={cn("rounded-md border px-2 py-0.5 text-xs font-medium", RESULT_STYLES["pending"])}>
+                                      {t("ppi.instances.results.pending")}
+                                    </span>
+                                  )}
                                   {(["na", "pass", "fail"] as PpiItemResult[]).map((r) => (
                                     <button
                                       key={r}
