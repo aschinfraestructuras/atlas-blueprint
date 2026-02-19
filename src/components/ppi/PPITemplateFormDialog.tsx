@@ -45,11 +45,12 @@ const itemSchema = z.object({
 
 const makeSchema = (t: (k: string) => string) =>
   z.object({
-    code:        z.string().min(1, t("ppi.templates.validation.codeRequired")),
-    title:       z.string().min(1, t("ppi.templates.validation.titleRequired")),
-    disciplina:  z.string().min(1, t("ppi.templates.validation.disciplinaRequired")),
-    description: z.string().optional(),
-    items:       z.array(itemSchema),
+    code:             z.string().min(1, t("ppi.templates.validation.codeRequired")),
+    title:            z.string().min(1, t("ppi.templates.validation.titleRequired")),
+    disciplina:       z.string().min(1, t("ppi.templates.validation.disciplinaRequired")),
+    disciplina_outro: z.string().optional(),
+    description:      z.string().optional(),
+    items:            z.array(itemSchema),
   });
 
 type FormValues = z.infer<ReturnType<typeof makeSchema>>;
@@ -78,7 +79,7 @@ export function PPITemplateFormDialog({ open, onOpenChange, template, onSuccess 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      code: "", title: "", disciplina: "geral", description: "", items: [],
+      code: "", title: "", disciplina: "geral", disciplina_outro: "", description: "", items: [],
     },
   });
 
@@ -93,11 +94,12 @@ export function PPITemplateFormDialog({ open, onOpenChange, template, onSuccess 
     setCodeError(null);
     if (template) {
       form.reset({
-        code:        template.code,
-        title:       template.title,
-        disciplina:  template.disciplina,
-        description: template.description ?? "",
-        items:       [],
+        code:             template.code,
+        title:            template.title,
+        disciplina:       template.disciplina,
+        disciplina_outro: (template as any).disciplina_outro ?? "",
+        description:      template.description ?? "",
+        items:            [],
       });
       setLoadingItems(true);
       ppiService.getTemplate(template.id).then(({ items }) => {
@@ -112,7 +114,7 @@ export function PPITemplateFormDialog({ open, onOpenChange, template, onSuccess 
         form.setValue("items", mapped);
       }).finally(() => setLoadingItems(false));
     } else {
-      form.reset({ code: "", title: "", disciplina: "geral", description: "", items: [] });
+      form.reset({ code: "", title: "", disciplina: "geral", disciplina_outro: "", description: "", items: [] });
     }
   }, [open, template, form]);
 
@@ -142,21 +144,23 @@ export function PPITemplateFormDialog({ open, onOpenChange, template, onSuccess 
       let templateId: string;
       if (isEdit && template) {
         await ppiService.updateTemplate(template.id, activeProject.id, {
-          title:       values.title,
-          disciplina:  values.disciplina as any,
-          description: values.description || null,
+          title:            values.title,
+          disciplina:       values.disciplina as any,
+          disciplina_outro: values.disciplina === "outros" ? (values.disciplina_outro || null) : null,
+          description:      values.description || null,
         });
         templateId = template.id;
         // Replace items: delete old + re-insert
         await supabase.from("ppi_template_items").delete().eq("template_id", template.id);
       } else {
         const created = await ppiService.createTemplate({
-          project_id:  activeProject.id,
-          code:        values.code,
-          disciplina:  values.disciplina as any,
-          title:       values.title,
-          description: values.description || null,
-          created_by:  user.id,
+          project_id:       activeProject.id,
+          code:             values.code,
+          disciplina:       values.disciplina as any,
+          disciplina_outro: values.disciplina === "outros" ? (values.disciplina_outro || null) : null,
+          title:            values.title,
+          description:      values.description || null,
+          created_by:       user.id,
         });
         templateId = created.id;
       }
@@ -250,6 +254,19 @@ export function PPITemplateFormDialog({ open, onOpenChange, template, onSuccess 
                 </FormItem>
               )} />
             </div>
+
+            {/* disciplina_outro — shown only when disciplina = 'outros' */}
+            {form.watch("disciplina") === "outros" && (
+              <FormField control={form.control} name="disciplina_outro" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("ppi.templates.form.disciplinaOutro")}</FormLabel>
+                  <FormControl>
+                    <Input placeholder={t("ppi.templates.form.disciplinaOutroPlaceholder")} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            )}
 
             {/* Title */}
             <FormField control={form.control} name="title" render={({ field }) => (

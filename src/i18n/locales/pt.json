@@ -855,6 +855,8 @@
         "title": "Título",
         "titlePlaceholder": "ex: Inspeção de Fundações",
         "disciplina": "Disciplina",
+        "disciplinaOutro": "Especificar disciplina",
+        "disciplinaOutroPlaceholder": "ex: Impermeabilização, Aterro",
         "description": "Descrição",
         "descriptionPlaceholder": "Âmbito e objetivo do template…",
         "version": "Versão",
