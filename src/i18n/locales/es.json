@@ -785,9 +785,14 @@
       "pk": "PK",
       "createdAt": "Creado el",
       "tabs": {
-        "tests": "Ensayos",
-        "ncs": "No Conformidades",
+        "ppi":         "Inspecciones PPI",
+        "tests":       "Ensayos",
+        "ncs":         "No Conformidades",
         "attachments": "Adjuntos"
+      },
+      "ppiTab": {
+        "createPPI": "Crear PPI",
+        "empty":     "Ninguna inspección PPI asociada a este work item."
       },
       "emptyTests": "Ningún ensayo asociado",
       "emptyNcs": "Ninguna no conformidad asociada",
@@ -1019,6 +1024,19 @@
     "templateStatus": {
       "active":   "Activo",
       "inactive": "Archivado"
+    },
+    "demo": {
+      "templates": {
+        "button":   "Crear plantillas demo",
+        "tooltip":  "Crea 2 plantillas de ejemplo (PPI-EST-FOUND y PPI-DRN-PIPE) si aún no existen en este proyecto.",
+        "created":  "Plantillas demo creadas: {{codes}}",
+        "allExist": "Las plantillas demo ya existen: {{codes}}"
+      },
+      "instance": {
+        "button":  "Demo PPI",
+        "created": "Inspección demo creada: {{code}}"
+      },
+      "error": "Error al crear datos demo. Verifique los permisos o si existe una plantilla activa."
     }
   },
   "attachments": {
