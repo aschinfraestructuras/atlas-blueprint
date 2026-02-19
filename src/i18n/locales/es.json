@@ -729,6 +729,112 @@
       "description": "Ocurrió un error inesperado. Inténtelo de nuevo."
     }
   },
+  "workItems": {
+    "title": "Work Items",
+    "subtitle": "Gestión de frentes de obra y sectores",
+    "module": "Módulo",
+    "new": "Nuevo Work Item",
+    "count_one": "{{count}} ítem",
+    "count_other": "{{count}} ítems",
+    "searchPlaceholder": "Buscar sector, obra, lote…",
+    "filters": {
+      "allDisciplines": "Todas las disciplinas",
+      "allStatuses": "Todos los estados"
+    },
+    "table": {
+      "sector": "Sector",
+      "discipline": "Disciplina",
+      "obraLote": "Obra / Lote",
+      "element": "Elemento",
+      "pk": "PK",
+      "status": "Estado",
+      "actions": "Acciones"
+    },
+    "disciplines": {
+      "geral":      "General",
+      "terras":     "Movimiento de tierras",
+      "firmes":     "Firmes",
+      "betao":      "Hormigón",
+      "drenagem":   "Drenaje",
+      "estruturas": "Estructuras",
+      "ferrovia":   "Ferroviario",
+      "instalacoes":"Instalaciones",
+      "outros":     "Otros"
+    },
+    "status": {
+      "planned":     "Previsto",
+      "in_progress": "En Ejecución",
+      "hold":        "En Espera",
+      "completed":   "Completado",
+      "approved":    "Aprobado",
+      "archived":    "Archivado",
+      "cancelled":   "Cancelado"
+    },
+    "detail": {
+      "back": "Volver",
+      "breadcrumb": "Work Item",
+      "edit": "Editar",
+      "generalInfo": "Información General",
+      "sector": "Sector",
+      "discipline": "Disciplina",
+      "obra": "Obra",
+      "lote": "Lote",
+      "element": "Elemento",
+      "parte": "Parte",
+      "pk": "PK",
+      "createdAt": "Creado el",
+      "tabs": {
+        "tests": "Ensayos",
+        "ncs": "No Conformidades",
+        "attachments": "Adjuntos"
+      },
+      "emptyTests": "Ningún ensayo asociado",
+      "emptyNcs": "Ninguna no conformidad asociada",
+      "loadError": "Work item no encontrado"
+    },
+    "form": {
+      "titleCreate": "Nuevo Work Item",
+      "titleEdit": "Editar Work Item",
+      "sector": "Sector",
+      "sectorPlaceholder": "ej: Lote 1, Tramo A",
+      "discipline": "Disciplina",
+      "obra": "Obra",
+      "obraPlaceholder": "Identificación de la obra",
+      "lote": "Lote",
+      "lotePlaceholder": "ej: L1, L2",
+      "element": "Elemento",
+      "elementPlaceholder": "ej: Viaducto V1",
+      "parte": "Parte",
+      "partePlaceholder": "ej: Cimentaciones",
+      "pkStart": "PK Inicio (m)",
+      "pkEnd": "PK Fin (m)",
+      "pkPlaceholder": "ej: 15250",
+      "pkEndPlaceholder": "ej: 17500",
+      "status": "Estado",
+      "saving": "Guardando…",
+      "createBtn": "Crear Work Item",
+      "saveBtn": "Guardar cambios",
+      "cancel": "Cancelar",
+      "validation": {
+        "sectorRequired": "El sector es obligatorio.",
+        "disciplineRequired": "La disciplina es obligatoria.",
+        "pkEndInvalid": "PK Fin debe ser ≥ PK Inicio."
+      }
+    },
+    "toast": {
+      "created": "Work Item creado con éxito.",
+      "updated": "Work Item actualizado con éxito.",
+      "deleted": "Work Item eliminado.",
+      "error": "Ocurrió un error. Inténtelo de nuevo."
+    },
+    "deleteConfirm": {
+      "title": "¿Eliminar Work Item?",
+      "description": "El work item «{{sector}}» se eliminará permanentemente. Los ensayos y NCs asociados perderán la vinculación."
+    },
+    "emptyState": {
+      "subtitle": "Este proyecto aún no tiene work items. Cree el primero."
+    }
+  },
   "attachments": {
     "title": "Adjuntos / Evidencias",
     "upload": "Añadir adjunto",

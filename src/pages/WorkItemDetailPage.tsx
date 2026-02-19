@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   ArrowLeft, Construction, FlaskConical, AlertTriangle, Paperclip,
   Pencil, Calendar, MapPin,
@@ -18,19 +19,26 @@ import { toast } from "@/hooks/use-toast";
 
 // ─── Status badge ─────────────────────────────────────────────────────────────
 
-const STATUS_MAP: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
-  planned:     { label: "Previsto",    variant: "outline"     },
-  in_progress: { label: "Em Execução", variant: "default"     },
-  completed:   { label: "Concluído",   variant: "secondary"   },
-  cancelled:   { label: "Cancelado",   variant: "destructive" },
+const STATUS_VARIANT: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+  planned:     "outline",
+  in_progress: "default",
+  hold:        "outline",
+  completed:   "secondary",
+  approved:    "secondary",
+  archived:    "outline",
+  cancelled:   "destructive",
 };
 
 function StatusBadge({ status }: { status: string }) {
-  const meta = STATUS_MAP[status] ?? { label: status, variant: "outline" as const };
-  return <Badge variant={meta.variant} className="text-xs">{meta.label}</Badge>;
+  const { t } = useTranslation();
+  return (
+    <Badge variant={STATUS_VARIANT[status] ?? "outline"} className="text-xs">
+      {t(`workItems.status.${status}`, { defaultValue: status })}
+    </Badge>
+  );
 }
 
-// ─── NC status colors ─────────────────────────────────────────────────────────
+// ─── NC / Test status colors ──────────────────────────────────────────────────
 
 const NC_STATUS_COLORS: Record<string, string> = {
   open:        "hsl(2, 60%, 44%)",
@@ -61,18 +69,18 @@ function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function WorkItemDetailPage() {
+  const { t }             = useTranslation();
   const { id }            = useParams<{ id: string }>();
   const navigate          = useNavigate();
   const { activeProject } = useProject();
 
-  const [item,      setItem]      = useState<WorkItem | null>(null);
-  const [loading,   setLoading]   = useState(true);
-  const [editOpen,  setEditOpen]  = useState(false);
-  const [tests,     setTests]     = useState<any[]>([]);
-  const [ncs,       setNcs]       = useState<any[]>([]);
-  const [subLoading,setSubLoading]= useState(true);
+  const [item,       setItem]       = useState<WorkItem | null>(null);
+  const [loading,    setLoading]    = useState(true);
+  const [editOpen,   setEditOpen]   = useState(false);
+  const [tests,      setTests]      = useState<any[]>([]);
+  const [ncs,        setNcs]        = useState<any[]>([]);
+  const [subLoading, setSubLoading] = useState(true);
 
-  // ── Load work item ─────────────────────────────────────────────────────────
   async function loadItem() {
     if (!id) return;
     setLoading(true);
@@ -80,14 +88,13 @@ export default function WorkItemDetailPage() {
       const data = await workItemService.getById(id);
       setItem(data);
     } catch {
-      toast({ title: "Erro", description: "Work item não encontrado", variant: "destructive" });
+      toast({ title: t("workItems.detail.loadError"), variant: "destructive" });
       navigate("/work-items");
     } finally {
       setLoading(false);
     }
   }
 
-  // ── Load related tests + NCs ───────────────────────────────────────────────
   async function loadRelated() {
     if (!id) return;
     setSubLoading(true);
@@ -116,6 +123,7 @@ export default function WorkItemDetailPage() {
   useEffect(() => {
     loadItem();
     loadRelated();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   if (loading) {
@@ -139,7 +147,7 @@ export default function WorkItemDetailPage() {
           </Button>
           <div>
             <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground mb-1">
-              Work Item
+              {t("workItems.detail.breadcrumb")}
             </p>
             <h1 className="text-xl font-extrabold tracking-tight text-foreground flex items-center gap-2">
               <Construction className="h-5 w-5 text-muted-foreground" />
@@ -147,12 +155,14 @@ export default function WorkItemDetailPage() {
             </h1>
             <div className="flex items-center gap-2 mt-1.5">
               <StatusBadge status={item.status} />
-              <span className="text-xs text-muted-foreground">{item.disciplina}</span>
+              <span className="text-xs text-muted-foreground">
+                {t(`workItems.disciplines.${item.disciplina}`, { defaultValue: item.disciplina })}
+              </span>
             </div>
           </div>
         </div>
         <Button variant="outline" size="sm" onClick={() => setEditOpen(true)} className="gap-2 flex-shrink-0">
-          <Pencil className="h-3.5 w-3.5" /> Editar
+          <Pencil className="h-3.5 w-3.5" /> {t("workItems.detail.edit")}
         </Button>
       </div>
 
@@ -160,21 +170,21 @@ export default function WorkItemDetailPage() {
       <Card className="shadow-card">
         <CardHeader className="pb-2 pt-5 px-5">
           <CardTitle className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
-            Informação Geral
+            {t("workItems.detail.generalInfo")}
           </CardTitle>
         </CardHeader>
         <CardContent className="px-5 pb-5 grid grid-cols-1 md:grid-cols-2 gap-x-8">
           <div>
-            <InfoRow label="Sector"     value={item.sector} />
-            <InfoRow label="Disciplina" value={item.disciplina} />
-            <InfoRow label="Obra"       value={item.obra} />
-            <InfoRow label="Lote"       value={item.lote} />
+            <InfoRow label={t("workItems.detail.sector")}     value={item.sector} />
+            <InfoRow label={t("workItems.detail.discipline")} value={t(`workItems.disciplines.${item.disciplina}`, { defaultValue: item.disciplina })} />
+            <InfoRow label={t("workItems.detail.obra")}       value={item.obra} />
+            <InfoRow label={t("workItems.detail.lote")}       value={item.lote} />
           </div>
           <div>
-            <InfoRow label="Elemento" value={item.elemento} />
-            <InfoRow label="Parte"    value={item.parte} />
+            <InfoRow label={t("workItems.detail.element")} value={item.elemento} />
+            <InfoRow label={t("workItems.detail.parte")}   value={item.parte} />
             <InfoRow
-              label="PK"
+              label={t("workItems.detail.pk")}
               value={
                 <span className="font-mono text-xs">
                   {formatPk(item.pk_inicio, item.pk_fim)}
@@ -182,8 +192,8 @@ export default function WorkItemDetailPage() {
               }
             />
             <InfoRow
-              label="Criado em"
-              value={new Date(item.created_at).toLocaleDateString("pt-PT", {
+              label={t("workItems.detail.createdAt")}
+              value={new Date(item.created_at).toLocaleDateString(undefined, {
                 day: "2-digit", month: "short", year: "numeric",
               })}
             />
@@ -196,7 +206,7 @@ export default function WorkItemDetailPage() {
         <TabsList>
           <TabsTrigger value="tests" className="gap-1.5">
             <FlaskConical className="h-3.5 w-3.5" />
-            Ensaios
+            {t("workItems.detail.tabs.tests")}
             {tests.length > 0 && (
               <span className="ml-1 rounded-full bg-primary/10 px-1.5 py-px text-[10px] font-bold text-primary">
                 {tests.length}
@@ -205,7 +215,7 @@ export default function WorkItemDetailPage() {
           </TabsTrigger>
           <TabsTrigger value="ncs" className="gap-1.5">
             <AlertTriangle className="h-3.5 w-3.5" />
-            Não Conformidades
+            {t("workItems.detail.tabs.ncs")}
             {ncs.length > 0 && (
               <span className="ml-1 rounded-full bg-destructive/10 px-1.5 py-px text-[10px] font-bold text-destructive">
                 {ncs.length}
@@ -214,7 +224,7 @@ export default function WorkItemDetailPage() {
           </TabsTrigger>
           <TabsTrigger value="attachments" className="gap-1.5">
             <Paperclip className="h-3.5 w-3.5" />
-            Anexos
+            {t("workItems.detail.tabs.attachments")}
           </TabsTrigger>
         </TabsList>
 
@@ -229,38 +239,41 @@ export default function WorkItemDetailPage() {
               ) : tests.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-10 gap-2 text-muted-foreground">
                   <FlaskConical className="h-6 w-6 opacity-40" />
-                  <p className="text-sm">Nenhum ensaio associado</p>
+                  <p className="text-sm">{t("workItems.detail.emptyTests")}</p>
                 </div>
               ) : (
                 <ul className="divide-y divide-border">
-                  {tests.map((t) => (
-                    <li key={t.id} className="flex items-center gap-3 px-5 py-3">
-                      <div className="flex h-7 w-7 items-center justify-center rounded-full flex-shrink-0"
-                        style={{ background: `${TEST_STATUS_COLORS[t.status] ?? "#888"}18` }}>
-                        <FlaskConical className="h-3.5 w-3.5"
-                          style={{ color: TEST_STATUS_COLORS[t.status] ?? "#888" }} />
+                  {tests.map((tr) => (
+                    <li key={tr.id} className="flex items-center gap-3 px-5 py-3">
+                      <div
+                        className="flex h-7 w-7 items-center justify-center rounded-full flex-shrink-0"
+                        style={{ background: `${TEST_STATUS_COLORS[tr.status] ?? "#888"}18` }}
+                      >
+                        <FlaskConical
+                          className="h-3.5 w-3.5"
+                          style={{ color: TEST_STATUS_COLORS[tr.status] ?? "#888" }}
+                        />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium truncate">
-                          {t.tests_catalog?.name ?? "Ensaio"}{" "}
-                          <span className="text-muted-foreground font-normal">({t.tests_catalog?.code ?? "—"})</span>
+                          {tr.tests_catalog?.name ?? t("tests.unknownTest")}{" "}
+                          <span className="text-muted-foreground font-normal">({tr.tests_catalog?.code ?? "—"})</span>
                         </p>
                         <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
                           <Calendar className="h-3 w-3" />
-                          {new Date(t.date).toLocaleDateString("pt-PT")}
-                          {t.sample_ref && <><span>·</span><span>Ref: {t.sample_ref}</span></>}
-                          {t.location   && <><span>·</span><MapPin className="h-3 w-3" /><span>{t.location}</span></>}
+                          {new Date(tr.date).toLocaleDateString()}
+                          {tr.sample_ref && <><span>·</span><span>Ref: {tr.sample_ref}</span></>}
+                          {tr.location   && <><span>·</span><MapPin className="h-3 w-3" /><span>{tr.location}</span></>}
                         </div>
                       </div>
                       <Badge
                         variant={
-                          t.status === "pass"        ? "secondary"   :
-                          t.status === "fail"        ? "destructive" :
-                          t.status === "inconclusive"? "outline"     : "outline"
+                          tr.status === "pass"         ? "secondary"   :
+                          tr.status === "fail"         ? "destructive" : "outline"
                         }
                         className="text-xs"
                       >
-                        {t.status}
+                        {t(`tests.status.${tr.status}`, { defaultValue: tr.status })}
                       </Badge>
                     </li>
                   ))}
@@ -281,21 +294,23 @@ export default function WorkItemDetailPage() {
               ) : ncs.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-10 gap-2 text-muted-foreground">
                   <AlertTriangle className="h-6 w-6 opacity-40" />
-                  <p className="text-sm">Nenhuma não conformidade associada</p>
+                  <p className="text-sm">{t("workItems.detail.emptyNcs")}</p>
                 </div>
               ) : (
                 <ul className="divide-y divide-border">
                   {ncs.map((nc) => (
                     <li key={nc.id} className="flex items-start gap-3 px-5 py-3">
-                      <div className="flex h-7 w-7 items-center justify-center rounded-full flex-shrink-0 mt-0.5"
-                        style={{ background: `${NC_STATUS_COLORS[nc.status] ?? "#888"}18` }}>
-                        <AlertTriangle className="h-3.5 w-3.5"
-                          style={{ color: NC_STATUS_COLORS[nc.status] ?? "#888" }} />
+                      <div
+                        className="flex h-7 w-7 items-center justify-center rounded-full flex-shrink-0 mt-0.5"
+                        style={{ background: `${NC_STATUS_COLORS[nc.status] ?? "#888"}18` }}
+                      >
+                        <AlertTriangle
+                          className="h-3.5 w-3.5"
+                          style={{ color: NC_STATUS_COLORS[nc.status] ?? "#888" }}
+                        />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium leading-snug line-clamp-2">
-                          {nc.description}
-                        </p>
+                        <p className="text-sm font-medium leading-snug line-clamp-2">{nc.description}</p>
                         <div className="flex items-center gap-2 mt-1 flex-wrap">
                           {nc.reference && (
                             <span className="text-[10px] font-mono text-muted-foreground">#{nc.reference}</span>
@@ -303,7 +318,7 @@ export default function WorkItemDetailPage() {
                           {nc.due_date && (
                             <span className="text-xs text-muted-foreground flex items-center gap-1">
                               <Calendar className="h-3 w-3" />
-                              {new Date(nc.due_date).toLocaleDateString("pt-PT")}
+                              {new Date(nc.due_date).toLocaleDateString()}
                             </span>
                           )}
                         </div>
@@ -313,9 +328,11 @@ export default function WorkItemDetailPage() {
                           variant={nc.severity === "critical" || nc.severity === "high" ? "destructive" : "outline"}
                           className="text-[10px]"
                         >
-                          {nc.severity}
+                          {t(`nc.severity.${nc.severity}`, { defaultValue: nc.severity })}
                         </Badge>
-                        <span className="text-[10px] text-muted-foreground capitalize">{nc.status}</span>
+                        <span className="text-[10px] text-muted-foreground">
+                          {t(`nc.status.${nc.status}`, { defaultValue: nc.status })}
+                        </span>
                       </div>
                     </li>
                   ))}
