@@ -1,10 +1,12 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Plus, Search, Construction, Pencil, Trash2, Eye } from "lucide-react";
+import { Plus, Search, Construction, Pencil, Trash2, Eye, ClipboardCheck, Loader2 } from "lucide-react";
 import { useWorkItems } from "@/hooks/useWorkItems";
 import { useProject } from "@/contexts/ProjectContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { workItemService, formatPk, WORK_ITEM_STATUS_OPTIONS, type WorkItem } from "@/lib/services/workItemService";
+import { ppiDemoService } from "@/lib/services/ppiDemoService";
 import { WorkItemFormDialog } from "@/components/work-items/WorkItemFormDialog";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { EmptyState } from "@/components/EmptyState";
@@ -62,6 +64,7 @@ export default function WorkItemsPage() {
   const { t }                     = useTranslation();
   const navigate                  = useNavigate();
   const { activeProject }         = useProject();
+  const { user }                  = useAuth();
   const { data, loading, refetch }= useWorkItems();
 
   const [dialogOpen, setDialogOpen]     = useState(false);
@@ -71,6 +74,9 @@ export default function WorkItemsPage() {
   const [search,     setSearch]         = useState("");
   const [filterDiscipline, setFilterDiscipline] = useState("all");
   const [filterStatus,     setFilterStatus]     = useState("all");
+
+  // Demo PPI creation — per selected row
+  const [demoCreatingId, setDemoCreatingId] = useState<string | null>(null);
 
   // ── Filtering ──────────────────────────────────────────────────────────────
   const filtered = useMemo(() => {
@@ -112,6 +118,26 @@ export default function WorkItemsPage() {
     }
   }
 
+  async function handleCreateDemoPPI(item: WorkItem) {
+    if (!activeProject || !user) return;
+    setDemoCreatingId(item.id);
+    try {
+      const { instanceId, code } = await ppiDemoService.seedDemoInstance(
+        activeProject.id, item.id, user.id
+      );
+      toast({ title: t("ppi.demo.instance.created", { code }) });
+      navigate(`/ppi/${instanceId}`);
+    } catch (err) {
+      toast({
+        title: t("ppi.demo.error"),
+        description: err instanceof Error ? err.message : String(err),
+        variant: "destructive",
+      });
+    } finally {
+      setDemoCreatingId(null);
+    }
+  }
+
   if (!activeProject) return <NoProjectBanner />;
 
   return (
@@ -134,6 +160,7 @@ export default function WorkItemsPage() {
           <Plus className="h-4 w-4" /> {t("workItems.new")}
         </Button>
       </div>
+
 
       {/* ── Filters ─────────────────────────────────────────────────── */}
       <div className="flex flex-wrap gap-3">
@@ -253,6 +280,17 @@ export default function WorkItemsPage() {
                       </Button>
                       <Button
                         variant="ghost" size="icon"
+                        className="h-8 w-8 hover:text-primary hover:bg-primary/10"
+                        onClick={() => handleCreateDemoPPI(item)}
+                        disabled={demoCreatingId === item.id}
+                        title={t("ppi.demo.instance.button")}
+                      >
+                        {demoCreatingId === item.id
+                          ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          : <ClipboardCheck className="h-3.5 w-3.5" />}
+                      </Button>
+                      <Button
+                        variant="ghost" size="icon"
                         className={cn("h-8 w-8 hover:text-destructive hover:bg-destructive/10")}
                         onClick={() => setDeleteItem(item)}
                         title={t("common.delete")}
@@ -261,6 +299,7 @@ export default function WorkItemsPage() {
                       </Button>
                     </div>
                   </TableCell>
+
                 </TableRow>
               ))}
             </TableBody>

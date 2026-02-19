@@ -761,13 +761,19 @@
       "pk": "PK",
       "createdAt": "Criado em",
       "tabs": {
-        "tests": "Ensaios",
-        "ncs": "Não Conformidades",
+        "ppi":         "Inspeções PPI",
+        "tests":       "Ensaios",
+        "ncs":         "Não Conformidades",
         "attachments": "Anexos"
+      },
+      "ppiTab": {
+        "createPPI": "Criar PPI",
+        "empty":     "Nenhuma inspeção PPI associada a este work item."
       },
       "emptyTests": "Nenhum ensaio associado",
       "emptyNcs": "Nenhuma não conformidade associada",
       "loadError": "Work item não encontrado"
+
     },
     "form": {
       "titleCreate": "Novo Work Item",
@@ -995,6 +1001,19 @@
     "templateStatus": {
       "active":   "Ativo",
       "inactive": "Arquivado"
+    },
+    "demo": {
+      "templates": {
+        "button":   "Criar templates demo",
+        "tooltip":  "Cria 2 templates de exemplo (PPI-EST-FOUND e PPI-DRN-PIPE) se ainda não existirem neste projeto.",
+        "created":  "Templates demo criados: {{codes}}",
+        "allExist": "Templates demo já existem: {{codes}}"
+      },
+      "instance": {
+        "button":  "Demo PPI",
+        "created": "Inspeção demo criada: {{code}}"
+      },
+      "error": "Erro ao criar dados demo. Verifique as permissões ou se existe um template ativo."
     }
   },
   "attachments": {

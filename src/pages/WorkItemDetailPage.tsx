@@ -3,10 +3,13 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   ArrowLeft, Construction, FlaskConical, AlertTriangle, Paperclip,
-  Pencil, Calendar, MapPin,
+  Pencil, Calendar, MapPin, ClipboardCheck, Plus, Eye,
 } from "lucide-react";
 import { workItemService, formatPk, type WorkItem } from "@/lib/services/workItemService";
+import { ppiService, type PpiInstanceStatus } from "@/lib/services/ppiService";
 import { WorkItemFormDialog } from "@/components/work-items/WorkItemFormDialog";
+import { PPIInstanceFormDialog } from "@/components/ppi/PPIInstanceFormDialog";
+import { PPIStatusBadge } from "@/components/ppi/PPIStatusBadge";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { useProject } from "@/contexts/ProjectContext";
 import { Button } from "@/components/ui/button";
@@ -63,6 +66,121 @@ function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
       </span>
       <span className="text-sm text-foreground">{value || "—"}</span>
     </div>
+  );
+}
+
+// ─── PPI list for a work item ─────────────────────────────────────────────────
+
+type PpiRow = {
+  id: string;
+  code: string;
+  status: PpiInstanceStatus;
+  template_disciplina: string | null;
+  template_code: string | null;
+  updated_at: string;
+};
+
+function WorkItemPPITab({
+  workItemId,
+  projectId,
+}: {
+  workItemId: string;
+  projectId: string;
+}) {
+  const { t }      = useTranslation();
+  const navigate   = useNavigate();
+  const [ppiList,  setPpiList]  = useState<PpiRow[]>([]);
+  const [loading,  setLoading]  = useState(true);
+  const [createOpen, setCreateOpen] = useState(false);
+
+  async function load() {
+    setLoading(true);
+    try {
+      const rows = await ppiService.listInstances(projectId, { work_item_id: workItemId });
+      setPpiList(rows as PpiRow[]);
+    } catch {
+      // non-blocking
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => { load(); }, [workItemId, projectId]);
+
+  return (
+    <>
+      <Card className="shadow-card">
+        <CardHeader className="pb-3 pt-4 px-5 flex flex-row items-center justify-between">
+          <CardTitle className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+            {t("ppi.instances.title")}
+            {ppiList.length > 0 && (
+              <span className="ml-2 rounded-full bg-primary/10 px-1.5 py-px text-[10px] font-bold text-primary">
+                {ppiList.length}
+              </span>
+            )}
+          </CardTitle>
+          <Button size="sm" variant="outline" className="gap-1.5 h-7 text-xs" onClick={() => setCreateOpen(true)}>
+            <Plus className="h-3 w-3" />
+            {t("workItems.detail.ppiTab.createPPI")}
+          </Button>
+        </CardHeader>
+        <CardContent className="p-0">
+          {loading ? (
+            <div className="p-5 space-y-2">
+              {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-10 w-full rounded" />)}
+            </div>
+          ) : ppiList.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-10 gap-2 text-muted-foreground">
+              <ClipboardCheck className="h-6 w-6 opacity-40" />
+              <p className="text-sm">{t("workItems.detail.ppiTab.empty")}</p>
+              <Button
+                size="sm" variant="outline" className="gap-1.5 mt-1 text-xs"
+                onClick={() => setCreateOpen(true)}
+              >
+                <Plus className="h-3 w-3" />
+                {t("workItems.detail.ppiTab.createPPI")}
+              </Button>
+            </div>
+          ) : (
+            <ul className="divide-y divide-border">
+              {ppiList.map((ppi) => (
+                <li
+                  key={ppi.id}
+                  className="flex items-center gap-3 px-5 py-3 hover:bg-muted/20 cursor-pointer group"
+                  onClick={() => navigate(`/ppi/${ppi.id}`)}
+                >
+                  <ClipboardCheck className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-mono font-semibold text-foreground">{ppi.code}</p>
+                    {ppi.template_disciplina && (
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {t(`ppi.disciplinas.${ppi.template_disciplina}`, { defaultValue: ppi.template_disciplina })}
+                        {ppi.template_code && ` · ${ppi.template_code}`}
+                      </p>
+                    )}
+                  </div>
+                  <PPIStatusBadge status={ppi.status} />
+                  <Button
+                    variant="ghost" size="icon" className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
+                    onClick={(e) => { e.stopPropagation(); navigate(`/ppi/${ppi.id}`); }}
+                    title={t("common.view")}
+                  >
+                    <Eye className="h-3.5 w-3.5" />
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </CardContent>
+      </Card>
+
+      <PPIInstanceFormDialog
+        open={createOpen}
+        onOpenChange={setCreateOpen}
+        preselectedWorkItemId={workItemId}
+        onSuccess={(id) => { load(); navigate(`/ppi/${id}`); }}
+      />
+    </>
   );
 }
 
@@ -201,9 +319,14 @@ export default function WorkItemDetailPage() {
         </CardContent>
       </Card>
 
-      {/* ── Tabs: Tests / NCs / Attachments ─────────────────────────── */}
-      <Tabs defaultValue="tests">
+      {/* ── Tabs: Tests / NCs / PPI / Attachments ────────────────────── */}
+      <Tabs defaultValue="ppi">
         <TabsList>
+          {/* PPI tab — first so users naturally find it */}
+          <TabsTrigger value="ppi" className="gap-1.5">
+            <ClipboardCheck className="h-3.5 w-3.5" />
+            {t("workItems.detail.tabs.ppi")}
+          </TabsTrigger>
           <TabsTrigger value="tests" className="gap-1.5">
             <FlaskConical className="h-3.5 w-3.5" />
             {t("workItems.detail.tabs.tests")}
@@ -227,6 +350,11 @@ export default function WorkItemDetailPage() {
             {t("workItems.detail.tabs.attachments")}
           </TabsTrigger>
         </TabsList>
+
+        {/* PPI tab */}
+        <TabsContent value="ppi" className="mt-4">
+          <WorkItemPPITab workItemId={item.id} projectId={activeProject?.id ?? ""} />
+        </TabsContent>
 
         {/* Tests tab */}
         <TabsContent value="tests" className="mt-4">
