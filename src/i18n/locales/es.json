@@ -878,6 +878,8 @@
         "title": "Título",
         "titlePlaceholder": "ej: Inspección de Cimentaciones",
         "disciplina": "Disciplina",
+        "disciplinaOutro": "Especificar disciplina",
+        "disciplinaOutroPlaceholder": "ej: Impermeabilización, Terraplén",
         "description": "Descripción",
         "descriptionPlaceholder": "Alcance y objetivo de la plantilla…",
         "version": "Versión",

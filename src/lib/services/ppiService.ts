@@ -26,6 +26,8 @@ export interface PpiTemplate {
   project_id: string;
   code: string;
   disciplina: PpiDisciplina;
+  /** Free-text label when disciplina === 'outros' */
+  disciplina_outro: string | null;
   title: string;
   description: string | null;
   version: number;
@@ -55,6 +57,8 @@ export interface PpiInstance {
   template_id: string | null;
   code: string;
   status: PpiInstanceStatus;
+  /** Free-text label when disciplina === 'outros' */
+  disciplina_outro: string | null;
   opened_at: string;
   closed_at: string | null;
   inspector_id: string | null;
@@ -82,6 +86,7 @@ export interface PpiTemplateInput {
   project_id: string;
   code: string;
   disciplina: PpiDisciplina;
+  disciplina_outro?: string | null;
   title: string;
   description?: string | null;
   version?: number;
@@ -106,6 +111,7 @@ export interface PpiInstanceInput {
   work_item_id: string;
   template_id?: string | null;
   code: string;
+  disciplina_outro?: string | null;
   inspector_id?: string | null;
   created_by?: string | null;
 }
@@ -172,14 +178,15 @@ export const ppiService = {
     const { data, error } = await supabase
       .from("ppi_templates")
       .insert({
-        project_id:  input.project_id,
-        code:        input.code,
-        disciplina:  input.disciplina,
-        title:       input.title,
-        description: input.description ?? null,
-        version:     input.version     ?? 1,
-        is_active:   input.is_active   ?? true,
-        created_by:  input.created_by  ?? null,
+        project_id:      input.project_id,
+        code:            input.code,
+        disciplina:      input.disciplina,
+        disciplina_outro: input.disciplina === "outros" ? (input.disciplina_outro ?? null) : null,
+        title:           input.title,
+        description:     input.description ?? null,
+        version:         input.version     ?? 1,
+        is_active:       input.is_active   ?? true,
+        created_by:      input.created_by  ?? null,
       })
       .select()
       .single();
@@ -224,11 +231,18 @@ export const ppiService = {
   async updateTemplate(
     templateId: string,
     projectId: string,
-    updates: Partial<Pick<PpiTemplate, "title" | "description" | "disciplina" | "version" | "is_active">>
+    updates: Partial<Pick<PpiTemplate, "title" | "description" | "disciplina" | "disciplina_outro" | "version" | "is_active">>
   ): Promise<PpiTemplate> {
+    // Auto-clear disciplina_outro when disciplina changes away from 'outros'
+    const payload: typeof updates = {
+      ...updates,
+      disciplina_outro: updates.disciplina && updates.disciplina !== "outros"
+        ? null
+        : updates.disciplina_outro,
+    };
     const { data, error } = await supabase
       .from("ppi_templates")
-      .update(updates)
+      .update(payload)
       .eq("id", templateId)
       .select()
       .single();
@@ -240,7 +254,7 @@ export const ppiService = {
       entityId: templateId,
       action: "UPDATE",
       module: "ppi",
-      diff: updates as Record<string, unknown>,
+      diff: payload as Record<string, unknown>,
     });
 
     return data as PpiTemplate;
@@ -340,13 +354,14 @@ export const ppiService = {
     const { data: inst, error: instErr } = await supabase
       .from("ppi_instances")
       .insert({
-        project_id:   input.project_id,
-        work_item_id: input.work_item_id,
-        template_id:  templateId,
-        code:         input.code,
-        status:       "draft",
-        inspector_id: input.inspector_id ?? null,
-        created_by:   input.created_by   ?? null,
+        project_id:       input.project_id,
+        work_item_id:     input.work_item_id,
+        template_id:      templateId,
+        code:             input.code,
+        status:           "draft",
+        disciplina_outro: input.disciplina_outro ?? null,
+        inspector_id:     input.inspector_id ?? null,
+        created_by:       input.created_by   ?? null,
       })
       .select()
       .single();
@@ -399,13 +414,14 @@ export const ppiService = {
     const { data, error } = await supabase
       .from("ppi_instances")
       .insert({
-        project_id:   input.project_id,
-        work_item_id: input.work_item_id,
-        template_id:  input.template_id ?? null,
-        code:         input.code,
-        status:       "draft",
-        inspector_id: input.inspector_id ?? null,
-        created_by:   input.created_by   ?? null,
+        project_id:       input.project_id,
+        work_item_id:     input.work_item_id,
+        template_id:      input.template_id      ?? null,
+        code:             input.code,
+        status:           "draft",
+        disciplina_outro: input.disciplina_outro ?? null,
+        inspector_id:     input.inspector_id     ?? null,
+        created_by:       input.created_by       ?? null,
       })
       .select()
       .single();
