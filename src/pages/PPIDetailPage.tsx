@@ -442,6 +442,17 @@ export default function PPIDetailPage() {
               }
             />
             <InfoRow
+              label={t("ppi.instances.detail.inspectionDate")}
+              value={
+                <span className="flex items-center gap-1">
+                  <Calendar className="h-3 w-3 text-muted-foreground" />
+                  {(instance as any).inspection_date
+                    ? new Date((instance as any).inspection_date + "T12:00:00").toLocaleDateString()
+                    : "—"}
+                </span>
+              }
+            />
+            <InfoRow
               label={t("ppi.instances.detail.openedAt")}
               value={
                 <span className="flex items-center gap-1">

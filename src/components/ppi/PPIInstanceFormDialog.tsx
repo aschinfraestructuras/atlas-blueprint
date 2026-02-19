@@ -4,6 +4,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { format } from "date-fns";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProject } from "@/contexts/ProjectContext";
 import { workItemService, type WorkItem } from "@/lib/services/workItemService";
@@ -21,17 +22,18 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Loader2, AlertTriangle, Info, LayoutTemplate, ExternalLink } from "lucide-react";
+import { Loader2, AlertTriangle, Info, LayoutTemplate, ExternalLink, Calendar } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 // ─── Schema ───────────────────────────────────────────────────────────────────
 
 const makeSchema = (t: (k: string) => string) =>
   z.object({
-    work_item_id: z.string().min(1, t("ppi.instances.validation.workItemRequired")),
-    template_id:  z.string().optional(),
-    code:         z.string().optional(),
-    inspector_id: z.string().optional(),
+    work_item_id:      z.string().min(1, t("ppi.instances.validation.workItemRequired")),
+    template_id:       z.string().optional(),
+    code:              z.string().optional(),
+    inspector_id:      z.string().optional(),
+    inspection_date:   z.string().optional(),
   });
 
 type FormValues = z.infer<ReturnType<typeof makeSchema>>;
@@ -73,10 +75,11 @@ export function PPIInstanceFormDialog({
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      work_item_id: preselectedWorkItemId ?? "",
-      template_id:  "",
-      code:         "",
-      inspector_id: "",
+      work_item_id:    preselectedWorkItemId ?? "",
+      template_id:     "",
+      code:            "",
+      inspector_id:    "",
+      inspection_date: format(new Date(), "yyyy-MM-dd"),
     },
   });
 
@@ -88,10 +91,11 @@ export function PPIInstanceFormDialog({
   useEffect(() => {
     if (!open || !activeProject) return;
     form.reset({
-      work_item_id: preselectedWorkItemId ?? "",
-      template_id:  "",
-      code:         "",
-      inspector_id: "",
+      work_item_id:    preselectedWorkItemId ?? "",
+      template_id:     "",
+      code:            "",
+      inspector_id:    "",
+      inspection_date: format(new Date(), "yyyy-MM-dd"),
     });
     setDisciplineMismatch(null);
     setNoActiveTemplates(false);
@@ -103,7 +107,6 @@ export function PPIInstanceFormDialog({
       .finally(() => setLoadingWI(false));
 
     setLoadingTpl(true);
-    // Only load ACTIVE templates — business rule enforced at UI level too
     ppiService.listTemplates(activeProject.id, { includeInactive: false })
       .then((tpls) => {
         setTemplates(tpls);
@@ -135,7 +138,7 @@ export function PPIInstanceFormDialog({
     }
   }, [watchedWorkItemId, watchedTemplateId, workItems, templates]);
 
-  // ── Validate chosen template is still active (server-side guard defence) ───
+  // ── Validate chosen template is still active ───────────────────────────────
 
   function getSelectedTemplate(): PpiTemplate | undefined {
     if (!watchedTemplateId || watchedTemplateId === "__none__") return undefined;
@@ -147,7 +150,7 @@ export function PPIInstanceFormDialog({
   async function onSubmit(values: FormValues) {
     if (!activeProject || !user) return;
 
-    // Client-side active-template guard (belt-and-suspenders)
+    // Client-side active-template guard
     const selectedTpl = getSelectedTemplate();
     if (selectedTpl && !selectedTpl.is_active) {
       toast({
@@ -165,11 +168,12 @@ export function PPIInstanceFormDialog({
           : null;
 
       const input = {
-        project_id:   activeProject.id,
-        work_item_id: values.work_item_id,
-        code:         values.code?.trim() || "",
-        inspector_id: values.inspector_id || null,
-        created_by:   user.id,
+        project_id:      activeProject.id,
+        work_item_id:    values.work_item_id,
+        code:            values.code?.trim() || "",
+        inspector_id:    values.inspector_id || null,
+        created_by:      user.id,
+        inspection_date: values.inspection_date || null,
       };
 
       let instanceId: string;
@@ -194,8 +198,8 @@ export function PPIInstanceFormDialog({
       onOpenChange(false);
       onSuccess(instanceId);
     } catch (err) {
-      // ── Proper error classification — NEVER shows [object Object] ──────────
       const info = classifySupabaseError(err, t);
+      console.error("[PPIInstanceFormDialog] create error:", err);
       toast({
         title: info.title,
         description: info.description ?? info.raw,
@@ -342,6 +346,24 @@ export function PPIInstanceFormDialog({
                 </AlertDescription>
               </Alert>
             )}
+
+            {/* Inspection date */}
+            <FormField
+              control={form.control}
+              name="inspection_date"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex items-center gap-1.5">
+                    <Calendar className="h-3.5 w-3.5" />
+                    {t("ppi.instances.form.inspectionDate")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input type="date" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             {/* Code — optional, auto-generated if empty */}
             <FormField

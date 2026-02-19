@@ -804,6 +804,8 @@
       "sector": "Sector",
       "sectorPlaceholder": "ej: Lote 1, Tramo A",
       "discipline": "Disciplina",
+      "disciplinaOutro": "Especificar disciplina",
+      "disciplinaOutroPlaceholder": "ej: Impermeabilización, Terraplén",
       "obra": "Obra",
       "obraPlaceholder": "Identificación de la obra",
       "lote": "Lote",
@@ -824,6 +826,7 @@
       "validation": {
         "sectorRequired": "El sector es obligatorio.",
         "disciplineRequired": "La disciplina es obligatoria.",
+        "disciplinaOutroRequired": "Especifique la disciplina cuando selecciona «Otros».",
         "pkEndInvalid": "PK Fin debe ser ≥ PK Inicio."
       }
     },
@@ -950,6 +953,7 @@
         "workItem": "Work Item",
         "template": "Plantilla",
         "inspector": "Inspector",
+        "inspectionDate": "Fecha de Inspección",
         "openedAt": "Abierto el",
         "closedAt": "Cerrado el",
         "checklistTitle": "Puntos de Inspección",
@@ -981,6 +985,7 @@
         "selectTemplate": "Seleccione una plantilla…",
         "noTemplate": "Sin plantilla (en blanco)",
         "inspector": "Inspector",
+        "inspectionDate": "Fecha de Inspección",
         "saving": "Guardando…",
         "createBtn": "Crear Inspección",
         "cancel": "Cancelar",

@@ -63,6 +63,8 @@ export interface PpiInstance {
   status: PpiInstanceStatus;
   /** Free-text label when disciplina === 'outros' */
   disciplina_outro: string | null;
+  /** Date of the physical inspection (default today) */
+  inspection_date: string | null;
   opened_at: string;
   closed_at: string | null;
   inspector_id: string | null;
@@ -120,6 +122,7 @@ export interface PpiInstanceInput {
   disciplina_outro?: string | null;
   inspector_id?: string | null;
   created_by?: string | null;
+  inspection_date?: string | null;
 }
 
 export interface PpiInstanceFilters {
@@ -358,7 +361,8 @@ export const ppiService = {
       p_inspector_id:     input.inspector_id    ?? null,
       p_created_by:       input.created_by      ?? null,
       p_disciplina_outro: input.disciplina_outro ?? null,
-    });
+      p_inspection_date:  input.inspection_date  ?? null,
+    } as any);
     if (error) throw error;
 
     const row = (data as any[])[0];
@@ -397,7 +401,8 @@ export const ppiService = {
       p_inspector_id:     input.inspector_id    ?? null,
       p_created_by:       input.created_by      ?? null,
       p_disciplina_outro: input.disciplina_outro ?? null,
-    });
+      p_inspection_date:  input.inspection_date  ?? null,
+    } as any);
     if (error) throw error;
 
     const row           = (data as any[])[0];
