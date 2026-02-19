@@ -119,9 +119,13 @@ export function PPIInstanceFormDialog({ open, onOpenChange, preselectedWorkItemI
         created_by:   user.id,
       };
 
+      const effectiveTemplateId = values.template_id && values.template_id !== "__none__"
+        ? values.template_id
+        : null;
+
       let instanceId: string;
-      if (values.template_id) {
-        const result = await ppiService.createInstanceFromTemplate(input, values.template_id);
+      if (effectiveTemplateId) {
+        const result = await ppiService.createInstanceFromTemplate(input, effectiveTemplateId);
         instanceId = result.id;
       } else {
         const result = await ppiService.createBlankInstance(input);
@@ -192,7 +196,7 @@ export function PPIInstanceFormDialog({ open, onOpenChange, preselectedWorkItemI
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="">{t("ppi.instances.form.noTemplate")}</SelectItem>
+                    <SelectItem value="__none__">{t("ppi.instances.form.noTemplate")}</SelectItem>
                     {templates.map((tpl) => (
                       <SelectItem key={tpl.id} value={tpl.id}>
                         [{tpl.code}] {tpl.title} — {t(`ppi.disciplinas.${tpl.disciplina}`, { defaultValue: tpl.disciplina })}
