@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProject } from "@/contexts/ProjectContext";
 import {
@@ -15,33 +16,42 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
-// ─── Schema ───────────────────────────────────────────────────────────────────
+// ─── Discipline codes (stable, stored in DB) ──────────────────────────────────
 
-const schema = z
-  .object({
-    sector: z.string().min(1, "Sector é obrigatório"),
-    disciplina: z.string().min(1, "Disciplina é obrigatória"),
-    obra: z.string().optional(),
-    lote: z.string().optional(),
-    elemento: z.string().optional(),
-    parte: z.string().optional(),
-    pk_inicio: z.coerce.number().nullable().optional(),
-    pk_fim: z.coerce.number().nullable().optional(),
-    status: z.string().min(1),
-  })
-  .superRefine((val, ctx) => {
-    if (val.pk_inicio != null && val.pk_fim != null && val.pk_fim < val.pk_inicio) {
-      ctx.addIssue({
-        path: ["pk_fim"],
-        code: z.ZodIssueCode.custom,
-        message: "PK Fim deve ser ≥ PK Início",
-      });
-    }
-  });
+const DISCIPLINE_CODES = [
+  "geral", "terras", "firmes", "betao", "drenagem",
+  "estruturas", "ferrovia", "instalacoes", "outros",
+] as const;
 
-type FormValues = z.infer<typeof schema>;
+// ─── Schema factory (receives t() so messages are i18n) ───────────────────────
+
+const makeSchema = (t: (k: string) => string) =>
+  z
+    .object({
+      sector:     z.string().min(1, t("workItems.form.validation.sectorRequired")),
+      disciplina: z.string().min(1, t("workItems.form.validation.disciplineRequired")),
+      obra:       z.string().optional(),
+      lote:       z.string().optional(),
+      elemento:   z.string().optional(),
+      parte:      z.string().optional(),
+      pk_inicio:  z.coerce.number().nullable().optional(),
+      pk_fim:     z.coerce.number().nullable().optional(),
+      status:     z.string().min(1),
+    })
+    .superRefine((val, ctx) => {
+      if (val.pk_inicio != null && val.pk_fim != null && val.pk_fim < val.pk_inicio) {
+        ctx.addIssue({
+          path: ["pk_fim"],
+          code: z.ZodIssueCode.custom,
+          message: t("workItems.form.validation.pkEndInvalid"),
+        });
+      }
+    });
+
+type FormValues = z.infer<ReturnType<typeof makeSchema>>;
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -52,67 +62,41 @@ interface Props {
   onSuccess: () => void;
 }
 
-// Valores têm de bater certo com a constraint na BD
-const DISCIPLINES = [
-  { value: "geral", label: "Geral" },
-  { value: "terras", label: "Terraplenagem" },
-  { value: "firmes", label: "Pavimentação" },
-  { value: "betao", label: "Betão" },
-  { value: "drenagem", label: "Drenagem" },
-  { value: "estruturas", label: "Estruturas" },
-  { value: "ferrovia", label: "Ferrovia" },
-  { value: "instalacoes", label: "Instalações" },
-  { value: "outros", label: "Outros" },
-] as const;
-
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function WorkItemFormDialog({ open, onOpenChange, item, onSuccess }: Props) {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { activeProject } = useProject();
+
+  const schema = makeSchema(t);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      sector: "",
-      disciplina: "geral", // ✅ NÃO "Geral"
-      obra: "",
-      lote: "",
-      elemento: "",
-      parte: "",
-      pk_inicio: undefined,
-      pk_fim: undefined,
-      status: "planned",
+      sector: "", disciplina: "geral", obra: "", lote: "",
+      elemento: "", parte: "", pk_inicio: undefined, pk_fim: undefined, status: "planned",
     },
   });
 
   useEffect(() => {
     if (!open) return;
-
     form.reset(
       item
         ? {
-            sector: item.sector ?? "",
-            // ✅ se vier vazio, cai para "geral"
-            disciplina: (item.disciplina as string) ?? "geral",
-            obra: item.obra ?? "",
-            lote: item.lote ?? "",
-            elemento: item.elemento ?? "",
-            parte: item.parte ?? "",
+            sector:    item.sector ?? "",
+            disciplina:(item.disciplina as string) ?? "geral",
+            obra:      item.obra      ?? "",
+            lote:      item.lote      ?? "",
+            elemento:  item.elemento  ?? "",
+            parte:     item.parte     ?? "",
             pk_inicio: item.pk_inicio ?? undefined,
-            pk_fim: item.pk_fim ?? undefined,
-            status: item.status ?? "planned",
+            pk_fim:    item.pk_fim    ?? undefined,
+            status:    item.status    ?? "planned",
           }
         : {
-            sector: "",
-            disciplina: "geral",
-            obra: "",
-            lote: "",
-            elemento: "",
-            parte: "",
-            pk_inicio: undefined,
-            pk_fim: undefined,
-            status: "planned",
+            sector: "", disciplina: "geral", obra: "", lote: "",
+            elemento: "", parte: "", pk_inicio: undefined, pk_fim: undefined, status: "planned",
           },
     );
   }, [open, item, form]);
@@ -121,235 +105,201 @@ export function WorkItemFormDialog({ open, onOpenChange, item, onSuccess }: Prop
 
   async function onSubmit(values: FormValues) {
     if (!activeProject || !user) return;
-
     try {
       const payload = {
-        sector: values.sector,
-        disciplina: values.disciplina, // ✅ já vai em minúsculas/código
-        obra: values.obra || undefined,
-        lote: values.lote || undefined,
-        elemento: values.elemento || undefined,
-        parte: values.parte || undefined,
+        sector:    values.sector,
+        disciplina:values.disciplina,
+        obra:      values.obra      || undefined,
+        lote:      values.lote      || undefined,
+        elemento:  values.elemento  || undefined,
+        parte:     values.parte     || undefined,
         pk_inicio: values.pk_inicio ?? null,
-        pk_fim: values.pk_fim ?? null,
-        status: values.status as WorkItemStatus,
+        pk_fim:    values.pk_fim    ?? null,
+        status:    values.status as WorkItemStatus,
       };
 
       if (isEdit && item) {
         await workItemService.update(item.id, activeProject.id, payload);
-        toast({ title: "Work Item atualizado" });
+        toast({ title: t("workItems.toast.updated") });
       } else {
-        await workItemService.create({
-          project_id: activeProject.id,
-          ...payload,
-          created_by: user.id,
-        });
-        toast({ title: "Work Item criado" });
+        await workItemService.create({ project_id: activeProject.id, ...payload, created_by: user.id });
+        toast({ title: t("workItems.toast.created") });
       }
 
       onSuccess();
       onOpenChange(false);
     } catch (err) {
       toast({
-        title: "Erro",
-        description: err instanceof Error ? err.message : "Erro desconhecido",
+        title: t("workItems.toast.error"),
+        description: err instanceof Error ? err.message : String(err),
         variant: "destructive",
       });
     }
   }
 
+  const isSubmitting = form.formState.isSubmitting;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[580px]">
         <DialogHeader>
-          <DialogTitle>{isEdit ? "Editar Work Item" : "Novo Work Item"}</DialogTitle>
+          <DialogTitle>
+            {isEdit ? t("workItems.form.titleEdit") : t("workItems.form.titleCreate")}
+          </DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+
             {/* Row 1: Sector + Disciplina */}
             <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="sector"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Sector <span className="text-destructive">*</span>
-                    </FormLabel>
-                    <FormControl>
-                      <Input placeholder="ex. Lote 1, Troço A" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="disciplina"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Disciplina <span className="text-destructive">*</span>
-                    </FormLabel>
-
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Disciplina" />
-                        </SelectTrigger>
-                      </FormControl>
-
-                      <SelectContent>
-                        {DISCIPLINES.map((d) => (
-                          <SelectItem key={d.value} value={d.value}>
-                            {d.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            {/* Row 2: Obra + Lote */}
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="obra"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Obra</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Identificação da obra" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="lote"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Lote</FormLabel>
-                    <FormControl>
-                      <Input placeholder="ex. L1, L2" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            {/* Row 3: Elemento + Parte */}
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="elemento"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Elemento</FormLabel>
-                    <FormControl>
-                      <Input placeholder="ex. Viaduto V1" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="parte"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Parte</FormLabel>
-                    <FormControl>
-                      <Input placeholder="ex. Fundações" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            {/* Row 4: PK Início + PK Fim */}
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="pk_inicio"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>PK Início (m)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="ex. 15250"
-                        {...field}
-                        value={field.value ?? ""}
-                        onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="pk_fim"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>PK Fim (m)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="ex. 17500"
-                        {...field}
-                        value={field.value ?? ""}
-                        onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            {/* Row 5: Status */}
-            <FormField
-              control={form.control}
-              name="status"
-              render={({ field }) => (
+              <FormField control={form.control} name="sector" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Estado</FormLabel>
+                  <FormLabel>
+                    {t("workItems.form.sector")} <span className="text-destructive">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input placeholder={t("workItems.form.sectorPlaceholder")} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+              <FormField control={form.control} name="disciplina" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    {t("workItems.form.discipline")} <span className="text-destructive">*</span>
+                  </FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Estado" />
+                        <SelectValue placeholder={t("workItems.form.discipline")} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {WORK_ITEM_STATUS_OPTIONS.map((s) => (
-                        <SelectItem key={s.value} value={s.value}>
-                          {s.label}
+                      {DISCIPLINE_CODES.map((code) => (
+                        <SelectItem key={code} value={code}>
+                          {t(`workItems.disciplines.${code}`)}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />
                 </FormItem>
-              )}
-            />
+              )} />
+            </div>
+
+            {/* Row 2: Obra + Lote */}
+            <div className="grid grid-cols-2 gap-4">
+              <FormField control={form.control} name="obra" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("workItems.form.obra")}</FormLabel>
+                  <FormControl>
+                    <Input placeholder={t("workItems.form.obraPlaceholder")} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="lote" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("workItems.form.lote")}</FormLabel>
+                  <FormControl>
+                    <Input placeholder={t("workItems.form.lotePlaceholder")} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            </div>
+
+            {/* Row 3: Elemento + Parte */}
+            <div className="grid grid-cols-2 gap-4">
+              <FormField control={form.control} name="elemento" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("workItems.form.element")}</FormLabel>
+                  <FormControl>
+                    <Input placeholder={t("workItems.form.elementPlaceholder")} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="parte" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("workItems.form.parte")}</FormLabel>
+                  <FormControl>
+                    <Input placeholder={t("workItems.form.partePlaceholder")} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            </div>
+
+            {/* Row 4: PK Início + PK Fim */}
+            <div className="grid grid-cols-2 gap-4">
+              <FormField control={form.control} name="pk_inicio" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("workItems.form.pkStart")}</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder={t("workItems.form.pkPlaceholder")}
+                      {...field}
+                      value={field.value ?? ""}
+                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="pk_fim" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("workItems.form.pkEnd")}</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder={t("workItems.form.pkEndPlaceholder")}
+                      {...field}
+                      value={field.value ?? ""}
+                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            </div>
+
+            {/* Row 5: Status */}
+            <FormField control={form.control} name="status" render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("workItems.form.status")}</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder={t("workItems.form.status")} />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {WORK_ITEM_STATUS_OPTIONS.map((s) => (
+                      <SelectItem key={s.value} value={s.value}>
+                        {t(`workItems.status.${s.value}`)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )} />
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-                Cancelar
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
+                {t("common.cancel")}
               </Button>
-              <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? "A guardar…" : isEdit ? "Guardar alterações" : "Criar Work Item"}
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting && <Loader2 className="h-3.5 w-3.5 animate-spin mr-2" />}
+                {isSubmitting
+                  ? t("workItems.form.saving")
+                  : isEdit
+                    ? t("workItems.form.saveBtn")
+                    : t("workItems.form.createBtn")}
               </Button>
             </DialogFooter>
           </form>

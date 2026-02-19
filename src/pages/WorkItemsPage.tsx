@@ -1,9 +1,9 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Plus, Search, Construction, Pencil, Trash2, Eye } from "lucide-react";
 import { useWorkItems } from "@/hooks/useWorkItems";
 import { useProject } from "@/contexts/ProjectContext";
-import { useAuth } from "@/contexts/AuthContext";
 import { workItemService, formatPk, WORK_ITEM_STATUS_OPTIONS, type WorkItem } from "@/lib/services/workItemService";
 import { WorkItemFormDialog } from "@/components/work-items/WorkItemFormDialog";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
@@ -25,31 +25,43 @@ import {
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
-// ─── Status badge ─────────────────────────────────────────────────────────────
+// ─── Discipline codes (same as in DB) ─────────────────────────────────────────
 
-const STATUS_MAP: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
-  planned:     { label: "Previsto",     variant: "outline"   },
-  in_progress: { label: "Em Execução",  variant: "default"   },
-  completed:   { label: "Concluído",    variant: "secondary" },
-  cancelled:   { label: "Cancelado",    variant: "destructive" },
+const DISCIPLINE_CODES = [
+  "geral", "terras", "firmes", "betao", "drenagem",
+  "estruturas", "ferrovia", "instalacoes", "outros",
+] as const;
+
+// ─── Status badge variant map (no labels — labels come from i18n) ─────────────
+
+const STATUS_VARIANT: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+  planned:     "outline",
+  in_progress: "default",
+  hold:        "outline",
+  completed:   "secondary",
+  approved:    "secondary",
+  archived:    "outline",
+  cancelled:   "destructive",
 };
 
-function StatusBadge({ status }: { status: string }) {
-  const meta = STATUS_MAP[status] ?? { label: status, variant: "outline" as const };
-  return <Badge variant={meta.variant}>{meta.label}</Badge>;
-}
+// ─── Sub-components ───────────────────────────────────────────────────────────
 
-const DISCIPLINES = [
-  "Geral", "Terraplenagem", "Pavimentação", "Drenagem",
-  "Estruturas", "Sinalização", "Instalações", "Geotecnia", "Outro",
-];
+function StatusBadge({ status }: { status: string }) {
+  const { t } = useTranslation();
+  const variant = STATUS_VARIANT[status] ?? "outline";
+  return (
+    <Badge variant={variant}>
+      {t(`workItems.status.${status}`, { defaultValue: status })}
+    </Badge>
+  );
+}
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function WorkItemsPage() {
+  const { t }                     = useTranslation();
   const navigate                  = useNavigate();
   const { activeProject }         = useProject();
-  const { user }                  = useAuth();
   const { data, loading, refetch }= useWorkItems();
 
   const [dialogOpen, setDialogOpen]     = useState(false);
@@ -67,40 +79,33 @@ export default function WorkItemsPage() {
       const q = search.toLowerCase();
       rows = rows.filter(
         (r) =>
-          r.sector.toLowerCase().includes(q)    ||
-          r.disciplina.toLowerCase().includes(q)||
+          r.sector.toLowerCase().includes(q)     ||
+          r.disciplina.toLowerCase().includes(q) ||
           (r.obra ?? "").toLowerCase().includes(q) ||
           (r.lote ?? "").toLowerCase().includes(q)
       );
     }
-    if (filterDiscipline !== "all") {
-      rows = rows.filter((r) => r.disciplina === filterDiscipline);
-    }
-    if (filterStatus !== "all") {
-      rows = rows.filter((r) => r.status === filterStatus);
-    }
+    if (filterDiscipline !== "all") rows = rows.filter((r) => r.disciplina === filterDiscipline);
+    if (filterStatus     !== "all") rows = rows.filter((r) => r.status     === filterStatus);
     return rows;
   }, [data, search, filterDiscipline, filterStatus]);
 
-  function openCreate() {
-    setEditItem(null);
-    setDialogOpen(true);
-  }
-
-  function openEdit(item: WorkItem) {
-    setEditItem(item);
-    setDialogOpen(true);
-  }
+  function openCreate() { setEditItem(null); setDialogOpen(true); }
+  function openEdit(item: WorkItem) { setEditItem(item); setDialogOpen(true); }
 
   async function handleDelete() {
     if (!deleteItem || !activeProject) return;
     setDeleting(true);
     try {
       await workItemService.delete(deleteItem.id, activeProject.id);
-      toast({ title: "Work Item eliminado" });
+      toast({ title: t("workItems.toast.deleted") });
       refetch();
     } catch (err) {
-      toast({ title: "Erro", description: err instanceof Error ? err.message : "Erro", variant: "destructive" });
+      toast({
+        title: t("workItems.toast.error"),
+        description: err instanceof Error ? err.message : String(err),
+        variant: "destructive",
+      });
     } finally {
       setDeleting(false);
       setDeleteItem(null);
@@ -115,18 +120,18 @@ export default function WorkItemsPage() {
       <div className="flex items-center justify-between">
         <div>
           <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground mb-1">
-            Módulo
+            {t("workItems.module")}
           </p>
           <h1 className="text-2xl font-extrabold tracking-tight text-foreground flex items-center gap-2">
             <Construction className="h-6 w-6 text-muted-foreground" />
-            Work Items
+            {t("workItems.title")}
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            {activeProject.name} · {data.length} item{data.length !== 1 ? "s" : ""}
+            {activeProject.name} · {t("workItems.count", { count: data.length })}
           </p>
         </div>
         <Button onClick={openCreate} className="gap-2">
-          <Plus className="h-4 w-4" /> Novo Work Item
+          <Plus className="h-4 w-4" /> {t("workItems.new")}
         </Button>
       </div>
 
@@ -135,29 +140,37 @@ export default function WorkItemsPage() {
         <div className="relative flex-1 min-w-[200px] max-w-xs">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
           <Input
-            placeholder="Pesquisar sector, obra, lote…"
+            placeholder={t("workItems.searchPlaceholder")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-9"
           />
         </div>
+
         <Select value={filterDiscipline} onValueChange={setFilterDiscipline}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Disciplina" />
+          <SelectTrigger className="w-[200px]">
+            <SelectValue placeholder={t("workItems.filters.allDisciplines")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todas as disciplinas</SelectItem>
-            {DISCIPLINES.map((d) => <SelectItem key={d} value={d}>{d}</SelectItem>)}
+            <SelectItem value="all">{t("workItems.filters.allDisciplines")}</SelectItem>
+            {DISCIPLINE_CODES.map((code) => (
+              <SelectItem key={code} value={code}>
+                {t(`workItems.disciplines.${code}`)}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
+
         <Select value={filterStatus} onValueChange={setFilterStatus}>
-          <SelectTrigger className="w-[160px]">
-            <SelectValue placeholder="Estado" />
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder={t("workItems.filters.allStatuses")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todos os estados</SelectItem>
+            <SelectItem value="all">{t("workItems.filters.allStatuses")}</SelectItem>
             {WORK_ITEM_STATUS_OPTIONS.map((s) => (
-              <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+              <SelectItem key={s.value} value={s.value}>
+                {t(`workItems.status.${s.value}`)}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -174,7 +187,11 @@ export default function WorkItemsPage() {
         <EmptyState
           icon={Construction}
           titleKey="emptyState.title"
-          subtitleKey="emptyState.subtitle"
+          subtitleKey={
+            !search && filterDiscipline === "all" && filterStatus === "all"
+              ? "workItems.emptyState.subtitle"
+              : "emptyState.noResults"
+          }
           {...(!search && filterDiscipline === "all" && filterStatus === "all"
             ? { ctaKey: "emptyState.cta", onCta: openCreate }
             : {})}
@@ -184,13 +201,13 @@ export default function WorkItemsPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Sector</TableHead>
-                <TableHead>Disciplina</TableHead>
-                <TableHead className="hidden md:table-cell">Obra / Lote</TableHead>
-                <TableHead className="hidden lg:table-cell">Elemento</TableHead>
-                <TableHead className="hidden xl:table-cell">PK</TableHead>
-                <TableHead>Estado</TableHead>
-                <TableHead className="text-right">Ações</TableHead>
+                <TableHead>{t("workItems.table.sector")}</TableHead>
+                <TableHead>{t("workItems.table.discipline")}</TableHead>
+                <TableHead className="hidden md:table-cell">{t("workItems.table.obraLote")}</TableHead>
+                <TableHead className="hidden lg:table-cell">{t("workItems.table.element")}</TableHead>
+                <TableHead className="hidden xl:table-cell">{t("workItems.table.pk")}</TableHead>
+                <TableHead>{t("workItems.table.status")}</TableHead>
+                <TableHead className="text-right">{t("workItems.table.actions")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -202,7 +219,9 @@ export default function WorkItemsPage() {
                 >
                   <TableCell className="font-medium">{item.sector}</TableCell>
                   <TableCell>
-                    <span className="text-xs text-muted-foreground">{item.disciplina}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {t(`workItems.disciplines.${item.disciplina}`, { defaultValue: item.disciplina })}
+                    </span>
                   </TableCell>
                   <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
                     {[item.obra, item.lote].filter(Boolean).join(" / ") || "—"}
@@ -219,18 +238,16 @@ export default function WorkItemsPage() {
                   <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
                     <div className="flex items-center justify-end gap-1">
                       <Button
-                        variant="ghost" size="icon"
-                        className="h-8 w-8"
+                        variant="ghost" size="icon" className="h-8 w-8"
                         onClick={() => navigate(`/work-items/${item.id}`)}
-                        title="Ver detalhe"
+                        title={t("common.view")}
                       >
                         <Eye className="h-3.5 w-3.5" />
                       </Button>
                       <Button
-                        variant="ghost" size="icon"
-                        className="h-8 w-8"
+                        variant="ghost" size="icon" className="h-8 w-8"
                         onClick={() => openEdit(item)}
-                        title="Editar"
+                        title={t("common.edit")}
                       >
                         <Pencil className="h-3.5 w-3.5" />
                       </Button>
@@ -238,7 +255,7 @@ export default function WorkItemsPage() {
                         variant="ghost" size="icon"
                         className={cn("h-8 w-8 hover:text-destructive hover:bg-destructive/10")}
                         onClick={() => setDeleteItem(item)}
-                        title="Eliminar"
+                        title={t("common.delete")}
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                       </Button>
@@ -263,20 +280,19 @@ export default function WorkItemsPage() {
       <AlertDialog open={!!deleteItem} onOpenChange={(v) => { if (!v) setDeleteItem(null); }}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Eliminar Work Item?</AlertDialogTitle>
+            <AlertDialogTitle>{t("workItems.deleteConfirm.title")}</AlertDialogTitle>
             <AlertDialogDescription>
-              O work item <strong>{deleteItem?.sector}</strong> será eliminado permanentemente.
-              Os ensaios e NCs associados perderão a ligação.
+              {t("workItems.deleteConfirm.description", { sector: deleteItem?.sector ?? "" })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               disabled={deleting}
               className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
             >
-              {deleting ? "A eliminar…" : "Eliminar"}
+              {deleting ? t("common.loading") : t("common.delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
