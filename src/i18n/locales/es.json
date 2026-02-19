@@ -1011,6 +1011,13 @@
         "workItemRequired": "El work item es obligatorio.",
         "codeUnique": "Ya existe una inspección con este código en este proyecto."
       },
+      "errors": {
+        "noActiveTemplates": "No existen plantillas activas en este proyecto. Cree o active al menos una plantilla antes de crear una inspección.",
+        "goToTemplates": "Ir a Plantillas PPI",
+        "inactiveTemplate": "La plantilla seleccionada está inactiva. Elija una plantilla activa o cree la inspección en blanco.",
+        "permissionDenied": "Sin permisos. Verifique que es miembro del proyecto con permiso para crear inspecciones.",
+        "templateNotFound": "Plantilla no encontrada o sin permiso de acceso."
+      },
       "toast": {
         "created": "Inspección PPI creada con éxito.",
         "updated": "Inspección actualizada.",

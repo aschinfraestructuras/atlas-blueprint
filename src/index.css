@@ -39,6 +39,10 @@
     --destructive:       2 72% 48%;
     --destructive-foreground: 0 0% 98%;
 
+    /* ── Warning ──────────────────────────────────────────────────── */
+    --warning:           38 85% 44%;
+    --warning-foreground: 38 65% 20%;
+
     /* ── Borders / Inputs ─────────────────────────────────────────── */
     --border:            215 18% 88%;
     --input:             215 18% 88%;
@@ -127,6 +131,10 @@
 
     --destructive:       2 60% 44%;
     --destructive-foreground: 0 0% 98%;
+
+    /* ── Warning (dark) ───────────────────────────────────────────── */
+    --warning:           38 80% 55%;
+    --warning-foreground: 38 50% 15%;
 
     --border:            224 20% 20%;
     --input:             224 20% 20%;

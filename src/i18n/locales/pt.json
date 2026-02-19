@@ -988,6 +988,13 @@
         "workItemRequired": "O work item é obrigatório.",
         "codeUnique": "Já existe uma inspeção com este código neste projeto."
       },
+      "errors": {
+        "noActiveTemplates": "Não existem templates ativos neste projeto. Crie ou ative pelo menos um template antes de criar uma inspeção.",
+        "goToTemplates": "Ir para Templates PPI",
+        "inactiveTemplate": "O template selecionado está inativo. Escolha um template ativo ou crie a inspeção em branco.",
+        "permissionDenied": "Sem permissões. Verifique se é membro do projeto com permissão para criar inspeções.",
+        "templateNotFound": "Template não encontrado ou sem permissão de acesso."
+      },
       "toast": {
         "created": "Inspeção PPI criada com sucesso.",
         "updated": "Inspeção atualizada.",
