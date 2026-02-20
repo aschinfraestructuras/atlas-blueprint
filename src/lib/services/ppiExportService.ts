@@ -167,7 +167,6 @@ function buildSinglePdfHtml(
     return `
       <tr>
         <td style="width:32px;text-align:center;color:${BRAND.textLight};font-size:10px;padding:5px 4px;">${it.item_no}</td>
-        <td style="width:70px;color:${BRAND.textLight};font-size:9px;font-family:monospace;padding:5px 4px;">${it.check_code}</td>
         <td style="padding:5px 6px;font-size:11px;">${it.label} ${ncBadge}</td>
         <td style="width:70px;text-align:center;padding:5px 4px;">
           <span style="display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:600;
@@ -303,14 +302,13 @@ function buildSinglePdfHtml(
     <thead>
       <tr>
         <th style="width:32px;">${labels.itemNo}</th>
-        <th style="width:70px;">${labels.checkCode}</th>
         <th>${labels.label}</th>
         <th style="width:70px;">${labels.result}</th>
         <th>${labels.notes}</th>
         <th style="width:80px;">${labels.checkedAt}</th>
       </tr>
     </thead>
-    <tbody>${rows || `<tr><td colspan="6" style="text-align:center;padding:12px;color:${BRAND.textLight};">—</td></tr>`}</tbody>
+    <tbody>${rows || `<tr><td colspan="5" style="text-align:center;padding:12px;color:${BRAND.textLight};">—</td></tr>`}</tbody>
   </table>
 
   <!-- Footer -->
