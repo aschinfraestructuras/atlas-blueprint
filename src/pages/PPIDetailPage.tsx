@@ -108,6 +108,7 @@ export default function PPIDetailPage() {
   const [saving,      setSaving]      = useState<string | null>(null);
   const [bulkSaving,  setBulkSaving]  = useState(false);
   const [workItem,    setWorkItem]    = useState<{ sector: string; disciplina: string } | null>(null);
+  const [templateTitle, setTemplateTitle] = useState<string | null>(null);
   const [exportInst,  setExportInst]  = useState<PpiInstanceForExport | null>(null);
 
   // Inspection date inline edit
@@ -149,19 +150,23 @@ export default function PPIDetailPage() {
       setDraft(initialDraft);
       setDirtyItems(new Set());
 
-      const { data: wi } = await supabase
-        .from("work_items")
-        .select("sector, disciplina")
-        .eq("id", inst.work_item_id)
-        .single();
-      setWorkItem(wi ?? null);
+      // Load work item + template in parallel
+      const [wiResult, tmplResult] = await Promise.all([
+        supabase.from("work_items").select("sector, disciplina").eq("id", inst.work_item_id).single(),
+        inst.template_id
+          ? supabase.from("ppi_templates").select("title, code").eq("id", inst.template_id).single()
+          : Promise.resolve({ data: null }),
+      ]);
+      setWorkItem(wiResult.data ?? null);
+      setTemplateTitle((tmplResult.data as { title?: string } | null)?.title ?? null);
 
       // Build enriched instance for export
       setExportInst({
         ...inst,
         items: its,
-        work_item_sector: wi?.sector ?? null,
-        work_item_disciplina: wi?.disciplina ?? null,
+        work_item_sector: wiResult.data?.sector ?? null,
+        work_item_disciplina: wiResult.data?.disciplina ?? null,
+        template_code: (tmplResult.data as { code?: string } | null)?.code ?? null,
       });
     } catch {
       toast({ title: t("ppi.instances.toast.error"), variant: "destructive" });
@@ -509,9 +514,11 @@ export default function PPIDetailPage() {
             />
             <InfoRow
               label={t("ppi.instances.detail.template")}
-              value={instance.template_id
-                ? <span className="font-mono text-xs">{instance.template_id.slice(0, 8)}…</span>
-                : <span className="italic text-muted-foreground text-xs">{t("ppi.instances.form.noTemplate")}</span>
+              value={templateTitle
+                ? <span className="text-sm">{templateTitle}</span>
+                : instance.template_id
+                  ? <span className="font-mono text-xs text-muted-foreground">{instance.template_id.slice(0, 8)}…</span>
+                  : <span className="italic text-muted-foreground text-xs">{t("ppi.instances.form.noTemplate")}</span>
               }
             />
             {/* Inspection date — editable when status allows */}
@@ -689,10 +696,9 @@ export default function PPIDetailPage() {
                               {item.item_no}
                             </td>
 
-                            {/* Label */}
+                            {/* Label — check_code oculto (apenas interno) */}
                             <td className="px-4 py-3 align-top pt-4">
                               <p className="font-medium text-foreground text-sm">{item.label}</p>
-                              <p className="text-[10px] font-mono text-muted-foreground/70 mt-0.5">{item.check_code}</p>
                               {isNok && (
                                 <div className="mt-1.5 flex items-center gap-1">
                                   {hasNc ? (

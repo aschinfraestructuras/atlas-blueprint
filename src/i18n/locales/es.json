@@ -840,12 +840,31 @@
       "title": "¿Eliminar Work Item?",
       "description": "El work item «{{sector}}» se eliminará permanentemente. Los ensayos y NCs asociados perderán la vinculación."
     },
+    "export": {
+      "button": "Exportar",
+      "pdfSingle": "PDF — Este Work Item",
+      "csvList": "CSV — Lista de Work Items",
+      "reportTitle": "Ficha de Work Item",
+      "generatedOn": "Generado el",
+      "fields": {
+        "sector": "Sector",
+        "discipline": "Disciplina",
+        "obra": "Obra",
+        "lote": "Lote",
+        "elemento": "Elemento",
+        "parte": "Parte",
+        "pk": "PK",
+        "status": "Estado",
+        "createdAt": "Fecha de creación",
+        "ncs": "NCs",
+        "tests": "Ensayos",
+        "ppis": "PPIs"
+      }
+    },
     "emptyState": {
       "subtitle": "Este proyecto aún no tiene work items. Cree el primero."
     }
-  },
-  "ppi": {
-    "title": "Planes de Puntos de Inspección (PPI)",
+  }
     "subtitle": "Gestionar plantillas e instancias de inspección por work item",
     "nav": "PPI",
     "templates": {

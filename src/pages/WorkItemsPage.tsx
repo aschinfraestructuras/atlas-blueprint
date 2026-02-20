@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { classifySupabaseError } from "@/lib/utils/supabaseError";
 
 // ─── Discipline codes (same as in DB) ─────────────────────────────────────────
 
@@ -128,9 +129,10 @@ export default function WorkItemsPage() {
       toast({ title: t("ppi.demo.instance.created", { code }) });
       navigate(`/ppi/${instanceId}`);
     } catch (err) {
+      const info = classifySupabaseError(err, t);
       toast({
         title: t("ppi.demo.error"),
-        description: err instanceof Error ? err.message : String(err),
+        description: info.raw || (err instanceof Error ? err.message : String(err)),
         variant: "destructive",
       });
     } finally {
