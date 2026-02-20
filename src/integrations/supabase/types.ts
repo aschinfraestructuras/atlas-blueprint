@@ -973,45 +973,93 @@ export type Database = {
       }
       test_results: {
         Row: {
+          approved_at: string | null
+          approved_by: string | null
+          code: string | null
           created_at: string
+          created_by: string | null
           date: string
           id: string
           location: string | null
+          material: string | null
+          material_outro: string | null
+          notes: string | null
+          pass_fail: string | null
+          pk_fim: number | null
+          pk_inicio: number | null
           project_id: string
+          report_number: string | null
           result: Json | null
+          result_payload: Json | null
+          reviewed_at: string | null
+          reviewed_by: string | null
           sample_ref: string | null
           status: string
+          subcontractor_id: string | null
           supplier_id: string | null
           test_id: string
           updated_at: string
+          updated_by: string | null
           work_item_id: string | null
         }
         Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          code?: string | null
           created_at?: string
+          created_by?: string | null
           date?: string
           id?: string
           location?: string | null
+          material?: string | null
+          material_outro?: string | null
+          notes?: string | null
+          pass_fail?: string | null
+          pk_fim?: number | null
+          pk_inicio?: number | null
           project_id: string
+          report_number?: string | null
           result?: Json | null
+          result_payload?: Json | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           sample_ref?: string | null
           status?: string
+          subcontractor_id?: string | null
           supplier_id?: string | null
           test_id: string
           updated_at?: string
+          updated_by?: string | null
           work_item_id?: string | null
         }
         Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          code?: string | null
           created_at?: string
+          created_by?: string | null
           date?: string
           id?: string
           location?: string | null
+          material?: string | null
+          material_outro?: string | null
+          notes?: string | null
+          pass_fail?: string | null
+          pk_fim?: number | null
+          pk_inicio?: number | null
           project_id?: string
+          report_number?: string | null
           result?: Json | null
+          result_payload?: Json | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           sample_ref?: string | null
           status?: string
+          subcontractor_id?: string | null
           supplier_id?: string | null
           test_id?: string
           updated_at?: string
+          updated_by?: string | null
           work_item_id?: string | null
         }
         Relationships: [
@@ -1020,6 +1068,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_results_subcontractor_id_fkey"
+            columns: ["subcontractor_id"]
+            isOneToOne: false
+            referencedRelation: "subcontractors"
             referencedColumns: ["id"]
           },
           {
@@ -1051,11 +1106,21 @@ export type Database = {
           active: boolean
           code: string
           created_at: string
+          created_by: string | null
+          description: string | null
+          disciplina: string
+          disciplina_outro: string | null
           frequency: string | null
           id: string
+          laboratorio: string | null
+          laboratorio_outro: string | null
+          material: string | null
+          material_outro: string | null
           name: string
           project_id: string
           standard: string | null
+          standards: string[] | null
+          unit: string | null
           updated_at: string
         }
         Insert: {
@@ -1063,11 +1128,21 @@ export type Database = {
           active?: boolean
           code: string
           created_at?: string
+          created_by?: string | null
+          description?: string | null
+          disciplina?: string
+          disciplina_outro?: string | null
           frequency?: string | null
           id?: string
+          laboratorio?: string | null
+          laboratorio_outro?: string | null
+          material?: string | null
+          material_outro?: string | null
           name: string
           project_id: string
           standard?: string | null
+          standards?: string[] | null
+          unit?: string | null
           updated_at?: string
         }
         Update: {
@@ -1075,11 +1150,21 @@ export type Database = {
           active?: boolean
           code?: string
           created_at?: string
+          created_by?: string | null
+          description?: string | null
+          disciplina?: string
+          disciplina_outro?: string | null
           frequency?: string | null
           id?: string
+          laboratorio?: string | null
+          laboratorio_outro?: string | null
+          material?: string | null
+          material_outro?: string | null
           name?: string
           project_id?: string
           standard?: string | null
+          standards?: string[] | null
+          unit?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -1180,6 +1265,30 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      fn_bulk_export_tests: {
+        Args: { p_ids?: string[]; p_project_id: string }
+        Returns: {
+          approved_at: string
+          approved_by: string
+          code: string
+          created_by: string
+          date: string
+          id: string
+          location: string
+          material: string
+          notes: string
+          pass_fail: string
+          pk_fim: number
+          pk_inicio: number
+          report_number: string
+          result_payload: Json
+          sample_ref: string
+          standard: string
+          status: string
+          test_code: string
+          test_name: string
+        }[]
+      }
       fn_create_ppi_instance:
         | {
             Args: {
@@ -1216,6 +1325,60 @@ export type Database = {
               items_created: number
             }[]
           }
+      fn_create_test_result: {
+        Args: {
+          p_code?: string
+          p_date?: string
+          p_location?: string
+          p_material?: string
+          p_notes?: string
+          p_pk_fim?: number
+          p_pk_inicio?: number
+          p_project_id: string
+          p_report_number?: string
+          p_result_payload?: Json
+          p_sample_ref?: string
+          p_supplier_id?: string
+          p_test_id: string
+          p_work_item_id?: string
+        }
+        Returns: {
+          approved_at: string | null
+          approved_by: string | null
+          code: string | null
+          created_at: string
+          created_by: string | null
+          date: string
+          id: string
+          location: string | null
+          material: string | null
+          material_outro: string | null
+          notes: string | null
+          pass_fail: string | null
+          pk_fim: number | null
+          pk_inicio: number | null
+          project_id: string
+          report_number: string | null
+          result: Json | null
+          result_payload: Json | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          sample_ref: string | null
+          status: string
+          subcontractor_id: string | null
+          supplier_id: string | null
+          test_id: string
+          updated_at: string
+          updated_by: string | null
+          work_item_id: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "test_results"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       fn_next_ppi_code: { Args: { p_project_id: string }; Returns: string }
       fn_ppi_bulk_mark_ok: { Args: { p_instance_id: string }; Returns: number }
       fn_ppi_bulk_save_items: {
@@ -1243,6 +1406,45 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "ppi_instances"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      fn_update_test_status: {
+        Args: { p_result_id: string; p_to_status: string }
+        Returns: {
+          approved_at: string | null
+          approved_by: string | null
+          code: string | null
+          created_at: string
+          created_by: string | null
+          date: string
+          id: string
+          location: string | null
+          material: string | null
+          material_outro: string | null
+          notes: string | null
+          pass_fail: string | null
+          pk_fim: number | null
+          pk_inicio: number | null
+          project_id: string
+          report_number: string | null
+          result: Json | null
+          result_payload: Json | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          sample_ref: string | null
+          status: string
+          subcontractor_id: string | null
+          supplier_id: string | null
+          test_id: string
+          updated_at: string
+          updated_by: string | null
+          work_item_id: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "test_results"
           isOneToOne: true
           isSetofReturn: false
         }
