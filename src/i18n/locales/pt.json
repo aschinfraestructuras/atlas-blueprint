@@ -932,6 +932,7 @@
         "template": "Template",
         "inspector": "Inspetor",
         "inspectionDate": "Data de Inspeção",
+        "editInspectionDate": "Editar data de inspeção",
         "openedAt": "Aberto em",
         "closedAt": "Fechado em",
         "checklistTitle": "Pontos de Inspeção",

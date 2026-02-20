@@ -1,10 +1,10 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   ArrowLeft, ClipboardCheck, CheckCircle2, XCircle,
   Clock, Loader2, Construction, Calendar, CheckCheck,
-  Save, AlertTriangle, Link2, Archive, Trash2,
+  Save, AlertTriangle, Link2, Archive, Trash2, Pencil,
 } from "lucide-react";
 import { PPIExportMenu } from "@/components/ppi/PPIExportMenu";
 import type { PpiInstanceForExport } from "@/lib/services/ppiExportService";
@@ -110,6 +110,12 @@ export default function PPIDetailPage() {
   const [workItem,    setWorkItem]    = useState<{ sector: string; disciplina: string } | null>(null);
   const [exportInst,  setExportInst]  = useState<PpiInstanceForExport | null>(null);
 
+  // Inspection date inline edit
+  const [editingDate,     setEditingDate]     = useState(false);
+  const [dateValue,       setDateValue]       = useState("");
+  const [savingDate,      setSavingDate]      = useState(false);
+  const dateInputRef = useRef<HTMLInputElement>(null);
+
   // Local draft for bulk editing: itemId → {result, notes}
   const [draft, setDraft] = useState<Record<string, { result: PpiItemResult; notes: string }>>({});
   const [dirtyItems, setDirtyItems] = useState<Set<string>>(new Set());
@@ -135,6 +141,7 @@ export default function PPIDetailPage() {
       const { items: its, ...inst } = await ppiService.getInstance(id);
       setInstance(inst);
       setItems(its);
+      setDateValue(inst.inspection_date ?? "");
 
       // Initialize draft from current values
       const initialDraft: Record<string, { result: PpiItemResult; notes: string }> = {};
@@ -165,6 +172,32 @@ export default function PPIDetailPage() {
   }, [id, t, navigate]);
 
   useEffect(() => { load(); }, [load]);
+
+  // ── Inspection date save ───────────────────────────────────────────────────
+
+  async function handleSaveDate() {
+    if (!instance || !activeProject) return;
+    setSavingDate(true);
+    try {
+      const updated = await ppiService.updateInspectionDate(
+        instance.id, activeProject.id, dateValue || null
+      );
+      setInstance((prev) => prev ? { ...prev, inspection_date: updated.inspection_date } : prev);
+      setEditingDate(false);
+      toast({ title: t("ppi.instances.toast.updated") });
+    } catch (err) {
+      const info = classifySupabaseError(err, t);
+      toast({ title: info.title, description: info.description ?? info.raw, variant: "destructive" });
+    } finally {
+      setSavingDate(false);
+    }
+  }
+
+  useEffect(() => {
+    if (editingDate && dateInputRef.current) {
+      dateInputRef.current.focus();
+    }
+  }, [editingDate]);
 
   // ── Draft edit helpers ─────────────────────────────────────────────────────
 
@@ -481,17 +514,60 @@ export default function PPIDetailPage() {
                 : <span className="italic text-muted-foreground text-xs">{t("ppi.instances.form.noTemplate")}</span>
               }
             />
-            <InfoRow
-              label={t("ppi.instances.detail.inspectionDate")}
-              value={
-                <span className="flex items-center gap-1">
-                  <Calendar className="h-3 w-3 text-muted-foreground" />
-                  {(instance as any).inspection_date
-                    ? new Date((instance as any).inspection_date + "T12:00:00").toLocaleDateString()
-                    : "—"}
-                </span>
-              }
-            />
+            {/* Inspection date — editable when status allows */}
+            <div className="flex items-start gap-2 py-2 border-b border-border/50">
+              <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground w-32 flex-shrink-0 mt-0.5">
+                {t("ppi.instances.detail.inspectionDate")}
+              </span>
+              <div className="flex items-center gap-2 flex-1">
+                {editingDate ? (
+                  <>
+                    <input
+                      ref={dateInputRef}
+                      type="date"
+                      value={dateValue}
+                      onChange={(e) => setDateValue(e.target.value)}
+                      className="text-sm border border-border rounded-md px-2 py-0.5 bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleSaveDate();
+                        if (e.key === "Escape") { setEditingDate(false); setDateValue(instance.inspection_date ?? ""); }
+                      }}
+                    />
+                    <button
+                      onClick={handleSaveDate}
+                      disabled={savingDate}
+                      className="text-xs font-medium text-primary hover:underline disabled:opacity-50"
+                    >
+                      {savingDate ? <Loader2 className="h-3 w-3 animate-spin inline" /> : t("common.save")}
+                    </button>
+                    <button
+                      onClick={() => { setEditingDate(false); setDateValue(instance.inspection_date ?? ""); }}
+                      className="text-xs text-muted-foreground hover:underline"
+                    >
+                      {t("common.cancel")}
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <span className="flex items-center gap-1 text-sm text-foreground">
+                      <Calendar className="h-3 w-3 text-muted-foreground" />
+                      {instance.inspection_date
+                        ? new Date(instance.inspection_date + "T12:00:00").toLocaleDateString()
+                        : <span className="text-muted-foreground">—</span>}
+                    </span>
+                    {!isReadOnly && (
+                      <button
+                        onClick={() => { setDateValue(instance.inspection_date ?? ""); setEditingDate(true); }}
+                        className="text-muted-foreground hover:text-foreground transition-colors"
+                        title={t("ppi.instances.detail.editInspectionDate")}
+                      >
+                        <Pencil className="h-3 w-3" />
+                      </button>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
             <InfoRow
               label={t("ppi.instances.detail.openedAt")}
               value={
@@ -585,6 +661,9 @@ export default function PPIDetailPage() {
                         <th className="text-left px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground hidden md:table-cell">
                           {t("ppi.instances.items.notes")}
                         </th>
+                        <th className="text-left px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground hidden xl:table-cell w-36">
+                          {t("ppi.instances.items.checkedAt")}
+                        </th>
                         <th className="w-10 px-2" />
                       </tr>
                     </thead>
@@ -675,6 +754,22 @@ export default function PPIDetailPage() {
                                   placeholder={t("ppi.instances.items.notesPlaceholder")}
                                   className="text-xs min-w-[140px] resize-none h-8 py-1"
                                 />
+                              )}
+                            </td>
+
+                            {/* checked_at timestamp (read-only column — updated by server on save) */}
+                            <td className="px-4 py-3 hidden xl:table-cell align-top pt-4">
+                              {item.checked_at ? (
+                                <div className="space-y-0.5">
+                                  <p className="text-[10px] font-mono text-muted-foreground">
+                                    {new Date(item.checked_at).toLocaleDateString()}
+                                  </p>
+                                  <p className="text-[10px] text-muted-foreground/60">
+                                    {new Date(item.checked_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                                  </p>
+                                </div>
+                              ) : (
+                                <span className="text-[10px] text-muted-foreground/40">—</span>
                               )}
                             </td>
 

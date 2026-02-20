@@ -281,6 +281,9 @@ export default function PPIPage() {
                   {t("ppi.instances.table.status")}
                 </TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground hidden lg:table-cell">
+                  {t("ppi.instances.form.inspectionDate")}
+                </TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground hidden lg:table-cell">
                   {t("ppi.instances.table.openedAt")}
                 </TableHead>
                 <TableHead className="w-[80px]" />
@@ -331,6 +334,11 @@ export default function PPIPage() {
                     </TableCell>
                     <TableCell className="hidden sm:table-cell">
                       <PPIStatusBadge status={inst.status} />
+                    </TableCell>
+                    <TableCell className="hidden lg:table-cell text-xs text-muted-foreground">
+                      {inst.inspection_date
+                        ? new Date(inst.inspection_date + "T12:00:00").toLocaleDateString()
+                        : <span className="italic">—</span>}
                     </TableCell>
                     <TableCell className="hidden lg:table-cell text-xs text-muted-foreground">
                       {new Date(inst.opened_at).toLocaleDateString()}
