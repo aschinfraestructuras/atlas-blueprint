@@ -1,23 +1,27 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   ArrowLeft, Construction, FlaskConical, AlertTriangle, Paperclip,
   Pencil, Calendar, MapPin, ClipboardCheck, Plus, Eye, FileDown,
+  CheckCircle2, XCircle, Clock,
 } from "lucide-react";
 import { workItemService, formatPk, type WorkItem } from "@/lib/services/workItemService";
 import { ppiService, type PpiInstanceStatus } from "@/lib/services/ppiService";
 import { exportWorkItemPdf, type WorkItemForExport } from "@/lib/services/workItemExportService";
+import { testService, type TestResult } from "@/lib/services/testService";
 import { WorkItemFormDialog } from "@/components/work-items/WorkItemFormDialog";
 import { PPIStatusBadge } from "@/components/ppi/PPIStatusBadge";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { PPIInstanceFormDialog } from "@/components/ppi/PPIInstanceFormDialog";
+import { TestResultFormDialog } from "@/components/tests/TestResultFormDialog";
 import { useProject } from "@/contexts/ProjectContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
@@ -51,11 +55,28 @@ const NC_STATUS_COLORS: Record<string, string> = {
 };
 
 const TEST_STATUS_COLORS: Record<string, string> = {
+  draft:        "hsl(215, 15%, 65%)",
   pending:      "hsl(215, 15%, 65%)",
+  in_progress:  "hsl(215, 70%, 50%)",
+  completed:    "hsl(270, 60%, 55%)",
+  approved:     "hsl(158, 45%, 32%)",
+  archived:     "hsl(215, 15%, 65%)",
   pass:         "hsl(158, 45%, 32%)",
   fail:         "hsl(2, 60%, 44%)",
   inconclusive: "hsl(33, 75%, 38%)",
 };
+
+// ─── Pass/fail icon ───────────────────────────────────────────────────────────
+
+function TestStatusIcon({ status, passFail }: { status: string; passFail?: string | null }) {
+  const cls = "h-3.5 w-3.5 flex-shrink-0";
+  const eff = passFail ?? status;
+  if (eff === "approved" || eff === "pass") return <CheckCircle2 className={cls} style={{ color: "hsl(158, 45%, 32%)" }} />;
+  if (eff === "fail")                       return <XCircle      className={cls} style={{ color: "hsl(2, 60%, 44%)" }} />;
+  if (eff === "in_progress")               return <Clock        className={cls} style={{ color: "hsl(215, 70%, 50%)" }} />;
+  return <FlaskConical className={cls} style={{ color: "hsl(215, 15%, 65%)" }} />;
+}
+
 
 // ─── Info row ─────────────────────────────────────────────────────────────────
 
@@ -185,6 +206,195 @@ function WorkItemPPITab({
   );
 }
 
+// ─── Tests tab for work item ──────────────────────────────────────────────────
+
+function WorkItemTestsTab({
+  workItemId,
+  projectId,
+}: {
+  workItemId: string;
+  projectId: string;
+}) {
+  const { t }    = useTranslation();
+  const [tests,  setTests]  = useState<TestResult[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editing, setEditing] = useState<TestResult | null>(null);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await testService.getByWorkItem(workItemId);
+      setTests(data);
+    } catch (err) {
+      console.error("[WorkItemTestsTab] load error:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [workItemId]);
+
+  useEffect(() => { load(); }, [load]);
+
+  // Stats
+  const stats = {
+    total:    tests.length,
+    approved: tests.filter((r) => r.status === "approved" || r.pass_fail === "pass").length,
+    failed:   tests.filter((r) => r.pass_fail === "fail").length,
+    pending:  tests.filter((r) => ["draft", "in_progress", "pending"].includes(r.status)).length,
+  };
+
+  const STAT_ITEMS = [
+    { key: "total",    color: "text-foreground" },
+    { key: "approved", color: "text-primary" },
+    { key: "failed",   color: "text-destructive" },
+    { key: "pending",  color: "text-muted-foreground" },
+  ] as const;
+
+  return (
+    <>
+      <Card className="shadow-card">
+        <CardHeader className="pb-3 pt-4 px-5 flex flex-row items-center justify-between gap-3">
+          <div className="flex items-center gap-2 flex-wrap">
+            <CardTitle className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+              {t("workItems.detail.tabs.tests")}
+              {tests.length > 0 && (
+                <span className="ml-2 rounded-full bg-primary/10 px-1.5 py-px text-[10px] font-bold text-primary">
+                  {tests.length}
+                </span>
+              )}
+            </CardTitle>
+            {/* Stats chips */}
+            {tests.length > 0 && STAT_ITEMS.map((s) => (
+              <span
+                key={s.key}
+                className={cn(
+                  "inline-flex items-center gap-1 rounded-full border border-border px-2 py-0.5 text-[10px] font-semibold",
+                  s.color,
+                )}
+              >
+                {stats[s.key]}
+                <span className="font-normal text-muted-foreground">
+                  {t(`tests.workItemTab.stats.${s.key}`)}
+                </span>
+              </span>
+            ))}
+          </div>
+          <Button
+            size="sm"
+            variant="outline"
+            className="gap-1.5 h-7 text-xs flex-shrink-0"
+            onClick={() => { setEditing(null); setDialogOpen(true); }}
+          >
+            <Plus className="h-3 w-3" />
+            {t("tests.workItemTab.createTest")}
+          </Button>
+        </CardHeader>
+
+        <CardContent className="p-0">
+          {loading ? (
+            <div className="p-5 space-y-2">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <Skeleton key={i} className="h-10 w-full rounded" />
+              ))}
+            </div>
+          ) : tests.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-10 gap-2 text-muted-foreground">
+              <FlaskConical className="h-6 w-6 opacity-40" />
+              <p className="text-sm">{t("tests.workItemTab.empty")}</p>
+              <Button
+                size="sm"
+                variant="outline"
+                className="gap-1.5 mt-1 text-xs"
+                onClick={() => { setEditing(null); setDialogOpen(true); }}
+              >
+                <Plus className="h-3 w-3" />
+                {t("tests.workItemTab.createTest")}
+              </Button>
+            </div>
+          ) : (
+            <ul className="divide-y divide-border">
+              {tests.map((tr) => {
+                const tc = tr.tests_catalog as any;
+                const statusColor = TEST_STATUS_COLORS[tr.pass_fail ?? tr.status] ?? TEST_STATUS_COLORS.pending;
+                return (
+                  <li
+                    key={tr.id}
+                    className="flex items-center gap-3 px-5 py-3 hover:bg-muted/20 cursor-pointer group"
+                    onClick={() => { setEditing(tr); setDialogOpen(true); }}
+                  >
+                    <div
+                      className="flex h-7 w-7 items-center justify-center rounded-full flex-shrink-0"
+                      style={{ background: `${statusColor}18` }}
+                    >
+                      <TestStatusIcon status={tr.status} passFail={tr.pass_fail} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">
+                        {tc?.name ?? t("tests.unknownTest")}
+                        {tc?.code && (
+                          <span className="ml-1.5 font-mono text-[10px] text-muted-foreground font-normal">
+                            {tc.code}
+                          </span>
+                        )}
+                      </p>
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5 flex-wrap">
+                        <Calendar className="h-3 w-3 flex-shrink-0" />
+                        {new Date(tr.date).toLocaleDateString()}
+                        {tr.sample_ref && (
+                          <><span>·</span><span>Ref: {tr.sample_ref}</span></>
+                        )}
+                        {tr.location && (
+                          <><span>·</span><MapPin className="h-3 w-3 flex-shrink-0" /><span>{tr.location}</span></>
+                        )}
+                        {tr.report_number && (
+                          <><span>·</span><span className="font-mono">{tr.report_number}</span></>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      {tr.pass_fail && (
+                        <Badge
+                          variant="secondary"
+                          className={cn("text-[10px] py-0",
+                            tr.pass_fail === "pass"         ? "bg-primary/10 text-primary" :
+                            tr.pass_fail === "fail"         ? "bg-destructive/10 text-destructive" :
+                            "bg-orange-500/10 text-orange-600",
+                          )}
+                        >
+                          {t(`tests.status.${tr.pass_fail}`, { defaultValue: tr.pass_fail })}
+                        </Badge>
+                      )}
+                      <Badge variant="outline" className="text-[10px] py-0">
+                        {t(`tests.status.${tr.status}`, { defaultValue: tr.status })}
+                      </Badge>
+                      <Button
+                        variant="ghost" size="icon"
+                        className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
+                        onClick={(e) => { e.stopPropagation(); setEditing(tr); setDialogOpen(true); }}
+                        title={t("common.edit")}
+                      >
+                        <Pencil className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </CardContent>
+      </Card>
+
+      <TestResultFormDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        testResult={editing}
+        preselectedWorkItemId={workItemId}
+        onSuccess={load}
+      />
+    </>
+  );
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function WorkItemDetailPage() {
@@ -196,7 +406,6 @@ export default function WorkItemDetailPage() {
   const [item,       setItem]       = useState<WorkItem | null>(null);
   const [loading,    setLoading]    = useState(true);
   const [editOpen,   setEditOpen]   = useState(false);
-  const [tests,      setTests]      = useState<any[]>([]);
   const [ncs,        setNcs]        = useState<any[]>([]);
   const [subLoading, setSubLoading] = useState(true);
 
@@ -209,7 +418,7 @@ export default function WorkItemDetailPage() {
       status_label:     t(`workItems.status.${item.status}`,          { defaultValue: item.status }),
       ppi_count:  0,
       nc_count:   ncs.length,
-      test_count: tests.length,
+      test_count: 0,
     };
     exportWorkItemPdf(wi, {
       appName:     "Atlas QMS",
@@ -249,19 +458,11 @@ export default function WorkItemDetailPage() {
     if (!id) return;
     setSubLoading(true);
     try {
-      const [{ data: testData }, { data: ncData }] = await Promise.all([
-        supabase
-          .from("test_results")
-          .select("*, tests_catalog(name, code)")
-          .eq("work_item_id", id)
-          .order("created_at", { ascending: false }),
-        supabase
-          .from("non_conformities")
-          .select("*")
-          .eq("work_item_id", id)
-          .order("created_at", { ascending: false }),
-      ]);
-      setTests(testData ?? []);
+      const { data: ncData } = await supabase
+        .from("non_conformities")
+        .select("*")
+        .eq("work_item_id", id)
+        .order("created_at", { ascending: false });
       setNcs(ncData ?? []);
     } catch {
       // non-blocking
@@ -367,11 +568,6 @@ export default function WorkItemDetailPage() {
           <TabsTrigger value="tests" className="gap-1.5">
             <FlaskConical className="h-3.5 w-3.5" />
             {t("workItems.detail.tabs.tests")}
-            {tests.length > 0 && (
-              <span className="ml-1 rounded-full bg-primary/10 px-1.5 py-px text-[10px] font-bold text-primary">
-                {tests.length}
-              </span>
-            )}
           </TabsTrigger>
           <TabsTrigger value="ncs" className="gap-1.5">
             <AlertTriangle className="h-3.5 w-3.5" />
@@ -395,57 +591,7 @@ export default function WorkItemDetailPage() {
 
         {/* Tests tab */}
         <TabsContent value="tests" className="mt-4">
-          <Card className="shadow-card">
-            <CardContent className="p-0">
-              {subLoading ? (
-                <div className="p-5 space-y-2">
-                  {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-10 w-full rounded" />)}
-                </div>
-              ) : tests.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-10 gap-2 text-muted-foreground">
-                  <FlaskConical className="h-6 w-6 opacity-40" />
-                  <p className="text-sm">{t("workItems.detail.emptyTests")}</p>
-                </div>
-              ) : (
-                <ul className="divide-y divide-border">
-                  {tests.map((tr) => (
-                    <li key={tr.id} className="flex items-center gap-3 px-5 py-3">
-                      <div
-                        className="flex h-7 w-7 items-center justify-center rounded-full flex-shrink-0"
-                        style={{ background: `${TEST_STATUS_COLORS[tr.status] ?? "#888"}18` }}
-                      >
-                        <FlaskConical
-                          className="h-3.5 w-3.5"
-                          style={{ color: TEST_STATUS_COLORS[tr.status] ?? "#888" }}
-                        />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">
-                          {tr.tests_catalog?.name ?? t("tests.unknownTest")}{" "}
-                          <span className="text-muted-foreground font-normal">({tr.tests_catalog?.code ?? "—"})</span>
-                        </p>
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
-                          <Calendar className="h-3 w-3" />
-                          {new Date(tr.date).toLocaleDateString()}
-                          {tr.sample_ref && <><span>·</span><span>Ref: {tr.sample_ref}</span></>}
-                          {tr.location   && <><span>·</span><MapPin className="h-3 w-3" /><span>{tr.location}</span></>}
-                        </div>
-                      </div>
-                      <Badge
-                        variant={
-                          tr.status === "pass"         ? "secondary"   :
-                          tr.status === "fail"         ? "destructive" : "outline"
-                        }
-                        className="text-xs"
-                      >
-                        {t(`tests.status.${tr.status}`, { defaultValue: tr.status })}
-                      </Badge>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </CardContent>
-          </Card>
+          <WorkItemTestsTab workItemId={item.id} projectId={activeProject?.id ?? ""} />
         </TabsContent>
 
         {/* NCs tab */}
