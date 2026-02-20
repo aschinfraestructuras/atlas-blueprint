@@ -32,9 +32,20 @@ import {
 import { EmptyState } from "@/components/EmptyState";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { NCFormDialog } from "@/components/nc/NCFormDialog";
+import { PageHeader } from "@/components/ui/page-header";
+import { FilterBar } from "@/components/ui/filter-bar";
 import { cn } from "@/lib/utils";
 
-// ─── Colour maps ──────────────────────────────────────────────────────────────
+
+// ─── Dot colour for severity ──────────────────────────────────────────────────
+const SEVERITY_DOT: Record<string, string> = {
+  minor:    "hsl(215 15% 55%)",
+  major:    "hsl(var(--primary))",
+  critical: "hsl(var(--destructive))",
+  low:      "hsl(215 15% 55%)",
+  medium:   "hsl(var(--primary))",
+  high:     "hsl(var(--destructive))",
+};
 
 const SEVERITY_COLORS: Record<string, string> = {
   minor:    "bg-muted text-muted-foreground",
@@ -45,16 +56,41 @@ const SEVERITY_COLORS: Record<string, string> = {
   high:     "bg-destructive/10 text-destructive",
 };
 
-const STATUS_COLORS: Record<string, string> = {
+// ─── Status: dot + pill ──────────────────────────────────────────────────────
+const STATUS_DOT: Record<string, string> = {
+  draft:                "hsl(215 18% 60%)",
+  open:                 "hsl(var(--destructive))",
+  in_progress:          "hsl(var(--primary))",
+  pending_verification: "hsl(38 85% 44%)",
+  closed:               "hsl(158 45% 36%)",
+  archived:             "hsl(215 15% 55%)",
+};
+
+const STATUS_BG: Record<string, string> = {
   draft:                "bg-muted/60 text-muted-foreground",
   open:                 "bg-destructive/10 text-destructive",
   in_progress:          "bg-primary/10 text-primary",
-  pending_verification: "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400",
+  pending_verification: "bg-amber-500/10 text-amber-700 dark:text-amber-400",
   closed:               "bg-green-500/10 text-green-700 dark:text-green-400",
   archived:             "bg-muted text-muted-foreground",
 };
 
-// ─── Colour maps / transitions now come from stateMachines ───────────────────
+function NCStatusBadge({ status }: { status: string }) {
+  const { t } = useTranslation();
+  return (
+    <span className={cn(
+      "inline-flex items-center gap-1.5 rounded-full border border-transparent px-2.5 py-0.5 text-xs font-medium",
+      STATUS_BG[status] ?? "bg-muted text-muted-foreground",
+    )}>
+      <span
+        className="h-1.5 w-1.5 rounded-full flex-shrink-0"
+        style={{ background: STATUS_DOT[status] ?? "hsl(215 15% 55%)" }}
+      />
+      {t(`nc.status.${status}`, { defaultValue: status })}
+    </span>
+  );
+}
+
 
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
@@ -228,45 +264,46 @@ export default function NonConformitiesPage() {
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
-      {/* ── Header ───────────────────────────────────────────────────────── */}
-      <div className="flex items-center justify-between gap-4">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">
-            {t("pages.nonConformities.title")}
-          </h1>
-          <p className="text-sm text-muted-foreground">{t("pages.nonConformities.subtitle")}</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline" size="sm"
-            onClick={handleSeedDemo} disabled={seeding}
-            className="gap-1.5 text-xs"
-            title={t("nc.demo.tooltip")}
-          >
-            {seeding ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Database className="h-3.5 w-3.5" />}
-            {t("nc.demo.button")}
-          </Button>
-          <Button onClick={handleNew} size="sm" className="gap-1.5">
-            <Plus className="h-3.5 w-3.5" />
-            {t("nc.newNC")}
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        module={t("pages.nonConformities.module", { defaultValue: "Qualidade" })}
+        title={t("pages.nonConformities.title")}
+        subtitle={t("pages.nonConformities.subtitle")}
+        icon={AlertTriangle}
+        iconColor="hsl(2, 60%, 44%)"
+        actions={
+          <>
+            <Button
+              variant="outline" size="sm"
+              onClick={handleSeedDemo} disabled={seeding}
+              className="gap-1.5 text-xs"
+              title={t("nc.demo.tooltip")}
+            >
+              {seeding ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Database className="h-3.5 w-3.5" />}
+              {t("nc.demo.button")}
+            </Button>
+            <Button onClick={handleNew} size="sm" className="gap-1.5">
+              <Plus className="h-3.5 w-3.5" />
+              {t("nc.newNC")}
+            </Button>
+          </>
+        }
+      />
+
 
       {/* ── Filters ─────────────────────────────────────────────────────── */}
-      <div className="flex flex-wrap gap-2 items-center">
+      <FilterBar>
         <div className="relative">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
           <Input
             placeholder={t("nc.searchPlaceholder")}
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="h-8 w-56 pl-8 text-sm"
+            className="h-8 w-52 pl-8 text-sm bg-background"
           />
         </div>
 
         <Select value={filterStatus} onValueChange={setFilterStatus}>
-          <SelectTrigger className="h-8 w-44 text-sm"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="h-8 w-44 text-sm bg-background"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t("nc.filters.allStatuses")}</SelectItem>
             {["draft","open","in_progress","pending_verification","closed","archived"].map(s => (
@@ -276,7 +313,7 @@ export default function NonConformitiesPage() {
         </Select>
 
         <Select value={filterSeverity} onValueChange={setFilterSeverity}>
-          <SelectTrigger className="h-8 w-36 text-sm"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="h-8 w-36 text-sm bg-background"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t("nc.filters.allSeverities")}</SelectItem>
             {["minor","major","critical"].map(s => (
@@ -286,7 +323,7 @@ export default function NonConformitiesPage() {
         </Select>
 
         <Select value={filterOrigin} onValueChange={setFilterOrigin}>
-          <SelectTrigger className="h-8 w-36 text-sm"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="h-8 w-36 text-sm bg-background"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t("nc.filters.allOrigins")}</SelectItem>
             {["manual","ppi","test","document","audit"].map(o => (
@@ -296,7 +333,7 @@ export default function NonConformitiesPage() {
         </Select>
 
         <Select value={filterCategory} onValueChange={setFilterCategory}>
-          <SelectTrigger className="h-8 w-40 text-sm"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="h-8 w-40 text-sm bg-background"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t("nc.filters.allCategories")}</SelectItem>
             {["qualidade","seguranca","ambiente","producao","outros"].map(c => (
@@ -306,9 +343,9 @@ export default function NonConformitiesPage() {
         </Select>
 
         <Input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)}
-          className="h-8 w-36 text-sm" placeholder={t("nc.filters.from")} title={t("nc.filters.from")} />
+          className="h-8 w-36 text-sm bg-background" title={t("nc.filters.from")} />
         <Input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)}
-          className="h-8 w-36 text-sm" placeholder={t("nc.filters.to")} title={t("nc.filters.to")} />
+          className="h-8 w-36 text-sm bg-background" title={t("nc.filters.to")} />
 
         {hasFilters && (
           <Button variant="ghost" size="sm" onClick={clearFilters} className="h-8 gap-1 text-xs text-muted-foreground">
@@ -316,10 +353,11 @@ export default function NonConformitiesPage() {
           </Button>
         )}
 
-        <span className="ml-auto text-xs text-muted-foreground">
+        <span className="ml-auto text-xs text-muted-foreground tabular-nums">
           {filtered.length} {t("nc.filters.results")}
         </span>
-      </div>
+      </FilterBar>
+
 
       {/* ── Bulk action bar ──────────────────────────────────────────────── */}
       {selected.size > 0 && (
@@ -376,7 +414,8 @@ export default function NonConformitiesPage() {
         <div className="rounded-xl border border-border overflow-hidden">
           <Table>
             <TableHeader>
-              <TableRow className="bg-muted/40">
+              <TableRow className="bg-muted/30 hover:bg-muted/30">
+
                 <TableHead className="w-10 px-3">
                   <button onClick={toggleAll} className="text-muted-foreground hover:text-foreground">
                     {allSelected
@@ -421,11 +460,13 @@ export default function NonConformitiesPage() {
                   <TableRow
                     key={nc.id}
                     className={cn(
-                      "hover:bg-muted/20 transition-colors cursor-pointer",
-                      isSelected && "bg-primary/5"
+                      "cursor-pointer group transition-colors duration-100",
+                      "hover:bg-primary/[0.028]",
+                      isSelected && "bg-primary/5 hover:bg-primary/[0.06]",
                     )}
                     onClick={() => navigate(`/non-conformities/${nc.id}`)}
                   >
+
                     {/* Checkbox */}
                     <TableCell className="px-3" onClick={e => { e.stopPropagation(); toggleOne(nc.id); }}>
                       {isSelected
@@ -459,17 +500,21 @@ export default function NonConformitiesPage() {
 
                     {/* Severidade */}
                     <TableCell>
-                      <Badge variant="secondary" className={cn("text-xs", SEVERITY_COLORS[nc.severity] ?? "")}>
+                      <span className={cn(
+                        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium border border-transparent",
+                        SEVERITY_COLORS[nc.severity] ?? "bg-muted text-muted-foreground",
+                      )}>
+                        <span className="h-1.5 w-1.5 rounded-full flex-shrink-0"
+                          style={{ background: SEVERITY_DOT[nc.severity] ?? "hsl(215 15% 55%)" }} />
                         {t(`nc.severity.${nc.severity}`, { defaultValue: nc.severity })}
-                      </Badge>
+                      </span>
                     </TableCell>
 
                     {/* Estado */}
                     <TableCell>
-                      <Badge variant="secondary" className={cn("text-xs", STATUS_COLORS[nc.status] ?? "")}>
-                        {t(`nc.status.${nc.status}`, { defaultValue: nc.status })}
-                      </Badge>
+                      <NCStatusBadge status={nc.status} />
                     </TableCell>
+
 
                     {/* Responsável */}
                     <TableCell className="text-sm text-muted-foreground truncate max-w-[120px]">
@@ -486,12 +531,12 @@ export default function NonConformitiesPage() {
                       ) : "—"}
                     </TableCell>
 
-                    {/* Ações */}
+                    {/* Ações — visíveis só no hover da linha */}
                     <TableCell onClick={e => e.stopPropagation()}>
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
                         <Button
                           variant="ghost" size="icon"
-                          className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                          className="h-7 w-7"
                           onClick={() => navigate(`/non-conformities/${nc.id}`)}
                           title={t("common.view")}
                         >
@@ -499,7 +544,7 @@ export default function NonConformitiesPage() {
                         </Button>
                         <Button
                           variant="ghost" size="icon"
-                          className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                          className="h-7 w-7"
                           onClick={() => handleEdit(nc)}
                           title={t("common.edit")}
                         >
@@ -510,7 +555,7 @@ export default function NonConformitiesPage() {
                             <DropdownMenuTrigger asChild>
                               <Button
                                 variant="ghost" size="icon"
-                                className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                                className="h-7 w-7"
                                 disabled={isTransitioning}
                                 title={t("nc.transitions.label")}
                               >
@@ -535,6 +580,7 @@ export default function NonConformitiesPage() {
                       </div>
                     </TableCell>
                   </TableRow>
+
                 );
               })}
             </TableBody>

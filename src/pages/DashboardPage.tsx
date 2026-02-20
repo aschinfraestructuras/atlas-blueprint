@@ -66,42 +66,48 @@ function StatCard({
   const animated = useCountUp(loading ? 0 : value);
 
   if (loading) return (
-    <Card className="border bg-card shadow-card">
-      <CardContent className="p-6">
-        <Skeleton className="h-3 w-28 mb-4" />
-        <Skeleton className="h-10 w-16 mb-2" />
-        <Skeleton className="h-2.5 w-24" />
+    <Card className="border bg-card shadow-card overflow-hidden">
+      <CardContent className="p-5">
+        <Skeleton className="h-3 w-24 mb-5" />
+        <Skeleton className="h-11 w-16 mb-3" />
+        <Skeleton className="h-2.5 w-20" />
       </CardContent>
     </Card>
   );
 
   return (
     <Card
-      className="border bg-card shadow-card hover:shadow-card-hover transition-shadow duration-200 animate-fade-in overflow-hidden relative"
+      className="border bg-card shadow-card hover:shadow-card-hover transition-all duration-200 animate-fade-in overflow-hidden relative group"
       style={{ borderTop: `3px solid ${moduleColor}` }}
     >
-      <CardContent className="p-6">
+      <CardContent className="p-5">
         <div className="flex items-start justify-between mb-4">
-          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground leading-none">
+          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground leading-none">
             {label}
           </p>
           <div
-            className="flex h-9 w-9 items-center justify-center rounded-xl flex-shrink-0"
-            style={{ background: `${moduleColor}18` }}
+            className="flex h-8 w-8 items-center justify-center rounded-lg flex-shrink-0 transition-transform duration-200 group-hover:scale-110"
+            style={{ background: `${moduleColor}18`, border: `1px solid ${moduleColor}25` }}
           >
-            <Icon className="h-4 w-4" style={{ color: moduleColor }} />
+            <Icon className="h-3.5 w-3.5" style={{ color: moduleColor }} />
           </div>
         </div>
-        <p className="text-4xl font-extrabold tabular-nums text-foreground leading-none">
+        <p className="text-[42px] font-black tabular-nums text-foreground leading-none tracking-tight">
           {animated}
         </p>
         {sub && (
-          <p className="mt-2 text-xs text-muted-foreground">{sub}</p>
+          <p className="mt-2.5 text-xs text-muted-foreground leading-none">{sub}</p>
         )}
       </CardContent>
+      {/* Subtle bottom accent line that grows on hover */}
+      <div
+        className="absolute bottom-0 left-0 h-[2px] w-0 group-hover:w-full transition-all duration-300 ease-out"
+        style={{ background: `${moduleColor}60` }}
+      />
     </Card>
   );
 }
+
 
 // ── Custom Tooltip ────────────────────────────────────────────────────────────
 function ChartTooltip({ active, payload, label }: any) {
@@ -198,13 +204,23 @@ function BarCard({
         ) : (
           <ResponsiveContainer width="100%" height={130}>
             <BarChart data={data} barCategoryGap="30%" barGap={4}>
+              {/* SVG gradient defs */}
+              <defs>
+                {bars.map((b, i) => (
+                  <linearGradient key={i} id={`barGrad-${i}`} x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={b.color} stopOpacity={1} />
+                    <stop offset="100%" stopColor={b.color} stopOpacity={0.65} />
+                  </linearGradient>
+                ))}
+              </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
               <XAxis dataKey="name" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
               <YAxis allowDecimals={false} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} width={22} />
               <Tooltip content={<ChartTooltip />} cursor={{ fill: "hsl(var(--muted))" }} />
               <Legend iconType="circle" iconSize={7} wrapperStyle={{ fontSize: 10, color: "hsl(var(--muted-foreground))" }} />
-              {bars.map((b) => (
-                <Bar key={b.key} dataKey={b.key} name={b.label} fill={b.color}
+              {bars.map((b, i) => (
+                <Bar key={b.key} dataKey={b.key} name={b.label}
+                  fill={`url(#barGrad-${i})`}
                   radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700} />
               ))}
             </BarChart>
@@ -214,6 +230,7 @@ function BarCard({
     </Card>
   );
 }
+
 
 // ── NC Aging Gauge ────────────────────────────────────────────────────────────
 function AgingCard({ days, openCount, loading }: { days: number; openCount: number; loading: boolean }) {
@@ -614,25 +631,26 @@ export default function DashboardPage() {
       {/* ── Page header ───────────────────────────────────────────────── */}
       <div className="flex items-start justify-between">
         <div className="space-y-1">
-          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
+          <p className="text-[10px] font-extrabold uppercase tracking-[0.22em] text-muted-foreground/60 select-none">
             {t("dashboard.welcome")}
           </p>
-          <h1 className="text-2xl font-extrabold tracking-tight text-foreground leading-none">
+          <h1 className="text-[26px] font-black tracking-tight text-foreground leading-tight">
             {displayName}
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="text-sm text-muted-foreground mt-1.5">
             {activeProject
               ? t("dashboard.subtitleProject", { project: activeProject.name })
               : t("dashboard.subtitle")}
           </p>
         </div>
         <div className="hidden sm:flex items-center gap-2 rounded-xl border border-border bg-card shadow-card px-4 py-2.5">
-          <ShieldCheck className="h-4 w-4 text-muted-foreground" />
+          <ShieldCheck className="h-4 w-4" style={{ color: "hsl(var(--primary))" }} />
           <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
             Atlas QMS
           </span>
         </div>
       </div>
+
 
       {/* ── No project banner ─────────────────────────────────────────── */}
       {!activeProject && (
