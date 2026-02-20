@@ -1062,25 +1062,6 @@
     }
   },
   "export": {
-    "button": "Exportar",
-    "menuTitle": "Opções de exportação",
-    "reportTitle": "Relatório de Inspeção PPI",
-    "bulkReportTitle": "Relatório PPI Consolidado",
-    "generatedOn": "Gerado em",
-    "page": "Página",
-    "of": "de",
-    "pdfSingle": "PDF — Esta inspeção",
-    "pdfBulk": "PDF — Combinado",
-    "csvInstances": "CSV — Lista de inspeções",
-    "csvItems": "CSV — Pontos de inspeção",
-    "noData": "Nenhuma inspeção para exportar.",
-    "error": "Erro ao exportar.",
-    "fields": {
-      "project": "Projeto",
-      "discipline": "Disciplina",
-      "linkedNc": "NC Associada",
-      "attachmentCount": "Nº Anexos"
-    }
   },
   "attachments": {
     "title": "Anexos / Evidências",
