@@ -270,10 +270,13 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
             <FormField control={form.control} name="work_item_id" render={({ field }) => (
               <FormItem>
                 <FormLabel>{t("tests.results.form.workItem")} <span className="text-xs text-muted-foreground">({t("common.optional")})</span></FormLabel>
-                <Select onValueChange={field.onChange} value={field.value ?? ""}>
+                <Select
+                  onValueChange={(v) => field.onChange(v === "__none__" ? "" : v)}
+                  value={field.value || "__none__"}
+                >
                   <FormControl><SelectTrigger><SelectValue placeholder={t("tests.results.form.workItemPlaceholder")} /></SelectTrigger></FormControl>
                   <SelectContent>
-                    <SelectItem value="">{t("tests.results.form.noWorkItem")}</SelectItem>
+                    <SelectItem value="__none__">{t("tests.results.form.noWorkItem")}</SelectItem>
                     {workItems.map((wi) => (
                       <SelectItem key={wi.id} value={wi.id}>{wi.sector}</SelectItem>
                     ))}
@@ -331,10 +334,13 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
               <FormField control={form.control} name="supplier_id" render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t("tests.results.form.supplier")} <span className="text-xs text-muted-foreground">({t("common.optional")})</span></FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value ?? ""}>
+                  <Select
+                    onValueChange={(v) => field.onChange(v === "__none__" ? "" : v)}
+                    value={field.value || "__none__"}
+                  >
                     <FormControl><SelectTrigger><SelectValue placeholder={t("tests.results.form.supplierPlaceholder")} /></SelectTrigger></FormControl>
                     <SelectContent>
-                      <SelectItem value="">{t("tests.results.form.noSupplier")}</SelectItem>
+                      <SelectItem value="__none__">{t("tests.results.form.noSupplier")}</SelectItem>
                       {suppliers.map((s) => (
                         <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
                       ))}
