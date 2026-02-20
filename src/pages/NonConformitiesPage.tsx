@@ -1,18 +1,24 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { useProject } from "@/contexts/ProjectContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { useNonConformities } from "@/hooks/useNonConformities";
 import { ncService } from "@/lib/services/ncService";
+import { ncDemoService } from "@/lib/services/ncDemoService";
 import type { NonConformity } from "@/lib/services/ncService";
 import { toast } from "@/hooks/use-toast";
+import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import {
   AlertTriangle, Calendar, Plus, Pencil, ChevronDown,
+  Eye, Loader2, Database, Search, X, CheckSquare, Square,
 } from "lucide-react";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger,
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
+  DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -26,16 +32,15 @@ import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { NCFormDialog } from "@/components/nc/NCFormDialog";
 import { cn } from "@/lib/utils";
 
-// ─── Paletes de cor ───────────────────────────────────────────────────────────
+// ─── Colour maps ──────────────────────────────────────────────────────────────
 
 const SEVERITY_COLORS: Record<string, string> = {
   minor:    "bg-muted text-muted-foreground",
   major:    "bg-primary/10 text-primary",
-  critical: "bg-destructive text-destructive-foreground",
-  // legado
+  critical: "bg-destructive/10 text-destructive",
   low:      "bg-muted text-muted-foreground",
   medium:   "bg-primary/10 text-primary",
-  high:     "bg-destructive/15 text-destructive",
+  high:     "bg-destructive/10 text-destructive",
 };
 
 const STATUS_COLORS: Record<string, string> = {
@@ -47,7 +52,6 @@ const STATUS_COLORS: Record<string, string> = {
   archived:             "bg-muted text-muted-foreground",
 };
 
-// Transições permitidas (espelho da RPC)
 const ALLOWED_TRANSITIONS: Record<string, string[]> = {
   draft:                ["open", "archived"],
   open:                 ["in_progress", "closed", "archived"],
@@ -57,19 +61,38 @@ const ALLOWED_TRANSITIONS: Record<string, string[]> = {
   archived:             ["open"],
 };
 
-// ─── Componente ───────────────────────────────────────────────────────────────
+// ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function NonConformitiesPage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const { data: ncs, loading, error, refetch } = useNonConformities();
 
-  const [dialogOpen, setDialogOpen]   = useState(false);
-  const [editingNC, setEditingNC]     = useState<NonConformity | null>(null);
-  const [search, setSearch]           = useState("");
-  const [filterStatus, setFilterStatus]   = useState("all");
+  // Filters
+  const [search, setSearch]             = useState("");
+  const [filterStatus, setFilterStatus] = useState("all");
   const [filterSeverity, setFilterSeverity] = useState("all");
+  const [filterOrigin, setFilterOrigin] = useState("all");
+  const [filterCategory, setFilterCategory] = useState("all");
+  const [dateFrom, setDateFrom]         = useState("");
+  const [dateTo, setDateTo]             = useState("");
+
+  // Dialog
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingNC, setEditingNC]   = useState<NonConformity | null>(null);
+
+  // Transition
   const [transitioningId, setTransitioningId] = useState<string | null>(null);
+
+  // Bulk selection
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+
+  // Demo seeding
+  const [seeding, setSeeding] = useState(false);
+
+  // ─── Filtered list ──────────────────────────────────────────────────────────
 
   const filtered = useMemo(() => {
     if (!activeProject) return [];
@@ -79,15 +102,31 @@ export default function NonConformitiesPage() {
         (nc.code ?? "").toLowerCase().includes(q) ||
         (nc.title ?? "").toLowerCase().includes(q) ||
         nc.description.toLowerCase().includes(q) ||
-        (nc.responsible ?? "").toLowerCase().includes(q);
+        (nc.responsible ?? "").toLowerCase().includes(q) ||
+        (nc.reference ?? "").toLowerCase().includes(q);
       const matchesStatus   = filterStatus === "all"   || nc.status === filterStatus;
       const matchesSeverity = filterSeverity === "all" || nc.severity === filterSeverity;
-      return matchesSearch && matchesStatus && matchesSeverity;
+      const matchesOrigin   = filterOrigin === "all"   || nc.origin === filterOrigin;
+      const matchesCategory = filterCategory === "all" || nc.category === filterCategory;
+      const detectedAt = nc.detected_at ?? nc.created_at;
+      const matchesFrom = !dateFrom || detectedAt >= dateFrom;
+      const matchesTo   = !dateTo   || detectedAt <= dateTo;
+      return matchesSearch && matchesStatus && matchesSeverity && matchesOrigin && matchesCategory && matchesFrom && matchesTo;
     });
-  }, [ncs, search, filterStatus, filterSeverity]);
+  }, [ncs, search, filterStatus, filterSeverity, filterOrigin, filterCategory, dateFrom, dateTo, activeProject]);
 
-  const handleEdit = (nc: NonConformity) => { setEditingNC(nc); setDialogOpen(true); };
+  const hasFilters = search || filterStatus !== "all" || filterSeverity !== "all" ||
+    filterOrigin !== "all" || filterCategory !== "all" || dateFrom || dateTo;
+
+  const clearFilters = () => {
+    setSearch(""); setFilterStatus("all"); setFilterSeverity("all");
+    setFilterOrigin("all"); setFilterCategory("all"); setDateFrom(""); setDateTo("");
+  };
+
+  // ─── Actions ────────────────────────────────────────────────────────────────
+
   const handleNew  = () => { setEditingNC(null); setDialogOpen(true); };
+  const handleEdit = (nc: NonConformity) => { setEditingNC(nc); setDialogOpen(true); };
 
   const handleTransition = async (nc: NonConformity, toStatus: string) => {
     setTransitioningId(nc.id);
@@ -96,80 +135,197 @@ export default function NonConformitiesPage() {
       toast({ title: t("nc.toast.statusChanged", { status: t(`nc.status.${toStatus}`) }) });
       refetch();
     } catch (err) {
-      toast({
-        title: t("errors.generic.title"),
-        description: err instanceof Error ? err.message : t("errors.generic.description"),
-        variant: "destructive",
-      });
+      const info = classifySupabaseError(err, t);
+      toast({ title: info.title, description: info.description ?? info.raw, variant: "destructive" });
     } finally {
       setTransitioningId(null);
     }
   };
 
+  // Bulk selection helpers
+  const allSelected = filtered.length > 0 && filtered.every(nc => selected.has(nc.id));
+  const toggleAll = () => {
+    if (allSelected) setSelected(new Set());
+    else setSelected(new Set(filtered.map(nc => nc.id)));
+  };
+  const toggleOne = (id: string) => {
+    setSelected(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  const handleBulkTransition = async (toStatus: string) => {
+    const ids = [...selected];
+    let ok = 0;
+    for (const id of ids) {
+      const nc = ncs.find(n => n.id === id);
+      if (!nc) continue;
+      const allowed = ALLOWED_TRANSITIONS[nc.status] ?? [];
+      if (!allowed.includes(toStatus)) continue;
+      try { await ncService.updateStatus(id, toStatus); ok++; } catch { /* skip */ }
+    }
+    toast({ title: t("nc.toast.bulkStatusChanged", { count: ok }) });
+    setSelected(new Set());
+    refetch();
+  };
+
+  // Demo seed
+  const handleSeedDemo = useCallback(async () => {
+    if (!activeProject || !user) return;
+    setSeeding(true);
+    try {
+      const { created, skipped } = await ncDemoService.seedDemoNCs(activeProject.id);
+      if (created > 0) toast({ title: t("nc.demo.created", { count: created }) });
+      else toast({ title: t("nc.demo.allExist", { count: skipped }) });
+      refetch();
+    } catch (err) {
+      const info = classifySupabaseError(err, t);
+      toast({ title: info.title, description: info.description ?? info.raw, variant: "destructive" });
+    } finally {
+      setSeeding(false);
+    }
+  }, [activeProject, user, refetch, t]);
+
+  // ─── Guard ──────────────────────────────────────────────────────────────────
+
   if (!activeProject) return <NoProjectBanner />;
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+      {/* ── Header ───────────────────────────────────────────────────────── */}
+      <div className="flex items-center justify-between gap-4">
         <div className="space-y-1">
           <h1 className="text-2xl font-bold tracking-tight text-foreground">
             {t("pages.nonConformities.title")}
           </h1>
           <p className="text-sm text-muted-foreground">{t("pages.nonConformities.subtitle")}</p>
         </div>
-        <Button onClick={handleNew} size="sm" className="gap-1.5">
-          <Plus className="h-3.5 w-3.5" />
-          {t("nc.newNC")}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline" size="sm"
+            onClick={handleSeedDemo} disabled={seeding}
+            className="gap-1.5 text-xs"
+            title={t("nc.demo.tooltip")}
+          >
+            {seeding ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Database className="h-3.5 w-3.5" />}
+            {t("nc.demo.button")}
+          </Button>
+          <Button onClick={handleNew} size="sm" className="gap-1.5">
+            <Plus className="h-3.5 w-3.5" />
+            {t("nc.newNC")}
+          </Button>
+        </div>
       </div>
 
-      {/* Filtros */}
-      <div className="flex flex-wrap gap-2">
-        <Input
-          placeholder={t("nc.searchPlaceholder")}
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          className="h-8 w-64 text-sm"
-        />
+      {/* ── Filters ─────────────────────────────────────────────────────── */}
+      <div className="flex flex-wrap gap-2 items-center">
+        <div className="relative">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
+          <Input
+            placeholder={t("nc.searchPlaceholder")}
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="h-8 w-56 pl-8 text-sm"
+          />
+        </div>
+
         <Select value={filterStatus} onValueChange={setFilterStatus}>
-          <SelectTrigger className="h-8 w-44 text-sm">
-            <SelectValue placeholder={t("nc.filters.allStatuses")} />
-          </SelectTrigger>
+          <SelectTrigger className="h-8 w-44 text-sm"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t("nc.filters.allStatuses")}</SelectItem>
-            <SelectItem value="draft">{t("nc.status.draft")}</SelectItem>
-            <SelectItem value="open">{t("nc.status.open")}</SelectItem>
-            <SelectItem value="in_progress">{t("nc.status.in_progress")}</SelectItem>
-            <SelectItem value="pending_verification">{t("nc.status.pending_verification")}</SelectItem>
-            <SelectItem value="closed">{t("nc.status.closed")}</SelectItem>
-            <SelectItem value="archived">{t("nc.status.archived")}</SelectItem>
+            {["draft","open","in_progress","pending_verification","closed","archived"].map(s => (
+              <SelectItem key={s} value={s}>{t(`nc.status.${s}`)}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
+
         <Select value={filterSeverity} onValueChange={setFilterSeverity}>
-          <SelectTrigger className="h-8 w-36 text-sm">
-            <SelectValue placeholder={t("nc.filters.allSeverities")} />
-          </SelectTrigger>
+          <SelectTrigger className="h-8 w-36 text-sm"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t("nc.filters.allSeverities")}</SelectItem>
-            <SelectItem value="minor">{t("nc.severity.minor")}</SelectItem>
-            <SelectItem value="major">{t("nc.severity.major")}</SelectItem>
-            <SelectItem value="critical">{t("nc.severity.critical")}</SelectItem>
+            {["minor","major","critical"].map(s => (
+              <SelectItem key={s} value={s}>{t(`nc.severity.${s}`)}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
+
+        <Select value={filterOrigin} onValueChange={setFilterOrigin}>
+          <SelectTrigger className="h-8 w-36 text-sm"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{t("nc.filters.allOrigins")}</SelectItem>
+            {["manual","ppi","test","document","audit"].map(o => (
+              <SelectItem key={o} value={o}>{t(`nc.origin.${o}`)}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Select value={filterCategory} onValueChange={setFilterCategory}>
+          <SelectTrigger className="h-8 w-40 text-sm"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{t("nc.filters.allCategories")}</SelectItem>
+            {["qualidade","seguranca","ambiente","producao","outros"].map(c => (
+              <SelectItem key={c} value={c}>{t(`nc.category.${c}`)}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)}
+          className="h-8 w-36 text-sm" placeholder={t("nc.filters.from")} title={t("nc.filters.from")} />
+        <Input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)}
+          className="h-8 w-36 text-sm" placeholder={t("nc.filters.to")} title={t("nc.filters.to")} />
+
+        {hasFilters && (
+          <Button variant="ghost" size="sm" onClick={clearFilters} className="h-8 gap-1 text-xs text-muted-foreground">
+            <X className="h-3.5 w-3.5" />{t("nc.filters.clear")}
+          </Button>
+        )}
+
+        <span className="ml-auto text-xs text-muted-foreground">
+          {filtered.length} {t("nc.filters.results")}
+        </span>
       </div>
 
+      {/* ── Bulk action bar ──────────────────────────────────────────────── */}
+      {selected.size > 0 && (
+        <div className="flex items-center gap-3 rounded-lg border border-primary/30 bg-primary/5 px-4 py-2">
+          <span className="text-sm font-medium text-primary">
+            {t("nc.bulk.selected", { count: selected.size })}
+          </span>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button size="sm" variant="outline" className="h-7 gap-1 text-xs">
+                {t("nc.bulk.changeStatus")} <ChevronDown className="h-3 w-3" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              {["open","in_progress","pending_verification","closed","archived"].map(s => (
+                <DropdownMenuItem key={s} onClick={() => handleBulkTransition(s)}>
+                  {t(`nc.status.${s}`)}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => setSelected(new Set())}>
+            {t("nc.bulk.clear")}
+          </Button>
+        </div>
+      )}
+
+      {/* ── Error ───────────────────────────────────────────────────────── */}
       {error && (
         <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
           {error}
         </div>
       )}
 
+      {/* ── Table ───────────────────────────────────────────────────────── */}
       {loading ? (
         <div className="rounded-xl border border-border overflow-hidden divide-y divide-border">
-          {Array.from({ length: 4 }).map((_, i) => (
+          {Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="flex items-center gap-4 px-5 py-3">
-              <Skeleton className="h-4 w-1/4" />
+              <Skeleton className="h-4 w-1/5" />
               <Skeleton className="h-4 w-1/3" />
               <Skeleton className="h-4 w-16" />
               <Skeleton className="h-4 w-16" />
@@ -183,16 +339,26 @@ export default function NonConformitiesPage() {
           <Table>
             <TableHeader>
               <TableRow className="bg-muted/40">
+                <TableHead className="w-10 px-3">
+                  <button onClick={toggleAll} className="text-muted-foreground hover:text-foreground">
+                    {allSelected
+                      ? <CheckSquare className="h-4 w-4 text-primary" />
+                      : <Square className="h-4 w-4" />}
+                  </button>
+                </TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground w-36">
                   {t("nc.table.code")}
                 </TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   {t("nc.table.title")}
                 </TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground w-24">
+                  {t("nc.table.origin")}
+                </TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground w-28">
                   {t("nc.table.severity")}
                 </TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground w-40">
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground w-44">
                   {t("common.status")}
                 </TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground w-32">
@@ -201,21 +367,41 @@ export default function NonConformitiesPage() {
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground w-28">
                   {t("nc.table.dueDate")}
                 </TableHead>
-                <TableHead className="w-24" />
+                <TableHead className="w-28" />
               </TableRow>
             </TableHeader>
             <TableBody>
               {filtered.map(nc => {
                 const transitions = ALLOWED_TRANSITIONS[nc.status] ?? [];
                 const isTransitioning = transitioningId === nc.id;
+                const isSelected = selected.has(nc.id);
+                const isOverdue = nc.due_date &&
+                  new Date(nc.due_date) < new Date() &&
+                  nc.status !== "closed" && nc.status !== "archived";
+
                 return (
-                  <TableRow key={nc.id} className="hover:bg-muted/20 transition-colors">
+                  <TableRow
+                    key={nc.id}
+                    className={cn(
+                      "hover:bg-muted/20 transition-colors cursor-pointer",
+                      isSelected && "bg-primary/5"
+                    )}
+                    onClick={() => navigate(`/non-conformities/${nc.id}`)}
+                  >
+                    {/* Checkbox */}
+                    <TableCell className="px-3" onClick={e => { e.stopPropagation(); toggleOne(nc.id); }}>
+                      {isSelected
+                        ? <CheckSquare className="h-4 w-4 text-primary" />
+                        : <Square className="h-4 w-4 text-muted-foreground" />}
+                    </TableCell>
+
                     {/* Código */}
                     <TableCell className="font-mono text-xs text-muted-foreground">
                       {nc.code ?? nc.reference ?? "—"}
                     </TableCell>
-                    {/* Título / Descrição */}
-                    <TableCell className="text-sm text-foreground max-w-[260px]">
+
+                    {/* Título */}
+                    <TableCell className="text-sm text-foreground max-w-[240px]">
                       {nc.title ? (
                         <>
                           <p className="truncate font-medium">{nc.title}</p>
@@ -225,24 +411,35 @@ export default function NonConformitiesPage() {
                         <p className="truncate">{nc.description}</p>
                       )}
                     </TableCell>
+
+                    {/* Origem */}
+                    <TableCell>
+                      <span className="text-xs text-muted-foreground capitalize">
+                        {t(`nc.origin.${nc.origin}`, { defaultValue: nc.origin })}
+                      </span>
+                    </TableCell>
+
                     {/* Severidade */}
                     <TableCell>
                       <Badge variant="secondary" className={cn("text-xs", SEVERITY_COLORS[nc.severity] ?? "")}>
                         {t(`nc.severity.${nc.severity}`, { defaultValue: nc.severity })}
                       </Badge>
                     </TableCell>
+
                     {/* Estado */}
                     <TableCell>
                       <Badge variant="secondary" className={cn("text-xs", STATUS_COLORS[nc.status] ?? "")}>
                         {t(`nc.status.${nc.status}`, { defaultValue: nc.status })}
                       </Badge>
                     </TableCell>
+
                     {/* Responsável */}
                     <TableCell className="text-sm text-muted-foreground truncate max-w-[120px]">
                       {nc.responsible ?? "—"}
                     </TableCell>
+
                     {/* Prazo */}
-                    <TableCell className="text-sm text-muted-foreground">
+                    <TableCell className={cn("text-sm", isOverdue ? "text-destructive" : "text-muted-foreground")}>
                       {nc.due_date ? (
                         <div className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
@@ -250,12 +447,20 @@ export default function NonConformitiesPage() {
                         </div>
                       ) : "—"}
                     </TableCell>
+
                     {/* Ações */}
-                    <TableCell>
+                    <TableCell onClick={e => e.stopPropagation()}>
                       <div className="flex items-center gap-1">
                         <Button
-                          variant="ghost"
-                          size="icon"
+                          variant="ghost" size="icon"
+                          className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                          onClick={() => navigate(`/non-conformities/${nc.id}`)}
+                          title={t("common.view")}
+                        >
+                          <Eye className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button
+                          variant="ghost" size="icon"
                           className="h-7 w-7 text-muted-foreground hover:text-foreground"
                           onClick={() => handleEdit(nc)}
                           title={t("common.edit")}
@@ -266,13 +471,14 @@ export default function NonConformitiesPage() {
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button
-                                variant="ghost"
-                                size="icon"
+                                variant="ghost" size="icon"
                                 className="h-7 w-7 text-muted-foreground hover:text-foreground"
                                 disabled={isTransitioning}
                                 title={t("nc.transitions.label")}
                               >
-                                <ChevronDown className="h-3.5 w-3.5" />
+                                {isTransitioning
+                                  ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                  : <ChevronDown className="h-3.5 w-3.5" />}
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-52">
@@ -281,10 +487,7 @@ export default function NonConformitiesPage() {
                               </div>
                               <DropdownMenuSeparator />
                               {transitions.map(s => (
-                                <DropdownMenuItem
-                                  key={s}
-                                  onClick={() => handleTransition(nc, s)}
-                                >
+                                <DropdownMenuItem key={s} onClick={() => handleTransition(nc, s)}>
                                   {t(`nc.transitions.${s}`, { defaultValue: s })}
                                 </DropdownMenuItem>
                               ))}
@@ -301,7 +504,7 @@ export default function NonConformitiesPage() {
         </div>
       )}
 
-      {/* Diálogo criar/editar */}
+      {/* ── Dialog ──────────────────────────────────────────────────────── */}
       <NCFormDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
