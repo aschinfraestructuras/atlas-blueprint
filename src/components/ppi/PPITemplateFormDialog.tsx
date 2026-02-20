@@ -20,6 +20,7 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
+import { SelectWithOther, withOtherRefinement } from "@/components/ui/select-with-other";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -51,6 +52,12 @@ const makeSchema = (t: (k: string) => string) =>
     disciplina_outro: z.string().optional(),
     description:      z.string().optional(),
     items:            z.array(itemSchema),
+  }).superRefine((val, ctx) => {
+    withOtherRefinement(
+      val, ctx,
+      "disciplina", "disciplina_outro",
+      t("ppi.templates.validation.disciplinaOutroRequired"),
+    );
   });
 
 type FormValues = z.infer<ReturnType<typeof makeSchema>>;
@@ -211,7 +218,7 @@ export function PPITemplateFormDialog({ open, onOpenChange, template, onSuccess 
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
 
             {/* Row 1: Code + Disciplina */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4 items-start">
               <FormField control={form.control} name="code" render={({ field }) => (
                 <FormItem>
                   <FormLabel>
@@ -235,41 +242,22 @@ export function PPITemplateFormDialog({ open, onOpenChange, template, onSuccess 
               )} />
 
               <FormField control={form.control} name="disciplina" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    {t("ppi.templates.form.disciplina")} <span className="text-destructive">*</span>
-                  </FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder={t("ppi.templates.form.disciplina")} />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {PPI_DISCIPLINAS.map((code) => (
-                        <SelectItem key={code} value={code}>
-                          {t(`ppi.disciplinas.${code}`)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
+                <SelectWithOther
+                  label={t("ppi.templates.form.disciplina")}
+                  required
+                  options={PPI_DISCIPLINAS.map((c) => ({
+                    value: c,
+                    label: t(`ppi.disciplinas.${c}`),
+                  }))}
+                  value={field.value}
+                  onChange={field.onChange}
+                  otherFieldName="disciplina_outro"
+                  control={form.control}
+                  otherLabel={t("ppi.templates.form.disciplinaOutro")}
+                  otherPlaceholder={t("ppi.templates.form.disciplinaOutroPlaceholder")}
+                />
               )} />
             </div>
-
-            {/* disciplina_outro — shown only when disciplina = 'outros' */}
-            {form.watch("disciplina") === "outros" && (
-              <FormField control={form.control} name="disciplina_outro" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("ppi.templates.form.disciplinaOutro")}</FormLabel>
-                  <FormControl>
-                    <Input placeholder={t("ppi.templates.form.disciplinaOutroPlaceholder")} {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-            )}
 
             {/* Title */}
             <FormField control={form.control} name="title" render={({ field }) => (

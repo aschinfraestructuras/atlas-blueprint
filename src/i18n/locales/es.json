@@ -906,6 +906,7 @@
         "codeRequired": "El código de la plantilla es obligatorio.",
         "titleRequired": "El título es obligatorio.",
         "disciplinaRequired": "La disciplina es obligatoria.",
+        "disciplinaOutroRequired": "Especifique la disciplina cuando selecciona «Otros».",
         "codeUnique": "Ya existe una plantilla con este código en este proyecto.",
         "itemLabelRequired": "La descripción del punto es obligatoria.",
         "itemCheckCodeRequired": "El código de verificación es obligatorio."
