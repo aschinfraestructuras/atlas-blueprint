@@ -6,12 +6,13 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNonConformities } from "@/hooks/useNonConformities";
 import { ncService } from "@/lib/services/ncService";
 import { ncDemoService } from "@/lib/services/ncDemoService";
+import { exportNCBulkPdf, type NCExportLabels } from "@/lib/services/ncExportService";
 import type { NonConformity } from "@/lib/services/ncService";
 import { toast } from "@/hooks/use-toast";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import {
   AlertTriangle, Calendar, Plus, Pencil, ChevronDown,
-  Eye, Loader2, Database, Search, X, CheckSquare, Square,
+  Eye, Loader2, Database, Search, X, CheckSquare, Square, FileDown,
 } from "lucide-react";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -171,6 +172,44 @@ export default function NonConformitiesPage() {
     refetch();
   };
 
+  // ── Bulk PDF export ──────────────────────────────────────────────────────────
+  const handleBulkExport = useCallback(async () => {
+    const items = filtered.filter(nc => selected.size === 0 || selected.has(nc.id));
+    if (items.length === 0) return;
+    const labels: NCExportLabels = {
+      appName: "Atlas QMS",
+      reportTitle: t("nc.export.reportTitle", { defaultValue: "Relatório de Não Conformidade" }),
+      bulkTitle: t("nc.export.bulkTitle", { defaultValue: "Relatório NC Consolidado" }),
+      wiSummaryTitle: t("nc.export.wiSummaryTitle", { defaultValue: "Resumo NC por Work Item" }),
+      generatedOn: t("nc.export.generatedOn", { defaultValue: "Gerado em" }),
+      page: t("nc.export.page", { defaultValue: "Página" }),
+      of: t("nc.export.of", { defaultValue: "de" }),
+      code: t("nc.table.code"), title: t("nc.form.title"), description: t("nc.form.description"),
+      severity: t("nc.table.severity"), category: t("nc.form.category"), origin: t("nc.table.origin"),
+      status: t("common.status"), responsible: t("nc.table.responsible"), assignedTo: t("nc.detail.assignedTo"),
+      detectedAt: t("nc.form.detectedAt"), dueDate: t("nc.table.dueDate"), closureDate: t("nc.detail.closureDate"),
+      reference: t("nc.table.reference"), workItem: t("nc.detail.workItem"),
+      capaTitle: t("nc.form.tabs.capa"), correction: t("nc.form.correction"), rootCause: t("nc.form.rootCause"),
+      correctiveAction: t("nc.form.correctiveAction"), preventiveAction: t("nc.form.preventiveAction"),
+      verificationMethod: t("nc.form.verificationMethod"), verificationResult: t("nc.form.verificationResult"),
+      verifiedBy: t("nc.detail.verifiedBy"), verifiedAt: t("nc.detail.verifiedAt"),
+      wiSector: t("workItems.detail.sector", { defaultValue: "Sector" }),
+      wiBySeverity: t("nc.export.wiBySeverity", { defaultValue: "Por Gravidade" }),
+      wiByStatus: t("nc.export.wiByStatus", { defaultValue: "Por Estado" }),
+      wiOpenNcs: t("nc.export.wiOpenNcs", { defaultValue: "NCs em Aberto" }),
+      severity_minor: t("nc.severity.minor"), severity_major: t("nc.severity.major"), severity_critical: t("nc.severity.critical"),
+      status_draft: t("nc.status.draft"), status_open: t("nc.status.open"), status_in_progress: t("nc.status.in_progress"),
+      status_pending_verification: t("nc.status.pending_verification"), status_closed: t("nc.status.closed"), status_archived: t("nc.status.archived"),
+      origin_manual: t("nc.origin.manual"), origin_ppi: t("nc.origin.ppi"), origin_test: t("nc.origin.test"),
+      origin_document: t("nc.origin.document"), origin_audit: t("nc.origin.audit"),
+    };
+    try {
+      await exportNCBulkPdf(items, labels, activeProject?.name ?? "Atlas");
+    } catch {
+      toast({ title: t("nc.export.noData", { defaultValue: "Erro ao exportar" }), variant: "destructive" });
+    }
+  }, [filtered, selected, t, activeProject]);
+
   // Demo seed
   const handleSeedDemo = useCallback(async () => {
     if (!activeProject || !user) return;
@@ -307,6 +346,10 @@ export default function NonConformitiesPage() {
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
+          <Button size="sm" variant="outline" className="h-7 gap-1 text-xs" onClick={handleBulkExport}>
+            <FileDown className="h-3 w-3" />
+            {t("nc.export.exportBulk", { defaultValue: "Exportar PDF" })}
+          </Button>
           <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => setSelected(new Set())}>
             {t("nc.bulk.clear")}
           </Button>

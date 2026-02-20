@@ -3,11 +3,15 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   ArrowLeft, AlertTriangle, Calendar, Clock, User, Tag, Pencil,
-  CheckCircle2, XCircle, RotateCcw, Archive, ChevronDown, Loader2,
-  FileText, Shield, Link2, ClipboardList,
+  CheckCircle2, RotateCcw, Archive, ChevronDown, Loader2,
+  FileText, Shield, Link2, ClipboardList, Printer, FileDown,
 } from "lucide-react";
 import { ncService, type NonConformity } from "@/lib/services/ncService";
 import { auditService, type AuditEntry } from "@/lib/services/auditService";
+import {
+  exportNCPdf,
+  type NCExportLabels,
+} from "@/lib/services/ncExportService";
 import { NCFormDialog } from "@/components/nc/NCFormDialog";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { useProject } from "@/contexts/ProjectContext";
@@ -123,6 +127,7 @@ export default function NCDetailPage() {
   const [logsLoading, setLogsLoading] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [transitioning, setTransitioning] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
   const loadNc = useCallback(async () => {
     if (!id) return;
@@ -166,6 +171,43 @@ export default function NCDetailPage() {
       toast({ title: info.title, description: info.description ?? info.raw, variant: "destructive" });
     } finally {
       setTransitioning(false);
+    }
+  };
+
+  const handleExportPdf = async () => {
+    if (!nc || !activeProject) return;
+    setExporting(true);
+    try {
+      const labels: NCExportLabels = {
+        appName: "Atlas QMS", reportTitle: t("nc.export.reportTitle", { defaultValue: "Relatório de Não Conformidade" }),
+        bulkTitle: t("nc.export.bulkTitle", { defaultValue: "Relatório de NCs" }),
+        wiSummaryTitle: t("nc.export.wiSummaryTitle", { defaultValue: "Resumo NC por Work Item" }),
+        generatedOn: t("nc.export.generatedOn", { defaultValue: "Gerado em" }),
+        page: t("nc.export.page", { defaultValue: "Página" }), of: t("nc.export.of", { defaultValue: "de" }),
+        code: t("nc.table.code"), title: t("nc.form.title"), description: t("nc.form.description"),
+        severity: t("nc.table.severity"), category: t("nc.form.category"), origin: t("nc.table.origin"),
+        status: t("common.status"), responsible: t("nc.table.responsible"), assignedTo: t("nc.detail.assignedTo"),
+        detectedAt: t("nc.form.detectedAt"), dueDate: t("nc.table.dueDate"), closureDate: t("nc.detail.closureDate"),
+        reference: t("nc.table.reference"), workItem: t("nc.detail.workItem"),
+        capaTitle: t("nc.form.tabs.capa"), correction: t("nc.form.correction"), rootCause: t("nc.form.rootCause"),
+        correctiveAction: t("nc.form.correctiveAction"), preventiveAction: t("nc.form.preventiveAction"),
+        verificationMethod: t("nc.form.verificationMethod"), verificationResult: t("nc.form.verificationResult"),
+        verifiedBy: t("nc.detail.verifiedBy"), verifiedAt: t("nc.detail.verifiedAt"),
+        wiSector: t("workItems.detail.sector", { defaultValue: "Sector" }),
+        wiBySeverity: t("nc.export.wiBySeverity", { defaultValue: "Por Gravidade" }),
+        wiByStatus: t("nc.export.wiByStatus", { defaultValue: "Por Estado" }),
+        wiOpenNcs: t("nc.export.wiOpenNcs", { defaultValue: "NCs em Aberto" }),
+        severity_minor: t("nc.severity.minor"), severity_major: t("nc.severity.major"), severity_critical: t("nc.severity.critical"),
+        status_draft: t("nc.status.draft"), status_open: t("nc.status.open"), status_in_progress: t("nc.status.in_progress"),
+        status_pending_verification: t("nc.status.pending_verification"), status_closed: t("nc.status.closed"), status_archived: t("nc.status.archived"),
+        origin_manual: t("nc.origin.manual"), origin_ppi: t("nc.origin.ppi"), origin_test: t("nc.origin.test"),
+        origin_document: t("nc.origin.document"), origin_audit: t("nc.origin.audit"),
+      };
+      await exportNCPdf(nc, labels, activeProject.name);
+    } catch {
+      toast({ title: t("nc.export.noData", { defaultValue: "Erro ao exportar" }), variant: "destructive" });
+    } finally {
+      setExporting(false);
     }
   };
 
@@ -234,6 +276,15 @@ export default function NCDetailPage() {
               </DropdownMenuContent>
             </DropdownMenu>
           )}
+          <Button
+            size="sm" variant="outline"
+            onClick={() => handleExportPdf()}
+            className="gap-1.5"
+            title={t("nc.export.exportSingle", { defaultValue: "Exportar NC (PDF)" })}
+          >
+            <FileDown className="h-3.5 w-3.5" />
+            {t("nc.export.button", { defaultValue: "Exportar PDF" })}
+          </Button>
           <Button size="sm" variant="outline" onClick={() => setEditOpen(true)} className="gap-1.5">
             <Pencil className="h-3.5 w-3.5" />
             {t("common.edit")}
@@ -418,33 +469,66 @@ export default function NCDetailPage() {
                 </div>
               ) : (
                 <ol className="relative border-l border-border/60 ml-3 space-y-0">
-                  {auditLogs.map((log, idx) => (
-                    <li key={log.id} className="mb-4 ml-5">
-                      <div className="absolute -left-1.5 mt-1.5 h-3 w-3 rounded-full border border-border bg-background" />
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className={cn(
-                          "text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded",
-                          log.action === "INSERT" ? "bg-green-500/10 text-green-700 dark:text-green-400" :
-                          log.action === "STATUS_CHANGE" ? "bg-primary/10 text-primary" :
-                          log.action === "DELETE" ? "bg-destructive/10 text-destructive" :
-                          "bg-muted text-muted-foreground"
-                        )}>
-                          {log.action}
-                        </span>
-                        <time className="text-xs text-muted-foreground">
-                          {new Date(log.created_at).toLocaleString()}
-                        </time>
-                      </div>
-                      {log.description && (
-                        <p className="text-sm mt-0.5 text-foreground">{log.description}</p>
-                      )}
-                      {log.diff && typeof log.diff === "object" && (
-                        <pre className="mt-1 text-[10px] text-muted-foreground bg-muted/40 rounded px-2 py-1 overflow-x-auto max-h-24">
-                          {JSON.stringify(log.diff, null, 2)}
-                        </pre>
-                      )}
-                    </li>
-                  ))}
+                  {auditLogs.map((log) => {
+                    const isStatusChange = log.action === "STATUS_CHANGE" || log.action === "status_change";
+                    const isInsert = log.action === "INSERT";
+                    const isDelete = log.action === "DELETE";
+
+                    // Human-readable action label
+                    const actionLabel = isInsert ? t("nc.history.created", { defaultValue: "Criada" })
+                      : isStatusChange ? t("nc.history.statusChanged", { defaultValue: "Estado alterado" })
+                      : isDelete ? t("nc.history.deleted", { defaultValue: "Eliminada" })
+                      : t("nc.history.updated", { defaultValue: "Atualizada" });
+
+                    // Human-readable diff (status change)
+                    let humanDiff: string | null = null;
+                    if (isStatusChange && log.diff && typeof log.diff === "object") {
+                      const d = log.diff as Record<string, unknown>;
+                      const from = d.from ?? d.status_from;
+                      const to   = d.to   ?? d.status_to;
+                      if (from && to) {
+                        humanDiff = `${t(`nc.status.${from}`, { defaultValue: String(from) })} → ${t(`nc.status.${to}`, { defaultValue: String(to) })}`;
+                      }
+                    }
+
+                    // For UPDATE, summarise changed fields
+                    let updatedFields: string[] | null = null;
+                    if (!isInsert && !isStatusChange && log.diff && typeof log.diff === "object") {
+                      updatedFields = Object.keys(log.diff as object).filter(k => k !== "updated_at");
+                    }
+
+                    return (
+                      <li key={log.id} className="mb-5 ml-5 relative">
+                        <div className="absolute -left-[22px] mt-1 h-3 w-3 rounded-full border border-border bg-background" />
+                        <div className="flex items-center gap-2 flex-wrap mb-1">
+                          <span className={cn(
+                            "text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full",
+                            isInsert      ? "bg-green-500/10 text-green-700 dark:text-green-400" :
+                            isStatusChange? "bg-primary/10 text-primary" :
+                            isDelete      ? "bg-destructive/10 text-destructive" :
+                            "bg-muted text-muted-foreground"
+                          )}>
+                            {actionLabel}
+                          </span>
+                          <time className="text-xs text-muted-foreground">
+                            {new Date(log.created_at).toLocaleString()}
+                          </time>
+                        </div>
+                        {log.description && (
+                          <p className="text-sm text-foreground">{log.description}</p>
+                        )}
+                        {humanDiff && (
+                          <p className="text-sm text-foreground font-medium">{humanDiff}</p>
+                        )}
+                        {updatedFields && updatedFields.length > 0 && (
+                          <p className="text-xs text-muted-foreground mt-0.5">
+                            {t("nc.history.fieldsUpdated", { defaultValue: "Campos: " })}
+                            {updatedFields.map(f => t(`nc.form.${f}`, { defaultValue: f })).join(", ")}
+                          </p>
+                        )}
+                      </li>
+                    );
+                  })}
                 </ol>
               )}
             </CardContent>

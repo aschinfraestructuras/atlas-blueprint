@@ -712,6 +712,19 @@
   "nc": {
     "newNC": "Nova NC",
     "searchPlaceholder": "Pesquisar código, título, responsável…",
+    "export": {
+      "button":         "Exportar PDF",
+      "exportSingle":   "Exportar NC (PDF)",
+      "exportBulk":     "Exportar selecionadas (PDF)",
+      "exportWiSummary":"Resumo por Work Item (PDF)",
+      "reportTitle":    "Relatório de Não Conformidade",
+      "bulkTitle":      "Relatório de NCs (Consolidado)",
+      "wiSummaryTitle": "Resumo de NCs por Work Item",
+      "generatedOn":    "Gerado em",
+      "page":           "Página",
+      "of":             "de",
+      "noData":         "Nenhuma NC para exportar."
+    },
     "filters": {
       "allStatuses": "Todos os estados",
       "allSeverities": "Todas as gravidades",
