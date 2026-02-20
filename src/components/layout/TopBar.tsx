@@ -44,7 +44,7 @@ export function TopBar({ onMobileMenuOpen }: TopBarProps) {
   const initials = user?.email?.slice(0, 2).toUpperCase() ?? "—";
 
   return (
-    <header className="h-14 flex items-center gap-3 border-b border-border bg-background px-4 flex-shrink-0">
+    <header className="h-14 flex items-center gap-3 border-b border-border bg-background/95 backdrop-blur-sm px-4 flex-shrink-0 shadow-[0_1px_12px_hsl(var(--foreground)/0.06)] z-10">
       {/* Mobile hamburger */}
       <Button
         variant="ghost"

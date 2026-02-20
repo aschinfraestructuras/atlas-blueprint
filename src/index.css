@@ -176,3 +176,23 @@
     box-shadow: var(--shadow-card-hover);
   }
 }
+
+/* ── Shimmer skeleton animation ──────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position:  400px 0; }
+}
+
+@layer utilities {
+  .animate-shimmer {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--muted))      25%,
+      hsl(var(--muted-foreground) / 0.08) 50%,
+      hsl(var(--muted))      75%
+    );
+    background-size: 800px 100%;
+    animation: shimmer 1.6s infinite linear;
+  }
+}
+
