@@ -420,41 +420,215 @@
   },
   "tests": {
     "newTest": "Novo Ensaio",
-    "table": {
-      "name": "Ensaio",
-      "sampleRef": "Ref. Amostra",
-      "location": "Localização"
+    "unknownTest": "Ensaio desconhecido",
+
+    "tabs": {
+      "results": "Resultados",
+      "catalog": "Catálogo"
     },
+
     "status": {
-      "pending": "Pendente",
-      "pass": "Conforme",
-      "fail": "Não Conforme",
+      "draft":        "Rascunho",
+      "pending":      "Pendente",
+      "in_progress":  "Em Curso",
+      "completed":    "Concluído",
+      "approved":     "Aprovado",
+      "archived":     "Arquivado",
+      "pass":         "Conforme",
+      "fail":         "Não Conforme",
       "inconclusive": "Inconclusivo"
     },
-    "unknownTest": "Ensaio desconhecido",
+
+    "stats": {
+      "total":    "Total",
+      "approved": "Aprovados",
+      "failed":   "Não Conformes",
+      "pending":  "Pendentes"
+    },
+
+    "catalog": {
+      "newEntry":           "Novo Tipo de Ensaio",
+      "searchPlaceholder":  "Pesquisar código, nome, norma…",
+      "clone":              "Clonar",
+      "archive":            "Arquivar",
+      "activate":           "Ativar",
+      "empty":              "Nenhum ensaio no catálogo. Crie o primeiro ou use «Dados Demo».",
+      "filters": {
+        "allDisciplines": "Todas as disciplinas",
+        "showInactive":   "Mostrar arquivados",
+        "hideInactive":   "Ocultar arquivados"
+      },
+      "table": {
+        "code":       "Código",
+        "name":       "Tipo de Ensaio",
+        "disciplina": "Disciplina",
+        "standards":  "Normas",
+        "unit":       "Unidade",
+        "material":   "Material",
+        "laboratorio":"Laboratório"
+      },
+      "status": {
+        "active":   "Ativo",
+        "archived": "Arquivado"
+      },
+      "form": {
+        "titleCreate":               "Novo Tipo de Ensaio",
+        "titleEdit":                 "Editar Tipo de Ensaio",
+        "code":                      "Código",
+        "codePlaceholder":           "ex: TST-SOIL-DENS",
+        "name":                      "Nome",
+        "namePlaceholder":           "ex: Densidade In Situ",
+        "disciplina":                "Disciplina",
+        "disciplinaPlaceholder":     "Selecionar disciplina…",
+        "disciplinaOutro":           "Disciplina (outro)",
+        "material":                  "Material",
+        "materialPlaceholder":       "ex: Solo, Betão, Betuminoso…",
+        "materialOutro":             "Material (outro)",
+        "laboratorio":               "Laboratório / Método",
+        "laboratorioPlaceholder":    "ex: Laboratório Geotécnico",
+        "laboratorioOutro":          "Laboratório (outro)",
+        "standards":                 "Normas (uma por linha)",
+        "standardsPlaceholder":      "ex: EN 12390-3\nASTM D1883",
+        "unit":                      "Unidade",
+        "unitPlaceholder":           "ex: MPa, %, mm",
+        "frequency":                 "Frequência de Ensaio",
+        "frequencyPlaceholder":      "ex: 1 por cada 100 m³",
+        "acceptanceCriteria":        "Critérios de Aceitação",
+        "acceptanceCriteriaPlaceholder": "ex: fck ≥ 30 MPa",
+        "description":               "Descrição / Método",
+        "descriptionPlaceholder":    "Descreva o procedimento de ensaio…",
+        "createBtn":                 "Criar tipo de ensaio",
+        "saveBtn":                   "Guardar alterações",
+        "validation": {
+          "codeRequired": "O código é obrigatório.",
+          "nameRequired": "O nome é obrigatório."
+        }
+      },
+      "toast": {
+        "created":   "Tipo de ensaio criado.",
+        "updated":   "Tipo de ensaio atualizado.",
+        "archived":  "Ensaio arquivado.",
+        "activated": "Ensaio ativado.",
+        "cloned":    "Ensaio clonado.",
+        "error":     "Ocorreu um erro. Tente novamente."
+      }
+    },
+
+    "results": {
+      "newResult":          "Novo Ensaio",
+      "searchPlaceholder":  "Pesquisar código, referência, local…",
+      "empty":              "Nenhum resultado registado. Clique em «Novo Ensaio» para começar.",
+      "filters": {
+        "allStatuses":    "Todos os estados",
+        "allDisciplines": "Todas as disciplinas"
+      },
+      "table": {
+        "code":       "Código",
+        "test":       "Tipo de Ensaio",
+        "sampleRef":  "Ref. Amostra",
+        "location":   "Localização / PK",
+        "date":       "Data",
+        "status":     "Estado",
+        "passFail":   "Resultado",
+        "supplier":   "Laboratório",
+        "workItem":   "Work Item",
+        "report":     "Nº Relatório"
+      },
+      "form": {
+        "titleCreate":            "Registar Ensaio",
+        "titleEdit":              "Editar Registo de Ensaio",
+        "catalogEntry":           "Tipo de Ensaio",
+        "catalogPlaceholder":     "Selecionar do catálogo…",
+        "workItem":               "Work Item (Tramo / Elemento)",
+        "workItemPlaceholder":    "Selecionar work item…",
+        "date":                   "Data do Ensaio",
+        "sampleRef":              "Ref. Amostra / Lote",
+        "sampleRefPlaceholder":   "ex: AM-2024-001",
+        "location":               "Localização",
+        "locationPlaceholder":    "ex: Km 12+500, Viga V1…",
+        "pkInicio":               "PK Início (m)",
+        "pkFim":                  "PK Fim (m)",
+        "material":               "Material",
+        "materialPlaceholder":    "ex: Betão C30/37",
+        "materialOutro":          "Material (outro)",
+        "reportNumber":           "Nº Relatório de Ensaio",
+        "reportPlaceholder":      "ex: LAB-2026-0001",
+        "supplier":               "Laboratório / Fornecedor",
+        "supplierPlaceholder":    "Selecionar laboratório…",
+        "notes":                  "Observações",
+        "notesPlaceholder":       "Observações adicionais sobre o ensaio…",
+        "status":                 "Estado",
+        "passFail":               "Resultado (Pass/Fail)",
+        "passFailPlaceholder":    "Selecionar resultado…",
+        "passFailOptions": {
+          "pass":         "Conforme",
+          "fail":         "Não Conforme",
+          "inconclusive": "Inconclusivo",
+          "na":           "N/A"
+        },
+        "createBtn":  "Registar Ensaio",
+        "saveBtn":    "Guardar",
+        "validation": {
+          "catalogRequired": "Selecione um tipo de ensaio do catálogo.",
+          "dateRequired":    "A data do ensaio é obrigatória."
+        }
+      },
+      "toast": {
+        "created": "Ensaio registado com sucesso.",
+        "updated": "Ensaio atualizado com sucesso.",
+        "error":   "Ocorreu um erro. Tente novamente."
+      }
+    },
+
+    "demo": {
+      "button":         "Dados Demo",
+      "alreadyExists":  "Dados demo já existem neste projeto.",
+      "created":        "Dados demo criados",
+      "catalogEntries": "tipos de ensaio",
+      "results":        "resultados"
+    },
+
+    "workItemTab": {
+      "createTest":    "Criar Ensaio",
+      "empty":         "Nenhum ensaio associado a este work item.",
+      "stats": {
+        "total":    "Total",
+        "approved": "Aprovados",
+        "failed":   "Não Conformes",
+        "pending":  "Pendentes"
+      }
+    },
+
+    "table": {
+      "name":      "Ensaio",
+      "sampleRef": "Ref. Amostra",
+      "location":  "Localização"
+    },
+
     "form": {
-      "titleCreate": "Novo Ensaio",
-      "titleEdit": "Editar Ensaio",
-      "testType": "Tipo de ensaio",
+      "titleCreate":         "Novo Ensaio",
+      "titleEdit":           "Editar Ensaio",
+      "testType":            "Tipo de ensaio",
       "testTypePlaceholder": "Selecionar ensaio do catálogo…",
-      "addNewTestType": "Criar novo tipo de ensaio",
-      "newTestTypeLabel": "Novo tipo de ensaio",
+      "addNewTestType":      "Criar novo tipo de ensaio",
+      "newTestTypeLabel":    "Novo tipo de ensaio",
       "newTestCodePlaceholder": "Código (ex: ENS-01)",
       "newTestNamePlaceholder": "Nome do ensaio",
-      "addTestTypeBtn": "Adicionar ao catálogo",
-      "sampleRefPlaceholder": "ex: AM-2024-001",
+      "addTestTypeBtn":      "Adicionar ao catálogo",
+      "sampleRefPlaceholder":"ex: AM-2024-001",
       "locationPlaceholder": "ex: Piso 2 — Betão A",
-      "createBtn": "Registar ensaio",
+      "createBtn":           "Registar ensaio",
       "validation": {
         "testRequired": "Selecione um tipo de ensaio.",
         "dateRequired": "A data é obrigatória."
       }
     },
+
     "toast": {
-      "created": "Ensaio registado com sucesso.",
-      "updated": "Ensaio atualizado com sucesso.",
-      "catalogCreated": "Tipo de ensaio adicionado ao catálogo.",
-      "error": "Ocorreu um erro. Tente novamente."
+      "created":       "Ensaio registado com sucesso.",
+      "updated":       "Ensaio atualizado com sucesso.",
+      "catalogCreated":"Tipo de ensaio adicionado ao catálogo.",
+      "error":         "Ocorreu um erro. Tente novamente."
     }
   },
   "suppliers": {
