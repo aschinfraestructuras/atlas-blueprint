@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import {
   ArrowLeft, ClipboardCheck, CheckCircle2, XCircle,
   Clock, Loader2, Construction, Calendar, CheckCheck,
-  Save, AlertTriangle, Link2,
+  Save, AlertTriangle, Link2, Archive, Trash2,
 } from "lucide-react";
 import { PPIExportMenu } from "@/components/ppi/PPIExportMenu";
 import type { PpiInstanceForExport } from "@/lib/services/ppiExportService";
@@ -79,10 +79,14 @@ type Transition = {
 
 const TRANSITIONS: Transition[] = [
   { from: "draft",       to: "in_progress", labelKey: "ppi.transitions.start",    variant: "default"     },
+  { from: "draft",       to: "archived",    labelKey: "ppi.transitions.archive",  variant: "outline"     },
   { from: "in_progress", to: "submitted",   labelKey: "ppi.transitions.submit",   variant: "default"     },
+  { from: "in_progress", to: "archived",    labelKey: "ppi.transitions.archive",  variant: "outline"     },
   { from: "submitted",   to: "approved",    labelKey: "ppi.transitions.approve",  variant: "secondary"   },
   { from: "submitted",   to: "rejected",    labelKey: "ppi.transitions.reject",   variant: "destructive" },
+  { from: "submitted",   to: "archived",    labelKey: "ppi.transitions.archive",  variant: "outline"     },
   { from: "rejected",    to: "in_progress", labelKey: "ppi.transitions.reopen",   variant: "default"     },
+  { from: "rejected",    to: "archived",    labelKey: "ppi.transitions.archive",  variant: "outline"     },
   { from: "approved",    to: "archived",    labelKey: "ppi.transitions.archive",  variant: "outline"     },
 ];
 
@@ -113,6 +117,10 @@ export default function PPIDetailPage() {
   // Status transition confirm
   const [pendingTransition, setPendingTransition] = useState<Transition | null>(null);
   const [transitioning,     setTransitioning]     = useState(false);
+
+  // Delete draft confirm
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleting,         setDeleting]         = useState(false);
 
   // NOK → NC dialog
   const [ncDialogItem, setNcDialogItem] = useState<PpiInstanceItem | null>(null);
@@ -263,6 +271,24 @@ export default function PPIDetailPage() {
     }
   }
 
+  // ── Delete draft (hard delete) ─────────────────────────────────────────────
+
+  async function handleDeleteDraft() {
+    if (!instance || !activeProject || instance.status !== "draft") return;
+    setDeleting(true);
+    try {
+      await ppiService.deleteInstance(instance.id, activeProject.id);
+      toast({ title: t("ppi.instances.toast.deleted", { defaultValue: "Rascunho eliminado." }) });
+      navigate("/ppi");
+    } catch (err) {
+      const info = classifySupabaseError(err, t);
+      toast({ title: info.title, description: info.description ?? info.raw, variant: "destructive" });
+    } finally {
+      setDeleting(false);
+      setDeleteDialogOpen(false);
+    }
+  }
+
   // ── Create NC from NOK item ────────────────────────────────────────────────
 
   async function handleCreateNc() {
@@ -405,9 +431,23 @@ export default function PPIDetailPage() {
             >
               {tr.to === "approved"  && <CheckCircle2 className="h-3.5 w-3.5" />}
               {tr.to === "rejected"  && <XCircle      className="h-3.5 w-3.5" />}
+              {tr.to === "archived"  && <Archive      className="h-3.5 w-3.5" />}
               {t(tr.labelKey)}
             </Button>
           ))}
+
+          {/* Delete draft button — only for draft status */}
+          {instance.status === "draft" && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setDeleteDialogOpen(true)}
+              className="gap-1.5 text-destructive hover:text-destructive hover:bg-destructive/10"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              {t("ppi.instances.detail.deleteDraft", { defaultValue: "Eliminar rascunho" })}
+            </Button>
+          )}
         </div>
       </div>
 
@@ -759,6 +799,36 @@ export default function PPIDetailPage() {
               {creatingNc
                 ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
                 : t("ppi.instances.detail.createNcConfirm")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* ── Delete draft confirm ──────────────────────────────────────── */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={(v) => { if (!v) setDeleteDialogOpen(false); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-destructive">
+              <Trash2 className="h-4 w-4" />
+              {t("ppi.instances.detail.deleteDraft", { defaultValue: "Eliminar rascunho" })}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("ppi.instances.detail.deleteDraftDescription", {
+                defaultValue: "Esta ação é irreversível. O rascunho {{code}} e todos os seus itens serão permanentemente eliminados.",
+                code: instance.code,
+              })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>{t("common.cancel")}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteDraft}
+              disabled={deleting}
+              className="bg-destructive hover:bg-destructive/90"
+            >
+              {deleting
+                ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                : t("ppi.instances.detail.deleteDraftConfirm", { defaultValue: "Eliminar permanentemente" })}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
