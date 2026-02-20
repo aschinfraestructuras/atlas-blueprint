@@ -6,6 +6,10 @@ import {
   Pencil, Calendar, MapPin, ClipboardCheck, Plus, Eye, FileDown,
   CheckCircle2, XCircle, Clock,
 } from "lucide-react";
+import {
+  exportWorkItemTestsPdf,
+  type TestExportLabels,
+} from "@/lib/services/testExportService";
 import { workItemService, formatPk, type WorkItem } from "@/lib/services/workItemService";
 import { ppiService, type PpiInstanceStatus } from "@/lib/services/ppiService";
 import { exportWorkItemPdf, type WorkItemForExport } from "@/lib/services/workItemExportService";
@@ -211,15 +215,19 @@ function WorkItemPPITab({
 function WorkItemTestsTab({
   workItemId,
   projectId,
+  workItemSector,
+  projectName,
 }: {
   workItemId: string;
   projectId: string;
+  workItemSector?: string;
+  projectName?: string;
 }) {
-  const { t }    = useTranslation();
-  const [tests,  setTests]  = useState<TestResult[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { t, i18n } = useTranslation();
+  const [tests,     setTests]     = useState<TestResult[]>([]);
+  const [loading,   setLoading]   = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editing, setEditing] = useState<TestResult | null>(null);
+  const [editing,   setEditing]   = useState<TestResult | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -235,7 +243,6 @@ function WorkItemTestsTab({
 
   useEffect(() => { load(); }, [load]);
 
-  // Stats
   const stats = {
     total:    tests.length,
     approved: tests.filter((r) => r.status === "approved" || r.pass_fail === "pass").length,
@@ -250,6 +257,57 @@ function WorkItemTestsTab({
     { key: "pending",  color: "text-muted-foreground" },
   ] as const;
 
+  const handleExportWI = () => {
+    if (tests.length === 0) return;
+    const labels: TestExportLabels = {
+      appName:            "Atlas QMS",
+      reportTitle:        t("tests.export.reportTitle"),
+      bulkReportTitle:    t("tests.export.bulkReportTitle"),
+      generatedOn:        t("tests.export.generatedOn"),
+      project:            t("tests.export.project"),
+      workItem:           t("tests.export.workItem"),
+      date:               t("tests.export.date"),
+      laboratory:         t("tests.export.laboratory"),
+      reportNumber:       t("tests.export.reportNumber"),
+      technician:         t("tests.export.technician"),
+      testCode:           t("tests.export.testCode"),
+      testName:           t("tests.export.testName"),
+      discipline:         t("tests.export.discipline"),
+      standards:          t("tests.export.standards"),
+      method:             t("tests.export.method"),
+      acceptanceCriteria: t("tests.export.acceptanceCriteria"),
+      sampleRef:          t("tests.export.sampleRef"),
+      location:           t("tests.export.location"),
+      pkRange:            t("tests.export.pkRange"),
+      status:             t("tests.export.status"),
+      passFail:           t("tests.export.passFail"),
+      notes:              t("tests.export.notes"),
+      attachments:        t("tests.export.attachments"),
+      results:            t("tests.export.results"),
+      page:               t("tests.export.page"),
+      of:                 t("tests.export.of"),
+      statuses: {
+        draft:       t("tests.status.draft"),
+        pending:     t("tests.status.pending"),
+        in_progress: t("tests.status.in_progress"),
+        completed:   t("tests.status.completed"),
+        approved:    t("tests.status.approved"),
+        archived:    t("tests.status.archived"),
+      },
+      passFailLabels: {
+        pass:         t("tests.status.pass"),
+        fail:         t("tests.status.fail"),
+        inconclusive: t("tests.status.inconclusive"),
+        na:           "N/A",
+      },
+    };
+    exportWorkItemTestsPdf(
+      tests, labels, i18n.language,
+      projectName ?? "Atlas",
+      workItemSector ?? workItemId,
+    );
+  };
+
   return (
     <>
       <Card className="shadow-card">
@@ -263,7 +321,6 @@ function WorkItemTestsTab({
                 </span>
               )}
             </CardTitle>
-            {/* Stats chips */}
             {tests.length > 0 && STAT_ITEMS.map((s) => (
               <span
                 key={s.key}
@@ -279,15 +336,27 @@ function WorkItemTestsTab({
               </span>
             ))}
           </div>
-          <Button
-            size="sm"
-            variant="outline"
-            className="gap-1.5 h-7 text-xs flex-shrink-0"
-            onClick={() => { setEditing(null); setDialogOpen(true); }}
-          >
-            <Plus className="h-3 w-3" />
-            {t("tests.workItemTab.createTest")}
-          </Button>
+          <div className="flex items-center gap-1.5 flex-shrink-0">
+            {tests.length > 0 && (
+              <Button
+                size="sm" variant="ghost"
+                className="gap-1.5 h-7 text-xs text-muted-foreground"
+                onClick={handleExportWI}
+                title={t("tests.workItemTab.exportSummary")}
+              >
+                <FileDown className="h-3 w-3" />
+                {t("tests.workItemTab.exportSummary")}
+              </Button>
+            )}
+            <Button
+              size="sm" variant="outline"
+              className="gap-1.5 h-7 text-xs"
+              onClick={() => { setEditing(null); setDialogOpen(true); }}
+            >
+              <Plus className="h-3 w-3" />
+              {t("tests.workItemTab.createTest")}
+            </Button>
+          </div>
         </CardHeader>
 
         <CardContent className="p-0">

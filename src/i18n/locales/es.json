@@ -584,14 +584,47 @@
     },
 
     "workItemTab": {
-      "createTest":    "Crear Ensayo",
-      "empty":         "Ningún ensayo asociado a este work item.",
+      "createTest":     "Crear Ensayo",
+      "exportSummary":  "Exportar Resumen PDF",
+      "empty":          "Ningún ensayo asociado a este work item.",
       "stats": {
         "total":    "Total",
         "approved": "Aprobados",
         "failed":   "No Conformes",
         "pending":  "Pendientes"
       }
+    },
+
+    "export": {
+      "exportSingle":    "Exportar PDF",
+      "exportBulk":      "Exportar seleccionados",
+      "exportWI":        "Exportar resumen WI",
+      "noSelection":     "Seleccione al menos un ensayo para exportar.",
+      "reportTitle":     "Informe de Ensayo",
+      "bulkReportTitle": "Informe de Ensayos en Lote",
+      "generatedOn":     "Generado el",
+      "project":         "Proyecto",
+      "workItem":        "Work Item",
+      "date":            "Fecha",
+      "laboratory":      "Laboratorio",
+      "reportNumber":    "Nº Informe",
+      "technician":      "Técnico",
+      "testCode":        "Código",
+      "testName":        "Tipo de Ensayo",
+      "discipline":      "Disciplina",
+      "standards":       "Normas Aplicables",
+      "method":          "Método",
+      "acceptanceCriteria": "Criterios de Aceptación",
+      "sampleRef":       "Ref. Muestra",
+      "location":        "Ubicación / PK",
+      "pkRange":         "Intervalo PK",
+      "status":          "Estado",
+      "passFail":        "Resultado",
+      "notes":           "Observaciones",
+      "attachments":     "Adjuntos",
+      "results":         "Resultados",
+      "page":            "Página",
+      "of":              "de"
     },
 
     "table": {

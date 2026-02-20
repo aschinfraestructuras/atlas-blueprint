@@ -589,14 +589,47 @@
     },
 
     "workItemTab": {
-      "createTest":    "Criar Ensaio",
-      "empty":         "Nenhum ensaio associado a este work item.",
+      "createTest":     "Criar Ensaio",
+      "exportSummary":  "Exportar Resumo PDF",
+      "empty":          "Nenhum ensaio associado a este work item.",
       "stats": {
         "total":    "Total",
         "approved": "Aprovados",
         "failed":   "Não Conformes",
         "pending":  "Pendentes"
       }
+    },
+
+    "export": {
+      "exportSingle":    "Exportar PDF",
+      "exportBulk":      "Exportar selecionados",
+      "exportWI":        "Exportar resumo WI",
+      "noSelection":     "Selecione pelo menos um ensaio para exportar.",
+      "reportTitle":     "Relatório de Ensaio",
+      "bulkReportTitle": "Relatório de Ensaios em Lote",
+      "generatedOn":     "Gerado em",
+      "project":         "Projeto",
+      "workItem":        "Work Item",
+      "date":            "Data",
+      "laboratory":      "Laboratório",
+      "reportNumber":    "Nº Relatório",
+      "technician":      "Técnico",
+      "testCode":        "Código",
+      "testName":        "Tipo de Ensaio",
+      "discipline":      "Disciplina",
+      "standards":       "Normas Aplicáveis",
+      "method":          "Método",
+      "acceptanceCriteria": "Critérios de Aceitação",
+      "sampleRef":       "Ref. Amostra",
+      "location":        "Localização / PK",
+      "pkRange":         "Intervalo PK",
+      "status":          "Estado",
+      "passFail":        "Resultado",
+      "notes":           "Observações",
+      "attachments":     "Anexos",
+      "results":         "Resultados",
+      "page":            "Página",
+      "of":              "de"
     },
 
     "table": {
