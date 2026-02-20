@@ -589,7 +589,7 @@ export default function WorkItemDetailPage() {
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
           <Button variant="outline" size="sm" onClick={handleExportPdf} className="gap-2">
-            <FileDown className="h-3.5 w-3.5" /> {t("workItems.export.pdfSingle")}
+            <FileDown className="h-3.5 w-3.5" /> {t("common.exportPdf", { defaultValue: "Exportar PDF" })}
           </Button>
           <Button variant="outline" size="sm" onClick={() => setEditOpen(true)} className="gap-2">
             <Pencil className="h-3.5 w-3.5" /> {t("workItems.detail.edit")}
