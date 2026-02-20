@@ -706,38 +706,93 @@
   },
   "nc": {
     "newNC": "Nueva NC",
+    "searchPlaceholder": "Buscar código, título, responsable…",
+    "filters": {
+      "allStatuses": "Todos los estados",
+      "allSeverities": "Todas las gravedades"
+    },
     "table": {
+      "code": "Código NC",
+      "title": "Título / Descripción",
       "reference": "Referencia",
       "severity": "Gravedad",
       "responsible": "Responsable",
       "dueDate": "Plazo"
     },
     "severity": {
-      "low": "Baja",
-      "medium": "Media",
-      "high": "Alta",
-      "critical": "Crítica"
+      "minor":    "Menor",
+      "major":    "Mayor",
+      "critical": "Crítica",
+      "low":      "Baja",
+      "medium":   "Media",
+      "high":     "Alta"
+    },
+    "category": {
+      "qualidade":  "Calidad",
+      "seguranca":  "Seguridad",
+      "ambiente":   "Medio Ambiente",
+      "producao":   "Producción",
+      "outros":     "Otros"
+    },
+    "origin": {
+      "manual":   "Manual",
+      "ppi":      "PPI",
+      "test":     "Ensayo",
+      "document": "Documento",
+      "audit":    "Auditoría"
     },
     "status": {
-      "open": "Abierta",
-      "in_progress": "En Curso",
-      "under_review": "En Revisión",
-      "closed": "Cerrada"
+      "draft":                "Borrador",
+      "open":                 "Abierta",
+      "in_progress":          "En Curso",
+      "pending_verification": "Pendiente Verificación",
+      "closed":               "Cerrada",
+      "archived":             "Archivada",
+      "under_review":         "En Revisión"
+    },
+    "transitions": {
+      "label":                "Cambiar estado",
+      "open":                 "Abrir",
+      "in_progress":          "Iniciar",
+      "pending_verification": "Enviar a Verificación",
+      "closed":               "Cerrar",
+      "archived":             "Archivar"
     },
     "form": {
       "titleCreate": "Nueva No Conformidad",
       "titleEdit": "Editar No Conformidad",
+      "tabs": {
+        "identification": "Identificación",
+        "capa": "CAPA",
+        "attachments": "Adjuntos"
+      },
+      "title": "Título",
+      "titlePlaceholder": "Resumen conciso de la no conformidad",
       "description": "Descripción",
-      "descriptionPlaceholder": "Describa la no conformidad detectada…",
-      "referencePlaceholder": "ej: NC-2024-001",
+      "descriptionPlaceholder": "Describa en detalle la no conformidad detectada…",
+      "category": "Categoría",
+      "categoryOutro": "Especificar categoría",
+      "categoryOutroPlaceholder": "ej: Acabados, Impermeabilización",
+      "origin": "Origen",
+      "referencePlaceholder": "ej: REF-2024-001",
       "responsiblePlaceholder": "ej: Juan García",
+      "detectedAt": "Fecha de Detección",
+      "capaHint": "Complete los campos CAPA cuando el análisis esté concluido. Pueden completarse gradualmente.",
+      "correction": "Corrección Inmediata",
+      "correctionPlaceholder": "Acción inmediata tomada para contener el problema…",
       "rootCause": "Causa Raíz",
-      "rootCausePlaceholder": "Describa la causa raíz de la no conformidad…",
+      "rootCausePlaceholder": "Análisis 5W / Ishikawa — describa la causa raíz…",
       "correctiveAction": "Acción Correctiva",
-      "correctiveActionPlaceholder": "Describa la acción correctiva implementada…",
-      "correctiveActionRequired": "La acción correctiva es obligatoria para cerrar la NC.",
+      "correctiveActionPlaceholder": "Acción(es) para eliminar la causa raíz…",
+      "preventiveAction": "Acción Preventiva",
+      "preventiveActionPlaceholder": "Acción(es) para prevenir recurrencia…",
+      "verificationMethod": "Método de Verificación",
+      "verificationMethodPlaceholder": "ej: Inspección visual, Re-ensayo",
+      "verificationResult": "Resultado de Verificación",
+      "verificationResultPlaceholder": "ej: Conforme, No Conforme",
       "createBtn": "Registrar NC",
       "validation": {
+        "titleRequired": "El título es obligatorio.",
         "descriptionRequired": "La descripción es obligatoria.",
         "severityRequired": "La gravedad es obligatoria.",
         "correctiveActionRequired": "La acción correctiva es obligatoria para cerrar la NC."
@@ -746,6 +801,7 @@
     "toast": {
       "created": "No conformidad registrada con éxito.",
       "updated": "No conformidad actualizada con éxito.",
+      "statusChanged": "Estado cambiado a {{status}}.",
       "error": "Ocurrió un error. Inténtelo de nuevo."
     }
   },

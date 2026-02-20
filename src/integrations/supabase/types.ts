@@ -241,68 +241,176 @@ export type Database = {
       }
       non_conformities: {
         Row: {
+          approver: string | null
+          assigned_to: string | null
+          category: string
+          category_outro: string | null
           closure_date: string | null
+          code: string | null
+          correction: string | null
           corrective_action: string | null
           created_at: string
           created_by: string | null
           description: string
+          detected_at: string
+          document_id: string | null
           due_date: string | null
           id: string
+          origin: string
           origin_entity_id: string | null
           origin_entity_type: string | null
+          owner: string | null
+          ppi_instance_id: string | null
+          ppi_instance_item_id: string | null
+          preventive_action: string | null
           project_id: string
           reference: string | null
           responsible: string | null
           root_cause: string | null
           severity: string
           status: string
+          subcontractor_id: string | null
+          supplier_id: string | null
+          test_result_id: string | null
+          title: string | null
           updated_at: string
+          updated_by: string | null
+          verification_method: string | null
+          verification_result: string | null
+          verified_at: string | null
+          verified_by: string | null
           work_item_id: string | null
         }
         Insert: {
+          approver?: string | null
+          assigned_to?: string | null
+          category?: string
+          category_outro?: string | null
           closure_date?: string | null
+          code?: string | null
+          correction?: string | null
           corrective_action?: string | null
           created_at?: string
           created_by?: string | null
           description: string
+          detected_at?: string
+          document_id?: string | null
           due_date?: string | null
           id?: string
+          origin?: string
           origin_entity_id?: string | null
           origin_entity_type?: string | null
+          owner?: string | null
+          ppi_instance_id?: string | null
+          ppi_instance_item_id?: string | null
+          preventive_action?: string | null
           project_id: string
           reference?: string | null
           responsible?: string | null
           root_cause?: string | null
           severity?: string
           status?: string
+          subcontractor_id?: string | null
+          supplier_id?: string | null
+          test_result_id?: string | null
+          title?: string | null
           updated_at?: string
+          updated_by?: string | null
+          verification_method?: string | null
+          verification_result?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
           work_item_id?: string | null
         }
         Update: {
+          approver?: string | null
+          assigned_to?: string | null
+          category?: string
+          category_outro?: string | null
           closure_date?: string | null
+          code?: string | null
+          correction?: string | null
           corrective_action?: string | null
           created_at?: string
           created_by?: string | null
           description?: string
+          detected_at?: string
+          document_id?: string | null
           due_date?: string | null
           id?: string
+          origin?: string
           origin_entity_id?: string | null
           origin_entity_type?: string | null
+          owner?: string | null
+          ppi_instance_id?: string | null
+          ppi_instance_item_id?: string | null
+          preventive_action?: string | null
           project_id?: string
           reference?: string | null
           responsible?: string | null
           root_cause?: string | null
           severity?: string
           status?: string
+          subcontractor_id?: string | null
+          supplier_id?: string | null
+          test_result_id?: string | null
+          title?: string | null
           updated_at?: string
+          updated_by?: string | null
+          verification_method?: string | null
+          verification_result?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
           work_item_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "non_conformities_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "non_conformities_ppi_instance_id_fkey"
+            columns: ["ppi_instance_id"]
+            isOneToOne: false
+            referencedRelation: "ppi_instances"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "non_conformities_ppi_instance_item_id_fkey"
+            columns: ["ppi_instance_item_id"]
+            isOneToOne: false
+            referencedRelation: "ppi_instance_items"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "non_conformities_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "non_conformities_subcontractor_id_fkey"
+            columns: ["subcontractor_id"]
+            isOneToOne: false
+            referencedRelation: "subcontractors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "non_conformities_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "non_conformities_test_result_id_fkey"
+            columns: ["test_result_id"]
+            isOneToOne: false
+            referencedRelation: "test_results"
             referencedColumns: ["id"]
           },
           {
@@ -1289,6 +1397,186 @@ export type Database = {
           test_name: string
         }[]
       }
+      fn_create_nc: {
+        Args: {
+          p_assigned_to?: string
+          p_category?: string
+          p_category_outro?: string
+          p_description: string
+          p_detected_at?: string
+          p_document_id?: string
+          p_due_date?: string
+          p_origin?: string
+          p_ppi_instance_id?: string
+          p_ppi_instance_item_id?: string
+          p_project_id: string
+          p_reference?: string
+          p_responsible?: string
+          p_severity?: string
+          p_subcontractor_id?: string
+          p_supplier_id?: string
+          p_test_result_id?: string
+          p_title: string
+          p_work_item_id?: string
+        }
+        Returns: {
+          approver: string | null
+          assigned_to: string | null
+          category: string
+          category_outro: string | null
+          closure_date: string | null
+          code: string | null
+          correction: string | null
+          corrective_action: string | null
+          created_at: string
+          created_by: string | null
+          description: string
+          detected_at: string
+          document_id: string | null
+          due_date: string | null
+          id: string
+          origin: string
+          origin_entity_id: string | null
+          origin_entity_type: string | null
+          owner: string | null
+          ppi_instance_id: string | null
+          ppi_instance_item_id: string | null
+          preventive_action: string | null
+          project_id: string
+          reference: string | null
+          responsible: string | null
+          root_cause: string | null
+          severity: string
+          status: string
+          subcontractor_id: string | null
+          supplier_id: string | null
+          test_result_id: string | null
+          title: string | null
+          updated_at: string
+          updated_by: string | null
+          verification_method: string | null
+          verification_result: string | null
+          verified_at: string | null
+          verified_by: string | null
+          work_item_id: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "non_conformities"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      fn_create_nc_from_ppi_item: {
+        Args: {
+          p_due_date?: string
+          p_ppi_instance_item_id: string
+          p_responsible?: string
+          p_severity?: string
+        }
+        Returns: {
+          approver: string | null
+          assigned_to: string | null
+          category: string
+          category_outro: string | null
+          closure_date: string | null
+          code: string | null
+          correction: string | null
+          corrective_action: string | null
+          created_at: string
+          created_by: string | null
+          description: string
+          detected_at: string
+          document_id: string | null
+          due_date: string | null
+          id: string
+          origin: string
+          origin_entity_id: string | null
+          origin_entity_type: string | null
+          owner: string | null
+          ppi_instance_id: string | null
+          ppi_instance_item_id: string | null
+          preventive_action: string | null
+          project_id: string
+          reference: string | null
+          responsible: string | null
+          root_cause: string | null
+          severity: string
+          status: string
+          subcontractor_id: string | null
+          supplier_id: string | null
+          test_result_id: string | null
+          title: string | null
+          updated_at: string
+          updated_by: string | null
+          verification_method: string | null
+          verification_result: string | null
+          verified_at: string | null
+          verified_by: string | null
+          work_item_id: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "non_conformities"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      fn_create_nc_from_test: {
+        Args: {
+          p_due_date?: string
+          p_responsible?: string
+          p_severity?: string
+          p_test_result_id: string
+        }
+        Returns: {
+          approver: string | null
+          assigned_to: string | null
+          category: string
+          category_outro: string | null
+          closure_date: string | null
+          code: string | null
+          correction: string | null
+          corrective_action: string | null
+          created_at: string
+          created_by: string | null
+          description: string
+          detected_at: string
+          document_id: string | null
+          due_date: string | null
+          id: string
+          origin: string
+          origin_entity_id: string | null
+          origin_entity_type: string | null
+          owner: string | null
+          ppi_instance_id: string | null
+          ppi_instance_item_id: string | null
+          preventive_action: string | null
+          project_id: string
+          reference: string | null
+          responsible: string | null
+          root_cause: string | null
+          severity: string
+          status: string
+          subcontractor_id: string | null
+          supplier_id: string | null
+          test_result_id: string | null
+          title: string | null
+          updated_at: string
+          updated_by: string | null
+          verification_method: string | null
+          verification_result: string | null
+          verified_at: string | null
+          verified_by: string | null
+          work_item_id: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "non_conformities"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       fn_create_ppi_instance:
         | {
             Args: {
@@ -1406,6 +1694,56 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "ppi_instances"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      fn_update_nc_status: {
+        Args: { p_nc_id: string; p_to_status: string }
+        Returns: {
+          approver: string | null
+          assigned_to: string | null
+          category: string
+          category_outro: string | null
+          closure_date: string | null
+          code: string | null
+          correction: string | null
+          corrective_action: string | null
+          created_at: string
+          created_by: string | null
+          description: string
+          detected_at: string
+          document_id: string | null
+          due_date: string | null
+          id: string
+          origin: string
+          origin_entity_id: string | null
+          origin_entity_type: string | null
+          owner: string | null
+          ppi_instance_id: string | null
+          ppi_instance_item_id: string | null
+          preventive_action: string | null
+          project_id: string
+          reference: string | null
+          responsible: string | null
+          root_cause: string | null
+          severity: string
+          status: string
+          subcontractor_id: string | null
+          supplier_id: string | null
+          test_result_id: string | null
+          title: string | null
+          updated_at: string
+          updated_by: string | null
+          verification_method: string | null
+          verification_result: string | null
+          verified_at: string | null
+          verified_by: string | null
+          work_item_id: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "non_conformities"
           isOneToOne: true
           isSetofReturn: false
         }

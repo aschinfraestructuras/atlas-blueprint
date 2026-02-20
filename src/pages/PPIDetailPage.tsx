@@ -333,13 +333,8 @@ export default function PPIDetailPage() {
     if (!ncDialogItem || !instance || !activeProject || !user) return;
     setCreatingNc(true);
     try {
-      const nc = await ncService.create({
-        project_id:  activeProject.id,
-        description: `NC gerada a partir de PPI ${instance.code} — item #${ncDialogItem.item_no}: ${ncDialogItem.label}`,
-        severity:    "medium",
-        status:      "open",
-        created_by:  user.id,
-        reference:   instance.code,
+      const nc = await ncService.createFromPpiItem(ncDialogItem.id, {
+        severity: "major",
       });
 
       // Link NC to item
