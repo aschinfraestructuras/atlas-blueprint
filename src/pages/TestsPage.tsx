@@ -3,11 +3,17 @@ import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { testService } from "@/lib/services/testService";
 import type { TestCatalogEntry, TestResult } from "@/lib/services/testService";
+import {
+  exportTestResultPdf,
+  exportTestResultsBulkPdf,
+  type TestExportLabels,
+} from "@/lib/services/testExportService";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { toast } from "@/hooks/use-toast";
 import {
   FlaskConical, Plus, Pencil, Search, Filter, Archive, Copy,
-  CheckCircle2, XCircle, Clock, AlertCircle, BookOpen,
+  CheckCircle2, XCircle, Clock, AlertCircle, BookOpen, FileDown,
+  Loader2,
 } from "lucide-react";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -16,6 +22,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
@@ -26,6 +33,7 @@ import { CatalogFormDialog } from "@/components/tests/CatalogFormDialog";
 import { TestResultFormDialog } from "@/components/tests/TestResultFormDialog";
 import { cn } from "@/lib/utils";
 import { TEST_DISCIPLINES } from "@/lib/services/testService";
+import { supabase } from "@/integrations/supabase/client";
 
 // ─── Status helpers ───────────────────────────────────────────────────────────
 
@@ -45,9 +53,57 @@ function StatusIcon({ status }: { status: string }) {
   const cls = "h-3.5 w-3.5 flex-shrink-0";
   if (status === "approved" || status === "pass") return <CheckCircle2 className={cls} />;
   if (status === "fail")                          return <XCircle      className={cls} />;
-  if (status === "in_progress")                  return <Clock        className={cls} />;
-  if (status === "completed")                    return <CheckCircle2 className={cls} />;
+  if (status === "in_progress")                   return <Clock        className={cls} />;
+  if (status === "completed")                     return <CheckCircle2 className={cls} />;
   return <AlertCircle className={cls} />;
+}
+
+// ─── Build export labels from i18n ────────────────────────────────────────────
+
+function useExportLabels(): TestExportLabels {
+  const { t } = useTranslation();
+  return {
+    appName:            "Atlas QMS",
+    reportTitle:        t("tests.export.reportTitle"),
+    bulkReportTitle:    t("tests.export.bulkReportTitle"),
+    generatedOn:        t("tests.export.generatedOn"),
+    project:            t("tests.export.project"),
+    workItem:           t("tests.export.workItem"),
+    date:               t("tests.export.date"),
+    laboratory:         t("tests.export.laboratory"),
+    reportNumber:       t("tests.export.reportNumber"),
+    technician:         t("tests.export.technician"),
+    testCode:           t("tests.export.testCode"),
+    testName:           t("tests.export.testName"),
+    discipline:         t("tests.export.discipline"),
+    standards:          t("tests.export.standards"),
+    method:             t("tests.export.method"),
+    acceptanceCriteria: t("tests.export.acceptanceCriteria"),
+    sampleRef:          t("tests.export.sampleRef"),
+    location:           t("tests.export.location"),
+    pkRange:            t("tests.export.pkRange"),
+    status:             t("tests.export.status"),
+    passFail:           t("tests.export.passFail"),
+    notes:              t("tests.export.notes"),
+    attachments:        t("tests.export.attachments"),
+    results:            t("tests.export.results"),
+    page:               t("tests.export.page"),
+    of:                 t("tests.export.of"),
+    statuses: {
+      draft:        t("tests.status.draft"),
+      pending:      t("tests.status.pending"),
+      in_progress:  t("tests.status.in_progress"),
+      completed:    t("tests.status.completed"),
+      approved:     t("tests.status.approved"),
+      archived:     t("tests.status.archived"),
+    },
+    passFailLabels: {
+      pass:         t("tests.status.pass"),
+      fail:         t("tests.status.fail"),
+      inconclusive: t("tests.status.inconclusive"),
+      na:           "N/A",
+    },
+  };
 }
 
 // ─── Catalog tab ──────────────────────────────────────────────────────────────
@@ -55,13 +111,13 @@ function StatusIcon({ status }: { status: string }) {
 function CatalogTab() {
   const { t }             = useTranslation();
   const { activeProject } = useProject();
-  const [catalog, setCatalog]       = useState<TestCatalogEntry[]>([]);
-  const [loading, setLoading]       = useState(false);
-  const [search, setSearch]         = useState("");
-  const [filterDisc, setFilterDisc] = useState("all");
+  const [catalog, setCatalog]           = useState<TestCatalogEntry[]>([]);
+  const [loading, setLoading]           = useState(false);
+  const [search, setSearch]             = useState("");
+  const [filterDisc, setFilterDisc]     = useState("all");
   const [showInactive, setShowInactive] = useState(false);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [editing, setEditing]       = useState<TestCatalogEntry | null>(null);
+  const [dialogOpen, setDialogOpen]     = useState(false);
+  const [editing, setEditing]           = useState<TestCatalogEntry | null>(null);
 
   const load = useCallback(async () => {
     if (!activeProject) return;
@@ -136,19 +192,18 @@ function CatalogTab() {
         </Select>
         <Button
           variant={showInactive ? "default" : "outline"}
-          size="sm"
-          className="h-8 text-xs gap-1.5"
+          size="sm" className="h-8 text-xs gap-1.5"
           onClick={() => setShowInactive((v) => !v)}
         >
           {showInactive ? t("tests.catalog.filters.hideInactive") : t("tests.catalog.filters.showInactive")}
         </Button>
-        <Button size="sm" className="h-8 gap-1.5 ml-auto" onClick={() => { setEditing(null); setDialogOpen(true); }}>
+        <Button size="sm" className="h-8 gap-1.5 ml-auto"
+          onClick={() => { setEditing(null); setDialogOpen(true); }}>
           <Plus className="h-3.5 w-3.5" />
           {t("tests.catalog.newEntry")}
         </Button>
       </div>
 
-      {/* Table */}
       {loading ? (
         <div className="space-y-2">
           {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-10 w-full rounded" />)}
@@ -235,16 +290,19 @@ function CatalogTab() {
 
 // ─── Results tab ──────────────────────────────────────────────────────────────
 
-function ResultsTab({ initialWorkItemId }: { initialWorkItemId?: string }) {
-  const { t }             = useTranslation();
+function ResultsTab() {
+  const { t, i18n }       = useTranslation();
   const { activeProject } = useProject();
-  const [results, setResults]       = useState<TestResult[]>([]);
-  const [loading, setLoading]       = useState(false);
-  const [search, setSearch]         = useState("");
+  const exportLabels      = useExportLabels();
+
+  const [results, setResults]           = useState<TestResult[]>([]);
+  const [loading, setLoading]           = useState(false);
+  const [search, setSearch]             = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
-  const [filterDisc, setFilterDisc]   = useState("all");
-  const [dialogOpen, setDialogOpen]   = useState(false);
-  const [editing, setEditing]         = useState<TestResult | null>(null);
+  const [filterDisc, setFilterDisc]     = useState("all");
+  const [dialogOpen, setDialogOpen]     = useState(false);
+  const [editing, setEditing]           = useState<TestResult | null>(null);
+  const [selected, setSelected]         = useState<Set<string>>(new Set());
 
   const load = useCallback(async () => {
     if (!activeProject) return;
@@ -255,6 +313,7 @@ function ResultsTab({ initialWorkItemId }: { initialWorkItemId?: string }) {
         filterStatus !== "all" ? { status: filterStatus } : undefined,
       );
       setResults(data);
+      setSelected(new Set()); // clear selection on reload
     } catch (err) {
       console.error("[ResultsTab] load error:", err);
     } finally { setLoading(false); }
@@ -274,6 +333,43 @@ function ResultsTab({ initialWorkItemId }: { initialWorkItemId?: string }) {
     const matchDisc = filterDisc === "all" || (tc?.disciplina ?? "") === filterDisc;
     return matchSearch && matchDisc;
   });
+
+  // ── Selection helpers ──────────────────────────────────────────────────────
+
+  const toggleOne = (id: string) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+
+  const allFilteredIds = filtered.map((r) => r.id);
+  const allSelected    = allFilteredIds.length > 0 && allFilteredIds.every((id) => selected.has(id));
+  const someSelected   = allFilteredIds.some((id) => selected.has(id));
+
+  const toggleAll = () => {
+    setSelected(allSelected
+      ? new Set()
+      : new Set(allFilteredIds),
+    );
+  };
+
+  // ── Export handlers ────────────────────────────────────────────────────────
+
+  const handleExportSingle = (r: TestResult) => {
+    const wi = (r.work_items as any)?.sector as string | undefined;
+    exportTestResultPdf(r, exportLabels, i18n.language, activeProject?.name ?? "Atlas", wi);
+  };
+
+  const handleExportBulk = () => {
+    const toExport = filtered.filter((r) => selected.has(r.id));
+    if (toExport.length === 0) {
+      toast({ title: t("tests.export.noSelection"), variant: "destructive" });
+      return;
+    }
+    exportTestResultsBulkPdf(toExport, exportLabels, i18n.language, activeProject?.name ?? "Atlas");
+  };
 
   const STATUSES = ["draft", "in_progress", "completed", "approved", "archived", "pending", "pass", "fail", "inconclusive"];
 
@@ -309,6 +405,22 @@ function ResultsTab({ initialWorkItemId }: { initialWorkItemId?: string }) {
             ))}
           </SelectContent>
         </Select>
+
+        {/* Export bulk — only when something selected */}
+        {someSelected && (
+          <Button
+            size="sm" variant="outline"
+            className="h-8 gap-1.5 text-xs"
+            onClick={handleExportBulk}
+          >
+            <FileDown className="h-3.5 w-3.5" />
+            {t("tests.export.exportBulk")}
+            <span className="rounded-full bg-primary/10 px-1.5 py-px text-[10px] font-bold text-primary">
+              {allFilteredIds.filter((id) => selected.has(id)).length}
+            </span>
+          </Button>
+        )}
+
         <Button size="sm" className="h-8 gap-1.5 ml-auto"
           onClick={() => { setEditing(null); setDialogOpen(true); }}>
           <Plus className="h-3.5 w-3.5" />
@@ -320,9 +432,9 @@ function ResultsTab({ initialWorkItemId }: { initialWorkItemId?: string }) {
       {results.length > 0 && (
         <div className="flex flex-wrap gap-3">
           {[
-            { label: t("tests.stats.total"),    value: results.length,                                     color: "" },
+            { label: t("tests.stats.total"),    value: results.length,                                                               color: "" },
             { label: t("tests.stats.approved"), value: results.filter((r) => r.status === "approved" || r.pass_fail === "pass").length, color: "text-primary" },
-            { label: t("tests.stats.failed"),   value: results.filter((r) => r.pass_fail === "fail").length, color: "text-destructive" },
+            { label: t("tests.stats.failed"),   value: results.filter((r) => r.pass_fail === "fail").length,                         color: "text-destructive" },
             { label: t("tests.stats.pending"),  value: results.filter((r) => ["draft","pending","in_progress"].includes(r.status)).length, color: "text-muted-foreground" },
           ].map((stat) => (
             <div key={stat.label} className="rounded-lg border border-border px-3 py-2 bg-muted/20 flex items-center gap-2">
@@ -345,20 +457,41 @@ function ResultsTab({ initialWorkItemId }: { initialWorkItemId?: string }) {
           <Table>
             <TableHeader>
               <TableRow className="bg-muted/40">
+                {/* Select-all checkbox */}
+                <TableHead className="w-10">
+                  <Checkbox
+                    checked={allSelected}
+                    onCheckedChange={toggleAll}
+                    aria-label="Selecionar todos"
+                    className="border-border"
+                  />
+                </TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("tests.results.table.code")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("tests.results.table.test")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("tests.results.table.sampleRef")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("tests.results.table.location")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.status")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.date")}</TableHead>
-                <TableHead className="w-10" />
+                <TableHead className="w-20" />
               </TableRow>
             </TableHeader>
             <TableBody>
               {filtered.map((r) => {
                 const tc = r.tests_catalog as any;
+                const isChecked = selected.has(r.id);
                 return (
-                  <TableRow key={r.id} className="hover:bg-muted/20 transition-colors">
+                  <TableRow
+                    key={r.id}
+                    className={cn("hover:bg-muted/20 transition-colors", isChecked && "bg-primary/5")}
+                  >
+                    <TableCell>
+                      <Checkbox
+                        checked={isChecked}
+                        onCheckedChange={() => toggleOne(r.id)}
+                        aria-label={`Selecionar ${r.code ?? r.id}`}
+                        className="border-border"
+                      />
+                    </TableCell>
                     <TableCell className="font-mono text-xs text-muted-foreground">
                       {r.code ?? "—"}
                     </TableCell>
@@ -376,19 +509,46 @@ function ResultsTab({ initialWorkItemId }: { initialWorkItemId?: string }) {
                       {r.location ?? (r.pk_inicio != null ? `PK ${r.pk_inicio}` : "—")}
                     </TableCell>
                     <TableCell>
-                      <Badge variant="secondary" className={cn("text-xs gap-1", STATUS_COLORS[r.status] ?? "")}>
-                        <StatusIcon status={r.status} />
-                        {t(`tests.status.${r.status}`, { defaultValue: r.status })}
-                      </Badge>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <Badge variant="secondary" className={cn("text-xs gap-1", STATUS_COLORS[r.status] ?? "")}>
+                          <StatusIcon status={r.status} />
+                          {t(`tests.status.${r.status}`, { defaultValue: r.status })}
+                        </Badge>
+                        {r.pass_fail && (
+                          <Badge variant="outline" className={cn("text-[10px] py-0",
+                            r.pass_fail === "pass" ? "border-primary/40 text-primary" :
+                            r.pass_fail === "fail" ? "border-destructive/40 text-destructive" :
+                            "border-orange-400/40 text-orange-600",
+                          )}>
+                            {t(`tests.status.${r.pass_fail}`, { defaultValue: r.pass_fail })}
+                          </Badge>
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
                       {new Date(r.date).toLocaleDateString()}
                     </TableCell>
                     <TableCell>
-                      <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground"
-                        onClick={() => { setEditing(r); setDialogOpen(true); }} title={t("common.edit")}>
-                        <Pencil className="h-3.5 w-3.5" />
-                      </Button>
+                      <div className="flex items-center gap-0.5">
+                        {/* Export individual */}
+                        <Button
+                          variant="ghost" size="icon"
+                          className="h-7 w-7 text-muted-foreground hover:text-primary"
+                          title={t("tests.export.exportSingle")}
+                          onClick={() => handleExportSingle(r)}
+                        >
+                          <FileDown className="h-3.5 w-3.5" />
+                        </Button>
+                        {/* Edit */}
+                        <Button
+                          variant="ghost" size="icon"
+                          className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                          title={t("common.edit")}
+                          onClick={() => { setEditing(r); setDialogOpen(true); }}
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 );
@@ -402,7 +562,6 @@ function ResultsTab({ initialWorkItemId }: { initialWorkItemId?: string }) {
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         testResult={editing}
-        preselectedWorkItemId={initialWorkItemId}
         onSuccess={load}
       />
     </div>
@@ -412,14 +571,12 @@ function ResultsTab({ initialWorkItemId }: { initialWorkItemId?: string }) {
 // ─── Demo data seed ───────────────────────────────────────────────────────────
 
 async function seedDemoData(projectId: string, t: (k: string) => string) {
-  // Check if already seeded
   const existing = await testService.getCatalogByProject(projectId, true);
   if (existing.length >= 5) {
     toast({ title: t("tests.demo.alreadyExists") });
     return;
   }
 
-  // Create 10 catalog entries
   const catalogDefs = [
     { code: "TST-SOIL-DENS", name: "Densidade In Situ (Cápsula)", disciplina: "terras", standards: ["ASTM D2937","NP 143"], unit: "%", frequency: "1 por cada 2.000 m²", acceptance_criteria: "Grau compactação ≥ 95% SPD" },
     { code: "TST-SOIL-PROC", name: "Proctor Modificado", disciplina: "terras", standards: ["ASTM D1557","NP 143"], unit: "g/cm³", frequency: "1 por cada 2.000 m³", acceptance_criteria: "Ref. para controlo de compactação" },
@@ -448,7 +605,6 @@ async function seedDemoData(projectId: string, t: (k: string) => string) {
     return;
   }
 
-  // Create 20 results distributed across catalog entries
   const samples = [
     { idx: 0, sample_ref: "DS-KM12-01", location: "Km 12+200", status: "approved", pass_fail: "pass",  pk_inicio: 12200, pk_fim: 12200, report_number: "LAB-2026-0101" },
     { idx: 0, sample_ref: "DS-KM12-02", location: "Km 12+400", status: "approved", pass_fail: "pass",  pk_inicio: 12400, pk_fim: 12400, report_number: "LAB-2026-0102" },
@@ -499,9 +655,6 @@ async function seedDemoData(projectId: string, t: (k: string) => string) {
   toast({ title: `${t("tests.demo.created")}: ${created.length} ${t("tests.demo.catalogEntries")}, ${count} ${t("tests.demo.results")}` });
 }
 
-// Import supabase for seed function
-import { supabase } from "@/integrations/supabase/client";
-
 // ─── Main page ────────────────────────────────────────────────────────────────
 
 export default function TestsPage() {
@@ -530,12 +683,11 @@ export default function TestsPage() {
           <p className="text-sm text-muted-foreground">{t("pages.tests.subtitle")}</p>
         </div>
         <Button
-          variant="outline"
-          size="sm"
-          onClick={handleSeedDemo}
-          disabled={seeding}
+          variant="outline" size="sm"
+          onClick={handleSeedDemo} disabled={seeding}
           className="text-xs gap-1.5"
         >
+          {seeding ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
           {seeding ? t("common.loading") : t("tests.demo.button")}
         </Button>
       </div>
