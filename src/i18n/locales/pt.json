@@ -948,7 +948,10 @@
         "createNcTitle": "Criar Não Conformidade",
         "createNcDescription": "O item {{item}} foi marcado como Não Conforme. Deseja criar uma NC associada?",
         "createNcConfirm": "Criar NC",
-        "createNcSkip": "Ignorar"
+        "createNcSkip": "Ignorar",
+        "deleteDraft": "Eliminar rascunho",
+        "deleteDraftDescription": "Esta ação é irreversível. O rascunho {{code}} e todos os seus itens serão permanentemente eliminados.",
+        "deleteDraftConfirm": "Eliminar permanentemente"
       },
       "form": {
         "titleCreate": "Nova Inspeção PPI",
