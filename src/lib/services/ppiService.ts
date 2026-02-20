@@ -564,6 +564,36 @@ export const ppiService = {
     return data as PpiInstanceItem;
   },
 
+  /**
+   * Update the inspection_date of a PPI instance.
+   * Only allowed when status is draft, in_progress or rejected.
+   */
+  async updateInspectionDate(
+    instanceId: string,
+    projectId: string,
+    inspectionDate: string | null
+  ): Promise<PpiInstance> {
+    const { data, error } = await supabase
+      .from("ppi_instances")
+      .update({ inspection_date: inspectionDate })
+      .eq("id", instanceId)
+      .select()
+      .single();
+    if (error) throw error;
+
+    await auditService.log({
+      projectId,
+      entity: "ppi_instances",
+      entityId: instanceId,
+      action: "UPDATE",
+      module: "ppi",
+      description: `Data de inspeção actualizada: ${inspectionDate ?? "—"}`,
+      diff: { inspection_date: inspectionDate },
+    });
+
+    return data as PpiInstance;
+  },
+
   /** Delete an instance (cascade deletes items via FK). */
   async deleteInstance(instanceId: string, projectId: string): Promise<void> {
     const { error } = await supabase

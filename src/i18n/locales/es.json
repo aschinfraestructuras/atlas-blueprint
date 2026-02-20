@@ -955,6 +955,7 @@
         "template": "Plantilla",
         "inspector": "Inspector",
         "inspectionDate": "Fecha de Inspección",
+        "editInspectionDate": "Editar fecha de inspección",
         "openedAt": "Abierto el",
         "closedAt": "Cerrado el",
         "checklistTitle": "Puntos de Inspección",
