@@ -883,6 +883,7 @@
         "codeRequired": "O código do template é obrigatório.",
         "titleRequired": "O título é obrigatório.",
         "disciplinaRequired": "A disciplina é obrigatória.",
+        "disciplinaOutroRequired": "Especifique a disciplina quando seleciona «Outros».",
         "codeUnique": "Já existe um template com este código neste projeto.",
         "itemLabelRequired": "A descrição do ponto é obrigatória.",
         "itemCheckCodeRequired": "O código de verificação é obrigatório."

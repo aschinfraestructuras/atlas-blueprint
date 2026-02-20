@@ -16,6 +16,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { SelectWithOther, withOtherRefinement } from "@/components/ui/select-with-other";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
@@ -44,13 +45,11 @@ const makeSchema = (t: (k: string) => string) =>
       status:          z.string().min(1),
     })
     .superRefine((val, ctx) => {
-      if (val.disciplina === "outros" && !val.disciplina_outro?.trim()) {
-        ctx.addIssue({
-          path: ["disciplina_outro"],
-          code: z.ZodIssueCode.custom,
-          message: t("workItems.form.validation.disciplinaOutroRequired"),
-        });
-      }
+      withOtherRefinement(
+        val, ctx,
+        "disciplina", "disciplina_outro",
+        t("workItems.form.validation.disciplinaOutroRequired"),
+      );
       if (val.pk_inicio != null && val.pk_fim != null && val.pk_fim < val.pk_inicio) {
         ctx.addIssue({
           path: ["pk_fim"],
@@ -88,7 +87,7 @@ export function WorkItemFormDialog({ open, onOpenChange, item, onSuccess }: Prop
     },
   });
 
-  const watchedDisciplina = form.watch("disciplina");
+  
 
   useEffect(() => {
     if (!open) return;
@@ -167,7 +166,7 @@ export function WorkItemFormDialog({ open, onOpenChange, item, onSuccess }: Prop
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
 
             {/* Row 1: Sector + Disciplina */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4 items-start">
               <FormField control={form.control} name="sector" render={({ field }) => (
                 <FormItem>
                   <FormLabel>
@@ -181,47 +180,22 @@ export function WorkItemFormDialog({ open, onOpenChange, item, onSuccess }: Prop
               )} />
 
               <FormField control={form.control} name="disciplina" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    {t("workItems.form.discipline")} <span className="text-destructive">*</span>
-                  </FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder={t("workItems.form.discipline")} />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {DISCIPLINE_CODES.map((code) => (
-                        <SelectItem key={code} value={code}>
-                          {t(`workItems.disciplines.${code}`)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
+                <SelectWithOther
+                  label={t("workItems.form.discipline")}
+                  required
+                  options={DISCIPLINE_CODES.map((c) => ({
+                    value: c,
+                    label: t(`workItems.disciplines.${c}`),
+                  }))}
+                  value={field.value}
+                  onChange={field.onChange}
+                  otherFieldName="disciplina_outro"
+                  control={form.control}
+                  otherLabel={t("workItems.form.disciplinaOutro")}
+                  otherPlaceholder={t("workItems.form.disciplinaOutroPlaceholder")}
+                />
               )} />
             </div>
-
-            {/* disciplina_outro — shown only when disciplina = 'outros' */}
-            {watchedDisciplina === "outros" && (
-              <FormField control={form.control} name="disciplina_outro" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    {t("workItems.form.disciplinaOutro")}{" "}
-                    <span className="text-destructive">*</span>
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t("workItems.form.disciplinaOutroPlaceholder")}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-            )}
 
             {/* Row 2: Obra + Lote */}
             <div className="grid grid-cols-2 gap-4">
