@@ -1059,9 +1059,30 @@
         "created": "Inspeção demo criada: {{code}}"
       },
       "error": "Erro ao criar dados demo. Verifique as permissões ou se existe um template ativo."
+    },
+    "export": {
+      "button": "Exportar",
+      "menuTitle": "Opções de exportação",
+      "reportTitle": "Relatório de Inspeção PPI",
+      "bulkReportTitle": "Relatório PPI Consolidado",
+      "generatedOn": "Gerado em",
+      "page": "Página",
+      "of": "de",
+      "pdfSingle": "PDF — Esta inspeção",
+      "pdfBulk": "PDF — Combinado",
+      "csvInstances": "CSV — Lista de inspeções",
+      "csvItems": "CSV — Pontos de inspeção",
+      "noData": "Nenhuma inspeção para exportar.",
+      "error": "Erro ao exportar.",
+      "selected": "selecionados",
+      "inspectionDate": "Data de inspeção",
+      "fields": {
+        "project":         "Projeto",
+        "discipline":      "Disciplina",
+        "linkedNc":        "NC Associada",
+        "attachmentCount": "Nº Anexos"
+      }
     }
-  },
-  "export": {
   },
   "attachments": {
     "title": "Anexos / Evidências",

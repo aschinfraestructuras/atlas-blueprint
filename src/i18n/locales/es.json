@@ -1082,7 +1082,6 @@
         "created": "Inspección demo creada: {{code}}"
       },
       "error": "Error al crear datos demo. Verifique los permisos o si existe una plantilla activa."
-    }
     },
     "export": {
       "button": "Exportar",
@@ -1099,6 +1098,7 @@
       "noData": "No hay inspecciones para exportar.",
       "error": "Error al exportar.",
       "selected": "seleccionados",
+      "inspectionDate": "Fecha de inspección",
       "fields": {
         "project":         "Proyecto",
         "discipline":      "Disciplina",

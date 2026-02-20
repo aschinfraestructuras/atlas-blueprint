@@ -55,6 +55,7 @@ function buildLabels(t: (k: string, opts?: Record<string, unknown>) => string): 
     closedAt:       t("ppi.instances.table.closedAt"),
     inspector:      t("ppi.instances.table.inspector"),
     discipline:     t("ppi.export.fields.discipline"),
+    inspectionDate: t("ppi.export.inspectionDate"),
     checklistTitle: t("ppi.instances.detail.checklistTitle"),
     itemNo:         t("ppi.instances.items.itemNo"),
     checkCode:      t("ppi.instances.items.checkCode"),

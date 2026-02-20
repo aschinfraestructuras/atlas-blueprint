@@ -32,6 +32,7 @@ export interface ExportLabels {
   closedAt: string;
   inspector: string;
   discipline: string;
+  inspectionDate: string;
   // checklist
   checklistTitle: string;
   itemNo: string;
@@ -91,6 +92,33 @@ function fmtDate(iso: string | null | undefined, locale: string): string {
   } catch {
     return iso.slice(0, 10);
   }
+}
+
+/**
+ * Sanitize a string for use in filenames: replace spaces/special chars with underscores,
+ * remove anything that isn't alphanumeric, underscore, hyphen, or dot.
+ */
+function sanitize(s: string): string {
+  return s
+    .replace(/\s+/g, "_")
+    .replace(/[^A-Za-z0-9_\-.]/g, "")
+    .replace(/_+/g, "_")
+    .slice(0, 40);
+}
+
+/**
+ * Build the canonical filename: PPI_{project}_{workItem}_{code}_{inspectionDate}_{status}.pdf
+ */
+function buildFilename(
+  inst: PpiInstanceForExport,
+  projectName: string,
+): string {
+  const proj   = sanitize(projectName);
+  const wi     = sanitize(inst.work_item_sector ?? inst.work_item_id.slice(0, 8));
+  const code   = sanitize(inst.code);
+  const date   = (inst.inspection_date ?? inst.opened_at ?? "").slice(0, 10).replace(/-/g, "");
+  const status = sanitize(inst.status);
+  return `PPI_${proj}_${wi}_${code}_${date}_${status}.pdf`;
 }
 
 function resultColor(result: string): string {
@@ -250,6 +278,10 @@ function buildSinglePdfHtml(
       <span class="info-value">${fmtDate(inst.opened_at, locale)}</span>
     </div>
     <div class="info-row">
+      <span class="info-label">${labels.inspectionDate}</span>
+      <span class="info-value">${fmtDate(inst.inspection_date, locale)}</span>
+    </div>
+    <div class="info-row">
       <span class="info-label">${labels.closedAt}</span>
       <span class="info-value">${fmtDate(inst.closed_at, locale)}</span>
     </div>
@@ -361,7 +393,7 @@ export function exportSinglePdf(
   projectName: string,
 ): void {
   const html = buildSinglePdfHtml(inst, labels, locale, projectName);
-  printHtml(html, `${inst.code}.pdf`);
+  printHtml(html, buildFilename(inst, projectName));
 }
 
 /**
@@ -407,7 +439,10 @@ ${pages.join("\n")}
 </body>
 </html>`;
 
-  printHtml(combined, `PPI-bulk-${Date.now()}.pdf`);
+  const bulkFilename = instances.length === 1
+    ? buildFilename(instances[0], projectName)
+    : `PPI_${sanitize(projectName)}_bulk_${instances.length}_${Date.now()}.pdf`;
+  printHtml(combined, bulkFilename);
 }
 
 /**
