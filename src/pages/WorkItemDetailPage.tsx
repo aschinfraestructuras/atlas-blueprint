@@ -3,20 +3,21 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   ArrowLeft, Construction, FlaskConical, AlertTriangle, Paperclip,
-  Pencil, Calendar, MapPin, ClipboardCheck, Plus, Eye,
+  Pencil, Calendar, MapPin, ClipboardCheck, Plus, Eye, FileDown,
 } from "lucide-react";
 import { workItemService, formatPk, type WorkItem } from "@/lib/services/workItemService";
 import { ppiService, type PpiInstanceStatus } from "@/lib/services/ppiService";
+import { exportWorkItemPdf, type WorkItemForExport } from "@/lib/services/workItemExportService";
 import { WorkItemFormDialog } from "@/components/work-items/WorkItemFormDialog";
-import { PPIInstanceFormDialog } from "@/components/ppi/PPIInstanceFormDialog";
 import { PPIStatusBadge } from "@/components/ppi/PPIStatusBadge";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
+import { PPIInstanceFormDialog } from "@/components/ppi/PPIInstanceFormDialog";
 import { useProject } from "@/contexts/ProjectContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
@@ -187,7 +188,7 @@ function WorkItemPPITab({
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function WorkItemDetailPage() {
-  const { t }             = useTranslation();
+  const { t, i18n }       = useTranslation();
   const { id }            = useParams<{ id: string }>();
   const navigate          = useNavigate();
   const { activeProject } = useProject();
@@ -198,6 +199,37 @@ export default function WorkItemDetailPage() {
   const [tests,      setTests]      = useState<any[]>([]);
   const [ncs,        setNcs]        = useState<any[]>([]);
   const [subLoading, setSubLoading] = useState(true);
+
+  function handleExportPdf() {
+    if (!item || !activeProject) return;
+    const locale = i18n.language ?? "pt";
+    const wi: WorkItemForExport = {
+      ...item,
+      disciplina_label: t(`workItems.disciplines.${item.disciplina}`, { defaultValue: item.disciplina }),
+      status_label:     t(`workItems.status.${item.status}`,          { defaultValue: item.status }),
+      ppi_count:  0,
+      nc_count:   ncs.length,
+      test_count: tests.length,
+    };
+    exportWorkItemPdf(wi, {
+      appName:     "Atlas QMS",
+      reportTitle: t("workItems.export.reportTitle"),
+      generatedOn: t("workItems.export.generatedOn"),
+      project:     t("workItems.export.fields.sector"),
+      sector:      t("workItems.export.fields.sector"),
+      discipline:  t("workItems.export.fields.discipline"),
+      obra:        t("workItems.export.fields.obra"),
+      lote:        t("workItems.export.fields.lote"),
+      elemento:    t("workItems.export.fields.elemento"),
+      parte:       t("workItems.export.fields.parte"),
+      pk:          t("workItems.export.fields.pk"),
+      status:      t("workItems.export.fields.status"),
+      createdAt:   t("workItems.export.fields.createdAt"),
+      ncs:         t("workItems.export.fields.ncs"),
+      tests:       t("workItems.export.fields.tests"),
+      ppis:        t("workItems.export.fields.ppis"),
+    }, locale, activeProject.name);
+  }
 
   async function loadItem() {
     if (!id) return;
@@ -279,9 +311,14 @@ export default function WorkItemDetailPage() {
             </div>
           </div>
         </div>
-        <Button variant="outline" size="sm" onClick={() => setEditOpen(true)} className="gap-2 flex-shrink-0">
-          <Pencil className="h-3.5 w-3.5" /> {t("workItems.detail.edit")}
-        </Button>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <Button variant="outline" size="sm" onClick={handleExportPdf} className="gap-2">
+            <FileDown className="h-3.5 w-3.5" /> {t("workItems.export.pdfSingle")}
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => setEditOpen(true)} className="gap-2">
+            <Pencil className="h-3.5 w-3.5" /> {t("workItems.detail.edit")}
+          </Button>
+        </div>
       </div>
 
       {/* ── Detail card ──────────────────────────────────────────────── */}

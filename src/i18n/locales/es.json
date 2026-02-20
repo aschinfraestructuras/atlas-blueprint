@@ -864,7 +864,8 @@
     "emptyState": {
       "subtitle": "Este proyecto aún no tiene work items. Cree el primero."
     }
-  }
+  },
+  "ppi": {
     "subtitle": "Gestionar plantillas e instancias de inspección por work item",
     "nav": "PPI",
     "templates": {
