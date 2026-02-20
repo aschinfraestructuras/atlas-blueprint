@@ -714,12 +714,19 @@
     "searchPlaceholder": "Pesquisar código, título, responsável…",
     "filters": {
       "allStatuses": "Todos os estados",
-      "allSeverities": "Todas as gravidades"
+      "allSeverities": "Todas as gravidades",
+      "allOrigins": "Todas as origens",
+      "allCategories": "Todas as categorias",
+      "from": "De",
+      "to": "Até",
+      "clear": "Limpar filtros",
+      "results": "resultados"
     },
     "table": {
       "code": "Código NC",
       "title": "Título / Descrição",
       "reference": "Referência",
+      "origin": "Origem",
       "severity": "Gravidade",
       "responsible": "Responsável",
       "dueDate": "Prazo"
@@ -757,11 +764,51 @@
     },
     "transitions": {
       "label":                "Alterar estado",
+      "changeTo":             "Transitar para",
       "open":                 "Abrir",
       "in_progress":          "Iniciar",
       "pending_verification": "Enviar para Verificação",
       "closed":               "Fechar",
       "archived":             "Arquivar"
+    },
+    "bulk": {
+      "selected":     "{{count}} selecionada(s)",
+      "changeStatus": "Alterar estado",
+      "clear":        "Limpar seleção"
+    },
+    "demo": {
+      "button":   "Dados Demo",
+      "tooltip":  "Cria 10 NCs de exemplo com diferentes origens e estados.",
+      "created":  "{{count}} NC(s) demo criadas.",
+      "allExist": "Dados demo já existem ({{count}} registos).",
+      "error":    "Erro ao criar dados demo."
+    },
+    "detail": {
+      "notFound":        "Não conformidade não encontrada.",
+      "tabs": {
+        "description": "Descrição",
+        "capa":        "CAPA",
+        "attachments": "Evidências",
+        "history":     "Histórico"
+      },
+      "identification":  "Identificação",
+      "responsibility":  "Responsáveis",
+      "linkedTo":        "Ligações",
+      "verification":    "Verificação e Fecho",
+      "dueDate":         "Prazo",
+      "assignedTo":      "Atribuído a",
+      "owner":           "Proprietário",
+      "approver":        "Aprovador",
+      "workItem":        "Work Item",
+      "viewWorkItem":    "Ver Work Item →",
+      "ppiInstance":     "Inspeção PPI",
+      "viewPpi":         "Ver Inspeção PPI →",
+      "verifiedBy":      "Verificado por",
+      "verifiedAt":      "Verificado em",
+      "closureDate":     "Data de fecho",
+      "capaEmpty":       "CAPA ainda não preenchida.",
+      "fillCapa":        "Preencher CAPA",
+      "historyEmpty":    "Sem registos de auditoria para esta NC."
     },
     "form": {
       "titleCreate": "Nova Não Conformidade",
@@ -807,6 +854,7 @@
       "created": "Não conformidade registada com sucesso.",
       "updated": "Não conformidade atualizada com sucesso.",
       "statusChanged": "Estado alterado para {{status}}.",
+      "bulkStatusChanged": "{{count}} NC(s) atualizadas.",
       "error": "Ocorreu um erro. Tente novamente."
     }
   },
