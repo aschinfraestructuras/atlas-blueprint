@@ -1432,5 +1432,9 @@
       "deleted": "Anexo eliminado.",
       "deleteError": "Falha ao eliminar o anexo"
     }
+  },
+  "common": {
+    "exportPdf": "Exportar PDF",
+    "exportCsv": "Exportar CSV"
   }
 }

@@ -10,6 +10,7 @@ import { exportNCBulkPdf, type NCExportLabels } from "@/lib/services/ncExportSer
 import type { NonConformity } from "@/lib/services/ncService";
 import { toast } from "@/hooks/use-toast";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
+import { getNCTransitions } from "@/lib/stateMachines";
 import {
   AlertTriangle, Calendar, Plus, Pencil, ChevronDown,
   Eye, Loader2, Database, Search, X, CheckSquare, Square, FileDown,
@@ -53,14 +54,8 @@ const STATUS_COLORS: Record<string, string> = {
   archived:             "bg-muted text-muted-foreground",
 };
 
-const ALLOWED_TRANSITIONS: Record<string, string[]> = {
-  draft:                ["open", "archived"],
-  open:                 ["in_progress", "closed", "archived"],
-  in_progress:          ["pending_verification", "open", "archived"],
-  pending_verification: ["closed", "in_progress", "archived"],
-  closed:               ["archived", "open"],
-  archived:             ["open"],
-};
+// ─── Colour maps / transitions now come from stateMachines ───────────────────
+
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
@@ -163,7 +158,7 @@ export default function NonConformitiesPage() {
     for (const id of ids) {
       const nc = ncs.find(n => n.id === id);
       if (!nc) continue;
-      const allowed = ALLOWED_TRANSITIONS[nc.status] ?? [];
+      const allowed: string[] = getNCTransitions(nc.status);
       if (!allowed.includes(toStatus)) continue;
       try { await ncService.updateStatus(id, toStatus); ok++; } catch { /* skip */ }
     }
@@ -415,7 +410,7 @@ export default function NonConformitiesPage() {
             </TableHeader>
             <TableBody>
               {filtered.map(nc => {
-                const transitions = ALLOWED_TRANSITIONS[nc.status] ?? [];
+                const transitions = getNCTransitions(nc.status);
                 const isTransitioning = transitioningId === nc.id;
                 const isSelected = selected.has(nc.id);
                 const isOverdue = nc.due_date &&
