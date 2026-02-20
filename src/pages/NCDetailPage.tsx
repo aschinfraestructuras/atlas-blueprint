@@ -4,8 +4,9 @@ import { useTranslation } from "react-i18next";
 import {
   ArrowLeft, AlertTriangle, Calendar, Clock, User, Tag, Pencil,
   CheckCircle2, RotateCcw, Archive, ChevronDown, Loader2,
-  FileText, Shield, Link2, ClipboardList, Printer, FileDown,
+  FileText, Shield, Link2, ClipboardList, Printer, FileDown, Trash2,
 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import { ncService, type NonConformity } from "@/lib/services/ncService";
 import { auditService, type AuditEntry } from "@/lib/services/auditService";
 import {
@@ -15,6 +16,7 @@ import {
 import { NCFormDialog } from "@/components/nc/NCFormDialog";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { useProject } from "@/contexts/ProjectContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,9 +27,14 @@ import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
   DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { toast } from "@/hooks/use-toast";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { cn } from "@/lib/utils";
+import { getNCTransitions, canDeleteNC, canEditNC } from "@/lib/stateMachines";
 
 // ─── Colour maps ──────────────────────────────────────────────────────────────
 
@@ -57,14 +64,6 @@ const ORIGIN_ICON: Record<string, typeof AlertTriangle> = {
   manual:   AlertTriangle,
 };
 
-const ALLOWED_TRANSITIONS: Record<string, string[]> = {
-  draft:                ["open", "archived"],
-  open:                 ["in_progress", "closed", "archived"],
-  in_progress:          ["pending_verification", "open", "archived"],
-  pending_verification: ["closed", "in_progress", "archived"],
-  closed:               ["archived", "open"],
-  archived:             ["open"],
-};
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
@@ -128,6 +127,9 @@ export default function NCDetailPage() {
   const [editOpen, setEditOpen] = useState(false);
   const [transitioning, setTransitioning] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const { user } = useAuth();
 
   const loadNc = useCallback(async () => {
     if (!id) return;
@@ -211,6 +213,26 @@ export default function NCDetailPage() {
     }
   };
 
+  const handleDeleteDraft = async () => {
+    if (!nc || !activeProject) return;
+    setDeleting(true);
+    try {
+      const { error } = await supabase
+        .from("non_conformities")
+        .delete()
+        .eq("id", nc.id);
+      if (error) throw error;
+      toast({ title: t("nc.toast.deleted", { defaultValue: "NC eliminada." }) });
+      navigate("/non-conformities");
+    } catch (err) {
+      const info = classifySupabaseError(err, t);
+      toast({ title: info.title, description: info.description ?? info.raw, variant: "destructive" });
+    } finally {
+      setDeleting(false);
+      setDeleteDialogOpen(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="space-y-6 max-w-5xl mx-auto">
@@ -227,8 +249,10 @@ export default function NCDetailPage() {
     </div>
   );
 
-  const transitions = ALLOWED_TRANSITIONS[nc.status] ?? [];
+  const transitions = getNCTransitions(nc.status);
   const OriginIcon = ORIGIN_ICON[nc.origin] ?? AlertTriangle;
+  const canDelete  = canDeleteNC(nc.status);
+  const canEdit    = canEditNC(nc.status);
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto animate-fade-in">
@@ -254,7 +278,7 @@ export default function NCDetailPage() {
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <div className="flex items-center gap-2 flex-shrink-0 flex-wrap">
           {transitions.length > 0 && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -280,15 +304,23 @@ export default function NCDetailPage() {
             size="sm" variant="outline"
             onClick={() => handleExportPdf()}
             className="gap-1.5"
-            title={t("nc.export.exportSingle", { defaultValue: "Exportar NC (PDF)" })}
+            disabled={exporting}
           >
-            <FileDown className="h-3.5 w-3.5" />
-            {t("nc.export.button", { defaultValue: "Exportar PDF" })}
+            {exporting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FileDown className="h-3.5 w-3.5" />}
+            {t("common.exportPdf", { defaultValue: "Exportar PDF" })}
           </Button>
-          <Button size="sm" variant="outline" onClick={() => setEditOpen(true)} className="gap-1.5">
-            <Pencil className="h-3.5 w-3.5" />
-            {t("common.edit")}
-          </Button>
+          {canEdit && (
+            <Button size="sm" variant="outline" onClick={() => setEditOpen(true)} className="gap-1.5">
+              <Pencil className="h-3.5 w-3.5" />
+              {t("common.edit")}
+            </Button>
+          )}
+          {canDelete && (
+            <Button size="sm" variant="destructive" onClick={() => setDeleteDialogOpen(true)} className="gap-1.5">
+              <Trash2 className="h-3.5 w-3.5" />
+              {t("common.delete")}
+            </Button>
+          )}
         </div>
       </div>
 
@@ -543,6 +575,29 @@ export default function NCDetailPage() {
         nc={nc}
         onSuccess={() => { loadNc(); loadLogs(); }}
       />
+
+      {/* ── Delete draft dialog ─────────────────────────────────────────── */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("nc.deleteDialog.title", { defaultValue: "Eliminar NC?" })}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("nc.deleteDialog.description", { defaultValue: "Esta ação é irreversível. A NC será eliminada permanentemente." })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>{t("common.cancel")}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteDraft}
+              disabled={deleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+              {t("common.delete")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
