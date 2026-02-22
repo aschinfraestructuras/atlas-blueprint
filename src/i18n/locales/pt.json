@@ -326,13 +326,16 @@
     "newDocument": "Novo Documento",
     "noFile": "Sem ficheiro",
     "allFiles": "documentos",
-    "searchPlaceholder": "Pesquisar por título, tipo ou revisão…",
+    "searchPlaceholder": "Pesquisar por título, código, tipo ou revisão…",
     "filterAll": "Todos os módulos",
     "filterAllStatus": "Todos os estados",
     "filterAllTypes": "Todos os tipos",
+    "filterAllDisciplinas": "Todas as disciplinas",
     "table": {
       "title": "Título",
+      "code": "Código",
       "type": "Tipo",
+      "disciplina": "Disciplina",
       "revision": "Revisão",
       "file": "Ficheiro",
       "fileName": "Ficheiro",
@@ -348,6 +351,18 @@
       "survey": "Topografia",
       "technical_office": "Of. Técnica",
       "ppi": "PPI"
+    },
+    "disciplinas": {
+      "geral": "Geral",
+      "estruturas": "Estruturas",
+      "geotecnia": "Geotecnia",
+      "hidraulica": "Hidráulica",
+      "estradas": "Estradas",
+      "ambiente": "Ambiente",
+      "seguranca": "Segurança",
+      "eletrica": "Elétrica",
+      "mecanica": "Mecânica",
+      "outro": "Outro"
     },
     "actions": {
       "upload": "Carregar ficheiro",
@@ -407,6 +422,18 @@
         "fileUrlInvalid": "Introduza um URL válido."
       }
     },
+    "detail": {
+      "breadcrumb": "Documentos",
+      "info": "Informação Geral",
+      "code": "Código",
+      "createdAt": "Criado em",
+      "approvedAt": "Aprovado em",
+      "tabs": {
+        "versions": "Versões",
+        "links": "Ligações",
+        "attachments": "Anexos"
+      }
+    },
     "versions": {
       "title": "Histórico de Versões",
       "version": "Versão {{n}}",
@@ -418,7 +445,10 @@
     "links": {
       "title": "Entidades Ligadas",
       "addLink": "Ligar entidade",
+      "entityType": "Tipo de Entidade",
       "noLinks": "Sem ligações.",
+      "added": "Ligação criada.",
+      "removed": "Ligação removida.",
       "entityTypes": {
         "work_item": "Atividade",
         "ppi_instance": "PPI",
@@ -426,6 +456,18 @@
         "non_conformity": "NC",
         "supplier": "Fornecedor"
       }
+    },
+    "linkedPanel": {
+      "title": "Documentos Associados",
+      "addDoc": "Associar documento",
+      "selectDoc": "Selecionar documento",
+      "empty": "Sem documentos associados.",
+      "noAvailable": "Nenhum documento disponível."
+    },
+    "bulk": {
+      "selected": "{{count}} selecionado(s)",
+      "archive": "Arquivar selecionados",
+      "clear": "Limpar seleção"
     },
     "toast": {
       "created": "Documento criado com sucesso.",
@@ -442,13 +484,13 @@
       "status_draft": "Documento voltou a Rascunho.",
       "status_obsolete": "Documento marcado como obsoleto.",
       "status_archived": "Documento arquivado.",
-      "versionCreated": "Nova versão criada com sucesso."
+      "versionCreated": "Nova versão criada com sucesso.",
+      "bulkArchived": "{{count}} documento(s) arquivado(s)."
     },
     "deleteConfirm": {
       "title": "Eliminar documento?",
       "description": "O documento «{{name}}» e o seu ficheiro serão eliminados permanentemente. Esta ação não pode ser revertida."
     }
-
   },
   "tests": {
     "newTest": "Novo Ensaio",

@@ -11,6 +11,7 @@ import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import ProjectsPage from "./pages/ProjectsPage";
 import DocumentsPage from "./pages/DocumentsPage";
+import DocumentDetailPage from "./pages/DocumentDetailPage";
 import TestsPage from "./pages/TestsPage";
 import SuppliersPage from "./pages/SuppliersPage";
 import NonConformitiesPage from "./pages/NonConformitiesPage";
@@ -54,6 +55,7 @@ const App = () => (
               <Route path="/" element={<ProtectedLayout><DashboardPage /></ProtectedLayout>} />
               <Route path="/projects" element={<ProtectedLayout><ProjectsPage /></ProtectedLayout>} />
               <Route path="/documents" element={<ProtectedLayout><DocumentsPage /></ProtectedLayout>} />
+              <Route path="/documents/:id" element={<ProtectedLayout><DocumentDetailPage /></ProtectedLayout>} />
               <Route path="/tests" element={<ProtectedLayout><TestsPage /></ProtectedLayout>} />
               <Route path="/suppliers" element={<ProtectedLayout><SuppliersPage /></ProtectedLayout>} />
               <Route path="/non-conformities" element={<ProtectedLayout><NonConformitiesPage /></ProtectedLayout>} />

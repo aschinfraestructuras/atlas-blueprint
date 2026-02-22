@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   ArrowLeft, Construction, FlaskConical, AlertTriangle, Paperclip,
-  Pencil, Calendar, MapPin, ClipboardCheck, Plus, Eye, FileDown,
+  Pencil, Calendar, MapPin, ClipboardCheck, Plus, Eye, FileDown, FileText,
   CheckCircle2, XCircle, Clock,
 } from "lucide-react";
 import {
@@ -16,6 +16,7 @@ import { exportWorkItemPdf, type WorkItemForExport } from "@/lib/services/workIt
 import { testService, type TestResult } from "@/lib/services/testService";
 import { WorkItemFormDialog } from "@/components/work-items/WorkItemFormDialog";
 import { PPIStatusBadge } from "@/components/ppi/PPIStatusBadge";
+import { LinkedDocumentsPanel } from "@/components/documents/LinkedDocumentsPanel";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { PPIInstanceFormDialog } from "@/components/ppi/PPIInstanceFormDialog";
 import { TestResultFormDialog } from "@/components/tests/TestResultFormDialog";
@@ -635,7 +636,6 @@ export default function WorkItemDetailPage() {
       {/* ── Tabs: Tests / NCs / PPI / Attachments ────────────────────── */}
       <Tabs defaultValue="ppi">
         <TabsList>
-          {/* PPI tab — first so users naturally find it */}
           <TabsTrigger value="ppi" className="gap-1.5">
             <ClipboardCheck className="h-3.5 w-3.5" />
             {t("workItems.detail.tabs.ppi")}
@@ -652,6 +652,10 @@ export default function WorkItemDetailPage() {
                 {ncs.length}
               </span>
             )}
+          </TabsTrigger>
+          <TabsTrigger value="documents" className="gap-1.5">
+            <FileText className="h-3.5 w-3.5" />
+            {t("documents.linkedPanel.title")}
           </TabsTrigger>
           <TabsTrigger value="attachments" className="gap-1.5">
             <Paperclip className="h-3.5 w-3.5" />
@@ -726,6 +730,11 @@ export default function WorkItemDetailPage() {
               )}
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* Documents tab */}
+        <TabsContent value="documents" className="mt-4">
+          <LinkedDocumentsPanel entityType="work_item" entityId={item.id} projectId={activeProject?.id ?? ""} />
         </TabsContent>
 
         {/* Attachments tab */}

@@ -326,13 +326,16 @@
     "newDocument": "Nuevo Documento",
     "noFile": "Sin archivo",
     "allFiles": "documentos",
-    "searchPlaceholder": "Buscar por título, tipo o revisión…",
+    "searchPlaceholder": "Buscar por título, código, tipo o revisión…",
     "filterAll": "Todos los módulos",
     "filterAllStatus": "Todos los estados",
     "filterAllTypes": "Todos los tipos",
+    "filterAllDisciplinas": "Todas las disciplinas",
     "table": {
       "title": "Título",
+      "code": "Código",
       "type": "Tipo",
+      "disciplina": "Disciplina",
       "revision": "Revisión",
       "file": "Archivo",
       "fileName": "Archivo",
@@ -349,16 +352,37 @@
       "technical_office": "Of. Técnica",
       "ppi": "PPI"
     },
+    "disciplinas": {
+      "geral": "General",
+      "estruturas": "Estructuras",
+      "geotecnia": "Geotecnia",
+      "hidraulica": "Hidráulica",
+      "estradas": "Carreteras",
+      "ambiente": "Medio Ambiente",
+      "seguranca": "Seguridad",
+      "eletrica": "Eléctrica",
+      "mecanica": "Mecánica",
+      "outro": "Otro"
+    },
     "actions": {
       "upload": "Subir archivo",
       "replace": "Reemplazar archivo",
       "download": "Descargar archivo",
-      "view": "Ver en nueva pestaña"
+      "view": "Ver en nueva pestaña",
+      "submit": "Enviar a revisión",
+      "approve": "Aprobar",
+      "reject": "Rechazar",
+      "backToDraft": "Volver a Borrador",
+      "obsolete": "Marcar como Obsoleto",
+      "archive": "Archivar",
+      "newVersion": "Nueva Versión"
     },
     "status": {
       "draft": "Borrador",
-      "review": "En revisión",
-      "approved": "Aprobado"
+      "in_review": "En Revisión",
+      "approved": "Aprobado",
+      "obsolete": "Obsoleto",
+      "archived": "Archivado"
     },
     "docTypes": {
       "procedure": "Procedimiento",
@@ -379,20 +403,71 @@
       "titlePlaceholder": "ej: Plan de Control de Calidad",
       "type": "Tipo de documento",
       "typePlaceholder": "Seleccionar tipo…",
+      "disciplina": "Disciplina",
+      "disciplinaPlaceholder": "Seleccionar disciplina…",
       "revision": "Revisión",
       "revisionPlaceholder": "ej: A, 1, 01",
       "fileUrl": "URL del archivo",
       "fileUrlPlaceholder": "https://…",
       "mainFile": "Archivo principal",
       "attachFile": "Adjuntar archivo…",
-      "replaceFile": "Reemplazar archivo…",
+      "replaceFile": "Nueva versión del archivo…",
       "createBtn": "Crear documento",
       "lockedNotice": "Este documento está bloqueado para edición. Solo se pueden añadir adjuntos.",
+      "changeDescription": "Descripción del cambio",
+      "changeDescriptionPlaceholder": "Describa lo que cambió en esta versión…",
       "validation": {
         "titleRequired": "El título es obligatorio.",
         "typeRequired": "El tipo es obligatorio.",
         "fileUrlInvalid": "Introduzca una URL válida."
       }
+    },
+    "detail": {
+      "breadcrumb": "Documentos",
+      "info": "Información General",
+      "code": "Código",
+      "createdAt": "Creado el",
+      "approvedAt": "Aprobado el",
+      "tabs": {
+        "versions": "Versiones",
+        "links": "Enlaces",
+        "attachments": "Adjuntos"
+      }
+    },
+    "versions": {
+      "title": "Historial de Versiones",
+      "version": "Versión {{n}}",
+      "current": "Actual",
+      "noVersions": "Sin versiones registradas.",
+      "uploadedBy": "Subido por",
+      "changeDescription": "Cambio"
+    },
+    "links": {
+      "title": "Entidades Enlazadas",
+      "addLink": "Enlazar entidad",
+      "entityType": "Tipo de Entidad",
+      "noLinks": "Sin enlaces.",
+      "added": "Enlace creado.",
+      "removed": "Enlace eliminado.",
+      "entityTypes": {
+        "work_item": "Actividad",
+        "ppi_instance": "PPI",
+        "test_result": "Ensayo",
+        "non_conformity": "NC",
+        "supplier": "Proveedor"
+      }
+    },
+    "linkedPanel": {
+      "title": "Documentos Asociados",
+      "addDoc": "Asociar documento",
+      "selectDoc": "Seleccionar documento",
+      "empty": "Sin documentos asociados.",
+      "noAvailable": "Ningún documento disponible."
+    },
+    "bulk": {
+      "selected": "{{count}} seleccionado(s)",
+      "archive": "Archivar seleccionados",
+      "clear": "Limpiar selección"
     },
     "toast": {
       "created": "Documento creado con éxito.",
@@ -404,9 +479,13 @@
       "uploadError": "Error al subir el archivo",
       "downloadError": "Error al descargar el archivo",
       "error": "Ocurrió un error. Inténtelo de nuevo.",
-      "status_review": "Documento enviado para revisión.",
+      "status_in_review": "Documento enviado a revisión.",
       "status_approved": "Documento aprobado.",
-      "status_draft": "Documento vuelto a Borrador."
+      "status_draft": "Documento vuelto a Borrador.",
+      "status_obsolete": "Documento marcado como obsoleto.",
+      "status_archived": "Documento archivado.",
+      "versionCreated": "Nueva versión creada con éxito.",
+      "bulkArchived": "{{count}} documento(s) archivado(s)."
     },
     "deleteConfirm": {
       "title": "¿Eliminar documento?",
