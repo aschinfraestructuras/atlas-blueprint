@@ -7,12 +7,13 @@ import { useDocuments } from "@/hooks/useDocuments";
 import { documentService } from "@/lib/services/documentService";
 import type { Document } from "@/lib/services/documentService";
 import type { DocumentStatus } from "@/lib/services/documentService";
+import { exportDocumentListPdf, type DocExportLabels } from "@/lib/services/documentExportService";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import {
   FileText, Download, ExternalLink, Loader2, Search,
   Plus, Trash2, Pencil, CheckCircle2, Clock, RotateCcw,
-  Archive, Eye,
+  Archive, Eye, FileDown,
 } from "lucide-react";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -61,7 +62,7 @@ const DISCIPLINAS = [
 // ─── Component ──────────────────────────────────────────────────────────────
 
 export default function DocumentsPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { activeProject } = useProject();
   const { user } = useAuth();
@@ -243,6 +244,35 @@ export default function DocumentsPage() {
             <span className="text-sm font-medium text-primary">
               {t("documents.bulk.selected", { count: selected.size })}
             </span>
+            <Button size="sm" variant="outline" className="gap-1.5 text-xs h-7"
+              onClick={() => {
+                const toExport = filtered.filter((d) => selected.has(d.id));
+                if (toExport.length === 0) return;
+                const labels: DocExportLabels = {
+                  appName: "Atlas QMS",
+                  reportTitle: t("documents.export.reportTitle"),
+                  listReportTitle: t("documents.export.listReportTitle"),
+                  generatedOn: t("documents.export.generatedOn"),
+                  page: t("documents.export.page"), of: t("documents.export.of"),
+                  code: t("documents.detail.code"), title: t("documents.form.title"),
+                  type: t("documents.form.type"), disciplina: t("documents.form.disciplina"),
+                  revision: t("documents.form.revision"), status: t("common.status"),
+                  createdAt: t("documents.detail.createdAt"), approvedAt: t("documents.detail.approvedAt"),
+                  approvedBy: t("documents.export.approvedBy"), version: t("documents.export.version"),
+                  fileName: t("documents.table.fileName"), fileSize: t("documents.table.size"),
+                  statuses: Object.fromEntries(["draft","in_review","approved","obsolete","archived"].map(k => [k, t(`documents.status.${k}`)])),
+                  docTypes: Object.fromEntries(["procedure","instruction","plan","report","certificate","drawing","specification","form","record","other"].map(k => [k, t(`documents.docTypes.${k}`)])),
+                  disciplinas: Object.fromEntries(["geral","estruturas","geotecnia","hidraulica","estradas","ambiente","seguranca","eletrica","mecanica","outro"].map(k => [k, t(`documents.disciplinas.${k}`)])),
+                  versionsTitle: t("documents.versions.title"),
+                  versionNo: t("documents.export.versionNo"),
+                  changeDescription: t("documents.form.changeDescription"),
+                  uploadedAt: t("documents.export.uploadedAt"),
+                };
+                exportDocumentListPdf(toExport, labels, i18n.language, activeProject?.name ?? "Atlas");
+              }}>
+              <FileDown className="h-3 w-3" />
+              {t("documents.bulk.exportSelected")}
+            </Button>
             <Button size="sm" variant="outline" className="gap-1.5 text-xs h-7"
               onClick={handleBulkArchive} disabled={bulkArchiving}>
               {bulkArchiving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Archive className="h-3 w-3" />}

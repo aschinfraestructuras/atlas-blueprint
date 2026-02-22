@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import {
   ArrowLeft, FileText, CheckCircle2, Clock, RotateCcw,
   SendHorizontal, Loader2, Upload, ExternalLink, Download,
-  Link2, Plus, Trash2, Pencil, Archive,
+  Link2, Plus, Trash2, Pencil, Archive, FileDown, ClipboardList,
 } from "lucide-react";
 import { documentService, isDocumentEditable, getDocumentTransitions } from "@/lib/services/documentService";
 import type { Document, DocumentVersion, DocumentLink, DocumentStatus } from "@/lib/services/documentService";
@@ -22,6 +22,8 @@ import {
 } from "@/components/ui/select";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { DocumentFormDialog } from "@/components/documents/DocumentFormDialog";
+import { DynamicFormRenderer, type FormSchema } from "@/components/documents/DynamicFormRenderer";
+import { exportDocumentPdf, type DocExportLabels } from "@/lib/services/documentExportService";
 import { toast } from "@/hooks/use-toast";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { cn } from "@/lib/utils";
@@ -279,7 +281,7 @@ function LinksTab({ documentId, projectId }: { documentId: string; projectId: st
 // ─── Page ───────────────────────────────────────────────────────────────────
 
 export default function DocumentDetailPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { activeProject } = useProject();
@@ -292,6 +294,8 @@ export default function DocumentDetailPage() {
   const [transitioning, setTransitioning] = useState(false);
   const [uploadingFile, setUploadingFile] = useState(false);
   const [versionKey, setVersionKey] = useState(0);
+  const [exporting, setExporting] = useState(false);
+  const [versions, setVersions] = useState<DocumentVersion[]>([]);
 
   const loadDoc = useCallback(async () => {
     if (!id) return;
@@ -306,6 +310,61 @@ export default function DocumentDetailPage() {
   }, [id, navigate, t]);
 
   useEffect(() => { loadDoc(); }, [loadDoc]);
+
+  // Load versions for export
+  useEffect(() => {
+    if (!doc?.id) return;
+    documentService.getVersions(doc.id).then(setVersions).catch(() => {});
+  }, [doc?.id, versionKey]);
+
+  const handleExportPdf = async () => {
+    if (!doc || !activeProject) return;
+    setExporting(true);
+    try {
+      const labels: DocExportLabels = {
+        appName: "Atlas QMS",
+        reportTitle: t("documents.export.reportTitle"),
+        listReportTitle: t("documents.export.listReportTitle"),
+        generatedOn: t("documents.export.generatedOn"),
+        page: t("documents.export.page"),
+        of: t("documents.export.of"),
+        code: t("documents.detail.code"),
+        title: t("documents.form.title"),
+        type: t("documents.form.type"),
+        disciplina: t("documents.form.disciplina"),
+        revision: t("documents.form.revision"),
+        status: t("common.status"),
+        createdAt: t("documents.detail.createdAt"),
+        approvedAt: t("documents.detail.approvedAt"),
+        approvedBy: t("documents.export.approvedBy"),
+        version: t("documents.export.version"),
+        fileName: t("documents.table.fileName"),
+        fileSize: t("documents.table.size"),
+        statuses: {
+          draft: t("documents.status.draft"),
+          in_review: t("documents.status.in_review"),
+          approved: t("documents.status.approved"),
+          obsolete: t("documents.status.obsolete"),
+          archived: t("documents.status.archived"),
+        },
+        docTypes: Object.fromEntries(
+          ["procedure", "instruction", "plan", "report", "certificate", "drawing", "specification", "form", "record", "other"]
+            .map(k => [k, t(`documents.docTypes.${k}`)])
+        ),
+        disciplinas: Object.fromEntries(
+          ["geral", "estruturas", "geotecnia", "hidraulica", "estradas", "ambiente", "seguranca", "eletrica", "mecanica", "outro"]
+            .map(k => [k, t(`documents.disciplinas.${k}`)])
+        ),
+        versionsTitle: t("documents.versions.title"),
+        versionNo: t("documents.export.versionNo"),
+        changeDescription: t("documents.form.changeDescription"),
+        uploadedAt: t("documents.export.uploadedAt"),
+      };
+      exportDocumentPdf(doc, versions, labels, i18n.language, activeProject.name);
+    } catch {
+      toast({ title: t("documents.toast.error"), variant: "destructive" });
+    } finally { setExporting(false); }
+  };
 
   const handleStatusTransition = async (toStatus: DocumentStatus) => {
     if (!doc || !activeProject) return;
@@ -423,6 +482,10 @@ export default function DocumentDetailPage() {
               {t("documents.actions.obsolete")}
             </Button>
           )}
+          <Button variant="outline" size="sm" onClick={handleExportPdf} className="gap-1.5 text-xs" disabled={exporting}>
+            {exporting ? <Loader2 className="h-3 w-3 animate-spin" /> : <FileDown className="h-3 w-3" />}
+            {t("documents.export.exportPdf")}
+          </Button>
           <Button variant="outline" size="sm" onClick={() => setEditOpen(true)} className="gap-1.5 text-xs">
             <Pencil className="h-3 w-3" /> {t("common.edit")}
           </Button>
@@ -498,6 +561,12 @@ export default function DocumentDetailPage() {
             <Link2 className="h-3.5 w-3.5" />
             {t("documents.detail.tabs.links")}
           </TabsTrigger>
+          {(doc as any).form_schema && (
+            <TabsTrigger value="form" className="gap-1.5">
+              <ClipboardList className="h-3.5 w-3.5" />
+              {t("documents.detail.tabs.form")}
+            </TabsTrigger>
+          )}
           <TabsTrigger value="attachments" className="gap-1.5">
             <FileText className="h-3.5 w-3.5" />
             {t("documents.detail.tabs.attachments")}
@@ -515,6 +584,24 @@ export default function DocumentDetailPage() {
             <LinksTab documentId={doc.id} projectId={activeProject?.id ?? ""} />
           </Card>
         </TabsContent>
+
+        {(doc as any).form_schema && (
+          <TabsContent value="form" className="mt-4">
+            <DynamicFormRenderer
+              schema={(doc as any).form_schema as FormSchema}
+              data={(doc as any).form_data ?? {}}
+              readOnly={!isDocumentEditable(doc.status)}
+              onSave={async (formData) => {
+                await supabase
+                  .from("documents")
+                  .update({ form_data: formData as any })
+                  .eq("id", doc.id);
+                toast({ title: t("documents.toast.updated") });
+                loadDoc();
+              }}
+            />
+          </TabsContent>
+        )}
 
         <TabsContent value="attachments" className="mt-4">
           <AttachmentsPanel entityType="documents" entityId={doc.id} projectId={activeProject?.id ?? ""} />

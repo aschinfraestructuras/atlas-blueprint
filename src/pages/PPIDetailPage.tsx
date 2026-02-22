@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import {
   ArrowLeft, ClipboardCheck, CheckCircle2, XCircle,
   Clock, Loader2, Construction, Calendar, CheckCheck,
-  Save, AlertTriangle, Link2, Archive, Trash2, Pencil,
+  Save, AlertTriangle, Link2, Archive, Trash2, Pencil, FileText,
 } from "lucide-react";
 import { PPIExportMenu } from "@/components/ppi/PPIExportMenu";
 import type { PpiInstanceForExport } from "@/lib/services/ppiExportService";
@@ -18,6 +18,7 @@ import {
 import { ncService } from "@/lib/services/ncService";
 import { PPIStatusBadge } from "@/components/ppi/PPIStatusBadge";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
+import { LinkedDocumentsPanel } from "@/components/documents/LinkedDocumentsPanel";
 import { useProject } from "@/contexts/ProjectContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -635,6 +636,10 @@ export default function PPIDetailPage() {
           <TabsTrigger value="attachments">
             {t("ppi.templates.items.evidenceRequired")}
           </TabsTrigger>
+          <TabsTrigger value="documents" className="gap-1.5">
+            <FileText className="h-3.5 w-3.5" />
+            {t("documents.linkedPanel.title")}
+          </TabsTrigger>
         </TabsList>
 
         {/* Checklist tab */}
@@ -837,6 +842,15 @@ export default function PPIDetailPage() {
             entityId={instance.id}
             projectId={activeProject?.id ?? ""}
             readOnly={["approved", "archived"].includes(instance.status)}
+          />
+        </TabsContent>
+
+        {/* Documents tab */}
+        <TabsContent value="documents" className="mt-4">
+          <LinkedDocumentsPanel
+            entityType="ppi_instance"
+            entityId={instance.id}
+            projectId={activeProject?.id ?? ""}
           />
         </TabsContent>
       </Tabs>
