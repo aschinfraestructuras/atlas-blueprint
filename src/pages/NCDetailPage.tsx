@@ -15,6 +15,7 @@ import {
 } from "@/lib/services/ncExportService";
 import { NCFormDialog } from "@/components/nc/NCFormDialog";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
+import { LinkedDocumentsPanel } from "@/components/documents/LinkedDocumentsPanel";
 import { useProject } from "@/contexts/ProjectContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -364,6 +365,10 @@ export default function NCDetailPage() {
             <Shield className="h-3.5 w-3.5" />
             {t("nc.detail.tabs.capa")}
           </TabsTrigger>
+          <TabsTrigger value="documents" className="gap-1.5">
+            <FileText className="h-3.5 w-3.5" />
+            {t("documents.linkedPanel.title")}
+          </TabsTrigger>
           <TabsTrigger value="attachments" className="gap-1.5">
             <ClipboardList className="h-3.5 w-3.5" />
             {t("nc.detail.tabs.attachments")}
@@ -469,6 +474,14 @@ export default function NCDetailPage() {
               )}
             </div>
           </SectionCard>
+        </TabsContent>
+
+        <TabsContent value="documents" className="mt-4">
+          <LinkedDocumentsPanel
+            entityType="non_conformity"
+            entityId={nc.id}
+            projectId={nc.project_id}
+          />
         </TabsContent>
 
         {/* ── TAB: Evidências ─────────────────────────────────────────── */}

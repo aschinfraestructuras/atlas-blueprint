@@ -431,7 +431,8 @@
       "tabs": {
         "versions": "Versões",
         "links": "Ligações",
-        "attachments": "Anexos"
+        "attachments": "Anexos",
+        "form": "Formulário"
       }
     },
     "versions": {
@@ -467,7 +468,23 @@
     "bulk": {
       "selected": "{{count}} selecionado(s)",
       "archive": "Arquivar selecionados",
+      "exportSelected": "Exportar selecionados",
       "clear": "Limpar seleção"
+    },
+    "export": {
+      "reportTitle": "Ficha de Documento",
+      "listReportTitle": "Lista de Documentos",
+      "generatedOn": "Gerado em",
+      "page": "Página",
+      "of": "de",
+      "approvedBy": "Aprovado por",
+      "version": "Versão",
+      "versionNo": "Nº",
+      "uploadedAt": "Data de upload",
+      "exportPdf": "Exportar PDF"
+    },
+    "dynamicForm": {
+      "title": "Formulário"
     },
     "toast": {
       "created": "Documento criado com sucesso.",

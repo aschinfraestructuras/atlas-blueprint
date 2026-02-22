@@ -271,6 +271,8 @@ export type Database = {
           file_path: string | null
           file_size: number | null
           file_url: string | null
+          form_data: Json | null
+          form_schema: Json | null
           id: string
           is_deleted: boolean
           issued_at: string | null
@@ -299,6 +301,8 @@ export type Database = {
           file_path?: string | null
           file_size?: number | null
           file_url?: string | null
+          form_data?: Json | null
+          form_schema?: Json | null
           id?: string
           is_deleted?: boolean
           issued_at?: string | null
@@ -327,6 +331,8 @@ export type Database = {
           file_path?: string | null
           file_size?: number | null
           file_url?: string | null
+          form_data?: Json | null
+          form_schema?: Json | null
           id?: string
           is_deleted?: boolean
           issued_at?: string | null
@@ -1541,6 +1547,8 @@ export type Database = {
           file_path: string | null
           file_size: number | null
           file_url: string | null
+          form_data: Json | null
+          form_schema: Json | null
           id: string
           is_deleted: boolean
           issued_at: string | null
