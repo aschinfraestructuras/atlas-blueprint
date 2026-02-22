@@ -52,9 +52,11 @@ function formatBytes(b: number | null | undefined): string {
 // ─── Status badge config ──────────────────────────────────────────────────────
 
 const STATUS_BADGE: Record<DocumentStatus, { cls: string; icon: React.ElementType }> = {
-  draft:    { cls: "bg-muted text-muted-foreground border-border",     icon: RotateCcw    },
-  review:   { cls: "bg-primary/10 text-primary border-primary/20",     icon: Clock        },
-  approved: { cls: "bg-chart-2/10 text-chart-2 border-chart-2/20",    icon: CheckCircle2 },
+  draft:     { cls: "bg-muted text-muted-foreground border-border",       icon: RotateCcw    },
+  in_review: { cls: "bg-primary/10 text-primary border-primary/20",      icon: Clock        },
+  approved:  { cls: "bg-chart-2/10 text-chart-2 border-chart-2/20",     icon: CheckCircle2 },
+  obsolete:  { cls: "bg-amber-500/10 text-amber-600 border-amber-500/20", icon: RotateCcw   },
+  archived:  { cls: "bg-muted/50 text-muted-foreground border-border",   icon: RotateCcw    },
 };
 
 // ─── DOC TYPE config (canonical values → display) ─────────────────────────────
@@ -102,13 +104,14 @@ export default function DocumentsPage() {
     const matchSearch = !search
       || d.title.toLowerCase().includes(search.toLowerCase())
       || d.doc_type.toLowerCase().includes(search.toLowerCase())
+      || (d.code ?? "").toLowerCase().includes(search.toLowerCase())
       || (d.revision ?? "").toLowerCase().includes(search.toLowerCase());
     return matchStatus && matchType && matchSearch;
   });
 
   // ── Counts for header badges ──────────────────────────────────────────────
   const totalDocs    = documents.length;
-  const reviewCount  = documents.filter((d) => d.status === "review").length;
+  const reviewCount  = documents.filter((d) => d.status === "in_review").length;
   const approvedCount= documents.filter((d) => d.status === "approved").length;
 
   // ── Download ──────────────────────────────────────────────────────────────
@@ -191,7 +194,7 @@ export default function DocumentsPage() {
                 {reviewCount > 0 && (
                   <Badge variant="outline" className="gap-1.5 text-xs bg-primary/10 text-primary border-primary/20">
                     <Clock className="h-3 w-3" />
-                    {reviewCount} {t("documents.status.review")}
+                    {reviewCount} {t("documents.status.in_review")}
                   </Badge>
                 )}
                 {approvedCount > 0 && (
@@ -233,8 +236,10 @@ export default function DocumentsPage() {
             <SelectContent>
               <SelectItem value="all">{t("documents.filterAllStatus")}</SelectItem>
               <SelectItem value="draft">{t("documents.status.draft")}</SelectItem>
-              <SelectItem value="review">{t("documents.status.review")}</SelectItem>
+              <SelectItem value="in_review">{t("documents.status.in_review")}</SelectItem>
               <SelectItem value="approved">{t("documents.status.approved")}</SelectItem>
+              <SelectItem value="obsolete">{t("documents.status.obsolete")}</SelectItem>
+              <SelectItem value="archived">{t("documents.status.archived")}</SelectItem>
             </SelectContent>
           </Select>
 
@@ -281,6 +286,9 @@ export default function DocumentsPage() {
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/40">
+                  <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground w-[100px]">
+                    Código
+                  </TableHead>
                   <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                     {t("documents.table.title")}
                   </TableHead>
@@ -292,9 +300,6 @@ export default function DocumentsPage() {
                   </TableHead>
                   <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground hidden lg:table-cell">
                     {t("documents.table.revision")}
-                  </TableHead>
-                  <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground hidden lg:table-cell">
-                    {t("documents.table.size")}
                   </TableHead>
                   <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground hidden md:table-cell">
                     {t("common.date")}
@@ -314,6 +319,11 @@ export default function DocumentsPage() {
                   return (
                     <TableRow key={doc.id} className="hover:bg-muted/20 transition-colors group">
 
+                      {/* Code */}
+                      <TableCell className="text-xs font-mono text-muted-foreground tabular-nums">
+                        {doc.code ?? "—"}
+                      </TableCell>
+
                       {/* Title + file indicator */}
                       <TableCell className="font-medium text-sm text-foreground">
                         <div className="flex items-center gap-2 min-w-0">
@@ -324,11 +334,6 @@ export default function DocumentsPage() {
                           <span className="truncate max-w-[240px]" title={doc.title}>
                             {doc.title}
                           </span>
-                          {doc.file_name && (
-                            <span className="hidden xl:inline text-xs text-muted-foreground truncate max-w-[120px]" title={doc.file_name}>
-                              · {doc.file_name.split("/").pop()}
-                            </span>
-                          )}
                         </div>
                       </TableCell>
 
@@ -355,10 +360,6 @@ export default function DocumentsPage() {
                         {doc.revision ? `Rev. ${doc.revision}` : "—"}
                       </TableCell>
 
-                      {/* File size */}
-                      <TableCell className="hidden lg:table-cell text-xs text-muted-foreground tabular-nums">
-                        {formatBytes(doc.file_size)}
-                      </TableCell>
 
                       {/* Date */}
                       <TableCell className="hidden md:table-cell text-xs text-muted-foreground">
