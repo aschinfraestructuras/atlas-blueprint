@@ -45,9 +45,11 @@ import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { cn } from "@/lib/utils";
 
 const STATUS_COLORS: Record<DocumentStatus, string> = {
-  draft:    "bg-muted text-muted-foreground",
-  review:   "bg-primary/15 text-primary",
-  approved: "bg-primary/20 text-primary font-semibold",
+  draft:     "bg-muted text-muted-foreground",
+  in_review: "bg-primary/15 text-primary",
+  approved:  "bg-chart-2/15 text-chart-2 font-semibold",
+  obsolete:  "bg-amber-500/15 text-amber-600",
+  archived:  "bg-muted/60 text-muted-foreground",
 };
 
 const schema = (t: (k: string) => string) =>
@@ -251,17 +253,17 @@ export function DocumentFormDialog({ open, onOpenChange, document: doc, onSucces
           </div>
         </DialogHeader>
 
-        {/* Workflow action buttons (only in edit mode) */}
+        {/* Workflow action buttons (only in edit mode) — driven by state machine */}
         {doc && (
           <div className="flex flex-wrap gap-2 py-1">
             {doc.status === "draft" && (
               <Button type="button" size="sm" variant="outline" className="gap-1.5 text-xs"
-                onClick={() => handleStatusTransition("review")} disabled={transitioning}>
+                onClick={() => handleStatusTransition("in_review")} disabled={transitioning}>
                 {transitioning ? <Loader2 className="h-3 w-3 animate-spin" /> : <SendHorizontal className="h-3 w-3" />}
                 {t("documents.actions.submit")}
               </Button>
             )}
-            {doc.status === "review" && (
+            {doc.status === "in_review" && (
               <>
                 <Button type="button" size="sm" className="gap-1.5 text-xs bg-primary/90 hover:bg-primary"
                   onClick={() => handleStatusTransition("approved")} disabled={transitioning}>
@@ -277,9 +279,9 @@ export function DocumentFormDialog({ open, onOpenChange, document: doc, onSucces
             )}
             {doc.status === "approved" && (
               <Button type="button" size="sm" variant="ghost" className="gap-1.5 text-xs text-muted-foreground"
-                onClick={() => handleStatusTransition("draft")} disabled={transitioning}>
+                onClick={() => handleStatusTransition("obsolete")} disabled={transitioning}>
                 {transitioning ? <Loader2 className="h-3 w-3 animate-spin" /> : <RotateCcw className="h-3 w-3" />}
-                {t("documents.actions.backToDraft")}
+                {t("documents.actions.obsolete")}
               </Button>
             )}
           </div>
@@ -329,8 +331,10 @@ export function DocumentFormDialog({ open, onOpenChange, document: doc, onSucces
                     <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                     <SelectContent>
                       <SelectItem value="draft">{t("documents.status.draft")}</SelectItem>
-                      <SelectItem value="review">{t("documents.status.review")}</SelectItem>
+                      <SelectItem value="in_review">{t("documents.status.in_review")}</SelectItem>
                       <SelectItem value="approved">{t("documents.status.approved")}</SelectItem>
+                      <SelectItem value="obsolete">{t("documents.status.obsolete")}</SelectItem>
+                      <SelectItem value="archived">{t("documents.status.archived")}</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

@@ -3,28 +3,43 @@ import { auditService } from "./auditService";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-/**
- * Canonical document statuses — must match the DB CHECK constraint
- * documents_status_check: draft | review | approved
- */
-export type DocumentStatus = "draft" | "review" | "approved";
+export type DocumentStatus = "draft" | "in_review" | "approved" | "obsolete" | "archived";
 
-export const DOCUMENT_STATUSES = ["draft", "review", "approved"] as const satisfies readonly DocumentStatus[];
+export const DOCUMENT_STATUSES = [
+  "draft", "in_review", "approved", "obsolete", "archived",
+] as const satisfies readonly DocumentStatus[];
+
+export const DOC_STATUS_TRANSITIONS: Record<DocumentStatus, DocumentStatus[]> = {
+  draft:      ["in_review", "archived"],
+  in_review:  ["approved", "draft", "archived"],
+  approved:   ["obsolete", "archived"],
+  obsolete:   ["archived"],
+  archived:   ["draft"],
+};
 
 export interface Document {
   id: string;
   project_id: string;
+  code: string | null;
   title: string;
   doc_type: string;
+  type_outro: string | null;
+  disciplina: string;
+  disciplina_outro: string | null;
   revision: string | null;
   status: DocumentStatus;
-  /** @deprecated use file_path */
+  current_version_id: string | null;
+  /** @deprecated use file_path from current version */
   file_url: string | null;
   file_path: string | null;
   file_name: string | null;
   file_size: number | null;
   mime_type: string | null;
   created_by: string | null;
+  updated_by: string | null;
+  approved_by: string | null;
+  approved_at: string | null;
+  is_deleted: boolean;
   created_at: string;
   updated_at: string;
   version: string;
@@ -32,10 +47,36 @@ export interface Document {
   issued_at: string | null;
 }
 
+export interface DocumentVersion {
+  id: string;
+  document_id: string;
+  version_number: number;
+  file_path: string;
+  file_name: string | null;
+  file_size: number | null;
+  mime_type: string | null;
+  change_description: string | null;
+  uploaded_by: string;
+  uploaded_at: string;
+  is_current: boolean;
+}
+
+export interface DocumentLink {
+  id: string;
+  document_id: string;
+  linked_entity_type: string;
+  linked_entity_id: string;
+  created_at: string;
+  created_by: string | null;
+}
+
 export interface DocumentInput {
   project_id: string;
   title: string;
   doc_type: string;
+  type_outro?: string;
+  disciplina?: string;
+  disciplina_outro?: string;
   revision?: string;
   status?: DocumentStatus;
   created_by: string;
@@ -43,14 +84,16 @@ export interface DocumentInput {
 
 // ─── Workflow helpers ─────────────────────────────────────────────────────────
 
-/** Returns true if the document's fields can still be edited */
 export function isDocumentEditable(status: string): boolean {
   return status === "draft";
 }
 
-/** Returns true if only attachments / comments can be added */
-export function isDocumentLockedForFields(status: string): boolean {
-  return ["review", "approved"].includes(status);
+export function getDocumentTransitions(status: string): DocumentStatus[] {
+  return DOC_STATUS_TRANSITIONS[status as DocumentStatus] ?? [];
+}
+
+export function canDeleteDocument(status: string): boolean {
+  return status === "draft";
 }
 
 // ─── Storage constants ────────────────────────────────────────────────────────
@@ -74,7 +117,6 @@ export function buildStoragePath(
 ): string {
   const safe = slugifyFilename(fileName);
   const ts = Date.now();
-  // First segment MUST be project UUID (RLS: storage_path_project_id)
   return `${projectId}/documents/${documentId}/${ts}_${safe}`;
 }
 
@@ -86,52 +128,46 @@ export const documentService = {
       .from("documents")
       .select("*")
       .eq("project_id", projectId)
+      .eq("is_deleted", false)
       .order("created_at", { ascending: false });
     if (error) throw error;
-    return (data ?? []) as Document[];
+    return (data ?? []) as unknown as Document[];
   },
 
-  async create(input: DocumentInput): Promise<Document> {
-    // Ensure status is always a valid DB value — never send a label
-    const safeStatus: DocumentStatus = DOCUMENT_STATUSES.includes(input.status as DocumentStatus)
-      ? (input.status as DocumentStatus)
-      : "draft";
-
+  async getById(id: string): Promise<Document> {
     const { data, error } = await supabase
       .from("documents")
-      .insert({
-        project_id: input.project_id,
-        title: input.title,
-        doc_type: input.doc_type,
-        revision: input.revision ?? "0",
-        status: safeStatus,
-        created_by: input.created_by,
-      })
-      .select()
+      .select("*")
+      .eq("id", id)
       .single();
     if (error) throw error;
+    return data as unknown as Document;
+  },
 
-    await auditService.log({
-      projectId: input.project_id,
-      entity: "documents",
-      entityId: (data as Document).id,
-      action: "INSERT",
-      module: "documents",
-      description: `Documento criado: ${input.title}`,
-      diff: { title: input.title, doc_type: input.doc_type, status: input.status ?? "draft" },
+  /** Create document via RPC with auto-generated code */
+  async create(input: DocumentInput): Promise<Document> {
+    const { data, error } = await supabase.rpc("fn_create_document", {
+      p_project_id: input.project_id,
+      p_title: input.title,
+      p_doc_type: input.doc_type,
+      p_type_outro: input.type_outro ?? null,
+      p_disciplina: input.disciplina ?? "geral",
+      p_disciplina_outro: input.disciplina_outro ?? null,
+      p_revision: input.revision ?? "0",
+      p_status: input.status ?? "draft",
     });
-
-    return data as Document;
+    if (error) throw error;
+    return data as unknown as Document;
   },
 
   async update(
     id: string,
     projectId: string,
-    updates: Partial<Pick<Document, "title" | "doc_type" | "status" | "revision">>
+    updates: Partial<Pick<Document, "title" | "doc_type" | "type_outro" | "disciplina" | "disciplina_outro" | "status" | "revision">>
   ): Promise<Document> {
     const { data, error } = await supabase
       .from("documents")
-      .update(updates)
+      .update({ ...updates, updated_by: (await supabase.auth.getUser()).data.user?.id })
       .eq("id", id)
       .select()
       .single();
@@ -143,23 +179,38 @@ export const documentService = {
       entityId: id,
       action: "UPDATE",
       module: "documents",
-      description: updates.status ? undefined : `Documento atualizado`,
       diff: updates as Record<string, unknown>,
     });
 
-    return data as Document;
+    return data as unknown as Document;
   },
 
-  /** Transition document status with audit trail */
+  /** Transition document status */
   async changeStatus(
     id: string,
     projectId: string,
     fromStatus: string,
     toStatus: DocumentStatus
   ): Promise<Document> {
+    const allowed = getDocumentTransitions(fromStatus);
+    if (!allowed.includes(toStatus)) {
+      throw new Error(`Transição inválida: ${fromStatus} → ${toStatus}. Permitidas: ${allowed.join(", ")}`);
+    }
+
+    const updatePayload: Record<string, unknown> = {
+      status: toStatus,
+      updated_by: (await supabase.auth.getUser()).data.user?.id,
+    };
+
+    if (toStatus === "approved") {
+      const user = (await supabase.auth.getUser()).data.user;
+      updatePayload.approved_by = user?.id;
+      updatePayload.approved_at = new Date().toISOString();
+    }
+
     const { data, error } = await supabase
       .from("documents")
-      .update({ status: toStatus })
+      .update(updatePayload)
       .eq("id", id)
       .select()
       .single();
@@ -169,20 +220,22 @@ export const documentService = {
       projectId,
       entity: "documents",
       entityId: id,
-      action: "status_change",
+      action: "STATUS_CHANGE",
       module: "documents",
       description: `Document status: ${fromStatus} → ${toStatus}`,
       diff: { from: fromStatus, to: toStatus },
     });
 
-    return data as Document;
+    return data as unknown as Document;
   },
 
+  /** Upload file and create a new version */
   async uploadFile(
     file: File,
     projectId: string,
     documentId: string,
-    uploadedBy: string
+    _uploadedBy: string,
+    changeDescription?: string
   ): Promise<void> {
     const storagePath = buildStoragePath(projectId, documentId, file.name);
 
@@ -197,38 +250,82 @@ export const documentService = {
       throw new Error(`Falha no upload: ${uploadError.message ?? String(uploadError)}`);
     }
 
-    const { error: updateError } = await supabase
-      .from("documents")
-      .update({
-        file_path: storagePath,
-        file_name: file.name,
-        file_size: file.size,
-        mime_type: file.type || null,
-      })
-      .eq("id", documentId);
+    // Create version via RPC
+    const { error: rpcError } = await supabase.rpc("fn_create_new_version", {
+      p_document_id: documentId,
+      p_file_path: storagePath,
+      p_file_name: file.name,
+      p_file_size: file.size,
+      p_mime_type: file.type || null,
+      p_change_description: changeDescription ?? null,
+    });
 
-    if (updateError) {
+    if (rpcError) {
+      // Cleanup uploaded file on RPC failure
       await supabase.storage.from(BUCKET).remove([storagePath]).catch(() => null);
-      throw updateError;
+      throw rpcError;
     }
+  },
 
-    await auditService
-      .log({
-        projectId,
-        entity: "documents",
-        entityId: documentId,
-        action: "attachment_add",
-        module: "documents",
-        description: `Added attachment: ${file.name}`,
-        diff: {
-          file_name: file.name,
-          file_size: file.size,
-          mime_type: file.type || null,
-          storage_path: storagePath,
-          uploaded_by: uploadedBy,
-        },
-      })
-      .catch(() => null);
+  /** Get version history for a document */
+  async getVersions(documentId: string): Promise<DocumentVersion[]> {
+    const { data, error } = await supabase
+      .from("document_versions")
+      .select("*")
+      .eq("document_id", documentId)
+      .order("version_number", { ascending: false });
+    if (error) throw error;
+    return (data ?? []) as unknown as DocumentVersion[];
+  },
+
+  /** Get links for a document */
+  async getLinks(documentId: string): Promise<DocumentLink[]> {
+    const { data, error } = await supabase
+      .from("document_links")
+      .select("*")
+      .eq("document_id", documentId)
+      .order("created_at", { ascending: false });
+    if (error) throw error;
+    return (data ?? []) as unknown as DocumentLink[];
+  },
+
+  /** Link document to an entity */
+  async addLink(documentId: string, entityType: string, entityId: string): Promise<void> {
+    const { error } = await supabase
+      .from("document_links")
+      .insert({
+        document_id: documentId,
+        linked_entity_type: entityType,
+        linked_entity_id: entityId,
+        created_by: (await supabase.auth.getUser()).data.user?.id,
+      });
+    if (error) throw error;
+  },
+
+  /** Remove a link */
+  async removeLink(linkId: string): Promise<void> {
+    const { error } = await supabase
+      .from("document_links")
+      .delete()
+      .eq("id", linkId);
+    if (error) throw error;
+  },
+
+  /** Soft delete */
+  async softDelete(id: string, projectId: string): Promise<void> {
+    const { error } = await supabase
+      .from("documents")
+      .update({ is_deleted: true, updated_by: (await supabase.auth.getUser()).data.user?.id })
+      .eq("id", id);
+    if (error) throw error;
+
+    await auditService.log({
+      projectId,
+      entity: "documents",
+      entityId: id,
+      action: "SOFT_DELETE",
+      module: "documents",
+    });
   },
 
   async getSignedUrl(
@@ -249,7 +346,6 @@ export const documentService = {
           entityId: documentId,
           action: "attachment_download",
           module: "documents",
-          description: `Downloaded document file`,
           diff: { storage_path: storagePath },
         })
         .catch(() => null);
@@ -263,6 +359,7 @@ export const documentService = {
       .from("documents")
       .select("*", { count: "exact", head: true })
       .eq("project_id", projectId)
+      .eq("is_deleted", false)
       .neq("status", "approved");
     if (error) throw error;
     return count ?? 0;

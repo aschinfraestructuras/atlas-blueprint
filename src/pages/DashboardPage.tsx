@@ -558,7 +558,7 @@ export default function DashboardPage() {
   // ── KPI Computations ─────────────────────────────────────────────────────────
   const activeProjectsCount = allProjects.filter((p) => p.status === "active").length;
   const docDraft    = documents.filter((d) => d.status === "draft").length;
-  const docReview   = documents.filter((d) => d.status === "review").length;
+  const docReview   = documents.filter((d) => d.status === "in_review").length;
   const docApproved = documents.filter((d) => d.status === "approved").length;
   const testPending      = tests.filter((t) => t.status === "pending").length;
   const testPass         = tests.filter((t) => t.status === "pass").length;
@@ -584,7 +584,7 @@ export default function DashboardPage() {
   // ── Chart data ────────────────────────────────────────────────────────────────
   const docPieData = [
     { name: t("documents.status.draft"),    value: docDraft,    color: MOD.muted        },
-    { name: t("documents.status.review"),   value: docReview,   color: MOD.documents    },
+    { name: t("documents.status.in_review"), value: docReview,   color: MOD.documents    },
     { name: t("documents.status.approved"), value: docApproved, color: MOD.suppliers    },
   ].filter((d) => d.value > 0);
 
@@ -621,7 +621,7 @@ export default function DashboardPage() {
   ];
 
   const recentEntries  = auditEntries.slice(0, 8);
-  const docsInReview   = documents.filter((d) => d.status === "review");
+  const docsInReview   = documents.filter((d) => d.status === "in_review");
   const openNCsList    = ncs.filter((n) => n.status === "open" || n.status === "in_progress");
   const anyLoading     = docLoading || testLoading || ncLoading || supLoading;
 

@@ -354,15 +354,20 @@
       "replace": "Substituir ficheiro",
       "download": "Transferir ficheiro",
       "view": "Ver em nova aba",
-      "submit": "Submeter",
+      "submit": "Submeter para revisão",
       "approve": "Aprovar",
       "reject": "Rejeitar",
-      "backToDraft": "Voltar a Rascunho"
+      "backToDraft": "Voltar a Rascunho",
+      "obsolete": "Marcar como Obsoleto",
+      "archive": "Arquivar",
+      "newVersion": "Nova Versão"
     },
     "status": {
       "draft": "Rascunho",
-      "review": "Em Revisão",
-      "approved": "Aprovado"
+      "in_review": "Em Revisão",
+      "approved": "Aprovado",
+      "obsolete": "Obsoleto",
+      "archived": "Arquivado"
     },
     "docTypes": {
       "procedure": "Procedimento",
@@ -383,19 +388,43 @@
       "titlePlaceholder": "ex: Plano de Controlo de Qualidade",
       "type": "Tipo de documento",
       "typePlaceholder": "Selecionar tipo…",
+      "disciplina": "Disciplina",
+      "disciplinaPlaceholder": "Selecionar disciplina…",
       "revision": "Revisão",
       "revisionPlaceholder": "ex: A, 1, 01",
       "fileUrl": "URL do ficheiro",
       "fileUrlPlaceholder": "https://…",
       "mainFile": "Ficheiro principal",
       "attachFile": "Anexar ficheiro…",
-      "replaceFile": "Substituir ficheiro…",
+      "replaceFile": "Nova versão do ficheiro…",
       "createBtn": "Criar documento",
       "lockedNotice": "Este documento está bloqueado para edição. Apenas anexos podem ser adicionados.",
+      "changeDescription": "Descrição da alteração",
+      "changeDescriptionPlaceholder": "Descreva o que mudou nesta versão…",
       "validation": {
         "titleRequired": "O título é obrigatório.",
         "typeRequired": "O tipo é obrigatório.",
         "fileUrlInvalid": "Introduza um URL válido."
+      }
+    },
+    "versions": {
+      "title": "Histórico de Versões",
+      "version": "Versão {{n}}",
+      "current": "Atual",
+      "noVersions": "Sem versões registadas.",
+      "uploadedBy": "Carregado por",
+      "changeDescription": "Alteração"
+    },
+    "links": {
+      "title": "Entidades Ligadas",
+      "addLink": "Ligar entidade",
+      "noLinks": "Sem ligações.",
+      "entityTypes": {
+        "work_item": "Atividade",
+        "ppi_instance": "PPI",
+        "test_result": "Ensaio",
+        "non_conformity": "NC",
+        "supplier": "Fornecedor"
       }
     },
     "toast": {
@@ -408,9 +437,12 @@
       "uploadError": "Falha no upload",
       "downloadError": "Falha no download",
       "error": "Ocorreu um erro. Tente novamente.",
-      "status_review": "Documento enviado para revisão.",
+      "status_in_review": "Documento enviado para revisão.",
       "status_approved": "Documento aprovado.",
-      "status_draft": "Documento voltou a Rascunho."
+      "status_draft": "Documento voltou a Rascunho.",
+      "status_obsolete": "Documento marcado como obsoleto.",
+      "status_archived": "Documento arquivado.",
+      "versionCreated": "Nova versão criada com sucesso."
     },
     "deleteConfirm": {
       "title": "Eliminar documento?",

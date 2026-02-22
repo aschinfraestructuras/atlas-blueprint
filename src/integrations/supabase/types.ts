@@ -171,16 +171,108 @@ export type Database = {
           },
         ]
       }
-      documents: {
+      document_links: {
         Row: {
           created_at: string
+          created_by: string | null
+          document_id: string
+          id: string
+          linked_entity_id: string
+          linked_entity_type: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          document_id: string
+          id?: string
+          linked_entity_id: string
+          linked_entity_type: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          document_id?: string
+          id?: string
+          linked_entity_id?: string
+          linked_entity_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_links_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      document_versions: {
+        Row: {
+          change_description: string | null
+          document_id: string
+          file_name: string | null
+          file_path: string
+          file_size: number | null
+          id: string
+          is_current: boolean
+          mime_type: string | null
+          uploaded_at: string
+          uploaded_by: string
+          version_number: number
+        }
+        Insert: {
+          change_description?: string | null
+          document_id: string
+          file_name?: string | null
+          file_path: string
+          file_size?: number | null
+          id?: string
+          is_current?: boolean
+          mime_type?: string | null
+          uploaded_at?: string
+          uploaded_by: string
+          version_number?: number
+        }
+        Update: {
+          change_description?: string | null
+          document_id?: string
+          file_name?: string | null
+          file_path?: string
+          file_size?: number | null
+          id?: string
+          is_current?: boolean
+          mime_type?: string | null
+          uploaded_at?: string
+          uploaded_by?: string
+          version_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_versions_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      documents: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          code: string | null
+          created_at: string
           created_by: string
+          current_version_id: string | null
+          disciplina: string
+          disciplina_outro: string | null
           doc_type: string
           file_name: string | null
           file_path: string | null
           file_size: number | null
           file_url: string | null
           id: string
+          is_deleted: boolean
           issued_at: string | null
           mime_type: string | null
           project_id: string
@@ -188,18 +280,27 @@ export type Database = {
           status: string
           tags: string[] | null
           title: string
+          type_outro: string | null
           updated_at: string
+          updated_by: string | null
           version: string
         }
         Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          code?: string | null
           created_at?: string
           created_by: string
+          current_version_id?: string | null
+          disciplina?: string
+          disciplina_outro?: string | null
           doc_type: string
           file_name?: string | null
           file_path?: string | null
           file_size?: number | null
           file_url?: string | null
           id?: string
+          is_deleted?: boolean
           issued_at?: string | null
           mime_type?: string | null
           project_id: string
@@ -207,18 +308,27 @@ export type Database = {
           status?: string
           tags?: string[] | null
           title: string
+          type_outro?: string | null
           updated_at?: string
+          updated_by?: string | null
           version?: string
         }
         Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          code?: string | null
           created_at?: string
           created_by?: string
+          current_version_id?: string | null
+          disciplina?: string
+          disciplina_outro?: string | null
           doc_type?: string
           file_name?: string | null
           file_path?: string | null
           file_size?: number | null
           file_url?: string | null
           id?: string
+          is_deleted?: boolean
           issued_at?: string | null
           mime_type?: string | null
           project_id?: string
@@ -226,10 +336,19 @@ export type Database = {
           status?: string
           tags?: string[] | null
           title?: string
+          type_outro?: string | null
           updated_at?: string
+          updated_by?: string | null
           version?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "documents_current_version_id_fkey"
+            columns: ["current_version_id"]
+            isOneToOne: false
+            referencedRelation: "document_versions"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "documents_project_id_fkey"
             columns: ["project_id"]
@@ -1397,6 +1516,52 @@ export type Database = {
           test_name: string
         }[]
       }
+      fn_create_document: {
+        Args: {
+          p_disciplina?: string
+          p_disciplina_outro?: string
+          p_doc_type: string
+          p_project_id: string
+          p_revision?: string
+          p_status?: string
+          p_title: string
+          p_type_outro?: string
+        }
+        Returns: {
+          approved_at: string | null
+          approved_by: string | null
+          code: string | null
+          created_at: string
+          created_by: string
+          current_version_id: string | null
+          disciplina: string
+          disciplina_outro: string | null
+          doc_type: string
+          file_name: string | null
+          file_path: string | null
+          file_size: number | null
+          file_url: string | null
+          id: string
+          is_deleted: boolean
+          issued_at: string | null
+          mime_type: string | null
+          project_id: string
+          revision: string | null
+          status: string
+          tags: string[] | null
+          title: string
+          type_outro: string | null
+          updated_at: string
+          updated_by: string | null
+          version: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "documents"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       fn_create_nc: {
         Args: {
           p_assigned_to?: string
@@ -1573,6 +1738,35 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "non_conformities"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      fn_create_new_version: {
+        Args: {
+          p_change_description?: string
+          p_document_id: string
+          p_file_name?: string
+          p_file_path: string
+          p_file_size?: number
+          p_mime_type?: string
+        }
+        Returns: {
+          change_description: string | null
+          document_id: string
+          file_name: string | null
+          file_path: string
+          file_size: number | null
+          id: string
+          is_current: boolean
+          mime_type: string | null
+          uploaded_at: string
+          uploaded_by: string
+          version_number: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "document_versions"
           isOneToOne: true
           isSetofReturn: false
         }
