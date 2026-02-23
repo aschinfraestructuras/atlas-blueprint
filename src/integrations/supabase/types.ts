@@ -551,6 +551,7 @@ export type Database = {
         Row: {
           created_at: string
           created_by: string
+          document_id: string | null
           file_url: string | null
           id: string
           plan_type: string
@@ -563,6 +564,7 @@ export type Database = {
         Insert: {
           created_at?: string
           created_by: string
+          document_id?: string | null
           file_url?: string | null
           id?: string
           plan_type?: string
@@ -575,6 +577,7 @@ export type Database = {
         Update: {
           created_at?: string
           created_by?: string
+          document_id?: string | null
           file_url?: string | null
           id?: string
           plan_type?: string
@@ -585,6 +588,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "plans_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "plans_project_id_fkey"
             columns: ["project_id"]
@@ -1135,6 +1145,7 @@ export type Database = {
           created_at: string
           created_by: string
           description: string | null
+          document_id: string | null
           due_date: string | null
           id: string
           project_id: string
@@ -1147,6 +1158,7 @@ export type Database = {
           created_at?: string
           created_by: string
           description?: string | null
+          document_id?: string | null
           due_date?: string | null
           id?: string
           project_id: string
@@ -1159,6 +1171,7 @@ export type Database = {
           created_at?: string
           created_by?: string
           description?: string | null
+          document_id?: string | null
           due_date?: string | null
           id?: string
           project_id?: string
@@ -1168,6 +1181,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "technical_office_items_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "technical_office_items_project_id_fkey"
             columns: ["project_id"]
@@ -1447,6 +1467,7 @@ export type Database = {
           project_id: string
           sector: string
           status: string
+          subcontractor_id: string | null
           updated_at: string
         }
         Insert: {
@@ -1464,6 +1485,7 @@ export type Database = {
           project_id: string
           sector: string
           status?: string
+          subcontractor_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -1481,6 +1503,7 @@ export type Database = {
           project_id?: string
           sector?: string
           status?: string
+          subcontractor_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -1489,6 +1512,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_items_subcontractor_id_fkey"
+            columns: ["subcontractor_id"]
+            isOneToOne: false
+            referencedRelation: "subcontractors"
             referencedColumns: ["id"]
           },
         ]

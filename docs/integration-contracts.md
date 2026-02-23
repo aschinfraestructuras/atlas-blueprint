@@ -342,23 +342,20 @@ Ao criar um novo módulo, verificar:
 **Proposta**: Manter `responsible` como text para compatibilidade, mas usar `assigned_to` (uuid) como referência principal.
 **Estado**: Já implementado — `assigned_to uuid` existe e é usado na UI.
 
-### 9.2 ⚠️ Work Items ↔ Subcontractors (FK directa)
+### 9.2 ✅ Work Items ↔ Subcontractors (FK directa)
 
-**Actual**: Sem ligação directa.
-**Proposta**: Adicionar `work_items.subcontractor_id uuid FK → subcontractors.id` (nullable).
-**Impacto**: Baixo — campo opcional, sem breaking changes.
-**Prioridade**: Média — útil para reporting por subempreiteiro.
+**Estado**: APLICADO (2026-02-23).
+`work_items.subcontractor_id uuid FK → subcontractors.id` (nullable, ON DELETE SET NULL).
+Índice: `idx_work_items_subcontractor`.
 
-### 9.3 ⚠️ Technical Office ↔ Documents (FK directa)
+### 9.3 ✅ Technical Office ↔ Documents (FK directa)
 
-**Actual**: Ligação só via `document_links`.
-**Proposta**: Adicionar `technical_office_items.document_id uuid FK → documents.id` (nullable).
-**Impacto**: Baixo.
-**Prioridade**: Baixa — `document_links` é suficiente.
+**Estado**: APLICADO (2026-02-23).
+`technical_office_items.document_id uuid FK → documents.id` (nullable, ON DELETE SET NULL).
+Índice: `idx_technical_office_document`.
 
-### 9.4 ⚠️ Plans ↔ Documents (FK directa)
+### 9.4 ✅ Plans ↔ Documents (FK directa)
 
-**Actual**: `plans.file_url` (text) — URL directa.
-**Proposta**: Adicionar `plans.document_id uuid FK → documents.id` (nullable) para vincular ao sistema documental.
-**Impacto**: Baixo.
-**Prioridade**: Média — unifica gestão documental.
+**Estado**: APLICADO (2026-02-23).
+`plans.document_id uuid FK → documents.id` (nullable, ON DELETE SET NULL).
+Índice: `idx_plans_document`.
