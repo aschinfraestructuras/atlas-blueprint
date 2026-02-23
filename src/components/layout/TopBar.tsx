@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProject } from "@/contexts/ProjectContext";
+import { useProjectRole } from "@/hooks/useProjectRole";
 import {
   LogOut,
   User,
@@ -36,6 +37,7 @@ export function TopBar({ onMobileMenuOpen }: TopBarProps) {
   const { t, i18n } = useTranslation();
   const { user, signOut } = useAuth();
   const { projects, activeProject, setActiveProject, loading: projectsLoading } = useProject();
+  const { role } = useProjectRole();
 
   // Only show active (non-archived) projects in the selector
   const activeProjects = projects.filter((p) => p.status !== "archived");
@@ -108,6 +110,13 @@ export function TopBar({ onMobileMenuOpen }: TopBarProps) {
           )}
         </DropdownMenuContent>
       </DropdownMenu>
+
+      {/* Role badge */}
+      {role && (
+        <span className="hidden md:inline-flex items-center rounded-full border border-border/50 bg-muted/50 px-2 py-0.5 text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+          {role.replace('_', ' ')}
+        </span>
+      )}
 
       {/* Spacer */}
       <div className="flex-1" />

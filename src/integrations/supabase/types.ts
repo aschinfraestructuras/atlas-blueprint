@@ -891,18 +891,21 @@ export type Database = {
       project_members: {
         Row: {
           created_at: string
+          is_active: boolean
           project_id: string
           role: string
           user_id: string
         }
         Insert: {
           created_at?: string
+          is_active?: boolean
           project_id: string
           role: string
           user_id: string
         }
         Update: {
           created_at?: string
+          is_active?: boolean
           project_id?: string
           role?: string
           user_id?: string
@@ -2024,6 +2027,10 @@ export type Database = {
         Returns: string
       }
       get_user_tenant_id: { Args: { _user_id: string }; Returns: string }
+      has_project_role: {
+        Args: { _project_id: string; _role: string; _user_id: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { useTechnicalOffice } from "@/hooks/useTechnicalOffice";
+import { useProjectRole } from "@/hooks/useProjectRole";
 import { Inbox, Plus, Pencil } from "lucide-react";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -32,6 +33,7 @@ export default function TechnicalOfficePage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
   const { data: items, loading, error, refetch } = useTechnicalOffice();
+  const { canCreate, canEdit } = useProjectRole();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<TechnicalOfficeItem | null>(null);
 
@@ -47,10 +49,12 @@ export default function TechnicalOfficePage() {
           <h1 className="text-2xl font-bold tracking-tight text-foreground">{t("pages.technicalOffice.title")}</h1>
           <p className="text-sm text-muted-foreground">{t("pages.technicalOffice.subtitle")}</p>
         </div>
-        <Button onClick={handleNew} size="sm" className="gap-1.5">
-          <Plus className="h-3.5 w-3.5" />
-          {t("technicalOffice.newItem")}
-        </Button>
+        {canCreate && (
+          <Button onClick={handleNew} size="sm" className="gap-1.5">
+            <Plus className="h-3.5 w-3.5" />
+            {t("technicalOffice.newItem")}
+          </Button>
+        )}
       </div>
 
       {error && (

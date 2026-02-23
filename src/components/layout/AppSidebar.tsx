@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useProjectRole } from "@/hooks/useProjectRole";
 import {
   LayoutDashboard,
   FolderKanban,
@@ -29,6 +30,10 @@ interface SidebarNavItem {
   url: string;
   icon: React.ElementType;
   exact?: boolean;
+  /** If set, item only shown when user can(action) */
+  requiredAction?: string;
+  /** If true, only shown for admin */
+  adminOnly?: boolean;
 }
 
 interface SidebarSection {
@@ -72,8 +77,8 @@ const NAV_SECTIONS: SidebarSection[] = [
   {
     sectionKey: "system",
     items: [
-      { labelKey: "nav.auditLog",  url: "/audit",    icon: ScrollText },
-      { labelKey: "nav.settings",  url: "/settings", icon: Settings   },
+      { labelKey: "nav.auditLog",  url: "/audit",    icon: ScrollText, requiredAction: "viewAudit" },
+      { labelKey: "nav.settings",  url: "/settings", icon: Settings, adminOnly: true },
     ],
   },
 ];
@@ -161,6 +166,7 @@ function SidebarContent({ collapsed, onClose }: SidebarContentProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
+  const { can, isAdmin } = useProjectRole();
 
   const isActive = (url: string, exact?: boolean) =>
     exact ? location.pathname === url : location.pathname.startsWith(url);
@@ -231,7 +237,13 @@ function SidebarContent({ collapsed, onClose }: SidebarContentProps) {
               />
             )}
             <div className="space-y-[2px]">
-              {section.items.map((item) => (
+              {section.items
+                .filter(item => {
+                  if (item.adminOnly && !isAdmin) return false;
+                  if (item.requiredAction && !can(item.requiredAction)) return false;
+                  return true;
+                })
+                .map((item) => (
                 <NavItem
                   key={item.url}
                   item={item}

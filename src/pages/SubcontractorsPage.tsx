@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { useSubcontractors } from "@/hooks/useSubcontractors";
+import { useProjectRole } from "@/hooks/useProjectRole";
 import { useSuppliers } from "@/hooks/useSuppliers";
 import { subcontractorService } from "@/lib/services/subcontractorService";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
@@ -34,6 +35,7 @@ export default function SubcontractorsPage() {
   const { activeProject } = useProject();
   const { data: subcontractors, loading, error, refetch } = useSubcontractors();
   const { data: suppliers } = useSuppliers();
+  const { canCreate, canEdit, canDelete } = useProjectRole();
   const { toast } = useToast();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingSub, setEditingSub] = useState<Subcontractor | null>(null);
@@ -70,10 +72,12 @@ export default function SubcontractorsPage() {
           <h1 className="text-2xl font-bold tracking-tight text-foreground">{t("pages.subcontractors.title")}</h1>
           <p className="text-sm text-muted-foreground">{t("pages.subcontractors.subtitle")}</p>
         </div>
-        <Button onClick={handleNew} size="sm" className="gap-1.5">
-          <Plus className="h-3.5 w-3.5" />
-          {t("subcontractors.newSubcontractor")}
-        </Button>
+        {canCreate && (
+          <Button onClick={handleNew} size="sm" className="gap-1.5">
+            <Plus className="h-3.5 w-3.5" />
+            {t("subcontractors.newSubcontractor")}
+          </Button>
+        )}
       </div>
 
       {error && (

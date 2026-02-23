@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { useSuppliers } from "@/hooks/useSuppliers";
+import { useProjectRole } from "@/hooks/useProjectRole";
 import { Truck, Plus, Pencil } from "lucide-react";
 import {
   Table,
@@ -31,6 +32,7 @@ export default function SuppliersPage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
   const { data: suppliers, loading, error, refetch } = useSuppliers();
+  const { canCreate, canEdit } = useProjectRole();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingSupplier, setEditingSupplier] = useState<Supplier | null>(null);
 
@@ -55,10 +57,12 @@ export default function SuppliersPage() {
           </h1>
           <p className="text-sm text-muted-foreground">{t("pages.suppliers.subtitle")}</p>
         </div>
-        <Button onClick={handleNew} size="sm" className="gap-1.5">
-          <Plus className="h-3.5 w-3.5" />
-          {t("suppliers.newSupplier")}
-        </Button>
+        {canCreate && (
+          <Button onClick={handleNew} size="sm" className="gap-1.5">
+            <Plus className="h-3.5 w-3.5" />
+            {t("suppliers.newSupplier")}
+          </Button>
+        )}
       </div>
 
       {error && (

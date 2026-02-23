@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useProject } from "@/contexts/ProjectContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useProjectRole } from "@/hooks/useProjectRole";
 import { useNonConformities } from "@/hooks/useNonConformities";
 import { ncService } from "@/lib/services/ncService";
 import { ncDemoService } from "@/lib/services/ncDemoService";
@@ -101,6 +102,7 @@ export default function NonConformitiesPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { data: ncs, loading, error, refetch } = useNonConformities();
+  const { canCreate, canEdit, canValidate } = useProjectRole();
 
   // Filters
   const [search, setSearch]             = useState("");
@@ -281,10 +283,12 @@ export default function NonConformitiesPage() {
               {seeding ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Database className="h-3.5 w-3.5" />}
               {t("nc.demo.button")}
             </Button>
-            <Button onClick={handleNew} size="sm" className="gap-1.5">
-              <Plus className="h-3.5 w-3.5" />
-              {t("nc.newNC")}
-            </Button>
+            {canCreate && (
+              <Button onClick={handleNew} size="sm" className="gap-1.5">
+                <Plus className="h-3.5 w-3.5" />
+                {t("nc.newNC")}
+              </Button>
+            )}
           </>
         }
       />
