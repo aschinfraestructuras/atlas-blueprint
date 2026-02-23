@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { usePlans } from "@/hooks/usePlans";
+import { useProjectRole } from "@/hooks/useProjectRole";
 import { BookOpen, Plus, Pencil } from "lucide-react";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -26,6 +27,7 @@ export default function PlansPage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
   const { data: plans, loading, error, refetch } = usePlans();
+  const { canCreate, canEdit } = useProjectRole();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingPlan, setEditingPlan] = useState<Plan | null>(null);
 
@@ -41,10 +43,12 @@ export default function PlansPage() {
           <h1 className="text-2xl font-bold tracking-tight text-foreground">{t("pages.plans.title")}</h1>
           <p className="text-sm text-muted-foreground">{t("pages.plans.subtitle")}</p>
         </div>
-        <Button onClick={handleNew} size="sm" className="gap-1.5">
-          <Plus className="h-3.5 w-3.5" />
-          {t("plans.newPlan")}
-        </Button>
+        {canCreate && (
+          <Button onClick={handleNew} size="sm" className="gap-1.5">
+            <Plus className="h-3.5 w-3.5" />
+            {t("plans.newPlan")}
+          </Button>
+        )}
       </div>
 
       {error && (

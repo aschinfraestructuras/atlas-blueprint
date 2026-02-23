@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Plus, Search, ClipboardCheck, Eye, Archive, CheckSquare, Square } from "lucide-react";
 import { usePPIInstances } from "@/hooks/usePPI";
 import { useProject } from "@/contexts/ProjectContext";
+import { useProjectRole } from "@/hooks/useProjectRole";
 import { ppiService, PPI_DISCIPLINAS, PPI_INSTANCE_STATUSES } from "@/lib/services/ppiService";
 import { PPIInstanceFormDialog } from "@/components/ppi/PPIInstanceFormDialog";
 import { PPIStatusBadge } from "@/components/ppi/PPIStatusBadge";
@@ -38,6 +39,7 @@ export default function PPIPage() {
   const navigate          = useNavigate();
   const { activeProject } = useProject();
   const { data, loading, refetch } = usePPIInstances();
+  const { canCreate } = useProjectRole();
 
   const [formOpen,    setFormOpen]    = useState(false);
   const [search,      setSearch]      = useState("");
@@ -169,9 +171,11 @@ export default function PPIPage() {
           <Button variant="outline" size="sm" onClick={() => navigate("/ppi/templates")} className="gap-2">
             {t("ppi.templates.title")}
           </Button>
-          <Button onClick={() => setFormOpen(true)} className="gap-2">
-            <Plus className="h-4 w-4" /> {t("ppi.instances.new")}
-          </Button>
+          {canCreate && (
+            <Button onClick={() => setFormOpen(true)} className="gap-2">
+              <Plus className="h-4 w-4" /> {t("ppi.instances.new")}
+            </Button>
+          )}
         </div>
       </div>
 

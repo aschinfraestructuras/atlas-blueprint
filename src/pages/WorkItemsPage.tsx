@@ -7,6 +7,8 @@ import {
 import { useWorkItems } from "@/hooks/useWorkItems";
 import { useProject } from "@/contexts/ProjectContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useProjectRole } from "@/hooks/useProjectRole";
+import { RoleGate, RoleGateAdmin } from "@/components/RoleGate";
 import {
   workItemService, formatPk, WORK_ITEM_STATUS_OPTIONS, type WorkItem,
 } from "@/lib/services/workItemService";
@@ -70,6 +72,7 @@ export default function WorkItemsPage() {
   const { activeProject }          = useProject();
   const { user }                   = useAuth();
   const { data, loading, refetch } = useWorkItems();
+  const { canCreate, canEdit, canDelete } = useProjectRole();
 
   const [dialogOpen, setDialogOpen]   = useState(false);
   const [editItem,   setEditItem]     = useState<WorkItem | null>(null);
@@ -193,10 +196,12 @@ export default function WorkItemsPage() {
               <FileDown className="h-4 w-4" />
               {t("workItems.export.csvList")}
             </Button>
-            <Button onClick={openCreate} className="gap-2">
-              <Plus className="h-4 w-4" />
-              {t("workItems.new")}
-            </Button>
+            {canCreate && (
+              <Button onClick={openCreate} className="gap-2">
+                <Plus className="h-4 w-4" />
+                {t("workItems.new")}
+              </Button>
+            )}
           </>
         }
       />
@@ -333,32 +338,38 @@ export default function WorkItemsPage() {
                       >
                         <Eye className="h-3.5 w-3.5" />
                       </Button>
-                      <Button
-                        variant="ghost" size="icon" className="h-7 w-7"
-                        onClick={() => openEdit(item)}
-                        title={t("common.edit")}
-                      >
-                        <Pencil className="h-3.5 w-3.5" />
-                      </Button>
-                      <Button
-                        variant="ghost" size="icon"
-                        className="h-7 w-7 hover:text-primary hover:bg-primary/10"
-                        onClick={() => handleCreateDemoPPI(item)}
-                        disabled={demoCreatingId === item.id}
-                        title={t("ppi.demo.instance.button")}
-                      >
-                        {demoCreatingId === item.id
-                          ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                          : <ClipboardCheck className="h-3.5 w-3.5" />}
-                      </Button>
-                      <Button
-                        variant="ghost" size="icon"
-                        className="h-7 w-7 hover:text-destructive hover:bg-destructive/10"
-                        onClick={() => setDeleteItem(item)}
-                        title={t("common.delete")}
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </Button>
+                      {canEdit && (
+                        <Button
+                          variant="ghost" size="icon" className="h-7 w-7"
+                          onClick={() => openEdit(item)}
+                          title={t("common.edit")}
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                        </Button>
+                      )}
+                      {canCreate && (
+                        <Button
+                          variant="ghost" size="icon"
+                          className="h-7 w-7 hover:text-primary hover:bg-primary/10"
+                          onClick={() => handleCreateDemoPPI(item)}
+                          disabled={demoCreatingId === item.id}
+                          title={t("ppi.demo.instance.button")}
+                        >
+                          {demoCreatingId === item.id
+                            ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                            : <ClipboardCheck className="h-3.5 w-3.5" />}
+                        </Button>
+                      )}
+                      {canDelete && (
+                        <Button
+                          variant="ghost" size="icon"
+                          className="h-7 w-7 hover:text-destructive hover:bg-destructive/10"
+                          onClick={() => setDeleteItem(item)}
+                          title={t("common.delete")}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      )}
                     </div>
                   </TableCell>
                 </TableRow>

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { useSurveys } from "@/hooks/useSurveys";
+import { useProjectRole } from "@/hooks/useProjectRole";
 import { Map, Plus, Pencil } from "lucide-react";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -25,6 +26,7 @@ export default function SurveyPage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
   const { data: records, loading, error, refetch } = useSurveys();
+  const { canCreate, canEdit } = useProjectRole();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingRecord, setEditingRecord] = useState<SurveyRecord | null>(null);
 
@@ -40,10 +42,12 @@ export default function SurveyPage() {
           <h1 className="text-2xl font-bold tracking-tight text-foreground">{t("pages.survey.title")}</h1>
           <p className="text-sm text-muted-foreground">{t("pages.survey.subtitle")}</p>
         </div>
-        <Button onClick={handleNew} size="sm" className="gap-1.5">
-          <Plus className="h-3.5 w-3.5" />
-          {t("survey.newRecord")}
-        </Button>
+        {canCreate && (
+          <Button onClick={handleNew} size="sm" className="gap-1.5">
+            <Plus className="h-3.5 w-3.5" />
+            {t("survey.newRecord")}
+          </Button>
+        )}
       </div>
 
       {error && (

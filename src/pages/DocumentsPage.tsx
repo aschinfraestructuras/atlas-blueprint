@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useProjectRole } from "@/hooks/useProjectRole";
 import { useDocuments } from "@/hooks/useDocuments";
 import { documentService } from "@/lib/services/documentService";
 import type { Document } from "@/lib/services/documentService";
@@ -84,13 +85,8 @@ export default function DocumentsPage() {
   const [deleteDoc, setDeleteDoc] = useState<Document | null>(null);
   const [deleting, setDeleting]   = useState(false);
 
-  // ── Admin check ───────────────────────────────────────────────────────────
-  const [isAdmin, setIsAdmin] = useState(false);
-  useEffect(() => {
-    if (!activeProject || !user) return;
-    supabase.rpc("is_project_admin", { _project_id: activeProject.id, _user_id: user.id })
-      .then(({ data }) => setIsAdmin(!!data));
-  }, [activeProject, user]);
+  // ── Role check (replaces manual admin check) ──────────────────────────────
+  const { isAdmin, canCreate, canEdit, canDelete } = useProjectRole();
 
   // ── Filtered list ─────────────────────────────────────────────────────────
   const filtered = documents.filter((d) => {
@@ -194,9 +190,11 @@ export default function DocumentsPage() {
                 )}
               </>
             )}
-            <Button size="sm" className="gap-1.5" onClick={() => { setEditDoc(null); setFormOpen(true); }}>
-              <Plus className="h-4 w-4" /> {t("documents.form.createBtn")}
-            </Button>
+            {canCreate && (
+              <Button size="sm" className="gap-1.5" onClick={() => { setEditDoc(null); setFormOpen(true); }}>
+                <Plus className="h-4 w-4" /> {t("documents.form.createBtn")}
+              </Button>
+            )}
           </div>
         </div>
 
