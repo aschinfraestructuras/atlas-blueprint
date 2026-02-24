@@ -392,6 +392,138 @@ export type Database = {
           },
         ]
       }
+      material_documents: {
+        Row: {
+          created_at: string
+          doc_type: string
+          document_id: string
+          id: string
+          material_id: string
+          project_id: string
+          valid_to: string | null
+        }
+        Insert: {
+          created_at?: string
+          doc_type?: string
+          document_id: string
+          id?: string
+          material_id: string
+          project_id: string
+          valid_to?: string | null
+        }
+        Update: {
+          created_at?: string
+          doc_type?: string
+          document_id?: string
+          id?: string
+          material_id?: string
+          project_id?: string
+          valid_to?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "material_documents_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "material_documents_material_id_fkey"
+            columns: ["material_id"]
+            isOneToOne: false
+            referencedRelation: "materials"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "material_documents_material_id_fkey"
+            columns: ["material_id"]
+            isOneToOne: false
+            referencedRelation: "view_material_detail_metrics"
+            referencedColumns: ["material_id"]
+          },
+          {
+            foreignKeyName: "material_documents_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "material_documents_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
+      materials: {
+        Row: {
+          acceptance_criteria: string | null
+          category: string
+          code: string
+          created_at: string
+          created_by: string | null
+          id: string
+          name: string
+          normative_refs: string | null
+          project_id: string
+          specification: string | null
+          status: string
+          subcategory: string | null
+          unit: string | null
+          updated_at: string
+        }
+        Insert: {
+          acceptance_criteria?: string | null
+          category: string
+          code: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name: string
+          normative_refs?: string | null
+          project_id: string
+          specification?: string | null
+          status?: string
+          subcategory?: string | null
+          unit?: string | null
+          updated_at?: string
+        }
+        Update: {
+          acceptance_criteria?: string | null
+          category?: string
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name?: string
+          normative_refs?: string | null
+          project_id?: string
+          specification?: string | null
+          status?: string
+          subcategory?: string | null
+          unit?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "materials_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "materials_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
       non_conformities: {
         Row: {
           approver: string | null
@@ -409,6 +541,7 @@ export type Database = {
           document_id: string | null
           due_date: string | null
           id: string
+          material_id: string | null
           origin: string
           origin_entity_id: string | null
           origin_entity_type: string | null
@@ -450,6 +583,7 @@ export type Database = {
           document_id?: string | null
           due_date?: string | null
           id?: string
+          material_id?: string | null
           origin?: string
           origin_entity_id?: string | null
           origin_entity_type?: string | null
@@ -491,6 +625,7 @@ export type Database = {
           document_id?: string | null
           due_date?: string | null
           id?: string
+          material_id?: string | null
           origin?: string
           origin_entity_id?: string | null
           origin_entity_type?: string | null
@@ -523,6 +658,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "documents"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "non_conformities_material_id_fkey"
+            columns: ["material_id"]
+            isOneToOne: false
+            referencedRelation: "materials"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "non_conformities_material_id_fkey"
+            columns: ["material_id"]
+            isOneToOne: false
+            referencedRelation: "view_material_detail_metrics"
+            referencedColumns: ["material_id"]
           },
           {
             foreignKeyName: "non_conformities_ppi_instance_id_fkey"
@@ -1209,6 +1358,7 @@ export type Database = {
           id: string
           is_primary: boolean | null
           lead_time_days: number | null
+          material_id: string | null
           material_name: string
           project_id: string
           supplier_id: string
@@ -1220,6 +1370,7 @@ export type Database = {
           id?: string
           is_primary?: boolean | null
           lead_time_days?: number | null
+          material_id?: string | null
           material_name: string
           project_id: string
           supplier_id: string
@@ -1231,12 +1382,27 @@ export type Database = {
           id?: string
           is_primary?: boolean | null
           lead_time_days?: number | null
+          material_id?: string | null
           material_name?: string
           project_id?: string
           supplier_id?: string
           unit_price?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "supplier_materials_material_id_fkey"
+            columns: ["material_id"]
+            isOneToOne: false
+            referencedRelation: "materials"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "supplier_materials_material_id_fkey"
+            columns: ["material_id"]
+            isOneToOne: false
+            referencedRelation: "view_material_detail_metrics"
+            referencedColumns: ["material_id"]
+          },
           {
             foreignKeyName: "supplier_materials_project_id_fkey"
             columns: ["project_id"]
@@ -1507,6 +1673,7 @@ export type Database = {
           id: string
           location: string | null
           material: string | null
+          material_id: string | null
           material_outro: string | null
           notes: string | null
           pass_fail: string | null
@@ -1537,6 +1704,7 @@ export type Database = {
           id?: string
           location?: string | null
           material?: string | null
+          material_id?: string | null
           material_outro?: string | null
           notes?: string | null
           pass_fail?: string | null
@@ -1567,6 +1735,7 @@ export type Database = {
           id?: string
           location?: string | null
           material?: string | null
+          material_id?: string | null
           material_outro?: string | null
           notes?: string | null
           pass_fail?: string | null
@@ -1588,6 +1757,20 @@ export type Database = {
           work_item_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "test_results_material_id_fkey"
+            columns: ["material_id"]
+            isOneToOne: false
+            referencedRelation: "materials"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_results_material_id_fkey"
+            columns: ["material_id"]
+            isOneToOne: false
+            referencedRelation: "view_material_detail_metrics"
+            referencedColumns: ["material_id"]
+          },
           {
             foreignKeyName: "test_results_project_id_fkey"
             columns: ["project_id"]
@@ -1751,6 +1934,92 @@ export type Database = {
         }
         Relationships: []
       }
+      work_item_materials: {
+        Row: {
+          created_at: string
+          id: string
+          lot_ref: string | null
+          material_id: string
+          project_id: string
+          quantity: number | null
+          supplier_id: string | null
+          unit: string | null
+          work_item_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          lot_ref?: string | null
+          material_id: string
+          project_id: string
+          quantity?: number | null
+          supplier_id?: string | null
+          unit?: string | null
+          work_item_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          lot_ref?: string | null
+          material_id?: string
+          project_id?: string
+          quantity?: number | null
+          supplier_id?: string | null
+          unit?: string | null
+          work_item_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_item_materials_material_id_fkey"
+            columns: ["material_id"]
+            isOneToOne: false
+            referencedRelation: "materials"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_item_materials_material_id_fkey"
+            columns: ["material_id"]
+            isOneToOne: false
+            referencedRelation: "view_material_detail_metrics"
+            referencedColumns: ["material_id"]
+          },
+          {
+            foreignKeyName: "work_item_materials_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_item_materials_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "work_item_materials_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_item_materials_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "view_supplier_detail_metrics"
+            referencedColumns: ["supplier_id"]
+          },
+          {
+            foreignKeyName: "work_item_materials_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       work_items: {
         Row: {
           created_at: string
@@ -1905,6 +2174,84 @@ export type Database = {
           },
           {
             foreignKeyName: "documents_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
+      view_material_detail_metrics: {
+        Row: {
+          docs_expired: number | null
+          docs_expiring_30d: number | null
+          material_id: string | null
+          nc_open_count: number | null
+          project_id: string | null
+          suppliers_count: number | null
+          tests_nonconform: number | null
+          tests_total: number | null
+          work_items_count: number | null
+        }
+        Insert: {
+          docs_expired?: never
+          docs_expiring_30d?: never
+          material_id?: string | null
+          nc_open_count?: never
+          project_id?: string | null
+          suppliers_count?: never
+          tests_nonconform?: never
+          tests_total?: never
+          work_items_count?: never
+        }
+        Update: {
+          docs_expired?: never
+          docs_expiring_30d?: never
+          material_id?: string | null
+          nc_open_count?: never
+          project_id?: string | null
+          suppliers_count?: never
+          tests_nonconform?: never
+          tests_total?: never
+          work_items_count?: never
+        }
+        Relationships: [
+          {
+            foreignKeyName: "materials_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "materials_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
+      view_materials_kpi: {
+        Row: {
+          materials_active: number | null
+          materials_discontinued: number | null
+          materials_total: number | null
+          materials_with_expired_docs: number | null
+          materials_with_nonconform_tests_30d: number | null
+          materials_with_open_nc: number | null
+          project_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "materials_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "materials_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_dashboard_summary"
@@ -2093,6 +2440,40 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      fn_create_material: {
+        Args: {
+          p_acceptance_criteria?: string
+          p_category: string
+          p_name: string
+          p_normative_refs?: string
+          p_project_id: string
+          p_specification?: string
+          p_subcategory?: string
+          p_unit?: string
+        }
+        Returns: {
+          acceptance_criteria: string | null
+          category: string
+          code: string
+          created_at: string
+          created_by: string | null
+          id: string
+          name: string
+          normative_refs: string | null
+          project_id: string
+          specification: string | null
+          status: string
+          subcategory: string | null
+          unit: string | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "materials"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       fn_create_nc: {
         Args: {
           p_assigned_to?: string
@@ -2131,6 +2512,7 @@ export type Database = {
           document_id: string | null
           due_date: string | null
           id: string
+          material_id: string | null
           origin: string
           origin_entity_id: string | null
           origin_entity_type: string | null
@@ -2186,6 +2568,7 @@ export type Database = {
           document_id: string | null
           due_date: string | null
           id: string
+          material_id: string | null
           origin: string
           origin_entity_id: string | null
           origin_entity_type: string | null
@@ -2241,6 +2624,7 @@ export type Database = {
           document_id: string | null
           due_date: string | null
           id: string
+          material_id: string | null
           origin: string
           origin_entity_id: string | null
           origin_entity_type: string | null
@@ -2407,6 +2791,7 @@ export type Database = {
           id: string
           location: string | null
           material: string | null
+          material_id: string | null
           material_outro: string | null
           notes: string | null
           pass_fail: string | null
@@ -2483,6 +2868,7 @@ export type Database = {
           document_id: string | null
           due_date: string | null
           id: string
+          material_id: string | null
           origin: string
           origin_entity_id: string | null
           origin_entity_type: string | null
@@ -2527,6 +2913,7 @@ export type Database = {
           id: string
           location: string | null
           material: string | null
+          material_id: string | null
           material_outro: string | null
           notes: string | null
           pass_fail: string | null
