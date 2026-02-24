@@ -1402,6 +1402,74 @@ export type Database = {
           },
         ]
       }
+      supplier_evaluations: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          criteria: Json
+          eval_date: string
+          id: string
+          notes: string | null
+          project_id: string
+          result: string
+          score: number | null
+          supplier_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          criteria?: Json
+          eval_date?: string
+          id?: string
+          notes?: string | null
+          project_id: string
+          result?: string
+          score?: number | null
+          supplier_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          criteria?: Json
+          eval_date?: string
+          id?: string
+          notes?: string | null
+          project_id?: string
+          result?: string
+          score?: number | null
+          supplier_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "supplier_evaluations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "supplier_evaluations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "supplier_evaluations_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "supplier_evaluations_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "view_supplier_detail_metrics"
+            referencedColumns: ["supplier_id"]
+          },
+        ]
+      }
       supplier_materials: {
         Row: {
           created_at: string
@@ -2323,7 +2391,12 @@ export type Database = {
         Row: {
           docs_expired: number | null
           docs_expiring_30d: number | null
-          open_nc_count: number | null
+          docs_total: number | null
+          evals_total: number | null
+          latest_eval_result: string | null
+          latest_score: number | null
+          materials_count: number | null
+          nc_open_count: number | null
           project_id: string | null
           supplier_id: string | null
           tests_nonconform: number | null
@@ -2332,7 +2405,12 @@ export type Database = {
         Insert: {
           docs_expired?: never
           docs_expiring_30d?: never
-          open_nc_count?: never
+          docs_total?: never
+          evals_total?: never
+          latest_eval_result?: never
+          latest_score?: never
+          materials_count?: never
+          nc_open_count?: never
           project_id?: string | null
           supplier_id?: string | null
           tests_nonconform?: never
@@ -2341,7 +2419,12 @@ export type Database = {
         Update: {
           docs_expired?: never
           docs_expiring_30d?: never
-          open_nc_count?: never
+          docs_total?: never
+          evals_total?: never
+          latest_eval_result?: never
+          latest_score?: never
+          materials_count?: never
+          nc_open_count?: never
           project_id?: string | null
           supplier_id?: string | null
           tests_nonconform?: never

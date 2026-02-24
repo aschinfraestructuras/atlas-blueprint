@@ -882,7 +882,14 @@
         "materials": "Materiales",
         "tests": "Ensayos",
         "ncs": "No Conformidades",
+        "evaluations": "Evaluaciones",
         "audit": "Auditoría"
+      },
+      "evaluations": {
+        "score": "Puntuación",
+        "result": "Resultado",
+        "notes": "Observaciones",
+        "results": { "approved": "Aprobado", "pending": "Pendiente", "rejected": "Rechazado", "conditional": "Condicional" }
       }
     },
     "docTypes": {
@@ -1554,6 +1561,8 @@
         "allMarkedOk": "{{count}} elemento(s) marcados como OK.",
         "ncCreated": "NC creada y vinculada al elemento.",
         "deleted": "Inspección eliminada.",
+        "deleteTitle": "¿Eliminar inspección?",
+        "deleteDesc": "La inspección «{{code}}» será eliminada permanentemente. Esta acción no se puede revertir.",
         "hadExistingItems": "Los puntos de inspección ya existían y no fueron duplicados.",
         "error": "Ocurrió un error. Inténtelo de nuevo."
       }

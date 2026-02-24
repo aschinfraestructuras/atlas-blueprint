@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Plus, Search, ClipboardCheck, Eye, Archive, CheckSquare, Square } from "lucide-react";
+import { Plus, Search, ClipboardCheck, Eye, Archive, CheckSquare, Square, Trash2 } from "lucide-react";
 import { usePPIInstances } from "@/hooks/usePPI";
 import { useProject } from "@/contexts/ProjectContext";
 import { useProjectRole } from "@/hooks/useProjectRole";
@@ -39,7 +39,7 @@ export default function PPIPage() {
   const navigate          = useNavigate();
   const { activeProject } = useProject();
   const { data, loading, refetch } = usePPIInstances();
-  const { canCreate } = useProjectRole();
+  const { canCreate, isAdmin } = useProjectRole();
 
   const [formOpen,    setFormOpen]    = useState(false);
   const [search,      setSearch]      = useState("");
@@ -47,6 +47,8 @@ export default function PPIPage() {
   const [filterStatus,     setFilterStatus]     = useState("all");
   const [archiveItem, setArchiveItem] = useState<string | null>(null);
   const [archiving,   setArchiving]   = useState(false);
+  const [deleteItem, setDeleteItem]   = useState<string | null>(null);
+  const [deleting,   setDeleting]     = useState(false);
 
   // ── Selection for bulk export ──────────────────────────────────────────────
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -144,6 +146,23 @@ export default function PPIPage() {
     } finally {
       setArchiving(false);
       setArchiveItem(null);
+    }
+  }
+
+  // ── Hard delete (admin, draft only) ────────────────────────────────────────
+  async function handleDelete() {
+    if (!deleteItem || !activeProject) return;
+    setDeleting(true);
+    try {
+      await ppiService.deleteInstance(deleteItem, activeProject.id);
+      toast({ title: t("ppi.instances.toast.deleted") });
+      refetch();
+    } catch (err) {
+      const info = classifySupabaseError(err, t);
+      toast({ title: info.title, description: info.description ?? info.raw, variant: "destructive" });
+    } finally {
+      setDeleting(false);
+      setDeleteItem(null);
     }
   }
 
@@ -366,6 +385,16 @@ export default function PPIPage() {
                             <Archive className="h-3.5 w-3.5" />
                           </Button>
                         )}
+                        {isAdmin && inst.status === "draft" && (
+                          <Button
+                            variant="ghost" size="icon"
+                            className="h-8 w-8 text-destructive hover:text-destructive"
+                            onClick={() => setDeleteItem(inst.id)}
+                            title={t("common.delete")}
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </Button>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>
@@ -396,6 +425,24 @@ export default function PPIPage() {
             <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
             <AlertDialogAction onClick={handleArchive} disabled={archiving}>
               {archiving ? t("common.loading") : t("ppi.instances.detail.archive")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* ── Delete confirm (admin, draft only) ───────────────────────── */}
+      <AlertDialog open={!!deleteItem} onOpenChange={(v) => { if (!v) setDeleteItem(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("ppi.instances.toast.deleteTitle")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("ppi.instances.toast.deleteDesc", { code: data.find((d) => d.id === deleteItem)?.code ?? "" })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+            <AlertDialogAction className="bg-destructive text-destructive-foreground" onClick={handleDelete} disabled={deleting}>
+              {deleting ? t("common.loading") : t("common.delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
