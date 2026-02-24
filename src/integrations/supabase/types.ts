@@ -567,6 +567,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "non_conformities_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "view_supplier_detail_metrics"
+            referencedColumns: ["supplier_id"]
+          },
+          {
             foreignKeyName: "non_conformities_test_result_id_fkey"
             columns: ["test_result_id"]
             isOneToOne: false
@@ -1114,45 +1121,216 @@ export type Database = {
             referencedRelation: "suppliers"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "subcontractors_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "view_supplier_detail_metrics"
+            referencedColumns: ["supplier_id"]
+          },
+        ]
+      }
+      supplier_documents: {
+        Row: {
+          created_at: string
+          doc_type: string
+          document_id: string
+          id: string
+          project_id: string
+          status: string
+          supplier_id: string
+          valid_from: string | null
+          valid_to: string | null
+        }
+        Insert: {
+          created_at?: string
+          doc_type?: string
+          document_id: string
+          id?: string
+          project_id: string
+          status?: string
+          supplier_id: string
+          valid_from?: string | null
+          valid_to?: string | null
+        }
+        Update: {
+          created_at?: string
+          doc_type?: string
+          document_id?: string
+          id?: string
+          project_id?: string
+          status?: string
+          supplier_id?: string
+          valid_from?: string | null
+          valid_to?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "supplier_documents_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "supplier_documents_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "supplier_documents_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "supplier_documents_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "supplier_documents_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "view_supplier_detail_metrics"
+            referencedColumns: ["supplier_id"]
+          },
+        ]
+      }
+      supplier_materials: {
+        Row: {
+          created_at: string
+          currency: string | null
+          id: string
+          is_primary: boolean | null
+          lead_time_days: number | null
+          material_name: string
+          project_id: string
+          supplier_id: string
+          unit_price: number | null
+        }
+        Insert: {
+          created_at?: string
+          currency?: string | null
+          id?: string
+          is_primary?: boolean | null
+          lead_time_days?: number | null
+          material_name: string
+          project_id: string
+          supplier_id: string
+          unit_price?: number | null
+        }
+        Update: {
+          created_at?: string
+          currency?: string | null
+          id?: string
+          is_primary?: boolean | null
+          lead_time_days?: number | null
+          material_name?: string
+          project_id?: string
+          supplier_id?: string
+          unit_price?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "supplier_materials_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "supplier_materials_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "supplier_materials_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "supplier_materials_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "view_supplier_detail_metrics"
+            referencedColumns: ["supplier_id"]
+          },
         ]
       }
       suppliers: {
         Row: {
+          address: string | null
           approval_status: string
           category: string | null
+          code: string | null
+          contact_email: string | null
+          contact_name: string | null
+          contact_phone: string | null
           contacts: Json | null
+          country: string | null
           created_at: string
           created_by: string | null
           id: string
           name: string
           nif_cif: string | null
+          notes: string | null
           project_id: string
+          qualification_score: number | null
+          qualification_status: string | null
           status: string
           updated_at: string
         }
         Insert: {
+          address?: string | null
           approval_status?: string
           category?: string | null
+          code?: string | null
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
           contacts?: Json | null
+          country?: string | null
           created_at?: string
           created_by?: string | null
           id?: string
           name: string
           nif_cif?: string | null
+          notes?: string | null
           project_id: string
+          qualification_score?: number | null
+          qualification_status?: string | null
           status?: string
           updated_at?: string
         }
         Update: {
+          address?: string | null
           approval_status?: string
           category?: string | null
+          code?: string | null
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
           contacts?: Json | null
+          country?: string | null
           created_at?: string
           created_by?: string | null
           id?: string
           name?: string
           nif_cif?: string | null
+          notes?: string | null
           project_id?: string
+          qualification_score?: number | null
+          qualification_status?: string | null
           status?: string
           updated_at?: string
         }
@@ -1437,6 +1615,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "suppliers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_results_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "view_supplier_detail_metrics"
+            referencedColumns: ["supplier_id"]
           },
           {
             foreignKeyName: "test_results_test_id_fkey"
@@ -1735,6 +1920,80 @@ export type Database = {
           project_id: string | null
         }
         Relationships: []
+      }
+      view_supplier_detail_metrics: {
+        Row: {
+          docs_expired: number | null
+          docs_expiring_30d: number | null
+          open_nc_count: number | null
+          project_id: string | null
+          supplier_id: string | null
+          tests_nonconform: number | null
+          tests_total: number | null
+        }
+        Insert: {
+          docs_expired?: never
+          docs_expiring_30d?: never
+          open_nc_count?: never
+          project_id?: string | null
+          supplier_id?: string | null
+          tests_nonconform?: never
+          tests_total?: never
+        }
+        Update: {
+          docs_expired?: never
+          docs_expiring_30d?: never
+          open_nc_count?: never
+          project_id?: string | null
+          supplier_id?: string | null
+          tests_nonconform?: never
+          tests_total?: never
+        }
+        Relationships: [
+          {
+            foreignKeyName: "suppliers_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "suppliers_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
+      view_suppliers_kpi: {
+        Row: {
+          project_id: string | null
+          supplier_docs_expired: number | null
+          supplier_docs_expiring_30d: number | null
+          suppliers_active: number | null
+          suppliers_blocked: number | null
+          suppliers_pending_qualification: number | null
+          suppliers_total: number | null
+          suppliers_with_nonconform_tests_30d: number | null
+          suppliers_with_open_nc: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "suppliers_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "suppliers_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+        ]
       }
       view_tests_monthly: {
         Row: {
@@ -2079,6 +2338,48 @@ export type Database = {
               items_created: number
             }[]
           }
+      fn_create_supplier: {
+        Args: {
+          p_address?: string
+          p_category?: string
+          p_contact_email?: string
+          p_contact_name?: string
+          p_contact_phone?: string
+          p_country?: string
+          p_name: string
+          p_notes?: string
+          p_project_id: string
+          p_tax_id?: string
+        }
+        Returns: {
+          address: string | null
+          approval_status: string
+          category: string | null
+          code: string | null
+          contact_email: string | null
+          contact_name: string | null
+          contact_phone: string | null
+          contacts: Json | null
+          country: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          name: string
+          nif_cif: string | null
+          notes: string | null
+          project_id: string
+          qualification_score: number | null
+          qualification_status: string | null
+          status: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "suppliers"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       fn_create_test_result: {
         Args: {
           p_code?: string

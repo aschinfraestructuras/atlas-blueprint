@@ -805,10 +805,23 @@
   },
   "suppliers": {
     "newSupplier": "Nuevo Proveedor",
+    "searchPlaceholder": "Buscar nombre, código, NIF/CIF…",
     "table": {
+      "code": "Código",
       "category": "Categoría",
       "nifCif": "NIF/CIF",
-      "approvalStatus": "Estado de Aprobación"
+      "approvalStatus": "Calificación"
+    },
+    "status": {
+      "active": "Activo",
+      "suspended": "Suspendido",
+      "blocked": "Bloqueado",
+      "archived": "Archivado"
+    },
+    "qualificationStatus": {
+      "pending": "Pendiente",
+      "approved": "Aprobado",
+      "rejected": "Rechazado"
     },
     "approvalStatus": {
       "pending": "Pendiente",
@@ -824,6 +837,56 @@
       "laboratory": "Laboratorio",
       "other": "Otro"
     },
+    "filters": {
+      "allStatuses": "Todos los estados",
+      "allQualifications": "Todas las calificaciones",
+      "allCategories": "Todas las categorías"
+    },
+    "actions": {
+      "archive": "Archivar",
+      "activate": "Reactivar"
+    },
+    "kpi": {
+      "total": "Total Proveedores",
+      "pendingQual": "Pend. Calificación",
+      "docsExpiring": "Docs por Expirar (30d)",
+      "withOpenNC": "Con NC Abierta"
+    },
+    "detail": {
+      "openNCs": "NC Abiertas",
+      "testsTotal": "Total Ensayos",
+      "testsNC": "Ensayos NC",
+      "docsExpiring": "Docs por Expirar",
+      "docsExpired": "Docs Expirados",
+      "supplierDocs": "Documentos del Proveedor",
+      "docType": "Tipo de Documento",
+      "validTo": "Válido hasta",
+      "noMaterials": "Sin materiales asociados.",
+      "materialName": "Material",
+      "primary": "Principal",
+      "leadTime": "Plazo Entrega",
+      "unitPrice": "Precio Unit.",
+      "noTests": "Sin ensayos asociados.",
+      "noNCs": "Sin no conformidades.",
+      "noAudit": "Sin registros de auditoría.",
+      "tabs": {
+        "summary": "Resumen",
+        "documents": "Documentos",
+        "materials": "Materiales",
+        "tests": "Ensayos",
+        "ncs": "No Conformidades",
+        "audit": "Auditoría"
+      }
+    },
+    "docTypes": {
+      "contract": "Contrato",
+      "insurance": "Seguro",
+      "certificate": "Certificado",
+      "ce_marking": "Marcado CE",
+      "declaration": "Declaración",
+      "test_report": "Informe de Ensayo",
+      "other": "Otro"
+    },
     "form": {
       "titleCreate": "Nuevo Proveedor",
       "titleEdit": "Editar Proveedor",
@@ -833,6 +896,20 @@
       "categoryPlaceholder": "Seleccionar categoría…",
       "nifCif": "NIF / CIF",
       "nifCifPlaceholder": "ej: B12345678",
+      "country": "País",
+      "countryPlaceholder": "ej: España",
+      "address": "Dirección",
+      "addressPlaceholder": "ej: Calle de la Calidad, 1",
+      "contactName": "Nombre de Contacto",
+      "contactNamePlaceholder": "ej: Juan García",
+      "contactEmail": "E-mail de Contacto",
+      "contactEmailPlaceholder": "ej: juan@empresa.es",
+      "contactPhone": "Teléfono de Contacto",
+      "contactPhonePlaceholder": "ej: +34 612 345 678",
+      "notes": "Observaciones",
+      "notesPlaceholder": "Notas internas sobre el proveedor…",
+      "qualificationStatus": "Estado de Calificación",
+      "qualificationScore": "Puntuación de Calificación",
       "createBtn": "Crear proveedor",
       "validation": {
         "nameRequired": "El nombre es obligatorio."
@@ -841,6 +918,8 @@
     "toast": {
       "created": "Proveedor creado con éxito.",
       "updated": "Proveedor actualizado con éxito.",
+      "archived": "Proveedor archivado.",
+      "activated": "Proveedor reactivado.",
       "error": "Ocurrió un error. Inténtelo de nuevo."
     }
   },
