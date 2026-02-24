@@ -19,6 +19,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
@@ -30,7 +31,14 @@ const schema = (t: (k: string) => string) =>
     name: z.string().trim().min(1, t("suppliers.form.validation.nameRequired")).max(200),
     category: z.string().trim().max(100).optional().or(z.literal("")),
     nif_cif: z.string().trim().max(30).optional().or(z.literal("")),
-    approval_status: z.string().min(1),
+    country: z.string().trim().max(80).optional().or(z.literal("")),
+    address: z.string().trim().max(300).optional().or(z.literal("")),
+    contact_name: z.string().trim().max(120).optional().or(z.literal("")),
+    contact_email: z.string().trim().max(120).optional().or(z.literal("")),
+    contact_phone: z.string().trim().max(30).optional().or(z.literal("")),
+    notes: z.string().trim().max(2000).optional().or(z.literal("")),
+    qualification_status: z.string().min(1),
+    status: z.string().min(1),
   });
 
 type FormValues = z.infer<ReturnType<typeof schema>>;
@@ -53,15 +61,35 @@ export function SupplierFormDialog({ open, onOpenChange, supplier, onSuccess }: 
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema(t)),
-    defaultValues: { name: "", category: "", nif_cif: "", approval_status: "pending" },
+    defaultValues: {
+      name: "", category: "", nif_cif: "", country: "", address: "",
+      contact_name: "", contact_email: "", contact_phone: "", notes: "",
+      qualification_status: "pending", status: "active",
+    },
   });
 
   useEffect(() => {
     if (open) {
       form.reset(
         supplier
-          ? { name: supplier.name, category: supplier.category ?? "", nif_cif: supplier.nif_cif ?? "", approval_status: supplier.approval_status }
-          : { name: "", category: "", nif_cif: "", approval_status: "pending" }
+          ? {
+              name: supplier.name,
+              category: supplier.category ?? "",
+              nif_cif: supplier.nif_cif ?? "",
+              country: supplier.country ?? "",
+              address: supplier.address ?? "",
+              contact_name: supplier.contact_name ?? "",
+              contact_email: supplier.contact_email ?? "",
+              contact_phone: supplier.contact_phone ?? "",
+              notes: supplier.notes ?? "",
+              qualification_status: supplier.qualification_status ?? supplier.approval_status ?? "pending",
+              status: supplier.status ?? "active",
+            }
+          : {
+              name: "", category: "", nif_cif: "", country: "", address: "",
+              contact_name: "", contact_email: "", contact_phone: "", notes: "",
+              qualification_status: "pending", status: "active",
+            }
       );
     }
   }, [open, supplier, form]);
@@ -75,7 +103,14 @@ export function SupplierFormDialog({ open, onOpenChange, supplier, onSuccess }: 
           name: values.name,
           category: values.category || undefined,
           nif_cif: values.nif_cif || undefined,
-          approval_status: values.approval_status,
+          country: values.country || undefined,
+          address: values.address || undefined,
+          contact_name: values.contact_name || undefined,
+          contact_email: values.contact_email || undefined,
+          contact_phone: values.contact_phone || undefined,
+          notes: values.notes || undefined,
+          qualification_status: values.qualification_status,
+          approval_status: values.qualification_status,
         });
         toast({ title: t("suppliers.toast.updated") });
       } else {
@@ -84,7 +119,12 @@ export function SupplierFormDialog({ open, onOpenChange, supplier, onSuccess }: 
           name: values.name,
           category: values.category || undefined,
           nif_cif: values.nif_cif || undefined,
-          approval_status: values.approval_status,
+          country: values.country || undefined,
+          address: values.address || undefined,
+          contact_name: values.contact_name || undefined,
+          contact_email: values.contact_email || undefined,
+          contact_phone: values.contact_phone || undefined,
+          notes: values.notes || undefined,
           created_by: user.id,
         });
         toast({ title: t("suppliers.toast.created") });
@@ -105,7 +145,7 @@ export function SupplierFormDialog({ open, onOpenChange, supplier, onSuccess }: 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[560px]">
+      <DialogContent className="sm:max-w-[640px]">
         <DialogHeader>
           <DialogTitle className="text-base font-semibold">
             {isEdit ? t("suppliers.form.titleEdit") : t("suppliers.form.titleCreate")}
@@ -116,111 +156,120 @@ export function SupplierFormDialog({ open, onOpenChange, supplier, onSuccess }: 
           <div className="space-y-4 pb-1 pt-1">
             <Form {...form}>
               <form id="supplier-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
+                {/* Row 1: Name */}
+                <FormField control={form.control} name="name" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("suppliers.form.name")}</FormLabel>
+                    <FormControl><Input placeholder={t("suppliers.form.namePlaceholder")} autoFocus {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+
+                {/* Row 2: Category + NIF */}
+                <div className="grid grid-cols-2 gap-3">
+                  <FormField control={form.control} name="category" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t("suppliers.form.name")}</FormLabel>
-                      <FormControl>
-                        <Input placeholder={t("suppliers.form.namePlaceholder")} autoFocus {...field} />
-                      </FormControl>
+                      <FormLabel>{t("suppliers.form.category")} <span className="text-xs text-muted-foreground font-normal">({t("common.optional")})</span></FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value ?? ""}>
+                        <FormControl><SelectTrigger><SelectValue placeholder={t("suppliers.form.categoryPlaceholder")} /></SelectTrigger></FormControl>
+                        <SelectContent>
+                          {CATEGORIES.map((cat) => (
+                            <SelectItem key={cat} value={cat}>{t(`suppliers.categories.${cat}`)}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
-                  )}
-                />
+                  )} />
 
-                <div className="grid grid-cols-2 gap-3">
-                  <FormField
-                    control={form.control}
-                    name="category"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          {t("suppliers.form.category")}{" "}
-                          <span className="text-xs text-muted-foreground font-normal">({t("common.optional")})</span>
-                        </FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder={t("suppliers.form.categoryPlaceholder")} />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {CATEGORIES.map((cat) => (
-                              <SelectItem key={cat} value={cat}>
-                                {t(`suppliers.categories.${cat}`)}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="approval_status"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t("suppliers.table.approvalStatus")}</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="pending">{t("suppliers.approvalStatus.pending")}</SelectItem>
-                            <SelectItem value="approved">{t("suppliers.approvalStatus.approved")}</SelectItem>
-                            <SelectItem value="conditional">{t("suppliers.approvalStatus.conditional")}</SelectItem>
-                            <SelectItem value="rejected">{t("suppliers.approvalStatus.rejected")}</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <FormField control={form.control} name="nif_cif" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("suppliers.form.nifCif")} <span className="text-xs text-muted-foreground font-normal">({t("common.optional")})</span></FormLabel>
+                      <FormControl><Input placeholder={t("suppliers.form.nifCifPlaceholder")} className="font-mono" {...field} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
                 </div>
 
-                <FormField
-                  control={form.control}
-                  name="nif_cif"
-                  render={({ field }) => (
+                {/* Row 3: Country + Status */}
+                <div className="grid grid-cols-2 gap-3">
+                  <FormField control={form.control} name="country" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>
-                        {t("suppliers.form.nifCif")}{" "}
-                        <span className="text-xs text-muted-foreground font-normal">({t("common.optional")})</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input placeholder={t("suppliers.form.nifCifPlaceholder")} className="font-mono" {...field} />
-                      </FormControl>
+                      <FormLabel>{t("suppliers.form.country")} <span className="text-xs text-muted-foreground font-normal">({t("common.optional")})</span></FormLabel>
+                      <FormControl><Input placeholder={t("suppliers.form.countryPlaceholder")} {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
-                  )}
-                />
+                  )} />
+
+                  <FormField control={form.control} name="qualification_status" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("suppliers.form.qualificationStatus")}</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                        <SelectContent>
+                          <SelectItem value="pending">{t("suppliers.qualificationStatus.pending")}</SelectItem>
+                          <SelectItem value="approved">{t("suppliers.qualificationStatus.approved")}</SelectItem>
+                          <SelectItem value="rejected">{t("suppliers.qualificationStatus.rejected")}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                </div>
+
+                {/* Row 4: Address */}
+                <FormField control={form.control} name="address" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("suppliers.form.address")} <span className="text-xs text-muted-foreground font-normal">({t("common.optional")})</span></FormLabel>
+                    <FormControl><Input placeholder={t("suppliers.form.addressPlaceholder")} {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+
+                {/* Row 5: Contact */}
+                <div className="grid grid-cols-3 gap-3">
+                  <FormField control={form.control} name="contact_name" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("suppliers.form.contactName")}</FormLabel>
+                      <FormControl><Input placeholder={t("suppliers.form.contactNamePlaceholder")} {...field} /></FormControl>
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="contact_email" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("suppliers.form.contactEmail")}</FormLabel>
+                      <FormControl><Input type="email" placeholder={t("suppliers.form.contactEmailPlaceholder")} {...field} /></FormControl>
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="contact_phone" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("suppliers.form.contactPhone")}</FormLabel>
+                      <FormControl><Input placeholder={t("suppliers.form.contactPhonePlaceholder")} {...field} /></FormControl>
+                    </FormItem>
+                  )} />
+                </div>
+
+                {/* Notes */}
+                <FormField control={form.control} name="notes" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("suppliers.form.notes")} <span className="text-xs text-muted-foreground font-normal">({t("common.optional")})</span></FormLabel>
+                    <FormControl><Textarea placeholder={t("suppliers.form.notesPlaceholder")} rows={3} {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
               </form>
             </Form>
 
-            {/* Attachments — only visible when editing an existing record */}
             {isEdit && supplier && activeProject && (
               <>
                 <Separator />
-                <AttachmentsPanel
-                  projectId={activeProject.id}
-                  entityType="suppliers"
-                  entityId={supplier.id}
-                />
+                <AttachmentsPanel projectId={activeProject.id} entityType="suppliers" entityId={supplier.id} />
               </>
             )}
           </div>
         </ScrollArea>
 
         <DialogFooter className="pt-2">
-          <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={submitting}>
-            {t("common.cancel")}
-          </Button>
+          <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={submitting}>{t("common.cancel")}</Button>
           <Button type="submit" form="supplier-form" disabled={submitting}>
             {submitting && <Loader2 className="h-3.5 w-3.5 animate-spin mr-2" />}
             {isEdit ? t("common.save") : t("suppliers.form.createBtn")}

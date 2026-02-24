@@ -1,0 +1,367 @@
+import { useEffect, useState, useCallback } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { useProject } from "@/contexts/ProjectContext";
+import { useProjectRole } from "@/hooks/useProjectRole";
+import {
+  supplierService,
+  type Supplier,
+  type SupplierDocument,
+  type SupplierMaterial,
+  type SupplierDetailMetrics,
+} from "@/lib/services/supplierService";
+import { supabase } from "@/integrations/supabase/client";
+import { ArrowLeft, Truck, FileText, Package, FlaskConical, AlertTriangle, History, Plus, Trash2, ExternalLink } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { NoProjectBanner } from "@/components/NoProjectBanner";
+import { SupplierFormDialog } from "@/components/suppliers/SupplierFormDialog";
+import { LinkedDocumentsPanel } from "@/components/documents/LinkedDocumentsPanel";
+import { toast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
+
+const QUAL_COLORS: Record<string, string> = {
+  pending: "bg-muted text-muted-foreground",
+  approved: "bg-primary/15 text-primary",
+  rejected: "bg-destructive/10 text-destructive",
+};
+
+const STATUS_COLORS: Record<string, string> = {
+  active: "bg-primary/15 text-primary",
+  suspended: "bg-accent text-accent-foreground",
+  blocked: "bg-destructive/10 text-destructive",
+  archived: "bg-muted text-muted-foreground",
+};
+
+export default function SupplierDetailPage() {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+  const { activeProject } = useProject();
+  const { canEdit } = useProjectRole();
+
+  const [supplier, setSupplier] = useState<Supplier | null>(null);
+  const [metrics, setMetrics] = useState<SupplierDetailMetrics | null>(null);
+  const [docs, setDocs] = useState<SupplierDocument[]>([]);
+  const [materials, setMaterials] = useState<SupplierMaterial[]>([]);
+  const [ncs, setNcs] = useState<any[]>([]);
+  const [tests, setTests] = useState<any[]>([]);
+  const [auditLogs, setAuditLogs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editOpen, setEditOpen] = useState(false);
+
+  const fetchAll = useCallback(async () => {
+    if (!id || !activeProject) return;
+    setLoading(true);
+    try {
+      const [s, m, d, mat] = await Promise.all([
+        supplierService.getById(id),
+        supplierService.getDetailMetrics(id),
+        supplierService.getDocuments(id),
+        supplierService.getMaterials(id),
+      ]);
+      setSupplier(s);
+      setMetrics(m);
+      setDocs(d);
+      setMaterials(mat);
+
+      // NCs
+      const { data: ncData } = await supabase
+        .from("non_conformities")
+        .select("id, code, title, severity, status, detected_at")
+        .eq("supplier_id", id)
+        .order("detected_at", { ascending: false });
+      setNcs(ncData ?? []);
+
+      // Tests
+      const { data: trData } = await supabase
+        .from("test_results")
+        .select("id, code, date, status, pass_fail, sample_ref")
+        .eq("supplier_id", id)
+        .order("date", { ascending: false });
+      setTests(trData ?? []);
+
+      // Audit
+      const { data: logData } = await supabase
+        .from("audit_log")
+        .select("id, action, diff, created_at, description")
+        .eq("entity", "suppliers")
+        .eq("entity_id", id)
+        .order("created_at", { ascending: false })
+        .limit(50);
+      setAuditLogs(logData ?? []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }, [id, activeProject]);
+
+  useEffect(() => { fetchAll(); }, [fetchAll]);
+
+  if (!activeProject) return <NoProjectBanner />;
+
+  if (loading) return (
+    <div className="space-y-6 max-w-5xl mx-auto">
+      <Skeleton className="h-8 w-48" />
+      <div className="grid grid-cols-4 gap-4">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-24" />)}</div>
+      <Skeleton className="h-64" />
+    </div>
+  );
+
+  if (!supplier) return <div className="text-center py-12 text-muted-foreground">{t("common.noData")}</div>;
+
+  const handleRemoveMaterial = async (matId: string) => {
+    try {
+      await supplierService.removeMaterial(matId);
+      setMaterials(prev => prev.filter(m => m.id !== matId));
+      toast({ title: t("common.delete") });
+    } catch { toast({ title: t("suppliers.toast.error"), variant: "destructive" }); }
+  };
+
+  return (
+    <div className="space-y-6 max-w-5xl mx-auto animate-fade-in">
+      {/* Header */}
+      <div className="flex items-center gap-3">
+        <Button variant="ghost" size="icon" onClick={() => navigate("/suppliers")} className="h-8 w-8">
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <Truck className="h-5 w-5 text-muted-foreground" />
+            <h1 className="text-xl font-bold text-foreground truncate">{supplier.name}</h1>
+            <Badge variant="secondary" className={cn("text-xs", STATUS_COLORS[supplier.status] ?? "")}>{t(`suppliers.status.${supplier.status}`)}</Badge>
+            <Badge variant="secondary" className={cn("text-xs ml-1", QUAL_COLORS[supplier.qualification_status ?? supplier.approval_status] ?? "")}>{t(`suppliers.qualificationStatus.${supplier.qualification_status ?? supplier.approval_status}`)}</Badge>
+          </div>
+          <p className="text-sm text-muted-foreground mt-0.5">{supplier.code} · {supplier.nif_cif ?? "—"}</p>
+        </div>
+        {canEdit && (
+          <Button size="sm" variant="outline" onClick={() => setEditOpen(true)}>{t("common.edit")}</Button>
+        )}
+      </div>
+
+      {/* Metric Cards */}
+      {metrics && (
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+          {[
+            { label: t("suppliers.detail.openNCs"), value: metrics.open_nc_count, color: "text-destructive" },
+            { label: t("suppliers.detail.testsTotal"), value: metrics.tests_total, color: "text-foreground" },
+            { label: t("suppliers.detail.testsNC"), value: metrics.tests_nonconform, color: "text-destructive" },
+            { label: t("suppliers.detail.docsExpiring"), value: metrics.docs_expiring_30d, color: "text-accent-foreground" },
+            { label: t("suppliers.detail.docsExpired"), value: metrics.docs_expired, color: "text-destructive" },
+          ].map((m, i) => (
+            <Card key={i} className="border-0 bg-card shadow-card">
+              <CardContent className="p-4 text-center">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{m.label}</p>
+                <p className={cn("text-2xl font-black tabular-nums mt-1", m.color)}>{m.value}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      {/* Tabs */}
+      <Tabs defaultValue="summary" className="space-y-4">
+        <TabsList className="bg-muted/50">
+          <TabsTrigger value="summary">{t("suppliers.detail.tabs.summary")}</TabsTrigger>
+          <TabsTrigger value="documents">{t("suppliers.detail.tabs.documents")}</TabsTrigger>
+          <TabsTrigger value="materials">{t("suppliers.detail.tabs.materials")}</TabsTrigger>
+          <TabsTrigger value="tests">{t("suppliers.detail.tabs.tests")}</TabsTrigger>
+          <TabsTrigger value="ncs">{t("suppliers.detail.tabs.ncs")}</TabsTrigger>
+          <TabsTrigger value="audit">{t("suppliers.detail.tabs.audit")}</TabsTrigger>
+        </TabsList>
+
+        {/* Summary */}
+        <TabsContent value="summary">
+          <Card className="border-0 shadow-card">
+            <CardContent className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[
+                [t("suppliers.form.category"), supplier.category ? t(`suppliers.categories.${supplier.category}`, { defaultValue: supplier.category }) : "—"],
+                [t("suppliers.form.country"), supplier.country ?? "—"],
+                [t("suppliers.form.address"), supplier.address ?? "—"],
+                [t("suppliers.form.contactName"), supplier.contact_name ?? "—"],
+                [t("suppliers.form.contactEmail"), supplier.contact_email ?? "—"],
+                [t("suppliers.form.contactPhone"), supplier.contact_phone ?? "—"],
+                [t("suppliers.form.notes"), supplier.notes ?? "—"],
+                [t("suppliers.form.qualificationScore"), supplier.qualification_score != null ? `${supplier.qualification_score}/100` : "—"],
+              ].map(([label, value], i) => (
+                <div key={i}>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{label}</p>
+                  <p className="text-sm text-foreground mt-0.5">{value}</p>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Documents */}
+        <TabsContent value="documents">
+          <LinkedDocumentsPanel entityType="supplier" entityId={supplier.id} projectId={activeProject.id} />
+          {docs.length > 0 && (
+            <Card className="border-0 shadow-card mt-4">
+              <CardHeader className="pb-2"><CardTitle className="text-sm">{t("suppliers.detail.supplierDocs")}</CardTitle></CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>{t("suppliers.detail.docType")}</TableHead>
+                      <TableHead>{t("suppliers.detail.validTo")}</TableHead>
+                      <TableHead>{t("common.status")}</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {docs.map(d => (
+                      <TableRow key={d.id}>
+                        <TableCell className="text-sm">{t(`suppliers.docTypes.${d.doc_type}`, { defaultValue: d.doc_type })}</TableCell>
+                        <TableCell className="text-sm">{d.valid_to ? new Date(d.valid_to).toLocaleDateString() : "—"}</TableCell>
+                        <TableCell><Badge variant="secondary" className="text-xs">{d.status}</Badge></TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
+        {/* Materials */}
+        <TabsContent value="materials">
+          <Card className="border-0 shadow-card">
+            <CardContent className="p-6">
+              {materials.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-6">{t("suppliers.detail.noMaterials")}</p>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>{t("suppliers.detail.materialName")}</TableHead>
+                      <TableHead>{t("suppliers.detail.primary")}</TableHead>
+                      <TableHead>{t("suppliers.detail.leadTime")}</TableHead>
+                      <TableHead>{t("suppliers.detail.unitPrice")}</TableHead>
+                      <TableHead className="w-10" />
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {materials.map(m => (
+                      <TableRow key={m.id}>
+                        <TableCell className="text-sm font-medium">{m.material_name}</TableCell>
+                        <TableCell>{m.is_primary ? "✓" : "—"}</TableCell>
+                        <TableCell className="text-sm">{m.lead_time_days != null ? `${m.lead_time_days}d` : "—"}</TableCell>
+                        <TableCell className="text-sm font-mono">{m.unit_price != null ? `${m.unit_price} ${m.currency}` : "—"}</TableCell>
+                        <TableCell>
+                          {canEdit && (
+                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleRemoveMaterial(m.id)}>
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Tests */}
+        <TabsContent value="tests">
+          <Card className="border-0 shadow-card">
+            <CardContent className="p-6">
+              {tests.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-6">{t("suppliers.detail.noTests")}</p>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>{t("tests.results.table.code")}</TableHead>
+                      <TableHead>{t("common.date")}</TableHead>
+                      <TableHead>{t("common.status")}</TableHead>
+                      <TableHead>{t("tests.results.table.passFail")}</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {tests.map(tr => (
+                      <TableRow key={tr.id}>
+                        <TableCell className="text-sm font-mono">{tr.code ?? "—"}</TableCell>
+                        <TableCell className="text-sm">{new Date(tr.date).toLocaleDateString()}</TableCell>
+                        <TableCell><Badge variant="secondary" className="text-xs">{t(`tests.status.${tr.status}`, { defaultValue: tr.status })}</Badge></TableCell>
+                        <TableCell><Badge variant="secondary" className={cn("text-xs", tr.pass_fail === "fail" ? "bg-destructive/10 text-destructive" : "")}>{tr.pass_fail ? t(`tests.results.form.passFailOptions.${tr.pass_fail}`, { defaultValue: tr.pass_fail }) : "—"}</Badge></TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* NCs */}
+        <TabsContent value="ncs">
+          <Card className="border-0 shadow-card">
+            <CardContent className="p-6">
+              {ncs.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-6">{t("suppliers.detail.noNCs")}</p>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>{t("nc.table.code")}</TableHead>
+                      <TableHead>{t("nc.table.title")}</TableHead>
+                      <TableHead>{t("nc.table.severity")}</TableHead>
+                      <TableHead>{t("common.status")}</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {ncs.map(nc => (
+                      <TableRow key={nc.id} className="cursor-pointer hover:bg-muted/30" onClick={() => navigate(`/non-conformities/${nc.id}`)}>
+                        <TableCell className="text-sm font-mono">{nc.code ?? "—"}</TableCell>
+                        <TableCell className="text-sm">{nc.title ?? "—"}</TableCell>
+                        <TableCell><Badge variant="secondary" className="text-xs">{t(`nc.severity.${nc.severity}`, { defaultValue: nc.severity })}</Badge></TableCell>
+                        <TableCell><Badge variant="secondary" className="text-xs">{t(`nc.status.${nc.status}`, { defaultValue: nc.status })}</Badge></TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Audit */}
+        <TabsContent value="audit">
+          <Card className="border-0 shadow-card">
+            <CardContent className="p-6">
+              {auditLogs.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-6">{t("suppliers.detail.noAudit")}</p>
+              ) : (
+                <ul className="space-y-3">
+                  {auditLogs.map(log => (
+                    <li key={log.id} className="flex items-start gap-3 text-sm border-b border-border/50 pb-3 last:border-0">
+                      <History className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-foreground">{log.description ?? log.action}</p>
+                        <p className="text-xs text-muted-foreground">{new Date(log.created_at).toLocaleString()}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+
+      <SupplierFormDialog
+        open={editOpen}
+        onOpenChange={setEditOpen}
+        supplier={supplier}
+        onSuccess={fetchAll}
+      />
+    </div>
+  );
+}
