@@ -1714,20 +1714,47 @@
       "error": "Ocurrió un error. Inténtelo de nuevo."
     }
   },
-  "pages": {
-    "materials": {
-      "title": "Materiales",
-      "subtitle": "Catálogo de materiales del proyecto"
-    }
-  },
-  "emptyState": {
-    "materials": { "subtitle": "Aún no hay materiales en este proyecto. Cree el primero." }
-  },
-  "dashboard": {
-    "exec": {
-      "materialsDocsExpired": "Materiales c/ Docs Expirados",
-      "materialsWithNC": "Materiales con NC Abierta",
-      "materialsNonconformTests": "Materiales c/ Ensayos NC (30d)"
+  "settings": {
+    "roles": {
+      "admin": "Administrador",
+      "project_manager": "Gestor de Proyecto",
+      "quality_manager": "Gestor de Calidad",
+      "technician": "Técnico",
+      "viewer": "Visualizador"
+    },
+    "roleDescriptions": {
+      "admin": "Acceso total al proyecto: miembros, datos, aprobaciones y eliminación.",
+      "project_manager": "Gestión completa del proyecto, sin eliminar registros críticos.",
+      "quality_manager": "Gestión documental, ensayos, NCs y aprobaciones de calidad.",
+      "technician": "Registro de ensayos, PPI y consulta de documentos.",
+      "viewer": "Solo lectura, sin permiso de escritura."
+    },
+    "members": {
+      "inviteBtn": "Invitar miembro",
+      "inviteTitle": "Invitar usuario al proyecto",
+      "emailLabel": "Correo electrónico",
+      "emailPlaceholder": "usuario@empresa.com",
+      "roleLabel": "Rol",
+      "sendInvite": "Enviar invitación",
+      "addedDirectly": "Usuario añadido al proyecto.",
+      "inviteSent": "Invitación enviada con éxito.",
+      "roleUpdated": "Rol actualizado.",
+      "memberRemoved": "Miembro eliminado del proyecto.",
+      "inviteDeleted": "Invitación eliminada.",
+      "noMembers": "Sin miembros en este proyecto.",
+      "pendingInvites": "Invitaciones pendientes",
+      "expires": "Expira el",
+      "you": "usted",
+      "colName": "Nombre",
+      "colEmail": "Correo",
+      "colRole": "Rol",
+      "removeTitle": "¿Eliminar miembro?",
+      "removeDesc": "El usuario «{{name}}» perderá acceso a este proyecto. Esta acción se puede revertir añadiendo nuevamente al miembro.",
+      "removeConfirm": "Eliminar acceso",
+      "noProjectsEmpty": "No está asociado a ningún proyecto.",
+      "noProjectsEmptySub": "Contacte a un administrador para obtener acceso a un proyecto o cree uno nuevo.",
+      "requestAccess": "Solicitar acceso"
     }
   }
 }
+

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { projectService, type Project } from "@/lib/services/projectService";
+import { memberService } from "@/lib/services/memberService";
 import { useAuth } from "@/contexts/AuthContext";
 
 const PROJECT_STORAGE_KEY = "atlas_active_project_id";
@@ -31,7 +32,14 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
     }
     try {
       setError(null);
-      const data = await projectService.getAll();
+      // Use RPC that returns only projects the user has access to
+      let data: Project[];
+      try {
+        data = await memberService.getMyProjects() as Project[];
+      } catch {
+        // Fallback to direct query if RPC not yet available
+        data = await projectService.getAll();
+      }
       setProjects(data);
 
       // Restore persisted active project or default to first

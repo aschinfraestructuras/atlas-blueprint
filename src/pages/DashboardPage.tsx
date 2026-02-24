@@ -6,11 +6,12 @@ import { useDashboardViews } from "@/hooks/useDashboardViews";
 import { useNonConformities } from "@/hooks/useNonConformities";
 import { useSuppliers } from "@/hooks/useSuppliers";
 import { useWorkItems } from "@/hooks/useWorkItems";
+import { useMaterials } from "@/hooks/useMaterials";
 import {
   FolderKanban, FileText, FlaskConical, AlertTriangle,
   Clock, Building2, Timer, CheckCircle2, TrendingUp,
   ShieldCheck, Construction, ClipboardCheck, Hourglass,
-  BarChart3, PieChart as PieChartIcon, Target, Activity, Truck,
+  BarChart3, PieChart as PieChartIcon, Target, Activity, Truck, Package,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -279,6 +280,7 @@ export default function DashboardPage() {
   const { data: ncs, loading: ncLoading } = useNonConformities();
   const { data: suppliers, kpis, loading: supLoading } = useSuppliers();
   const { data: workItems, loading: wiLoading } = useWorkItems();
+  const { kpis: matKpis, loading: matLoading } = useMaterials();
 
   const displayName = user?.email?.split("@")[0] ?? "—";
   const emptyMsg = t("dashboard.noData");
@@ -426,7 +428,15 @@ export default function DashboardPage() {
             </div>
           )}
 
-          {/* ── Row 2: Quality Indicators ───────────────────────── */}
+          {/* ── Row 1c: Material Indicators ──────────────────────── */}
+          {matKpis && (
+            <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+              <KPICard label={t("dashboard.exec.materialsDocsExpired")} value={matKpis.materials_with_expired_docs} icon={Package} loading={matLoading} color={matKpis.materials_with_expired_docs > 0 ? MOD.subcontractors : MOD.suppliers} sub={`${matKpis.materials_active} ${t("materials.status.active").toLowerCase()}`} />
+              <KPICard label={t("dashboard.exec.materialsWithNC")} value={matKpis.materials_with_open_nc} icon={Package} loading={matLoading} color={matKpis.materials_with_open_nc > 0 ? MOD.nc : MOD.suppliers} sub={`${matKpis.materials_total} total`} />
+              <KPICard label={t("dashboard.exec.materialsNonconformTests")} value={matKpis.materials_with_nonconform_tests_30d} icon={Package} loading={matLoading} color={matKpis.materials_with_nonconform_tests_30d > 0 ? MOD.nc : MOD.suppliers} sub={`${matKpis.materials_total} total`} />
+            </div>
+          )}
+
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
             <PercentCard label={t("dashboard.exec.ppiConform")} value={summary.ppi_conform_pct} loading={loading} color={MOD.suppliers} icon={ClipboardCheck} sub={`${summary.ppi_approved}/${summary.ppi_total}`} />
             <PercentCard label={t("dashboard.exec.testsConform")} value={summary.tests_conform_pct} loading={loading} color={MOD.tests} icon={FlaskConical} sub={`${summary.tests_completed} ${t("dashboard.stats.completed")}`} />
