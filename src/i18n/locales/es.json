@@ -68,6 +68,7 @@
     "projects": "Proyectos",
     "documents": "Documentos",
     "suppliers": "Proveedores",
+    "materials": "Materiales",
     "tests": "Ensayos",
     "nonConformities": "No Conformidades",
     "auditLog": "Registro de Auditoría",
@@ -1665,6 +1666,68 @@
       "rls": "RLS / Permisos",
       "functions": "Funciones RPC",
       "storage": "Storage"
+    }
+  },
+  "materials": {
+    "newMaterial": "Nuevo Material",
+    "searchPlaceholder": "Buscar código, nombre, especificación…",
+    "table": { "code": "Código" },
+    "filters": { "allStatuses": "Todos los estados", "allCategories": "Todas las categorías" },
+    "status": { "active": "Activo", "discontinued": "Descontinuado", "archived": "Archivado" },
+    "categories": {
+      "betao": "Hormigón", "aco": "Acero", "solos": "Suelos", "agregado": "Árido",
+      "mbc": "MBC / Asfáltico", "pintura": "Pintura", "geossintetico": "Geosintético",
+      "soldadura": "Soldadura", "tubagem": "Tubería", "prefabricado": "Prefabricado", "outro": "Otro"
+    },
+    "actions": { "archive": "Archivar", "activate": "Activar" },
+    "kpi": {
+      "total": "Total", "active": "Activos", "discontinued": "Descontinuados",
+      "docsExpired": "Docs Expirados", "withOpenNC": "Con NC Abierta", "nonconformTests": "Ensayos NC (30d)"
+    },
+    "form": {
+      "titleCreate": "Nuevo Material", "titleEdit": "Editar Material",
+      "name": "Nombre", "namePlaceholder": "ej: Hormigón C30/37 XC2",
+      "category": "Categoría", "subcategory": "Subcategoría", "subcategoryPlaceholder": "ej: Estructural",
+      "specification": "Especificación", "specificationPlaceholder": "ej: C30/37 XC2 Cl 0.4 Dmax22 S3",
+      "unit": "Unidad", "unitPlaceholder": "Seleccionar…",
+      "normativeRefs": "Referencias Normativas", "normativeRefsPlaceholder": "ej: EN 206, UNE-EN 13670",
+      "acceptanceCriteria": "Criterios de Aceptación", "acceptanceCriteriaPlaceholder": "ej: fck ≥ 30 MPa a 28 días",
+      "createBtn": "Crear material"
+    },
+    "detail": {
+      "suppliersCount": "Proveedores", "testsTotal": "Ensayos", "testsNC": "Ensayos NC",
+      "ncOpen": "NC Abiertas", "docsExpiring": "Docs por Expirar", "docsExpired": "Docs Expirados",
+      "workItems": "Actividades",
+      "tabs": {
+        "summary": "Resumen", "suppliers": "Proveedores", "documents": "Documentos",
+        "tests": "Ensayos", "ncs": "No Conformidades", "workItems": "Aplicación en Obra", "audit": "Auditoría"
+      },
+      "noSuppliers": "Sin proveedores asociados.",
+      "noTests": "Sin ensayos registrados.", "createTest": "Crear Ensayo",
+      "noNCs": "Sin no conformidades.", "createNC": "Crear NC",
+      "noWorkItems": "Sin actividades asociadas.", "noAudit": "Sin registros de auditoría.",
+      "workItemId": "Actividad", "lotRef": "Lote / Guía", "quantity": "Cantidad"
+    },
+    "toast": {
+      "created": "Material creado con éxito.", "updated": "Material actualizado.",
+      "archived": "Material archivado.", "activated": "Material activado.",
+      "error": "Ocurrió un error. Inténtelo de nuevo."
+    }
+  },
+  "pages": {
+    "materials": {
+      "title": "Materiales",
+      "subtitle": "Catálogo de materiales del proyecto"
+    }
+  },
+  "emptyState": {
+    "materials": { "subtitle": "Aún no hay materiales en este proyecto. Cree el primero." }
+  },
+  "dashboard": {
+    "exec": {
+      "materialsDocsExpired": "Materiales c/ Docs Expirados",
+      "materialsWithNC": "Materiales con NC Abierta",
+      "materialsNonconformTests": "Materiales c/ Ensayos NC (30d)"
     }
   }
 }

@@ -28,6 +28,8 @@ import WorkItemDetailPage from "./pages/WorkItemDetailPage";
 import PPIPage from "./pages/PPIPage";
 import PPITemplatesPage from "./pages/PPITemplatesPage";
 import PPIDetailPage from "./pages/PPIDetailPage";
+import MaterialsPage from "./pages/MaterialsPage";
+import MaterialDetailPage from "./pages/MaterialDetailPage";
 import NotFound from "./pages/NotFound";
 import HealthCheckPage from "./pages/HealthCheckPage";
 
@@ -76,6 +78,8 @@ const App = () => (
               <Route path="/ppi" element={<ProtectedLayout><PPIPage /></ProtectedLayout>} />
               <Route path="/ppi/templates" element={<ProtectedLayout><PPITemplatesPage /></ProtectedLayout>} />
               <Route path="/ppi/:id" element={<ProtectedLayout><PPIDetailPage /></ProtectedLayout>} />
+              <Route path="/materials" element={<ProtectedLayout><MaterialsPage /></ProtectedLayout>} />
+              <Route path="/materials/:id" element={<ProtectedLayout><MaterialDetailPage /></ProtectedLayout>} />
               <Route path="/admin/health" element={<ProtectedLayout><HealthCheckPage /></ProtectedLayout>} />
 
               {/* Catch-all */}

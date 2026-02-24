@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import {
-  LayoutDashboard, FolderKanban, FileText, Truck,
+  LayoutDashboard, FolderKanban, FileText, Truck, Package,
   FlaskConical, AlertTriangle, ScrollText, Settings,
   ShieldCheck, ChevronLeft, ChevronRight, X,
   Inbox, BookOpen, Map, HardHat, Construction, ClipboardCheck,
@@ -39,6 +39,7 @@ const NAV_SECTIONS: SidebarSection[] = [
       { labelKey: "nav.documents",      url: "/documents",        icon: FileText },
       { labelKey: "nav.tests",          url: "/tests",            icon: FlaskConical },
       { labelKey: "nav.suppliers",      url: "/suppliers",        icon: Truck },
+      { labelKey: "nav.materials",      url: "/materials",        icon: Package },
       { labelKey: "nav.nonConformities", url: "/non-conformities", icon: AlertTriangle },
     ],
   },
