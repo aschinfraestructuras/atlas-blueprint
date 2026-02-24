@@ -8,6 +8,8 @@ import { useNonConformities } from "@/hooks/useNonConformities";
 import { ncService } from "@/lib/services/ncService";
 import { ncDemoService } from "@/lib/services/ncDemoService";
 import { exportNCBulkPdf, type NCExportLabels } from "@/lib/services/ncExportService";
+import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
+import { exportToCSV, generateListPdf, buildReportFilename } from "@/lib/services/reportService";
 import type { NonConformity } from "@/lib/services/ncService";
 import { toast } from "@/hooks/use-toast";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
@@ -274,6 +276,21 @@ export default function NonConformitiesPage() {
         iconColor="hsl(2, 60%, 44%)"
         actions={
           <>
+            <ReportExportMenu
+              disabled={filtered.length === 0}
+              options={[
+                { label: t("report.pdfList", { defaultValue: "PDF — Lista" }), icon: "pdf", action: handleBulkExport },
+                { label: t("report.csvList", { defaultValue: "CSV — Lista" }), icon: "csv", action: () => {
+                  if (!activeProject) return;
+                  const headers = [t("nc.table.code"), t("nc.form.title"), t("nc.table.severity"), t("common.status"), t("nc.form.detectedAt"), t("nc.table.dueDate")];
+                  const rows = filtered.map(nc => [
+                    nc.code ?? "", nc.title ?? "", t(`nc.severity.${nc.severity}`), t(`nc.status.${nc.status}`),
+                    nc.detected_at ?? "", nc.due_date ?? "",
+                  ]);
+                  exportToCSV(headers, rows, buildReportFilename("NC", activeProject.code, "list", "csv"));
+                }},
+              ]}
+            />
             <Button
               variant="outline" size="sm"
               onClick={handleSeedDemo} disabled={seeding}

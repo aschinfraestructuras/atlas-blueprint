@@ -28,6 +28,7 @@ import PPIPage from "./pages/PPIPage";
 import PPITemplatesPage from "./pages/PPITemplatesPage";
 import PPIDetailPage from "./pages/PPIDetailPage";
 import NotFound from "./pages/NotFound";
+import HealthCheckPage from "./pages/HealthCheckPage";
 
 const queryClient = new QueryClient();
 
@@ -73,6 +74,7 @@ const App = () => (
               <Route path="/ppi" element={<ProtectedLayout><PPIPage /></ProtectedLayout>} />
               <Route path="/ppi/templates" element={<ProtectedLayout><PPITemplatesPage /></ProtectedLayout>} />
               <Route path="/ppi/:id" element={<ProtectedLayout><PPIDetailPage /></ProtectedLayout>} />
+              <Route path="/admin/health" element={<ProtectedLayout><HealthCheckPage /></ProtectedLayout>} />
 
               {/* Catch-all */}
               <Route path="*" element={<NotFound />} />
