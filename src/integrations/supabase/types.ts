@@ -62,6 +62,13 @@ export type Database = {
             referencedRelation: "projects"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "attachments_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
         ]
       }
       audit_log: {
@@ -111,6 +118,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "projects"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "audit_log_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
           },
         ]
       }
@@ -168,6 +182,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "projects"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_files_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
           },
         ]
       }
@@ -362,6 +383,13 @@ export type Database = {
             referencedRelation: "projects"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "documents_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
         ]
       }
       non_conformities: {
@@ -518,6 +546,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "non_conformities_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
             foreignKeyName: "non_conformities_subcontractor_id_fkey"
             columns: ["subcontractor_id"]
             isOneToOne: false
@@ -601,6 +636,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "projects"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plans_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
           },
         ]
       }
@@ -729,6 +771,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "ppi_instances_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
             foreignKeyName: "ppi_instances_template_id_fkey"
             columns: ["template_id"]
             isOneToOne: false
@@ -842,6 +891,13 @@ export type Database = {
             referencedRelation: "projects"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "ppi_templates_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
         ]
       }
       profiles: {
@@ -917,6 +973,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "projects"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_members_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
           },
           {
             foreignKeyName: "project_members_role_fkey"
@@ -1038,6 +1101,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "subcontractors_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
             foreignKeyName: "subcontractors_supplier_id_fkey"
             columns: ["supplier_id"]
             isOneToOne: false
@@ -1094,6 +1164,13 @@ export type Database = {
             referencedRelation: "projects"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "suppliers_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
         ]
       }
       survey_records: {
@@ -1140,6 +1217,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "projects"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "survey_records_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
           },
         ]
       }
@@ -1197,6 +1281,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "projects"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "technical_office_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
           },
         ]
       }
@@ -1327,6 +1418,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "test_results_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
             foreignKeyName: "test_results_subcontractor_id_fkey"
             columns: ["subcontractor_id"]
             isOneToOne: false
@@ -1346,6 +1444,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tests_catalog"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_results_test_id_fkey"
+            columns: ["test_id"]
+            isOneToOne: false
+            referencedRelation: "view_advanced_quality_metrics"
+            referencedColumns: ["test_catalog_id"]
           },
           {
             foreignKeyName: "test_results_work_item_id_fkey"
@@ -1430,6 +1535,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "projects"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tests_catalog_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
           },
         ]
       }
@@ -1518,6 +1630,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "work_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
             foreignKeyName: "work_items_subcontractor_id_fkey"
             columns: ["subcontractor_id"]
             isOneToOne: false
@@ -1528,7 +1647,119 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      view_advanced_quality_metrics: {
+        Row: {
+          conform: number | null
+          disciplina: string | null
+          failure_rate_pct: number | null
+          material: string | null
+          non_conform: number | null
+          project_id: string | null
+          standard: string | null
+          test_catalog_id: string | null
+          test_code: string | null
+          test_name: string | null
+          total: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_results_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_results_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
+      view_dashboard_summary: {
+        Row: {
+          docs_in_review: number | null
+          docs_total: number | null
+          nc_avg_aging: number | null
+          nc_avg_lead_time: number | null
+          nc_closed: number | null
+          nc_open: number | null
+          ppi_approved: number | null
+          ppi_conform_pct: number | null
+          ppi_submitted: number | null
+          ppi_total: number | null
+          project_id: string | null
+          tests_completed: number | null
+          tests_conform_pct: number | null
+          tests_non_conform: number | null
+          tests_total: number | null
+          wi_in_progress: number | null
+          wi_total: number | null
+        }
+        Relationships: []
+      }
+      view_document_metrics: {
+        Row: {
+          approved: number | null
+          avg_approval_days: number | null
+          doc_type: string | null
+          draft: number | null
+          in_review: number | null
+          project_id: string | null
+          total: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documents_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
+      view_nc_monthly: {
+        Row: {
+          closed: number | null
+          month: string | null
+          opened: number | null
+          project_id: string | null
+        }
+        Relationships: []
+      }
+      view_tests_monthly: {
+        Row: {
+          conform: number | null
+          month: string | null
+          non_conform: number | null
+          project_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_results_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_results_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
     }
     Functions: {
       fn_bulk_export_tests: {
