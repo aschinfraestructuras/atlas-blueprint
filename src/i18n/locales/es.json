@@ -106,7 +106,11 @@
       "openNCs": "NCs Abiertas",
       "totalWorkItems": "Total Work Items",
       "openWorkItems": "Work Items Abiertos",
-      "workItemsWithNC": "Work Items c/ NC Abierta"
+      "workItemsWithNC": "Work Items c/ NC Abierta",
+      "completed": "completados",
+      "ppiTotal": "PPI Total",
+      "ppiPending": "PPI Pendientes Aprobación",
+      "ppiConform": "conformes"
     },
     "kpi": {
       "title": "KPIs del Proyecto",
@@ -114,18 +118,25 @@
       "tests": "Ensayos",
       "ncs": "No Conformidades",
       "suppliers": "Proveedores",
+      "ppi": "PPI",
       "avgAging": "Aging medio: {{days}} días",
       "avgAgingTitle": "Aging Medio NC",
       "days": "días abiertos",
       "openNcCount": "{{count}} NC abiertas",
       "noOpenNcs": "Sin NCs abiertas",
       "awaitingReview": "En revisión",
-      "approved": "Aprobados"
+      "approved": "Aprobados",
+      "ncLeadTimeTitle": "Lead Time Medio NC",
+      "daysToClose": "días hasta cierre",
+      "closedNcCount": "{{count}} NC cerradas",
+      "noClosedNcs": "Sin NCs cerradas",
+      "ncOpened": "Abiertas",
+      "ncClosed": "Cerradas"
     },
     "charts": {
       "tests": "Ensayos",
       "suppliers": "Proveedores",
-      "ncTrend": "Tendencia de NC — últimos 6 meses",
+      "ncTrend": "NC Abiertas vs Cerradas — 6 meses",
       "docsByType": "Documentos por Tipo"
     },
     "recentActivity": "Actividad Reciente",
