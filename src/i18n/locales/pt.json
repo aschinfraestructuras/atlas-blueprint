@@ -1535,8 +1535,30 @@
       "deleteError": "Falha ao eliminar o anexo"
     }
   },
-  "common": {
-    "exportPdf": "Exportar PDF",
-    "exportCsv": "Exportar CSV"
+  "report": {
+    "export": "Exportar",
+    "exportOptions": "Opções de exportação",
+    "exportError": "Erro ao exportar",
+    "pdfList": "PDF — Lista",
+    "pdfDetail": "PDF — Detalhe",
+    "csvList": "CSV — Lista"
+  },
+  "health": {
+    "module": "Sistema",
+    "title": "Verificação de Saúde",
+    "subtitle": "Testes automáticos de integridade do sistema",
+    "runChecks": "Executar verificações",
+    "lastRun": "Última execução",
+    "noProject": "Selecione um projeto ativo para executar as verificações.",
+    "ready": "Clique em «Executar verificações» para testar a integridade do sistema.",
+    "cat": {
+      "tables": "Tabelas",
+      "rls": "RLS / Permissões",
+      "functions": "Funções RPC",
+      "storage": "Storage"
+    }
+  },
+  "nav": {
+    "health": "Saúde do Sistema"
   }
 }

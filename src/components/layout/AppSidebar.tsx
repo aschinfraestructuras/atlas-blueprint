@@ -78,6 +78,7 @@ const NAV_SECTIONS: SidebarSection[] = [
     sectionKey: "system",
     items: [
       { labelKey: "nav.auditLog",  url: "/audit",    icon: ScrollText, requiredAction: "viewAudit" },
+      { labelKey: "nav.health",    url: "/admin/health", icon: ShieldCheck, adminOnly: true },
       { labelKey: "nav.settings",  url: "/settings", icon: Settings, adminOnly: true },
     ],
   },

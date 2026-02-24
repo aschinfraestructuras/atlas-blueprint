@@ -2,8 +2,17 @@ import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
-  Plus, Search, Construction, Pencil, Trash2, Eye, ClipboardCheck, Loader2, FileDown,
+  Plus, Search, Construction, Pencil, Trash2, Eye, ClipboardCheck, Loader2,
 } from "lucide-react";
+import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
+import {
+  exportToCSV,
+  generateListPdf,
+  buildReportFilename,
+  type ReportLabels,
+} from "@/lib/services/reportService";
+import { ppiDemoService } from "@/lib/services/ppiDemoService";
+import { exportWorkItemsCsv, type WorkItemForExport } from "@/lib/services/workItemExportService";
 import { useWorkItems } from "@/hooks/useWorkItems";
 import { useProject } from "@/contexts/ProjectContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -12,8 +21,6 @@ import { RoleGate, RoleGateAdmin } from "@/components/RoleGate";
 import {
   workItemService, formatPk, WORK_ITEM_STATUS_OPTIONS, type WorkItem,
 } from "@/lib/services/workItemService";
-import { exportWorkItemsCsv, type WorkItemForExport } from "@/lib/services/workItemExportService";
-import { ppiDemoService } from "@/lib/services/ppiDemoService";
 import { WorkItemFormDialog } from "@/components/work-items/WorkItemFormDialog";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { EmptyState } from "@/components/EmptyState";
@@ -147,30 +154,54 @@ export default function WorkItemsPage() {
   function handleExportCsv() {
     if (!activeProject) return;
     const locale = i18n.language ?? "pt";
-    const rows: WorkItemForExport[] = filtered.map((wi) => ({
-      ...wi,
-      disciplina_label: t(`workItems.disciplines.${wi.disciplina}`, { defaultValue: wi.disciplina }),
-      status_label:     t(`workItems.status.${wi.status}`,          { defaultValue: wi.status }),
-    }));
-    exportWorkItemsCsv(rows, {
-      appName:     "Atlas QMS",
+    const headers = [
+      t("workItems.export.fields.sector"),
+      t("workItems.export.fields.discipline"),
+      t("workItems.export.fields.obra"),
+      t("workItems.export.fields.lote"),
+      t("workItems.export.fields.pk"),
+      t("workItems.export.fields.status"),
+      t("workItems.export.fields.createdAt"),
+    ];
+    const rows = filtered.map((wi) => [
+      wi.sector,
+      t(`workItems.disciplines.${wi.disciplina}`, { defaultValue: wi.disciplina }),
+      wi.obra ?? "",
+      wi.lote ?? "",
+      formatPk(wi.pk_inicio, wi.pk_fim),
+      t(`workItems.status.${wi.status}`, { defaultValue: wi.status }),
+      wi.created_at?.slice(0, 10) ?? "",
+    ]);
+    exportToCSV(headers, rows,
+      buildReportFilename("WI", activeProject.code, "list", "csv"));
+  }
+
+  function handleExportPdf() {
+    if (!activeProject || filtered.length === 0) return;
+    const locale = i18n.language ?? "pt";
+    const columns = [
+      t("workItems.export.fields.sector"),
+      t("workItems.export.fields.discipline"),
+      t("workItems.export.fields.obra"),
+      t("workItems.export.fields.pk"),
+      t("workItems.export.fields.status"),
+    ];
+    const rows = filtered.map((wi) => [
+      wi.sector,
+      t(`workItems.disciplines.${wi.disciplina}`, { defaultValue: wi.disciplina }),
+      wi.obra ?? "—",
+      formatPk(wi.pk_inicio, wi.pk_fim),
+      t(`workItems.status.${wi.status}`, { defaultValue: wi.status }),
+    ]);
+    generateListPdf({
       reportTitle: t("workItems.export.reportTitle"),
-      generatedOn: t("workItems.export.generatedOn"),
-      project:     t("workItems.export.fields.sector"),
-      sector:      t("workItems.export.fields.sector"),
-      discipline:  t("workItems.export.fields.discipline"),
-      obra:        t("workItems.export.fields.obra"),
-      lote:        t("workItems.export.fields.lote"),
-      elemento:    t("workItems.export.fields.elemento"),
-      parte:       t("workItems.export.fields.parte"),
-      pk:          t("workItems.export.fields.pk"),
-      status:      t("workItems.export.fields.status"),
-      createdAt:   t("workItems.export.fields.createdAt"),
-      ncs:         t("workItems.export.fields.ncs"),
-      tests:       t("workItems.export.fields.tests"),
-      ppis:        t("workItems.export.fields.ppis"),
-    }, locale, activeProject.name,
-      `WI_${activeProject.code}_${new Date().toISOString().slice(0, 10)}.csv`);
+      labels: { appName: "Atlas QMS", reportTitle: t("workItems.export.reportTitle"), generatedOn: t("workItems.export.generatedOn") },
+      meta: { projectName: activeProject.name, projectCode: activeProject.code, locale },
+      columns,
+      rows,
+      footerRef: `${filtered.length} work items`,
+      filename: buildReportFilename("WI", activeProject.code, "list"),
+    });
   }
 
   if (!activeProject) return <NoProjectBanner />;
@@ -187,15 +218,13 @@ export default function WorkItemsPage() {
         iconColor="hsl(212, 43%, 40%)"
         actions={
           <>
-            <Button
-              variant="outline" size="sm"
-              onClick={handleExportCsv}
-              className="gap-2"
+            <ReportExportMenu
               disabled={filtered.length === 0}
-            >
-              <FileDown className="h-4 w-4" />
-              {t("workItems.export.csvList")}
-            </Button>
+              options={[
+                { label: t("report.pdfList"), icon: "pdf", action: handleExportPdf },
+                { label: t("report.csvList"), icon: "csv", action: handleExportCsv },
+              ]}
+            />
             {canCreate && (
               <Button onClick={openCreate} className="gap-2">
                 <Plus className="h-4 w-4" />

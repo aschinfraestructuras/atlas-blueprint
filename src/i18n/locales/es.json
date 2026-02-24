@@ -1521,6 +1521,32 @@
       "deleted": "Adjunto eliminado.",
       "deleteError": "Error al eliminar el adjunto"
     }
+  },
+  "report": {
+    "export": "Exportar",
+    "exportOptions": "Opciones de exportación",
+    "exportError": "Error al exportar",
+    "pdfList": "PDF — Lista",
+    "pdfDetail": "PDF — Detalle",
+    "csvList": "CSV — Lista"
+  },
+  "health": {
+    "module": "Sistema",
+    "title": "Verificación de Salud",
+    "subtitle": "Pruebas automáticas de integridad del sistema",
+    "runChecks": "Ejecutar verificaciones",
+    "lastRun": "Última ejecución",
+    "noProject": "Seleccione un proyecto activo para ejecutar las verificaciones.",
+    "ready": "Haga clic en «Ejecutar verificaciones» para probar la integridad del sistema.",
+    "cat": {
+      "tables": "Tablas",
+      "rls": "RLS / Permisos",
+      "functions": "Funciones RPC",
+      "storage": "Storage"
+    }
+  },
+  "nav": {
+    "health": "Salud del Sistema"
   }
 }
 
