@@ -10,8 +10,9 @@ import {
   type SupplierMaterial,
   type SupplierDetailMetrics,
 } from "@/lib/services/supplierService";
+import { exportSupplierPdf } from "@/lib/services/supplierExportService";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, Truck, FileText, Package, FlaskConical, AlertTriangle, History, Plus, Trash2, ExternalLink } from "lucide-react";
+import { ArrowLeft, Truck, FileText, Package, FlaskConical, AlertTriangle, History, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -20,7 +21,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { SupplierFormDialog } from "@/components/suppliers/SupplierFormDialog";
+import { AddMaterialDialog } from "@/components/suppliers/AddMaterialDialog";
 import { LinkedDocumentsPanel } from "@/components/documents/LinkedDocumentsPanel";
+import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
@@ -42,7 +45,7 @@ export default function SupplierDetailPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { activeProject } = useProject();
-  const { canEdit } = useProjectRole();
+  const { canEdit, canCreate } = useProjectRole();
 
   const [supplier, setSupplier] = useState<Supplier | null>(null);
   const [metrics, setMetrics] = useState<SupplierDetailMetrics | null>(null);
@@ -53,6 +56,7 @@ export default function SupplierDetailPage() {
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [editOpen, setEditOpen] = useState(false);
+  const [addMaterialOpen, setAddMaterialOpen] = useState(false);
 
   const fetchAll = useCallback(async () => {
     if (!id || !activeProject) return;
@@ -69,7 +73,6 @@ export default function SupplierDetailPage() {
       setDocs(d);
       setMaterials(mat);
 
-      // NCs
       const { data: ncData } = await supabase
         .from("non_conformities")
         .select("id, code, title, severity, status, detected_at")
@@ -77,7 +80,6 @@ export default function SupplierDetailPage() {
         .order("detected_at", { ascending: false });
       setNcs(ncData ?? []);
 
-      // Tests
       const { data: trData } = await supabase
         .from("test_results")
         .select("id, code, date, status, pass_fail, sample_ref")
@@ -85,7 +87,6 @@ export default function SupplierDetailPage() {
         .order("date", { ascending: false });
       setTests(trData ?? []);
 
-      // Audit
       const { data: logData } = await supabase
         .from("audit_log")
         .select("id, action, diff, created_at, description")
@@ -108,7 +109,7 @@ export default function SupplierDetailPage() {
   if (loading) return (
     <div className="space-y-6 max-w-5xl mx-auto">
       <Skeleton className="h-8 w-48" />
-      <div className="grid grid-cols-4 gap-4">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-24" />)}</div>
+      <div className="grid grid-cols-5 gap-4">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-24" />)}</div>
       <Skeleton className="h-64" />
     </div>
   );
@@ -121,6 +122,19 @@ export default function SupplierDetailPage() {
       setMaterials(prev => prev.filter(m => m.id !== matId));
       toast({ title: t("common.delete") });
     } catch { toast({ title: t("suppliers.toast.error"), variant: "destructive" }); }
+  };
+
+  const handleExportPdf = () => {
+    exportSupplierPdf({
+      supplier,
+      metrics,
+      docs,
+      materials,
+      ncs: ncs.map(nc => ({ code: nc.code ?? "", title: nc.title ?? "", severity: nc.severity ?? "", status: nc.status ?? "" })),
+      projectName: activeProject.name,
+      projectCode: activeProject.code,
+      t,
+    });
   };
 
   return (
@@ -139,20 +153,27 @@ export default function SupplierDetailPage() {
           </div>
           <p className="text-sm text-muted-foreground mt-0.5">{supplier.code} · {supplier.nif_cif ?? "—"}</p>
         </div>
-        {canEdit && (
-          <Button size="sm" variant="outline" onClick={() => setEditOpen(true)}>{t("common.edit")}</Button>
-        )}
+        <div className="flex gap-2">
+          <ReportExportMenu
+            options={[
+              { label: "PDF", icon: "pdf" as const, action: handleExportPdf },
+            ]}
+          />
+          {canEdit && (
+            <Button size="sm" variant="outline" onClick={() => setEditOpen(true)}>{t("common.edit")}</Button>
+          )}
+        </div>
       </div>
 
       {/* Metric Cards */}
       {metrics && (
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
           {[
-            { label: t("suppliers.detail.openNCs"), value: metrics.open_nc_count, color: "text-destructive" },
+            { label: t("suppliers.detail.openNCs"), value: metrics.open_nc_count, color: metrics.open_nc_count > 0 ? "text-destructive" : "text-foreground" },
             { label: t("suppliers.detail.testsTotal"), value: metrics.tests_total, color: "text-foreground" },
-            { label: t("suppliers.detail.testsNC"), value: metrics.tests_nonconform, color: "text-destructive" },
-            { label: t("suppliers.detail.docsExpiring"), value: metrics.docs_expiring_30d, color: "text-accent-foreground" },
-            { label: t("suppliers.detail.docsExpired"), value: metrics.docs_expired, color: "text-destructive" },
+            { label: t("suppliers.detail.testsNC"), value: metrics.tests_nonconform, color: metrics.tests_nonconform > 0 ? "text-destructive" : "text-foreground" },
+            { label: t("suppliers.detail.docsExpiring"), value: metrics.docs_expiring_30d, color: metrics.docs_expiring_30d > 0 ? "text-accent-foreground" : "text-foreground" },
+            { label: t("suppliers.detail.docsExpired"), value: metrics.docs_expired, color: metrics.docs_expired > 0 ? "text-destructive" : "text-foreground" },
           ].map((m, i) => (
             <Card key={i} className="border-0 bg-card shadow-card">
               <CardContent className="p-4 text-center">
@@ -231,7 +252,16 @@ export default function SupplierDetailPage() {
         {/* Materials */}
         <TabsContent value="materials">
           <Card className="border-0 shadow-card">
-            <CardContent className="p-6">
+            <CardHeader className="pb-2 flex flex-row items-center justify-between">
+              <CardTitle className="text-sm">{t("suppliers.detail.tabs.materials")}</CardTitle>
+              {canCreate && (
+                <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setAddMaterialOpen(true)}>
+                  <Plus className="h-3.5 w-3.5" />
+                  {t("suppliers.detail.addMaterial", { defaultValue: "Adicionar Material" })}
+                </Button>
+              )}
+            </CardHeader>
+            <CardContent>
               {materials.length === 0 ? (
                 <p className="text-sm text-muted-foreground text-center py-6">{t("suppliers.detail.noMaterials")}</p>
               ) : (
@@ -286,7 +316,7 @@ export default function SupplierDetailPage() {
                   </TableHeader>
                   <TableBody>
                     {tests.map(tr => (
-                      <TableRow key={tr.id}>
+                      <TableRow key={tr.id} className="cursor-pointer hover:bg-muted/30" onClick={() => navigate(`/tests`)}>
                         <TableCell className="text-sm font-mono">{tr.code ?? "—"}</TableCell>
                         <TableCell className="text-sm">{new Date(tr.date).toLocaleDateString()}</TableCell>
                         <TableCell><Badge variant="secondary" className="text-xs">{t(`tests.status.${tr.status}`, { defaultValue: tr.status })}</Badge></TableCell>
@@ -303,7 +333,16 @@ export default function SupplierDetailPage() {
         {/* NCs */}
         <TabsContent value="ncs">
           <Card className="border-0 shadow-card">
-            <CardContent className="p-6">
+            <CardHeader className="pb-2 flex flex-row items-center justify-between">
+              <CardTitle className="text-sm">{t("suppliers.detail.tabs.ncs")}</CardTitle>
+              {canCreate && (
+                <Button size="sm" variant="outline" className="gap-1.5" onClick={() => navigate(`/non-conformities?supplier_id=${supplier.id}`)}>
+                  <Plus className="h-3.5 w-3.5" />
+                  {t("suppliers.detail.createNC", { defaultValue: "Criar NC" })}
+                </Button>
+              )}
+            </CardHeader>
+            <CardContent>
               {ncs.length === 0 ? (
                 <p className="text-sm text-muted-foreground text-center py-6">{t("suppliers.detail.noNCs")}</p>
               ) : (
@@ -356,12 +395,8 @@ export default function SupplierDetailPage() {
         </TabsContent>
       </Tabs>
 
-      <SupplierFormDialog
-        open={editOpen}
-        onOpenChange={setEditOpen}
-        supplier={supplier}
-        onSuccess={fetchAll}
-      />
+      <SupplierFormDialog open={editOpen} onOpenChange={setEditOpen} supplier={supplier} onSuccess={fetchAll} />
+      <AddMaterialDialog open={addMaterialOpen} onOpenChange={setAddMaterialOpen} projectId={activeProject.id} supplierId={supplier.id} onSuccess={fetchAll} />
     </div>
   );
 }

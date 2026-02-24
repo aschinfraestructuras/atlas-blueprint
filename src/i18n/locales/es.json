@@ -115,7 +115,10 @@
       "ncAging": "Aging Medio NC",
       "docsReview": "Documentos en Revisión",
       "conform": "Conformes",
-      "nonConform": "No Conformes"
+      "nonConform": "No Conformes",
+      "suppliersPendingQual": "Proveedores Pend. Calificación",
+      "supplierDocsExpiring": "Docs Proveedor por Expirar (30d)",
+      "suppliersWithNC": "Proveedores con NC Abierta"
     },
     "adv": {
       "quality": "Calidad Técnica",
@@ -869,6 +872,9 @@
       "noTests": "Sin ensayos asociados.",
       "noNCs": "Sin no conformidades.",
       "noAudit": "Sin registros de auditoría.",
+      "addMaterial": "Añadir Material",
+      "materialNamePlaceholder": "ej: Hormigón C30/37",
+      "createNC": "Crear NC",
       "tabs": {
         "summary": "Resumen",
         "documents": "Documentos",
@@ -886,6 +892,9 @@
       "declaration": "Declaración",
       "test_report": "Informe de Ensayo",
       "other": "Otro"
+    },
+    "export": {
+      "reportTitle": "Ficha de Proveedor"
     },
     "form": {
       "titleCreate": "Nuevo Proveedor",
@@ -920,7 +929,8 @@
       "updated": "Proveedor actualizado con éxito.",
       "archived": "Proveedor archivado.",
       "activated": "Proveedor reactivado.",
-      "error": "Ocurrió un error. Inténtelo de nuevo."
+      "error": "Ocurrió un error. Inténtelo de nuevo.",
+      "materialAdded": "Material añadido."
     }
   },
   "nc": {
