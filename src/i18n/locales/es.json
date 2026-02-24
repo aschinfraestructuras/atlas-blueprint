@@ -58,13 +58,13 @@
   },
   "nav": {
     "sections": {
-      "core": "Core",
+      "core": "Principal",
       "projectManagement": "Gestión de Proyecto",
       "technicalOfficeSection": "Oficina Técnica",
       "fieldSection": "Campo y Subcontratistas",
       "system": "Sistema"
     },
-    "dashboard": "Dashboard",
+    "dashboard": "Panel General",
     "projects": "Proyectos",
     "documents": "Documentos",
     "suppliers": "Proveedores",
@@ -73,11 +73,12 @@
     "auditLog": "Registro de Auditoría",
     "settings": "Configuración",
     "technicalOffice": "Oficina Técnica",
-    "plans": "Planificación & Planes",
+    "plans": "Planificación",
     "survey": "Topografía",
     "subcontractors": "Subcontratistas",
-    "workItems": "Work Items",
-    "ppi": "PPI"
+    "workItems": "Actividades",
+    "ppi": "Inspecciones PPI",
+    "health": "Salud del Sistema"
   },
   "topbar": {
     "language": "Idioma",
@@ -99,14 +100,45 @@
     "subtitle": "Aquí tiene un resumen del estado actual de sus proyectos.",
     "subtitleProject": "Visualizando datos del proyecto: {{project}}",
     "noProjectSelected": "Seleccione un proyecto en la parte superior para filtrar los datos.",
+    "noData": "Sin datos en el período seleccionado.",
+    "tabs": {
+      "executive": "Panel Ejecutivo",
+      "advanced": "Análisis Avanzado"
+    },
+    "exec": {
+      "wiOpen": "Actividades en Curso",
+      "ppiPending": "PPI Pend. Aprobación",
+      "testsNC": "Ensayos No Conformes",
+      "ncOpen": "NC Abiertas",
+      "ppiConform": "% PPI Conformes",
+      "testsConform": "% Ensayos Conformes",
+      "ncAging": "Aging Medio NC",
+      "docsReview": "Documentos en Revisión",
+      "conform": "Conformes",
+      "nonConform": "No Conformes"
+    },
+    "adv": {
+      "quality": "Calidad Técnica",
+      "documental": "Documental",
+      "ncRisk": "NC & Riesgo",
+      "operational": "Operacional",
+      "testsByType": "Ensayos por Tipo",
+      "failureByMaterial": "Tasa Reprobación por Material (%)",
+      "docsByType": "Documentos por Tipo",
+      "avgApproval": "Tiempo Medio Aprobación (días)",
+      "ncByDiscipline": "NC por Disciplina",
+      "ncBySupplier": "NC por Proveedor",
+      "ncBySeverity": "NC por Gravedad",
+      "wiByDiscipline": "Actividades por Disciplina"
+    },
     "stats": {
       "activeProjects": "Proyectos Activos",
       "openDocuments": "Documentos en Curso",
       "pendingTests": "Ensayos Pendientes",
       "openNCs": "NCs Abiertas",
-      "totalWorkItems": "Total Work Items",
-      "openWorkItems": "Work Items Abiertos",
-      "workItemsWithNC": "Work Items c/ NC Abierta",
+      "totalWorkItems": "Total Actividades",
+      "openWorkItems": "Actividades en Curso",
+      "workItemsWithNC": "Actividades c/ NC Abierta",
       "completed": "completados",
       "ppiTotal": "PPI Total",
       "ppiPending": "PPI Pendientes Aprobación",
@@ -136,8 +168,9 @@
     "charts": {
       "tests": "Ensayos",
       "suppliers": "Proveedores",
-      "ncTrend": "NC Abiertas vs Cerradas — 6 meses",
-      "docsByType": "Documentos por Tipo"
+      "ncTrend": "NC Abiertas vs Cerradas — 6 Meses",
+      "docsByType": "Documentos por Tipo",
+      "testsTrend": "Ensayos Conformes vs No Conformes — 6 Meses"
     },
     "recentActivity": "Actividad Reciente",
     "nextActions": "Próximas Acciones",
@@ -1105,10 +1138,10 @@
     }
   },
   "workItems": {
-    "title": "Work Items",
+    "title": "Actividades",
     "subtitle": "Gestión de frentes de obra y sectores",
     "module": "Módulo",
-    "new": "Nuevo Work Item",
+    "new": "Nueva Actividad",
     "count_one": "{{count}} ítem",
     "count_other": "{{count}} ítems",
     "searchPlaceholder": "Buscar sector, obra, lote…",
@@ -1544,9 +1577,5 @@
       "functions": "Funciones RPC",
       "storage": "Storage"
     }
-  },
-  "nav": {
-    "health": "Salud del Sistema"
   }
 }
-
