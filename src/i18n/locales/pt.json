@@ -115,7 +115,10 @@
       "ncAging": "Aging Médio NC",
       "docsReview": "Documentos em Revisão",
       "conform": "Conformes",
-      "nonConform": "Não Conformes"
+      "nonConform": "Não Conformes",
+      "suppliersPendingQual": "Fornecedores Pend. Qualificação",
+      "supplierDocsExpiring": "Docs Fornecedor a Expirar (30d)",
+      "suppliersWithNC": "Fornecedores com NC Aberta"
     },
     "adv": {
       "quality": "Qualidade Técnica",
@@ -869,6 +872,9 @@
       "noTests": "Sem ensaios associados.",
       "noNCs": "Sem não conformidades.",
       "noAudit": "Sem registos de auditoria.",
+      "addMaterial": "Adicionar Material",
+      "materialNamePlaceholder": "ex: Betão C30/37",
+      "createNC": "Criar NC",
       "tabs": {
         "summary": "Resumo",
         "documents": "Documentos",
@@ -886,6 +892,9 @@
       "declaration": "Declaração",
       "test_report": "Relatório de Ensaio",
       "other": "Outro"
+    },
+    "export": {
+      "reportTitle": "Ficha de Fornecedor"
     },
     "form": {
       "titleCreate": "Novo Fornecedor",
@@ -920,7 +929,8 @@
       "updated": "Fornecedor atualizado com sucesso.",
       "archived": "Fornecedor arquivado.",
       "activated": "Fornecedor reativado.",
-      "error": "Ocorreu um erro. Tente novamente."
+      "error": "Ocorreu um erro. Tente novamente.",
+      "materialAdded": "Material adicionado."
     }
   },
   "nc": {

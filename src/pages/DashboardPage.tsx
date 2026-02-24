@@ -10,7 +10,7 @@ import {
   FolderKanban, FileText, FlaskConical, AlertTriangle,
   Clock, Building2, Timer, CheckCircle2, TrendingUp,
   ShieldCheck, Construction, ClipboardCheck, Hourglass,
-  BarChart3, PieChart as PieChartIcon, Target, Activity,
+  BarChart3, PieChart as PieChartIcon, Target, Activity, Truck,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -277,7 +277,7 @@ export default function DashboardPage() {
   const { activeProject } = useProject();
   const { summary, ncMonthly, testsMonthly, docMetrics, qualityMetrics, loading } = useDashboardViews();
   const { data: ncs, loading: ncLoading } = useNonConformities();
-  const { data: suppliers, loading: supLoading } = useSuppliers();
+  const { data: suppliers, kpis, loading: supLoading } = useSuppliers();
   const { data: workItems, loading: wiLoading } = useWorkItems();
 
   const displayName = user?.email?.split("@")[0] ?? "—";
@@ -416,6 +416,15 @@ export default function DashboardPage() {
             <KPICard label={t("dashboard.exec.testsNC")} value={summary.tests_non_conform} icon={FlaskConical} loading={loading} color={MOD.nc} sub={`${summary.tests_total} total`} />
             <KPICard label={t("dashboard.exec.ncOpen")} value={summary.nc_open} icon={AlertTriangle} loading={loading} color={MOD.nc} sub={`${summary.nc_closed} ${t("dashboard.kpi.ncClosed").toLowerCase()}`} />
           </div>
+
+          {/* ── Row 1b: Supplier Indicators ──────────────────────── */}
+          {kpis && (
+            <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+              <KPICard label={t("dashboard.exec.suppliersPendingQual")} value={kpis.suppliers_pending_qualification} icon={Truck} loading={supLoading} color={MOD.suppliers} sub={`${kpis.suppliers_active} ${t("suppliers.status.active").toLowerCase()}`} />
+              <KPICard label={t("dashboard.exec.supplierDocsExpiring")} value={kpis.supplier_docs_expiring_30d} icon={FileText} loading={supLoading} color={kpis.supplier_docs_expiring_30d > 0 ? MOD.subcontractors : MOD.suppliers} sub={`${kpis.supplier_docs_expired} ${t("suppliers.detail.docsExpired").toLowerCase()}`} />
+              <KPICard label={t("dashboard.exec.suppliersWithNC")} value={kpis.suppliers_with_open_nc} icon={AlertTriangle} loading={supLoading} color={kpis.suppliers_with_open_nc > 0 ? MOD.nc : MOD.suppliers} sub={`${kpis.suppliers_total} total`} />
+            </div>
+          )}
 
           {/* ── Row 2: Quality Indicators ───────────────────────── */}
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
