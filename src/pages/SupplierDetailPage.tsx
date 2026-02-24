@@ -9,6 +9,7 @@ import {
   type SupplierDocument,
   type SupplierMaterial,
   type SupplierDetailMetrics,
+  type SupplierEvaluation,
 } from "@/lib/services/supplierService";
 import { exportSupplierPdf } from "@/lib/services/supplierExportService";
 import { supabase } from "@/integrations/supabase/client";
@@ -53,6 +54,7 @@ export default function SupplierDetailPage() {
   const [materials, setMaterials] = useState<SupplierMaterial[]>([]);
   const [ncs, setNcs] = useState<any[]>([]);
   const [tests, setTests] = useState<any[]>([]);
+  const [evals, setEvals] = useState<SupplierEvaluation[]>([]);
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [editOpen, setEditOpen] = useState(false);
@@ -62,16 +64,18 @@ export default function SupplierDetailPage() {
     if (!id || !activeProject) return;
     setLoading(true);
     try {
-      const [s, m, d, mat] = await Promise.all([
+      const [s, m, d, mat, ev] = await Promise.all([
         supplierService.getById(id),
         supplierService.getDetailMetrics(id),
         supplierService.getDocuments(id),
         supplierService.getMaterials(id),
+        supplierService.getEvaluations(id),
       ]);
       setSupplier(s);
       setMetrics(m);
       setDocs(d);
       setMaterials(mat);
+      setEvals(ev);
 
       const { data: ncData } = await supabase
         .from("non_conformities")
@@ -193,6 +197,7 @@ export default function SupplierDetailPage() {
           <TabsTrigger value="materials">{t("suppliers.detail.tabs.materials")}</TabsTrigger>
           <TabsTrigger value="tests">{t("suppliers.detail.tabs.tests")}</TabsTrigger>
           <TabsTrigger value="ncs">{t("suppliers.detail.tabs.ncs")}</TabsTrigger>
+          <TabsTrigger value="evaluations">{t("suppliers.detail.tabs.evaluations", { defaultValue: "Avaliações" })}</TabsTrigger>
           <TabsTrigger value="audit">{t("suppliers.detail.tabs.audit")}</TabsTrigger>
         </TabsList>
 
@@ -362,6 +367,42 @@ export default function SupplierDetailPage() {
                         <TableCell className="text-sm">{nc.title ?? "—"}</TableCell>
                         <TableCell><Badge variant="secondary" className="text-xs">{t(`nc.severity.${nc.severity}`, { defaultValue: nc.severity })}</Badge></TableCell>
                         <TableCell><Badge variant="secondary" className="text-xs">{t(`nc.status.${nc.status}`, { defaultValue: nc.status })}</Badge></TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Evaluations */}
+        <TabsContent value="evaluations">
+          <Card className="border-0 shadow-card">
+            <CardContent className="p-6">
+              {evals.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-6">{t("common.noData")}</p>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>{t("common.date")}</TableHead>
+                      <TableHead>{t("suppliers.evaluations.score", { defaultValue: "Pontuação" })}</TableHead>
+                      <TableHead>{t("suppliers.evaluations.result", { defaultValue: "Resultado" })}</TableHead>
+                      <TableHead>{t("suppliers.evaluations.notes", { defaultValue: "Observações" })}</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {evals.map(ev => (
+                      <TableRow key={ev.id}>
+                        <TableCell className="text-sm">{new Date(ev.eval_date).toLocaleDateString()}</TableCell>
+                        <TableCell className="text-sm font-medium">{ev.score != null ? `${ev.score}/100` : "—"}</TableCell>
+                        <TableCell>
+                          <Badge variant="secondary" className={cn("text-xs", ev.result === "approved" ? "bg-primary/15 text-primary" : ev.result === "rejected" ? "bg-destructive/10 text-destructive" : "")}>
+                            {t(`suppliers.evaluations.results.${ev.result}`, { defaultValue: ev.result })}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">{ev.notes ?? "—"}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>

@@ -144,8 +144,8 @@ export default function SettingsPage() {
       setInviteDialogOpen(false);
       fetchMembers();
     } catch (err: any) {
-      const classified = classifySupabaseError(err);
-      toast.error(classified.title, { description: classified.description });
+      const classified = classifySupabaseError(err, t);
+      toast.error(classified.title, { description: classified.description ?? classified.raw });
     } finally {
       setInviting(false);
     }
@@ -158,8 +158,8 @@ export default function SettingsPage() {
       toast.success(t("settings.members.roleUpdated"));
       fetchMembers();
     } catch (err: any) {
-      const classified = classifySupabaseError(err);
-      toast.error(classified.title, { description: classified.description });
+      const classified = classifySupabaseError(err, t);
+      toast.error(classified.title, { description: classified.description ?? classified.raw });
     }
   };
 
@@ -170,8 +170,8 @@ export default function SettingsPage() {
       toast.success(t("settings.members.memberRemoved"));
       fetchMembers();
     } catch (err: any) {
-      const classified = classifySupabaseError(err);
-      toast.error(classified.title, { description: classified.description });
+      const classified = classifySupabaseError(err, t);
+      toast.error(classified.title, { description: classified.description ?? classified.raw });
     }
   };
 

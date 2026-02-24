@@ -85,6 +85,32 @@ export interface SupplierDetailMetrics {
   tests_nonconform: number;
   docs_expiring_30d: number;
   docs_expired: number;
+  evals_total: number;
+  latest_score: number | null;
+  latest_eval_result: string | null;
+}
+
+export interface SupplierEvaluation {
+  id: string;
+  project_id: string;
+  supplier_id: string;
+  eval_date: string;
+  criteria: Record<string, unknown>;
+  score: number | null;
+  result: string;
+  notes: string | null;
+  created_by: string | null;
+  created_at: string;
+}
+
+export interface SupplierEvaluationInput {
+  project_id: string;
+  supplier_id: string;
+  eval_date?: string;
+  criteria?: Record<string, unknown>;
+  score?: number;
+  result?: string;
+  notes?: string;
 }
 
 export const supplierService = {
@@ -268,11 +294,41 @@ export const supplierService = {
     return {
       supplier_id: d.supplier_id,
       project_id: d.project_id,
-      open_nc_count: Number(d.open_nc_count) || 0,
+      open_nc_count: Number(d.nc_open_count) || 0,
       tests_total: Number(d.tests_total) || 0,
       tests_nonconform: Number(d.tests_nonconform) || 0,
       docs_expiring_30d: Number(d.docs_expiring_30d) || 0,
       docs_expired: Number(d.docs_expired) || 0,
+      evals_total: Number(d.evals_total) || 0,
+      latest_score: d.latest_score != null ? Number(d.latest_score) : null,
+      latest_eval_result: d.latest_eval_result ?? null,
     };
+  },
+
+  // ── Evaluations ─────────────────────────────────────────────────
+  async getEvaluations(supplierId: string): Promise<SupplierEvaluation[]> {
+    const { data, error } = await supabase
+      .from("supplier_evaluations" as any)
+      .select("*")
+      .eq("supplier_id", supplierId)
+      .order("eval_date", { ascending: false });
+    if (error) throw error;
+    return (data ?? []) as unknown as SupplierEvaluation[];
+  },
+
+  async createEvaluation(input: SupplierEvaluationInput): Promise<SupplierEvaluation> {
+    const { data: { user } } = await supabase.auth.getUser();
+    const { data, error } = await supabase
+      .from("supplier_evaluations" as any)
+      .insert({ ...input, created_by: user?.id })
+      .select()
+      .single();
+    if (error) throw error;
+    await auditService.log({
+      projectId: input.project_id, entity: "supplier_evaluations", entityId: (data as any).id,
+      action: "INSERT", module: "suppliers",
+      diff: { score: input.score, result: input.result } as Record<string, unknown>,
+    });
+    return data as unknown as SupplierEvaluation;
   },
 };
