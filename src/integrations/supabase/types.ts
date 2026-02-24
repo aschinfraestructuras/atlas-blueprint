@@ -1100,6 +1100,57 @@ export type Database = {
           },
         ]
       }
+      project_invites: {
+        Row: {
+          accepted_at: string | null
+          created_at: string
+          created_by: string | null
+          email: string
+          expires_at: string
+          id: string
+          project_id: string
+          role: string
+          token: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          email: string
+          expires_at?: string
+          id?: string
+          project_id: string
+          role?: string
+          token?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          email?: string
+          expires_at?: string
+          id?: string
+          project_id?: string
+          role?: string
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_invites_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_invites_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
       project_members: {
         Row: {
           created_at: string
@@ -2368,6 +2419,7 @@ export type Database = {
       }
     }
     Functions: {
+      fn_accept_project_invite: { Args: { p_token: string }; Returns: Json }
       fn_bulk_export_tests: {
         Args: { p_ids?: string[]; p_project_id: string }
         Returns: {
@@ -2819,6 +2871,32 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      fn_invite_project_member: {
+        Args: { p_email: string; p_project_id: string; p_role?: string }
+        Returns: Json
+      }
+      fn_list_my_projects: {
+        Args: never
+        Returns: {
+          client: string | null
+          code: string
+          created_at: string
+          created_by: string | null
+          id: string
+          location: string | null
+          name: string
+          start_date: string | null
+          status: string
+          tenant_id: string | null
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "projects"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       fn_next_ppi_code: { Args: { p_project_id: string }; Returns: string }
       fn_ppi_bulk_mark_ok: { Args: { p_instance_id: string }; Returns: number }
       fn_ppi_bulk_save_items: {
@@ -2849,6 +2927,14 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      fn_remove_project_member: {
+        Args: { p_project_id: string; p_user_id: string }
+        Returns: undefined
+      }
+      fn_update_member_role: {
+        Args: { p_new_role: string; p_project_id: string; p_user_id: string }
+        Returns: undefined
       }
       fn_update_nc_status: {
         Args: { p_nc_id: string; p_to_status: string }

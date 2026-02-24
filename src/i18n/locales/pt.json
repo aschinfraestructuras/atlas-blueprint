@@ -1727,20 +1727,47 @@
       "error": "Ocorreu um erro. Tente novamente."
     }
   },
-  "pages": {
-    "materials": {
-      "title": "Materiais",
-      "subtitle": "Catálogo de materiais do projeto"
-    }
-  },
-  "emptyState": {
-    "materials": { "subtitle": "Ainda não existem materiais neste projeto. Crie o primeiro." }
-  },
-  "dashboard": {
-    "exec": {
-      "materialsDocsExpired": "Materiais c/ Docs Expirados",
-      "materialsWithNC": "Materiais com NC Aberta",
-      "materialsNonconformTests": "Materiais c/ Ensaios NC (30d)"
+  "settings": {
+    "roles": {
+      "admin": "Administrador",
+      "project_manager": "Gestor de Projeto",
+      "quality_manager": "Gestor de Qualidade",
+      "technician": "Técnico",
+      "viewer": "Visualizador"
+    },
+    "roleDescriptions": {
+      "admin": "Acesso total ao projeto: membros, dados, aprovações e eliminação.",
+      "project_manager": "Gestão completa do projeto, sem eliminar registos críticos.",
+      "quality_manager": "Gestão documental, ensaios, NCs e aprovações de qualidade.",
+      "technician": "Registo de ensaios, PPI e consulta de documentos.",
+      "viewer": "Leitura apenas, sem permissão de escrita."
+    },
+    "members": {
+      "inviteBtn": "Convidar membro",
+      "inviteTitle": "Convidar utilizador para o projeto",
+      "emailLabel": "E-mail",
+      "emailPlaceholder": "utilizador@empresa.com",
+      "roleLabel": "Função",
+      "sendInvite": "Enviar convite",
+      "addedDirectly": "Utilizador adicionado ao projeto.",
+      "inviteSent": "Convite enviado com sucesso.",
+      "roleUpdated": "Função atualizada.",
+      "memberRemoved": "Membro removido do projeto.",
+      "inviteDeleted": "Convite eliminado.",
+      "noMembers": "Sem membros neste projeto.",
+      "pendingInvites": "Convites pendentes",
+      "expires": "Expira em",
+      "you": "você",
+      "colName": "Nome",
+      "colEmail": "E-mail",
+      "colRole": "Função",
+      "removeTitle": "Remover membro?",
+      "removeDesc": "O utilizador «{{name}}» perderá acesso a este projeto. Esta ação pode ser revertida readicionando o membro.",
+      "removeConfirm": "Remover acesso",
+      "noProjectsEmpty": "Não está associado a nenhum projeto.",
+      "noProjectsEmptySub": "Contacte um administrador para obter acesso a um projeto ou crie um novo.",
+      "requestAccess": "Pedir acesso"
     }
   }
 }
+
