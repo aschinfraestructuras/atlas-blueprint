@@ -9,10 +9,12 @@ import { useNonConformities } from "@/hooks/useNonConformities";
 import { useSuppliers } from "@/hooks/useSuppliers";
 import { useAuditLog } from "@/hooks/useAuditLog";
 import { useWorkItems } from "@/hooks/useWorkItems";
+import { usePPIInstances } from "@/hooks/usePPI";
 import {
   FolderKanban, FileText, FlaskConical, AlertTriangle,
   Clock, Building2, Timer, CheckCircle2, TrendingUp, Activity,
   ChevronRight, RotateCcw, ShieldCheck, Construction,
+  ClipboardCheck, Hourglass,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -552,6 +554,7 @@ export default function DashboardPage() {
   const { data: suppliers, loading: supLoading } = useSuppliers();
   const { data: auditEntries, loading: auditLoading } = useAuditLog();
   const { data: workItems, loading: wiLoading } = useWorkItems();
+  const { data: ppiInstances, loading: ppiLoading } = usePPIInstances();
 
   const displayName = user?.email?.split("@")[0] ?? "—";
 
@@ -580,6 +583,49 @@ export default function DashboardPage() {
   const wiOpen   = workItems.filter((w) => w.status === "planned" || w.status === "in_progress").length;
   const wiNcIds  = new Set(ncs.filter((n: any) => n.status !== "closed" && n.work_item_id).map((n: any) => n.work_item_id as string));
   const wiWithNC = workItems.filter((w) => wiNcIds.has(w.id)).length;
+
+  // ── PPI KPIs ────────────────────────────────────────────────────────────────
+  const ppiTotal     = ppiInstances.length;
+  const ppiApproved  = ppiInstances.filter((p) => p.status === "approved").length;
+  const ppiSubmitted = ppiInstances.filter((p) => p.status === "submitted").length;
+  const ppiDraft     = ppiInstances.filter((p) => p.status === "draft").length;
+  const ppiInProgress= ppiInstances.filter((p) => p.status === "in_progress").length;
+  const ppiConformRate = ppiTotal > 0 ? Math.round((ppiApproved / ppiTotal) * 100) : 0;
+
+  // ── NC Lead Time (avg days from open to close for closed NCs) ──────────────
+  const closedNcs = ncs.filter((n) => n.status === "closed" && n.closure_date);
+  const avgLeadTime = closedNcs.length > 0
+    ? Math.round(
+        closedNcs.reduce((acc, n) => {
+          const open = new Date(n.detected_at ?? n.created_at).getTime();
+          const close = new Date(n.closure_date!).getTime();
+          return acc + Math.max(0, (close - open) / 86_400_000);
+        }, 0) / closedNcs.length
+      )
+    : 0;
+
+  // ── NC Trend — last 6 months (opened vs closed per month) ──────────────────
+  const ncTrendData = useMemo(() => {
+    const months: { name: string; opened: number; closed: number }[] = [];
+    const now = new Date();
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const label = d.toLocaleDateString(undefined, { month: "short" });
+      const monthStart = d.getTime();
+      const nextMonth = new Date(d.getFullYear(), d.getMonth() + 1, 1).getTime();
+      const opened = ncs.filter((n) => {
+        const t = new Date(n.created_at).getTime();
+        return t >= monthStart && t < nextMonth;
+      }).length;
+      const closed = ncs.filter((n) => {
+        if (!n.closure_date) return false;
+        const t = new Date(n.closure_date).getTime();
+        return t >= monthStart && t < nextMonth;
+      }).length;
+      months.push({ name: label, opened, closed });
+    }
+    return months;
+  }, [ncs]);
 
   // ── Chart data ────────────────────────────────────────────────────────────────
   const docPieData = [
@@ -619,6 +665,14 @@ export default function DashboardPage() {
     { key: t("suppliers.approvalStatus.pending"),  color: MOD.subcontractors, label: t("suppliers.approvalStatus.pending")  },
     { key: t("suppliers.approvalStatus.rejected"), color: MOD.nc,             label: t("suppliers.approvalStatus.rejected") },
   ];
+
+  // ── PPI Pie data ─────────────────────────────────────────────────────────────
+  const ppiPieData = [
+    { name: t("ppi.status.draft"),       value: ppiDraft,      color: MOD.muted },
+    { name: t("ppi.status.in_progress"), value: ppiInProgress, color: MOD.documents },
+    { name: t("ppi.status.submitted"),   value: ppiSubmitted,  color: MOD.subcontractors },
+    { name: t("ppi.status.approved"),    value: ppiApproved,   color: MOD.suppliers },
+  ].filter((d) => d.value > 0);
 
   const recentEntries  = auditEntries.slice(0, 8);
   const docsInReview   = documents.filter((d) => d.status === "in_review");
@@ -695,8 +749,8 @@ export default function DashboardPage() {
         />
       </div>
 
-      {/* ── Row 1b: Work Items KPI row (3 cols) ───────────────────────── */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      {/* ── Row 1b: Work Items + PPI KPI row (5 cols) ────────────────── */}
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
         <StatCard
           label={t("dashboard.stats.totalWorkItems")}
           value={wiTotal}
@@ -710,7 +764,7 @@ export default function DashboardPage() {
           icon={Construction}
           loading={wiLoading}
           moduleColor="hsl(33, 75%, 38%)"
-          sub={`${wiTotal - wiOpen} concluídos/cancelados`}
+          sub={`${wiTotal - wiOpen} ${t("dashboard.stats.completed")}`}
         />
         <StatCard
           label={t("dashboard.stats.workItemsWithNC")}
@@ -718,7 +772,22 @@ export default function DashboardPage() {
           icon={AlertTriangle}
           loading={wiLoading || ncLoading}
           moduleColor="hsl(2, 60%, 44%)"
-          sub={wiWithNC > 0 ? "Com NCs abertas" : "Sem NCs abertas"}
+        />
+        <StatCard
+          label={t("dashboard.stats.ppiTotal")}
+          value={ppiTotal}
+          icon={ClipboardCheck}
+          loading={ppiLoading}
+          moduleColor="hsl(188, 55%, 32%)"
+          sub={ppiTotal > 0 ? `${ppiConformRate}% ${t("dashboard.stats.ppiConform")}` : undefined}
+        />
+        <StatCard
+          label={t("dashboard.stats.ppiPending")}
+          value={ppiSubmitted}
+          icon={ClipboardCheck}
+          loading={ppiLoading}
+          moduleColor="hsl(33, 75%, 38%)"
+          sub={`${ppiApproved} ${t("dashboard.kpi.approved").toLowerCase()}`}
         />
       </div>
 
@@ -750,8 +819,8 @@ export default function DashboardPage() {
         />
       </div>
 
-      {/* ── Row 3: Charts grid ───────────────────────────────────────── */}
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 xl:grid-cols-4">
+      {/* ── Row 3: Charts grid — 5 cards ─────────────────────────────── */}
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 xl:grid-cols-5">
         <PieCard
           title={t("dashboard.kpi.documents")}
           data={docPieData}
@@ -767,7 +836,55 @@ export default function DashboardPage() {
           icon={AlertTriangle}
           total={ncs.length}
         />
+        <PieCard
+          title={t("dashboard.kpi.ppi")}
+          data={ppiPieData}
+          loading={ppiLoading}
+          icon={ClipboardCheck}
+          total={ppiTotal}
+        />
         <AgingCard days={avgAgingDays} openCount={openNcs.length} loading={ncLoading} />
+      </div>
+
+      {/* ── Row 3b: NC Lead Time + NC Trend ───────────────────────────── */}
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+        <Card className="border bg-card shadow-card animate-fade-in">
+          <CardHeader className="pb-0 pt-5 px-5">
+            <CardTitle className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+              <Hourglass className="h-3.5 w-3.5" />{t("dashboard.kpi.ncLeadTimeTitle")}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="px-5 pb-5">
+            {ncLoading ? (
+              <Skeleton className="h-24 w-full mt-3 rounded-xl" />
+            ) : (
+              <div className="flex flex-col items-center justify-center py-5 gap-1">
+                <span className="text-5xl font-extrabold tabular-nums" style={{ color: avgLeadTime === 0 ? MOD.muted : avgLeadTime < 14 ? MOD.suppliers : avgLeadTime < 30 ? MOD.subcontractors : MOD.nc }}>
+                  {avgLeadTime}
+                </span>
+                <span className="text-xs text-muted-foreground">{t("dashboard.kpi.daysToClose")}</span>
+                <span className="mt-2 text-xs text-muted-foreground text-center">
+                  {closedNcs.length > 0
+                    ? t("dashboard.kpi.closedNcCount", { count: closedNcs.length })
+                    : t("dashboard.kpi.noClosedNcs")}
+                </span>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <div className="md:col-span-2">
+          <BarCard
+            title={t("dashboard.charts.ncTrend")}
+            data={ncTrendData}
+            loading={ncLoading}
+            icon={TrendingUp}
+            bars={[
+              { key: "opened", color: MOD.nc, label: t("dashboard.kpi.ncOpened") },
+              { key: "closed", color: MOD.suppliers, label: t("dashboard.kpi.ncClosed") },
+            ]}
+          />
+        </div>
       </div>
 
       {/* ── Row 4: Tests + Suppliers bar charts ──────────────────────── */}
