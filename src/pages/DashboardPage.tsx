@@ -2,22 +2,18 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProject } from "@/contexts/ProjectContext";
-import { useProjects } from "@/hooks/useProjects";
-import { useDocuments } from "@/hooks/useDocuments";
-import { useTests } from "@/hooks/useTests";
+import { useDashboardViews } from "@/hooks/useDashboardViews";
 import { useNonConformities } from "@/hooks/useNonConformities";
 import { useSuppliers } from "@/hooks/useSuppliers";
-import { useAuditLog } from "@/hooks/useAuditLog";
 import { useWorkItems } from "@/hooks/useWorkItems";
-import { usePPIInstances } from "@/hooks/usePPI";
 import {
   FolderKanban, FileText, FlaskConical, AlertTriangle,
-  Clock, Building2, Timer, CheckCircle2, TrendingUp, Activity,
-  ChevronRight, RotateCcw, ShieldCheck, Construction,
-  ClipboardCheck, Hourglass,
+  Clock, Building2, Timer, CheckCircle2, TrendingUp,
+  ShieldCheck, Construction, ClipboardCheck, Hourglass,
+  BarChart3, PieChart as PieChartIcon, Target, Activity,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis,
@@ -25,20 +21,20 @@ import {
 } from "recharts";
 import { cn } from "@/lib/utils";
 
-// ── Module color map (matches CSS custom properties) ─────────────────────────
+// ── Semantic module colors from CSS tokens ────────────────────────
 const MOD = {
-  documents:      "hsl(215, 70%, 38%)",
-  tests:          "hsl(252, 55%, 45%)",
-  nc:             "hsl(2, 60%, 44%)",
-  suppliers:      "hsl(158, 45%, 32%)",
-  subcontractors: "hsl(33, 75%, 38%)",
-  plans:          "hsl(188, 55%, 32%)",
-  projects:       "hsl(221, 50%, 40%)",
-  muted:          "hsl(215, 15%, 65%)",
+  documents:      "hsl(var(--module-documents))",
+  tests:          "hsl(var(--module-tests))",
+  nc:             "hsl(var(--module-nc))",
+  suppliers:      "hsl(var(--module-suppliers))",
+  subcontractors: "hsl(var(--module-subcontractors))",
+  plans:          "hsl(var(--module-plans))",
+  projects:       "hsl(var(--module-projects))",
+  muted:          "hsl(var(--muted-foreground))",
 } as const;
 
-// ── Animated counter ──────────────────────────────────────────────────────────
-function useCountUp(target: number, duration = 900) {
+// ── Animated counter ──────────────────────────────────────────────
+function useCountUp(target: number, duration = 800) {
   const [value, setValue] = useState(0);
   const raf = useRef<number | null>(null);
   const start = useRef<number | null>(null);
@@ -58,68 +54,85 @@ function useCountUp(target: number, duration = 900) {
   return value;
 }
 
-// ── KPI Stat Card ─────────────────────────────────────────────────────────────
-function StatCard({
-  label, value, icon: Icon, loading, moduleColor, sub,
+// ── KPI Indicator Card ────────────────────────────────────────────
+function KPICard({
+  label, value, icon: Icon, loading, color, sub, suffix,
 }: {
   label: string; value: number; icon: React.ElementType;
-  loading: boolean; moduleColor: string; sub?: string;
+  loading: boolean; color: string; sub?: string; suffix?: string;
 }) {
   const animated = useCountUp(loading ? 0 : value);
-
   if (loading) return (
-    <Card className="border bg-card shadow-card overflow-hidden">
-      <CardContent className="p-5">
-        <Skeleton className="h-3 w-24 mb-5" />
-        <Skeleton className="h-11 w-16 mb-3" />
-        <Skeleton className="h-2.5 w-20" />
-      </CardContent>
+    <Card className="border-0 bg-card shadow-card overflow-hidden">
+      <CardContent className="p-5"><Skeleton className="h-3 w-24 mb-5" /><Skeleton className="h-10 w-16 mb-3" /><Skeleton className="h-2.5 w-20" /></CardContent>
     </Card>
   );
-
   return (
-    <Card
-      className="border bg-card shadow-card hover:shadow-card-hover transition-all duration-200 animate-fade-in overflow-hidden relative group"
-      style={{ borderTop: `3px solid ${moduleColor}` }}
-    >
+    <Card className="border-0 bg-card shadow-card hover:shadow-card-hover transition-all duration-200 animate-fade-in overflow-hidden relative group">
+      <div className="absolute top-0 left-0 right-0 h-[3px]" style={{ background: color }} />
       <CardContent className="p-5">
-        <div className="flex items-start justify-between mb-4">
-          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground leading-none">
-            {label}
-          </p>
-          <div
-            className="flex h-8 w-8 items-center justify-center rounded-lg flex-shrink-0 transition-transform duration-200 group-hover:scale-110"
-            style={{ background: `${moduleColor}18`, border: `1px solid ${moduleColor}25` }}
-          >
-            <Icon className="h-3.5 w-3.5" style={{ color: moduleColor }} />
+        <div className="flex items-start justify-between mb-3">
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground leading-none">{label}</p>
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg flex-shrink-0" style={{ background: `${color}14`, border: `1px solid ${color}20` }}>
+            <Icon className="h-3.5 w-3.5" style={{ color }} />
           </div>
         </div>
-        <p className="text-[42px] font-black tabular-nums text-foreground leading-none tracking-tight">
-          {animated}
-        </p>
-        {sub && (
-          <p className="mt-2.5 text-xs text-muted-foreground leading-none">{sub}</p>
-        )}
+        <div className="flex items-baseline gap-1">
+          <p className="text-[38px] font-black tabular-nums text-foreground leading-none tracking-tight">{animated}</p>
+          {suffix && <span className="text-sm font-semibold text-muted-foreground">{suffix}</span>}
+        </div>
+        {sub && <p className="mt-2 text-xs text-muted-foreground leading-none">{sub}</p>}
       </CardContent>
-      {/* Subtle bottom accent line that grows on hover */}
-      <div
-        className="absolute bottom-0 left-0 h-[2px] w-0 group-hover:w-full transition-all duration-300 ease-out"
-        style={{ background: `${moduleColor}60` }}
-      />
     </Card>
   );
 }
 
+// ── Percent Ring ─────────────────────────────────────────────────
+function PercentCard({
+  label, value, loading, color, sub, icon: Icon,
+}: {
+  label: string; value: number; loading: boolean; color: string; sub?: string; icon: React.ElementType;
+}) {
+  const animated = useCountUp(loading ? 0 : value);
+  const data = [{ value: animated }, { value: Math.max(0, 100 - animated) }];
+  if (loading) return (
+    <Card className="border-0 bg-card shadow-card"><CardContent className="p-5"><Skeleton className="h-3 w-24 mb-3" /><Skeleton className="h-20 w-20 rounded-full mx-auto" /></CardContent></Card>
+  );
+  return (
+    <Card className="border-0 bg-card shadow-card hover:shadow-card-hover transition-all duration-200 animate-fade-in">
+      <CardContent className="p-5">
+        <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground leading-none mb-4 flex items-center gap-1.5">
+          <Icon className="h-3 w-3" />{label}
+        </p>
+        <div className="relative mx-auto w-[90px] h-[90px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie data={data} cx="50%" cy="50%" innerRadius={30} outerRadius={42} startAngle={90} endAngle={-270}
+                dataKey="value" strokeWidth={0} isAnimationActive animationDuration={700}>
+                <Cell fill={color} />
+                <Cell fill="hsl(var(--muted))" />
+              </Pie>
+            </PieChart>
+          </ResponsiveContainer>
+          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+            <span className="text-xl font-black tabular-nums text-foreground">{animated}%</span>
+          </div>
+        </div>
+        {sub && <p className="mt-3 text-xs text-muted-foreground text-center">{sub}</p>}
+      </CardContent>
+    </Card>
+  );
+}
 
-// ── Custom Tooltip ────────────────────────────────────────────────────────────
+// ── Chart Tooltip ─────────────────────────────────────────────────
 function ChartTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded-xl border border-border bg-card px-3.5 py-2.5 shadow-card text-xs">
-      {label && <p className="font-semibold text-foreground mb-1.5">{label}</p>}
+    <div className="rounded-xl border border-border bg-card px-3 py-2 shadow-md text-xs">
+      {label && <p className="font-semibold text-foreground mb-1">{label}</p>}
       {payload.map((p: any, i: number) => (
         <div key={i} className="flex items-center gap-2">
-          <span className="h-2 w-2 rounded-full inline-block" style={{ background: p.fill ?? p.color }} />
+          <span className="h-2 w-2 rounded-full" style={{ background: p.fill ?? p.color }} />
           <span className="text-muted-foreground">{p.name}:</span>
           <span className="font-semibold text-foreground">{p.value}</span>
         </div>
@@ -128,16 +141,54 @@ function ChartTooltip({ active, payload, label }: any) {
   );
 }
 
-// ── Pie Card — thicker donuts, centre total ──────────────────────────────────
-function PieCard({
-  title, data, loading, icon: Icon, total,
+// ── Trend Bar Chart ───────────────────────────────────────────────
+function TrendChart({
+  title, data, loading, icon: Icon, bars, emptyMsg,
 }: {
-  title: string;
-  data: { name: string; value: number; color: string }[];
-  loading: boolean; icon: React.ElementType; total: number;
+  title: string; data: any[]; loading: boolean; icon: React.ElementType;
+  bars: { key: string; color: string; label: string }[];
+  emptyMsg: string;
 }) {
   return (
-    <Card className="border bg-card shadow-card hover:shadow-card-hover transition-shadow duration-200 animate-fade-in">
+    <Card className="border-0 bg-card shadow-card hover:shadow-card-hover transition-shadow duration-200 animate-fade-in">
+      <CardHeader className="pb-0 pt-5 px-5">
+        <CardTitle className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+          <Icon className="h-3.5 w-3.5" />{title}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="px-5 pb-5 pt-3">
+        {loading ? (
+          <Skeleton className="h-[140px] w-full rounded-xl" />
+        ) : data.length === 0 ? (
+          <div className="flex h-[140px] items-center justify-center"><p className="text-sm text-muted-foreground">{emptyMsg}</p></div>
+        ) : (
+          <ResponsiveContainer width="100%" height={140}>
+            <BarChart data={data} barCategoryGap="25%" barGap={3}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+              <XAxis dataKey="label" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
+              <YAxis allowDecimals={false} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} width={24} />
+              <Tooltip content={<ChartTooltip />} cursor={{ fill: "hsl(var(--muted))" }} />
+              <Legend iconType="circle" iconSize={7} wrapperStyle={{ fontSize: 10, color: "hsl(var(--muted-foreground))" }} />
+              {bars.map((b) => (
+                <Bar key={b.key} dataKey={b.key} name={b.label} fill={b.color} radius={[3, 3, 0, 0]} isAnimationActive animationDuration={600} />
+              ))}
+            </BarChart>
+          </ResponsiveContainer>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+// ── Donut Card ────────────────────────────────────────────────────
+function DonutCard({
+  title, data, loading, icon: Icon, total, emptyMsg,
+}: {
+  title: string; data: { name: string; value: number; color: string }[];
+  loading: boolean; icon: React.ElementType; total: number; emptyMsg: string;
+}) {
+  return (
+    <Card className="border-0 bg-card shadow-card hover:shadow-card-hover transition-shadow duration-200 animate-fade-in">
       <CardHeader className="pb-0 pt-5 px-5">
         <CardTitle className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
           <Icon className="h-3.5 w-3.5" />{title}
@@ -145,32 +196,25 @@ function PieCard({
       </CardHeader>
       <CardContent className="px-5 pb-5">
         {loading ? (
-          <Skeleton className="h-[140px] w-full mt-3 rounded-xl" />
+          <Skeleton className="h-[130px] w-full mt-3 rounded-xl" />
         ) : total === 0 ? (
-          <div className="flex h-[140px] items-center justify-center">
-            <p className="text-sm text-muted-foreground">—</p>
-          </div>
+          <div className="flex h-[130px] items-center justify-center"><p className="text-sm text-muted-foreground">{emptyMsg}</p></div>
         ) : (
-          <div className="flex items-center gap-5 mt-3">
-            {/* Donut with centre label */}
+          <div className="flex items-center gap-4 mt-3">
             <div className="relative flex-shrink-0">
-              <ResponsiveContainer width={120} height={120}>
+              <ResponsiveContainer width={110} height={110}>
                 <PieChart>
-                  <Pie data={data} cx="50%" cy="50%" innerRadius={36} outerRadius={56}
-                    paddingAngle={2} dataKey="value" isAnimationActive animationDuration={700}
-                    strokeWidth={0}>
-                    {data.map((entry, i) => <Cell key={i} fill={entry.color} stroke="transparent" />)}
+                  <Pie data={data} cx="50%" cy="50%" innerRadius={34} outerRadius={52} paddingAngle={2} dataKey="value" strokeWidth={0} isAnimationActive animationDuration={600}>
+                    {data.map((e, i) => <Cell key={i} fill={e.color} />)}
                   </Pie>
                   <Tooltip content={<ChartTooltip />} />
                 </PieChart>
               </ResponsiveContainer>
-              {/* Centre number */}
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <span className="text-[22px] font-extrabold tabular-nums text-foreground leading-none">{total}</span>
-                <span className="text-[8.5px] text-muted-foreground uppercase tracking-wide leading-none mt-0.5">total</span>
+                <span className="text-lg font-extrabold tabular-nums text-foreground leading-none">{total}</span>
               </div>
             </div>
-            <ul className="flex-1 space-y-2 min-w-0">
+            <ul className="flex-1 space-y-1.5 min-w-0">
               {data.map((d) => (
                 <li key={d.name} className="flex items-center gap-2 text-xs">
                   <span className="h-2 w-2 rounded-full flex-shrink-0" style={{ background: d.color }} />
@@ -186,319 +230,37 @@ function PieCard({
   );
 }
 
-// ── Bar Card ──────────────────────────────────────────────────────────────────
-function BarCard({
-  title, data, loading, icon: Icon, bars,
+// ── Horizontal bar list (for advanced analysis) ───────────────────
+function HBarList({
+  title, data, loading, icon: Icon, emptyMsg,
 }: {
-  title: string; data: any[]; loading: boolean; icon: React.ElementType;
-  bars: { key: string; color: string; label: string }[];
+  title: string; data: { label: string; value: number; color: string }[];
+  loading: boolean; icon: React.ElementType; emptyMsg: string;
 }) {
+  const max = Math.max(1, ...data.map(d => d.value));
   return (
-    <Card className="border bg-card shadow-card hover:shadow-card-hover transition-shadow duration-200 animate-fade-in">
-      <CardHeader className="pb-0 pt-5 px-5">
+    <Card className="border-0 bg-card shadow-card animate-fade-in">
+      <CardHeader className="pb-2 pt-5 px-5">
         <CardTitle className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
           <Icon className="h-3.5 w-3.5" />{title}
         </CardTitle>
       </CardHeader>
-      <CardContent className="px-5 pb-5 pt-3">
-        {loading ? (
-          <Skeleton className="h-[130px] w-full rounded-xl" />
-        ) : (
-          <ResponsiveContainer width="100%" height={130}>
-            <BarChart data={data} barCategoryGap="30%" barGap={4}>
-              {/* SVG gradient defs */}
-              <defs>
-                {bars.map((b, i) => (
-                  <linearGradient key={i} id={`barGrad-${i}`} x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor={b.color} stopOpacity={1} />
-                    <stop offset="100%" stopColor={b.color} stopOpacity={0.65} />
-                  </linearGradient>
-                ))}
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-              <XAxis dataKey="name" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
-              <YAxis allowDecimals={false} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} width={22} />
-              <Tooltip content={<ChartTooltip />} cursor={{ fill: "hsl(var(--muted))" }} />
-              <Legend iconType="circle" iconSize={7} wrapperStyle={{ fontSize: 10, color: "hsl(var(--muted-foreground))" }} />
-              {bars.map((b, i) => (
-                <Bar key={b.key} dataKey={b.key} name={b.label}
-                  fill={`url(#barGrad-${i})`}
-                  radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700} />
-              ))}
-            </BarChart>
-          </ResponsiveContainer>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
-
-
-// ── NC Aging Gauge ────────────────────────────────────────────────────────────
-function AgingCard({ days, openCount, loading }: { days: number; openCount: number; loading: boolean }) {
-  const { t } = useTranslation();
-  const animated = useCountUp(loading ? 0 : days);
-  const agingColor = days === 0 ? MOD.muted : days < 7 ? MOD.suppliers : days < 30 ? MOD.subcontractors : MOD.nc;
-  return (
-    <Card className="border bg-card shadow-card animate-fade-in">
-      <CardHeader className="pb-0 pt-5 px-5">
-        <CardTitle className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
-          <Timer className="h-3.5 w-3.5" />{t("dashboard.kpi.avgAgingTitle")}
-        </CardTitle>
-      </CardHeader>
       <CardContent className="px-5 pb-5">
-        {loading ? (
-          <Skeleton className="h-24 w-full mt-3 rounded-xl" />
+        {loading ? <Skeleton className="h-24 w-full rounded-xl" /> : data.length === 0 ? (
+          <p className="text-sm text-muted-foreground py-4 text-center">{emptyMsg}</p>
         ) : (
-          <div className="flex flex-col items-center justify-center py-5 gap-1">
-            <span className="text-5xl font-extrabold tabular-nums" style={{ color: agingColor }}>{animated}</span>
-            <span className="text-xs text-muted-foreground">{t("dashboard.kpi.days")}</span>
-            <span className="mt-2 text-xs text-muted-foreground text-center">
-              {openCount > 0
-                ? t("dashboard.kpi.openNcCount", { count: openCount })
-                : t("dashboard.kpi.noOpenNcs")}
-            </span>
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
-
-// ── Doc by Type Card — thicker donut with centre total ───────────────────────
-function DocTypeCard({ documents, loading, t }: { documents: any[]; loading: boolean; t: (k: string, opts?: any) => string }) {
-  const TYPE_COLORS = [MOD.documents, MOD.tests, MOD.subcontractors, MOD.plans, MOD.nc, MOD.suppliers];
-  const typeCounts = useMemo(() => {
-    const counts: Record<string, number> = {};
-    documents.forEach((d) => { counts[d.doc_type] = (counts[d.doc_type] ?? 0) + 1; });
-    return Object.entries(counts)
-      .map(([type, count]) => ({ name: t(`documents.docTypes.${type}`, { defaultValue: type }), value: count, type }))
-      .sort((a, b) => b.value - a.value);
-  }, [documents, t]);
-
-  return (
-    <Card className="border bg-card shadow-card hover:shadow-card-hover transition-shadow duration-200 animate-fade-in">
-      <CardHeader className="pb-0 pt-5 px-5">
-        <CardTitle className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
-          <FileText className="h-3.5 w-3.5" />{t("dashboard.charts.docsByType")}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="px-5 pb-5">
-        {loading ? (
-          <Skeleton className="h-[140px] w-full mt-3 rounded-xl" />
-        ) : typeCounts.length === 0 ? (
-          <div className="flex h-[140px] items-center justify-center">
-            <p className="text-sm text-muted-foreground">—</p>
-          </div>
-        ) : (
-          <div className="flex items-center gap-5 mt-3">
-            <div className="relative flex-shrink-0">
-              <ResponsiveContainer width={120} height={120}>
-                <PieChart>
-                  <Pie data={typeCounts.map((d, i) => ({ ...d, color: TYPE_COLORS[i % TYPE_COLORS.length] }))}
-                    cx="50%" cy="50%" innerRadius={36} outerRadius={56} paddingAngle={2}
-                    dataKey="value" isAnimationActive animationDuration={700} strokeWidth={0}>
-                    {typeCounts.map((_, i) => <Cell key={i} fill={TYPE_COLORS[i % TYPE_COLORS.length]} stroke="transparent" />)}
-                  </Pie>
-                  <Tooltip content={<ChartTooltip />} />
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <span className="text-[22px] font-extrabold tabular-nums text-foreground leading-none">{documents.length}</span>
-                <span className="text-[8.5px] text-muted-foreground uppercase tracking-wide leading-none mt-0.5">total</span>
-              </div>
-            </div>
-            <ul className="flex-1 space-y-2 min-w-0">
-              {typeCounts.slice(0, 6).map((d, i) => (
-                <li key={d.type} className="flex items-center gap-2 text-xs">
-                  <span className="h-2 w-2 rounded-full flex-shrink-0" style={{ background: TYPE_COLORS[i % TYPE_COLORS.length] }} />
-                  <span className="flex-1 truncate text-muted-foreground">{d.name}</span>
-                  <span className="font-bold tabular-nums text-foreground">{d.value}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
-
-// ── Day label helper ──────────────────────────────────────────────────────────
-function dayLabel(dateStr: string): string {
-  const d = new Date(dateStr);
-  const today = new Date();
-  const yesterday = new Date(); yesterday.setDate(today.getDate() - 1);
-  if (d.toDateString() === today.toDateString()) return "Hoje";
-  if (d.toDateString() === yesterday.toDateString()) return "Ontem";
-  return d.toLocaleDateString(undefined, { day: "2-digit", month: "short" });
-}
-
-// ── Recent Activity Card — corporate feed with day groups ─────────────────────
-function RecentActivityCard({ entries, loading, t }: { entries: any[]; loading: boolean; t: (k: string, opts?: any) => string }) {
-  const ACTION_META: Record<string, { icon: React.ElementType; color: string; label: string }> = {
-    INSERT:              { icon: TrendingUp,    color: MOD.suppliers,  label: "Criado"     },
-    UPDATE:              { icon: RotateCcw,     color: MOD.documents,  label: "Atualizado" },
-    DELETE:              { icon: AlertTriangle, color: MOD.nc,         label: "Eliminado"  },
-    status_change:       { icon: CheckCircle2,  color: MOD.plans,      label: "Estado"     },
-    attachment_add:      { icon: FileText,      color: MOD.tests,      label: "Anexo"      },
-    attachment_download: { icon: FileText,      color: MOD.muted,      label: "Download"   },
-  };
-
-  const grouped = useMemo(() => {
-    const map: Record<string, typeof entries> = {};
-    entries.forEach((e) => {
-      const key = dayLabel(e.created_at);
-      if (!map[key]) map[key] = [];
-      map[key].push(e);
-    });
-    return Object.entries(map);
-  }, [entries]);
-
-  return (
-    <Card className="border bg-card shadow-card hover:shadow-card-hover transition-shadow duration-200 animate-fade-in">
-      <CardHeader className="pb-3 pt-5 px-5">
-        <CardTitle className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
-          <Activity className="h-3.5 w-3.5" />{t("dashboard.recentActivity")}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="px-5 pb-4">
-        {loading ? (
-          <div className="space-y-4">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="flex items-center gap-3">
-                <Skeleton className="h-8 w-8 rounded-full flex-shrink-0" />
-                <div className="flex-1 space-y-1.5">
-                  <Skeleton className="h-3 w-4/5" />
-                  <Skeleton className="h-2.5 w-2/5" />
+          <ul className="space-y-2.5 mt-2">
+            {data.slice(0, 8).map((d) => (
+              <li key={d.label}>
+                <div className="flex items-center justify-between mb-0.5">
+                  <span className="text-xs text-foreground truncate max-w-[60%]">{d.label}</span>
+                  <span className="text-xs font-bold tabular-nums text-foreground">{d.value}</span>
                 </div>
-              </div>
-            ))}
-          </div>
-        ) : entries.length === 0 ? (
-          <p className="text-sm text-muted-foreground py-6 text-center">{t("dashboard.noActivity")}</p>
-        ) : (
-          <div className="space-y-4">
-            {grouped.map(([day, dayEntries]) => (
-              <div key={day}>
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-[9.5px] font-bold uppercase tracking-[0.18em]"
-                    style={{ color: "hsl(var(--muted-foreground) / 0.6)" }}>{day}</span>
-                  <div className="flex-1 h-px bg-border/60" />
+                <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                  <div className="h-full rounded-full transition-all duration-500" style={{ width: `${(d.value / max) * 100}%`, background: d.color }} />
                 </div>
-                <ul className="space-y-0.5">
-                  {dayEntries.map((entry) => {
-                    const meta = ACTION_META[entry.action] ?? { icon: Activity, color: MOD.muted, label: entry.action };
-                    const Icon = meta.icon;
-                    return (
-                      <li key={entry.id} className="flex items-start gap-3 py-2 rounded-lg px-1 hover:bg-muted/40 transition-colors duration-150">
-                        <div className="mt-0.5 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full"
-                          style={{ background: `${meta.color}14` }}>
-                          <Icon className="h-3.5 w-3.5" style={{ color: meta.color }} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-0.5">
-                            <span className="inline-flex items-center rounded-full px-1.5 py-px text-[9px] font-bold uppercase tracking-wide border"
-                              style={{ color: meta.color, borderColor: `${meta.color}30`, background: `${meta.color}0e` }}>
-                              {meta.label}
-                            </span>
-                            <span className="text-[9.5px] tabular-nums"
-                              style={{ color: "hsl(var(--muted-foreground) / 0.5)" }}>
-                              {new Date(entry.created_at).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })}
-                            </span>
-                          </div>
-                          <p className="text-[12px] text-foreground leading-snug truncate">
-                            {entry.description ?? `${entry.entity} · ${entry.action}`}
-                          </p>
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
+              </li>
             ))}
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
-
-// ── Priority badge helper ─────────────────────────────────────────────────────
-function getPriority(item: any): { label: string; color: string } {
-  if (item.severity === "critical") return { label: "Crítico", color: MOD.nc };
-  if (item.severity === "high")     return { label: "Alta",    color: MOD.subcontractors };
-  if (item.due_date) {
-    const daysLeft = Math.floor((new Date(item.due_date).getTime() - Date.now()) / 86_400_000);
-    if (daysLeft < 3)  return { label: "Urgente", color: MOD.nc };
-    if (daysLeft < 7)  return { label: "Alta",    color: MOD.subcontractors };
-  }
-  return { label: "Normal", color: MOD.documents };
-}
-
-// ── Next Actions Card — executive control panel ───────────────────────────────
-function NextActionsCard({
-  docsInReview, openNCs, t,
-}: {
-  docsInReview: any[];
-  openNCs: any[];
-  t: (k: string, opts?: any) => string;
-}) {
-  type ActionItem = { label: string; color: string; icon: React.ElementType; priority: { label: string; color: string }; due?: string };
-  const items: ActionItem[] = [
-    ...docsInReview.slice(0, 3).map((d) => ({
-      label: d.title, color: MOD.documents, icon: Clock,
-      priority: getPriority(d), due: d.updated_at,
-    })),
-    ...openNCs.slice(0, 3).map((nc) => ({
-      label: nc.description?.slice(0, 60) ?? "NC", color: MOD.nc, icon: AlertTriangle,
-      priority: getPriority(nc), due: nc.due_date,
-    })),
-  ];
-
-  return (
-    <Card className="border bg-card shadow-card hover:shadow-card-hover transition-shadow duration-200 animate-fade-in">
-      <CardHeader className="pb-3 pt-5 px-5">
-        <CardTitle className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
-          <ChevronRight className="h-3.5 w-3.5" />{t("dashboard.nextActions")}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="px-5 pb-4">
-        {items.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-6 gap-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full" style={{ background: `${MOD.suppliers}18` }}>
-              <CheckCircle2 className="h-5 w-5" style={{ color: MOD.suppliers }} />
-            </div>
-            <p className="text-sm text-muted-foreground">{t("dashboard.allClear")}</p>
-          </div>
-        ) : (
-          <ul className="space-y-1">
-            {items.map((item, i) => {
-              const Icon = item.icon;
-              return (
-                <li key={i} className="flex items-start gap-3 rounded-lg px-2 py-2.5 hover:bg-muted/40 transition-all duration-150 cursor-default">
-                  <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg mt-0.5"
-                    style={{ background: `${item.color}12` }}>
-                    <Icon className="h-3.5 w-3.5" style={{ color: item.color }} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-0.5">
-                      <span className="inline-flex items-center rounded-full px-1.5 py-px text-[9px] font-bold uppercase tracking-wide border"
-                        style={{ color: item.priority.color, borderColor: `${item.priority.color}30`, background: `${item.priority.color}10` }}>
-                        {item.priority.label}
-                      </span>
-                      {item.due && (
-                        <span className="text-[9.5px] tabular-nums"
-                          style={{ color: "hsl(var(--muted-foreground) / 0.5)" }}>
-                          {new Date(item.due).toLocaleDateString(undefined, { day: "2-digit", month: "short" })}
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-[12px] text-foreground leading-snug truncate">{item.label}</p>
-                  </div>
-                </li>
-              );
-            })}
           </ul>
         )}
       </CardContent>
@@ -506,207 +268,126 @@ function NextActionsCard({
   );
 }
 
-// ── Document status mini-card ─────────────────────────────────────────────────
-function DocStatusCard({
-  label, count, color, icon: Icon, badge, loading,
-}: {
-  label: string; count: number; color: string; icon: React.ElementType;
-  badge: string; loading: boolean;
-}) {
-  const animated = useCountUp(loading ? 0 : count);
-  return (
-    <Card className="border bg-card shadow-card animate-fade-in">
-      <CardContent className="p-5">
-        <div className="flex items-center justify-between mb-3">
-          <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">{label}</p>
-          <Icon className="h-3.5 w-3.5 text-muted-foreground" />
-        </div>
-        {loading ? (
-          <Skeleton className="h-9 w-14" />
-        ) : (
-          <>
-            <p className="text-3xl font-extrabold tabular-nums leading-none" style={{ color }}>{animated}</p>
-            <div className="mt-3">
-              <span
-                className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold border"
-                style={{ color, borderColor: `${color}40`, background: `${color}12` }}
-              >
-                {badge}
-              </span>
-            </div>
-          </>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
-
-// ── Main Dashboard ─────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════
+// MAIN DASHBOARD PAGE
+// ══════════════════════════════════════════════════════════════════
 export default function DashboardPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { activeProject } = useProject();
-
-  const { data: allProjects, loading: projLoading } = useProjects();
-  const { data: documents, loading: docLoading } = useDocuments();
-  const { data: tests, loading: testLoading } = useTests();
+  const { summary, ncMonthly, testsMonthly, docMetrics, qualityMetrics, loading } = useDashboardViews();
   const { data: ncs, loading: ncLoading } = useNonConformities();
   const { data: suppliers, loading: supLoading } = useSuppliers();
-  const { data: auditEntries, loading: auditLoading } = useAuditLog();
   const { data: workItems, loading: wiLoading } = useWorkItems();
-  const { data: ppiInstances, loading: ppiLoading } = usePPIInstances();
 
   const displayName = user?.email?.split("@")[0] ?? "—";
+  const emptyMsg = t("dashboard.noData");
 
-  // ── KPI Computations ─────────────────────────────────────────────────────────
-  const activeProjectsCount = allProjects.filter((p) => p.status === "active").length;
-  const docDraft    = documents.filter((d) => d.status === "draft").length;
-  const docReview   = documents.filter((d) => d.status === "in_review").length;
-  const docApproved = documents.filter((d) => d.status === "approved").length;
-  const testPending      = tests.filter((t) => t.status === "pending").length;
-  const testPass         = tests.filter((t) => t.status === "pass").length;
-  const testFail         = tests.filter((t) => t.status === "fail").length;
-  const testInconclusive = tests.filter((t) => t.status === "inconclusive").length;
-  const ncOpen       = ncs.filter((n) => n.status === "open").length;
-  const ncInProgress = ncs.filter((n) => n.status === "in_progress").length;
-  const ncClosed     = ncs.filter((n) => n.status === "closed").length;
-  const openNcs = ncs.filter((n) => n.status !== "closed");
-  const avgAgingDays = openNcs.length > 0
-    ? Math.round(openNcs.reduce((acc, n) => acc + Math.floor((Date.now() - new Date(n.created_at).getTime()) / 86_400_000), 0) / openNcs.length)
-    : 0;
-  const supPending  = suppliers.filter((s) => s.approval_status === "pending").length;
-  const supApproved = suppliers.filter((s) => s.approval_status === "approved").length;
-  const supRejected = suppliers.filter((s) => s.approval_status === "rejected").length;
+  // ── Advanced analysis data ──────────────────────────────────────
+  const ncByDiscipline = useMemo(() => {
+    const map: Record<string, number> = {};
+    ncs.forEach(n => {
+      const wi = workItems.find(w => w.id === (n as any).work_item_id);
+      const disc = wi?.disciplina ?? "geral";
+      map[disc] = (map[disc] ?? 0) + 1;
+    });
+    return Object.entries(map).map(([k, v]) => ({
+      label: t(`workItems.disciplines.${k}`, { defaultValue: k }),
+      value: v,
+      color: MOD.nc,
+    })).sort((a, b) => b.value - a.value);
+  }, [ncs, workItems, t]);
 
-  // ── Work Items KPIs ───────────────────────────────────────────────────────────
-  const wiTotal  = workItems.length;
-  const wiOpen   = workItems.filter((w) => w.status === "planned" || w.status === "in_progress").length;
-  const wiNcIds  = new Set(ncs.filter((n: any) => n.status !== "closed" && n.work_item_id).map((n: any) => n.work_item_id as string));
-  const wiWithNC = workItems.filter((w) => wiNcIds.has(w.id)).length;
+  const ncBySupplier = useMemo(() => {
+    const map: Record<string, number> = {};
+    ncs.forEach(n => {
+      const sid = (n as any).supplier_id;
+      if (sid) {
+        const sup = suppliers.find(s => s.id === sid);
+        const name = sup?.name ?? sid;
+        map[name] = (map[name] ?? 0) + 1;
+      }
+    });
+    return Object.entries(map).map(([k, v]) => ({ label: k, value: v, color: MOD.subcontractors })).sort((a, b) => b.value - a.value);
+  }, [ncs, suppliers]);
 
-  // ── PPI KPIs ────────────────────────────────────────────────────────────────
-  const ppiTotal     = ppiInstances.length;
-  const ppiApproved  = ppiInstances.filter((p) => p.status === "approved").length;
-  const ppiSubmitted = ppiInstances.filter((p) => p.status === "submitted").length;
-  const ppiDraft     = ppiInstances.filter((p) => p.status === "draft").length;
-  const ppiInProgress= ppiInstances.filter((p) => p.status === "in_progress").length;
-  const ppiConformRate = ppiTotal > 0 ? Math.round((ppiApproved / ppiTotal) * 100) : 0;
+  const ncBySeverity = useMemo(() => {
+    const map: Record<string, number> = {};
+    ncs.forEach(n => {
+      const sev = (n as any).severity ?? "medium";
+      map[sev] = (map[sev] ?? 0) + 1;
+    });
+    const colors: Record<string, string> = { critical: MOD.nc, major: MOD.subcontractors, high: MOD.subcontractors, medium: MOD.plans, minor: MOD.muted, low: MOD.muted };
+    return Object.entries(map).map(([k, v]) => ({
+      label: t(`nc.severity.${k}`, { defaultValue: k }),
+      value: v,
+      color: colors[k] ?? MOD.muted,
+    })).sort((a, b) => b.value - a.value);
+  }, [ncs, t]);
 
-  // ── NC Lead Time (avg days from open to close for closed NCs) ──────────────
-  const closedNcs = ncs.filter((n) => n.status === "closed" && n.closure_date);
-  const avgLeadTime = closedNcs.length > 0
-    ? Math.round(
-        closedNcs.reduce((acc, n) => {
-          const open = new Date(n.detected_at ?? n.created_at).getTime();
-          const close = new Date(n.closure_date!).getTime();
-          return acc + Math.max(0, (close - open) / 86_400_000);
-        }, 0) / closedNcs.length
-      )
-    : 0;
+  const docByType = useMemo(() => {
+    const colors = [MOD.documents, MOD.tests, MOD.subcontractors, MOD.plans, MOD.nc, MOD.suppliers, MOD.projects];
+    return docMetrics.map((d, i) => ({
+      name: t(`documents.docTypes.${d.doc_type}`, { defaultValue: d.doc_type }),
+      value: d.total,
+      color: colors[i % colors.length],
+    })).sort((a, b) => b.value - a.value);
+  }, [docMetrics, t]);
 
-  // ── NC Trend — last 6 months (opened vs closed per month) ──────────────────
-  const ncTrendData = useMemo(() => {
-    const months: { name: string; opened: number; closed: number }[] = [];
-    const now = new Date();
-    for (let i = 5; i >= 0; i--) {
-      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const label = d.toLocaleDateString(undefined, { month: "short" });
-      const monthStart = d.getTime();
-      const nextMonth = new Date(d.getFullYear(), d.getMonth() + 1, 1).getTime();
-      const opened = ncs.filter((n) => {
-        const t = new Date(n.created_at).getTime();
-        return t >= monthStart && t < nextMonth;
-      }).length;
-      const closed = ncs.filter((n) => {
-        if (!n.closure_date) return false;
-        const t = new Date(n.closure_date).getTime();
-        return t >= monthStart && t < nextMonth;
-      }).length;
-      months.push({ name: label, opened, closed });
-    }
-    return months;
-  }, [ncs]);
+  const wiByDiscipline = useMemo(() => {
+    const map: Record<string, number> = {};
+    workItems.forEach(w => {
+      const disc = w.disciplina ?? "geral";
+      map[disc] = (map[disc] ?? 0) + 1;
+    });
+    return Object.entries(map).map(([k, v]) => ({
+      label: t(`workItems.disciplines.${k}`, { defaultValue: k }),
+      value: v,
+      color: MOD.projects,
+    })).sort((a, b) => b.value - a.value);
+  }, [workItems, t]);
 
-  // ── Chart data ────────────────────────────────────────────────────────────────
-  const docPieData = [
-    { name: t("documents.status.draft"),    value: docDraft,    color: MOD.muted        },
-    { name: t("documents.status.in_review"), value: docReview,   color: MOD.documents    },
-    { name: t("documents.status.approved"), value: docApproved, color: MOD.suppliers    },
-  ].filter((d) => d.value > 0);
+  const testsByType = useMemo(() => {
+    return qualityMetrics.map(q => ({
+      label: q.test_name,
+      value: q.total,
+      color: MOD.tests,
+    })).sort((a, b) => b.value - a.value);
+  }, [qualityMetrics]);
 
-  const ncPieData = [
-    { name: t("nc.status.open"),        value: ncOpen,       color: MOD.nc             },
-    { name: t("nc.status.in_progress"), value: ncInProgress, color: MOD.subcontractors },
-    { name: t("nc.status.closed"),      value: ncClosed,     color: MOD.suppliers      },
-  ].filter((d) => d.value > 0);
-
-  const testBarData = [{
-    name: t("dashboard.charts.tests"),
-    [t("tests.status.pass")]:         testPass,
-    [t("tests.status.fail")]:         testFail,
-    [t("tests.status.pending")]:      testPending,
-    [t("tests.status.inconclusive")]: testInconclusive,
-  }];
-  const testBars = [
-    { key: t("tests.status.pass"),         color: MOD.suppliers,      label: t("tests.status.pass")         },
-    { key: t("tests.status.fail"),         color: MOD.nc,             label: t("tests.status.fail")         },
-    { key: t("tests.status.pending"),      color: MOD.subcontractors, label: t("tests.status.pending")      },
-    { key: t("tests.status.inconclusive"), color: MOD.muted,          label: t("tests.status.inconclusive") },
-  ];
-
-  const supBarData = [{
-    name: t("dashboard.charts.suppliers"),
-    [t("suppliers.approvalStatus.approved")]: supApproved,
-    [t("suppliers.approvalStatus.pending")]:  supPending,
-    [t("suppliers.approvalStatus.rejected")]: supRejected,
-  }];
-  const supBars = [
-    { key: t("suppliers.approvalStatus.approved"), color: MOD.suppliers,      label: t("suppliers.approvalStatus.approved") },
-    { key: t("suppliers.approvalStatus.pending"),  color: MOD.subcontractors, label: t("suppliers.approvalStatus.pending")  },
-    { key: t("suppliers.approvalStatus.rejected"), color: MOD.nc,             label: t("suppliers.approvalStatus.rejected") },
-  ];
-
-  // ── PPI Pie data ─────────────────────────────────────────────────────────────
-  const ppiPieData = [
-    { name: t("ppi.status.draft"),       value: ppiDraft,      color: MOD.muted },
-    { name: t("ppi.status.in_progress"), value: ppiInProgress, color: MOD.documents },
-    { name: t("ppi.status.submitted"),   value: ppiSubmitted,  color: MOD.subcontractors },
-    { name: t("ppi.status.approved"),    value: ppiApproved,   color: MOD.suppliers },
-  ].filter((d) => d.value > 0);
-
-  const recentEntries  = auditEntries.slice(0, 8);
-  const docsInReview   = documents.filter((d) => d.status === "in_review");
-  const openNCsList    = ncs.filter((n) => n.status === "open" || n.status === "in_progress");
-  const anyLoading     = docLoading || testLoading || ncLoading || supLoading;
+  const failureByMaterial = useMemo(() => {
+    const map: Record<string, { fail: number; total: number }> = {};
+    qualityMetrics.forEach(q => {
+      const mat = q.material ?? t("common.noData");
+      if (!map[mat]) map[mat] = { fail: 0, total: 0 };
+      map[mat].fail += q.non_conform;
+      map[mat].total += q.total;
+    });
+    return Object.entries(map).filter(([, v]) => v.total > 0).map(([k, v]) => ({
+      label: k,
+      value: Math.round((v.fail / v.total) * 100),
+      color: MOD.nc,
+    })).sort((a, b) => b.value - a.value);
+  }, [qualityMetrics, t]);
 
   return (
-    <div className="space-y-8 max-w-6xl mx-auto animate-fade-in">
+    <div className="space-y-6 max-w-[1200px] mx-auto animate-fade-in">
 
-      {/* ── Page header ───────────────────────────────────────────────── */}
+      {/* ── Header ─────────────────────────────────────────────────── */}
       <div className="flex items-start justify-between">
         <div className="space-y-1">
-          <p className="text-[10px] font-extrabold uppercase tracking-[0.22em] text-muted-foreground/60 select-none">
-            {t("dashboard.welcome")}
-          </p>
-          <h1 className="text-[26px] font-black tracking-tight text-foreground leading-tight">
-            {displayName}
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1.5">
-            {activeProject
-              ? t("dashboard.subtitleProject", { project: activeProject.name })
-              : t("dashboard.subtitle")}
+          <p className="text-[10px] font-extrabold uppercase tracking-[0.20em] text-muted-foreground/60">{t("dashboard.welcome")}</p>
+          <h1 className="text-2xl font-black tracking-tight text-foreground">{displayName}</h1>
+          <p className="text-sm text-muted-foreground">
+            {activeProject ? t("dashboard.subtitleProject", { project: activeProject.name }) : t("dashboard.subtitle")}
           </p>
         </div>
         <div className="hidden sm:flex items-center gap-2 rounded-xl border border-border bg-card shadow-card px-4 py-2.5">
-          <ShieldCheck className="h-4 w-4" style={{ color: "hsl(var(--primary))" }} />
-          <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
-            Atlas QMS
-          </span>
+          <ShieldCheck className="h-4 w-4 text-primary" />
+          <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-muted-foreground">Atlas QMS</span>
         </div>
       </div>
 
-
-      {/* ── No project banner ─────────────────────────────────────────── */}
       {!activeProject && (
         <div className="flex items-center gap-3 rounded-xl border border-border bg-card shadow-card px-5 py-3.5">
           <Building2 className="h-4 w-4 text-muted-foreground flex-shrink-0" />
@@ -714,205 +395,157 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* ── Row 1: Main KPI cards (4 cols) ───────────────────────────── */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard
-          label={t("dashboard.stats.activeProjects")}
-          value={activeProjectsCount}
-          icon={FolderKanban}
-          loading={projLoading}
-          moduleColor={MOD.projects}
-        />
-        <StatCard
-          label={t("dashboard.stats.openDocuments")}
-          value={documents.filter((d) => d.status !== "approved").length}
-          icon={FileText}
-          loading={docLoading}
-          moduleColor={MOD.documents}
-          sub={`${docApproved} ${t("documents.status.approved").toLowerCase()}`}
-        />
-        <StatCard
-          label={t("dashboard.stats.pendingTests")}
-          value={testPending + testFail}
-          icon={FlaskConical}
-          loading={testLoading}
-          moduleColor={MOD.tests}
-          sub={`${testPass} ${t("tests.status.pass").toLowerCase()}`}
-        />
-        <StatCard
-          label={t("dashboard.stats.openNCs")}
-          value={ncOpen + ncInProgress}
-          icon={AlertTriangle}
-          loading={ncLoading}
-          moduleColor={MOD.nc}
-          sub={`${ncClosed} ${t("nc.status.closed").toLowerCase()}`}
-        />
-      </div>
+      {/* ══════════════════════════════════════════════════════════════
+         TABS: Executivo | Análise Avançada
+      ══════════════════════════════════════════════════════════════ */}
+      <Tabs defaultValue="executive" className="space-y-6">
+        <TabsList className="bg-muted/50 border border-border">
+          <TabsTrigger value="executive" className="text-xs font-semibold uppercase tracking-wider">{t("dashboard.tabs.executive")}</TabsTrigger>
+          <TabsTrigger value="advanced" className="text-xs font-semibold uppercase tracking-wider">{t("dashboard.tabs.advanced")}</TabsTrigger>
+        </TabsList>
 
-      {/* ── Row 1b: Work Items + PPI KPI row (5 cols) ────────────────── */}
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-        <StatCard
-          label={t("dashboard.stats.totalWorkItems")}
-          value={wiTotal}
-          icon={Construction}
-          loading={wiLoading}
-          moduleColor="hsl(212, 43%, 40%)"
-        />
-        <StatCard
-          label={t("dashboard.stats.openWorkItems")}
-          value={wiOpen}
-          icon={Construction}
-          loading={wiLoading}
-          moduleColor="hsl(33, 75%, 38%)"
-          sub={`${wiTotal - wiOpen} ${t("dashboard.stats.completed")}`}
-        />
-        <StatCard
-          label={t("dashboard.stats.workItemsWithNC")}
-          value={wiWithNC}
-          icon={AlertTriangle}
-          loading={wiLoading || ncLoading}
-          moduleColor="hsl(2, 60%, 44%)"
-        />
-        <StatCard
-          label={t("dashboard.stats.ppiTotal")}
-          value={ppiTotal}
-          icon={ClipboardCheck}
-          loading={ppiLoading}
-          moduleColor="hsl(188, 55%, 32%)"
-          sub={ppiTotal > 0 ? `${ppiConformRate}% ${t("dashboard.stats.ppiConform")}` : undefined}
-        />
-        <StatCard
-          label={t("dashboard.stats.ppiPending")}
-          value={ppiSubmitted}
-          icon={ClipboardCheck}
-          loading={ppiLoading}
-          moduleColor="hsl(33, 75%, 38%)"
-          sub={`${ppiApproved} ${t("dashboard.kpi.approved").toLowerCase()}`}
-        />
-      </div>
+        {/* ═════════════════════════════════════════════════════════
+           EXECUTIVE DASHBOARD
+        ═════════════════════════════════════════════════════════ */}
+        <TabsContent value="executive" className="space-y-6 mt-0">
 
-      {/* ── Row 2: Document status breakdown ─────────────────────────── */}
-      <div className="grid grid-cols-3 gap-4">
-        <DocStatusCard
-          label={t("documents.status.draft")}
-          count={docDraft}
-          color={MOD.muted}
-          icon={RotateCcw}
-          badge={t("dashboard.kpi.documents")}
-          loading={anyLoading}
-        />
-        <DocStatusCard
-          label={t("documents.status.review")}
-          count={docReview}
-          color={MOD.documents}
-          icon={Clock}
-          badge={t("dashboard.kpi.awaitingReview")}
-          loading={anyLoading}
-        />
-        <DocStatusCard
-          label={t("documents.status.approved")}
-          count={docApproved}
-          color={MOD.suppliers}
-          icon={CheckCircle2}
-          badge={t("dashboard.kpi.approved")}
-          loading={anyLoading}
-        />
-      </div>
+          {/* ── Row 1: Critical Indicators ──────────────────────── */}
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+            <KPICard label={t("dashboard.exec.wiOpen")} value={summary.wi_in_progress} icon={Construction} loading={loading} color={MOD.projects} sub={`${summary.wi_total} total`} />
+            <KPICard label={t("dashboard.exec.ppiPending")} value={summary.ppi_submitted} icon={ClipboardCheck} loading={loading} color={MOD.subcontractors} sub={`${summary.ppi_approved} ${t("dashboard.kpi.approved").toLowerCase()}`} />
+            <KPICard label={t("dashboard.exec.testsNC")} value={summary.tests_non_conform} icon={FlaskConical} loading={loading} color={MOD.nc} sub={`${summary.tests_total} total`} />
+            <KPICard label={t("dashboard.exec.ncOpen")} value={summary.nc_open} icon={AlertTriangle} loading={loading} color={MOD.nc} sub={`${summary.nc_closed} ${t("dashboard.kpi.ncClosed").toLowerCase()}`} />
+          </div>
 
-      {/* ── Row 3: Charts grid — 5 cards ─────────────────────────────── */}
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 xl:grid-cols-5">
-        <PieCard
-          title={t("dashboard.kpi.documents")}
-          data={docPieData}
-          loading={docLoading}
-          icon={FileText}
-          total={documents.length}
-        />
-        <DocTypeCard documents={documents} loading={docLoading} t={t} />
-        <PieCard
-          title={t("dashboard.kpi.ncs")}
-          data={ncPieData}
-          loading={ncLoading}
-          icon={AlertTriangle}
-          total={ncs.length}
-        />
-        <PieCard
-          title={t("dashboard.kpi.ppi")}
-          data={ppiPieData}
-          loading={ppiLoading}
-          icon={ClipboardCheck}
-          total={ppiTotal}
-        />
-        <AgingCard days={avgAgingDays} openCount={openNcs.length} loading={ncLoading} />
-      </div>
+          {/* ── Row 2: Quality Indicators ───────────────────────── */}
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+            <PercentCard label={t("dashboard.exec.ppiConform")} value={summary.ppi_conform_pct} loading={loading} color={MOD.suppliers} icon={ClipboardCheck} sub={`${summary.ppi_approved}/${summary.ppi_total}`} />
+            <PercentCard label={t("dashboard.exec.testsConform")} value={summary.tests_conform_pct} loading={loading} color={MOD.tests} icon={FlaskConical} sub={`${summary.tests_completed} ${t("dashboard.stats.completed")}`} />
+            <KPICard label={t("dashboard.exec.ncAging")} value={summary.nc_avg_aging} icon={Timer} loading={loading} color={summary.nc_avg_aging > 30 ? MOD.nc : summary.nc_avg_aging > 14 ? MOD.subcontractors : MOD.suppliers} suffix={t("dashboard.kpi.days")} sub={t("dashboard.kpi.openNcCount", { count: summary.nc_open })} />
+            <KPICard label={t("dashboard.exec.docsReview")} value={summary.docs_in_review} icon={FileText} loading={loading} color={MOD.documents} sub={`${summary.docs_total} total`} />
+          </div>
 
-      {/* ── Row 3b: NC Lead Time + NC Trend ───────────────────────────── */}
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
-        <Card className="border bg-card shadow-card animate-fade-in">
-          <CardHeader className="pb-0 pt-5 px-5">
-            <CardTitle className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
-              <Hourglass className="h-3.5 w-3.5" />{t("dashboard.kpi.ncLeadTimeTitle")}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-5 pb-5">
-            {ncLoading ? (
-              <Skeleton className="h-24 w-full mt-3 rounded-xl" />
-            ) : (
-              <div className="flex flex-col items-center justify-center py-5 gap-1">
-                <span className="text-5xl font-extrabold tabular-nums" style={{ color: avgLeadTime === 0 ? MOD.muted : avgLeadTime < 14 ? MOD.suppliers : avgLeadTime < 30 ? MOD.subcontractors : MOD.nc }}>
-                  {avgLeadTime}
-                </span>
-                <span className="text-xs text-muted-foreground">{t("dashboard.kpi.daysToClose")}</span>
-                <span className="mt-2 text-xs text-muted-foreground text-center">
-                  {closedNcs.length > 0
-                    ? t("dashboard.kpi.closedNcCount", { count: closedNcs.length })
-                    : t("dashboard.kpi.noClosedNcs")}
-                </span>
+          {/* ── Row 3: 6-Month Trends ──────────────────────────── */}
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+            <TrendChart
+              title={t("dashboard.charts.ncTrend")}
+              data={ncMonthly}
+              loading={loading}
+              icon={TrendingUp}
+              emptyMsg={emptyMsg}
+              bars={[
+                { key: "opened", color: MOD.nc, label: t("dashboard.kpi.ncOpened") },
+                { key: "closed", color: MOD.suppliers, label: t("dashboard.kpi.ncClosed") },
+              ]}
+            />
+            <TrendChart
+              title={t("dashboard.charts.testsTrend")}
+              data={testsMonthly}
+              loading={loading}
+              icon={FlaskConical}
+              emptyMsg={emptyMsg}
+              bars={[
+                { key: "conform", color: MOD.suppliers, label: t("dashboard.exec.conform") },
+                { key: "non_conform", color: MOD.nc, label: t("dashboard.exec.nonConform") },
+              ]}
+            />
+          </div>
+        </TabsContent>
+
+        {/* ═════════════════════════════════════════════════════════
+           ADVANCED ANALYSIS
+        ═════════════════════════════════════════════════════════ */}
+        <TabsContent value="advanced" className="space-y-6 mt-0">
+          <Tabs defaultValue="quality" className="space-y-5">
+            <TabsList className="bg-muted/50 border border-border">
+              <TabsTrigger value="quality" className="text-xs">{t("dashboard.adv.quality")}</TabsTrigger>
+              <TabsTrigger value="documental" className="text-xs">{t("dashboard.adv.documental")}</TabsTrigger>
+              <TabsTrigger value="ncRisk" className="text-xs">{t("dashboard.adv.ncRisk")}</TabsTrigger>
+              <TabsTrigger value="operational" className="text-xs">{t("dashboard.adv.operational")}</TabsTrigger>
+            </TabsList>
+
+            {/* ── A. Quality ─────────────────────────────────────── */}
+            <TabsContent value="quality" className="space-y-5 mt-0">
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                <HBarList title={t("dashboard.adv.testsByType")} data={testsByType} loading={loading} icon={FlaskConical} emptyMsg={emptyMsg} />
+                <HBarList title={t("dashboard.adv.failureByMaterial")} data={failureByMaterial} loading={loading} icon={Target} emptyMsg={emptyMsg} />
               </div>
-            )}
-          </CardContent>
-        </Card>
+              <TrendChart
+                title={t("dashboard.charts.testsTrend")}
+                data={testsMonthly}
+                loading={loading}
+                icon={BarChart3}
+                emptyMsg={emptyMsg}
+                bars={[
+                  { key: "conform", color: MOD.suppliers, label: t("dashboard.exec.conform") },
+                  { key: "non_conform", color: MOD.nc, label: t("dashboard.exec.nonConform") },
+                ]}
+              />
+            </TabsContent>
 
-        <div className="md:col-span-2">
-          <BarCard
-            title={t("dashboard.charts.ncTrend")}
-            data={ncTrendData}
-            loading={ncLoading}
-            icon={TrendingUp}
-            bars={[
-              { key: "opened", color: MOD.nc, label: t("dashboard.kpi.ncOpened") },
-              { key: "closed", color: MOD.suppliers, label: t("dashboard.kpi.ncClosed") },
-            ]}
-          />
-        </div>
-      </div>
+            {/* ── B. Documental ───────────────────────────────────── */}
+            <TabsContent value="documental" className="space-y-5 mt-0">
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                <DonutCard
+                  title={t("dashboard.adv.docsByType")}
+                  data={docByType}
+                  loading={loading}
+                  icon={FileText}
+                  total={docMetrics.reduce((s, d) => s + d.total, 0)}
+                  emptyMsg={emptyMsg}
+                />
+                <HBarList
+                  title={t("dashboard.adv.avgApproval")}
+                  data={docMetrics.map((d) => ({
+                    label: t(`documents.docTypes.${d.doc_type}`, { defaultValue: d.doc_type }),
+                    value: d.avg_approval_days,
+                    color: MOD.documents,
+                  })).sort((a, b) => b.value - a.value)}
+                  loading={loading}
+                  icon={Clock}
+                  emptyMsg={emptyMsg}
+                />
+              </div>
+            </TabsContent>
 
-      {/* ── Row 4: Tests + Suppliers bar charts ──────────────────────── */}
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-        <BarCard
-          title={t("dashboard.kpi.tests")}
-          data={testBarData}
-          loading={testLoading}
-          icon={FlaskConical}
-          bars={testBars}
-        />
-        <BarCard
-          title={t("dashboard.kpi.suppliers")}
-          data={supBarData}
-          loading={supLoading}
-          icon={Building2}
-          bars={supBars}
-        />
-      </div>
+            {/* ── C. NC & Risco ───────────────────────────────────── */}
+            <TabsContent value="ncRisk" className="space-y-5 mt-0">
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+                <HBarList title={t("dashboard.adv.ncByDiscipline")} data={ncByDiscipline} loading={ncLoading || wiLoading} icon={AlertTriangle} emptyMsg={emptyMsg} />
+                <HBarList title={t("dashboard.adv.ncBySupplier")} data={ncBySupplier} loading={ncLoading || supLoading} icon={Building2} emptyMsg={emptyMsg} />
+                <HBarList title={t("dashboard.adv.ncBySeverity")} data={ncBySeverity} loading={ncLoading} icon={Activity} emptyMsg={emptyMsg} />
+              </div>
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+                <div className="md:col-span-2">
+                  <TrendChart
+                    title={t("dashboard.charts.ncTrend")}
+                    data={ncMonthly}
+                    loading={loading}
+                    icon={TrendingUp}
+                    emptyMsg={emptyMsg}
+                    bars={[
+                      { key: "opened", color: MOD.nc, label: t("dashboard.kpi.ncOpened") },
+                      { key: "closed", color: MOD.suppliers, label: t("dashboard.kpi.ncClosed") },
+                    ]}
+                  />
+                </div>
+                <KPICard label={t("dashboard.kpi.ncLeadTimeTitle")} value={summary.nc_avg_lead_time} icon={Hourglass} loading={loading} color={summary.nc_avg_lead_time > 30 ? MOD.nc : MOD.suppliers} suffix={t("dashboard.kpi.daysToClose")} sub={t("dashboard.kpi.closedNcCount", { count: summary.nc_closed })} />
+              </div>
+            </TabsContent>
 
-      {/* ── Row 5: Activity + Next actions ───────────────────────────── */}
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          <RecentActivityCard entries={recentEntries} loading={auditLoading} t={t} />
-        </div>
-        <NextActionsCard docsInReview={docsInReview} openNCs={openNCsList} t={t} />
-      </div>
-
+            {/* ── D. Operacional ──────────────────────────────────── */}
+            <TabsContent value="operational" className="space-y-5 mt-0">
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                <HBarList title={t("dashboard.adv.wiByDiscipline")} data={wiByDiscipline} loading={wiLoading} icon={Construction} emptyMsg={emptyMsg} />
+                <div className="grid gap-4">
+                  <PercentCard label={t("dashboard.exec.ppiConform")} value={summary.ppi_conform_pct} loading={loading} color={MOD.suppliers} icon={ClipboardCheck} sub={`${summary.ppi_approved} / ${summary.ppi_total}`} />
+                  <KPICard label={t("dashboard.exec.ppiPending")} value={summary.ppi_submitted} icon={ClipboardCheck} loading={loading} color={MOD.subcontractors} />
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
