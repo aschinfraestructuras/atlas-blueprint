@@ -2527,6 +2527,7 @@ export type Database = {
           test_name: string
         }[]
       }
+      fn_claim_my_pending_invites: { Args: never; Returns: Json }
       fn_create_document: {
         Args: {
           p_disciplina?: string

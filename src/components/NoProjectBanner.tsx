@@ -6,7 +6,9 @@ import { useNavigate } from "react-router-dom";
 
 export function NoProjectBanner() {
   const { t } = useTranslation();
+  const { projects } = useProject();
   const navigate = useNavigate();
+  const hasProjects = projects.length > 0;
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-4 max-w-md mx-auto">
@@ -15,14 +17,14 @@ export function NoProjectBanner() {
       </div>
       <div className="space-y-1">
         <h3 className="text-base font-semibold text-foreground">
-          {t("noProject.title")}
+          {hasProjects ? t("noProject.title") : t("settings.members.noProjectsEmpty")}
         </h3>
         <p className="text-sm text-muted-foreground">
-          {t("noProject.subtitle")}
+          {hasProjects ? t("noProject.subtitle") : t("settings.members.noProjectsEmptySub")}
         </p>
       </div>
-      <Button variant="outline" size="sm" onClick={() => navigate("/projects")}>
-        {t("noProject.cta")}
+      <Button variant="outline" size="sm" onClick={() => navigate(hasProjects ? "/projects" : "/settings")}>
+        {hasProjects ? t("noProject.cta") : t("settings.members.requestAccess")}
       </Button>
     </div>
   );

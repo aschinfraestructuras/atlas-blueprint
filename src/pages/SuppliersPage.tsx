@@ -22,6 +22,7 @@ import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import type { Supplier } from "@/lib/services/supplierService";
 
 const QUAL_COLORS: Record<string, string> = {
@@ -80,7 +81,10 @@ export default function SuppliersPage() {
         toast({ title: t("suppliers.toast.archived") });
       }
       refetch();
-    } catch { toast({ title: t("suppliers.toast.error"), variant: "destructive" }); }
+    } catch (err) {
+      const info = classifySupabaseError(err, t);
+      toast({ title: info.title, description: info.description ?? info.raw, variant: "destructive" });
+    }
   };
 
   // Export data

@@ -24,6 +24,13 @@ export interface ProjectInvite {
   created_at: string;
 }
 
+export interface InviteMemberResult {
+  status: string;
+  user_id?: string;
+  invite_id?: string;
+  token?: string;
+}
+
 export const memberService = {
   async getMembers(projectId: string): Promise<ProjectMember[]> {
     const { data, error } = await supabase
@@ -64,14 +71,14 @@ export const memberService = {
     return (data ?? []) as ProjectInvite[];
   },
 
-  async invite(projectId: string, email: string, role: string): Promise<{ status: string }> {
+  async invite(projectId: string, email: string, role: string): Promise<InviteMemberResult> {
     const { data, error } = await supabase.rpc("fn_invite_project_member" as any, {
       p_project_id: projectId,
       p_email: email,
       p_role: role,
     });
     if (error) throw error;
-    return data as any;
+    return data as InviteMemberResult;
   },
 
   async acceptInvite(token: string): Promise<{ status: string; project_id: string }> {
@@ -80,6 +87,12 @@ export const memberService = {
     });
     if (error) throw error;
     return data as any;
+  },
+
+  async claimMyPendingInvites(): Promise<{ status: string; claimed: number }> {
+    const { data, error } = await supabase.rpc("fn_claim_my_pending_invites" as any);
+    if (error) throw error;
+    return (data ?? { status: "ok", claimed: 0 }) as { status: string; claimed: number };
   },
 
   async updateRole(projectId: string, userId: string, newRole: string): Promise<void> {

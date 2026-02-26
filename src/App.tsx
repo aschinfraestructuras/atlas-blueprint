@@ -32,6 +32,7 @@ import MaterialsPage from "./pages/MaterialsPage";
 import MaterialDetailPage from "./pages/MaterialDetailPage";
 import NotFound from "./pages/NotFound";
 import HealthCheckPage from "./pages/HealthCheckPage";
+import AcceptInvitePage from "./pages/AcceptInvitePage";
 
 const queryClient = new QueryClient();
 
@@ -54,6 +55,7 @@ const App = () => (
             <Routes>
               {/* Public */}
               <Route path="/login" element={<LoginPage />} />
+              <Route path="/invite/accept" element={<ProtectedLayout><AcceptInvitePage /></ProtectedLayout>} />
 
               {/* Protected – all share MainLayout */}
               <Route path="/" element={<ProtectedLayout><DashboardPage /></ProtectedLayout>} />
