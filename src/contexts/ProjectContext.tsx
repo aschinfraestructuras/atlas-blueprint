@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
-import { projectService, type Project } from "@/lib/services/projectService";
+import { type Project } from "@/lib/services/projectService";
 import { memberService } from "@/lib/services/memberService";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -32,14 +32,16 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
     }
     try {
       setError(null);
-      // Use RPC that returns only projects the user has access to
-      let data: Project[];
+
+      // Auto-claim pending invites sent to this authenticated email
       try {
-        data = await memberService.getMyProjects() as Project[];
-      } catch {
-        // Fallback to direct query if RPC not yet available
-        data = await projectService.getAll();
+        await memberService.claimMyPendingInvites();
+      } catch (claimErr) {
+        console.warn("[ProjectContext] claimMyPendingInvites failed", claimErr);
       }
+
+      // Source of truth for project visibility: membership-aware RPC
+      const data = await memberService.getMyProjects() as Project[];
       setProjects(data);
 
       // Restore persisted active project or default to first

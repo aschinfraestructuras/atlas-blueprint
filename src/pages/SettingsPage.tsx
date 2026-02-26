@@ -134,10 +134,20 @@ export default function SettingsPage() {
     setInviting(true);
     try {
       const result = await memberService.invite(activeProject.id, inviteEmail.trim(), inviteRole);
-      if ((result as any).status === "added_directly") {
+      if (result.status === "added_directly") {
         toast.success(t("settings.members.addedDirectly"));
       } else {
-        toast.success(t("settings.members.inviteSent"));
+        if (result.token) {
+          const inviteUrl = `${window.location.origin}/invite/accept?token=${result.token}`;
+          try {
+            await navigator.clipboard.writeText(inviteUrl);
+            toast.success(t("settings.members.inviteSent"), { description: inviteUrl });
+          } catch {
+            toast.success(t("settings.members.inviteSent"), { description: inviteUrl });
+          }
+        } else {
+          toast.success(t("settings.members.inviteSent"));
+        }
       }
       setInviteEmail("");
       setInviteRole("technician");
@@ -181,7 +191,8 @@ export default function SettingsPage() {
       toast.success(t("settings.members.inviteDeleted"));
       fetchMembers();
     } catch (err: any) {
-      toast.error(t("common.error"));
+      const classified = classifySupabaseError(err, t);
+      toast.error(classified.title, { description: classified.description ?? classified.raw });
     }
   };
 
