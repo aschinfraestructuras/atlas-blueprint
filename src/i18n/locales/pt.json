@@ -212,12 +212,22 @@
     "technicalOffice": { "subtitle": "Ainda não existem RFIs, Submittals ou Clarificações neste projeto." },
     "plans": { "subtitle": "Ainda não existem planos associados a este projeto." },
     "survey": { "subtitle": "Ainda não existem registos topográficos neste projeto." },
-    "subcontractors": { "subtitle": "Ainda não existem subempreiteiros associados a este projeto." }
+    "subcontractors": { "subtitle": "Ainda não existem subempreiteiros associados a este projeto." },
+    "materials": { "subtitle": "Este projeto ainda não tem materiais. Crie o primeiro." },
+    "workItems": { "subtitle": "Este projeto ainda não tem atividades. Crie a primeira." }
   },
   "pages": {
     "projects": {
       "title": "Projetos",
       "subtitle": "Gestão de projetos de construção"
+    },
+    "materials": {
+      "title": "Materiais",
+      "subtitle": "Catálogo de materiais do projeto"
+    },
+    "workItems": {
+      "title": "Atividades",
+      "subtitle": "Gestão de frentes de obra e sectores"
     },
     "documents": {
       "title": "Documentos",
@@ -1241,7 +1251,57 @@
       "timestamp": "Data/Hora",
       "entity": "Entidade",
       "action": "Ação",
-      "user": "Utilizador"
+      "user": "Utilizador",
+      "module": "Módulo",
+      "description": "Descrição"
+    },
+    "filters": {
+      "module": "Módulo",
+      "allModules": "Todos os módulos",
+      "from": "De",
+      "to": "Até",
+      "apply": "Aplicar"
+    },
+    "modules": {
+      "documents": "Documentos",
+      "non_conformities": "Não Conformidades",
+      "tests": "Ensaios",
+      "suppliers": "Fornecedores",
+      "subcontractors": "Subempreiteiros",
+      "survey": "Topografia",
+      "technical_office": "Of. Técnica",
+      "plans": "Planeamento",
+      "ppi_instances": "Inspeções PPI",
+      "ppi_templates": "Templates PPI",
+      "materials": "Materiais",
+      "work_items": "Atividades",
+      "project_members": "Membros",
+      "project_invites": "Convites",
+      "settings": "Definições"
+    },
+    "actions": {
+      "INSERT": "Criação",
+      "UPDATE": "Atualização",
+      "DELETE": "Eliminação",
+      "STATUS_CHANGE": "Alteração de estado",
+      "status_change": "Alteração de estado",
+      "BULK_SAVE": "Guardamento em lote",
+      "BULK_MARK_OK": "Marcação em lote",
+      "LINK_NC": "Ligação a NC",
+      "ARCHIVE": "Arquivo",
+      "EXPORT": "Exportação",
+      "LOGIN": "Login",
+      "LOGOUT": "Logout",
+      "APPROVE": "Aprovação",
+      "REJECT": "Rejeição",
+      "SUBMIT": "Submissão",
+      "REOPEN": "Reabertura",
+      "MEMBER_ADDED": "Membro adicionado",
+      "INVITE_CREATED": "Convite criado",
+      "INVITE_ACCEPTED": "Convite aceite",
+      "ROLE_CHANGED": "Função alterada",
+      "MEMBER_REMOVED": "Membro removido",
+      "NEW_VERSION": "Nova versão"
     }
   },
   "errors": {
