@@ -212,12 +212,22 @@
     "technicalOffice": { "subtitle": "Aún no hay RFIs, Submittals ni Clarificaciones en este proyecto." },
     "plans": { "subtitle": "Aún no hay planes asociados a este proyecto." },
     "survey": { "subtitle": "Aún no hay registros topográficos en este proyecto." },
-    "subcontractors": { "subtitle": "Aún no hay subcontratistas asociados a este proyecto." }
+    "subcontractors": { "subtitle": "Aún no hay subcontratistas asociados a este proyecto." },
+    "materials": { "subtitle": "Este proyecto aún no tiene materiales. Cree el primero." },
+    "workItems": { "subtitle": "Este proyecto aún no tiene actividades. Cree la primera." }
   },
   "pages": {
     "projects": {
       "title": "Proyectos",
       "subtitle": "Gestión de proyectos de construcción"
+    },
+    "materials": {
+      "title": "Materiales",
+      "subtitle": "Catálogo de materiales del proyecto"
+    },
+    "workItems": {
+      "title": "Actividades",
+      "subtitle": "Gestión de frentes de obra y sectores"
     },
     "documents": {
       "title": "Documentos",
@@ -1199,17 +1209,42 @@
       "subcontractors": "Subcontratistas",
       "survey": "Topografía",
       "technical_office": "Oficina Técnica",
-      "plans": "Planificación"
+      "plans": "Planificación",
+      "ppi_instances": "Inspecciones PPI",
+      "ppi_templates": "Plantillas PPI",
+      "materials": "Materiales",
+      "work_items": "Actividades",
+      "project_members": "Miembros",
+      "project_invites": "Invitaciones",
+      "settings": "Configuración"
     },
     "actions": {
-      "INSERT": "Creado",
-      "UPDATE": "Actualizado",
-      "DELETE": "Eliminado",
-      "status_change": "Cambio Estado",
-      "attachment_add": "Adjunto Añadido",
-      "attachment_download": "Adjunto Descargado",
-      "attachment_delete": "Adjunto Eliminado",
-      "upload_file": "Archivo Subido"
+      "INSERT": "Creación",
+      "UPDATE": "Actualización",
+      "DELETE": "Eliminación",
+      "STATUS_CHANGE": "Cambio de estado",
+      "status_change": "Cambio de estado",
+      "BULK_SAVE": "Guardado en lote",
+      "BULK_MARK_OK": "Marcado en lote",
+      "LINK_NC": "Vinculación a NC",
+      "ARCHIVE": "Archivo",
+      "EXPORT": "Exportación",
+      "LOGIN": "Login",
+      "LOGOUT": "Logout",
+      "APPROVE": "Aprobación",
+      "REJECT": "Rechazo",
+      "SUBMIT": "Envío",
+      "REOPEN": "Reapertura",
+      "MEMBER_ADDED": "Miembro añadido",
+      "INVITE_CREATED": "Invitación creada",
+      "INVITE_ACCEPTED": "Invitación aceptada",
+      "ROLE_CHANGED": "Rol cambiado",
+      "MEMBER_REMOVED": "Miembro eliminado",
+      "NEW_VERSION": "Nueva versión",
+      "attachment_add": "Adjunto añadido",
+      "attachment_download": "Adjunto descargado",
+      "attachment_delete": "Adjunto eliminado",
+      "upload_file": "Archivo subido"
     }
   },
   "errors": {
@@ -1370,6 +1405,7 @@
     }
   },
   "ppi": {
+    "title": "Planes de Puntos de Inspección (PPI)",
     "subtitle": "Gestionar plantillas e instancias de inspección por work item",
     "nav": "PPI",
     "templates": {
