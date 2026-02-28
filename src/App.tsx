@@ -25,6 +25,7 @@ import PlansPage from "./pages/PlansPage";
 import PlanDetailPage from "./pages/PlanDetailPage";
 import SurveyPage from "./pages/SurveyPage";
 import SubcontractorsPage from "./pages/SubcontractorsPage";
+import SubcontractorDetailPage from "./pages/SubcontractorDetailPage";
 import WorkItemsPage from "./pages/WorkItemsPage";
 import WorkItemDetailPage from "./pages/WorkItemDetailPage";
 import PPIPage from "./pages/PPIPage";
@@ -82,6 +83,7 @@ const App = () => (
               <Route path="/plans/:id" element={<ProtectedLayout><PlanDetailPage /></ProtectedLayout>} />
               <Route path="/survey" element={<ProtectedLayout><SurveyPage /></ProtectedLayout>} />
               <Route path="/subcontractors" element={<ProtectedLayout><SubcontractorsPage /></ProtectedLayout>} />
+              <Route path="/subcontractors/:id" element={<ProtectedLayout><SubcontractorDetailPage /></ProtectedLayout>} />
               <Route path="/work-items" element={<ProtectedLayout><WorkItemsPage /></ProtectedLayout>} />
               <Route path="/work-items/:id" element={<ProtectedLayout><WorkItemDetailPage /></ProtectedLayout>} />
               <Route path="/ppi" element={<ProtectedLayout><PPIPage /></ProtectedLayout>} />
