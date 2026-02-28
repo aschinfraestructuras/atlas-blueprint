@@ -176,7 +176,7 @@ export function SurveyFormDialog({ open, onOpenChange, record, onSuccess }: Prop
                 <Separator />
                 <AttachmentsPanel
                   projectId={activeProject.id}
-                  entityType="survey"
+                  entityType="survey_records"
                   entityId={record.id}
                 />
               </>

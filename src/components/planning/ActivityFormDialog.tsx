@@ -17,6 +17,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Slider } from "@/components/ui/slider";
+import { Separator } from "@/components/ui/separator";
+import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 
 const STATUSES = ["planned", "in_progress", "blocked", "completed", "cancelled"] as const;
 
@@ -194,6 +196,17 @@ export function ActivityFormDialog({ open, onOpenChange, wbsNodes, editActivity,
                 <Label htmlFor="req-ppi" className="text-sm">{t("planning.fields.reqPpi")}</Label>
               </div>
             </div>
+
+            {isEdit && editActivity && activeProject && (
+              <>
+                <Separator />
+                <AttachmentsPanel
+                  projectId={activeProject.id}
+                  entityType="planning_activities"
+                  entityId={editActivity.id}
+                />
+              </>
+            )}
           </div>
         </ScrollArea>
         <DialogFooter>

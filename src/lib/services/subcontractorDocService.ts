@@ -75,6 +75,25 @@ export const subcontractorDocService = {
     return data as unknown as SubcontractorDocument;
   },
 
+  async update(id: string, projectId: string, updates: Partial<Omit<SubcontractorDocInput, "project_id" | "subcontractor_id">>): Promise<SubcontractorDocument> {
+    const { data, error } = await supabase
+      .from("subcontractor_documents")
+      .update(updates)
+      .eq("id", id)
+      .select()
+      .single();
+    if (error) throw error;
+    await auditService.log({
+      projectId,
+      entity: "subcontractor_documents",
+      entityId: id,
+      action: "UPDATE",
+      module: "subcontractors",
+      diff: updates as Record<string, unknown>,
+    });
+    return data as unknown as SubcontractorDocument;
+  },
+
   async delete(id: string, projectId: string): Promise<void> {
     const { error } = await supabase
       .from("subcontractor_documents")

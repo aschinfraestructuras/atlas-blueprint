@@ -12,6 +12,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 
 interface Props {
   open: boolean;
@@ -92,32 +95,45 @@ export function WbsFormDialog({ open, onOpenChange, wbsNodes, editNode, onSucces
         <DialogHeader>
           <DialogTitle>{isEdit ? t("planning.wbs.editTitle") : t("planning.wbs.createTitle")}</DialogTitle>
         </DialogHeader>
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div><Label>{t("planning.wbs.code")} *</Label><Input value={form.wbs_code} onChange={e => setForm(f => ({ ...f, wbs_code: e.target.value }))} placeholder="1.2.3" /></div>
-            <div>
-              <Label>{t("planning.wbs.parent")}</Label>
-              <Select value={form.parent_id} onValueChange={v => setForm(f => ({ ...f, parent_id: v }))}>
-                <SelectTrigger><SelectValue placeholder={t("common.optional")} /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__none__">— {t("common.optional")} —</SelectItem>
-                  {wbsNodes.filter(n => n.id !== editNode?.id).map(n => (
-                    <SelectItem key={n.id} value={n.id}>{n.wbs_code} – {n.description}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+        <ScrollArea className="max-h-[70vh] pr-1">
+          <div className="space-y-4 pb-1">
+            <div className="grid grid-cols-2 gap-4">
+              <div><Label>{t("planning.wbs.code")} *</Label><Input value={form.wbs_code} onChange={e => setForm(f => ({ ...f, wbs_code: e.target.value }))} placeholder="1.2.3" /></div>
+              <div>
+                <Label>{t("planning.wbs.parent")}</Label>
+                <Select value={form.parent_id} onValueChange={v => setForm(f => ({ ...f, parent_id: v }))}>
+                  <SelectTrigger><SelectValue placeholder={t("common.optional")} /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">— {t("common.optional")} —</SelectItem>
+                    {wbsNodes.filter(n => n.id !== editNode?.id).map(n => (
+                      <SelectItem key={n.id} value={n.id}>{n.wbs_code} – {n.description}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
+            <div><Label>{t("common.description")} *</Label><Textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} rows={2} /></div>
+            <div className="grid grid-cols-2 gap-4">
+              <div><Label>{t("planning.wbs.zone")}</Label><Input value={form.zone} onChange={e => setForm(f => ({ ...f, zone: e.target.value }))} placeholder="PK 12+500" /></div>
+              <div><Label>{t("planning.wbs.responsible")}</Label><Input value={form.responsible} onChange={e => setForm(f => ({ ...f, responsible: e.target.value }))} /></div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div><Label>{t("planning.fields.plannedStart")}</Label><Input type="date" value={form.planned_start} onChange={e => setForm(f => ({ ...f, planned_start: e.target.value }))} /></div>
+              <div><Label>{t("planning.fields.plannedEnd")}</Label><Input type="date" value={form.planned_end} onChange={e => setForm(f => ({ ...f, planned_end: e.target.value }))} /></div>
+            </div>
+
+            {isEdit && editNode && activeProject && (
+              <>
+                <Separator />
+                <AttachmentsPanel
+                  projectId={activeProject.id}
+                  entityType="planning_wbs"
+                  entityId={editNode.id}
+                />
+              </>
+            )}
           </div>
-          <div><Label>{t("common.description")} *</Label><Textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} rows={2} /></div>
-          <div className="grid grid-cols-2 gap-4">
-            <div><Label>{t("planning.wbs.zone")}</Label><Input value={form.zone} onChange={e => setForm(f => ({ ...f, zone: e.target.value }))} placeholder="PK 12+500" /></div>
-            <div><Label>{t("planning.wbs.responsible")}</Label><Input value={form.responsible} onChange={e => setForm(f => ({ ...f, responsible: e.target.value }))} /></div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div><Label>{t("planning.fields.plannedStart")}</Label><Input type="date" value={form.planned_start} onChange={e => setForm(f => ({ ...f, planned_start: e.target.value }))} /></div>
-            <div><Label>{t("planning.fields.plannedEnd")}</Label><Input type="date" value={form.planned_end} onChange={e => setForm(f => ({ ...f, planned_end: e.target.value }))} /></div>
-          </div>
-        </div>
+        </ScrollArea>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>{t("common.cancel")}</Button>
           <Button onClick={handleSubmit} disabled={submitting}>{submitting ? t("common.loading") : t("common.save")}</Button>

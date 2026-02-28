@@ -188,6 +188,25 @@ export const calibrationService = {
     return data as EquipmentCalibration;
   },
 
+  async update(id: string, projectId: string, updates: Partial<EquipmentCalibration>): Promise<EquipmentCalibration> {
+    const { data, error } = await (supabase as any)
+      .from("equipment_calibrations")
+      .update(updates)
+      .eq("id", id)
+      .select()
+      .single();
+    if (error) throw error;
+    await auditService.log({
+      projectId,
+      entity: "equipment_calibrations",
+      entityId: id,
+      action: "UPDATE",
+      module: "topography",
+      diff: updates as Record<string, unknown>,
+    });
+    return data as EquipmentCalibration;
+  },
+
   async delete(id: string, projectId: string): Promise<void> {
     const { error } = await (supabase as any).from("equipment_calibrations").delete().eq("id", id);
     if (error) throw error;

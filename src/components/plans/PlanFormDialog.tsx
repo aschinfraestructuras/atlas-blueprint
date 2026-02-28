@@ -183,7 +183,7 @@ export function PlanFormDialog({ open, onOpenChange, plan, onSuccess }: Props) {
                 <Separator />
                 <AttachmentsPanel
                   projectId={activeProject.id}
-                  entityType="ppi"
+                  entityType="plans"
                   entityId={plan.id}
                 />
               </>
