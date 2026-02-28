@@ -1871,12 +1871,18 @@
     "title": "Planificación Estructurada",
     "subtitle": "WBS jerárquica, actividades planificadas y bloqueos inteligentes",
     "tabs": { "activities": "Actividades" },
-    "wbs": { "add": "Nueva WBS", "createTitle": "Crear Nodo WBS", "editTitle": "Editar Nodo WBS", "code": "Código WBS", "parent": "Nodo Padre", "zone": "Zona", "responsible": "Responsable" },
+    "wbs": { "add": "Nueva WBS", "addChild": "Crear hijo", "createTitle": "Crear Nodo WBS", "editTitle": "Editar Nodo WBS", "code": "Código WBS", "parent": "Nodo Padre", "zone": "Zona", "responsible": "Responsable", "codeDuplicate": "Ya existe un nodo WBS con este código en este proyecto." },
     "activity": { "add": "Nueva Actividad", "createTitle": "Crear Actividad", "editTitle": "Editar Actividad" },
     "fields": { "plannedStart": "Inicio Planificado", "plannedEnd": "Fin Planificado", "actualStart": "Inicio Real", "actualEnd": "Fin Real", "progress": "Progreso", "zone": "Zona", "dates": "Fechas", "requirements": "Requisitos", "workItem": "Actividad (WI)", "subcontractor": "Subcontratista", "constraints": "Restricciones", "constraintsPlaceholder": "Ej: Depende de aprobación de material…", "reqTopography": "Requiere topografía", "reqTests": "Requiere ensayos", "reqPpi": "Requiere PPI" },
     "status": { "planned": "Planificado", "in_progress": "En curso", "blocked": "Bloqueado", "completed": "Completado", "cancelled": "Cancelado" },
     "toast": { "wbsCreated": "WBS creado", "wbsUpdated": "WBS actualizado", "activityCreated": "Actividad creada", "activityUpdated": "Actividad actualizada" },
-    "completion": { "title": "Verificar Conclusión", "runCheck": "Ejecutar Verificación", "canComplete": "La actividad puede completarse — sin bloqueos.", "blocked": "La actividad NO puede completarse:" }
+    "completion": { "title": "Verificar Conclusión", "runCheck": "Ejecutar Verificación", "canComplete": "La actividad puede completarse — sin bloqueos.", "blocked": "La actividad NO puede completarse:" },
+    "detail": {
+      "tabs": { "overview": "Resumen", "requirements": "Requisitos", "evidence": "Evidencias", "links": "Enlaces" },
+      "met": "Cumplido", "notMet": "Pendiente",
+      "noRequirements": "Esta actividad no tiene requisitos obligatorios.",
+      "noLinks": "Sin enlaces a Work Items o Subcontratistas."
+    }
   },
   "emptyState": {
     "planning": { "wbs": "Ninguna WBS definida.", "activities": "Ninguna actividad planificada." }

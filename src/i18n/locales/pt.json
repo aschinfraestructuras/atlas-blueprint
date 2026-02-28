@@ -1954,12 +1954,14 @@
     },
     "wbs": {
       "add": "Nova WBS",
+      "addChild": "Criar filho",
       "createTitle": "Criar Nó WBS",
       "editTitle": "Editar Nó WBS",
       "code": "Código WBS",
       "parent": "Nó Pai",
       "zone": "Zona",
-      "responsible": "Responsável"
+      "responsible": "Responsável",
+      "codeDuplicate": "Já existe um nó WBS com este código neste projeto."
     },
     "activity": {
       "add": "Nova Atividade",
@@ -2001,6 +2003,15 @@
       "runCheck": "Executar Verificação",
       "canComplete": "Atividade pode ser concluída — sem bloqueios.",
       "blocked": "Atividade NÃO pode ser concluída:"
+    },
+    "detail": {
+      "tabs": { "overview": "Resumo", "requirements": "Requisitos", "evidence": "Evidências", "links": "Ligações" },
+      "reqMet": "{{count}} pedido(s) em progresso/concluídos",
+      "reqNotMet": "Nenhum pedido topográfico registado ou todos pendentes",
+      "met": "Cumprido",
+      "notMet": "Pendente",
+      "noRequirements": "Esta atividade não tem requisitos obrigatórios (Topografia, PPI, Ensaios).",
+      "noLinks": "Sem ligações a Work Items ou Subempreiteiros."
     }
   },
   "emptyState": {

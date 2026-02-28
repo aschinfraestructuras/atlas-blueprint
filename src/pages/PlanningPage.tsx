@@ -1,12 +1,13 @@
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { useProject } from "@/contexts/ProjectContext";
 import { usePlanning } from "@/hooks/usePlanning";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import { planningService } from "@/lib/services/planningService";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import { exportWbsCsv, exportWbsPdf, exportActivitiesCsv, exportActivitiesPdf } from "@/lib/services/planningExportService";
-import { Plus, Pencil, Network, ListChecks, ShieldCheck, Trash2, Search } from "lucide-react";
+import { Plus, Pencil, Network, ListChecks, ShieldCheck, Trash2, Search, Eye, ChevronRight, ChevronDown, FolderPlus } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -28,7 +29,6 @@ import { CompletionCheckDialog } from "@/components/planning/CompletionCheckDial
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import type { WbsNode, Activity } from "@/lib/services/planningService";
-
 const STATUS_COLORS: Record<string, string> = {
   planned: "bg-muted text-muted-foreground",
   in_progress: "bg-primary/10 text-primary",
@@ -62,6 +62,7 @@ function DeleteButton({ onConfirm }: { onConfirm: () => void }) {
 
 export default function PlanningPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { activeProject } = useProject();
   const { wbs, activities, loading, error, refetch } = usePlanning();
   const { canCreate, isAdmin } = useProjectRole();
@@ -69,19 +70,50 @@ export default function PlanningPage() {
 
   const [wbsDialogOpen, setWbsDialogOpen] = useState(false);
   const [editWbs, setEditWbs] = useState<WbsNode | null>(null);
+  const [parentWbs, setParentWbs] = useState<string | null>(null); // for "create child"
   const [actDialogOpen, setActDialogOpen] = useState(false);
   const [editAct, setEditAct] = useState<Activity | null>(null);
   const [checkDialog, setCheckDialog] = useState<{ open: boolean; id: string; desc: string }>({ open: false, id: "", desc: "" });
+  const [expandedWbs, setExpandedWbs] = useState<Set<string>>(new Set());
 
   // Filters
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("__all__");
 
-  const filteredWbs = useMemo(() => {
-    if (!search) return wbs;
-    const q = search.toLowerCase();
-    return wbs.filter(w => w.wbs_code.toLowerCase().includes(q) || w.description.toLowerCase().includes(q) || (w.zone ?? "").toLowerCase().includes(q));
-  }, [wbs, search]);
+  // Build WBS tree
+  const wbsTree = useMemo(() => {
+    type TreeNode = WbsNode & { children: TreeNode[]; depth: number };
+    const map = new Map<string, TreeNode>();
+    const roots: TreeNode[] = [];
+    // Filter first
+    let filtered = wbs;
+    if (search) {
+      const q = search.toLowerCase();
+      filtered = wbs.filter(w => w.wbs_code.toLowerCase().includes(q) || w.description.toLowerCase().includes(q) || (w.zone ?? "").toLowerCase().includes(q));
+    }
+    filtered.forEach(w => map.set(w.id, { ...w, children: [], depth: 0 }));
+    // If search is active, show flat
+    if (search) return Array.from(map.values());
+    map.forEach(node => {
+      if (node.parent_id && map.has(node.parent_id)) {
+        const parent = map.get(node.parent_id)!;
+        node.depth = parent.depth + 1;
+        parent.children.push(node);
+      } else {
+        roots.push(node);
+      }
+    });
+    // Flatten tree for rendering
+    const flat: TreeNode[] = [];
+    const walk = (nodes: TreeNode[]) => {
+      for (const n of nodes) {
+        flat.push(n);
+        if (expandedWbs.has(n.id)) walk(n.children);
+      }
+    };
+    walk(roots);
+    return flat;
+  }, [wbs, search, expandedWbs]);
 
   const filteredActivities = useMemo(() => {
     let list = activities;
@@ -93,14 +125,28 @@ export default function PlanningPage() {
     return list;
   }, [activities, search, filterStatus]);
 
+  // WBS code uniqueness validation
+  const wbsCodes = useMemo(() => new Set(wbs.map(w => w.wbs_code.toLowerCase())), [wbs]);
+
   if (!activeProject) return <NoProjectBanner />;
 
   const meta = { projectName: activeProject.name, projectCode: activeProject.code, locale: "pt" };
 
-  const handleNewWbs = () => { setEditWbs(null); setWbsDialogOpen(true); };
-  const handleEditWbs = (n: WbsNode) => { setEditWbs(n); setWbsDialogOpen(true); };
+  const handleNewWbs = (pId?: string) => { setEditWbs(null); setParentWbs(pId ?? null); setWbsDialogOpen(true); };
+  const handleEditWbs = (n: WbsNode) => { setEditWbs(n); setParentWbs(null); setWbsDialogOpen(true); };
   const handleNewAct = () => { setEditAct(null); setActDialogOpen(true); };
   const handleEditAct = (a: Activity) => { setEditAct(a); setActDialogOpen(true); };
+
+  const toggleWbsExpand = (id: string) => {
+    setExpandedWbs(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  // Check if a WBS node has children
+  const hasChildren = (id: string) => wbs.some(w => w.parent_id === id);
 
   const handleDeleteWbs = async (id: string) => {
     try { await planningService.deleteWbs(id, activeProject.id); toast.success(t("common.deleted", { defaultValue: "Eliminado" })); refetch(); }
@@ -111,8 +157,6 @@ export default function PlanningPage() {
     catch { toast.error(t("common.deleteError", { defaultValue: "Erro ao eliminar" })); }
   };
 
-  const exportData = activeTab === "wbs" ? filteredWbs : filteredActivities;
-
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       <div className="flex items-center justify-between">
@@ -121,8 +165,8 @@ export default function PlanningPage() {
           <p className="text-sm text-muted-foreground">{t("planning.subtitle")}</p>
         </div>
         <ReportExportMenu options={[
-          { label: "CSV", icon: "csv", action: () => activeTab === "wbs" ? exportWbsCsv(filteredWbs, meta) : exportActivitiesCsv(filteredActivities, meta) },
-          { label: "PDF", icon: "pdf", action: () => activeTab === "wbs" ? exportWbsPdf(filteredWbs, meta) : exportActivitiesPdf(filteredActivities, meta) },
+          { label: "CSV", icon: "csv", action: () => activeTab === "wbs" ? exportWbsCsv(wbsTree as WbsNode[], meta) : exportActivitiesCsv(filteredActivities, meta) },
+          { label: "PDF", icon: "pdf", action: () => activeTab === "wbs" ? exportWbsPdf(wbsTree as WbsNode[], meta) : exportActivitiesPdf(filteredActivities, meta) },
         ]} />
       </div>
 
@@ -162,38 +206,55 @@ export default function PlanningPage() {
         </div>
 
         <TabsContent value="wbs" className="space-y-4">
-          <div className="flex justify-end">
-            {canCreate && <Button size="sm" className="gap-1.5" onClick={handleNewWbs}><Plus className="h-3.5 w-3.5" /> {t("planning.wbs.add")}</Button>}
+          <div className="flex justify-end gap-2">
+            {canCreate && <Button size="sm" className="gap-1.5" onClick={() => handleNewWbs()}><Plus className="h-3.5 w-3.5" /> {t("planning.wbs.add")}</Button>}
           </div>
           {loading ? (
             <div className="rounded-xl border border-border overflow-hidden divide-y divide-border">
               {Array.from({ length: 4 }).map((_, i) => <div key={i} className="flex items-center gap-4 px-5 py-3"><Skeleton className="h-4 w-16" /><Skeleton className="h-4 w-1/3" /><Skeleton className="h-4 w-12" /></div>)}
             </div>
-          ) : filteredWbs.length === 0 ? (
+          ) : wbsTree.length === 0 ? (
             <EmptyState icon={Network} subtitleKey={wbs.length === 0 ? "emptyState.planning.wbs" : "emptyState.noResults"} />
           ) : (
             <div className="rounded-xl border border-border overflow-hidden">
               <Table>
                 <TableHeader>
                   <TableRow className="bg-muted/40">
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground w-8"></TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("planning.wbs.code")}</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.description")}</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("planning.wbs.zone")}</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("planning.fields.plannedStart")}</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("planning.fields.plannedEnd")}</TableHead>
-                    <TableHead className="w-20">{t("common.actions")}</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("planning.wbs.responsible")}</TableHead>
+                    <TableHead className="w-28">{t("common.actions")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredWbs.map((n) => (
+                  {wbsTree.map((n: any) => (
                     <TableRow key={n.id} className="hover:bg-muted/20 transition-colors">
-                      <TableCell className="font-mono text-xs font-medium">{n.wbs_code}</TableCell>
+                      <TableCell className="w-8 px-1">
+                        {hasChildren(n.id) ? (
+                          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => toggleWbsExpand(n.id)}>
+                            {expandedWbs.has(n.id) ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
+                          </Button>
+                        ) : <span className="w-6 inline-block" />}
+                      </TableCell>
+                      <TableCell className="font-mono text-xs font-medium" style={{ paddingLeft: `${(n.depth || 0) * 20 + 4}px` }}>
+                        {n.wbs_code}
+                      </TableCell>
                       <TableCell className="text-sm text-foreground">{n.description}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">{n.zone || "—"}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">{n.planned_start || "—"}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">{n.planned_end || "—"}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{n.responsible || "—"}</TableCell>
                       <TableCell>
                         <div className="flex gap-1">
+                          {canCreate && (
+                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleNewWbs(n.id)} title={t("planning.wbs.addChild", { defaultValue: "Criar filho" })}>
+                              <FolderPlus className="h-3.5 w-3.5" />
+                            </Button>
+                          )}
                           <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditWbs(n)}><Pencil className="h-3.5 w-3.5" /></Button>
                           {isAdmin && <DeleteButton onConfirm={() => handleDeleteWbs(n.id)} />}
                         </div>
@@ -258,6 +319,7 @@ export default function PlanningPage() {
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-1">
+                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => navigate(`/planning/activities/${a.id}`)} title={t("common.view")}><Eye className="h-3.5 w-3.5" /></Button>
                           <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditAct(a)} title={t("common.edit")}><Pencil className="h-3.5 w-3.5" /></Button>
                           <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setCheckDialog({ open: true, id: a.id, desc: a.description })} title={t("planning.completion.title")}><ShieldCheck className="h-3.5 w-3.5" /></Button>
                           {isAdmin && <DeleteButton onConfirm={() => handleDeleteActivity(a.id)} />}
@@ -272,7 +334,7 @@ export default function PlanningPage() {
         </TabsContent>
       </Tabs>
 
-      <WbsFormDialog open={wbsDialogOpen} onOpenChange={setWbsDialogOpen} wbsNodes={wbs} editNode={editWbs} onSuccess={refetch} />
+      <WbsFormDialog open={wbsDialogOpen} onOpenChange={setWbsDialogOpen} wbsNodes={wbs} editNode={editWbs} defaultParentId={parentWbs} onSuccess={refetch} />
       <ActivityFormDialog open={actDialogOpen} onOpenChange={setActDialogOpen} wbsNodes={wbs} editActivity={editAct} onSuccess={refetch} />
       <CompletionCheckDialog open={checkDialog.open} onOpenChange={(v) => setCheckDialog(p => ({ ...p, open: v }))} activityId={checkDialog.id} activityDesc={checkDialog.desc} />
     </div>

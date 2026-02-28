@@ -37,6 +37,7 @@ import HealthCheckPage from "./pages/HealthCheckPage";
 import AcceptInvitePage from "./pages/AcceptInvitePage";
 import TopographyPage from "./pages/TopographyPage";
 import PlanningPage from "./pages/PlanningPage";
+import ActivityDetailPage from "./pages/ActivityDetailPage";
 
 const queryClient = new QueryClient();
 
@@ -90,6 +91,7 @@ const App = () => (
               <Route path="/materials/:id" element={<ProtectedLayout><MaterialDetailPage /></ProtectedLayout>} />
               <Route path="/topography" element={<ProtectedLayout><TopographyPage /></ProtectedLayout>} />
               <Route path="/planning" element={<ProtectedLayout><PlanningPage /></ProtectedLayout>} />
+              <Route path="/planning/activities/:id" element={<ProtectedLayout><ActivityDetailPage /></ProtectedLayout>} />
               <Route path="/admin/health" element={<ProtectedLayout><HealthCheckPage /></ProtectedLayout>} />
 
               {/* Catch-all */}
