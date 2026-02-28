@@ -10,6 +10,9 @@ export interface Subcontractor {
   status: string;          // active | suspended | concluded
   contact_email: string | null;
   supplier_id: string | null;
+  contract: string | null;
+  documentation_status: string; // pending | valid | expired
+  performance_score: number | null;
   created_at: string;
   updated_at: string;
 }
@@ -22,6 +25,9 @@ export interface SubcontractorInput {
   status?: string;
   contact_email?: string;
   supplier_id?: string;
+  contract?: string;
+  documentation_status?: string;
+  performance_score?: number;
 }
 
 export const subcontractorService = {
@@ -46,6 +52,9 @@ export const subcontractorService = {
         status: input.status ?? "active",
         contact_email: input.contact_email ?? null,
         supplier_id: input.supplier_id ?? null,
+        contract: input.contract ?? null,
+        documentation_status: input.documentation_status ?? "pending",
+        performance_score: input.performance_score ?? null,
       })
       .select()
       .single();

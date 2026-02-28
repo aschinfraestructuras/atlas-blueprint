@@ -4,6 +4,8 @@ import { useProject } from "@/contexts/ProjectContext";
 import { usePlanning } from "@/hooks/usePlanning";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import { planningService } from "@/lib/services/planningService";
+import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
+import { exportWbsCsv, exportWbsPdf, exportActivitiesCsv, exportActivitiesPdf } from "@/lib/services/planningExportService";
 import { Plus, Pencil, Network, ListChecks, ShieldCheck, Trash2 } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -36,15 +38,10 @@ function DeleteButton({ onConfirm }: { onConfirm: () => void }) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive">
-          <Trash2 className="h-3.5 w-3.5" />
-        </Button>
+        <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive"><Trash2 className="h-3.5 w-3.5" /></Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Confirmar eliminação</AlertDialogTitle>
-          <AlertDialogDescription>Este registo será eliminado permanentemente. Tem a certeza?</AlertDialogDescription>
-        </AlertDialogHeader>
+        <AlertDialogHeader><AlertDialogTitle>Confirmar eliminação</AlertDialogTitle><AlertDialogDescription>Este registo será eliminado permanentemente. Tem a certeza?</AlertDialogDescription></AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
           <AlertDialogAction onClick={onConfirm} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Eliminar</AlertDialogAction>
@@ -59,6 +56,7 @@ export default function PlanningPage() {
   const { activeProject } = useProject();
   const { wbs, activities, loading, error, refetch } = usePlanning();
   const { canCreate, isAdmin } = useProjectRole();
+  const [activeTab, setActiveTab] = useState("activities");
 
   const [wbsDialogOpen, setWbsDialogOpen] = useState(false);
   const [editWbs, setEditWbs] = useState<WbsNode | null>(null);
@@ -68,25 +66,20 @@ export default function PlanningPage() {
 
   if (!activeProject) return <NoProjectBanner />;
 
+  const meta = { projectName: activeProject.name, projectCode: activeProject.code, locale: "pt" };
+
   const handleNewWbs = () => { setEditWbs(null); setWbsDialogOpen(true); };
   const handleEditWbs = (n: WbsNode) => { setEditWbs(n); setWbsDialogOpen(true); };
   const handleNewAct = () => { setEditAct(null); setActDialogOpen(true); };
   const handleEditAct = (a: Activity) => { setEditAct(a); setActDialogOpen(true); };
 
   const handleDeleteWbs = async (id: string) => {
-    try {
-      await planningService.deleteWbs(id, activeProject.id);
-      toast.success("WBS eliminado");
-      refetch();
-    } catch { toast.error("Erro ao eliminar WBS"); }
+    try { await planningService.deleteWbs(id, activeProject.id); toast.success("WBS eliminado"); refetch(); }
+    catch { toast.error("Erro ao eliminar WBS"); }
   };
-
   const handleDeleteActivity = async (id: string) => {
-    try {
-      await planningService.deleteActivity(id, activeProject.id);
-      toast.success("Atividade eliminada");
-      refetch();
-    } catch { toast.error("Erro ao eliminar atividade"); }
+    try { await planningService.deleteActivity(id, activeProject.id); toast.success("Atividade eliminada"); refetch(); }
+    catch { toast.error("Erro ao eliminar atividade"); }
   };
 
   const LoadingSkeleton = () => (
@@ -101,22 +94,31 @@ export default function PlanningPage() {
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
-      <div className="space-y-1">
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">{t("planning.title")}</h1>
-        <p className="text-sm text-muted-foreground">{t("planning.subtitle")}</p>
+      <div className="flex items-center justify-between">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">{t("planning.title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("planning.subtitle")}</p>
+        </div>
+        <ReportExportMenu
+          onExportCsv={() => {
+            if (activeTab === "wbs") exportWbsCsv(wbs, meta);
+            else exportActivitiesCsv(activities, meta);
+          }}
+          onExportPdf={() => {
+            if (activeTab === "wbs") exportWbsPdf(wbs, meta);
+            else exportActivitiesPdf(activities, meta);
+          }}
+        />
       </div>
 
-      {error && (
-        <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">{error}</div>
-      )}
+      {error && <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">{error}</div>}
 
-      <Tabs defaultValue="activities">
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
           <TabsTrigger value="wbs" className="gap-1.5"><Network className="h-3.5 w-3.5" /> WBS</TabsTrigger>
           <TabsTrigger value="activities" className="gap-1.5"><ListChecks className="h-3.5 w-3.5" /> {t("planning.tabs.activities")}</TabsTrigger>
         </TabsList>
 
-        {/* ── WBS ── */}
         <TabsContent value="wbs" className="space-y-4">
           <div className="flex justify-end">
             {canCreate && <Button size="sm" className="gap-1.5" onClick={handleNewWbs}><Plus className="h-3.5 w-3.5" /> {t("planning.wbs.add")}</Button>}
@@ -146,9 +148,7 @@ export default function PlanningPage() {
                       <TableCell className="text-sm text-muted-foreground">{n.planned_end || "—"}</TableCell>
                       <TableCell>
                         <div className="flex gap-1">
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditWbs(n)}>
-                            <Pencil className="h-3.5 w-3.5" />
-                          </Button>
+                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditWbs(n)}><Pencil className="h-3.5 w-3.5" /></Button>
                           {isAdmin && <DeleteButton onConfirm={() => handleDeleteWbs(n.id)} />}
                         </div>
                       </TableCell>
@@ -160,7 +160,6 @@ export default function PlanningPage() {
           )}
         </TabsContent>
 
-        {/* ── Activities ── */}
         <TabsContent value="activities" className="space-y-4">
           <div className="flex justify-end">
             {canCreate && <Button size="sm" className="gap-1.5" onClick={handleNewAct}><Plus className="h-3.5 w-3.5" /> {t("planning.activity.add")}</Button>}
@@ -199,9 +198,7 @@ export default function PlanningPage() {
                           <span className="text-xs text-muted-foreground">{a.progress_pct}%</span>
                         </div>
                       </TableCell>
-                      <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
-                        {a.planned_start || "?"} → {a.planned_end || "?"}
-                      </TableCell>
+                      <TableCell className="text-xs text-muted-foreground whitespace-nowrap">{a.planned_start || "?"} → {a.planned_end || "?"}</TableCell>
                       <TableCell>
                         <div className="flex gap-1">
                           {a.requires_topography && <Badge variant="outline" className="text-[10px]">Topo</Badge>}
@@ -211,12 +208,8 @@ export default function PlanningPage() {
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-1">
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditAct(a)} title={t("common.edit")}>
-                            <Pencil className="h-3.5 w-3.5" />
-                          </Button>
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setCheckDialog({ open: true, id: a.id, desc: a.description })} title={t("planning.completion.title")}>
-                            <ShieldCheck className="h-3.5 w-3.5" />
-                          </Button>
+                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditAct(a)} title={t("common.edit")}><Pencil className="h-3.5 w-3.5" /></Button>
+                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setCheckDialog({ open: true, id: a.id, desc: a.description })} title={t("planning.completion.title")}><ShieldCheck className="h-3.5 w-3.5" /></Button>
                           {isAdmin && <DeleteButton onConfirm={() => handleDeleteActivity(a.id)} />}
                         </div>
                       </TableCell>
