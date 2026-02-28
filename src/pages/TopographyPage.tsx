@@ -107,16 +107,16 @@ export default function TopographyPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <PageHeader title={t("topography.title", "Topografia")} subtitle={t("topography.subtitle", "Equipamentos, calibrações, pedidos e controlo geométrico")} />
-        <ReportExportMenu
-          onExportCsv={() => {
+        <ReportExportMenu options={[
+          { label: "CSV", icon: "csv", action: () => {
             if (activeTab === "equipment") exportTopographyEquipmentCsv(equipment, meta);
             else if (activeTab === "requests") exportTopographyRequestsCsv(requests, meta);
             else exportTopographyControlsCsv(controls, meta);
-          }}
-          onExportPdf={() => {
+          }},
+          { label: "PDF", icon: "pdf", action: () => {
             if (activeTab === "equipment") exportTopographyEquipmentPdf(equipment, meta);
-          }}
-        />
+          }},
+        ]} />
       </div>
 
       <div className="grid gap-4 md:grid-cols-4">

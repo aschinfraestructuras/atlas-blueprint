@@ -105,10 +105,10 @@ export default function TechnicalOfficePage() {
           <h1 className="text-2xl font-bold tracking-tight text-foreground">{t("pages.technicalOffice.title")}</h1>
           <p className="text-sm text-muted-foreground">{t("pages.technicalOffice.subtitle")}</p>
         </div>
-        <ReportExportMenu
-          onExportCsv={() => { if (activeTab === "rfis") exportRfisCsv(rfis, meta); }}
-          onExportPdf={() => { if (activeTab === "rfis") exportRfisPdf(rfis, meta); }}
-        />
+        <ReportExportMenu options={[
+          { label: "CSV", icon: "csv", action: () => { if (activeTab === "rfis") exportRfisCsv(rfis, meta); } },
+          { label: "PDF", icon: "pdf", action: () => { if (activeTab === "rfis") exportRfisPdf(rfis, meta); } },
+        ]} />
       </div>
 
       {error && <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">{error}</div>}
