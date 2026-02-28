@@ -13,7 +13,13 @@ export type EntityType =
   | "technical_office"
   | "work_items"
   | "ppi"
-  | "ppi_instances";
+  | "ppi_instances"
+  | "topography_equipment"
+  | "topography_requests"
+  | "topography_controls"
+  | "planning_wbs"
+  | "planning_activities"
+  | "rfis";
 
 export interface Attachment {
   id: string;

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -20,6 +20,9 @@ import { Button } from "@/components/ui/button";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 
 const PRIORITIES = ["low", "normal", "high", "urgent"] as const;
 
@@ -104,56 +107,71 @@ export function RfiFormDialog({ open, onOpenChange, rfi, onSuccess }: Props) {
         <DialogHeader>
           <DialogTitle>{isEdit ? "Editar RFI" : "Novo RFI"}</DialogTitle>
         </DialogHeader>
-        <Form {...form}>
-          <form id="rfi-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField control={form.control} name="subject" render={({ field }) => (
-              <FormItem>
-                <FormLabel>Assunto</FormLabel>
-                <FormControl><Input placeholder="Assunto do RFI" {...field} /></FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
+        <ScrollArea className="max-h-[75vh] pr-1">
+          <div className="space-y-4 pb-1">
+            <Form {...form}>
+              <form id="rfi-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField control={form.control} name="subject" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Assunto</FormLabel>
+                    <FormControl><Input placeholder="Assunto do RFI" {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
 
-            <FormField control={form.control} name="description" render={({ field }) => (
-              <FormItem>
-                <FormLabel>Descrição <span className="text-muted-foreground text-xs">(opcional)</span></FormLabel>
-                <FormControl><Textarea placeholder="Detalhes do pedido" rows={3} {...field} /></FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
+                <FormField control={form.control} name="description" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Descrição <span className="text-muted-foreground text-xs">(opcional)</span></FormLabel>
+                    <FormControl><Textarea placeholder="Detalhes do pedido" rows={3} {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
 
-            <div className="grid grid-cols-2 gap-4">
-              <FormField control={form.control} name="priority" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Prioridade</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                    <SelectContent>
-                      {PRIORITIES.map(p => <SelectItem key={p} value={p}>{p === "low" ? "Baixa" : p === "normal" ? "Normal" : p === "high" ? "Alta" : "Urgente"}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )} />
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField control={form.control} name="priority" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Prioridade</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                        <SelectContent>
+                          {PRIORITIES.map(p => <SelectItem key={p} value={p}>{p === "low" ? "Baixa" : p === "normal" ? "Normal" : p === "high" ? "Alta" : "Urgente"}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
 
-              <FormField control={form.control} name="deadline" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Prazo <span className="text-muted-foreground text-xs">(opcional)</span></FormLabel>
-                  <FormControl><Input type="date" {...field} /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-            </div>
+                  <FormField control={form.control} name="deadline" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Prazo <span className="text-muted-foreground text-xs">(opcional)</span></FormLabel>
+                      <FormControl><Input type="date" {...field} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                </div>
 
-            <FormField control={form.control} name="zone" render={({ field }) => (
-              <FormItem>
-                <FormLabel>Zona <span className="text-muted-foreground text-xs">(opcional)</span></FormLabel>
-                <FormControl><Input placeholder="Ex: Zona A, PK 12+500" {...field} /></FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
-          </form>
-        </Form>
+                <FormField control={form.control} name="zone" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Zona <span className="text-muted-foreground text-xs">(opcional)</span></FormLabel>
+                    <FormControl><Input placeholder="Ex: Zona A, PK 12+500" {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              </form>
+            </Form>
+
+            {isEdit && rfi && activeProject && (
+              <>
+                <Separator />
+                <AttachmentsPanel
+                  projectId={activeProject.id}
+                  entityType="rfis"
+                  entityId={rfi.id}
+                />
+              </>
+            )}
+          </div>
+        </ScrollArea>
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
           <Button type="submit" form="rfi-form" disabled={form.formState.isSubmitting}>

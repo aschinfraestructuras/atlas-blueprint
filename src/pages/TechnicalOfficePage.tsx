@@ -5,6 +5,8 @@ import { useTechnicalOffice } from "@/hooks/useTechnicalOffice";
 import { useRfis } from "@/hooks/useRfis";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import { technicalOfficeService } from "@/lib/services/technicalOfficeService";
+import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
+import { exportRfisCsv, exportRfisPdf } from "@/lib/services/rfiExportService";
 import { Inbox, Plus, Pencil, Trash2, MessageSquareText } from "lucide-react";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -52,15 +54,10 @@ function DeleteButton({ onConfirm, label }: { onConfirm: () => void; label?: str
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive">
-          <Trash2 className="h-3.5 w-3.5" />
-        </Button>
+        <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"><Trash2 className="h-3.5 w-3.5" /></Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Confirmar eliminação</AlertDialogTitle>
-          <AlertDialogDescription>{label || "Este registo será eliminado permanentemente. Tem a certeza?"}</AlertDialogDescription>
-        </AlertDialogHeader>
+        <AlertDialogHeader><AlertDialogTitle>Confirmar eliminação</AlertDialogTitle><AlertDialogDescription>{label || "Este registo será eliminado permanentemente. Tem a certeza?"}</AlertDialogDescription></AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
           <AlertDialogAction onClick={onConfirm} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Eliminar</AlertDialogAction>
@@ -76,6 +73,7 @@ export default function TechnicalOfficePage() {
   const { data: items, loading, error, refetch } = useTechnicalOffice();
   const { data: rfis, loading: rfisLoading, refetch: refetchRfis } = useRfis();
   const { canCreate, canEdit, isAdmin } = useProjectRole();
+  const [activeTab, setActiveTab] = useState("rfis");
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<TechnicalOfficeItem | null>(null);
@@ -87,15 +85,14 @@ export default function TechnicalOfficePage() {
 
   if (!activeProject) return <NoProjectBanner />;
 
+  const meta = { projectName: activeProject.name, projectCode: activeProject.code, locale: "pt" };
+
   const handleNew = () => { setEditingItem(null); setDialogOpen(true); };
   const handleEdit = (item: TechnicalOfficeItem) => { setEditingItem(item); setDialogOpen(true); };
 
   const handleDeleteItem = async (id: string) => {
-    try {
-      await technicalOfficeService.delete(id, activeProject.id);
-      toast.success("Registo eliminado");
-      refetch();
-    } catch { toast.error("Erro ao eliminar"); }
+    try { await technicalOfficeService.delete(id, activeProject.id); toast.success("Registo eliminado"); refetch(); }
+    catch { toast.error("Erro ao eliminar"); }
   };
 
   const handleNewRfi = () => { setEditingRfi(null); setRfiFormOpen(true); };
@@ -103,16 +100,20 @@ export default function TechnicalOfficePage() {
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
-      <div className="space-y-1">
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">{t("pages.technicalOffice.title")}</h1>
-        <p className="text-sm text-muted-foreground">{t("pages.technicalOffice.subtitle")}</p>
+      <div className="flex items-center justify-between">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">{t("pages.technicalOffice.title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("pages.technicalOffice.subtitle")}</p>
+        </div>
+        <ReportExportMenu
+          onExportCsv={() => { if (activeTab === "rfis") exportRfisCsv(rfis, meta); }}
+          onExportPdf={() => { if (activeTab === "rfis") exportRfisPdf(rfis, meta); }}
+        />
       </div>
 
-      {error && (
-        <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">{error}</div>
-      )}
+      {error && <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">{error}</div>}
 
-      <Tabs defaultValue="rfis">
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
           <TabsTrigger value="rfis" className="gap-1.5"><MessageSquareText className="h-3.5 w-3.5" /> RFIs</TabsTrigger>
           <TabsTrigger value="items" className="gap-1.5"><Inbox className="h-3.5 w-3.5" /> Registos</TabsTrigger>
@@ -121,11 +122,7 @@ export default function TechnicalOfficePage() {
         {/* ── RFIs Tab ── */}
         <TabsContent value="rfis" className="space-y-4">
           <div className="flex justify-end">
-            {canCreate && (
-              <Button onClick={handleNewRfi} size="sm" className="gap-1.5">
-                <Plus className="h-3.5 w-3.5" /> Novo RFI
-              </Button>
-            )}
+            {canCreate && <Button onClick={handleNewRfi} size="sm" className="gap-1.5"><Plus className="h-3.5 w-3.5" /> Novo RFI</Button>}
           </div>
           {rfisLoading ? (
             <div className="rounded-xl border border-border overflow-hidden divide-y divide-border">
@@ -166,12 +163,8 @@ export default function TechnicalOfficePage() {
                           {rfi.status === "open" ? "Aberto" : rfi.status === "awaiting_response" ? "Aguarda Resposta" : rfi.status === "closed" ? "Encerrado" : rfi.status}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {rfi.deadline ? new Date(rfi.deadline).toLocaleDateString() : "—"}
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {new Date(rfi.created_at).toLocaleDateString()}
-                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{rfi.deadline ? new Date(rfi.deadline).toLocaleDateString() : "—"}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{new Date(rfi.created_at).toLocaleDateString()}</TableCell>
                       <TableCell onClick={(e) => e.stopPropagation()}>
                         <div className="flex gap-1">
                           <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground"
@@ -191,11 +184,7 @@ export default function TechnicalOfficePage() {
         {/* ── Items Tab ── */}
         <TabsContent value="items" className="space-y-4">
           <div className="flex justify-end">
-            {canCreate && (
-              <Button onClick={handleNew} size="sm" className="gap-1.5">
-                <Plus className="h-3.5 w-3.5" /> {t("technicalOffice.newItem")}
-              </Button>
-            )}
+            {canCreate && <Button onClick={handleNew} size="sm" className="gap-1.5"><Plus className="h-3.5 w-3.5" /> {t("technicalOffice.newItem")}</Button>}
           </div>
           {loading ? (
             <div className="rounded-xl border border-border overflow-hidden divide-y divide-border">
@@ -223,28 +212,14 @@ export default function TechnicalOfficePage() {
                 <TableBody>
                   {items.map((item) => (
                     <TableRow key={item.id} className="hover:bg-muted/20 transition-colors">
-                      <TableCell>
-                        <Badge variant="secondary" className={cn("text-xs", TYPE_COLORS[item.type] ?? "")}>
-                          {t(`technicalOffice.types.${item.type}`, { defaultValue: item.type })}
-                        </Badge>
-                      </TableCell>
+                      <TableCell><Badge variant="secondary" className={cn("text-xs", TYPE_COLORS[item.type] ?? "")}>{t(`technicalOffice.types.${item.type}`, { defaultValue: item.type })}</Badge></TableCell>
                       <TableCell className="font-medium text-sm text-foreground">{item.title}</TableCell>
-                      <TableCell>
-                        <Badge variant="secondary" className={cn("text-xs", STATUS_COLORS[item.status] ?? "")}>
-                          {t(`technicalOffice.status.${item.status}`, { defaultValue: item.status })}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {item.due_date ? new Date(item.due_date).toLocaleDateString() : "—"}
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {new Date(item.created_at).toLocaleDateString()}
-                      </TableCell>
+                      <TableCell><Badge variant="secondary" className={cn("text-xs", STATUS_COLORS[item.status] ?? "")}>{t(`technicalOffice.status.${item.status}`, { defaultValue: item.status })}</Badge></TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{item.due_date ? new Date(item.due_date).toLocaleDateString() : "—"}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{new Date(item.created_at).toLocaleDateString()}</TableCell>
                       <TableCell>
                         <div className="flex gap-1">
-                          <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={() => handleEdit(item)}>
-                            <Pencil className="h-3.5 w-3.5" />
-                          </Button>
+                          <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={() => handleEdit(item)}><Pencil className="h-3.5 w-3.5" /></Button>
                           <DeleteButton onConfirm={() => handleDeleteItem(item.id)} />
                         </div>
                       </TableCell>

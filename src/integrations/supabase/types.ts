@@ -1641,13 +1641,87 @@ export type Database = {
         }
         Relationships: []
       }
+      subcontractor_documents: {
+        Row: {
+          created_at: string
+          doc_type: string
+          document_id: string | null
+          id: string
+          project_id: string
+          status: string
+          subcontractor_id: string
+          title: string
+          updated_at: string
+          valid_from: string | null
+          valid_to: string | null
+        }
+        Insert: {
+          created_at?: string
+          doc_type?: string
+          document_id?: string | null
+          id?: string
+          project_id: string
+          status?: string
+          subcontractor_id: string
+          title: string
+          updated_at?: string
+          valid_from?: string | null
+          valid_to?: string | null
+        }
+        Update: {
+          created_at?: string
+          doc_type?: string
+          document_id?: string | null
+          id?: string
+          project_id?: string
+          status?: string
+          subcontractor_id?: string
+          title?: string
+          updated_at?: string
+          valid_from?: string | null
+          valid_to?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subcontractor_documents_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subcontractor_documents_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subcontractor_documents_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "subcontractor_documents_subcontractor_id_fkey"
+            columns: ["subcontractor_id"]
+            isOneToOne: false
+            referencedRelation: "subcontractors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       subcontractors: {
         Row: {
           contact_email: string | null
+          contract: string | null
           created_at: string
           created_by: string
+          documentation_status: string
           id: string
           name: string
+          performance_score: number | null
           project_id: string
           status: string
           supplier_id: string | null
@@ -1656,10 +1730,13 @@ export type Database = {
         }
         Insert: {
           contact_email?: string | null
+          contract?: string | null
           created_at?: string
           created_by: string
+          documentation_status?: string
           id?: string
           name: string
+          performance_score?: number | null
           project_id: string
           status?: string
           supplier_id?: string | null
@@ -1668,10 +1745,13 @@ export type Database = {
         }
         Update: {
           contact_email?: string | null
+          contract?: string | null
           created_at?: string
           created_by?: string
+          documentation_status?: string
           id?: string
           name?: string
+          performance_score?: number | null
           project_id?: string
           status?: string
           supplier_id?: string | null
