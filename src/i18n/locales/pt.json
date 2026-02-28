@@ -1194,6 +1194,7 @@
   },
   "plans": {
     "newPlan": "Novo Plano",
+    "searchPlaceholder": "Pesquisar título, revisão…",
     "table": {
       "type": "Tipo",
       "title": "Título",
@@ -1212,7 +1213,13 @@
       "draft": "Rascunho",
       "under_review": "Em Revisão",
       "approved": "Aprovado",
+      "obsolete": "Obsoleto",
+      "archived": "Arquivado",
       "superseded": "Superseded"
+    },
+    "filters": {
+      "allTypes": "Todos os tipos",
+      "allStatuses": "Todos os estados"
     },
     "form": {
       "titleCreate": "Novo Plano",
@@ -1224,10 +1231,38 @@
       "fileUrl": "URL do ficheiro",
       "createBtn": "Criar plano"
     },
+    "detail": {
+      "breadcrumb": "Planos",
+      "info": "Informação Geral",
+      "workflow": "Workflow:",
+      "createdAt": "Criado em",
+      "updatedAt": "Atualizado em",
+      "currentFile": "Ficheiro atual",
+      "uploadTitle": "Carregar nova versão",
+      "changeDescPlaceholder": "Descrição da alteração (opcional)…",
+      "uploadBtn": "Selecionar ficheiro",
+      "versionsTitle": "Histórico de Versões",
+      "noVersions": "Sem versões registadas. Carregue o primeiro ficheiro.",
+      "current": "Atual",
+      "attachments": "Anexos"
+    },
+    "deleteConfirm": {
+      "title": "Eliminar plano?",
+      "description": "O plano «{{name}}» será eliminado permanentemente."
+    },
     "toast": {
       "created": "Plano criado com sucesso.",
       "updated": "Plano atualizado com sucesso.",
-      "error": "Ocorreu um erro. Tente novamente."
+      "deleted": "Plano eliminado.",
+      "error": "Ocorreu um erro. Tente novamente.",
+      "fileUploaded": "Ficheiro «{{name}}» carregado com sucesso.",
+      "uploadError": "Falha no upload",
+      "downloadError": "Erro no download",
+      "status_draft": "Plano voltou a Rascunho.",
+      "status_under_review": "Plano enviado para revisão.",
+      "status_approved": "Plano aprovado.",
+      "status_obsolete": "Plano marcado como obsoleto.",
+      "status_archived": "Plano arquivado."
     }
   },
   "survey": {
