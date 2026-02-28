@@ -54,7 +54,6 @@ const NAV_SECTIONS: SidebarSection[] = [
   {
     sectionKey: "fieldSection",
     items: [
-      { labelKey: "nav.survey",         url: "/survey",          icon: Map },
       { labelKey: "nav.topography",    url: "/topography",      icon: Crosshair },
       { labelKey: "nav.subcontractors", url: "/subcontractors",  icon: HardHat },
       { labelKey: "nav.workItems",      url: "/work-items",      icon: Construction },

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,8 @@ import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { topographyControlService, type TopographyEquipment, type TopographyControl } from "@/lib/services/topographyService";
+import { auditService } from "@/lib/services/auditService";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 interface Props {
@@ -25,6 +27,7 @@ interface Props {
 export function ControlFormDialog({ open, onOpenChange, projectId, equipment, editControl, onSuccess }: Props) {
   const [loading, setLoading] = useState(false);
   const isEdit = !!editControl;
+  const [workItems, setWorkItems] = useState<{ id: string; sector: string }[]>([]);
   const [form, setForm] = useState({
     equipment_id: editControl?.equipment_id ?? "",
     element: editControl?.element ?? "",
@@ -36,7 +39,38 @@ export function ControlFormDialog({ open, onOpenChange, projectId, equipment, ed
     execution_date: editControl?.execution_date ?? new Date().toISOString().split("T")[0],
     technician: editControl?.technician ?? "",
     notes: editControl?.notes ?? "",
+    work_item_id: editControl?.work_item_id ?? "__none__",
+    ppi_id: editControl?.ppi_id ?? "__none__",
+    nc_id: editControl?.nc_id ?? "__none__",
   });
+
+  useEffect(() => {
+    if (open) {
+      if (editControl) {
+        setForm({
+          equipment_id: editControl.equipment_id,
+          element: editControl.element,
+          zone: editControl.zone ?? "",
+          tolerance: editControl.tolerance ?? "",
+          measured_value: editControl.measured_value ?? "",
+          deviation: editControl.deviation ?? "",
+          result: editControl.result,
+          execution_date: editControl.execution_date,
+          technician: editControl.technician ?? "",
+          notes: editControl.notes ?? "",
+          work_item_id: editControl.work_item_id ?? "__none__",
+          ppi_id: editControl.ppi_id ?? "__none__",
+          nc_id: editControl.nc_id ?? "__none__",
+        });
+      } else {
+        setForm({ equipment_id: "", element: "", zone: "", tolerance: "", measured_value: "", deviation: "", result: "conforme", execution_date: new Date().toISOString().split("T")[0], technician: "", notes: "", work_item_id: "__none__", ppi_id: "__none__", nc_id: "__none__" });
+      }
+      // load work items for linking
+      supabase.from("work_items").select("id, sector").eq("project_id", projectId).order("sector").then(({ data }) => {
+        setWorkItems(data ?? []);
+      });
+    }
+  }, [open, editControl, projectId]);
 
   const selectedEquipment = equipment.find(e => e.id === form.equipment_id);
   const isCalibrationInvalid = selectedEquipment && (selectedEquipment.calibration_status === "expired" || selectedEquipment.calibration_status === "unknown");
@@ -46,13 +80,22 @@ export function ControlFormDialog({ open, onOpenChange, projectId, equipment, ed
     if (!form.element.trim()) { toast.error("Elemento é obrigatório"); return; }
 
     if (isCalibrationInvalid) {
-      toast.error("Equipamento com calibração inválida. Atualizar certificado antes de registar medições.");
+      // Log calibration block to audit
+      await auditService.log({
+        projectId,
+        entity: "topography_controls",
+        action: "STATUS_CHANGE",
+        module: "topography",
+        description: `Bloqueio por calibração expirada no equipamento ${selectedEquipment?.code}`,
+        diff: { equipment_id: form.equipment_id, calibration_status: selectedEquipment?.calibration_status },
+      });
+      toast.error("🔒 Equipamento com calibração expirada. Atualize o certificado antes de registar medições.");
       return;
     }
 
     setLoading(true);
     try {
-      const payload = {
+      const payload: any = {
         equipment_id: form.equipment_id,
         element: form.element.trim(),
         zone: form.zone || null,
@@ -63,6 +106,9 @@ export function ControlFormDialog({ open, onOpenChange, projectId, equipment, ed
         execution_date: form.execution_date,
         technician: form.technician || null,
         notes: form.notes || null,
+        work_item_id: form.work_item_id === "__none__" ? null : form.work_item_id,
+        ppi_id: form.ppi_id === "__none__" ? null : form.ppi_id,
+        nc_id: form.nc_id === "__none__" ? null : form.nc_id,
       };
 
       if (editControl) {
@@ -72,11 +118,10 @@ export function ControlFormDialog({ open, onOpenChange, projectId, equipment, ed
         await topographyControlService.create({ ...payload, project_id: projectId });
         toast.success("Controlo geométrico registado com sucesso");
       }
-      setForm({ equipment_id: "", element: "", zone: "", tolerance: "", measured_value: "", deviation: "", result: "conforme", execution_date: new Date().toISOString().split("T")[0], technician: "", notes: "" });
       onSuccess();
     } catch (e: any) {
       if (e.message?.includes("calibração inválida")) {
-        toast.error("🔒 Equipamento com calibração inválida. Atualizar certificado antes de registar medições.");
+        toast.error("🔒 Equipamento com calibração inválida.");
       } else {
         toast.error(e.message || "Erro ao registar controlo");
       }
@@ -149,6 +194,27 @@ export function ControlFormDialog({ open, onOpenChange, projectId, equipment, ed
             </div>
 
             <div><Label>Técnico</Label><Input value={form.technician} onChange={e => setForm(f => ({ ...f, technician: e.target.value }))} /></div>
+
+            {/* Entity links */}
+            <Separator />
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ligações</p>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Atividade (Work Item)</Label>
+                <Select value={form.work_item_id} onValueChange={v => setForm(f => ({ ...f, work_item_id: v }))}>
+                  <SelectTrigger><SelectValue placeholder="Nenhuma" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">Nenhuma</SelectItem>
+                    {workItems.map(wi => <SelectItem key={wi.id} value={wi.id}>{wi.sector}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>NC associada</Label>
+                <Input value={form.nc_id === "__none__" ? "" : form.nc_id} onChange={e => setForm(f => ({ ...f, nc_id: e.target.value || "__none__" }))} placeholder="UUID da NC (opcional)" className="font-mono text-xs" />
+              </div>
+            </div>
+
             <div><Label>Notas</Label><Textarea value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} rows={2} /></div>
 
             {isEdit && editControl && (

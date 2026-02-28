@@ -1930,7 +1930,8 @@
   },
   "topography": {
     "title": "Topografia",
-    "subtitle": "Equipamentos, calibrações, pedidos e controlo geométrico",
+    "subtitle": "Levantamentos, equipamentos, calibrações, pedidos e controlo geométrico",
+    "surveys": "Levantamentos",
     "equipment": "Equipamentos",
     "calibrations": "Calibrações",
     "requests": "Pedidos",
@@ -1940,10 +1941,44 @@
     "newRequest": "Novo Pedido",
     "newControl": "Novo Controlo",
     "calibrationBlocked": "Equipamento com calibração inválida. Atualizar certificado antes de registar medições.",
+    "noLinked": "Sem registos topográficos ligados a esta atividade.",
+    "searchPlaceholder": "Pesquisar código, tipo, zona…",
     "status": {
       "valid": "Válido",
       "expiring_soon": "Expira em breve",
       "expired": "Expirado"
+    },
+    "requestStatus": {
+      "pending": "Pendente",
+      "in_progress": "Em curso",
+      "completed": "Concluído",
+      "cancelled": "Cancelado"
+    },
+    "result": {
+      "conforme": "Conforme",
+      "nao_conforme": "Não conforme"
+    },
+    "filters": {
+      "allStatuses": "Todos os estados",
+      "allResults": "Todos os resultados"
+    },
+    "table": {
+      "code": "Código",
+      "type": "Tipo",
+      "brandModel": "Marca/Modelo",
+      "serial": "Nº Série",
+      "responsible": "Responsável",
+      "calibration": "Calibração",
+      "validity": "Validade",
+      "requestType": "Tipo",
+      "zone": "Zona",
+      "priority": "Prioridade",
+      "element": "Elemento",
+      "tolerance": "Tolerância",
+      "measuredValue": "Valor Medido",
+      "deviation": "Desvio",
+      "result": "Resultado",
+      "technician": "Técnico"
     }
   },
   "planning": {
