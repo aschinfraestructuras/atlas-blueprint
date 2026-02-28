@@ -137,6 +137,12 @@ export const topographyEquipmentService = {
     });
     return data as TopographyEquipment;
   },
+
+  async delete(id: string, projectId: string): Promise<void> {
+    const { error } = await (supabase as any).from("topography_equipment").delete().eq("id", id);
+    if (error) throw error;
+    await auditService.log({ projectId, entity: "topography_equipment", entityId: id, action: "DELETE", module: "topography" });
+  },
 };
 
 // ─── Calibration Service ──────────────────────────────────────────────────────
@@ -180,6 +186,12 @@ export const calibrationService = {
       diff: { equipment_id: input.equipment_id, valid_until: input.valid_until },
     });
     return data as EquipmentCalibration;
+  },
+
+  async delete(id: string, projectId: string): Promise<void> {
+    const { error } = await (supabase as any).from("equipment_calibrations").delete().eq("id", id);
+    if (error) throw error;
+    await auditService.log({ projectId, entity: "equipment_calibrations", entityId: id, action: "DELETE", module: "topography" });
   },
 };
 
@@ -233,6 +245,12 @@ export const topographyRequestService = {
     });
     return data as TopographyRequest;
   },
+
+  async delete(id: string, projectId: string): Promise<void> {
+    const { error } = await (supabase as any).from("topography_requests").delete().eq("id", id);
+    if (error) throw error;
+    await auditService.log({ projectId, entity: "topography_requests", entityId: id, action: "DELETE", module: "topography" });
+  },
 };
 
 // ─── Topography Controls Service ──────────────────────────────────────────────
@@ -284,5 +302,11 @@ export const topographyControlService = {
       diff: updates as Record<string, unknown>,
     });
     return data as TopographyControl;
+  },
+
+  async delete(id: string, projectId: string): Promise<void> {
+    const { error } = await (supabase as any).from("topography_controls").delete().eq("id", id);
+    if (error) throw error;
+    await auditService.log({ projectId, entity: "topography_controls", entityId: id, action: "DELETE", module: "topography" });
   },
 };

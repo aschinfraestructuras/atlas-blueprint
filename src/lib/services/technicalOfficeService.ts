@@ -83,4 +83,10 @@ export const technicalOfficeService = {
     });
     return data as TechnicalOfficeItem;
   },
+
+  async delete(id: string, projectId: string): Promise<void> {
+    const { error } = await supabase.from("technical_office_items").delete().eq("id", id);
+    if (error) throw error;
+    await auditService.log({ projectId, entity: "technical_office_items", entityId: id, action: "DELETE", module: "technicalOffice" });
+  },
 };

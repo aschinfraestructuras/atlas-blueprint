@@ -3,7 +3,8 @@ import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { usePlanning } from "@/hooks/usePlanning";
 import { useProjectRole } from "@/hooks/useProjectRole";
-import { Plus, Pencil, Network, ListChecks, ShieldCheck } from "lucide-react";
+import { planningService } from "@/lib/services/planningService";
+import { Plus, Pencil, Network, ListChecks, ShieldCheck, Trash2 } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -15,7 +16,12 @@ import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { WbsFormDialog } from "@/components/planning/WbsFormDialog";
 import { ActivityFormDialog } from "@/components/planning/ActivityFormDialog";
 import { CompletionCheckDialog } from "@/components/planning/CompletionCheckDialog";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 import type { WbsNode, Activity } from "@/lib/services/planningService";
 
 const STATUS_COLORS: Record<string, string> = {
@@ -26,11 +32,33 @@ const STATUS_COLORS: Record<string, string> = {
   cancelled: "bg-muted text-muted-foreground line-through",
 };
 
+function DeleteButton({ onConfirm }: { onConfirm: () => void }) {
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive">
+          <Trash2 className="h-3.5 w-3.5" />
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Confirmar eliminação</AlertDialogTitle>
+          <AlertDialogDescription>Este registo será eliminado permanentemente. Tem a certeza?</AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogAction onClick={onConfirm} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Eliminar</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
+
 export default function PlanningPage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
   const { wbs, activities, loading, error, refetch } = usePlanning();
-  const { canCreate } = useProjectRole();
+  const { canCreate, isAdmin } = useProjectRole();
 
   const [wbsDialogOpen, setWbsDialogOpen] = useState(false);
   const [editWbs, setEditWbs] = useState<WbsNode | null>(null);
@@ -44,6 +72,22 @@ export default function PlanningPage() {
   const handleEditWbs = (n: WbsNode) => { setEditWbs(n); setWbsDialogOpen(true); };
   const handleNewAct = () => { setEditAct(null); setActDialogOpen(true); };
   const handleEditAct = (a: Activity) => { setEditAct(a); setActDialogOpen(true); };
+
+  const handleDeleteWbs = async (id: string) => {
+    try {
+      await planningService.deleteWbs(id, activeProject.id);
+      toast.success("WBS eliminado");
+      refetch();
+    } catch { toast.error("Erro ao eliminar WBS"); }
+  };
+
+  const handleDeleteActivity = async (id: string) => {
+    try {
+      await planningService.deleteActivity(id, activeProject.id);
+      toast.success("Atividade eliminada");
+      refetch();
+    } catch { toast.error("Erro ao eliminar atividade"); }
+  };
 
   const LoadingSkeleton = () => (
     <div className="rounded-xl border border-border overflow-hidden divide-y divide-border">
@@ -89,7 +133,7 @@ export default function PlanningPage() {
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("planning.wbs.zone")}</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("planning.fields.plannedStart")}</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("planning.fields.plannedEnd")}</TableHead>
-                    <TableHead className="w-10" />
+                    <TableHead className="w-20" />
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -101,9 +145,12 @@ export default function PlanningPage() {
                       <TableCell className="text-sm text-muted-foreground">{n.planned_start || "—"}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">{n.planned_end || "—"}</TableCell>
                       <TableCell>
-                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditWbs(n)}>
-                          <Pencil className="h-3.5 w-3.5" />
-                        </Button>
+                        <div className="flex gap-1">
+                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditWbs(n)}>
+                            <Pencil className="h-3.5 w-3.5" />
+                          </Button>
+                          {isAdmin && <DeleteButton onConfirm={() => handleDeleteWbs(n.id)} />}
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -132,7 +179,7 @@ export default function PlanningPage() {
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("planning.fields.progress")}</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("planning.fields.dates")}</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("planning.fields.requirements")}</TableHead>
-                    <TableHead className="w-20" />
+                    <TableHead className="w-28" />
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -170,6 +217,7 @@ export default function PlanningPage() {
                           <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setCheckDialog({ open: true, id: a.id, desc: a.description })} title={t("planning.completion.title")}>
                             <ShieldCheck className="h-3.5 w-3.5" />
                           </Button>
+                          {isAdmin && <DeleteButton onConfirm={() => handleDeleteActivity(a.id)} />}
                         </div>
                       </TableCell>
                     </TableRow>

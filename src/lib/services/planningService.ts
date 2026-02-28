@@ -143,6 +143,12 @@ export const planningService = {
     return data as WbsNode;
   },
 
+  async deleteWbs(id: string, projectId: string): Promise<void> {
+    const { error } = await (supabase as any).from("planning_wbs").delete().eq("id", id);
+    if (error) throw error;
+    await auditService.log({ projectId, entity: "planning_wbs", entityId: id, action: "DELETE", module: "planning" });
+  },
+
   // Activities
   async getActivities(projectId: string): Promise<Activity[]> {
     const { data, error } = await (supabase as any)
@@ -216,6 +222,12 @@ export const planningService = {
       diff: updates as Record<string, unknown>,
     });
     return data as Activity;
+  },
+
+  async deleteActivity(id: string, projectId: string): Promise<void> {
+    const { error } = await (supabase as any).from("planning_activities").delete().eq("id", id);
+    if (error) throw error;
+    await auditService.log({ projectId, entity: "planning_activities", entityId: id, action: "DELETE", module: "planning" });
   },
 
   // Smart completion check
