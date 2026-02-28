@@ -1513,6 +1513,7 @@
         "ppi":         "Inspeções PPI",
         "tests":       "Ensaios",
         "ncs":         "Não Conformidades",
+        "planning":    "Planeamento",
         "attachments": "Anexos"
       },
       "ppiTab": {
