@@ -20,6 +20,7 @@ import NCDetailPage from "./pages/NCDetailPage";
 import AuditLogPage from "./pages/AuditLogPage";
 import SettingsPage from "./pages/SettingsPage";
 import TechnicalOfficePage from "./pages/TechnicalOfficePage";
+import RfiDetailPage from "./pages/RfiDetailPage";
 import PlansPage from "./pages/PlansPage";
 import SurveyPage from "./pages/SurveyPage";
 import SubcontractorsPage from "./pages/SubcontractorsPage";
@@ -74,6 +75,7 @@ const App = () => (
 
               {/* New structural modules */}
               <Route path="/technical-office" element={<ProtectedLayout><TechnicalOfficePage /></ProtectedLayout>} />
+              <Route path="/technical-office/rfis/:id" element={<ProtectedLayout><RfiDetailPage /></ProtectedLayout>} />
               <Route path="/plans" element={<ProtectedLayout><PlansPage /></ProtectedLayout>} />
               <Route path="/survey" element={<ProtectedLayout><SurveyPage /></ProtectedLayout>} />
               <Route path="/subcontractors" element={<ProtectedLayout><SubcontractorsPage /></ProtectedLayout>} />
