@@ -1118,21 +1118,60 @@
   },
   "technicalOffice": {
     "newItem": "Novo Item",
+    "newRfi": "Novo RFI",
     "table": {
       "type": "Tipo",
       "title": "Título",
-      "dueDate": "Prazo"
+      "dueDate": "Prazo",
+      "code": "Código",
+      "subject": "Assunto",
+      "priority": "Prioridade",
+      "deadline": "Prazo"
     },
     "types": {
       "RFI": "RFI",
       "Submittal": "Submittal",
       "Clarification": "Clarificação"
     },
+    "priority": {
+      "low": "Baixa",
+      "normal": "Normal",
+      "high": "Alta",
+      "urgent": "Urgente"
+    },
     "status": {
       "open": "Aberto",
+      "in_review": "Em Análise",
+      "answered": "Respondido",
       "in_progress": "Em Curso",
       "closed": "Fechado",
-      "cancelled": "Cancelado"
+      "cancelled": "Cancelado",
+      "awaiting_response": "Aguarda Resposta"
+    },
+    "filters": {
+      "allStatuses": "Todos os estados",
+      "allPriorities": "Todas as prioridades",
+      "overdue": "⚠ Atrasados"
+    },
+    "rfi": {
+      "createTitle": "Novo RFI",
+      "editTitle": "Editar RFI",
+      "createBtn": "Criar RFI",
+      "subjectPlaceholder": "Assunto do RFI",
+      "descriptionPlaceholder": "Detalhes do pedido",
+      "zone": "Zona",
+      "workItem": "Atividade",
+      "selectWorkItem": "Selecionar atividade…",
+      "linkedNc": "NC Associada:",
+      "overdue": "Atrasado",
+      "messagesTitle": "Histórico de Mensagens",
+      "noMessages": "Sem mensagens. Envie a primeira para iniciar a thread.",
+      "messagePlaceholder": "Escreva uma mensagem…",
+      "changeStatus": "Alterar estado:",
+      "statusChanged": "Estado atualizado.",
+      "cannotCloseNoResponse": "Encerrar requer pelo menos uma resposta.",
+      "deleteTitle": "Eliminar RFI?",
+      "deleteDesc": "O RFI será arquivado (soft-delete). O histórico será preservado para rastreabilidade."
     },
     "form": {
       "titleCreate": "Novo Item — Oficina Técnica",
@@ -1147,6 +1186,9 @@
     "toast": {
       "created": "Item criado com sucesso.",
       "updated": "Item atualizado com sucesso.",
+      "rfiCreated": "RFI criado com sucesso.",
+      "rfiUpdated": "RFI atualizado.",
+      "rfiDeleted": "RFI eliminado.",
       "error": "Ocorreu um erro. Tente novamente."
     }
   },

@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { useProject } from "@/contexts/ProjectContext";
 import { useTechnicalOffice } from "@/hooks/useTechnicalOffice";
 import { useRfis } from "@/hooks/useRfis";
@@ -27,7 +28,6 @@ import { EmptyState } from "@/components/EmptyState";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { TechnicalOfficeFormDialog } from "@/components/technical-office/TechnicalOfficeFormDialog";
 import { RfiFormDialog } from "@/components/technical-office/RfiFormDialog";
-import { RfiDetailDialog } from "@/components/technical-office/RfiDetailDialog";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import type { TechnicalOfficeItem } from "@/lib/services/technicalOfficeService";
@@ -48,8 +48,9 @@ const PRIORITY_COLORS: Record<string, string> = {
   urgent: "destructive",
 };
 
-const RFI_STATUSES = ["open", "awaiting_response", "closed"];
+const RFI_STATUSES = ["open", "in_review", "answered", "closed"];
 const PRIORITIES = ["low", "normal", "high", "urgent"];
+const OVERDUE_FILTER = "__overdue__";
 
 function DeleteButton({ onConfirm, label }: { onConfirm: () => void; label?: string }) {
   const { t } = useTranslation();
@@ -78,6 +79,7 @@ export default function TechnicalOfficePage() {
   const { data: items, loading, error, refetch } = useTechnicalOffice();
   const { data: rfis, loading: rfisLoading, refetch: refetchRfis } = useRfis();
   const { canCreate, isAdmin } = useProjectRole();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("rfis");
 
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -85,8 +87,6 @@ export default function TechnicalOfficePage() {
 
   const [rfiFormOpen, setRfiFormOpen] = useState(false);
   const [editingRfi, setEditingRfi] = useState<Rfi | null>(null);
-  const [rfiDetailOpen, setRfiDetailOpen] = useState(false);
-  const [selectedRfi, setSelectedRfi] = useState<Rfi | null>(null);
 
   // Filters
   const [search, setSearch] = useState("");
@@ -99,7 +99,12 @@ export default function TechnicalOfficePage() {
       const q = search.toLowerCase();
       list = list.filter(r => (r.code ?? "").toLowerCase().includes(q) || r.subject.toLowerCase().includes(q) || (r.zone ?? "").toLowerCase().includes(q));
     }
-    if (filterStatus !== "__all__") list = list.filter(r => r.status === filterStatus);
+    if (filterStatus === OVERDUE_FILTER) {
+      const today = new Date().toISOString().slice(0, 10);
+      list = list.filter(r => r.deadline && r.deadline < today && r.status !== "closed" && r.status !== "cancelled");
+    } else if (filterStatus !== "__all__") {
+      list = list.filter(r => r.status === filterStatus);
+    }
     if (filterPriority !== "__all__") list = list.filter(r => r.priority === filterPriority);
     return list;
   }, [rfis, search, filterStatus, filterPriority]);
@@ -122,7 +127,7 @@ export default function TechnicalOfficePage() {
   };
 
   const handleNewRfi = () => { setEditingRfi(null); setRfiFormOpen(true); };
-  const handleViewRfi = (rfi: Rfi) => { setSelectedRfi(rfi); setRfiDetailOpen(true); };
+  const handleViewRfi = (rfi: Rfi) => { navigate(`/technical-office/rfis/${rfi.id}`); };
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
@@ -164,6 +169,7 @@ export default function TechnicalOfficePage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="__all__">{t("technicalOffice.filters.allStatuses", { defaultValue: "Todos os estados" })}</SelectItem>
+                    <SelectItem value={OVERDUE_FILTER}>{t("technicalOffice.filters.overdue", { defaultValue: "⚠ Atrasados" })}</SelectItem>
                     {RFI_STATUSES.map(s => (
                       <SelectItem key={s} value={s}>{t(`technicalOffice.status.${s}`, { defaultValue: s })}</SelectItem>
                     ))}
@@ -293,7 +299,6 @@ export default function TechnicalOfficePage() {
 
       <TechnicalOfficeFormDialog open={dialogOpen} onOpenChange={setDialogOpen} item={editingItem} onSuccess={refetch} />
       <RfiFormDialog open={rfiFormOpen} onOpenChange={setRfiFormOpen} rfi={editingRfi} onSuccess={refetchRfis} />
-      <RfiDetailDialog open={rfiDetailOpen} onOpenChange={setRfiDetailOpen} rfi={selectedRfi} onRefresh={refetchRfis} />
     </div>
   );
 }
