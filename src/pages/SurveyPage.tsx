@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { useSurveys } from "@/hooks/useSurveys";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import { Map, Plus, Pencil } from "lucide-react";
@@ -13,8 +14,11 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/EmptyState";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { SurveyFormDialog } from "@/components/survey/SurveyFormDialog";
+import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
+import { exportSurveysCsv, exportSurveysPdf } from "@/lib/services/surveyExportService";
 import { cn } from "@/lib/utils";
 import type { SurveyRecord } from "@/lib/services/surveyService";
+import type { ReportMeta } from "@/lib/services/reportService";
 
 const STATUS_COLORS: Record<string, string> = {
   pending: "bg-muted text-muted-foreground",
@@ -25,12 +29,20 @@ const STATUS_COLORS: Record<string, string> = {
 export default function SurveyPage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
+  const { user } = useAuth();
   const { data: records, loading, error, refetch } = useSurveys();
   const { canCreate, canEdit } = useProjectRole();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingRecord, setEditingRecord] = useState<SurveyRecord | null>(null);
 
   if (!activeProject) return <NoProjectBanner />;
+
+  const meta: ReportMeta = {
+    projectName: activeProject.name,
+    projectCode: activeProject.code,
+    locale: "pt",
+    generatedBy: user?.email ?? undefined,
+  };
 
   const handleNew = () => { setEditingRecord(null); setDialogOpen(true); };
   const handleEdit = (r: SurveyRecord) => { setEditingRecord(r); setDialogOpen(true); };
@@ -42,12 +54,18 @@ export default function SurveyPage() {
           <h1 className="text-2xl font-bold tracking-tight text-foreground">{t("pages.survey.title")}</h1>
           <p className="text-sm text-muted-foreground">{t("pages.survey.subtitle")}</p>
         </div>
-        {canCreate && (
-          <Button onClick={handleNew} size="sm" className="gap-1.5">
-            <Plus className="h-3.5 w-3.5" />
-            {t("survey.newRecord")}
-          </Button>
-        )}
+        <div className="flex items-center gap-2">
+          <ReportExportMenu options={[
+            { label: "CSV", icon: "csv", action: () => exportSurveysCsv(records, meta) },
+            { label: "PDF", icon: "pdf", action: () => exportSurveysPdf(records, meta) },
+          ]} />
+          {canCreate && (
+            <Button onClick={handleNew} size="sm" className="gap-1.5">
+              <Plus className="h-3.5 w-3.5" />
+              {t("survey.newRecord")}
+            </Button>
+          )}
+        </div>
       </div>
 
       {error && (

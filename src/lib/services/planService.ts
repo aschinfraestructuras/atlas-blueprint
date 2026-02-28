@@ -83,4 +83,19 @@ export const planService = {
     });
     return data as Plan;
   },
+
+  async delete(id: string, projectId: string): Promise<void> {
+    const { error } = await supabase
+      .from("plans")
+      .delete()
+      .eq("id", id);
+    if (error) throw error;
+    await auditService.log({
+      projectId,
+      entity: "plans",
+      entityId: id,
+      action: "DELETE",
+      module: "plans",
+    });
+  },
 };

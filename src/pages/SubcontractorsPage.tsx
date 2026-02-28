@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { useSubcontractors } from "@/hooks/useSubcontractors";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import { useSuppliers } from "@/hooks/useSuppliers";
@@ -21,8 +22,11 @@ import {
 import { EmptyState } from "@/components/EmptyState";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { SubcontractorFormDialog } from "@/components/subcontractors/SubcontractorFormDialog";
+import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
+import { exportSubcontractorsCsv, exportSubcontractorsPdf } from "@/lib/services/subcontractorExportService";
 import { cn } from "@/lib/utils";
 import type { Subcontractor } from "@/lib/services/subcontractorService";
+import type { ReportMeta } from "@/lib/services/reportService";
 
 const STATUS_COLORS: Record<string, string> = {
   active: "bg-primary/20 text-primary",
@@ -33,6 +37,7 @@ const STATUS_COLORS: Record<string, string> = {
 export default function SubcontractorsPage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
+  const { user } = useAuth();
   const { data: subcontractors, loading, error, refetch } = useSubcontractors();
   const { data: suppliers } = useSuppliers();
   const { canCreate, canEdit, canDelete } = useProjectRole();
@@ -43,6 +48,13 @@ export default function SubcontractorsPage() {
   const [deleting, setDeleting] = useState(false);
 
   if (!activeProject) return <NoProjectBanner />;
+
+  const meta: ReportMeta = {
+    projectName: activeProject.name,
+    projectCode: activeProject.code,
+    locale: "pt",
+    generatedBy: user?.email ?? undefined,
+  };
 
   const handleNew = () => { setEditingSub(null); setDialogOpen(true); };
   const handleEdit = (sub: Subcontractor) => { setEditingSub(sub); setDialogOpen(true); };
@@ -72,12 +84,18 @@ export default function SubcontractorsPage() {
           <h1 className="text-2xl font-bold tracking-tight text-foreground">{t("pages.subcontractors.title")}</h1>
           <p className="text-sm text-muted-foreground">{t("pages.subcontractors.subtitle")}</p>
         </div>
-        {canCreate && (
-          <Button onClick={handleNew} size="sm" className="gap-1.5">
-            <Plus className="h-3.5 w-3.5" />
-            {t("subcontractors.newSubcontractor")}
-          </Button>
-        )}
+        <div className="flex items-center gap-2">
+          <ReportExportMenu options={[
+            { label: "CSV", icon: "csv", action: () => exportSubcontractorsCsv(subcontractors, meta) },
+            { label: "PDF", icon: "pdf", action: () => exportSubcontractorsPdf(subcontractors, meta) },
+          ]} />
+          {canCreate && (
+            <Button onClick={handleNew} size="sm" className="gap-1.5">
+              <Plus className="h-3.5 w-3.5" />
+              {t("subcontractors.newSubcontractor")}
+            </Button>
+          )}
+        </div>
       </div>
 
       {error && (
