@@ -78,8 +78,10 @@ export default function HealthCheckPage() {
     for (const table of TABLES_TO_CHECK) {
       const start = performance.now();
       try {
+        // project_members has no 'id' column (composite PK)
+        const selectCol = table === "project_members" ? "user_id" : "id";
         const { data, error } = await (supabase.from(table as any) as any)
-          .select("id", { count: "exact", head: true })
+          .select(selectCol, { count: "exact", head: true })
           .limit(1);
         const dur = Math.round(performance.now() - start);
         if (error) {
