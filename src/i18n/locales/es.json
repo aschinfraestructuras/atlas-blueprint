@@ -1042,7 +1042,8 @@
         "titleRequired": "El título es obligatorio.",
         "descriptionRequired": "La descripción es obligatoria.",
         "severityRequired": "La gravedad es obligatoria.",
-        "correctiveActionRequired": "La acción correctiva es obligatoria para cerrar la NC."
+        "correctiveActionRequired": "La acción correctiva es obligatoria para cerrar la NC.",
+        "categoryOutroRequired": "Especifique la categoría cuando selecciona «Otros»."
       }
     },
     "toast": {
@@ -1802,6 +1803,13 @@
       "noProjectsEmpty": "No está asociado a ningún proyecto.",
       "noProjectsEmptySub": "Contacte a un administrador para obtener acceso a un proyecto o cree uno nuevo.",
       "requestAccess": "Solicitar acceso"
+    },
+    "password": {
+      "newPasswordLabel": "Nueva contraseña",
+      "newPasswordPlaceholder": "Mínimo 6 caracteres",
+      "changeBtn": "Cambiar contraseña",
+      "success": "Contraseña cambiada con éxito.",
+      "error": "Error al cambiar contraseña."
     }
   }
 }

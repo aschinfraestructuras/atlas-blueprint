@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Settings, Users, ShieldCheck, Sliders, Globe, Bell, Lock,
   Building2, Mail, UserCheck, Key, Database, ChevronRight,
@@ -94,7 +95,7 @@ function SettingsRow({ label, description, value, icon: Icon, comingSoon = false
 // MAIN
 // ═══════════════════════════════════════════════════════════════
 export default function SettingsPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { activeProject } = useProject();
   const { user } = useAuth();
   const { isAdmin, role: myRole } = useProjectRole();
@@ -106,6 +107,9 @@ export default function SettingsPage() {
   const [inviteRole, setInviteRole] = useState("technician");
   const [inviting, setInviting] = useState(false);
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [changingPassword, setChangingPassword] = useState(false);
 
   const cs = t("pages.settings.comingSoon");
   const s = (key: string) => t(`pages.settings.sections.${key}`);
@@ -239,7 +243,54 @@ export default function SettingsPage() {
           </div>
         </div>
         <SettingsRow label={s("profile.changeEmail")} description={s("profile.changeEmailDesc")} icon={Mail} comingSoon comingSoonLabel={cs} />
-        <SettingsRow label={s("profile.changePassword")} description={s("profile.changePasswordDesc")} icon={Key} comingSoon comingSoonLabel={cs} />
+
+        {/* Password change */}
+        <div className="flex items-center gap-3 py-3 border-b border-border/50 hover:bg-muted/30 -mx-2 px-2 rounded-lg transition-colors duration-150 cursor-pointer" onClick={() => setPasswordDialogOpen(true)}>
+          <Key className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+          <div className="flex-1 min-w-0">
+            <p className="text-[12.5px] font-medium text-foreground leading-none">{s("profile.changePassword")}</p>
+            <p className="text-[11px] text-muted-foreground mt-0.5 leading-snug">{s("profile.changePasswordDesc")}</p>
+          </div>
+          <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/40" />
+        </div>
+
+        {/* Password Dialog */}
+        <Dialog open={passwordDialogOpen} onOpenChange={setPasswordDialogOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>{s("profile.changePassword")}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-2">
+              <div>
+                <Label>{t("settings.password.newPasswordLabel")}</Label>
+                <Input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder={t("settings.password.newPasswordPlaceholder")} />
+              </div>
+            </div>
+            <DialogFooter>
+              <DialogClose asChild><Button variant="outline">{t("common.cancel")}</Button></DialogClose>
+              <Button
+                disabled={changingPassword || newPassword.length < 6}
+                onClick={async () => {
+                  setChangingPassword(true);
+                  try {
+                    const { error } = await supabase.auth.updateUser({ password: newPassword });
+                    if (error) throw error;
+                    toast.success(t("settings.password.success"));
+                    setNewPassword("");
+                    setPasswordDialogOpen(false);
+                  } catch (err: any) {
+                    toast.error(t("settings.password.error"), { description: err?.message });
+                  } finally {
+                    setChangingPassword(false);
+                  }
+                }}
+              >
+                {changingPassword && <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" />}
+                {t("settings.password.changeBtn")}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </SettingsSection>
 
       {/* ── 3. User Management — FUNCTIONAL ──────────────────────────── */}
@@ -405,7 +456,27 @@ export default function SettingsPage() {
 
       {/* ── 5. Preferences ───────────────────────────────────────────── */}
       <SettingsSection icon={Sliders} title={s("preferences.title")} subtitle={s("preferences.subtitle")} color={MOD.tests}>
-        <SettingsRow label={s("preferences.language")} description={s("preferences.languageDesc")} value={s("preferences.languageValue")} icon={Globe} comingSoon comingSoonLabel={cs} />
+        {/* Language Switcher - Functional */}
+        <div className="flex items-center gap-3 py-3 border-b border-border/50 hover:bg-muted/30 -mx-2 px-2 rounded-lg transition-colors duration-150">
+          <Globe className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+          <div className="flex-1 min-w-0">
+            <p className="text-[12.5px] font-medium text-foreground leading-none">{s("preferences.language")}</p>
+            <p className="text-[11px] text-muted-foreground mt-0.5 leading-snug">{s("preferences.languageDesc")}</p>
+          </div>
+          <Select
+            value={i18n.language?.startsWith("es") ? "es" : "pt"}
+            onValueChange={(lang) => {
+              i18n.changeLanguage(lang);
+              localStorage.setItem("atlas_lang", lang);
+            }}
+          >
+            <SelectTrigger className="w-[130px] h-7 text-xs"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="pt">Português</SelectItem>
+              <SelectItem value="es">Español</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
         <SettingsRow label={s("preferences.timezone")} description={s("preferences.timezoneDesc")} icon={Sliders} comingSoon comingSoonLabel={cs} />
         <SettingsRow label={s("preferences.theme")} description={s("preferences.themeDesc")} icon={Settings} comingSoon comingSoonLabel={cs} />
       </SettingsSection>
