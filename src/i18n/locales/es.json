@@ -1091,6 +1091,7 @@
   },
   "plans": {
     "newPlan": "Nuevo Plan",
+    "searchPlaceholder": "Buscar título, revisión…",
     "table": {
       "type": "Tipo",
       "title": "Título",
@@ -1109,7 +1110,13 @@
       "draft": "Borrador",
       "under_review": "En Revisión",
       "approved": "Aprobado",
+      "obsolete": "Obsoleto",
+      "archived": "Archivado",
       "superseded": "Superado"
+    },
+    "filters": {
+      "allTypes": "Todos los tipos",
+      "allStatuses": "Todos los estados"
     },
     "form": {
       "titleCreate": "Nuevo Plan",
@@ -1121,10 +1128,38 @@
       "fileUrl": "URL del archivo",
       "createBtn": "Crear plan"
     },
+    "detail": {
+      "breadcrumb": "Planes",
+      "info": "Información General",
+      "workflow": "Workflow:",
+      "createdAt": "Creado el",
+      "updatedAt": "Actualizado el",
+      "currentFile": "Archivo actual",
+      "uploadTitle": "Subir nueva versión",
+      "changeDescPlaceholder": "Descripción del cambio (opcional)…",
+      "uploadBtn": "Seleccionar archivo",
+      "versionsTitle": "Historial de Versiones",
+      "noVersions": "Sin versiones registradas. Suba el primer archivo.",
+      "current": "Actual",
+      "attachments": "Adjuntos"
+    },
+    "deleteConfirm": {
+      "title": "¿Eliminar plan?",
+      "description": "El plan «{{name}}» se eliminará permanentemente."
+    },
     "toast": {
       "created": "Plan creado con éxito.",
       "updated": "Plan actualizado con éxito.",
-      "error": "Ocurrió un error. Inténtelo de nuevo."
+      "deleted": "Plan eliminado.",
+      "error": "Ocurrió un error. Inténtelo de nuevo.",
+      "fileUploaded": "Archivo «{{name}}» subido con éxito.",
+      "uploadError": "Error al subir el archivo",
+      "downloadError": "Error al descargar",
+      "status_draft": "Plan vuelto a Borrador.",
+      "status_under_review": "Plan enviado a revisión.",
+      "status_approved": "Plan aprobado.",
+      "status_obsolete": "Plan marcado como obsoleto.",
+      "status_archived": "Plan archivado."
     }
   },
   "survey": {

@@ -24,7 +24,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 
 const PLAN_TYPES = ["PQO", "PIE", "PPI", "ITP", "MethodStatement", "TestPlan", "Schedule"] as const;
-const STATUSES = ["draft", "under_review", "approved", "superseded"] as const;
+const STATUSES = ["draft", "under_review", "approved", "obsolete", "archived"] as const;
 
 const schema = z.object({
   plan_type: z.enum(PLAN_TYPES),

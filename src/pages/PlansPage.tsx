@@ -1,12 +1,13 @@
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { useProject } from "@/contexts/ProjectContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePlans } from "@/hooks/usePlans";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import { planService } from "@/lib/services/planService";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
-import { BookOpen, Plus, Pencil, Trash2, Search } from "lucide-react";
+import { BookOpen, Plus, Pencil, Trash2, Search, Eye, Download } from "lucide-react";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
@@ -24,7 +25,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { PlanFormDialog } from "@/components/plans/PlanFormDialog";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
-import { exportPlansCsv, exportPlansPdf } from "@/lib/services/planExportService";
+import { exportPlansCsv, exportPlansPdf, exportPlanDetailPdf } from "@/lib/services/planExportService";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import type { Plan } from "@/lib/services/planService";
@@ -34,14 +35,17 @@ const STATUS_COLORS: Record<string, string> = {
   draft: "bg-muted text-muted-foreground",
   under_review: "bg-primary/10 text-primary",
   approved: "bg-primary/20 text-primary",
+  obsolete: "bg-amber-500/15 text-amber-600",
+  archived: "bg-muted/60 text-muted-foreground",
   superseded: "bg-destructive/10 text-destructive",
 };
 
 const PLAN_TYPES = ["PQO", "PIE", "PPI", "ITP", "MethodStatement", "TestPlan", "Schedule"];
-const PLAN_STATUSES = ["draft", "under_review", "approved", "superseded"];
+const PLAN_STATUSES = ["draft", "under_review", "approved", "obsolete", "archived", "superseded"];
 
 export default function PlansPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const { activeProject } = useProject();
   const { user } = useAuth();
   const { data: plans, loading, error, refetch } = usePlans();
@@ -198,6 +202,9 @@ export default function PlansPage() {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1">
+                      <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-primary" onClick={() => navigate(`/plans/${plan.id}`)}>
+                        <Eye className="h-3.5 w-3.5" />
+                      </Button>
                       <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={() => handleEdit(plan)}>
                         <Pencil className="h-3.5 w-3.5" />
                       </Button>
