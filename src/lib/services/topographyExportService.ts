@@ -32,3 +32,12 @@ export function exportTopographyControlsCsv(data: TopographyControl[], meta: Rep
   const rows = data.map(c => [c.element, c.zone ?? "", c.tolerance ?? "", c.measured_value ?? "", c.deviation ?? "", c.result, c.execution_date, c.technician ?? ""]);
   exportToCSV(headers, rows, buildReportFilename("TOPO-CTRL", meta.projectCode, "lista", "csv"));
 }
+
+export function exportTopographyControlsPdf(data: TopographyControl[], equipment: TopographyEquipment[], meta: ReportMeta) {
+  const l = labels(meta.locale);
+  l.reportTitle = meta.locale === "pt" ? "Controlo Geométrico" : "Control Geométrico";
+  const eqMap = Object.fromEntries(equipment.map(e => [e.id, e.code]));
+  const columns = ["Elemento", "Zona", "Equipamento", "Tolerância", "Valor", "Desvio", "Resultado", "Data"];
+  const rows = data.map(c => [c.element, c.zone ?? "—", eqMap[c.equipment_id] ?? "—", c.tolerance ?? "—", c.measured_value ?? "—", c.deviation ?? "—", c.result === "conforme" ? "Conforme" : "Não conforme", c.execution_date]);
+  generateListPdf({ reportTitle: l.reportTitle, labels: l, meta, columns, rows, footerRef: `TOPO-CTRL-${meta.projectCode}`, filename: buildReportFilename("TOPO-CTRL", meta.projectCode, "lista") });
+}

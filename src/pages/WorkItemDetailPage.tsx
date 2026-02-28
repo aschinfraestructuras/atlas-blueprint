@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import {
   ArrowLeft, Construction, FlaskConical, AlertTriangle, Paperclip,
   Pencil, Calendar, MapPin, ClipboardCheck, Plus, Eye, FileDown, FileText,
-  CheckCircle2, XCircle, Clock,
+  CheckCircle2, XCircle, Clock, Crosshair, Target, Map,
 } from "lucide-react";
 import {
   exportWorkItemTestsPdf,
@@ -29,6 +29,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { topographyRequestService, topographyControlService, type TopographyRequest, type TopographyControl } from "@/lib/services/topographyService";
+import { surveyService, type SurveyRecord } from "@/lib/services/surveyService";
 
 // ─── Status badge ─────────────────────────────────────────────────────────────
 
@@ -471,6 +473,93 @@ function WorkItemTestsTab({
   );
 }
 
+// ─── Topography tab ───────────────────────────────────────────────────────────
+
+function WorkItemTopoTab({ workItemId, projectId }: { workItemId: string; projectId: string }) {
+  const { t } = useTranslation();
+  const [surveys, setSurveys] = useState<SurveyRecord[]>([]);
+  const [requests, setRequests] = useState<TopographyRequest[]>([]);
+  const [controls, setControls] = useState<TopographyControl[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function load() {
+      setLoading(true);
+      try {
+        const [reqData, ctrlData, survData] = await Promise.all([
+          topographyRequestService.getByProject(projectId),
+          topographyControlService.getByProject(projectId),
+          surveyService.getByProject(projectId),
+        ]);
+        // Filter by work_item_id
+        setRequests(reqData.filter(r => r.work_item_id === workItemId));
+        setControls(ctrlData.filter(c => c.work_item_id === workItemId));
+        // Surveys don't have work_item_id, so we skip unless zone matches
+        setSurveys([]); // surveys don't link directly
+      } catch { /* */ } finally { setLoading(false); }
+    }
+    load();
+  }, [workItemId, projectId]);
+
+  const total = requests.length + controls.length;
+
+  return (
+    <Card className="shadow-card">
+      <CardHeader className="pb-3 pt-4 px-5">
+        <CardTitle className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+          {t("topography.title")}
+          {total > 0 && <span className="ml-2 rounded-full bg-primary/10 px-1.5 py-px text-[10px] font-bold text-primary">{total}</span>}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="p-0">
+        {loading ? (
+          <div className="p-5 space-y-2">{Array.from({ length: 2 }).map((_, i) => <Skeleton key={i} className="h-10 w-full rounded" />)}</div>
+        ) : total === 0 ? (
+          <div className="flex flex-col items-center justify-center py-10 gap-2 text-muted-foreground">
+            <Crosshair className="h-6 w-6 opacity-40" />
+            <p className="text-sm">{t("topography.noLinked", { defaultValue: "Sem registos topográficos ligados a esta atividade." })}</p>
+          </div>
+        ) : (
+          <div className="divide-y divide-border">
+            {requests.length > 0 && (
+              <div className="px-5 py-3">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                  <FileText className="inline h-3 w-3 mr-1" />{t("topography.requests")} ({requests.length})
+                </p>
+                <ul className="space-y-1">
+                  {requests.map(r => (
+                    <li key={r.id} className="flex items-center justify-between text-sm">
+                      <span>{r.request_type} — {r.description.substring(0, 60)}</span>
+                      <Badge variant={r.status === "completed" ? "default" : "secondary"} className="text-xs">{r.status}</Badge>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {controls.length > 0 && (
+              <div className="px-5 py-3">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                  <Target className="inline h-3 w-3 mr-1" />{t("topography.controls")} ({controls.length})
+                </p>
+                <ul className="space-y-1">
+                  {controls.map(c => (
+                    <li key={c.id} className="flex items-center justify-between text-sm">
+                      <span>{c.element} — {c.zone ?? "—"}</span>
+                      <Badge variant={c.result === "conforme" ? "default" : "destructive"} className="text-xs">
+                        {c.result === "conforme" ? "Conforme" : "Não conforme"}
+                      </Badge>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function WorkItemDetailPage() {
@@ -657,6 +746,10 @@ export default function WorkItemDetailPage() {
             <FileText className="h-3.5 w-3.5" />
             {t("documents.linkedPanel.title")}
           </TabsTrigger>
+          <TabsTrigger value="topography" className="gap-1.5">
+            <Crosshair className="h-3.5 w-3.5" />
+            {t("topography.title")}
+          </TabsTrigger>
           <TabsTrigger value="attachments" className="gap-1.5">
             <Paperclip className="h-3.5 w-3.5" />
             {t("workItems.detail.tabs.attachments")}
@@ -735,6 +828,11 @@ export default function WorkItemDetailPage() {
         {/* Documents tab */}
         <TabsContent value="documents" className="mt-4">
           <LinkedDocumentsPanel entityType="work_item" entityId={item.id} projectId={activeProject?.id ?? ""} />
+        </TabsContent>
+
+        {/* Topography tab */}
+        <TabsContent value="topography" className="mt-4">
+          <WorkItemTopoTab workItemId={item.id} projectId={activeProject?.id ?? ""} />
         </TabsContent>
 
         {/* Attachments tab */}

@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProjectRole } from "@/hooks/useProjectRole";
+import { useSurveys } from "@/hooks/useSurveys";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { PageHeader } from "@/components/ui/page-header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -17,24 +18,34 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { FilterBar } from "@/components/ui/filter-bar";
-import { Plus, AlertTriangle, CheckCircle, Clock, Wrench, FileText, Target, Trash2, Pencil, Search } from "lucide-react";
+import {
+  Plus, AlertTriangle, CheckCircle, Clock, Wrench, FileText, Target, Trash2, Pencil, Search,
+  Map, Eye,
+} from "lucide-react";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import {
   exportTopographyEquipmentCsv, exportTopographyEquipmentPdf,
   exportTopographyRequestsCsv, exportTopographyControlsCsv,
+  exportTopographyControlsPdf,
 } from "@/lib/services/topographyExportService";
+import { exportSurveysCsv, exportSurveysPdf } from "@/lib/services/surveyExportService";
 import {
   useTopographyEquipment, useCalibrations, useTopographyRequests, useTopographyControls,
 } from "@/hooks/useTopography";
 import {
   topographyEquipmentService, calibrationService, topographyRequestService, topographyControlService,
 } from "@/lib/services/topographyService";
+import { surveyService } from "@/lib/services/surveyService";
 import { EquipmentFormDialog } from "@/components/topography/EquipmentFormDialog";
 import { CalibrationFormDialog } from "@/components/topography/CalibrationFormDialog";
 import { RequestFormDialog } from "@/components/topography/RequestFormDialog";
 import { ControlFormDialog } from "@/components/topography/ControlFormDialog";
+import { SurveyFormDialog } from "@/components/survey/SurveyFormDialog";
 import type { TopographyRequest, TopographyControl } from "@/lib/services/topographyService";
+import type { SurveyRecord } from "@/lib/services/surveyService";
+import { cn } from "@/lib/utils";
 
 function CalibrationBadge({ status }: { status: string }) {
   const { t } = useTranslation();
@@ -48,6 +59,12 @@ function StatusBadge({ status }: { status: string }) {
   const map: Record<string, string> = { pending: "secondary", in_progress: "default", completed: "outline", cancelled: "destructive" };
   return <Badge variant={(map[status] || "secondary") as any}>{t(`topography.requestStatus.${status}`, { defaultValue: status })}</Badge>;
 }
+
+const SURVEY_STATUS_COLORS: Record<string, string> = {
+  pending: "bg-muted text-muted-foreground",
+  validated: "bg-primary/20 text-primary",
+  rejected: "bg-destructive/10 text-destructive",
+};
 
 function DeleteButton({ onConfirm }: { onConfirm: () => void }) {
   const { t } = useTranslation();
@@ -69,18 +86,21 @@ function DeleteButton({ onConfirm }: { onConfirm: () => void }) {
 
 const REQ_STATUSES = ["pending", "in_progress", "completed", "cancelled"];
 const CTRL_RESULTS = ["conforme", "nao_conforme"];
+const SURVEY_STATUSES = ["pending", "validated", "rejected"];
 
 export default function TopographyPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { activeProject } = useProject();
   const { user } = useAuth();
-  const { isAdmin } = useProjectRole();
-  const [activeTab, setActiveTab] = useState("equipment");
+  const { isAdmin, canCreate, canDelete } = useProjectRole();
+  const [activeTab, setActiveTab] = useState("surveys");
 
   const { data: equipment, loading: eqLoading, refetch: refetchEq } = useTopographyEquipment();
   const { data: calibrations, refetch: refetchCal } = useCalibrations();
   const { data: requests, loading: reqLoading, refetch: refetchReq } = useTopographyRequests();
   const { data: controls, loading: ctrlLoading, refetch: refetchCtrl } = useTopographyControls();
+  const { data: surveys, loading: surveyLoading, refetch: refetchSurveys } = useSurveys();
 
   const [eqDialogOpen, setEqDialogOpen] = useState(false);
   const [viewEquipment, setViewEquipment] = useState<any>(null);
@@ -90,11 +110,21 @@ export default function TopographyPage() {
   const [editRequest, setEditRequest] = useState<TopographyRequest | null>(null);
   const [ctrlDialogOpen, setCtrlDialogOpen] = useState(false);
   const [editControl, setEditControl] = useState<TopographyControl | null>(null);
+  const [surveyDialogOpen, setSurveyDialogOpen] = useState(false);
+  const [editSurvey, setEditSurvey] = useState<SurveyRecord | null>(null);
 
   // Filters
   const [search, setSearch] = useState("");
   const [filterReqStatus, setFilterReqStatus] = useState("__all__");
   const [filterCtrlResult, setFilterCtrlResult] = useState("__all__");
+  const [filterSurveyStatus, setFilterSurveyStatus] = useState("__all__");
+
+  const filteredSurveys = useMemo(() => {
+    let list = surveys;
+    if (search) { const q = search.toLowerCase(); list = list.filter(r => r.area_or_pk.toLowerCase().includes(q) || (r.description ?? "").toLowerCase().includes(q)); }
+    if (filterSurveyStatus !== "__all__") list = list.filter(r => r.status === filterSurveyStatus);
+    return list;
+  }, [surveys, search, filterSurveyStatus]);
 
   const filteredEquipment = useMemo(() => {
     if (!search) return equipment;
@@ -118,7 +148,7 @@ export default function TopographyPage() {
 
   if (!activeProject) return <NoProjectBanner />;
 
-  const meta = { projectName: activeProject.name, projectCode: activeProject.code, locale: "pt" };
+  const meta = { projectName: activeProject.name, projectCode: activeProject.code, locale: "pt", generatedBy: user?.email ?? undefined };
   const expiredCount = equipment.filter(e => e.calibration_status === "expired").length;
   const expiringCount = equipment.filter(e => e.calibration_status === "expiring_soon").length;
   const validCount = equipment.filter(e => e.calibration_status === "valid").length;
@@ -130,6 +160,8 @@ export default function TopographyPage() {
   const handleNewRequest = () => { setEditRequest(null); setReqDialogOpen(true); };
   const handleEditControl = (ctrl: TopographyControl) => { setEditControl(ctrl); setCtrlDialogOpen(true); };
   const handleNewControl = () => { setEditControl(null); setCtrlDialogOpen(true); };
+  const handleNewSurvey = () => { setEditSurvey(null); setSurveyDialogOpen(true); };
+  const handleEditSurvey = (s: SurveyRecord) => { setEditSurvey(s); setSurveyDialogOpen(true); };
 
   const handleDeleteEquipment = async (id: string) => {
     try { await topographyEquipmentService.delete(id, activeProject.id); toast.success(t("common.deleted", { defaultValue: "Eliminado" })); refetchEq(); }
@@ -143,24 +175,38 @@ export default function TopographyPage() {
     try { await topographyControlService.delete(id, activeProject.id); toast.success(t("common.deleted", { defaultValue: "Eliminado" })); refetchCtrl(); }
     catch { toast.error(t("common.deleteError", { defaultValue: "Erro ao eliminar" })); }
   };
+  const handleDeleteSurvey = async (id: string) => {
+    try { await surveyService.delete(id, activeProject.id); toast.success(t("common.deleted", { defaultValue: "Eliminado" })); refetchSurveys(); }
+    catch { toast.error(t("common.deleteError", { defaultValue: "Erro ao eliminar" })); }
+  };
+
+  const getExportOptions = () => {
+    const opts: any[] = [];
+    if (activeTab === "surveys") {
+      opts.push({ label: "CSV", icon: "csv", action: () => exportSurveysCsv(filteredSurveys, meta) });
+      opts.push({ label: "PDF", icon: "pdf", action: () => exportSurveysPdf(filteredSurveys, meta) });
+    } else if (activeTab === "equipment") {
+      opts.push({ label: "CSV", icon: "csv", action: () => exportTopographyEquipmentCsv(filteredEquipment, meta) });
+      opts.push({ label: "PDF", icon: "pdf", action: () => exportTopographyEquipmentPdf(filteredEquipment, meta) });
+    } else if (activeTab === "requests") {
+      opts.push({ label: "CSV", icon: "csv", action: () => exportTopographyRequestsCsv(filteredRequests, meta) });
+    } else {
+      opts.push({ label: "CSV", icon: "csv", action: () => exportTopographyControlsCsv(filteredControls, meta) });
+      opts.push({ label: "PDF", icon: "pdf", action: () => exportTopographyControlsPdf(filteredControls, equipment, meta) });
+    }
+    return opts;
+  };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <PageHeader title={t("topography.title")} subtitle={t("topography.subtitle")} />
-        <ReportExportMenu options={[
-          { label: "CSV", icon: "csv", action: () => {
-            if (activeTab === "equipment") exportTopographyEquipmentCsv(filteredEquipment, meta);
-            else if (activeTab === "requests") exportTopographyRequestsCsv(filteredRequests, meta);
-            else exportTopographyControlsCsv(filteredControls, meta);
-          }},
-          { label: "PDF", icon: "pdf", action: () => {
-            if (activeTab === "equipment") exportTopographyEquipmentPdf(filteredEquipment, meta);
-          }},
-        ]} />
+        <ReportExportMenu options={getExportOptions()} />
       </div>
 
-      <div className="grid gap-4 md:grid-cols-4">
+      {/* KPI cards */}
+      <div className="grid gap-4 md:grid-cols-5">
+        <Card><CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">{t("topography.surveys", { defaultValue: "Levantamentos" })}</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold">{surveys.length}</div></CardContent></Card>
         <Card><CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">{t("topography.equipment")}</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold">{equipment.length}</div></CardContent></Card>
         <Card><CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-primary"><CheckCircle className="inline h-4 w-4 mr-1" />{t("topography.status.valid")}</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-primary">{validCount}</div></CardContent></Card>
         <Card><CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground"><Clock className="inline h-4 w-4 mr-1" />{t("topography.status.expiring_soon")}</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold">{expiringCount}</div></CardContent></Card>
@@ -169,6 +215,7 @@ export default function TopographyPage() {
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
+          <TabsTrigger value="surveys"><Map className="h-4 w-4 mr-1" />{t("topography.surveys", { defaultValue: "Levantamentos" })}</TabsTrigger>
           <TabsTrigger value="equipment"><Wrench className="h-4 w-4 mr-1" />{t("topography.equipment")}</TabsTrigger>
           <TabsTrigger value="requests"><FileText className="h-4 w-4 mr-1" />{t("topography.requests")}</TabsTrigger>
           <TabsTrigger value="controls"><Target className="h-4 w-4 mr-1" />{t("topography.controls")}</TabsTrigger>
@@ -178,13 +225,17 @@ export default function TopographyPage() {
           <FilterBar>
             <div className="relative flex-1 min-w-[180px]">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-              <Input
-                placeholder={t("topography.searchPlaceholder", { defaultValue: "Pesquisar código, tipo, zona…" })}
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                className="pl-8 h-8 text-sm"
-              />
+              <Input placeholder={t("topography.searchPlaceholder", { defaultValue: "Pesquisar…" })} value={search} onChange={e => setSearch(e.target.value)} className="pl-8 h-8 text-sm" />
             </div>
+            {activeTab === "surveys" && (
+              <Select value={filterSurveyStatus} onValueChange={setFilterSurveyStatus}>
+                <SelectTrigger className="w-[160px] h-8 text-sm"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__all__">{t("survey.filters.allStatuses", { defaultValue: "Todos os estados" })}</SelectItem>
+                  {SURVEY_STATUSES.map(s => <SelectItem key={s} value={s}>{t(`survey.status.${s}`, { defaultValue: s })}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            )}
             {activeTab === "requests" && (
               <Select value={filterReqStatus} onValueChange={setFilterReqStatus}>
                 <SelectTrigger className="w-[160px] h-8 text-sm"><SelectValue /></SelectTrigger>
@@ -207,6 +258,46 @@ export default function TopographyPage() {
           </FilterBar>
         </div>
 
+        {/* ── A) Levantamentos ───────────────────────────────────────── */}
+        <TabsContent value="surveys" className="space-y-4">
+          <div className="flex justify-end">
+            {canCreate && <Button onClick={handleNewSurvey}><Plus className="h-4 w-4 mr-1" />{t("survey.newRecord", { defaultValue: "Novo Levantamento" })}</Button>}
+          </div>
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader><TableRow>
+                <TableHead>{t("survey.table.areaPk", { defaultValue: "Área / PK" })}</TableHead>
+                <TableHead>{t("common.description")}</TableHead>
+                <TableHead>{t("common.date")}</TableHead>
+                <TableHead>{t("common.status")}</TableHead>
+                <TableHead>{t("common.actions")}</TableHead>
+              </TableRow></TableHeader>
+              <TableBody>
+                {filteredSurveys.map((s) => (
+                  <TableRow key={s.id}>
+                    <TableCell className="font-medium font-mono">{s.area_or_pk}</TableCell>
+                    <TableCell className="max-w-[300px] truncate text-muted-foreground">{s.description ?? "—"}</TableCell>
+                    <TableCell>{new Date(s.date).toLocaleDateString()}</TableCell>
+                    <TableCell>
+                      <Badge variant="secondary" className={cn("text-xs", SURVEY_STATUS_COLORS[s.status] ?? "")}>
+                        {t(`survey.status.${s.status}`, { defaultValue: s.status })}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex gap-1">
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditSurvey(s)}><Pencil className="h-3.5 w-3.5" /></Button>
+                        {canDelete && <DeleteButton onConfirm={() => handleDeleteSurvey(s.id)} />}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+                {filteredSurveys.length === 0 && <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-8">{t("common.noData")}</TableCell></TableRow>}
+              </TableBody>
+            </Table>
+          </div>
+        </TabsContent>
+
+        {/* ── B) Equipamentos ────────────────────────────────────────── */}
         <TabsContent value="equipment" className="space-y-4">
           <div className="flex justify-end"><Button onClick={handleNewEquipment}><Plus className="h-4 w-4 mr-1" />{t("topography.newEquipment")}</Button></div>
           <div className="rounded-md border">
@@ -233,7 +324,7 @@ export default function TopographyPage() {
                     <TableCell>{eq.calibration_valid_until || "—"}</TableCell>
                     <TableCell onClick={e => e.stopPropagation()}>
                       <div className="flex gap-1">
-                        <Button size="sm" variant="outline" onClick={() => handleAddCalibration(eq.id)}><Plus className="h-3 w-3 mr-1" />{t("topography.calibrations", { defaultValue: "Calibração" })}</Button>
+                        <Button size="sm" variant="outline" onClick={() => handleAddCalibration(eq.id)}><Plus className="h-3 w-3 mr-1" />{t("topography.calibrations")}</Button>
                         {isAdmin && <DeleteButton onConfirm={() => handleDeleteEquipment(eq.id)} />}
                       </div>
                     </TableCell>
@@ -245,6 +336,7 @@ export default function TopographyPage() {
           </div>
         </TabsContent>
 
+        {/* ── C) Pedidos ─────────────────────────────────────────────── */}
         <TabsContent value="requests" className="space-y-4">
           <div className="flex justify-end"><Button onClick={handleNewRequest}><Plus className="h-4 w-4 mr-1" />{t("topography.newRequest")}</Button></div>
           <div className="rounded-md border">
@@ -281,6 +373,7 @@ export default function TopographyPage() {
           </div>
         </TabsContent>
 
+        {/* ── D) Controlo Geométrico ─────────────────────────────────── */}
         <TabsContent value="controls" className="space-y-4">
           <div className="flex justify-end"><Button onClick={handleNewControl}><Plus className="h-4 w-4 mr-1" />{t("topography.newControl")}</Button></div>
           <div className="rounded-md border">
@@ -322,6 +415,8 @@ export default function TopographyPage() {
         </TabsContent>
       </Tabs>
 
+      {/* Dialogs */}
+      <SurveyFormDialog open={surveyDialogOpen} onOpenChange={setSurveyDialogOpen} record={editSurvey} onSuccess={() => { refetchSurveys(); setSurveyDialogOpen(false); }} />
       <EquipmentFormDialog open={eqDialogOpen} onOpenChange={setEqDialogOpen} projectId={activeProject.id} equipment={viewEquipment} onSuccess={() => { refetchEq(); setEqDialogOpen(false); }} />
       <CalibrationFormDialog open={calDialogOpen} onOpenChange={setCalDialogOpen} projectId={activeProject.id} equipmentId={calEquipmentId} onSuccess={() => { refetchCal(); refetchEq(); setCalDialogOpen(false); }} />
       <RequestFormDialog open={reqDialogOpen} onOpenChange={setReqDialogOpen} projectId={activeProject.id} editRequest={editRequest} onSuccess={() => { refetchReq(); setReqDialogOpen(false); }} />
