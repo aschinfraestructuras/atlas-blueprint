@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useProjectRole } from "@/hooks/useProjectRole";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { PageHeader } from "@/components/ui/page-header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,8 +10,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, AlertTriangle, CheckCircle, Clock, Crosshair, Wrench, FileText, Target } from "lucide-react";
+import { Plus, AlertTriangle, CheckCircle, Clock, Wrench, FileText, Target, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import {
   useTopographyEquipment,
   useCalibrations,
@@ -35,19 +40,39 @@ function CalibrationBadge({ status }: { status: string }) {
 }
 
 function StatusBadge({ status }: { status: string }) {
-  const map: Record<string, string> = {
-    pending: "secondary",
-    in_progress: "default",
-    completed: "outline",
-    cancelled: "destructive",
-  };
+  const map: Record<string, string> = { pending: "secondary", in_progress: "default", completed: "outline", cancelled: "destructive" };
   return <Badge variant={(map[status] || "secondary") as any}>{status}</Badge>;
+}
+
+function DeleteButton({ onConfirm, label }: { onConfirm: () => void; label?: string }) {
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive">
+          <Trash2 className="h-3.5 w-3.5" />
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Confirmar eliminação</AlertDialogTitle>
+          <AlertDialogDescription>
+            {label || "Este registo será eliminado permanentemente. Tem a certeza?"}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogAction onClick={onConfirm} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Eliminar</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
 }
 
 export default function TopographyPage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
   const { user } = useAuth();
+  const { isAdmin } = useProjectRole();
   const [activeTab, setActiveTab] = useState("equipment");
 
   const { data: equipment, loading: eqLoading, refetch: refetchEq } = useTopographyEquipment();
@@ -70,6 +95,30 @@ export default function TopographyPage() {
   const handleAddCalibration = (equipmentId: string) => {
     setCalEquipmentId(equipmentId);
     setCalDialogOpen(true);
+  };
+
+  const handleDeleteEquipment = async (id: string) => {
+    try {
+      await topographyEquipmentService.delete(id, activeProject.id);
+      toast.success("Equipamento eliminado");
+      refetchEq();
+    } catch { toast.error("Erro ao eliminar equipamento"); }
+  };
+
+  const handleDeleteRequest = async (id: string) => {
+    try {
+      await topographyRequestService.delete(id, activeProject.id);
+      toast.success("Pedido eliminado");
+      refetchReq();
+    } catch { toast.error("Erro ao eliminar pedido"); }
+  };
+
+  const handleDeleteControl = async (id: string) => {
+    try {
+      await topographyControlService.delete(id, activeProject.id);
+      toast.success("Controlo eliminado");
+      refetchCtrl();
+    } catch { toast.error("Erro ao eliminar controlo"); }
   };
 
   return (
@@ -106,25 +155,18 @@ export default function TopographyPage() {
           <TabsTrigger value="controls"><Target className="h-4 w-4 mr-1" />Controlo Geométrico</TabsTrigger>
         </TabsList>
 
-        {/* ─── Equipment Tab ─────────────────────────────────────── */}
+        {/* ─── Equipment Tab ─── */}
         <TabsContent value="equipment" className="space-y-4">
           <div className="flex justify-end">
-            <Button onClick={() => setEqDialogOpen(true)}>
-              <Plus className="h-4 w-4 mr-1" />Novo Equipamento
-            </Button>
+            <Button onClick={() => setEqDialogOpen(true)}><Plus className="h-4 w-4 mr-1" />Novo Equipamento</Button>
           </div>
           <div className="rounded-md border">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Código</TableHead>
-                  <TableHead>Tipo</TableHead>
-                  <TableHead>Marca/Modelo</TableHead>
-                  <TableHead>Nº Série</TableHead>
-                  <TableHead>Responsável</TableHead>
-                  <TableHead>Calibração</TableHead>
-                  <TableHead>Validade</TableHead>
-                  <TableHead>Ações</TableHead>
+                  <TableHead>Código</TableHead><TableHead>Tipo</TableHead><TableHead>Marca/Modelo</TableHead>
+                  <TableHead>Nº Série</TableHead><TableHead>Responsável</TableHead><TableHead>Calibração</TableHead>
+                  <TableHead>Validade</TableHead><TableHead>Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -138,9 +180,12 @@ export default function TopographyPage() {
                     <TableCell><CalibrationBadge status={eq.calibration_status} /></TableCell>
                     <TableCell>{eq.calibration_valid_until || "—"}</TableCell>
                     <TableCell>
-                      <Button size="sm" variant="outline" onClick={() => handleAddCalibration(eq.id)}>
-                        <Plus className="h-3 w-3 mr-1" />Calibração
-                      </Button>
+                      <div className="flex gap-1">
+                        <Button size="sm" variant="outline" onClick={() => handleAddCalibration(eq.id)}>
+                          <Plus className="h-3 w-3 mr-1" />Calibração
+                        </Button>
+                        {isAdmin && <DeleteButton onConfirm={() => handleDeleteEquipment(eq.id)} />}
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -152,23 +197,17 @@ export default function TopographyPage() {
           </div>
         </TabsContent>
 
-        {/* ─── Requests Tab ──────────────────────────────────────── */}
+        {/* ─── Requests Tab ─── */}
         <TabsContent value="requests" className="space-y-4">
           <div className="flex justify-end">
-            <Button onClick={() => setReqDialogOpen(true)}>
-              <Plus className="h-4 w-4 mr-1" />Novo Pedido
-            </Button>
+            <Button onClick={() => setReqDialogOpen(true)}><Plus className="h-4 w-4 mr-1" />Novo Pedido</Button>
           </div>
           <div className="rounded-md border">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Tipo</TableHead>
-                  <TableHead>Descrição</TableHead>
-                  <TableHead>Zona</TableHead>
-                  <TableHead>Data</TableHead>
-                  <TableHead>Prioridade</TableHead>
-                  <TableHead>Estado</TableHead>
+                  <TableHead>Tipo</TableHead><TableHead>Descrição</TableHead><TableHead>Zona</TableHead>
+                  <TableHead>Data</TableHead><TableHead>Prioridade</TableHead><TableHead>Estado</TableHead><TableHead>Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -180,35 +219,31 @@ export default function TopographyPage() {
                     <TableCell>{req.request_date}</TableCell>
                     <TableCell><Badge variant={req.priority === "urgent" ? "destructive" : "secondary"}>{req.priority}</Badge></TableCell>
                     <TableCell><StatusBadge status={req.status} /></TableCell>
+                    <TableCell>
+                      <DeleteButton onConfirm={() => handleDeleteRequest(req.id)} />
+                    </TableCell>
                   </TableRow>
                 ))}
                 {requests.length === 0 && (
-                  <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-8">Sem pedidos registados</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-8">Sem pedidos registados</TableCell></TableRow>
                 )}
               </TableBody>
             </Table>
           </div>
         </TabsContent>
 
-        {/* ─── Controls Tab ──────────────────────────────────────── */}
+        {/* ─── Controls Tab ─── */}
         <TabsContent value="controls" className="space-y-4">
           <div className="flex justify-end">
-            <Button onClick={() => setCtrlDialogOpen(true)}>
-              <Plus className="h-4 w-4 mr-1" />Novo Controlo
-            </Button>
+            <Button onClick={() => setCtrlDialogOpen(true)}><Plus className="h-4 w-4 mr-1" />Novo Controlo</Button>
           </div>
           <div className="rounded-md border">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Elemento</TableHead>
-                  <TableHead>Zona</TableHead>
-                  <TableHead>Tolerância</TableHead>
-                  <TableHead>Valor Medido</TableHead>
-                  <TableHead>Desvio</TableHead>
-                  <TableHead>Resultado</TableHead>
-                  <TableHead>Data</TableHead>
-                  <TableHead>Técnico</TableHead>
+                  <TableHead>Elemento</TableHead><TableHead>Zona</TableHead><TableHead>Tolerância</TableHead>
+                  <TableHead>Valor Medido</TableHead><TableHead>Desvio</TableHead><TableHead>Resultado</TableHead>
+                  <TableHead>Data</TableHead><TableHead>Técnico</TableHead><TableHead>Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -226,10 +261,13 @@ export default function TopographyPage() {
                     </TableCell>
                     <TableCell>{ctrl.execution_date}</TableCell>
                     <TableCell>{ctrl.technician || "—"}</TableCell>
+                    <TableCell>
+                      <DeleteButton onConfirm={() => handleDeleteControl(ctrl.id)} />
+                    </TableCell>
                   </TableRow>
                 ))}
                 {controls.length === 0 && (
-                  <TableRow><TableCell colSpan={8} className="text-center text-muted-foreground py-8">Sem controlos registados</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={9} className="text-center text-muted-foreground py-8">Sem controlos registados</TableCell></TableRow>
                 )}
               </TableBody>
             </Table>
@@ -238,32 +276,10 @@ export default function TopographyPage() {
       </Tabs>
 
       {/* Dialogs */}
-      <EquipmentFormDialog
-        open={eqDialogOpen}
-        onOpenChange={setEqDialogOpen}
-        projectId={activeProject.id}
-        onSuccess={() => { refetchEq(); setEqDialogOpen(false); }}
-      />
-      <CalibrationFormDialog
-        open={calDialogOpen}
-        onOpenChange={setCalDialogOpen}
-        projectId={activeProject.id}
-        equipmentId={calEquipmentId}
-        onSuccess={() => { refetchCal(); refetchEq(); setCalDialogOpen(false); }}
-      />
-      <RequestFormDialog
-        open={reqDialogOpen}
-        onOpenChange={setReqDialogOpen}
-        projectId={activeProject.id}
-        onSuccess={() => { refetchReq(); setReqDialogOpen(false); }}
-      />
-      <ControlFormDialog
-        open={ctrlDialogOpen}
-        onOpenChange={setCtrlDialogOpen}
-        projectId={activeProject.id}
-        equipment={equipment}
-        onSuccess={() => { refetchCtrl(); setCtrlDialogOpen(false); }}
-      />
+      <EquipmentFormDialog open={eqDialogOpen} onOpenChange={setEqDialogOpen} projectId={activeProject.id} onSuccess={() => { refetchEq(); setEqDialogOpen(false); }} />
+      <CalibrationFormDialog open={calDialogOpen} onOpenChange={setCalDialogOpen} projectId={activeProject.id} equipmentId={calEquipmentId} onSuccess={() => { refetchCal(); refetchEq(); setCalDialogOpen(false); }} />
+      <RequestFormDialog open={reqDialogOpen} onOpenChange={setReqDialogOpen} projectId={activeProject.id} onSuccess={() => { refetchReq(); setReqDialogOpen(false); }} />
+      <ControlFormDialog open={ctrlDialogOpen} onOpenChange={setCtrlDialogOpen} projectId={activeProject.id} equipment={equipment} onSuccess={() => { refetchCtrl(); setCtrlDialogOpen(false); }} />
     </div>
   );
 }

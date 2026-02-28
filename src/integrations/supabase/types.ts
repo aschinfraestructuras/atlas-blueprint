@@ -1499,6 +1499,133 @@ export type Database = {
           },
         ]
       }
+      rfi_messages: {
+        Row: {
+          attachment_url: string | null
+          created_at: string
+          id: string
+          message: string
+          rfi_id: string
+          user_id: string
+        }
+        Insert: {
+          attachment_url?: string | null
+          created_at?: string
+          id?: string
+          message: string
+          rfi_id: string
+          user_id: string
+        }
+        Update: {
+          attachment_url?: string | null
+          created_at?: string
+          id?: string
+          message?: string
+          rfi_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rfi_messages_rfi_id_fkey"
+            columns: ["rfi_id"]
+            isOneToOne: false
+            referencedRelation: "rfis"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rfis: {
+        Row: {
+          code: string | null
+          created_at: string
+          created_by: string
+          deadline: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          description: string | null
+          id: string
+          is_deleted: boolean
+          nc_id: string | null
+          priority: string
+          project_id: string
+          recipient: string | null
+          status: string
+          subject: string
+          updated_at: string
+          work_item_id: string | null
+          zone: string | null
+        }
+        Insert: {
+          code?: string | null
+          created_at?: string
+          created_by: string
+          deadline?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          id?: string
+          is_deleted?: boolean
+          nc_id?: string | null
+          priority?: string
+          project_id: string
+          recipient?: string | null
+          status?: string
+          subject: string
+          updated_at?: string
+          work_item_id?: string | null
+          zone?: string | null
+        }
+        Update: {
+          code?: string | null
+          created_at?: string
+          created_by?: string
+          deadline?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          id?: string
+          is_deleted?: boolean
+          nc_id?: string | null
+          priority?: string
+          project_id?: string
+          recipient?: string | null
+          status?: string
+          subject?: string
+          updated_at?: string
+          work_item_id?: string | null
+          zone?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rfis_nc_id_fkey"
+            columns: ["nc_id"]
+            isOneToOne: false
+            referencedRelation: "non_conformities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rfis_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rfis_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "rfis_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       roles: {
         Row: {
           code: string
