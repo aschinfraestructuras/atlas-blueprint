@@ -81,7 +81,9 @@
     "subcontractors": "Subcontratistas",
     "workItems": "Actividades",
     "ppi": "Inspecciones PPI",
-    "health": "Salud del Sistema"
+    "health": "Salud del Sistema",
+    "mapMas": "Aprobación MAP/MAS",
+    "expirations": "Expiraciones"
   },
   "topbar": {
     "language": "Idioma",
@@ -1971,6 +1973,55 @@
   },
   "emptyState": {
     "planning": { "wbs": "Ninguna WBS definida.", "activities": "Ninguna actividad planificada." }
+  },
+  "mapMas": {
+    "title": "Aprobación de Materiales (MAP/MAS)",
+    "subtitle": "Envíos de aprobación de materiales con flujo de trabajo y versionado.",
+    "newSubmission": "Nuevo Envío",
+    "searchPlaceholder": "Buscar MAP/MAS…",
+    "empty": "No se encontraron envíos MAP/MAS.",
+    "filters": { "allStatuses": "Todos los estados" },
+    "table": { "code": "Código", "title": "Título", "type": "Tipo" },
+    "actions": { "submit": "Enviar", "approve": "Aprobar", "reject": "Rechazar" },
+    "form": {
+      "titleCreate": "Nuevo Envío MAP/MAS",
+      "titleEdit": "Editar MAP/MAS",
+      "title": "Título",
+      "material": "Material",
+      "selectMaterial": "Seleccionar material…",
+      "submissionType": "Tipo de Envío",
+      "supplier": "Proveedor",
+      "subcontractor": "Subcontratista",
+      "workItem": "Actividad",
+      "zone": "Zona",
+      "pk": "PK",
+      "lotRef": "Lote/Ref.",
+      "normativeRefs": "Referencias Normativas",
+      "acceptanceCriteria": "Criterios de Aceptación",
+      "deadline": "Plazo",
+      "observations": "Observaciones",
+      "createBtn": "Crear Envío"
+    },
+    "toast": {
+      "created": "Envío MAP/MAS creado.",
+      "updated": "MAP/MAS actualizado.",
+      "error": "Error en operación MAP/MAS.",
+      "submitSuccess": "MAP/MAS enviado para revisión.",
+      "approveSuccess": "MAP/MAS aprobado.",
+      "rejectSuccess": "MAP/MAS rechazado."
+    }
+  },
+  "expirations": {
+    "title": "Centro de Expiraciones",
+    "subtitle": "Documentos y certificados que expiran o ya expiraron (hasta 90 días).",
+    "empty": "No se encontraron elementos por expirar.",
+    "summary": { "total": "Total", "expired": "Expirados", "expiring": "Por Expirar", "domains": "Dominios" },
+    "tabs": { "all": "Todos", "suppliers": "Proveedores", "subcontractors": "Subcontratistas", "calibrations": "Calibraciones", "materials": "Materiales" },
+    "filters": { "allUrgency": "Toda Urgencia", "expired": "Expirados", "7days": "≤ 7 días", "30days": "≤ 30 días", "60days": "≤ 60 días", "90days": "≤ 90 días" },
+    "table": { "entity": "Entidad", "document": "Documento", "validTo": "Validez", "days": "Días" }
+  },
+  "projects": {
+    "archivedBanner": "Proyecto archivado — solo lectura. Reactive el proyecto para realizar cambios."
   }
 }
 

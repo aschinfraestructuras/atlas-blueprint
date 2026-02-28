@@ -102,6 +102,17 @@ export default function ProjectsPage() {
           if (others.length > 0) setActiveProject(others[0]);
         }
       }
+      // Audit log
+      const { auditService } = await import("@/lib/services/auditService");
+      await auditService.log({
+        projectId: project.id,
+        entity: "projects",
+        entityId: project.id,
+        action: "STATUS_CHANGE",
+        module: "projects",
+        description: project.status === "archived" ? "Project reactivated" : "Project archived",
+        diff: { from: project.status, to: project.status === "archived" ? "active" : "archived" },
+      });
       refetch();
     } catch (err) {
       toast({

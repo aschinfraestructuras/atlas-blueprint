@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { AppSidebar } from "./AppSidebar";
 import { TopBar } from "./TopBar";
+import { useArchivedProject } from "@/hooks/useArchivedProject";
+import { ArchivedBanner } from "@/components/ArchivedBanner";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -9,6 +11,7 @@ interface MainLayoutProps {
 export function MainLayout({ children }: MainLayoutProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const isArchived = useArchivedProject();
 
   // Auto-collapse sidebar below lg breakpoint on mount
   useEffect(() => {
@@ -36,6 +39,7 @@ export function MainLayout({ children }: MainLayoutProps) {
         <TopBar onMobileMenuOpen={() => setMobileOpen(true)} />
         <main className="flex-1 overflow-y-auto bg-muted/20">
           <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+            {isArchived && <ArchivedBanner />}
             {children}
           </div>
         </main>
