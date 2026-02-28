@@ -81,7 +81,9 @@
     "subcontractors": "Subempreiteiros",
     "workItems": "Atividades",
     "ppi": "Inspeções PPI",
-    "health": "Saúde do Sistema"
+    "health": "Saúde do Sistema",
+    "mapMas": "Aprovação MAP/MAS",
+    "expirations": "Expirações"
   },
   "topbar": {
     "language": "Idioma",
@@ -2104,6 +2106,78 @@
       "wbs": "Nenhuma WBS definida. Crie a estrutura de decomposição do trabalho.",
       "activities": "Nenhuma atividade planeada. Crie atividades ligadas a WBS e atividades de campo."
     }
+  },
+  "mapMas": {
+    "title": "Aprovação de Materiais (MAP/MAS)",
+    "subtitle": "Submissões de aprovação de materiais com workflow e versionamento.",
+    "newSubmission": "Nova Submissão",
+    "searchPlaceholder": "Pesquisar MAP/MAS…",
+    "empty": "Nenhuma submissão MAP/MAS encontrada.",
+    "filters": { "allStatuses": "Todos os estados" },
+    "table": { "code": "Código", "title": "Título", "type": "Tipo" },
+    "actions": { "submit": "Submeter", "approve": "Aprovar", "reject": "Rejeitar" },
+    "form": {
+      "titleCreate": "Nova Submissão MAP/MAS",
+      "titleEdit": "Editar MAP/MAS",
+      "title": "Título",
+      "material": "Material",
+      "selectMaterial": "Selecionar material…",
+      "submissionType": "Tipo de Submissão",
+      "supplier": "Fornecedor",
+      "subcontractor": "Subempreiteiro",
+      "workItem": "Atividade",
+      "zone": "Zona",
+      "pk": "PK",
+      "lotRef": "Lote/Ref.",
+      "normativeRefs": "Referências Normativas",
+      "acceptanceCriteria": "Critérios de Aceitação",
+      "deadline": "Prazo",
+      "observations": "Observações",
+      "createBtn": "Criar Submissão"
+    },
+    "toast": {
+      "created": "Submissão MAP/MAS criada.",
+      "updated": "MAP/MAS atualizada.",
+      "error": "Erro na operação MAP/MAS.",
+      "submitSuccess": "MAP/MAS submetida para revisão.",
+      "approveSuccess": "MAP/MAS aprovada.",
+      "rejectSuccess": "MAP/MAS rejeitada."
+    }
+  },
+  "expirations": {
+    "title": "Centro de Expirações",
+    "subtitle": "Documentos e certificados a expirar ou já expirados (até 90 dias).",
+    "empty": "Nenhum item a expirar encontrado.",
+    "summary": {
+      "total": "Total",
+      "expired": "Expirados",
+      "expiring": "A Expirar",
+      "domains": "Domínios"
+    },
+    "tabs": {
+      "all": "Todos",
+      "suppliers": "Fornecedores",
+      "subcontractors": "Subempreiteiros",
+      "calibrations": "Calibrações",
+      "materials": "Materiais"
+    },
+    "filters": {
+      "allUrgency": "Toda a Urgência",
+      "expired": "Expirados",
+      "7days": "≤ 7 dias",
+      "30days": "≤ 30 dias",
+      "60days": "≤ 60 dias",
+      "90days": "≤ 90 dias"
+    },
+    "table": {
+      "entity": "Entidade",
+      "document": "Documento",
+      "validTo": "Validade",
+      "days": "Dias"
+    }
+  },
+  "projects": {
+    "archivedBanner": "Projeto arquivado — apenas leitura. Reative o projeto para efetuar alterações."
   }
 }
 
