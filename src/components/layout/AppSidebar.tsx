@@ -5,7 +5,7 @@ import {
   LayoutDashboard, FolderKanban, FileText, Truck, Package,
   FlaskConical, AlertTriangle, ScrollText, Settings,
   ShieldCheck, ChevronLeft, ChevronRight, X,
-  Inbox, BookOpen, Map, HardHat, Construction, ClipboardCheck,
+  Inbox, BookOpen, Map, HardHat, Construction, ClipboardCheck, Crosshair,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { cn } from "@/lib/utils";
@@ -54,6 +54,7 @@ const NAV_SECTIONS: SidebarSection[] = [
     sectionKey: "fieldSection",
     items: [
       { labelKey: "nav.survey",         url: "/survey",          icon: Map },
+      { labelKey: "nav.topography",    url: "/topography",      icon: Crosshair },
       { labelKey: "nav.subcontractors", url: "/subcontractors",  icon: HardHat },
       { labelKey: "nav.workItems",      url: "/work-items",      icon: Construction },
       { labelKey: "nav.ppi",            url: "/ppi",             icon: ClipboardCheck },

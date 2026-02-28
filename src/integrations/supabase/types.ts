@@ -392,6 +392,86 @@ export type Database = {
           },
         ]
       }
+      equipment_calibrations: {
+        Row: {
+          approved_by: string | null
+          certificate_number: string | null
+          certifying_entity: string
+          created_at: string
+          created_by: string | null
+          document_id: string | null
+          equipment_id: string
+          id: string
+          issue_date: string
+          notes: string | null
+          project_id: string
+          status: string
+          updated_at: string
+          valid_until: string
+        }
+        Insert: {
+          approved_by?: string | null
+          certificate_number?: string | null
+          certifying_entity: string
+          created_at?: string
+          created_by?: string | null
+          document_id?: string | null
+          equipment_id: string
+          id?: string
+          issue_date?: string
+          notes?: string | null
+          project_id: string
+          status?: string
+          updated_at?: string
+          valid_until: string
+        }
+        Update: {
+          approved_by?: string | null
+          certificate_number?: string | null
+          certifying_entity?: string
+          created_at?: string
+          created_by?: string | null
+          document_id?: string | null
+          equipment_id?: string
+          id?: string
+          issue_date?: string
+          notes?: string | null
+          project_id?: string
+          status?: string
+          updated_at?: string
+          valid_until?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "equipment_calibrations_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "equipment_calibrations_equipment_id_fkey"
+            columns: ["equipment_id"]
+            isOneToOne: false
+            referencedRelation: "topography_equipment"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "equipment_calibrations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "equipment_calibrations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
       material_documents: {
         Row: {
           created_at: string
@@ -2029,6 +2109,264 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "view_dashboard_summary"
             referencedColumns: ["project_id"]
+          },
+        ]
+      }
+      topography_controls: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          deviation: string | null
+          element: string
+          equipment_id: string
+          execution_date: string
+          id: string
+          measured_value: string | null
+          nc_id: string | null
+          notes: string | null
+          ppi_id: string | null
+          project_id: string
+          result: string
+          technician: string | null
+          test_id: string | null
+          tolerance: string | null
+          updated_at: string
+          work_item_id: string | null
+          zone: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          deviation?: string | null
+          element: string
+          equipment_id: string
+          execution_date?: string
+          id?: string
+          measured_value?: string | null
+          nc_id?: string | null
+          notes?: string | null
+          ppi_id?: string | null
+          project_id: string
+          result?: string
+          technician?: string | null
+          test_id?: string | null
+          tolerance?: string | null
+          updated_at?: string
+          work_item_id?: string | null
+          zone?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          deviation?: string | null
+          element?: string
+          equipment_id?: string
+          execution_date?: string
+          id?: string
+          measured_value?: string | null
+          nc_id?: string | null
+          notes?: string | null
+          ppi_id?: string | null
+          project_id?: string
+          result?: string
+          technician?: string | null
+          test_id?: string | null
+          tolerance?: string | null
+          updated_at?: string
+          work_item_id?: string | null
+          zone?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "topography_controls_equipment_id_fkey"
+            columns: ["equipment_id"]
+            isOneToOne: false
+            referencedRelation: "topography_equipment"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "topography_controls_nc_id_fkey"
+            columns: ["nc_id"]
+            isOneToOne: false
+            referencedRelation: "non_conformities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "topography_controls_ppi_id_fkey"
+            columns: ["ppi_id"]
+            isOneToOne: false
+            referencedRelation: "ppi_instances"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "topography_controls_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "topography_controls_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "topography_controls_test_id_fkey"
+            columns: ["test_id"]
+            isOneToOne: false
+            referencedRelation: "test_results"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "topography_controls_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      topography_equipment: {
+        Row: {
+          brand: string | null
+          calibration_status: string
+          calibration_valid_until: string | null
+          code: string
+          created_at: string
+          created_by: string | null
+          current_location: string | null
+          equipment_type: string
+          id: string
+          model: string | null
+          project_id: string
+          responsible: string | null
+          serial_number: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          brand?: string | null
+          calibration_status?: string
+          calibration_valid_until?: string | null
+          code: string
+          created_at?: string
+          created_by?: string | null
+          current_location?: string | null
+          equipment_type?: string
+          id?: string
+          model?: string | null
+          project_id: string
+          responsible?: string | null
+          serial_number?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          brand?: string | null
+          calibration_status?: string
+          calibration_valid_until?: string | null
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          current_location?: string | null
+          equipment_type?: string
+          id?: string
+          model?: string | null
+          project_id?: string
+          responsible?: string | null
+          serial_number?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "topography_equipment_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "topography_equipment_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
+      topography_requests: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string
+          id: string
+          notes: string | null
+          priority: string
+          project_id: string
+          request_date: string
+          request_type: string
+          responsible: string | null
+          status: string
+          updated_at: string
+          work_item_id: string | null
+          zone: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description: string
+          id?: string
+          notes?: string | null
+          priority?: string
+          project_id: string
+          request_date?: string
+          request_type?: string
+          responsible?: string | null
+          status?: string
+          updated_at?: string
+          work_item_id?: string | null
+          zone?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          id?: string
+          notes?: string | null
+          priority?: string
+          project_id?: string
+          request_date?: string
+          request_type?: string
+          responsible?: string | null
+          status?: string
+          updated_at?: string
+          work_item_id?: string | null
+          zone?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "topography_requests_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "topography_requests_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "topography_requests_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
           },
         ]
       }
