@@ -9,6 +9,7 @@ import { ncService } from "@/lib/services/ncService";
 import type { NonConformity } from "@/lib/services/ncService";
 import { toast } from "@/hooks/use-toast";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
+import { withOtherRefinement } from "@/components/ui/select-with-other";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
@@ -48,6 +49,8 @@ const schema = (t: (k: string) => string) =>
     preventive_action:   z.string().trim().max(2000).optional().or(z.literal("")),
     verification_method: z.string().trim().max(500).optional().or(z.literal("")),
     verification_result: z.string().trim().max(500).optional().or(z.literal("")),
+  }).superRefine((val, ctx) => {
+    withOtherRefinement(val, ctx, "category", "category_outro", t("nc.form.validation.categoryOutroRequired"));
   });
 
 type FormValues = z.infer<ReturnType<typeof schema>>;

@@ -22,6 +22,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, X, Plus } from "lucide-react";
+import { withOtherRefinement } from "@/components/ui/select-with-other";
 
 const schema = (t: (k: string) => string) =>
   z.object({
@@ -38,6 +39,10 @@ const schema = (t: (k: string) => string) =>
     acceptance_criteria:z.string().optional().or(z.literal("")),
     description:        z.string().optional().or(z.literal("")),
     unit:               z.string().optional().or(z.literal("")),
+  }).superRefine((val, ctx) => {
+    withOtherRefinement(val, ctx, "disciplina", "disciplina_outro", t("ppi.templates.validation.disciplinaOutroRequired"));
+    withOtherRefinement(val, ctx, "material", "material_outro", t("nc.form.validation.categoryOutroRequired"), "outros");
+    withOtherRefinement(val, ctx, "laboratorio", "laboratorio_outro", t("nc.form.validation.categoryOutroRequired"), "outros");
   });
 
 type FormValues = z.infer<ReturnType<typeof schema>>;

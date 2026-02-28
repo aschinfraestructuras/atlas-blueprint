@@ -1102,7 +1102,8 @@
         "titleRequired": "O título é obrigatório.",
         "descriptionRequired": "A descrição é obrigatória.",
         "severityRequired": "A gravidade é obrigatória.",
-        "correctiveActionRequired": "A ação corretiva é obrigatória para fechar a NC."
+        "correctiveActionRequired": "A ação corretiva é obrigatória para fechar a NC.",
+        "categoryOutroRequired": "Especifique a categoria quando seleciona «Outros»."
       }
     },
     "toast": {
@@ -1839,6 +1840,13 @@
       "noProjectsEmpty": "Não está associado a nenhum projeto.",
       "noProjectsEmptySub": "Contacte um administrador para obter acesso a um projeto ou crie um novo.",
       "requestAccess": "Pedir acesso"
+    },
+    "password": {
+      "newPasswordLabel": "Nova password",
+      "newPasswordPlaceholder": "Mínimo 6 caracteres",
+      "changeBtn": "Alterar password",
+      "success": "Password alterada com sucesso.",
+      "error": "Erro ao alterar password."
     }
   }
 }
