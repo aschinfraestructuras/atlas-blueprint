@@ -74,7 +74,8 @@
     "auditLog": "Registo de Auditoria",
     "settings": "Definições",
     "technicalOffice": "Escritório Técnico",
-    "plans": "Planeamento",
+    "plans": "Planos",
+    "planning": "Planeamento",
     "survey": "Levantamentos",
     "topography": "Topografia",
     "subcontractors": "Subempreiteiros",
@@ -1866,6 +1867,69 @@
       "valid": "Válido",
       "expiring_soon": "Expira em breve",
       "expired": "Expirado"
+    }
+  },
+  "planning": {
+    "title": "Planeamento Estruturado",
+    "subtitle": "WBS hierárquica, atividades planeadas e bloqueios inteligentes",
+    "tabs": {
+      "activities": "Atividades"
+    },
+    "wbs": {
+      "add": "Nova WBS",
+      "createTitle": "Criar Nó WBS",
+      "editTitle": "Editar Nó WBS",
+      "code": "Código WBS",
+      "parent": "Nó Pai",
+      "zone": "Zona",
+      "responsible": "Responsável"
+    },
+    "activity": {
+      "add": "Nova Atividade",
+      "createTitle": "Criar Atividade",
+      "editTitle": "Editar Atividade"
+    },
+    "fields": {
+      "plannedStart": "Início Planeado",
+      "plannedEnd": "Fim Planeado",
+      "actualStart": "Início Real",
+      "actualEnd": "Fim Real",
+      "progress": "Progresso",
+      "zone": "Zona",
+      "dates": "Datas",
+      "requirements": "Requisitos",
+      "workItem": "Atividade (WI)",
+      "subcontractor": "Subempreiteiro",
+      "constraints": "Restrições",
+      "constraintsPlaceholder": "Ex: Depende de aprovação de material, acesso condicionado…",
+      "reqTopography": "Requer topografia",
+      "reqTests": "Requer ensaios",
+      "reqPpi": "Requer PPI"
+    },
+    "status": {
+      "planned": "Planeado",
+      "in_progress": "Em curso",
+      "blocked": "Bloqueado",
+      "completed": "Concluído",
+      "cancelled": "Cancelado"
+    },
+    "toast": {
+      "wbsCreated": "WBS criado com sucesso",
+      "wbsUpdated": "WBS atualizado",
+      "activityCreated": "Atividade criada com sucesso",
+      "activityUpdated": "Atividade atualizada"
+    },
+    "completion": {
+      "title": "Verificar Conclusão",
+      "runCheck": "Executar Verificação",
+      "canComplete": "Atividade pode ser concluída — sem bloqueios.",
+      "blocked": "Atividade NÃO pode ser concluída:"
+    }
+  },
+  "emptyState": {
+    "planning": {
+      "wbs": "Nenhuma WBS definida. Crie a estrutura de decomposição do trabalho.",
+      "activities": "Nenhuma atividade planeada. Crie atividades ligadas a WBS e atividades de campo."
     }
   }
 }

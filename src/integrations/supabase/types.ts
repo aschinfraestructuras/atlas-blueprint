@@ -818,6 +818,178 @@ export type Database = {
           },
         ]
       }
+      planning_activities: {
+        Row: {
+          actual_end: string | null
+          actual_start: string | null
+          constraints_text: string | null
+          created_at: string
+          created_by: string | null
+          description: string
+          id: string
+          planned_end: string | null
+          planned_start: string | null
+          progress_pct: number
+          project_id: string
+          requires_ppi: boolean
+          requires_tests: boolean
+          requires_topography: boolean
+          status: string
+          subcontractor_id: string | null
+          updated_at: string
+          wbs_id: string | null
+          work_item_id: string | null
+          zone: string | null
+        }
+        Insert: {
+          actual_end?: string | null
+          actual_start?: string | null
+          constraints_text?: string | null
+          created_at?: string
+          created_by?: string | null
+          description: string
+          id?: string
+          planned_end?: string | null
+          planned_start?: string | null
+          progress_pct?: number
+          project_id: string
+          requires_ppi?: boolean
+          requires_tests?: boolean
+          requires_topography?: boolean
+          status?: string
+          subcontractor_id?: string | null
+          updated_at?: string
+          wbs_id?: string | null
+          work_item_id?: string | null
+          zone?: string | null
+        }
+        Update: {
+          actual_end?: string | null
+          actual_start?: string | null
+          constraints_text?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          id?: string
+          planned_end?: string | null
+          planned_start?: string | null
+          progress_pct?: number
+          project_id?: string
+          requires_ppi?: boolean
+          requires_tests?: boolean
+          requires_topography?: boolean
+          status?: string
+          subcontractor_id?: string | null
+          updated_at?: string
+          wbs_id?: string | null
+          work_item_id?: string | null
+          zone?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "planning_activities_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planning_activities_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "planning_activities_subcontractor_id_fkey"
+            columns: ["subcontractor_id"]
+            isOneToOne: false
+            referencedRelation: "subcontractors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planning_activities_wbs_id_fkey"
+            columns: ["wbs_id"]
+            isOneToOne: false
+            referencedRelation: "planning_wbs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planning_activities_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      planning_wbs: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string
+          id: string
+          parent_id: string | null
+          planned_end: string | null
+          planned_start: string | null
+          project_id: string
+          responsible: string | null
+          updated_at: string
+          wbs_code: string
+          zone: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description: string
+          id?: string
+          parent_id?: string | null
+          planned_end?: string | null
+          planned_start?: string | null
+          project_id: string
+          responsible?: string | null
+          updated_at?: string
+          wbs_code: string
+          zone?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          id?: string
+          parent_id?: string | null
+          planned_end?: string | null
+          planned_start?: string | null
+          project_id?: string
+          responsible?: string | null
+          updated_at?: string
+          wbs_code?: string
+          zone?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "planning_wbs_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "planning_wbs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planning_wbs_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planning_wbs_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
       plans: {
         Row: {
           created_at: string
@@ -2864,6 +3036,10 @@ export type Database = {
           test_code: string
           test_name: string
         }[]
+      }
+      fn_check_activity_completion: {
+        Args: { p_activity_id: string }
+        Returns: Json
       }
       fn_claim_my_pending_invites: { Args: never; Returns: Json }
       fn_create_document: {
