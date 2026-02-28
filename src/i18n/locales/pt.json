@@ -2178,6 +2178,59 @@
   },
   "projects": {
     "archivedBanner": "Projeto arquivado — apenas leitura. Reative o projeto para efetuar alterações."
+  },
+  "nav": {
+    "qcReport": "Relatório QC"
+  },
+  "topbar": {
+    "theme": "Tema",
+    "themeLight": "Claro",
+    "themeDark": "Escuro",
+    "themeSystem": "Sistema"
+  },
+  "qcReport": {
+    "module": "Relatórios",
+    "title": "Relatório QC",
+    "subtitle": "Gerar relatório de controlo de qualidade semanal ou mensal",
+    "params": "Parâmetros do Relatório",
+    "startDate": "Data Início",
+    "endDate": "Data Fim",
+    "type": "Tipo",
+    "weekly": "Semanal",
+    "monthly": "Mensal",
+    "generate": "Gerar PDF",
+    "pdfTitle": "Relatório QC",
+    "toast": {
+      "generated": "Relatório QC gerado com sucesso.",
+      "error": "Erro ao gerar relatório."
+    },
+    "kpi": {
+      "testPass": "Ensaios Conformes",
+      "testFail": "Ensaios Não Conformes",
+      "testPending": "Ensaios Pendentes",
+      "ncOpen": "NC Abertas",
+      "ncClosed": "NC Fechadas (período)",
+      "docsApproved": "Docs Aprovados",
+      "docsReview": "Docs em Revisão",
+      "expiring": "Itens a Expirar (30d)",
+      "period": "Período"
+    },
+    "sections": {
+      "criticalNc": "NCs Críticas (Top 10)",
+      "failedTests": "Ensaios Não Conformes",
+      "expiredCals": "Calibrações Expiradas / A Expirar"
+    },
+    "signature": {
+      "title": "Assinatura Simples",
+      "name": "Gerado por",
+      "timestamp": "Data/Hora",
+      "checksum": "Checksum"
+    }
+  },
+  "globalSearch": {
+    "title": "Pesquisa Global",
+    "placeholder": "Pesquisar por código, nome, referência…",
+    "noResults": "Sem resultados."
   }
 }
 

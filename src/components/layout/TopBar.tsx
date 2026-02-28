@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProject } from "@/contexts/ProjectContext";
 import { useProjectRole } from "@/hooks/useProjectRole";
+import { useTheme } from "@/components/theme/ThemeProvider";
+import { GlobalSearchDialog } from "@/components/search/GlobalSearchDialog";
 import {
   LogOut,
   User,
@@ -12,6 +14,10 @@ import {
   Building2,
   Check,
   Loader2,
+  Search,
+  Sun,
+  Moon,
+  Monitor,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -38,12 +44,28 @@ export function TopBar({ onMobileMenuOpen }: TopBarProps) {
   const { user, signOut } = useAuth();
   const { projects, activeProject, setActiveProject, loading: projectsLoading } = useProject();
   const { role } = useProjectRole();
+  const { theme, setTheme } = useTheme();
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  // ⌘K / Ctrl+K shortcut
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
 
   // Only show active (non-archived) projects in the selector
   const activeProjects = projects.filter((p) => p.status !== "archived");
 
   const currentLang = LANGUAGES.find((l) => l.code === i18n.language) ?? LANGUAGES[0];
   const initials = user?.email?.slice(0, 2).toUpperCase() ?? "—";
+
+  const themeIcon = theme === "dark" ? Moon : theme === "light" ? Sun : Monitor;
 
   return (
     <header className="h-14 flex items-center gap-3 border-b border-border bg-background/95 backdrop-blur-sm px-4 flex-shrink-0 shadow-[0_1px_12px_hsl(var(--foreground)/0.06)] z-10">
@@ -120,6 +142,46 @@ export function TopBar({ onMobileMenuOpen }: TopBarProps) {
 
       {/* Spacer */}
       <div className="flex-1" />
+
+      {/* Global search */}
+      <Button
+        variant="ghost"
+        size="sm"
+        className="gap-1.5 h-8 text-xs text-muted-foreground px-2.5"
+        onClick={() => setSearchOpen(true)}
+      >
+        <Search className="h-3.5 w-3.5" />
+        <span className="hidden sm:inline">{t("common.search")}</span>
+        <kbd className="hidden md:inline-flex h-5 items-center gap-0.5 rounded border border-border bg-muted px-1.5 text-[10px] font-mono text-muted-foreground">
+          ⌘K
+        </kbd>
+      </Button>
+      <GlobalSearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
+
+      {/* Theme toggle */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
+            {theme === "dark" ? <Moon className="h-3.5 w-3.5" /> : theme === "light" ? <Sun className="h-3.5 w-3.5" /> : <Monitor className="h-3.5 w-3.5" />}
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-36">
+          <DropdownMenuLabel className="text-xs text-muted-foreground">{t("topbar.theme", { defaultValue: "Tema" })}</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => setTheme("light")} className="gap-2 text-sm">
+            <Sun className="h-3.5 w-3.5" /> {t("topbar.themeLight", { defaultValue: "Claro" })}
+            {theme === "light" && <Check className="h-3.5 w-3.5 text-primary ml-auto" />}
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setTheme("dark")} className="gap-2 text-sm">
+            <Moon className="h-3.5 w-3.5" /> {t("topbar.themeDark", { defaultValue: "Escuro" })}
+            {theme === "dark" && <Check className="h-3.5 w-3.5 text-primary ml-auto" />}
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setTheme("system")} className="gap-2 text-sm">
+            <Monitor className="h-3.5 w-3.5" /> {t("topbar.themeSystem", { defaultValue: "Sistema" })}
+            {theme === "system" && <Check className="h-3.5 w-3.5 text-primary ml-auto" />}
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
 
       {/* Language switcher */}
       <DropdownMenu>

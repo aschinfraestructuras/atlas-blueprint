@@ -41,7 +41,8 @@ import PlanningPage from "./pages/PlanningPage";
 import ActivityDetailPage from "./pages/ActivityDetailPage";
 import MapMasPage from "./pages/MapMasPage";
 import ExpirationsPage from "./pages/ExpirationsPage";
-
+import QCReportPage from "./pages/QCReportPage";
+import { ThemeProvider } from "@/components/theme/ThemeProvider";
 const queryClient = new QueryClient();
 
 function ProtectedLayout({ children }: { children: React.ReactNode }) {
@@ -54,6 +55,7 @@ function ProtectedLayout({ children }: { children: React.ReactNode }) {
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
+    <ThemeProvider>
     <TooltipProvider>
       <Toaster />
       <Sonner />
@@ -95,6 +97,7 @@ const App = () => (
               <Route path="/materials/:id" element={<ProtectedLayout><MaterialDetailPage /></ProtectedLayout>} />
               <Route path="/materials/map-mas" element={<ProtectedLayout><MapMasPage /></ProtectedLayout>} />
               <Route path="/expirations" element={<ProtectedLayout><ExpirationsPage /></ProtectedLayout>} />
+              <Route path="/reports/qc" element={<ProtectedLayout><QCReportPage /></ProtectedLayout>} />
               <Route path="/topography" element={<ProtectedLayout><TopographyPage /></ProtectedLayout>} />
               <Route path="/planning" element={<ProtectedLayout><PlanningPage /></ProtectedLayout>} />
               <Route path="/planning/activities/:id" element={<ProtectedLayout><ActivityDetailPage /></ProtectedLayout>} />
@@ -107,6 +110,7 @@ const App = () => (
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 

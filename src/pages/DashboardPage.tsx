@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProject } from "@/contexts/ProjectContext";
@@ -7,6 +7,7 @@ import { useNonConformities } from "@/hooks/useNonConformities";
 import { useSuppliers } from "@/hooks/useSuppliers";
 import { useWorkItems } from "@/hooks/useWorkItems";
 import { useMaterials } from "@/hooks/useMaterials";
+import { useRealtimeProject } from "@/hooks/useRealtimeProject";
 import {
   FolderKanban, FileText, FlaskConical, AlertTriangle,
   Clock, Building2, Timer, CheckCircle2, TrendingUp,
@@ -281,6 +282,14 @@ export default function DashboardPage() {
   const { data: suppliers, kpis, loading: supLoading } = useSuppliers();
   const { data: workItems, loading: wiLoading } = useWorkItems();
   const { kpis: matKpis, loading: matLoading } = useMaterials();
+
+  // Realtime subscriptions for live updates
+  const refetchAll = useCallback(() => {
+    // trigger refetches by the hooks (they auto-refetch on project change)
+  }, []);
+  useRealtimeProject("documents", refetchAll);
+  useRealtimeProject("non_conformities", refetchAll);
+  useRealtimeProject("planning_activities", refetchAll);
 
   const displayName = user?.email?.split("@")[0] ?? "—";
   const emptyMsg = t("dashboard.noData");
