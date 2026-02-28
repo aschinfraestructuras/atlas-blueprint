@@ -1414,6 +1414,7 @@
         "ppi":         "Inspecciones PPI",
         "tests":       "Ensayos",
         "ncs":         "No Conformidades",
+        "planning":    "Planificación",
         "attachments": "Adjuntos"
       },
       "ppiTab": {

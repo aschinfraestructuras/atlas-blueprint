@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import {
   ArrowLeft, Construction, FlaskConical, AlertTriangle, Paperclip,
   Pencil, Calendar, MapPin, ClipboardCheck, Plus, Eye, FileDown, FileText,
-  CheckCircle2, XCircle, Clock, Crosshair, Target, Map,
+  CheckCircle2, XCircle, Clock, Crosshair, Target, Map, ListTodo,
 } from "lucide-react";
 import {
   exportWorkItemTestsPdf,
@@ -12,7 +12,7 @@ import {
 } from "@/lib/services/testExportService";
 import { workItemService, formatPk, type WorkItem } from "@/lib/services/workItemService";
 import { ppiService, type PpiInstanceStatus } from "@/lib/services/ppiService";
-import { exportWorkItemPdf, type WorkItemForExport } from "@/lib/services/workItemExportService";
+import { exportWorkItemConsolidatedPdf, type WorkItemForExport, type ConsolidatedExportData } from "@/lib/services/workItemExportService";
 import { testService, type TestResult } from "@/lib/services/testService";
 import { WorkItemFormDialog } from "@/components/work-items/WorkItemFormDialog";
 import { PPIStatusBadge } from "@/components/ppi/PPIStatusBadge";
@@ -31,6 +31,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { topographyRequestService, topographyControlService, type TopographyRequest, type TopographyControl } from "@/lib/services/topographyService";
 import { surveyService, type SurveyRecord } from "@/lib/services/surveyService";
+import { planningService, type Activity } from "@/lib/services/planningService";
 
 // ─── Status badge ─────────────────────────────────────────────────────────────
 
@@ -473,11 +474,74 @@ function WorkItemTestsTab({
   );
 }
 
+// ─── Planning tab ─────────────────────────────────────────────────────────────
+
+function WorkItemPlanningTab({ workItemId, projectId }: { workItemId: string; projectId: string }) {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const [activities, setActivities] = useState<Activity[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function load() {
+      setLoading(true);
+      try {
+        const all = await planningService.getActivities(projectId);
+        setActivities(all.filter(a => a.work_item_id === workItemId));
+      } catch { /* */ } finally { setLoading(false); }
+    }
+    load();
+  }, [workItemId, projectId]);
+
+  return (
+    <Card className="shadow-card">
+      <CardHeader className="pb-3 pt-4 px-5">
+        <CardTitle className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+          {t("planning.activities", { defaultValue: "Atividades" })}
+          {activities.length > 0 && <span className="ml-2 rounded-full bg-primary/10 px-1.5 py-px text-[10px] font-bold text-primary">{activities.length}</span>}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="p-0">
+        {loading ? (
+          <div className="p-5 space-y-2">{Array.from({ length: 2 }).map((_, i) => <Skeleton key={i} className="h-10 w-full rounded" />)}</div>
+        ) : activities.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-10 gap-2 text-muted-foreground">
+            <ListTodo className="h-6 w-6 opacity-40" />
+            <p className="text-sm">{t("planning.noActivities", { defaultValue: "Sem atividades ligadas." })}</p>
+          </div>
+        ) : (
+          <ul className="divide-y divide-border">
+            {activities.map(a => (
+              <li
+                key={a.id}
+                className="flex items-center gap-3 px-5 py-3 hover:bg-muted/20 cursor-pointer"
+                onClick={() => navigate(`/planning/activities/${a.id}`)}
+              >
+                <ListTodo className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium truncate">{a.description}</p>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
+                    {a.zone && <span>{a.zone}</span>}
+                    {a.planned_start && <><Calendar className="h-3 w-3" /><span>{a.planned_start}</span></>}
+                    <span>{a.progress_pct}%</span>
+                  </div>
+                </div>
+                <Badge variant={a.status === "completed" ? "secondary" : "outline"} className="text-xs">
+                  {t(`planning.statuses.${a.status}`, { defaultValue: a.status })}
+                </Badge>
+              </li>
+            ))}
+          </ul>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
 // ─── Topography tab ───────────────────────────────────────────────────────────
 
 function WorkItemTopoTab({ workItemId, projectId }: { workItemId: string; projectId: string }) {
   const { t } = useTranslation();
-  const [surveys, setSurveys] = useState<SurveyRecord[]>([]);
   const [requests, setRequests] = useState<TopographyRequest[]>([]);
   const [controls, setControls] = useState<TopographyControl[]>([]);
   const [loading, setLoading] = useState(true);
@@ -486,16 +550,12 @@ function WorkItemTopoTab({ workItemId, projectId }: { workItemId: string; projec
     async function load() {
       setLoading(true);
       try {
-        const [reqData, ctrlData, survData] = await Promise.all([
+        const [reqData, ctrlData] = await Promise.all([
           topographyRequestService.getByProject(projectId),
           topographyControlService.getByProject(projectId),
-          surveyService.getByProject(projectId),
         ]);
-        // Filter by work_item_id
         setRequests(reqData.filter(r => r.work_item_id === workItemId));
         setControls(ctrlData.filter(c => c.work_item_id === workItemId));
-        // Surveys don't have work_item_id, so we skip unless zone matches
-        setSurveys([]); // surveys don't link directly
       } catch { /* */ } finally { setLoading(false); }
     }
     load();
@@ -574,18 +634,72 @@ export default function WorkItemDetailPage() {
   const [ncs,        setNcs]        = useState<any[]>([]);
   const [subLoading, setSubLoading] = useState(true);
 
-  function handleExportPdf() {
+  // State for consolidated export data
+  const [ppiList, setPpiList] = useState<any[]>([]);
+  const [testsList, setTestsList] = useState<any[]>([]);
+  const [activitiesList, setActivitiesList] = useState<any[]>([]);
+  const [topoRequests, setTopoRequests] = useState<any[]>([]);
+  const [topoControls, setTopoControls] = useState<any[]>([]);
+
+  async function handleExportPdf() {
     if (!item || !activeProject) return;
     const locale = i18n.language ?? "pt";
     const wi: WorkItemForExport = {
       ...item,
       disciplina_label: t(`workItems.disciplines.${item.disciplina}`, { defaultValue: item.disciplina }),
       status_label:     t(`workItems.status.${item.status}`,          { defaultValue: item.status }),
-      ppi_count:  0,
+      ppi_count:  ppiList.length,
       nc_count:   ncs.length,
-      test_count: 0,
+      test_count: testsList.length,
     };
-    exportWorkItemPdf(wi, {
+
+    // Fetch all related data for consolidated export
+    const [ppiData, testsData, actData, reqData, ctrlData] = await Promise.all([
+      ppiService.listInstances(activeProject.id, { work_item_id: item.id }).catch(() => []),
+      testService.getByWorkItem(item.id).catch(() => []),
+      planningService.getActivities(activeProject.id).then(all => all.filter(a => a.work_item_id === item.id)).catch(() => []),
+      topographyRequestService.getByProject(activeProject.id).then(all => all.filter(r => r.work_item_id === item.id)).catch(() => []),
+      topographyControlService.getByProject(activeProject.id).then(all => all.filter(c => c.work_item_id === item.id)).catch(() => []),
+    ]);
+
+    wi.ppi_count = ppiData.length;
+    wi.test_count = testsData.length;
+
+    const consolidated: ConsolidatedExportData = {
+      ppis: ppiData.map((p: any) => ({ code: p.code, status: p.status, disciplina: p.template_disciplina ?? "—" })),
+      tests: testsData.map((tr: any) => ({
+        name: (tr.tests_catalog as any)?.name ?? "—",
+        code: (tr.tests_catalog as any)?.code ?? "",
+        status: tr.status,
+        passFail: tr.pass_fail ?? "—",
+        date: tr.date,
+      })),
+      ncs: ncs.map((nc: any) => ({
+        code: nc.code ?? nc.reference ?? "—",
+        description: nc.description?.substring(0, 80) ?? "",
+        severity: nc.severity,
+        status: nc.status,
+      })),
+      activities: actData.map((a: any) => ({
+        description: a.description,
+        status: a.status,
+        progress: a.progress_pct,
+        zone: a.zone ?? "—",
+      })),
+      topoRequests: reqData.map((r: any) => ({
+        type: r.request_type,
+        description: r.description?.substring(0, 60) ?? "",
+        status: r.status,
+      })),
+      topoControls: ctrlData.map((c: any) => ({
+        element: c.element,
+        zone: c.zone ?? "—",
+        result: c.result,
+        deviation: c.deviation ?? "—",
+      })),
+    };
+
+    exportWorkItemConsolidatedPdf(wi, {
       appName:     "Atlas QMS",
       reportTitle: t("workItems.export.reportTitle"),
       generatedOn: t("workItems.export.generatedOn"),
@@ -602,7 +716,7 @@ export default function WorkItemDetailPage() {
       ncs:         t("workItems.export.fields.ncs"),
       tests:       t("workItems.export.fields.tests"),
       ppis:        t("workItems.export.fields.ppis"),
-    }, locale, activeProject.name);
+    }, locale, activeProject.name, consolidated);
   }
 
   async function loadItem() {
@@ -746,6 +860,10 @@ export default function WorkItemDetailPage() {
             <FileText className="h-3.5 w-3.5" />
             {t("documents.linkedPanel.title")}
           </TabsTrigger>
+          <TabsTrigger value="planning" className="gap-1.5">
+            <ListTodo className="h-3.5 w-3.5" />
+            {t("workItems.detail.tabs.planning", { defaultValue: "Planeamento" })}
+          </TabsTrigger>
           <TabsTrigger value="topography" className="gap-1.5">
             <Crosshair className="h-3.5 w-3.5" />
             {t("topography.title")}
@@ -828,6 +946,11 @@ export default function WorkItemDetailPage() {
         {/* Documents tab */}
         <TabsContent value="documents" className="mt-4">
           <LinkedDocumentsPanel entityType="work_item" entityId={item.id} projectId={activeProject?.id ?? ""} />
+        </TabsContent>
+
+        {/* Planning tab */}
+        <TabsContent value="planning" className="mt-4">
+          <WorkItemPlanningTab workItemId={item.id} projectId={activeProject?.id ?? ""} />
         </TabsContent>
 
         {/* Topography tab */}
