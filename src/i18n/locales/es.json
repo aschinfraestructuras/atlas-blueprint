@@ -2022,6 +2022,59 @@
   },
   "projects": {
     "archivedBanner": "Proyecto archivado — solo lectura. Reactive el proyecto para realizar cambios."
+  },
+  "nav": {
+    "qcReport": "Informe QC"
+  },
+  "topbar": {
+    "theme": "Tema",
+    "themeLight": "Claro",
+    "themeDark": "Oscuro",
+    "themeSystem": "Sistema"
+  },
+  "qcReport": {
+    "module": "Informes",
+    "title": "Informe QC",
+    "subtitle": "Generar informe de control de calidad semanal o mensual",
+    "params": "Parámetros del Informe",
+    "startDate": "Fecha Inicio",
+    "endDate": "Fecha Fin",
+    "type": "Tipo",
+    "weekly": "Semanal",
+    "monthly": "Mensual",
+    "generate": "Generar PDF",
+    "pdfTitle": "Informe QC",
+    "toast": {
+      "generated": "Informe QC generado con éxito.",
+      "error": "Error al generar informe."
+    },
+    "kpi": {
+      "testPass": "Ensayos Conformes",
+      "testFail": "Ensayos No Conformes",
+      "testPending": "Ensayos Pendientes",
+      "ncOpen": "NC Abiertas",
+      "ncClosed": "NC Cerradas (período)",
+      "docsApproved": "Docs Aprobados",
+      "docsReview": "Docs en Revisión",
+      "expiring": "Ítems por Expirar (30d)",
+      "period": "Período"
+    },
+    "sections": {
+      "criticalNc": "NCs Críticas (Top 10)",
+      "failedTests": "Ensayos No Conformes",
+      "expiredCals": "Calibraciones Expiradas / Por Expirar"
+    },
+    "signature": {
+      "title": "Firma Simple",
+      "name": "Generado por",
+      "timestamp": "Fecha/Hora",
+      "checksum": "Checksum"
+    }
+  },
+  "globalSearch": {
+    "title": "Búsqueda Global",
+    "placeholder": "Buscar por código, nombre, referencia…",
+    "noResults": "Sin resultados."
   }
 }
 

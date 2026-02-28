@@ -6,7 +6,7 @@ import {
   FlaskConical, AlertTriangle, ScrollText, Settings,
   ShieldCheck, ChevronLeft, ChevronRight, X,
   Inbox, BookOpen, Map, HardHat, Construction, ClipboardCheck, Crosshair, CalendarClock,
-  Clock, FileCheck,
+  Clock, FileCheck, BarChart3,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { cn } from "@/lib/utils";
@@ -65,10 +65,11 @@ const NAV_SECTIONS: SidebarSection[] = [
   {
     sectionKey: "system",
     items: [
-      { labelKey: "nav.expirations", url: "/expirations",   icon: Clock },
-      { labelKey: "nav.auditLog", url: "/audit",         icon: ScrollText,  requiredAction: "viewAudit" },
-      { labelKey: "nav.health",   url: "/admin/health",  icon: ShieldCheck, adminOnly: true },
-      { labelKey: "nav.settings", url: "/settings",      icon: Settings,    adminOnly: true },
+      { labelKey: "nav.expirations",  url: "/expirations",   icon: Clock },
+      { labelKey: "nav.qcReport",     url: "/reports/qc",    icon: BarChart3 },
+      { labelKey: "nav.auditLog",     url: "/audit",         icon: ScrollText,  requiredAction: "viewAudit" },
+      { labelKey: "nav.health",       url: "/admin/health",  icon: ShieldCheck, adminOnly: true },
+      { labelKey: "nav.settings",     url: "/settings",      icon: Settings,    adminOnly: true },
     ],
   },
 ];
