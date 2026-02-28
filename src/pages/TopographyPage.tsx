@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -8,19 +8,22 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, AlertTriangle, CheckCircle, Clock, Wrench, FileText, Target, Trash2 } from "lucide-react";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { FilterBar } from "@/components/ui/filter-bar";
+import { Plus, AlertTriangle, CheckCircle, Clock, Wrench, FileText, Target, Trash2, Pencil, Search } from "lucide-react";
 import { toast } from "sonner";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import {
   exportTopographyEquipmentCsv, exportTopographyEquipmentPdf,
   exportTopographyRequestsCsv, exportTopographyControlsCsv,
 } from "@/lib/services/topographyExportService";
-import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import {
   useTopographyEquipment, useCalibrations, useTopographyRequests, useTopographyControls,
 } from "@/hooks/useTopography";
@@ -31,34 +34,41 @@ import { EquipmentFormDialog } from "@/components/topography/EquipmentFormDialog
 import { CalibrationFormDialog } from "@/components/topography/CalibrationFormDialog";
 import { RequestFormDialog } from "@/components/topography/RequestFormDialog";
 import { ControlFormDialog } from "@/components/topography/ControlFormDialog";
+import type { TopographyRequest, TopographyControl } from "@/lib/services/topographyService";
 
 function CalibrationBadge({ status }: { status: string }) {
-  if (status === "valid") return <Badge variant="default"><CheckCircle className="h-3 w-3 mr-1" />Válido</Badge>;
-  if (status === "expiring_soon") return <Badge variant="secondary"><Clock className="h-3 w-3 mr-1" />Expira em breve</Badge>;
-  return <Badge variant="destructive"><AlertTriangle className="h-3 w-3 mr-1" />Expirado</Badge>;
+  const { t } = useTranslation();
+  if (status === "valid") return <Badge variant="default"><CheckCircle className="h-3 w-3 mr-1" />{t("topography.status.valid")}</Badge>;
+  if (status === "expiring_soon") return <Badge variant="secondary"><Clock className="h-3 w-3 mr-1" />{t("topography.status.expiring_soon")}</Badge>;
+  return <Badge variant="destructive"><AlertTriangle className="h-3 w-3 mr-1" />{t("topography.status.expired")}</Badge>;
 }
 
 function StatusBadge({ status }: { status: string }) {
+  const { t } = useTranslation();
   const map: Record<string, string> = { pending: "secondary", in_progress: "default", completed: "outline", cancelled: "destructive" };
-  return <Badge variant={(map[status] || "secondary") as any}>{status}</Badge>;
+  return <Badge variant={(map[status] || "secondary") as any}>{t(`topography.requestStatus.${status}`, { defaultValue: status })}</Badge>;
 }
 
-function DeleteButton({ onConfirm, label }: { onConfirm: () => void; label?: string }) {
+function DeleteButton({ onConfirm }: { onConfirm: () => void }) {
+  const { t } = useTranslation();
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"><Trash2 className="h-3.5 w-3.5" /></Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
-        <AlertDialogHeader><AlertDialogTitle>Confirmar eliminação</AlertDialogTitle><AlertDialogDescription>{label || "Este registo será eliminado permanentemente. Tem a certeza?"}</AlertDialogDescription></AlertDialogHeader>
+        <AlertDialogHeader><AlertDialogTitle>{t("common.deleteConfirmTitle", { defaultValue: "Confirmar eliminação" })}</AlertDialogTitle><AlertDialogDescription>{t("common.deleteConfirmDesc", { defaultValue: "Este registo será eliminado permanentemente. Tem a certeza?" })}</AlertDialogDescription></AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-          <AlertDialogAction onClick={onConfirm} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Eliminar</AlertDialogAction>
+          <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+          <AlertDialogAction onClick={onConfirm} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">{t("common.delete")}</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
   );
 }
+
+const REQ_STATUSES = ["pending", "in_progress", "completed", "cancelled"];
+const CTRL_RESULTS = ["conforme", "nao_conforme"];
 
 export default function TopographyPage() {
   const { t } = useTranslation();
@@ -77,7 +87,34 @@ export default function TopographyPage() {
   const [calDialogOpen, setCalDialogOpen] = useState(false);
   const [calEquipmentId, setCalEquipmentId] = useState<string | null>(null);
   const [reqDialogOpen, setReqDialogOpen] = useState(false);
+  const [editRequest, setEditRequest] = useState<TopographyRequest | null>(null);
   const [ctrlDialogOpen, setCtrlDialogOpen] = useState(false);
+  const [editControl, setEditControl] = useState<TopographyControl | null>(null);
+
+  // Filters
+  const [search, setSearch] = useState("");
+  const [filterReqStatus, setFilterReqStatus] = useState("__all__");
+  const [filterCtrlResult, setFilterCtrlResult] = useState("__all__");
+
+  const filteredEquipment = useMemo(() => {
+    if (!search) return equipment;
+    const q = search.toLowerCase();
+    return equipment.filter(e => e.code.toLowerCase().includes(q) || e.equipment_type.toLowerCase().includes(q) || (e.brand ?? "").toLowerCase().includes(q) || (e.serial_number ?? "").toLowerCase().includes(q));
+  }, [equipment, search]);
+
+  const filteredRequests = useMemo(() => {
+    let list = requests;
+    if (search) { const q = search.toLowerCase(); list = list.filter(r => r.description.toLowerCase().includes(q) || (r.zone ?? "").toLowerCase().includes(q) || r.request_type.toLowerCase().includes(q)); }
+    if (filterReqStatus !== "__all__") list = list.filter(r => r.status === filterReqStatus);
+    return list;
+  }, [requests, search, filterReqStatus]);
+
+  const filteredControls = useMemo(() => {
+    let list = controls;
+    if (search) { const q = search.toLowerCase(); list = list.filter(c => c.element.toLowerCase().includes(q) || (c.zone ?? "").toLowerCase().includes(q) || (c.technician ?? "").toLowerCase().includes(q)); }
+    if (filterCtrlResult !== "__all__") list = list.filter(c => c.result === filterCtrlResult);
+    return list;
+  }, [controls, search, filterCtrlResult]);
 
   if (!activeProject) return <NoProjectBanner />;
 
@@ -89,61 +126,103 @@ export default function TopographyPage() {
   const handleAddCalibration = (equipmentId: string) => { setCalEquipmentId(equipmentId); setCalDialogOpen(true); };
   const handleViewEquipment = (eq: any) => { setViewEquipment(eq); setEqDialogOpen(true); };
   const handleNewEquipment = () => { setViewEquipment(null); setEqDialogOpen(true); };
+  const handleEditRequest = (req: TopographyRequest) => { setEditRequest(req); setReqDialogOpen(true); };
+  const handleNewRequest = () => { setEditRequest(null); setReqDialogOpen(true); };
+  const handleEditControl = (ctrl: TopographyControl) => { setEditControl(ctrl); setCtrlDialogOpen(true); };
+  const handleNewControl = () => { setEditControl(null); setCtrlDialogOpen(true); };
 
   const handleDeleteEquipment = async (id: string) => {
-    try { await topographyEquipmentService.delete(id, activeProject.id); toast.success("Equipamento eliminado"); refetchEq(); }
-    catch { toast.error("Erro ao eliminar equipamento"); }
+    try { await topographyEquipmentService.delete(id, activeProject.id); toast.success(t("common.deleted", { defaultValue: "Eliminado" })); refetchEq(); }
+    catch { toast.error(t("common.deleteError", { defaultValue: "Erro ao eliminar" })); }
   };
   const handleDeleteRequest = async (id: string) => {
-    try { await topographyRequestService.delete(id, activeProject.id); toast.success("Pedido eliminado"); refetchReq(); }
-    catch { toast.error("Erro ao eliminar pedido"); }
+    try { await topographyRequestService.delete(id, activeProject.id); toast.success(t("common.deleted", { defaultValue: "Eliminado" })); refetchReq(); }
+    catch { toast.error(t("common.deleteError", { defaultValue: "Erro ao eliminar" })); }
   };
   const handleDeleteControl = async (id: string) => {
-    try { await topographyControlService.delete(id, activeProject.id); toast.success("Controlo eliminado"); refetchCtrl(); }
-    catch { toast.error("Erro ao eliminar controlo"); }
+    try { await topographyControlService.delete(id, activeProject.id); toast.success(t("common.deleted", { defaultValue: "Eliminado" })); refetchCtrl(); }
+    catch { toast.error(t("common.deleteError", { defaultValue: "Erro ao eliminar" })); }
   };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <PageHeader title={t("topography.title", "Topografia")} subtitle={t("topography.subtitle", "Equipamentos, calibrações, pedidos e controlo geométrico")} />
+        <PageHeader title={t("topography.title")} subtitle={t("topography.subtitle")} />
         <ReportExportMenu options={[
           { label: "CSV", icon: "csv", action: () => {
-            if (activeTab === "equipment") exportTopographyEquipmentCsv(equipment, meta);
-            else if (activeTab === "requests") exportTopographyRequestsCsv(requests, meta);
-            else exportTopographyControlsCsv(controls, meta);
+            if (activeTab === "equipment") exportTopographyEquipmentCsv(filteredEquipment, meta);
+            else if (activeTab === "requests") exportTopographyRequestsCsv(filteredRequests, meta);
+            else exportTopographyControlsCsv(filteredControls, meta);
           }},
           { label: "PDF", icon: "pdf", action: () => {
-            if (activeTab === "equipment") exportTopographyEquipmentPdf(equipment, meta);
+            if (activeTab === "equipment") exportTopographyEquipmentPdf(filteredEquipment, meta);
           }},
         ]} />
       </div>
 
       <div className="grid gap-4 md:grid-cols-4">
-        <Card><CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Equipamentos</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold">{equipment.length}</div></CardContent></Card>
-        <Card><CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-primary"><CheckCircle className="inline h-4 w-4 mr-1" />Calibração Válida</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-primary">{validCount}</div></CardContent></Card>
-        <Card><CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground"><Clock className="inline h-4 w-4 mr-1" />Expira em Breve</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold">{expiringCount}</div></CardContent></Card>
-        <Card><CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-destructive"><AlertTriangle className="inline h-4 w-4 mr-1" />Expirado</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-destructive">{expiredCount}</div></CardContent></Card>
+        <Card><CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">{t("topography.equipment")}</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold">{equipment.length}</div></CardContent></Card>
+        <Card><CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-primary"><CheckCircle className="inline h-4 w-4 mr-1" />{t("topography.status.valid")}</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-primary">{validCount}</div></CardContent></Card>
+        <Card><CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground"><Clock className="inline h-4 w-4 mr-1" />{t("topography.status.expiring_soon")}</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold">{expiringCount}</div></CardContent></Card>
+        <Card><CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-destructive"><AlertTriangle className="inline h-4 w-4 mr-1" />{t("topography.status.expired")}</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-destructive">{expiredCount}</div></CardContent></Card>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
-          <TabsTrigger value="equipment"><Wrench className="h-4 w-4 mr-1" />Equipamentos</TabsTrigger>
-          <TabsTrigger value="requests"><FileText className="h-4 w-4 mr-1" />Pedidos</TabsTrigger>
-          <TabsTrigger value="controls"><Target className="h-4 w-4 mr-1" />Controlo Geométrico</TabsTrigger>
+          <TabsTrigger value="equipment"><Wrench className="h-4 w-4 mr-1" />{t("topography.equipment")}</TabsTrigger>
+          <TabsTrigger value="requests"><FileText className="h-4 w-4 mr-1" />{t("topography.requests")}</TabsTrigger>
+          <TabsTrigger value="controls"><Target className="h-4 w-4 mr-1" />{t("topography.controls")}</TabsTrigger>
         </TabsList>
 
+        <div className="mt-4">
+          <FilterBar>
+            <div className="relative flex-1 min-w-[180px]">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+              <Input
+                placeholder={t("topography.searchPlaceholder", { defaultValue: "Pesquisar código, tipo, zona…" })}
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="pl-8 h-8 text-sm"
+              />
+            </div>
+            {activeTab === "requests" && (
+              <Select value={filterReqStatus} onValueChange={setFilterReqStatus}>
+                <SelectTrigger className="w-[160px] h-8 text-sm"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__all__">{t("topography.filters.allStatuses", { defaultValue: "Todos os estados" })}</SelectItem>
+                  {REQ_STATUSES.map(s => <SelectItem key={s} value={s}>{t(`topography.requestStatus.${s}`, { defaultValue: s })}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            )}
+            {activeTab === "controls" && (
+              <Select value={filterCtrlResult} onValueChange={setFilterCtrlResult}>
+                <SelectTrigger className="w-[160px] h-8 text-sm"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__all__">{t("topography.filters.allResults", { defaultValue: "Todos os resultados" })}</SelectItem>
+                  <SelectItem value="conforme">{t("topography.result.conforme", { defaultValue: "Conforme" })}</SelectItem>
+                  <SelectItem value="nao_conforme">{t("topography.result.nao_conforme", { defaultValue: "Não conforme" })}</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+          </FilterBar>
+        </div>
+
         <TabsContent value="equipment" className="space-y-4">
-          <div className="flex justify-end"><Button onClick={handleNewEquipment}><Plus className="h-4 w-4 mr-1" />Novo Equipamento</Button></div>
+          <div className="flex justify-end"><Button onClick={handleNewEquipment}><Plus className="h-4 w-4 mr-1" />{t("topography.newEquipment")}</Button></div>
           <div className="rounded-md border">
             <Table>
               <TableHeader><TableRow>
-                <TableHead>Código</TableHead><TableHead>Tipo</TableHead><TableHead>Marca/Modelo</TableHead>
-                <TableHead>Nº Série</TableHead><TableHead>Responsável</TableHead><TableHead>Calibração</TableHead>
-                <TableHead>Validade</TableHead><TableHead>Ações</TableHead>
+                <TableHead>{t("topography.table.code", { defaultValue: "Código" })}</TableHead>
+                <TableHead>{t("topography.table.type", { defaultValue: "Tipo" })}</TableHead>
+                <TableHead>{t("topography.table.brandModel", { defaultValue: "Marca/Modelo" })}</TableHead>
+                <TableHead>{t("topography.table.serial", { defaultValue: "Nº Série" })}</TableHead>
+                <TableHead>{t("topography.table.responsible", { defaultValue: "Responsável" })}</TableHead>
+                <TableHead>{t("topography.table.calibration", { defaultValue: "Calibração" })}</TableHead>
+                <TableHead>{t("topography.table.validity", { defaultValue: "Validade" })}</TableHead>
+                <TableHead>{t("common.actions")}</TableHead>
               </TableRow></TableHeader>
               <TableBody>
-                {equipment.map((eq) => (
+                {filteredEquipment.map((eq) => (
                   <TableRow key={eq.id} className="cursor-pointer hover:bg-muted/20" onClick={() => handleViewEquipment(eq)}>
                     <TableCell className="font-medium">{eq.code}</TableCell>
                     <TableCell>{eq.equipment_type}</TableCell>
@@ -154,28 +233,33 @@ export default function TopographyPage() {
                     <TableCell>{eq.calibration_valid_until || "—"}</TableCell>
                     <TableCell onClick={e => e.stopPropagation()}>
                       <div className="flex gap-1">
-                        <Button size="sm" variant="outline" onClick={() => handleAddCalibration(eq.id)}><Plus className="h-3 w-3 mr-1" />Calibração</Button>
+                        <Button size="sm" variant="outline" onClick={() => handleAddCalibration(eq.id)}><Plus className="h-3 w-3 mr-1" />{t("topography.calibrations", { defaultValue: "Calibração" })}</Button>
                         {isAdmin && <DeleteButton onConfirm={() => handleDeleteEquipment(eq.id)} />}
                       </div>
                     </TableCell>
                   </TableRow>
                 ))}
-                {equipment.length === 0 && <TableRow><TableCell colSpan={8} className="text-center text-muted-foreground py-8">Sem equipamentos registados</TableCell></TableRow>}
+                {filteredEquipment.length === 0 && <TableRow><TableCell colSpan={8} className="text-center text-muted-foreground py-8">{t("common.noData")}</TableCell></TableRow>}
               </TableBody>
             </Table>
           </div>
         </TabsContent>
 
         <TabsContent value="requests" className="space-y-4">
-          <div className="flex justify-end"><Button onClick={() => setReqDialogOpen(true)}><Plus className="h-4 w-4 mr-1" />Novo Pedido</Button></div>
+          <div className="flex justify-end"><Button onClick={handleNewRequest}><Plus className="h-4 w-4 mr-1" />{t("topography.newRequest")}</Button></div>
           <div className="rounded-md border">
             <Table>
               <TableHeader><TableRow>
-                <TableHead>Tipo</TableHead><TableHead>Descrição</TableHead><TableHead>Zona</TableHead>
-                <TableHead>Data</TableHead><TableHead>Prioridade</TableHead><TableHead>Estado</TableHead><TableHead>Ações</TableHead>
+                <TableHead>{t("topography.table.requestType", { defaultValue: "Tipo" })}</TableHead>
+                <TableHead>{t("common.description")}</TableHead>
+                <TableHead>{t("topography.table.zone", { defaultValue: "Zona" })}</TableHead>
+                <TableHead>{t("common.date")}</TableHead>
+                <TableHead>{t("topography.table.priority", { defaultValue: "Prioridade" })}</TableHead>
+                <TableHead>{t("common.status")}</TableHead>
+                <TableHead>{t("common.actions")}</TableHead>
               </TableRow></TableHeader>
               <TableBody>
-                {requests.map((req) => (
+                {filteredRequests.map((req) => (
                   <TableRow key={req.id}>
                     <TableCell className="font-medium">{req.request_type}</TableCell>
                     <TableCell className="max-w-[300px] truncate">{req.description}</TableCell>
@@ -183,39 +267,55 @@ export default function TopographyPage() {
                     <TableCell>{req.request_date}</TableCell>
                     <TableCell><Badge variant={req.priority === "urgent" ? "destructive" : "secondary"}>{req.priority}</Badge></TableCell>
                     <TableCell><StatusBadge status={req.status} /></TableCell>
-                    <TableCell><DeleteButton onConfirm={() => handleDeleteRequest(req.id)} /></TableCell>
+                    <TableCell>
+                      <div className="flex gap-1">
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditRequest(req)}><Pencil className="h-3.5 w-3.5" /></Button>
+                        {isAdmin && <DeleteButton onConfirm={() => handleDeleteRequest(req.id)} />}
+                      </div>
+                    </TableCell>
                   </TableRow>
                 ))}
-                {requests.length === 0 && <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-8">Sem pedidos registados</TableCell></TableRow>}
+                {filteredRequests.length === 0 && <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-8">{t("common.noData")}</TableCell></TableRow>}
               </TableBody>
             </Table>
           </div>
         </TabsContent>
 
         <TabsContent value="controls" className="space-y-4">
-          <div className="flex justify-end"><Button onClick={() => setCtrlDialogOpen(true)}><Plus className="h-4 w-4 mr-1" />Novo Controlo</Button></div>
+          <div className="flex justify-end"><Button onClick={handleNewControl}><Plus className="h-4 w-4 mr-1" />{t("topography.newControl")}</Button></div>
           <div className="rounded-md border">
             <Table>
               <TableHeader><TableRow>
-                <TableHead>Elemento</TableHead><TableHead>Zona</TableHead><TableHead>Tolerância</TableHead>
-                <TableHead>Valor Medido</TableHead><TableHead>Desvio</TableHead><TableHead>Resultado</TableHead>
-                <TableHead>Data</TableHead><TableHead>Técnico</TableHead><TableHead>Ações</TableHead>
+                <TableHead>{t("topography.table.element", { defaultValue: "Elemento" })}</TableHead>
+                <TableHead>{t("topography.table.zone", { defaultValue: "Zona" })}</TableHead>
+                <TableHead>{t("topography.table.tolerance", { defaultValue: "Tolerância" })}</TableHead>
+                <TableHead>{t("topography.table.measuredValue", { defaultValue: "Valor Medido" })}</TableHead>
+                <TableHead>{t("topography.table.deviation", { defaultValue: "Desvio" })}</TableHead>
+                <TableHead>{t("topography.table.result", { defaultValue: "Resultado" })}</TableHead>
+                <TableHead>{t("common.date")}</TableHead>
+                <TableHead>{t("topography.table.technician", { defaultValue: "Técnico" })}</TableHead>
+                <TableHead>{t("common.actions")}</TableHead>
               </TableRow></TableHeader>
               <TableBody>
-                {controls.map((ctrl) => (
+                {filteredControls.map((ctrl) => (
                   <TableRow key={ctrl.id}>
                     <TableCell className="font-medium">{ctrl.element}</TableCell>
                     <TableCell>{ctrl.zone || "—"}</TableCell>
                     <TableCell>{ctrl.tolerance || "—"}</TableCell>
                     <TableCell>{ctrl.measured_value || "—"}</TableCell>
                     <TableCell>{ctrl.deviation || "—"}</TableCell>
-                    <TableCell><Badge variant={ctrl.result === "conforme" ? "default" : "destructive"}>{ctrl.result === "conforme" ? "Conforme" : "Não conforme"}</Badge></TableCell>
+                    <TableCell><Badge variant={ctrl.result === "conforme" ? "default" : "destructive"}>{t(`topography.result.${ctrl.result}`, { defaultValue: ctrl.result === "conforme" ? "Conforme" : "Não conforme" })}</Badge></TableCell>
                     <TableCell>{ctrl.execution_date}</TableCell>
                     <TableCell>{ctrl.technician || "—"}</TableCell>
-                    <TableCell><DeleteButton onConfirm={() => handleDeleteControl(ctrl.id)} /></TableCell>
+                    <TableCell>
+                      <div className="flex gap-1">
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditControl(ctrl)}><Pencil className="h-3.5 w-3.5" /></Button>
+                        {isAdmin && <DeleteButton onConfirm={() => handleDeleteControl(ctrl.id)} />}
+                      </div>
+                    </TableCell>
                   </TableRow>
                 ))}
-                {controls.length === 0 && <TableRow><TableCell colSpan={9} className="text-center text-muted-foreground py-8">Sem controlos registados</TableCell></TableRow>}
+                {filteredControls.length === 0 && <TableRow><TableCell colSpan={9} className="text-center text-muted-foreground py-8">{t("common.noData")}</TableCell></TableRow>}
               </TableBody>
             </Table>
           </div>
@@ -224,8 +324,8 @@ export default function TopographyPage() {
 
       <EquipmentFormDialog open={eqDialogOpen} onOpenChange={setEqDialogOpen} projectId={activeProject.id} equipment={viewEquipment} onSuccess={() => { refetchEq(); setEqDialogOpen(false); }} />
       <CalibrationFormDialog open={calDialogOpen} onOpenChange={setCalDialogOpen} projectId={activeProject.id} equipmentId={calEquipmentId} onSuccess={() => { refetchCal(); refetchEq(); setCalDialogOpen(false); }} />
-      <RequestFormDialog open={reqDialogOpen} onOpenChange={setReqDialogOpen} projectId={activeProject.id} onSuccess={() => { refetchReq(); setReqDialogOpen(false); }} />
-      <ControlFormDialog open={ctrlDialogOpen} onOpenChange={setCtrlDialogOpen} projectId={activeProject.id} equipment={equipment} onSuccess={() => { refetchCtrl(); setCtrlDialogOpen(false); }} />
+      <RequestFormDialog open={reqDialogOpen} onOpenChange={setReqDialogOpen} projectId={activeProject.id} editRequest={editRequest} onSuccess={() => { refetchReq(); setReqDialogOpen(false); }} />
+      <ControlFormDialog open={ctrlDialogOpen} onOpenChange={setCtrlDialogOpen} projectId={activeProject.id} equipment={equipment} editControl={editControl} onSuccess={() => { refetchCtrl(); setCtrlDialogOpen(false); }} />
     </div>
   );
 }
