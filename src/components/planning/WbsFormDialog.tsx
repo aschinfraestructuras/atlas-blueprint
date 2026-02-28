@@ -21,12 +21,13 @@ interface Props {
   onOpenChange: (v: boolean) => void;
   wbsNodes: WbsNode[];
   editNode?: WbsNode | null;
+  defaultParentId?: string | null;
   onSuccess: () => void;
 }
 
 const EMPTY = { wbs_code: "", description: "", zone: "", planned_start: "", planned_end: "", responsible: "", parent_id: "__none__" };
 
-export function WbsFormDialog({ open, onOpenChange, wbsNodes, editNode, onSuccess }: Props) {
+export function WbsFormDialog({ open, onOpenChange, wbsNodes, editNode, defaultParentId, onSuccess }: Props) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { activeProject } = useProject();
@@ -46,12 +47,15 @@ export function WbsFormDialog({ open, onOpenChange, wbsNodes, editNode, onSucces
         parent_id: editNode.parent_id ?? "__none__",
       });
     } else {
-      setForm(EMPTY);
+      setForm({ ...EMPTY, parent_id: defaultParentId ?? "__none__" });
     }
-  }, [editNode, open]);
+  }, [editNode, open, defaultParentId]);
 
   const handleSubmit = async () => {
     if (!activeProject || !user || !form.wbs_code.trim() || !form.description.trim()) return;
+    // Uniqueness check
+    const duplicate = wbsNodes.find(w => w.wbs_code.toLowerCase() === form.wbs_code.trim().toLowerCase() && w.id !== editNode?.id);
+    if (duplicate) { toast.error(t("planning.wbs.codeDuplicate", { defaultValue: "Já existe um nó WBS com este código neste projeto." })); return; }
     setSubmitting(true);
     try {
       const parentId = form.parent_id === "__none__" ? null : form.parent_id;
