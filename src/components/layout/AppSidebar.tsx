@@ -5,7 +5,7 @@ import {
   LayoutDashboard, FolderKanban, FileText, Truck, Package,
   FlaskConical, AlertTriangle, ScrollText, Settings,
   ShieldCheck, ChevronLeft, ChevronRight, X,
-  Inbox, BookOpen, Map, HardHat, Construction, ClipboardCheck, Crosshair,
+  Inbox, BookOpen, Map, HardHat, Construction, ClipboardCheck, Crosshair, CalendarClock,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { cn } from "@/lib/utils";
@@ -48,6 +48,7 @@ const NAV_SECTIONS: SidebarSection[] = [
     items: [
       { labelKey: "nav.technicalOffice", url: "/technical-office", icon: Inbox },
       { labelKey: "nav.plans",           url: "/plans",            icon: BookOpen },
+      { labelKey: "nav.planning",        url: "/planning",         icon: CalendarClock },
     ],
   },
   {
