@@ -48,6 +48,10 @@ const TABLES_TO_CHECK = [
   "audit_log",
   "profiles",
   "project_members",
+  "topography_equipment",
+  "equipment_calibrations",
+  "topography_requests",
+  "topography_controls",
 ] as const;
 
 const RPC_FUNCTIONS = [

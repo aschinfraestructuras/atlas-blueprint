@@ -75,7 +75,8 @@
     "settings": "Definições",
     "technicalOffice": "Escritório Técnico",
     "plans": "Planeamento",
-    "survey": "Topografia",
+    "survey": "Levantamentos",
+    "topography": "Topografia",
     "subcontractors": "Subempreiteiros",
     "workItems": "Atividades",
     "ppi": "Inspeções PPI",
@@ -1847,6 +1848,24 @@
       "changeBtn": "Alterar password",
       "success": "Password alterada com sucesso.",
       "error": "Erro ao alterar password."
+    }
+  },
+  "topography": {
+    "title": "Topografia",
+    "subtitle": "Equipamentos, calibrações, pedidos e controlo geométrico",
+    "equipment": "Equipamentos",
+    "calibrations": "Calibrações",
+    "requests": "Pedidos",
+    "controls": "Controlo Geométrico",
+    "newEquipment": "Novo Equipamento",
+    "newCalibration": "Registar Calibração",
+    "newRequest": "Novo Pedido",
+    "newControl": "Novo Controlo",
+    "calibrationBlocked": "Equipamento com calibração inválida. Atualizar certificado antes de registar medições.",
+    "status": {
+      "valid": "Válido",
+      "expiring_soon": "Expira em breve",
+      "expired": "Expirado"
     }
   }
 }

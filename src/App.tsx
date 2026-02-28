@@ -33,6 +33,7 @@ import MaterialDetailPage from "./pages/MaterialDetailPage";
 import NotFound from "./pages/NotFound";
 import HealthCheckPage from "./pages/HealthCheckPage";
 import AcceptInvitePage from "./pages/AcceptInvitePage";
+import TopographyPage from "./pages/TopographyPage";
 
 const queryClient = new QueryClient();
 
@@ -82,6 +83,7 @@ const App = () => (
               <Route path="/ppi/:id" element={<ProtectedLayout><PPIDetailPage /></ProtectedLayout>} />
               <Route path="/materials" element={<ProtectedLayout><MaterialsPage /></ProtectedLayout>} />
               <Route path="/materials/:id" element={<ProtectedLayout><MaterialDetailPage /></ProtectedLayout>} />
+              <Route path="/topography" element={<ProtectedLayout><TopographyPage /></ProtectedLayout>} />
               <Route path="/admin/health" element={<ProtectedLayout><HealthCheckPage /></ProtectedLayout>} />
 
               {/* Catch-all */}
