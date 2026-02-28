@@ -1,14 +1,14 @@
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSubcontractors } from "@/hooks/useSubcontractors";
 import { useProjectRole } from "@/hooks/useProjectRole";
-import { useSuppliers } from "@/hooks/useSuppliers";
 import { subcontractorService } from "@/lib/services/subcontractorService";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { useToast } from "@/hooks/use-toast";
-import { HardHat, Plus, Pencil, Trash2, Search } from "lucide-react";
+import { HardHat, Plus, Pencil, Trash2, Search, Eye } from "lucide-react";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
@@ -41,10 +41,10 @@ const SUB_STATUSES = ["active", "suspended", "concluded"];
 
 export default function SubcontractorsPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { activeProject } = useProject();
   const { user } = useAuth();
   const { data: subcontractors, loading, error, refetch } = useSubcontractors();
-  const { data: suppliers } = useSuppliers();
   const { canCreate, canDelete } = useProjectRole();
   const { toast } = useToast();
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -55,8 +55,7 @@ export default function SubcontractorsPage() {
   // Filters
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("__all__");
-
-  const supplierMap = new Map(suppliers.map((s) => [s.id, s.name]));
+  const [filterDocStatus, setFilterDocStatus] = useState("__all__");
 
   const filtered = useMemo(() => {
     let list = subcontractors;
@@ -65,8 +64,9 @@ export default function SubcontractorsPage() {
       list = list.filter(s => s.name.toLowerCase().includes(q) || (s.trade ?? "").toLowerCase().includes(q) || (s.contact_email ?? "").toLowerCase().includes(q));
     }
     if (filterStatus !== "__all__") list = list.filter(s => s.status === filterStatus);
+    if (filterDocStatus !== "__all__") list = list.filter(s => s.documentation_status === filterDocStatus);
     return list;
-  }, [subcontractors, search, filterStatus]);
+  }, [subcontractors, search, filterStatus, filterDocStatus]);
 
   if (!activeProject) return <NoProjectBanner />;
 
@@ -138,6 +138,17 @@ export default function SubcontractorsPage() {
             ))}
           </SelectContent>
         </Select>
+        <Select value={filterDocStatus} onValueChange={setFilterDocStatus}>
+          <SelectTrigger className="w-[160px] h-8 text-sm">
+            <SelectValue placeholder={t("subcontractors.filters.allDocStatuses", { defaultValue: "Todos doc. status" })} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="__all__">{t("subcontractors.filters.allDocStatuses", { defaultValue: "Todos doc. status" })}</SelectItem>
+            <SelectItem value="pending">{t("subcontractors.docStatus.pending", { defaultValue: "Pendente" })}</SelectItem>
+            <SelectItem value="valid">{t("subcontractors.docStatus.valid", { defaultValue: "Válida" })}</SelectItem>
+            <SelectItem value="expired">{t("subcontractors.docStatus.expired", { defaultValue: "Expirada" })}</SelectItem>
+          </SelectContent>
+        </Select>
       </FilterBar>
 
       {error && (
@@ -161,16 +172,17 @@ export default function SubcontractorsPage() {
               <TableRow className="bg-muted/40">
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.name")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("subcontractors.table.trade")}</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("subcontractors.table.contactEmail")}</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("subcontractors.table.linkedSupplier")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.status")}</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("subcontractors.table.docStatus", { defaultValue: "Doc. Status" })}</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("subcontractors.table.score", { defaultValue: "Score" })}</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("subcontractors.table.contactEmail")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.date")}</TableHead>
-                <TableHead className="w-20">{t("common.actions")}</TableHead>
+                <TableHead className="w-28">{t("common.actions")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filtered.map((sub) => (
-                <TableRow key={sub.id} className="hover:bg-muted/20 transition-colors">
+                <TableRow key={sub.id} className="hover:bg-muted/20 transition-colors cursor-pointer" onClick={() => navigate(`/subcontractors/${sub.id}`)}>
                   <TableCell className="font-medium text-sm text-foreground">
                     <div className="flex items-center gap-2">
                       <HardHat className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
@@ -178,20 +190,26 @@ export default function SubcontractorsPage() {
                     </div>
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">{sub.trade ?? "—"}</TableCell>
-                  <TableCell className="text-sm text-muted-foreground">{sub.contact_email ?? "—"}</TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {sub.supplier_id ? supplierMap.get(sub.supplier_id) ?? "—" : "—"}
-                  </TableCell>
                   <TableCell>
                     <Badge variant="secondary" className={cn("text-xs", STATUS_COLORS[sub.status] ?? "")}>
                       {t(`subcontractors.status.${sub.status}`, { defaultValue: sub.status })}
                     </Badge>
                   </TableCell>
+                  <TableCell>
+                    <Badge variant="secondary" className={cn("text-xs", sub.documentation_status === "valid" ? "bg-primary/20 text-primary" : sub.documentation_status === "expired" ? "bg-destructive/10 text-destructive" : "bg-muted text-muted-foreground")}>
+                      {t(`subcontractors.docStatus.${sub.documentation_status}`, { defaultValue: sub.documentation_status })}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-sm text-muted-foreground">{sub.performance_score != null ? `${sub.performance_score}` : "—"}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground">{sub.contact_email ?? "—"}</TableCell>
                   <TableCell className="text-sm text-muted-foreground">
-                    {new Date(sub.created_at).toLocaleDateString()}
+                    {new Date(sub.updated_at).toLocaleDateString()}
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
+                      <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={() => navigate(`/subcontractors/${sub.id}`)}>
+                        <Eye className="h-3.5 w-3.5" />
+                      </Button>
                       <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={() => handleEdit(sub)}>
                         <Pencil className="h-3.5 w-3.5" />
                       </Button>

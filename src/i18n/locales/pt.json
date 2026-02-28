@@ -1292,15 +1292,27 @@
   },
   "subcontractors": {
     "newSubcontractor": "Novo Subempreiteiro",
+    "searchPlaceholder": "Pesquisar nome, especialidade, e-mail…",
     "table": {
       "trade": "Especialidade",
       "contactEmail": "E-mail",
-      "linkedSupplier": "Fornecedor"
+      "linkedSupplier": "Fornecedor",
+      "docStatus": "Doc. Status",
+      "score": "Score"
+    },
+    "filters": {
+      "allStatuses": "Todos os estados",
+      "allDocStatuses": "Todos doc. status"
     },
     "status": {
       "active": "Ativo",
       "suspended": "Suspenso",
       "concluded": "Concluído"
+    },
+    "docStatus": {
+      "pending": "Pendente",
+      "valid": "Válida",
+      "expired": "Expirada"
     },
     "form": {
       "titleCreate": "Novo Subempreiteiro",
@@ -1314,6 +1326,43 @@
       "linkedSupplierPlaceholder": "Selecionar fornecedor…",
       "noSupplier": "Sem fornecedor",
       "createBtn": "Criar subempreiteiro"
+    },
+    "detail": {
+      "tabs": {
+        "overview": "Visão Geral",
+        "docs": "Documentação",
+        "activities": "Atividades",
+        "workItems": "Work Items",
+        "audit": "Auditoria"
+      },
+      "generalInfo": "Informação Geral",
+      "contract": "Contrato",
+      "docStatus": "Estado Documentação",
+      "score": "Score Desempenho",
+      "attachments": "Anexos",
+      "mandatoryDocs": "Documentação Obrigatória",
+      "docType": "Tipo",
+      "docTitle": "Título",
+      "validFrom": "Válido de",
+      "validTo": "Válido até",
+      "addDoc": "Adicionar documento",
+      "addDocBtn": "Adicionar",
+      "docAdded": "Documento adicionado com sucesso.",
+      "docDeleted": "Documento removido.",
+      "deleteDocTitle": "Eliminar documento?",
+      "deleteDocDesc": "O documento «{{name}}» será removido permanentemente.",
+      "docsExpiredWarning": "Documentação expirada — este subempreiteiro está bloqueado para conclusão de atividades.",
+      "docsExpiringSoon": "Documentação a expirar nos próximos 30 dias.",
+      "expiredOn": "expirado a",
+      "expiresOn": "expira a",
+      "blockingNotice": "Atividades associadas a este subempreiteiro não podem ser marcadas como concluídas até regularização.",
+      "expiringSoonBadge": "Expira em breve",
+      "linkedActivities": "Atividades Associadas",
+      "linkedWorkItems": "Work Items Associados",
+      "auditHistory": "Histórico de Auditoria",
+      "zone": "Zona",
+      "progress": "Progresso",
+      "plannedDates": "Datas Planeadas"
     },
     "deleteConfirm": {
       "title": "Eliminar subempreiteiro?",

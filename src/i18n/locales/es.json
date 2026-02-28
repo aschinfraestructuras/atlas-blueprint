@@ -1189,15 +1189,27 @@
   },
   "subcontractors": {
     "newSubcontractor": "Nuevo Subcontratista",
+    "searchPlaceholder": "Buscar nombre, especialidad, correo…",
     "table": {
       "trade": "Especialidad",
       "contactEmail": "Correo",
-      "linkedSupplier": "Proveedor"
+      "linkedSupplier": "Proveedor",
+      "docStatus": "Doc. Status",
+      "score": "Score"
+    },
+    "filters": {
+      "allStatuses": "Todos los estados",
+      "allDocStatuses": "Todos doc. status"
     },
     "status": {
       "active": "Activo",
       "suspended": "Suspendido",
       "concluded": "Concluido"
+    },
+    "docStatus": {
+      "pending": "Pendiente",
+      "valid": "Válida",
+      "expired": "Expirada"
     },
     "form": {
       "titleCreate": "Nuevo Subcontratista",
@@ -1211,6 +1223,43 @@
       "linkedSupplierPlaceholder": "Seleccionar proveedor…",
       "noSupplier": "Sin proveedor",
       "createBtn": "Crear subcontratista"
+    },
+    "detail": {
+      "tabs": {
+        "overview": "Resumen",
+        "docs": "Documentación",
+        "activities": "Actividades",
+        "workItems": "Work Items",
+        "audit": "Auditoría"
+      },
+      "generalInfo": "Información General",
+      "contract": "Contrato",
+      "docStatus": "Estado Documentación",
+      "score": "Score Desempeño",
+      "attachments": "Adjuntos",
+      "mandatoryDocs": "Documentación Obligatoria",
+      "docType": "Tipo",
+      "docTitle": "Título",
+      "validFrom": "Válido desde",
+      "validTo": "Válido hasta",
+      "addDoc": "Añadir documento",
+      "addDocBtn": "Añadir",
+      "docAdded": "Documento añadido con éxito.",
+      "docDeleted": "Documento eliminado.",
+      "deleteDocTitle": "¿Eliminar documento?",
+      "deleteDocDesc": "El documento «{{name}}» se eliminará permanentemente.",
+      "docsExpiredWarning": "Documentación expirada — este subcontratista está bloqueado para completar actividades.",
+      "docsExpiringSoon": "Documentación por expirar en los próximos 30 días.",
+      "expiredOn": "expirado el",
+      "expiresOn": "expira el",
+      "blockingNotice": "Las actividades asociadas a este subcontratista no pueden marcarse como completadas hasta su regularización.",
+      "expiringSoonBadge": "Expira pronto",
+      "linkedActivities": "Actividades Asociadas",
+      "linkedWorkItems": "Work Items Asociados",
+      "auditHistory": "Historial de Auditoría",
+      "zone": "Zona",
+      "progress": "Progreso",
+      "plannedDates": "Fechas Planificadas"
     },
     "deleteConfirm": {
       "title": "¿Eliminar subcontratista?",
