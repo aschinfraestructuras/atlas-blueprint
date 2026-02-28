@@ -99,16 +99,10 @@ export default function PlanningPage() {
           <h1 className="text-2xl font-bold tracking-tight text-foreground">{t("planning.title")}</h1>
           <p className="text-sm text-muted-foreground">{t("planning.subtitle")}</p>
         </div>
-        <ReportExportMenu
-          onExportCsv={() => {
-            if (activeTab === "wbs") exportWbsCsv(wbs, meta);
-            else exportActivitiesCsv(activities, meta);
-          }}
-          onExportPdf={() => {
-            if (activeTab === "wbs") exportWbsPdf(wbs, meta);
-            else exportActivitiesPdf(activities, meta);
-          }}
-        />
+        <ReportExportMenu options={[
+          { label: "CSV", icon: "csv", action: () => activeTab === "wbs" ? exportWbsCsv(wbs, meta) : exportActivitiesCsv(activities, meta) },
+          { label: "PDF", icon: "pdf", action: () => activeTab === "wbs" ? exportWbsPdf(wbs, meta) : exportActivitiesPdf(activities, meta) },
+        ]} />
       </div>
 
       {error && <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">{error}</div>}
