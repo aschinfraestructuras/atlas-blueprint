@@ -112,50 +112,54 @@ export default function QCReportPage() {
       };
       const labels: ReportLabels = {
         appName: "Atlas",
-        reportTitle: t("qcReport.pdfTitle", { defaultValue: `Relatório QC — ${reportType === "weekly" ? "Semanal" : "Mensal"}` }),
-        generatedOn: t("report.generatedOn", { defaultValue: "Gerado em" }),
+        reportTitle: t("qcReport.pdfTitle"),
+        generatedOn: t("report.generatedOn"),
       };
+
+      // Translate status values
+      const tStatus = (s: string) => t(`qcReport.pdfStatus.${s}`, { defaultValue: s });
+      const h = (key: string) => t(`qcReport.pdfHeaders.${key}`);
 
       const kpiRow = (label: string, value: string | number) =>
         `<div class="atlas-info-row"><span class="atlas-info-lbl">${label}</span><span class="atlas-info-val">${value}</span></div>`;
 
       const bodyHtml = `
         <div class="atlas-info-grid" style="grid-template-columns: 1fr 1fr 1fr;">
-          ${kpiRow(t("qcReport.kpi.testPass", { defaultValue: "Ensaios Conformes" }), testsPass)}
-          ${kpiRow(t("qcReport.kpi.testFail", { defaultValue: "Ensaios Não Conformes" }), testsFail)}
-          ${kpiRow(t("qcReport.kpi.testPending", { defaultValue: "Ensaios Pendentes" }), testsPending)}
-          ${kpiRow(t("qcReport.kpi.ncOpen", { defaultValue: "NC Abertas" }), ncsOpen)}
-          ${kpiRow(t("qcReport.kpi.ncClosed", { defaultValue: "NC Fechadas (período)" }), ncsClosed)}
-          ${kpiRow(t("qcReport.kpi.docsApproved", { defaultValue: "Docs Aprovados" }), docsApproved)}
-          ${kpiRow(t("qcReport.kpi.docsReview", { defaultValue: "Docs em Revisão" }), docsInReview)}
-          ${kpiRow(t("qcReport.kpi.expiring", { defaultValue: "Itens a Expirar (30d)" }), expiringCals + expiringSuppDocs + expiringSubDocs)}
-          ${kpiRow(t("qcReport.kpi.period", { defaultValue: "Período" }), `${fmtDate(startDate, locale)} — ${fmtDate(endDate, locale)}`)}
+          ${kpiRow(t("qcReport.kpi.testPass"), testsPass)}
+          ${kpiRow(t("qcReport.kpi.testFail"), testsFail)}
+          ${kpiRow(t("qcReport.kpi.testPending"), testsPending)}
+          ${kpiRow(t("qcReport.kpi.ncOpen"), ncsOpen)}
+          ${kpiRow(t("qcReport.kpi.ncClosed"), ncsClosed)}
+          ${kpiRow(t("qcReport.kpi.docsApproved"), docsApproved)}
+          ${kpiRow(t("qcReport.kpi.docsReview"), docsInReview)}
+          ${kpiRow(t("qcReport.kpi.expiring"), expiringCals + expiringSuppDocs + expiringSubDocs)}
+          ${kpiRow(t("qcReport.kpi.period"), `${fmtDate(startDate, locale)} — ${fmtDate(endDate, locale)}`)}
         </div>
 
-        <div class="atlas-section">${t("qcReport.sections.criticalNc", { defaultValue: "NCs Críticas (Top 10)" })}</div>
+        <div class="atlas-section">${t("qcReport.sections.criticalNc")}</div>
         <table class="atlas-table">
-          <thead><tr><th>Código</th><th>Título</th><th>Gravidade</th><th>Estado</th><th>Data</th></tr></thead>
-          <tbody>${criticalNcs.map(n => `<tr><td>${n.code ?? "—"}</td><td>${n.title ?? "—"}</td><td>${n.severity}</td><td>${n.status}</td><td>${fmtDate(n.detected_at, locale)}</td></tr>`).join("") || `<tr><td colspan="5" style="text-align:center;color:#999;">—</td></tr>`}</tbody>
+          <thead><tr><th>${h("code")}</th><th>${h("title")}</th><th>${h("severity")}</th><th>${h("status")}</th><th>${h("date")}</th></tr></thead>
+          <tbody>${criticalNcs.map(n => `<tr><td>${n.code ?? "—"}</td><td>${n.title ?? "—"}</td><td>${tStatus(n.severity)}</td><td>${tStatus(n.status)}</td><td>${fmtDate(n.detected_at, locale)}</td></tr>`).join("") || `<tr><td colspan="5" style="text-align:center;color:#999;">—</td></tr>`}</tbody>
         </table>
 
-        <div class="atlas-section">${t("qcReport.sections.failedTests", { defaultValue: "Ensaios Não Conformes" })}</div>
+        <div class="atlas-section">${t("qcReport.sections.failedTests")}</div>
         <table class="atlas-table">
-          <thead><tr><th>Código</th><th>Relatório</th><th>Data</th><th>Estado</th></tr></thead>
-          <tbody>${failedTests.map((t: any) => `<tr><td>${t.code ?? "—"}</td><td>${t.report_number ?? "—"}</td><td>${fmtDate(t.test_date, locale)}</td><td>${t.status}</td></tr>`).join("") || `<tr><td colspan="4" style="text-align:center;color:#999;">—</td></tr>`}</tbody>
+          <thead><tr><th>${h("code")}</th><th>${h("report")}</th><th>${h("date")}</th><th>${h("status")}</th></tr></thead>
+          <tbody>${failedTests.map((t: any) => `<tr><td>${t.code ?? "—"}</td><td>${t.report_number ?? "—"}</td><td>${fmtDate(t.test_date, locale)}</td><td>${tStatus(t.status)}</td></tr>`).join("") || `<tr><td colspan="4" style="text-align:center;color:#999;">—</td></tr>`}</tbody>
         </table>
 
-        <div class="atlas-section">${t("qcReport.sections.expiredCals", { defaultValue: "Calibrações Expiradas / A Expirar" })}</div>
+        <div class="atlas-section">${t("qcReport.sections.expiredCals")}</div>
         <table class="atlas-table">
-          <thead><tr><th>Certificado</th><th>Válido até</th><th>Estado</th></tr></thead>
-          <tbody>${expiredCals.map(c => `<tr><td>${c.certificate_number ?? "—"}</td><td>${fmtDate(c.valid_until, locale)}</td><td>${c.status}</td></tr>`).join("") || `<tr><td colspan="3" style="text-align:center;color:#999;">—</td></tr>`}</tbody>
+          <thead><tr><th>${h("certificate")}</th><th>${h("validUntil")}</th><th>${h("status")}</th></tr></thead>
+          <tbody>${expiredCals.map(c => `<tr><td>${c.certificate_number ?? "—"}</td><td>${fmtDate(c.valid_until, locale)}</td><td>${tStatus(c.status)}</td></tr>`).join("") || `<tr><td colspan="3" style="text-align:center;color:#999;">—</td></tr>`}</tbody>
         </table>
 
         <div style="margin-top:24px;padding-top:16px;border-top:2px solid #2F4F75;">
-          <p style="font-size:10px;font-weight:700;color:#2F4F75;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:8px;">${t("qcReport.signature.title", { defaultValue: "Assinatura Simples" })}</p>
+          <p style="font-size:10px;font-weight:700;color:#2F4F75;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:8px;">${t("qcReport.signature.title")}</p>
           <div class="atlas-info-grid" style="grid-template-columns:1fr 1fr 1fr;">
-            ${kpiRow(t("qcReport.signature.name", { defaultValue: "Gerado por" }), user?.email ?? "—")}
-            ${kpiRow(t("qcReport.signature.timestamp", { defaultValue: "Data/Hora" }), new Date().toISOString())}
-            ${kpiRow(t("qcReport.signature.checksum", { defaultValue: "Checksum" }), checksum)}
+            ${kpiRow(t("qcReport.signature.name"), user?.email ?? "—")}
+            ${kpiRow(t("qcReport.signature.timestamp"), new Date().toISOString())}
+            ${kpiRow(t("qcReport.signature.checksum"), checksum)}
           </div>
         </div>
       `;

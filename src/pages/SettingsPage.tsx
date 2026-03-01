@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
+import { useTheme } from "@/components/theme/ThemeProvider";
 import {
   Settings, Users, ShieldCheck, Sliders, Globe, Bell, Lock,
   Building2, Mail, UserCheck, Key, Database, ChevronRight,
-  Plus, Trash2, UserMinus, Loader2,
+  Plus, Trash2, UserMinus, Loader2, Sun, Moon, Monitor,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -99,6 +100,7 @@ export default function SettingsPage() {
   const { activeProject } = useProject();
   const { user } = useAuth();
   const { isAdmin, role: myRole } = useProjectRole();
+  const { theme, setTheme } = useTheme();
 
   const [members, setMembers] = useState<ProjectMember[]>([]);
   const [invites, setInvites] = useState<ProjectInvite[]>([]);
@@ -356,7 +358,7 @@ export default function SettingsPage() {
             <TableBody>
               {members.map(m => {
                 const isMe = m.user_id === user?.id;
-                const displayName = m.profile?.full_name || m.profile?.email || m.user_id.substring(0, 8);
+                const displayName = m.profile?.full_name || m.profile?.email || user?.email?.split("@")[0] || m.user_id.substring(0, 8);
                 const displayEmail = m.profile?.email || "—";
                 const color = ROLE_COLOR[m.role] ?? MOD.muted;
                 return (
@@ -478,7 +480,22 @@ export default function SettingsPage() {
           </Select>
         </div>
         <SettingsRow label={s("preferences.timezone")} description={s("preferences.timezoneDesc")} icon={Sliders} comingSoon comingSoonLabel={cs} />
-        <SettingsRow label={s("preferences.theme")} description={s("preferences.themeDesc")} icon={Settings} comingSoon comingSoonLabel={cs} />
+        {/* Theme Selector - Functional */}
+        <div className="flex items-center gap-3 py-3 border-b border-border/50 hover:bg-muted/30 -mx-2 px-2 rounded-lg transition-colors duration-150">
+          <Settings className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+          <div className="flex-1 min-w-0">
+            <p className="text-[12.5px] font-medium text-foreground leading-none">{s("preferences.theme")}</p>
+            <p className="text-[11px] text-muted-foreground mt-0.5 leading-snug">{s("preferences.themeDesc")}</p>
+          </div>
+          <Select value={theme} onValueChange={(v: any) => setTheme(v)}>
+            <SelectTrigger className="w-[130px] h-7 text-xs"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="light"><div className="flex items-center gap-1.5"><Sun className="h-3 w-3" />{t("topbar.themeLight")}</div></SelectItem>
+              <SelectItem value="dark"><div className="flex items-center gap-1.5"><Moon className="h-3 w-3" />{t("topbar.themeDark")}</div></SelectItem>
+              <SelectItem value="system"><div className="flex items-center gap-1.5"><Monitor className="h-3 w-3" />{t("topbar.themeSystem")}</div></SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </SettingsSection>
     </div>
   );

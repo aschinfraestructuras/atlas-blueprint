@@ -2114,7 +2114,64 @@
       "noLinks": "Sem ligações a Work Items ou Subempreiteiros."
     }
   },
-  
+  "mapMas": {
+    "title": "Aprovação MAP/MAS",
+    "subtitle": "Gestão de submissões de aprovação de materiais",
+    "newSubmission": "Nova Submissão",
+    "searchPlaceholder": "Pesquisar por título, código…",
+    "empty": "Ainda não existem submissões MAP/MAS. Crie a primeira.",
+    "filters": {
+      "allStatuses": "Todos os estados"
+    },
+    "table": {
+      "code": "Código",
+      "title": "Título",
+      "type": "Tipo"
+    },
+    "actions": {
+      "submit": "Submeter",
+      "approve": "Aprovar",
+      "reject": "Rejeitar"
+    },
+    "toast": {
+      "submitSuccess": "MAP/MAS submetido para revisão.",
+      "approveSuccess": "MAP/MAS aprovado com sucesso.",
+      "rejectSuccess": "MAP/MAS rejeitado.",
+      "error": "Erro na operação MAP/MAS."
+    }
+  },
+  "expirations": {
+    "title": "Centro de Expirações",
+    "subtitle": "Monitorização de documentos e certificados a expirar",
+    "empty": "Sem itens a expirar nos próximos 90 dias.",
+    "summary": {
+      "total": "Total",
+      "expired": "Expirados",
+      "expiring": "A Expirar",
+      "domains": "Domínios"
+    },
+    "tabs": {
+      "all": "Todos",
+      "suppliers": "Fornecedores",
+      "subcontractors": "Subempreiteiros",
+      "calibrations": "Calibrações",
+      "materials": "Materiais"
+    },
+    "filters": {
+      "allUrgency": "Todas as urgências",
+      "expired": "Expirado",
+      "7days": "≤ 7 dias",
+      "30days": "≤ 30 dias",
+      "60days": "≤ 60 dias",
+      "90days": "≤ 90 dias"
+    },
+    "table": {
+      "entity": "Entidade",
+      "document": "Documento",
+      "validTo": "Validade",
+      "days": "Dias"
+    }
+  },
   "qcReport": {
     "module": "Relatórios",
     "title": "Relatório QC",
@@ -2152,7 +2209,35 @@
       "name": "Gerado por",
       "timestamp": "Data/Hora",
       "checksum": "Checksum"
+    },
+    "pdfHeaders": {
+      "code": "Código",
+      "title": "Título",
+      "severity": "Gravidade",
+      "status": "Estado",
+      "date": "Data",
+      "report": "Relatório",
+      "certificate": "Certificado",
+      "validUntil": "Válido até"
+    },
+    "pdfStatus": {
+      "open": "Aberta",
+      "in_progress": "Em curso",
+      "closed": "Fechada",
+      "draft": "Rascunho",
+      "pending": "Pendente",
+      "approved": "Aprovado",
+      "completed": "Concluído",
+      "verified": "Verificado",
+      "archived": "Arquivado",
+      "valid": "Válido",
+      "expired": "Expirado",
+      "expiring_soon": "A expirar"
     }
+  },
+  "report": {
+    "generatedOn": "Gerado em",
+    "qualityManagementSystem": "Sistema de Gestão da Qualidade"
   },
   "globalSearch": {
     "title": "Pesquisa Global",

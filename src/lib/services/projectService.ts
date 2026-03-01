@@ -90,6 +90,14 @@ export const projectService = {
     if (error) throw error;
   },
 
+  async softDelete(id: string): Promise<void> {
+    const { error } = await supabase
+      .from("projects")
+      .update({ status: "inactive" })
+      .eq("id", id);
+    if (error) throw error;
+  },
+
   async isCodeUnique(code: string, excludeId?: string): Promise<boolean> {
     let query = supabase
       .from("projects")
