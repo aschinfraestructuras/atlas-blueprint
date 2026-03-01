@@ -18,6 +18,7 @@ import {
   ArchiveRestore,
   Building,
   User,
+  Trash2,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -31,6 +32,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
 
 const STATUS_BADGE: Record<string, string> = {
@@ -67,6 +72,7 @@ export default function ProjectsPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [archiving, setArchiving] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Project | null>(null);
 
   const filtered = projects.filter((p) =>
     tab === "active" ? p.status !== "archived" : p.status === "archived"
@@ -128,6 +134,31 @@ export default function ProjectsPage() {
   const handleSetActive = (project: Project) => {
     setActiveProject(project);
     toast({ title: t("projects.toast.activated", { name: project.name }) });
+  };
+
+  const handleDelete = async (project: Project) => {
+    try {
+      await projectService.softDelete(project.id);
+      const { auditService } = await import("@/lib/services/auditService");
+      await auditService.log({
+        projectId: project.id,
+        entity: "projects",
+        entityId: project.id,
+        action: "DELETE",
+        module: "projects",
+        description: `Project soft-deleted: ${project.name}`,
+        diff: { status: "inactive" },
+      });
+      toast({ title: t("projects.toast.deleted", { defaultValue: "Projeto eliminado." }) });
+      if (activeProject?.id === project.id) {
+        const others = projects.filter(p => p.id !== project.id && p.status === "active");
+        if (others.length > 0) setActiveProject(others[0]);
+      }
+      refetch();
+    } catch (err) {
+      toast({ title: t("projects.toast.error"), description: err instanceof Error ? err.message : "", variant: "destructive" });
+    }
+    setDeleteTarget(null);
   };
 
   return (
@@ -276,6 +307,13 @@ export default function ProjectsPage() {
                               </>
                             )}
                           </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => setDeleteTarget(project)}
+                            className="gap-2 text-sm text-destructive"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                            {t("common.delete")}
+                          </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </div>
@@ -331,6 +369,24 @@ export default function ProjectsPage() {
         project={editingProject}
         onSuccess={refetch}
       />
+
+      {/* Delete confirmation */}
+      <AlertDialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("common.deleteConfirmTitle", { defaultValue: "Confirmar eliminação" })}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("projects.deleteConfirm", { defaultValue: "Tem a certeza que deseja eliminar o projeto \"{{name}}\"? Esta ação é irreversível.", name: deleteTarget?.name })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+            <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={() => deleteTarget && handleDelete(deleteTarget)}>
+              {t("common.delete")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

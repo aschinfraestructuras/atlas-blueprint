@@ -206,7 +206,7 @@ export function headerHtml(
     <div class="atlas-brand-logo">A</div>
     <div>
       <div class="atlas-brand-app">${labels.appName}</div>
-      <div class="atlas-brand-sub">Quality Management System</div>
+      <div class="atlas-brand-sub">${meta.locale === "es" ? "Sistema de Gestión de Calidad" : "Sistema de Gestão da Qualidade"}</div>
     </div>
   </div>
   <div class="atlas-meta">
@@ -221,10 +221,11 @@ export function headerHtml(
 /**
  * Build footer HTML.
  */
-export function footerHtml(ref: string, labels: ReportLabels): string {
+export function footerHtml(ref: string, labels: ReportLabels, locale?: string): string {
+  const sysLabel = locale === "es" ? "Sistema de Gestión de Calidad" : "Sistema de Gestão da Qualidade";
   return `
 <div class="atlas-footer">
-  <span>${labels.appName} · Quality Management System</span>
+  <span>${labels.appName} · ${sysLabel}</span>
   <span>${ref}</span>
 </div>`;
 }
@@ -288,7 +289,7 @@ export function generatePdfDocument(opts: {
 <body>
 ${headerHtml(opts.labels.reportTitle, opts.labels, opts.meta)}
 ${opts.bodyHtml}
-${footerHtml(opts.footerRef, opts.labels)}
+${footerHtml(opts.footerRef, opts.labels, opts.meta.locale)}
 </body>
 </html>`;
 }
