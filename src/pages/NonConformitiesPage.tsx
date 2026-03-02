@@ -15,7 +15,7 @@ import { toast } from "@/hooks/use-toast";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { getNCTransitions } from "@/lib/stateMachines";
 import {
-  AlertTriangle, Calendar, Plus, Pencil, ChevronDown,
+  AlertTriangle, Calendar, Plus, Pencil, ChevronDown, Trash2,
   Eye, Loader2, Database, Search, X, CheckSquare, Square, FileDown,
 } from "lucide-react";
 import {
@@ -594,11 +594,28 @@ export default function NonConformitiesPage() {
                                 <DropdownMenuItem key={s} onClick={() => handleTransition(nc, s)}>
                                   {t(`nc.transitions.${s}`, { defaultValue: s })}
                                 </DropdownMenuItem>
-                              ))}
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        )}
-                      </div>
+                                ))}
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          )}
+                          <Button
+                            variant="ghost" size="icon"
+                            className="h-7 w-7 text-destructive hover:text-destructive"
+                            onClick={async () => {
+                              try {
+                                await ncService.updateStatus(nc.id, "archived");
+                                toast({ title: t("nc.toast.statusChanged", { status: t("nc.status.archived") }) });
+                                refetch();
+                              } catch (err) {
+                                const info = classifySupabaseError(err, t);
+                                toast({ title: info.title, description: info.description ?? info.raw, variant: "destructive" });
+                              }
+                            }}
+                            title={t("common.delete")}
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
                     </TableCell>
                   </TableRow>
 

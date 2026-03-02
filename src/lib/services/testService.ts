@@ -365,4 +365,22 @@ export const testService = {
       pending:  rows.filter((r) => ["draft", "in_progress", "pending"].includes(r.status)).length,
     };
   },
+
+  async archiveResult(id: string, projectId: string): Promise<void> {
+    const { error } = await supabase
+      .from("test_results")
+      .update({ status: "archived" } as any)
+      .eq("id", id)
+      .eq("project_id", projectId);
+    if (error) throw error;
+    await auditService.log({
+      projectId,
+      entity: "test_results",
+      entityId: id,
+      action: "STATUS_CHANGE",
+      module: "tests",
+      description: "Test result archived",
+      diff: { status: "archived" },
+    });
+  },
 };

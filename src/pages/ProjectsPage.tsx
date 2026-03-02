@@ -75,10 +75,10 @@ export default function ProjectsPage() {
   const [deleteTarget, setDeleteTarget] = useState<Project | null>(null);
 
   const filtered = projects.filter((p) =>
-    tab === "active" ? p.status !== "archived" : p.status === "archived"
+    tab === "active" ? p.status !== "archived" && p.status !== "inactive" : p.status === "archived"
   );
 
-  const activeCount = projects.filter((p) => p.status !== "archived").length;
+  const activeCount = projects.filter((p) => p.status !== "archived" && p.status !== "inactive").length;
   const archivedCount = projects.filter((p) => p.status === "archived").length;
 
   const openCreate = () => {

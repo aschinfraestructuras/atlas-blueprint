@@ -41,7 +41,6 @@ const NAV_SECTIONS: SidebarSection[] = [
       { labelKey: "nav.tests",          url: "/tests",            icon: FlaskConical },
       { labelKey: "nav.suppliers",      url: "/suppliers",        icon: Truck },
       { labelKey: "nav.materials",      url: "/materials",        icon: Package },
-      { labelKey: "nav.mapMas",          url: "/materials/map-mas", icon: FileCheck },
       { labelKey: "nav.nonConformities", url: "/non-conformities", icon: AlertTriangle },
     ],
   },
