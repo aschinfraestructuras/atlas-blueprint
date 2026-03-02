@@ -2128,12 +2128,33 @@
       "title": "Título",
       "type": "Tipo"
     },
+    "form": {
+      "titleCreate": "Nova Submissão MAP/MAS",
+      "titleEdit": "Editar MAP/MAS",
+      "title": "Título",
+      "material": "Material",
+      "selectMaterial": "Selecionar material",
+      "submissionType": "Tipo de Submissão",
+      "supplier": "Fornecedor",
+      "subcontractor": "Subempreiteiro",
+      "workItem": "Trabalho",
+      "zone": "Zona",
+      "pk": "PK",
+      "lotRef": "Ref. Lote",
+      "normativeRefs": "Referências Normativas",
+      "acceptanceCriteria": "Critérios de Aceitação",
+      "deadline": "Prazo",
+      "observations": "Observações",
+      "createBtn": "Criar Submissão"
+    },
     "actions": {
       "submit": "Submeter",
       "approve": "Aprovar",
       "reject": "Rejeitar"
     },
     "toast": {
+      "created": "MAP/MAS criado com sucesso.",
+      "updated": "MAP/MAS atualizado com sucesso.",
       "submitSuccess": "MAP/MAS submetido para revisão.",
       "approveSuccess": "MAP/MAS aprovado com sucesso.",
       "rejectSuccess": "MAP/MAS rejeitado.",

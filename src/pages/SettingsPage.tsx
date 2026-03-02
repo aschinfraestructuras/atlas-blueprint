@@ -358,8 +358,8 @@ export default function SettingsPage() {
             <TableBody>
               {members.map(m => {
                 const isMe = m.user_id === user?.id;
-                const displayName = m.profile?.full_name || m.profile?.email || user?.email?.split("@")[0] || m.user_id.substring(0, 8);
-                const displayEmail = m.profile?.email || "—";
+                const displayEmail = m.profile?.email || (isMe ? user?.email : null) || m.user_id.substring(0, 8);
+                const displayName = m.profile?.full_name || displayEmail;
                 const color = ROLE_COLOR[m.role] ?? MOD.muted;
                 return (
                   <TableRow key={m.user_id}>

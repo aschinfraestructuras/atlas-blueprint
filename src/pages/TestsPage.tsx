@@ -11,7 +11,7 @@ import {
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { toast } from "@/hooks/use-toast";
 import {
-  FlaskConical, Plus, Pencil, Search, Filter, Archive, Copy,
+  FlaskConical, Plus, Pencil, Search, Filter, Archive, Copy, Trash2,
   CheckCircle2, XCircle, Clock, AlertCircle, BookOpen, FileDown,
   Loader2,
 } from "lucide-react";
@@ -536,7 +536,6 @@ function ResultsTab() {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-0.5">
-                        {/* Export individual */}
                         <Button
                           variant="ghost" size="icon"
                           className="h-7 w-7 text-muted-foreground hover:text-primary"
@@ -545,7 +544,6 @@ function ResultsTab() {
                         >
                           <FileDown className="h-3.5 w-3.5" />
                         </Button>
-                        {/* Edit */}
                         <Button
                           variant="ghost" size="icon"
                           className="h-7 w-7 text-muted-foreground hover:text-foreground"
@@ -553,6 +551,24 @@ function ResultsTab() {
                           onClick={() => { setEditing(r); setDialogOpen(true); }}
                         >
                           <Pencil className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button
+                          variant="ghost" size="icon"
+                          className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                          title={t("common.delete")}
+                          onClick={async () => {
+                            if (!activeProject) return;
+                            try {
+                              await testService.archiveResult(r.id, activeProject.id);
+                              toast({ title: t("tests.results.toast.archived") });
+                              load();
+                            } catch (err) {
+                              const info = classifySupabaseError(err);
+                              toast({ title: t(info.titleKey), description: info.raw, variant: "destructive" });
+                            }
+                          }}
+                        >
+                          <Archive className="h-3.5 w-3.5" />
                         </Button>
                       </div>
                     </TableCell>
