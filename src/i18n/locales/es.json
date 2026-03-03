@@ -1092,28 +1092,96 @@
   },
   "technicalOffice": {
     "newItem": "Nuevo Ítem",
+    "newRfi": "Nuevo RFI",
+    "subtitle": "RFIs, Submittals, Transmittals y Aclaraciones",
+    "searchPlaceholder": "Buscar código, asunto…",
     "table": {
       "type": "Tipo",
       "title": "Título",
-      "dueDate": "Plazo"
+      "dueDate": "Plazo",
+      "code": "Código",
+      "subject": "Asunto",
+      "priority": "Prioridad",
+      "deadline": "Plazo"
     },
     "types": {
       "RFI": "RFI",
       "Submittal": "Submittal",
-      "Clarification": "Aclaración"
+      "SUBMITTAL": "Submittal",
+      "Clarification": "Aclaración",
+      "CLARIFICATION": "Solicitud Aclaración",
+      "TRANSMITTAL": "Transmittal",
+      "APPROVAL_REQUEST": "Solicitud Aprobación",
+      "CHANGE_NOTICE": "Cambio / VO"
+    },
+    "priority": {
+      "low": "Baja",
+      "normal": "Normal",
+      "high": "Alta",
+      "urgent": "Urgente"
     },
     "status": {
+      "draft": "Borrador",
       "open": "Abierto",
+      "in_review": "En Análisis",
       "in_progress": "En Curso",
+      "responded": "Respondido",
+      "answered": "Respondido",
       "closed": "Cerrado",
-      "cancelled": "Cancelado"
+      "cancelled": "Cancelado",
+      "archived": "Archivado",
+      "awaiting_response": "Esperando Respuesta"
+    },
+    "filters": {
+      "allStatuses": "Todos los estados",
+      "allPriorities": "Todas las prioridades",
+      "allTypes": "Todos los tipos",
+      "overdue": "⚠ Atrasados"
+    },
+    "tabs": {
+      "all": "Todos",
+      "others": "Otros"
+    },
+    "kpi": {
+      "open": "Abiertos",
+      "inReview": "En Análisis",
+      "overdue": "Atrasados",
+      "closed30": "Cerrados (30d)"
+    },
+    "detail": {
+      "tabDetails": "Detalles",
+      "tabMessages": "Mensajes",
+      "tabAttachments": "Adjuntos",
+      "recipient": "Destinatario",
+      "respondedAt": "Respondido el",
+      "noDescription": "Sin descripción."
+    },
+    "rfi": {
+      "createTitle": "Nuevo RFI",
+      "editTitle": "Editar RFI",
+      "createBtn": "Crear RFI",
+      "subjectPlaceholder": "Asunto del RFI",
+      "descriptionPlaceholder": "Detalles de la solicitud",
+      "zone": "Zona",
+      "workItem": "Actividad",
+      "selectWorkItem": "Seleccionar actividad…",
+      "linkedNc": "NC Asociada:",
+      "overdue": "Atrasado",
+      "messagesTitle": "Historial de Mensajes",
+      "noMessages": "Sin mensajes. Envíe el primero para iniciar el hilo.",
+      "messagePlaceholder": "Escriba un mensaje…",
+      "changeStatus": "Cambiar estado:",
+      "statusChanged": "Estado actualizado.",
+      "cannotCloseNoResponse": "Cerrar requiere al menos una respuesta.",
+      "deleteTitle": "¿Eliminar RFI?",
+      "deleteDesc": "El RFI será archivado (soft-delete). El historial se preservará para trazabilidad."
     },
     "form": {
       "titleCreate": "Nuevo Ítem — Oficina Técnica",
       "titleEdit": "Editar Ítem",
       "type": "Tipo",
       "title": "Título",
-      "titlePlaceholder": "ej: RFI sobre espesor de hormigón",
+      "titlePlaceholder": "ej: Submittal sobre hormigón armado",
       "descriptionPlaceholder": "Describa la solicitud o aclaración…",
       "dueDate": "Plazo de respuesta",
       "createBtn": "Crear ítem"
@@ -1121,6 +1189,10 @@
     "toast": {
       "created": "Ítem creado con éxito.",
       "updated": "Ítem actualizado con éxito.",
+      "deleted": "Ítem eliminado.",
+      "rfiCreated": "RFI creado con éxito.",
+      "rfiUpdated": "RFI actualizado.",
+      "rfiDeleted": "RFI eliminado.",
       "error": "Ocurrió un error. Inténtelo de nuevo."
     }
   },

@@ -2283,43 +2283,76 @@ export type Database = {
       }
       technical_office_items: {
         Row: {
+          assigned_to: string | null
+          code: string | null
           created_at: string
           created_by: string
+          deadline: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           description: string | null
           document_id: string | null
           due_date: string | null
           id: string
+          is_deleted: boolean
+          nc_id: string | null
+          priority: string
           project_id: string
+          recipient: string | null
+          responded_at: string | null
           status: string
           title: string
           type: string
           updated_at: string
+          work_item_id: string | null
         }
         Insert: {
+          assigned_to?: string | null
+          code?: string | null
           created_at?: string
           created_by: string
+          deadline?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           description?: string | null
           document_id?: string | null
           due_date?: string | null
           id?: string
+          is_deleted?: boolean
+          nc_id?: string | null
+          priority?: string
           project_id: string
+          recipient?: string | null
+          responded_at?: string | null
           status?: string
           title: string
           type?: string
           updated_at?: string
+          work_item_id?: string | null
         }
         Update: {
+          assigned_to?: string | null
+          code?: string | null
           created_at?: string
           created_by?: string
+          deadline?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           description?: string | null
           document_id?: string | null
           due_date?: string | null
           id?: string
+          is_deleted?: boolean
+          nc_id?: string | null
+          priority?: string
           project_id?: string
+          recipient?: string | null
+          responded_at?: string | null
           status?: string
           title?: string
           type?: string
           updated_at?: string
+          work_item_id?: string | null
         }
         Relationships: [
           {
@@ -2327,6 +2360,13 @@ export type Database = {
             columns: ["document_id"]
             isOneToOne: false
             referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "technical_office_items_nc_id_fkey"
+            columns: ["nc_id"]
+            isOneToOne: false
+            referencedRelation: "non_conformities"
             referencedColumns: ["id"]
           },
           {
@@ -2342,6 +2382,48 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "view_dashboard_summary"
             referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "technical_office_items_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      technical_office_messages: {
+        Row: {
+          attachment_url: string | null
+          created_at: string
+          id: string
+          item_id: string
+          message: string
+          user_id: string
+        }
+        Insert: {
+          attachment_url?: string | null
+          created_at?: string
+          id?: string
+          item_id: string
+          message: string
+          user_id: string
+        }
+        Update: {
+          attachment_url?: string | null
+          created_at?: string
+          id?: string
+          item_id?: string
+          message?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "technical_office_messages_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "technical_office_items"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -3930,6 +4012,10 @@ export type Database = {
         }
       }
       fn_next_ppi_code: { Args: { p_project_id: string }; Returns: string }
+      fn_next_tech_office_code: {
+        Args: { p_prefix: string; p_project_id: string }
+        Returns: string
+      }
       fn_ppi_bulk_mark_ok: { Args: { p_instance_id: string }; Returns: number }
       fn_ppi_bulk_save_items: {
         Args: { p_instance_id: string; p_items: Json }
