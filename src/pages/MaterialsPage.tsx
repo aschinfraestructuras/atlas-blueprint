@@ -50,6 +50,8 @@ export default function MaterialsPage() {
   const [filterCategory, setFilterCategory] = useState("all");
   const [activeTab, setActiveTab] = useState("materials");
 
+  const [filterApproval, setFilterApproval] = useState("all");
+
   const filtered = useMemo(() => {
     let result = materials;
     if (search) {
@@ -57,13 +59,15 @@ export default function MaterialsPage() {
       result = result.filter(m =>
         m.name.toLowerCase().includes(q) ||
         m.code.toLowerCase().includes(q) ||
-        (m.specification ?? "").toLowerCase().includes(q)
+        (m.specification ?? "").toLowerCase().includes(q) ||
+        (m.normative_refs ?? "").toLowerCase().includes(q)
       );
     }
     if (filterStatus !== "all") result = result.filter(m => m.status === filterStatus);
     if (filterCategory !== "all") result = result.filter(m => m.category === filterCategory);
+    if (filterApproval !== "all") result = result.filter(m => m.approval_status === filterApproval);
     return result;
-  }, [materials, search, filterStatus, filterCategory]);
+  }, [materials, search, filterStatus, filterCategory, filterApproval]);
 
   if (!activeProject) return <NoProjectBanner />;
 
@@ -171,6 +175,18 @@ export default function MaterialsPage() {
                 ))}
               </SelectContent>
             </Select>
+            <Select value={filterApproval} onValueChange={setFilterApproval}>
+              <SelectTrigger className="w-[160px] h-9 text-sm"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t("materials.filters.allApprovals")}</SelectItem>
+                <SelectItem value="pending">{t("materials.approval.statuses.pending")}</SelectItem>
+                <SelectItem value="submitted">{t("materials.approval.statuses.submitted")}</SelectItem>
+                <SelectItem value="in_review">{t("materials.approval.statuses.in_review")}</SelectItem>
+                <SelectItem value="approved">{t("materials.approval.statuses.approved")}</SelectItem>
+                <SelectItem value="rejected">{t("materials.approval.statuses.rejected")}</SelectItem>
+                <SelectItem value="conditional">{t("materials.approval.statuses.conditional")}</SelectItem>
+              </SelectContent>
+            </Select>
           </FilterBar>
 
           {error && (
@@ -197,8 +213,9 @@ export default function MaterialsPage() {
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("materials.form.category")}</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("materials.form.specification")}</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("materials.form.unit")}</TableHead>
-                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.status")}</TableHead>
-                    <TableHead className="w-28" />
+                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.status")}</TableHead>
+                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("materials.approval.mapMas")}</TableHead>
+                     <TableHead className="w-28" />
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -215,9 +232,17 @@ export default function MaterialsPage() {
                       <TableCell className="text-sm text-muted-foreground">{m.specification ?? "—"}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">{m.unit ?? "—"}</TableCell>
                       <TableCell>
-                        <Badge variant="secondary" className={cn("text-xs", STATUS_COLORS[m.status] ?? "")}>{t(`materials.status.${m.status}`)}</Badge>
-                      </TableCell>
-                      <TableCell>
+                         <Badge variant="secondary" className={cn("text-xs", STATUS_COLORS[m.status] ?? "")}>{t(`materials.status.${m.status}`)}</Badge>
+                       </TableCell>
+                       <TableCell>
+                         <Badge variant="secondary" className={cn("text-xs",
+                           m.approval_status === "approved" ? "bg-chart-2/15 text-chart-2" :
+                           m.approval_status === "rejected" ? "bg-destructive/10 text-destructive" :
+                           m.approval_status === "conditional" ? "bg-amber-500/15 text-amber-600" :
+                           m.approval_status === "in_review" ? "bg-primary/15 text-primary" : ""
+                         )}>{t(`materials.approval.statuses.${m.approval_status}`, { defaultValue: m.approval_status })}</Badge>
+                       </TableCell>
+                       <TableCell>
                         <div className="flex gap-1" onClick={e => e.stopPropagation()}>
                           <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => navigate(`/materials/${m.id}`)} title={t("common.view")}>
                             <Eye className="h-3.5 w-3.5" />

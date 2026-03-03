@@ -480,6 +480,8 @@ export type Database = {
           id: string
           material_id: string
           project_id: string
+          status: string
+          valid_from: string | null
           valid_to: string | null
         }
         Insert: {
@@ -489,6 +491,8 @@ export type Database = {
           id?: string
           material_id: string
           project_id: string
+          status?: string
+          valid_from?: string | null
           valid_to?: string | null
         }
         Update: {
@@ -498,6 +502,8 @@ export type Database = {
           id?: string
           material_id?: string
           project_id?: string
+          status?: string
+          valid_from?: string | null
           valid_to?: string | null
         }
         Relationships: [
@@ -541,10 +547,15 @@ export type Database = {
       materials: {
         Row: {
           acceptance_criteria: string | null
+          approval_required: boolean
+          approval_status: string
+          approved_at: string | null
+          approved_by: string | null
           category: string
           code: string
           created_at: string
           created_by: string | null
+          current_approved_doc_id: string | null
           deleted_at: string | null
           deleted_by: string | null
           id: string
@@ -552,18 +563,27 @@ export type Database = {
           name: string
           normative_refs: string | null
           project_id: string
+          rejection_reason: string | null
           specification: string | null
           status: string
           subcategory: string | null
+          submitted_at: string | null
+          submitted_by: string | null
+          supplier_id: string | null
           unit: string | null
           updated_at: string
         }
         Insert: {
           acceptance_criteria?: string | null
+          approval_required?: boolean
+          approval_status?: string
+          approved_at?: string | null
+          approved_by?: string | null
           category: string
           code: string
           created_at?: string
           created_by?: string | null
+          current_approved_doc_id?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
           id?: string
@@ -571,18 +591,27 @@ export type Database = {
           name: string
           normative_refs?: string | null
           project_id: string
+          rejection_reason?: string | null
           specification?: string | null
           status?: string
           subcategory?: string | null
+          submitted_at?: string | null
+          submitted_by?: string | null
+          supplier_id?: string | null
           unit?: string | null
           updated_at?: string
         }
         Update: {
           acceptance_criteria?: string | null
+          approval_required?: boolean
+          approval_status?: string
+          approved_at?: string | null
+          approved_by?: string | null
           category?: string
           code?: string
           created_at?: string
           created_by?: string | null
+          current_approved_doc_id?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
           id?: string
@@ -590,9 +619,13 @@ export type Database = {
           name?: string
           normative_refs?: string | null
           project_id?: string
+          rejection_reason?: string | null
           specification?: string | null
           status?: string
           subcategory?: string | null
+          submitted_at?: string | null
+          submitted_by?: string | null
+          supplier_id?: string | null
           unit?: string | null
           updated_at?: string
         }
@@ -3400,10 +3433,15 @@ export type Database = {
         }
         Returns: {
           acceptance_criteria: string | null
+          approval_required: boolean
+          approval_status: string
+          approved_at: string | null
+          approved_by: string | null
           category: string
           code: string
           created_at: string
           created_by: string | null
+          current_approved_doc_id: string | null
           deleted_at: string | null
           deleted_by: string | null
           id: string
@@ -3411,9 +3449,13 @@ export type Database = {
           name: string
           normative_refs: string | null
           project_id: string
+          rejection_reason: string | null
           specification: string | null
           status: string
           subcategory: string | null
+          submitted_at: string | null
+          submitted_by: string | null
+          supplier_id: string | null
           unit: string | null
           updated_at: string
         }
