@@ -31,12 +31,14 @@ export interface SubcontractorInput {
 }
 
 export const subcontractorService = {
-  async getByProject(projectId: string): Promise<Subcontractor[]> {
-    const { data, error } = await supabase
+  async getByProject(projectId: string, includeDeleted = false): Promise<Subcontractor[]> {
+    let q = supabase
       .from("subcontractors")
       .select("*")
       .eq("project_id", projectId)
       .order("created_at", { ascending: false });
+    if (!includeDeleted) q = q.eq("is_deleted", false);
+    const { data, error } = await q;
     if (error) throw error;
     return data as Subcontractor[];
   },
@@ -93,18 +95,43 @@ export const subcontractorService = {
     return data as Subcontractor;
   },
 
-  async delete(id: string, projectId: string): Promise<void> {
+  async softDelete(id: string, projectId: string): Promise<void> {
+    const { data: { user } } = await supabase.auth.getUser();
     const { error } = await supabase
       .from("subcontractors")
-      .delete()
+      .update({ is_deleted: true, deleted_at: new Date().toISOString(), deleted_by: user?.id ?? null } as any)
       .eq("id", id);
     if (error) throw error;
     await auditService.log({
-      projectId,
-      entity: "subcontractors",
-      entityId: id,
-      action: "DELETE",
-      module: "subcontractors",
+      projectId, entity: "subcontractors", entityId: id,
+      action: "DELETE", module: "subcontractors",
+      description: "Subempreiteiro eliminado (soft)",
+    });
+  },
+
+  async restore(id: string, projectId: string): Promise<void> {
+    const { error } = await supabase
+      .from("subcontractors")
+      .update({ is_deleted: false, deleted_at: null, deleted_by: null } as any)
+      .eq("id", id);
+    if (error) throw error;
+    await auditService.log({
+      projectId, entity: "subcontractors", entityId: id,
+      action: "UPDATE", module: "subcontractors",
+      description: "Subempreiteiro restaurado",
+    });
+  },
+
+  async archive(id: string, projectId: string): Promise<void> {
+    const { error } = await supabase
+      .from("subcontractors")
+      .update({ status: "archived" } as any)
+      .eq("id", id);
+    if (error) throw error;
+    await auditService.log({
+      projectId, entity: "subcontractors", entityId: id,
+      action: "ARCHIVE", module: "subcontractors",
+      description: "Subempreiteiro arquivado",
     });
   },
 };

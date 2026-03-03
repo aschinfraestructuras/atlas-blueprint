@@ -545,7 +545,10 @@ export type Database = {
           code: string
           created_at: string
           created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           id: string
+          is_deleted: boolean
           name: string
           normative_refs: string | null
           project_id: string
@@ -561,7 +564,10 @@ export type Database = {
           code: string
           created_at?: string
           created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: string
+          is_deleted?: boolean
           name: string
           normative_refs?: string | null
           project_id: string
@@ -577,7 +583,10 @@ export type Database = {
           code?: string
           created_at?: string
           created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: string
+          is_deleted?: boolean
           name?: string
           normative_refs?: string | null
           project_id?: string
@@ -616,11 +625,14 @@ export type Database = {
           corrective_action: string | null
           created_at: string
           created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           description: string
           detected_at: string
           document_id: string | null
           due_date: string | null
           id: string
+          is_deleted: boolean
           material_id: string | null
           origin: string
           origin_entity_id: string | null
@@ -658,11 +670,14 @@ export type Database = {
           corrective_action?: string | null
           created_at?: string
           created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           description: string
           detected_at?: string
           document_id?: string | null
           due_date?: string | null
           id?: string
+          is_deleted?: boolean
           material_id?: string | null
           origin?: string
           origin_entity_id?: string | null
@@ -700,11 +715,14 @@ export type Database = {
           corrective_action?: string | null
           created_at?: string
           created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           description?: string
           detected_at?: string
           document_id?: string | null
           due_date?: string | null
           id?: string
+          is_deleted?: boolean
           material_id?: string | null
           origin?: string
           origin_entity_id?: string | null
@@ -1127,10 +1145,13 @@ export type Database = {
           code: string
           created_at: string
           created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           disciplina_outro: string | null
           id: string
           inspection_date: string | null
           inspector_id: string | null
+          is_deleted: boolean
           opened_at: string
           project_id: string
           status: string
@@ -1143,10 +1164,13 @@ export type Database = {
           code: string
           created_at?: string
           created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           disciplina_outro?: string | null
           id?: string
           inspection_date?: string | null
           inspector_id?: string | null
+          is_deleted?: boolean
           opened_at?: string
           project_id: string
           status?: string
@@ -1159,10 +1183,13 @@ export type Database = {
           code?: string
           created_at?: string
           created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           disciplina_outro?: string | null
           id?: string
           inspection_date?: string | null
           inspector_id?: string | null
+          is_deleted?: boolean
           opened_at?: string
           project_id?: string
           status?: string
@@ -1718,8 +1745,11 @@ export type Database = {
           contract: string | null
           created_at: string
           created_by: string
+          deleted_at: string | null
+          deleted_by: string | null
           documentation_status: string
           id: string
+          is_deleted: boolean
           name: string
           performance_score: number | null
           project_id: string
@@ -1733,8 +1763,11 @@ export type Database = {
           contract?: string | null
           created_at?: string
           created_by: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           documentation_status?: string
           id?: string
+          is_deleted?: boolean
           name: string
           performance_score?: number | null
           project_id: string
@@ -1748,8 +1781,11 @@ export type Database = {
           contract?: string | null
           created_at?: string
           created_by?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           documentation_status?: string
           id?: string
+          is_deleted?: boolean
           name?: string
           performance_score?: number | null
           project_id?: string
@@ -2024,7 +2060,10 @@ export type Database = {
           country: string | null
           created_at: string
           created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           id: string
+          is_deleted: boolean
           name: string
           nif_cif: string | null
           notes: string | null
@@ -2046,7 +2085,10 @@ export type Database = {
           country?: string | null
           created_at?: string
           created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: string
+          is_deleted?: boolean
           name: string
           nif_cif?: string | null
           notes?: string | null
@@ -2068,7 +2110,10 @@ export type Database = {
           country?: string | null
           created_at?: string
           created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: string
+          is_deleted?: boolean
           name?: string
           nif_cif?: string | null
           notes?: string | null
@@ -2248,7 +2293,10 @@ export type Database = {
           created_at: string
           created_by: string | null
           date: string
+          deleted_at: string | null
+          deleted_by: string | null
           id: string
+          is_deleted: boolean
           location: string | null
           material: string | null
           material_id: string | null
@@ -2281,7 +2329,10 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           date?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: string
+          is_deleted?: boolean
           location?: string | null
           material?: string | null
           material_id?: string | null
@@ -2314,7 +2365,10 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           date?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: string
+          is_deleted?: boolean
           location?: string | null
           material?: string | null
           material_id?: string | null
@@ -2875,6 +2929,8 @@ export type Database = {
         Row: {
           created_at: string
           created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           disciplina: string
           disciplina_outro: string | null
           elemento: string | null
@@ -2882,6 +2938,7 @@ export type Database = {
           has_pending_ppi: boolean
           has_pending_tests: boolean
           id: string
+          is_deleted: boolean
           lote: string | null
           obra: string | null
           parte: string | null
@@ -2897,6 +2954,8 @@ export type Database = {
         Insert: {
           created_at?: string
           created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           disciplina?: string
           disciplina_outro?: string | null
           elemento?: string | null
@@ -2904,6 +2963,7 @@ export type Database = {
           has_pending_ppi?: boolean
           has_pending_tests?: boolean
           id?: string
+          is_deleted?: boolean
           lote?: string | null
           obra?: string | null
           parte?: string | null
@@ -2919,6 +2979,8 @@ export type Database = {
         Update: {
           created_at?: string
           created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           disciplina?: string
           disciplina_outro?: string | null
           elemento?: string | null
@@ -2926,6 +2988,7 @@ export type Database = {
           has_pending_ppi?: boolean
           has_pending_tests?: boolean
           id?: string
+          is_deleted?: boolean
           lote?: string | null
           obra?: string | null
           parte?: string | null
@@ -3341,7 +3404,10 @@ export type Database = {
           code: string
           created_at: string
           created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           id: string
+          is_deleted: boolean
           name: string
           normative_refs: string | null
           project_id: string
@@ -3391,11 +3457,14 @@ export type Database = {
           corrective_action: string | null
           created_at: string
           created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           description: string
           detected_at: string
           document_id: string | null
           due_date: string | null
           id: string
+          is_deleted: boolean
           material_id: string | null
           origin: string
           origin_entity_id: string | null
@@ -3447,11 +3516,14 @@ export type Database = {
           corrective_action: string | null
           created_at: string
           created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           description: string
           detected_at: string
           document_id: string | null
           due_date: string | null
           id: string
+          is_deleted: boolean
           material_id: string | null
           origin: string
           origin_entity_id: string | null
@@ -3503,11 +3575,14 @@ export type Database = {
           corrective_action: string | null
           created_at: string
           created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           description: string
           detected_at: string
           document_id: string | null
           due_date: string | null
           id: string
+          is_deleted: boolean
           material_id: string | null
           origin: string
           origin_entity_id: string | null
@@ -3631,7 +3706,10 @@ export type Database = {
           country: string | null
           created_at: string
           created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           id: string
+          is_deleted: boolean
           name: string
           nif_cif: string | null
           notes: string | null
@@ -3672,7 +3750,10 @@ export type Database = {
           created_at: string
           created_by: string | null
           date: string
+          deleted_at: string | null
+          deleted_by: string | null
           id: string
+          is_deleted: boolean
           location: string | null
           material: string | null
           material_id: string | null
@@ -3744,10 +3825,13 @@ export type Database = {
           code: string
           created_at: string
           created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           disciplina_outro: string | null
           id: string
           inspection_date: string | null
           inspector_id: string | null
+          is_deleted: boolean
           opened_at: string
           project_id: string
           status: string
@@ -3787,11 +3871,14 @@ export type Database = {
           corrective_action: string | null
           created_at: string
           created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           description: string
           detected_at: string
           document_id: string | null
           due_date: string | null
           id: string
+          is_deleted: boolean
           material_id: string | null
           origin: string
           origin_entity_id: string | null
@@ -3834,7 +3921,10 @@ export type Database = {
           created_at: string
           created_by: string | null
           date: string
+          deleted_at: string | null
+          deleted_by: string | null
           id: string
+          is_deleted: boolean
           location: string | null
           material: string | null
           material_id: string | null

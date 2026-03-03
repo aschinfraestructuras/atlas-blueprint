@@ -58,16 +58,18 @@ export function GlobalSearchDialog({ open, onOpenChange }: Props) {
           .or(`title.ilike.${like},code.ilike.${like}`).limit(5),
         supabase.from("rfis").select("id, code, subject").eq("project_id", pid).eq("is_deleted", false)
           .or(`code.ilike.${like},subject.ilike.${like}`).limit(5),
-        supabase.from("non_conformities").select("id, code, title, reference").eq("project_id", pid)
+        supabase.from("non_conformities").select("id, code, title, reference").eq("project_id", pid).eq("is_deleted", false)
           .or(`code.ilike.${like},title.ilike.${like},reference.ilike.${like}`).limit(5),
-        supabase.from("test_results" as any).select("id, code, report_number, sample_ref").eq("project_id", pid)
+        supabase.from("test_results" as any).select("id, code, report_number, sample_ref").eq("project_id", pid).eq("is_deleted", false)
           .or(`code.ilike.${like},report_number.ilike.${like},sample_ref.ilike.${like}`).limit(5),
-        supabase.from("materials").select("id, code, name").eq("project_id", pid)
+        supabase.from("materials").select("id, code, name").eq("project_id", pid).eq("is_deleted", false)
           .or(`code.ilike.${like},name.ilike.${like}`).limit(5),
-        supabase.from("suppliers" as any).select("id, name").eq("project_id", pid)
+        supabase.from("suppliers" as any).select("id, name").eq("project_id", pid).eq("is_deleted", false)
           .ilike("name", like).limit(5),
-        supabase.from("subcontractors").select("id, name").eq("project_id", pid)
+        supabase.from("subcontractors").select("id, name").eq("project_id", pid).eq("is_deleted", false)
           .ilike("name", like).limit(5),
+        supabase.from("work_items" as any).select("id, sector, lote, pk_inicio, pk_fim").eq("project_id", pid).eq("is_deleted", false)
+          .or(`sector.ilike.${like},lote.ilike.${like}`).limit(5),
         supabase.from("work_items" as any).select("id, sector, lote, pk_inicio, pk_fim").eq("project_id", pid)
           .or(`sector.ilike.${like},lote.ilike.${like}`).limit(5),
       ]);

@@ -314,7 +314,7 @@ export default function PPIDetailPage() {
     if (!instance || !activeProject || instance.status !== "draft") return;
     setDeleting(true);
     try {
-      await ppiService.deleteInstance(instance.id, activeProject.id);
+      await ppiService.softDeleteInstance(instance.id, activeProject.id);
       toast({ title: t("ppi.instances.toast.deleted", { defaultValue: "Rascunho eliminado." }) });
       navigate("/ppi");
     } catch (err) {

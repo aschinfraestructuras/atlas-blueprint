@@ -20,7 +20,19 @@
     "confirm": "Confirmar",
     "close": "Fechar",
     "required": "Obrigatório",
-    "optional": "Opcional"
+    "optional": "Opcional",
+    "restore": "Restaurar",
+    "archive": "Arquivar",
+    "showDeleted": "Mostrar eliminados",
+    "showArchived": "Mostrar arquivados",
+    "softDeleted": "Eliminado",
+    "restored": "Restaurado com sucesso",
+    "archived": "Arquivado com sucesso",
+    "confirmDelete": "Tem a certeza que deseja eliminar?",
+    "confirmRestore": "Tem a certeza que deseja restaurar?",
+    "export": "Exportar",
+    "exportPdf": "Exportar PDF",
+    "exportCsv": "Exportar CSV"
   },
   "auth": {
     "signIn": "Iniciar sessão",
