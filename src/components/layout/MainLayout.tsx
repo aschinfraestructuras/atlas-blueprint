@@ -6,6 +6,8 @@ import { TopBar } from "./TopBar";
 import { useArchivedProject } from "@/hooks/useArchivedProject";
 import { ArchivedBanner } from "@/components/ArchivedBanner";
 import { useProject } from "@/contexts/ProjectContext";
+import { useSessionTimeout } from "@/hooks/useSessionTimeout";
+import { SessionTimeoutWarning } from "@/components/session/SessionTimeoutWarning";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -17,6 +19,7 @@ export function MainLayout({ children }: MainLayoutProps) {
   const isArchived = useArchivedProject();
   const { activeProject } = useProject();
   const { t } = useTranslation();
+  const { showWarning, extendSession } = useSessionTimeout();
   const location = useLocation();
 
   // Dynamic browser tab title
@@ -78,6 +81,7 @@ export function MainLayout({ children }: MainLayoutProps) {
           </div>
         </main>
       </div>
+      <SessionTimeoutWarning open={showWarning} onExtend={extendSession} />
     </div>
   );
 }

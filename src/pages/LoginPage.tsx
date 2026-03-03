@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Eye, EyeOff, ShieldCheck, Loader2, Globe } from "lucide-react";
+import { Eye, EyeOff, ShieldCheck, Loader2, Globe, CheckCircle2 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 
-type Mode = "login" | "signup";
+type Mode = "login" | "forgot";
 
 const LANGUAGES = [
   { code: "pt", label: "PT" },
@@ -26,8 +26,9 @@ const LANGUAGES = [
 const RAW_ERRORS: Record<string, string> = {
   "Invalid login credentials": "errors.invalidCredentials",
   "Email not confirmed": "errors.emailNotConfirmed",
-  "User already registered": "errors.userAlreadyRegistered",
   "Password should be at least 6 characters": "errors.passwordTooShort",
+  "Signups not allowed for this instance": "errors.signupsDisabled",
+  "For security purposes": "errors.rateLimited",
 };
 
 function mapError(msg: string, t: (k: string) => string): string {
@@ -46,32 +47,22 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [confirmationSent, setConfirmationSent] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
 
   if (!loading && user) {
     return <Navigate to="/" replace />;
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setSubmitting(true);
     try {
-      if (mode === "login") {
-        const { error } = await supabase.auth.signInWithPassword({
-          email: email.trim(),
-          password,
-        });
-        if (error) throw error;
-      } else {
-        const { error } = await supabase.auth.signUp({
-          email: email.trim(),
-          password,
-          options: { emailRedirectTo: window.location.origin },
-        });
-        if (error) throw error;
-        setConfirmationSent(true);
-      }
+      const { error } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      });
+      if (error) throw error;
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Unknown error";
       setError(mapError(msg, t));
@@ -80,23 +71,42 @@ export default function LoginPage() {
     }
   };
 
-  if (confirmationSent) {
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setSubmitting(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
+      setResetSent(true);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Unknown error";
+      setError(mapError(msg, t));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Reset email sent confirmation
+  if (resetSent) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-secondary px-4">
         <div className="w-full max-w-md rounded-xl border bg-card p-10 shadow-sm text-center">
           <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
-            <ShieldCheck className="h-7 w-7 text-primary" />
+            <CheckCircle2 className="h-7 w-7 text-primary" />
           </div>
           <h2 className="mb-2 text-xl font-semibold tracking-tight text-card-foreground">
-            {t("auth.confirmEmailTitle")}
+            {t("auth.resetSentTitle")}
           </h2>
           <p className="text-sm text-muted-foreground">
-            {t("auth.confirmEmailText", { email })}
+            {t("auth.resetSentText", { email })}
           </p>
           <button
             className="mt-6 text-sm text-primary underline-offset-4 hover:underline"
             onClick={() => {
-              setConfirmationSent(false);
+              setResetSent(false);
               setMode("login");
               setPassword("");
             }}
@@ -173,105 +183,138 @@ export default function LoginPage() {
 
             <div className="space-y-1">
               <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-                {mode === "login" ? t("auth.signInTitle") : t("auth.signUpTitle")}
+                {mode === "login" ? t("auth.signInTitle") : t("auth.forgotPasswordTitle")}
               </h1>
               <p className="text-sm text-muted-foreground">
-                {mode === "login" ? t("auth.signInSubtitle") : t("auth.signUpSubtitle")}
+                {mode === "login" ? t("auth.signInSubtitle") : t("auth.forgotPasswordSubtitle")}
               </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-5" noValidate>
-              {error && (
-                <Alert variant="destructive">
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
-              )}
+            {mode === "login" ? (
+              <form onSubmit={handleLogin} className="space-y-5" noValidate>
+                {error && (
+                  <Alert variant="destructive">
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                )}
 
-              <div className="space-y-2">
-                <Label htmlFor="email">{t("auth.email")}</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  autoComplete="email"
-                  placeholder={t("auth.emailPlaceholder")}
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  disabled={submitting}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="password">{t("auth.password")}</Label>
-                <div className="relative">
+                <div className="space-y-2">
+                  <Label htmlFor="email">{t("auth.email")}</Label>
                   <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    autoComplete={mode === "login" ? "current-password" : "new-password"}
-                    placeholder={
-                      mode === "signup"
-                        ? t("auth.passwordPlaceholderSignup")
-                        : t("auth.passwordPlaceholder")
-                    }
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    id="email"
+                    type="email"
+                    autoComplete="email"
+                    placeholder={t("auth.emailPlaceholder")}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
                     disabled={submitting}
-                    className="pr-10"
                   />
-                  <button
-                    type="button"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                    onClick={() => setShowPassword((v) => !v)}
-                    tabIndex={-1}
-                    aria-label={showPassword ? t("auth.hidePassword") : t("auth.showPassword")}
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
                 </div>
-              </div>
 
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={submitting || !email || !password}
-              >
-                {submitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {mode === "login" ? t("auth.signingIn") : t("auth.signingUp")}
-                  </>
-                ) : mode === "login" ? (
-                  t("auth.signIn")
-                ) : (
-                  t("auth.signUp")
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="password">{t("auth.password")}</Label>
+                    <button
+                      type="button"
+                      className="text-xs text-primary underline-offset-4 hover:underline"
+                      onClick={() => { setMode("forgot"); setError(null); }}
+                    >
+                      {t("auth.forgotPassword")}
+                    </button>
+                  </div>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      autoComplete="current-password"
+                      placeholder={t("auth.passwordPlaceholder")}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      disabled={submitting}
+                      className="pr-10"
+                    />
+                    <button
+                      type="button"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                      onClick={() => setShowPassword((v) => !v)}
+                      tabIndex={-1}
+                      aria-label={showPassword ? t("auth.hidePassword") : t("auth.showPassword")}
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={submitting || !email || !password}
+                >
+                  {submitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {t("auth.signingIn")}
+                    </>
+                  ) : (
+                    t("auth.signIn")
+                  )}
+                </Button>
+              </form>
+            ) : (
+              <form onSubmit={handleForgotPassword} className="space-y-5" noValidate>
+                {error && (
+                  <Alert variant="destructive">
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
                 )}
-              </Button>
-            </form>
 
-            <p className="text-center text-sm text-muted-foreground">
-              {mode === "login" ? (
-                <>
-                  {t("auth.noAccount")}{" "}
-                  <button
-                    className="font-medium text-foreground underline-offset-4 hover:underline"
-                    onClick={() => { setMode("signup"); setError(null); setPassword(""); }}
-                  >
-                    {t("auth.signUp")}
-                  </button>
-                </>
-              ) : (
-                <>
-                  {t("auth.haveAccount")}{" "}
-                  <button
-                    className="font-medium text-foreground underline-offset-4 hover:underline"
-                    onClick={() => { setMode("login"); setError(null); setPassword(""); }}
-                  >
-                    {t("auth.signIn")}
-                  </button>
-                </>
+                <div className="space-y-2">
+                  <Label htmlFor="reset-email">{t("auth.email")}</Label>
+                  <Input
+                    id="reset-email"
+                    type="email"
+                    autoComplete="email"
+                    placeholder={t("auth.emailPlaceholder")}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    disabled={submitting}
+                  />
+                </div>
+
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={submitting || !email}
+                >
+                  {submitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {t("auth.sendingReset")}
+                    </>
+                  ) : (
+                    t("auth.sendResetLink")
+                  )}
+                </Button>
+              </form>
+            )}
+
+            {/* Invite-only notice + back to login */}
+            <div className="space-y-3 text-center">
+              {mode === "forgot" && (
+                <button
+                  className="text-sm font-medium text-foreground underline-offset-4 hover:underline"
+                  onClick={() => { setMode("login"); setError(null); }}
+                >
+                  {t("auth.backToSignIn")}
+                </button>
               )}
-            </p>
+              <p className="text-xs text-muted-foreground">
+                {t("auth.inviteOnlyNotice")}
+              </p>
+            </div>
           </div>
         </div>
       </div>
