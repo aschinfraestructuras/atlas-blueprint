@@ -18,6 +18,7 @@ import { FilterBar } from "@/components/ui/filter-bar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
+import { ..., ClipboardCheck } from "lucide-react";
 import {
   Clock,
   AlertTriangle,
@@ -37,11 +38,14 @@ import {
 const SOURCE_ICONS: Record<string, React.ElementType> = {
   supplier_doc: Truck,
   material_doc: Package,
+  subcontractor_doc: Truck,       // ← adicionar
   calibration: Crosshair,
   nc_due: AlertTriangle,
   rfi_due: Inbox,
   tech_office_due: Inbox,
   planning_due: CalendarClock,
+  ppi_pending: ClipboardCheck,    // ← adicionar
+  ppi_approval: ClipboardCheck,   // ← adicionar
 };
 
 const SOURCE_ROUTES: Record<string, string> = {
