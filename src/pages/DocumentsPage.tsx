@@ -12,10 +12,11 @@ import { exportDocumentListPdf, type DocExportLabels } from "@/lib/services/docu
 import { auditService } from "@/lib/services/auditService";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { ModuleKPICard } from "@/components/ModuleKPICard";
 import {
   FileText, Download, ExternalLink, Loader2, Search,
   Plus, Trash2, Pencil, CheckCircle2, Clock, RotateCcw,
-  Archive, Eye, FileDown,
+  Archive, Eye, FileDown, AlertTriangle,
 } from "lucide-react";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -103,8 +104,12 @@ export default function DocumentsPage() {
   });
 
   const totalDocs     = documents.length;
+  const draftCount    = documents.filter((d) => d.status === "draft").length;
   const reviewCount   = documents.filter((d) => d.status === "in_review").length;
   const approvedCount = documents.filter((d) => d.status === "approved").length;
+  const obsoleteCount = documents.filter((d) => d.status === "obsolete").length;
+  const now30d = new Date(); now30d.setDate(now30d.getDate() - 30);
+  const recentCount   = documents.filter((d) => new Date(d.updated_at) >= now30d).length;
 
   // ── Selection ─────────────────────────────────────────────────────────────
   const toggleSelect = (id: string) => {
@@ -170,23 +175,6 @@ export default function DocumentsPage() {
             <p className="text-sm text-muted-foreground">{t("pages.documents.subtitle")}</p>
           </div>
           <div className="flex items-center gap-2 flex-wrap justify-end">
-            {!loading && (
-              <>
-                <Badge variant="outline" className="gap-1.5 text-xs">
-                  <FileText className="h-3 w-3" /> {totalDocs} {t("documents.allFiles")}
-                </Badge>
-                {reviewCount > 0 && (
-                  <Badge variant="outline" className="gap-1.5 text-xs bg-primary/10 text-primary border-primary/20">
-                    <Clock className="h-3 w-3" /> {reviewCount} {t("documents.status.in_review")}
-                  </Badge>
-                )}
-                {approvedCount > 0 && (
-                  <Badge variant="outline" className="gap-1.5 text-xs bg-chart-2/10 text-chart-2 border-chart-2/20">
-                    <CheckCircle2 className="h-3 w-3" /> {approvedCount} {t("documents.status.approved")}
-                  </Badge>
-                )}
-              </>
-            )}
             {canCreate && (
               <Button size="sm" className="gap-1.5" onClick={() => { setEditDoc(null); setFormOpen(true); }}>
                 <Plus className="h-4 w-4" /> {t("documents.form.createBtn")}
@@ -194,6 +182,19 @@ export default function DocumentsPage() {
             )}
           </div>
         </div>
+
+        {/* ── KPI Row ────────────────────────────────────────────────────── */}
+        {!loading && (
+          <div className="grid grid-cols-3 md:grid-cols-7 gap-2">
+            <ModuleKPICard label={t("moduleKpi.total")} value={totalDocs} icon={FileText} />
+            <ModuleKPICard label={t("moduleKpi.draft")} value={draftCount} icon={RotateCcw} active={statusFilter === "draft"} onClick={() => setStatusFilter(statusFilter === "draft" ? "all" : "draft")} />
+            <ModuleKPICard label={t("moduleKpi.inReview")} value={reviewCount} icon={Clock} color="hsl(var(--primary))" active={statusFilter === "in_review"} onClick={() => setStatusFilter(statusFilter === "in_review" ? "all" : "in_review")} />
+            <ModuleKPICard label={t("moduleKpi.approved")} value={approvedCount} icon={CheckCircle2} color="hsl(var(--chart-2))" active={statusFilter === "approved"} onClick={() => setStatusFilter(statusFilter === "approved" ? "all" : "approved")} />
+            <ModuleKPICard label={t("moduleKpi.obsolete")} value={obsoleteCount} icon={Archive} active={statusFilter === "obsolete"} onClick={() => setStatusFilter(statusFilter === "obsolete" ? "all" : "obsolete")} />
+            <ModuleKPICard label={t("moduleKpi.recentlyUpdated")} value={recentCount} icon={Clock} />
+            <ModuleKPICard label={t("moduleKpi.total")} value={`${approvedCount}/${totalDocs}`} icon={CheckCircle2} />
+          </div>
+        )}
 
         {/* ── Filters ────────────────────────────────────────────────────── */}
         <FilterBar>
