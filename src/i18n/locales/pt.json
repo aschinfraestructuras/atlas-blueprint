@@ -60,12 +60,37 @@
     "qualityQuoteAuthor": "— Aristóteles",
     "qmsLabel": "Sistema de Gestão da Qualidade",
     "activeSession": "Sessão ativa",
+    "inviteOnlyNotice": "Conta apenas por convite. Contacte o administrador do projeto.",
+    "forgotPassword": "Esqueceu a password?",
+    "forgotPasswordTitle": "Recuperar password",
+    "forgotPasswordSubtitle": "Introduza o e-mail associado à sua conta para receber um link de recuperação.",
+    "sendResetLink": "Enviar link de recuperação",
+    "sendingReset": "A enviar…",
+    "resetSentTitle": "E-mail enviado",
+    "resetSentText": "Se existir uma conta com {{email}}, receberá um link para redefinir a password.",
+    "resetPasswordTitle": "Nova password",
+    "resetPasswordSubtitle": "Defina a sua nova password de acesso.",
+    "newPassword": "Nova password",
+    "confirmPassword": "Confirmar password",
+    "confirmPasswordPlaceholder": "Repita a password",
+    "updatePassword": "Atualizar password",
+    "updatingPassword": "A atualizar…",
+    "passwordUpdatedTitle": "Password atualizada",
+    "passwordUpdatedText": "A sua password foi atualizada com sucesso. A redirecionar…",
+    "session": {
+      "timeoutTitle": "Sessão prestes a expirar",
+      "timeoutDescription": "A sua sessão expira em 5 minutos por inatividade. Clique para continuar.",
+      "continueSession": "Continuar sessão"
+    },
     "errors": {
       "invalidCredentials": "E-mail ou password incorretos. Tente novamente.",
       "emailNotConfirmed": "Confirme o seu endereço de e-mail antes de iniciar sessão. Verifique a sua caixa de entrada.",
       "userAlreadyRegistered": "Já existe uma conta com este e-mail. Por favor, inicie sessão.",
       "passwordTooShort": "A password deve ter pelo menos 6 caracteres.",
-      "unexpected": "Ocorreu um erro inesperado. Tente novamente."
+      "passwordMismatch": "As passwords não coincidem.",
+      "unexpected": "Ocorreu um erro inesperado. Tente novamente.",
+      "signupsDisabled": "Registos públicos desativados. Conta apenas por convite.",
+      "rateLimited": "Demasiadas tentativas. Aguarde antes de tentar novamente."
     }
   },
   "nav": {
