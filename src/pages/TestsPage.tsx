@@ -35,6 +35,8 @@ import { TestResultFormDialog } from "@/components/tests/TestResultFormDialog";
 import { cn } from "@/lib/utils";
 import { TEST_DISCIPLINES } from "@/lib/services/testService";
 import { supabase } from "@/integrations/supabase/client";
+import { DueTab } from "@/components/tests/DueTab";
+import { PlanTab } from "@/components/tests/PlanTab";
 
 // ─── Status helpers ───────────────────────────────────────────────────────────
 

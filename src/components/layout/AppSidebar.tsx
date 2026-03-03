@@ -6,7 +6,7 @@ import {
   FlaskConical, AlertTriangle, ScrollText, Settings,
   ShieldCheck, ChevronLeft, ChevronRight, X,
   Inbox, BookOpen, Map, HardHat, Construction, ClipboardCheck, Crosshair, CalendarClock,
-  Clock, FileCheck, BarChart3,
+  Clock, FileCheck, BarChart3, Building2,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { cn } from "@/lib/utils";
@@ -39,6 +39,7 @@ const NAV_SECTIONS: SidebarSection[] = [
       { labelKey: "nav.projects",       url: "/projects",         icon: FolderKanban },
       { labelKey: "nav.documents",      url: "/documents",        icon: FileText },
       { labelKey: "nav.tests",          url: "/tests",            icon: FlaskConical },
+      { labelKey: "nav.laboratories",    url: "/laboratories",     icon: Building2 },
       { labelKey: "nav.suppliers",      url: "/suppliers",        icon: Truck },
       { labelKey: "nav.materials",      url: "/materials",        icon: Package },
       { labelKey: "nav.nonConformities", url: "/non-conformities", icon: AlertTriangle },
