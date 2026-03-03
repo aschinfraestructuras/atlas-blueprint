@@ -123,6 +123,7 @@ export default function PPIDetailPage() {
   // Status transition confirm
   const [pendingTransition, setPendingTransition] = useState<Transition | null>(null);
   const [transitioning,     setTransitioning]     = useState(false);
+  const [rejectionReason,   setRejectionReason]   = useState("");
 
   // Delete draft confirm
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -292,12 +293,19 @@ export default function PPIDetailPage() {
 
   async function confirmTransition() {
     if (!pendingTransition || !instance || !activeProject) return;
+    // Require reason for rejection
+    if (pendingTransition.to === "rejected" && !rejectionReason.trim()) {
+      toast({ title: t("ppi.rejection.reasonRequired"), variant: "destructive" });
+      return;
+    }
     setTransitioning(true);
     try {
       await ppiService.updateInstanceStatus(
-        instance.id, activeProject.id, instance.status, pendingTransition.to
+        instance.id, activeProject.id, instance.status, pendingTransition.to,
+        pendingTransition.to === "rejected" ? rejectionReason.trim() : undefined
       );
       toast({ title: t("ppi.instances.toast.statusChanged", { status: t(`ppi.status.${pendingTransition.to}`) }) });
+      setRejectionReason("");
       load();
     } catch (err) {
       const info = classifySupabaseError(err, t);
@@ -584,6 +592,14 @@ export default function PPIDetailPage() {
                 value={new Date(instance.closed_at).toLocaleDateString()}
               />
             )}
+            {instance.status === "rejected" && instance.rejection_reason && (
+              <InfoRow
+                label={t("ppi.rejection.reasonLabel")}
+                value={
+                  <span className="text-destructive text-sm">{instance.rejection_reason}</span>
+                }
+              />
+            )}
           </div>
           <div>
             {/* Progress summary */}
@@ -856,23 +872,47 @@ export default function PPIDetailPage() {
       {/* ── Status transition confirm ─────────────────────────────────── */}
       <AlertDialog
         open={!!pendingTransition}
-        onOpenChange={(v) => { if (!v) setPendingTransition(null); }}
+        onOpenChange={(v) => { if (!v) { setPendingTransition(null); setRejectionReason(""); } }}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {pendingTransition ? t(pendingTransition.labelKey) : ""}
+              {pendingTransition?.to === "rejected"
+                ? t("ppi.rejection.title")
+                : pendingTransition ? t(pendingTransition.labelKey) : ""}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              {instance.code} · {t("ppi.status." + instance.status)} → {t("ppi.status." + (pendingTransition?.to ?? "draft"))}
+              {pendingTransition?.to === "rejected"
+                ? t("ppi.rejection.description", { code: instance.code })
+                : `${instance.code} · ${t("ppi.status." + instance.status)} → ${t("ppi.status." + (pendingTransition?.to ?? "draft"))}`}
             </AlertDialogDescription>
           </AlertDialogHeader>
+          {pendingTransition?.to === "rejected" && (
+            <div className="px-1 py-2">
+              <label className="text-sm font-medium text-foreground mb-1.5 block">
+                {t("ppi.rejection.reasonLabel")} <span className="text-destructive">*</span>
+              </label>
+              <Textarea
+                rows={3}
+                value={rejectionReason}
+                onChange={(e) => setRejectionReason(e.target.value)}
+                placeholder={t("ppi.rejection.reasonPlaceholder")}
+                className="resize-none"
+              />
+            </div>
+          )}
           <AlertDialogFooter>
             <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmTransition} disabled={transitioning}>
+            <AlertDialogAction
+              onClick={confirmTransition}
+              disabled={transitioning || (pendingTransition?.to === "rejected" && !rejectionReason.trim())}
+              className={pendingTransition?.to === "rejected" ? "bg-destructive hover:bg-destructive/90" : ""}
+            >
               {transitioning
                 ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                : t("common.confirm")}
+                : pendingTransition?.to === "rejected"
+                  ? t("ppi.rejection.confirm")
+                  : t("common.confirm")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

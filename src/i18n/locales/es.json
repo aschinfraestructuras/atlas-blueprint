@@ -1817,9 +1817,26 @@
       "rejected":    "Rechazado",
       "archived":    "Archivado"
     },
+    "kpi": {
+      "total": "Total",
+      "inProgress": "En Curso",
+      "submitted": "Enviados",
+      "approved": "Aprobados",
+      "rejected": "Rechazados",
+      "overdueApproval": "Aprobación Atrasada"
+    },
     "templateStatus": {
       "active":   "Activo",
       "inactive": "Archivado"
+    },
+    "rejection": {
+      "title": "Rechazar Inspección",
+      "description": "Indique el motivo del rechazo de la inspección {{code}}.",
+      "reasonLabel": "Motivo del rechazo",
+      "reasonPlaceholder": "Describa el motivo del rechazo…",
+      "reasonRequired": "El motivo del rechazo es obligatorio.",
+      "confirm": "Rechazar",
+      "cancel": "Cancelar"
     },
     "demo": {
       "templates": {

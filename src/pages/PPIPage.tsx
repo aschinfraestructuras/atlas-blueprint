@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Plus, Search, ClipboardCheck, Eye, Archive, CheckSquare, Square, Trash2, RotateCcw } from "lucide-react";
+import { Plus, Search, ClipboardCheck, Eye, Archive, CheckSquare, Square, Trash2, RotateCcw, Clock, CheckCircle2, XCircle, AlertTriangle, Send, BarChart3 } from "lucide-react";
 import { usePPIInstances } from "@/hooks/usePPI";
 import { useProject } from "@/contexts/ProjectContext";
 import { useProjectRole } from "@/hooks/useProjectRole";
@@ -212,12 +212,12 @@ export default function PPIPage() {
       {/* ── KPIs ────────────────────────────────────────────────────── */}
       {kpis && (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          <ModuleKPICard label={t("ppi.kpi.total")} value={kpis.total} color="default" />
-          <ModuleKPICard label={t("ppi.kpi.inProgress")} value={kpis.in_progress_count} color="primary" />
-          <ModuleKPICard label={t("ppi.kpi.submitted")} value={kpis.submitted_count} color="warning" />
-          <ModuleKPICard label={t("ppi.kpi.approved")} value={kpis.approved_count} color="success" />
-          <ModuleKPICard label={t("ppi.kpi.rejected")} value={kpis.rejected_count} color="destructive" />
-          <ModuleKPICard label={t("ppi.kpi.overdueApproval")} value={kpis.overdue_approval} color={kpis.overdue_approval > 0 ? "destructive" : "default"} />
+          <ModuleKPICard label={t("ppi.kpi.total")} value={kpis.total} icon={BarChart3} />
+          <ModuleKPICard label={t("ppi.kpi.inProgress")} value={kpis.in_progress_count} icon={Clock} color="hsl(var(--primary))" />
+          <ModuleKPICard label={t("ppi.kpi.submitted")} value={kpis.submitted_count} icon={Send} color="hsl(35, 92%, 50%)" />
+          <ModuleKPICard label={t("ppi.kpi.approved")} value={kpis.approved_count} icon={CheckCircle2} color="hsl(152, 69%, 31%)" />
+          <ModuleKPICard label={t("ppi.kpi.rejected")} value={kpis.rejected_count} icon={XCircle} color="hsl(var(--destructive))" />
+          <ModuleKPICard label={t("ppi.kpi.overdueApproval")} value={kpis.overdue_approval} icon={AlertTriangle} color={kpis.overdue_approval > 0 ? "hsl(var(--destructive))" : undefined} />
         </div>
       )}
 
