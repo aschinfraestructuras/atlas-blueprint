@@ -1,20 +1,23 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Plus, Search, ClipboardCheck, Eye, Archive, CheckSquare, Square, Trash2 } from "lucide-react";
+import { Plus, Search, ClipboardCheck, Eye, Archive, CheckSquare, Square, Trash2, RotateCcw } from "lucide-react";
 import { usePPIInstances } from "@/hooks/usePPI";
 import { useProject } from "@/contexts/ProjectContext";
 import { useProjectRole } from "@/hooks/useProjectRole";
-import { ppiService, PPI_DISCIPLINAS, PPI_INSTANCE_STATUSES } from "@/lib/services/ppiService";
+import { ppiService, PPI_DISCIPLINAS, PPI_INSTANCE_STATUSES, type PpiKpis } from "@/lib/services/ppiService";
 import { PPIInstanceFormDialog } from "@/components/ppi/PPIInstanceFormDialog";
 import { PPIStatusBadge } from "@/components/ppi/PPIStatusBadge";
 import { PPIExportMenu } from "@/components/ppi/PPIExportMenu";
+import { ModuleKPICard } from "@/components/ModuleKPICard";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { EmptyState } from "@/components/EmptyState";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
@@ -45,10 +48,18 @@ export default function PPIPage() {
   const [search,      setSearch]      = useState("");
   const [filterDiscipline, setFilterDiscipline] = useState("all");
   const [filterStatus,     setFilterStatus]     = useState("all");
+  const [showDeleted,  setShowDeleted]  = useState(false);
   const [archiveItem, setArchiveItem] = useState<string | null>(null);
   const [archiving,   setArchiving]   = useState(false);
   const [deleteItem, setDeleteItem]   = useState<string | null>(null);
   const [deleting,   setDeleting]     = useState(false);
+  const [kpis, setKpis] = useState<PpiKpis | null>(null);
+
+  // ── KPIs ──────────────────────────────────────────────────────────────────
+  useEffect(() => {
+    if (!activeProject) return;
+    ppiService.getKpis(activeProject.id).then(setKpis).catch(() => {});
+  }, [activeProject, data]);
 
   // ── Selection for bulk export ──────────────────────────────────────────────
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -197,6 +208,18 @@ export default function PPIPage() {
           )}
         </div>
       </div>
+
+      {/* ── KPIs ────────────────────────────────────────────────────── */}
+      {kpis && (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          <ModuleKPICard label={t("ppi.kpi.total")} value={kpis.total} color="default" />
+          <ModuleKPICard label={t("ppi.kpi.inProgress")} value={kpis.in_progress_count} color="primary" />
+          <ModuleKPICard label={t("ppi.kpi.submitted")} value={kpis.submitted_count} color="warning" />
+          <ModuleKPICard label={t("ppi.kpi.approved")} value={kpis.approved_count} color="success" />
+          <ModuleKPICard label={t("ppi.kpi.rejected")} value={kpis.rejected_count} color="destructive" />
+          <ModuleKPICard label={t("ppi.kpi.overdueApproval")} value={kpis.overdue_approval} color={kpis.overdue_approval > 0 ? "destructive" : "default"} />
+        </div>
+      )}
 
       {/* ── Filters ─────────────────────────────────────────────────── */}
       <div className="flex flex-wrap gap-3 items-center">

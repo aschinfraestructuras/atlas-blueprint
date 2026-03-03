@@ -16,11 +16,6 @@ export const PPI_INSTANCE_STATUSES = [
 
 export type PpiInstanceStatus = typeof PPI_INSTANCE_STATUSES[number];
 
-// Standardized item results after normalization migration:
-// 'pending' = not yet reviewed (initial)
-// 'pass'    = item passes inspection (was 'ok')
-// 'fail'    = item fails inspection, requires NC (was 'nok')
-// 'na'      = not applicable
 export const PPI_ITEM_RESULTS = ["pending", "pass", "fail", "na"] as const;
 export type PpiItemResult = typeof PPI_ITEM_RESULTS[number];
 
@@ -31,7 +26,6 @@ export interface PpiTemplate {
   project_id: string;
   code: string;
   disciplina: PpiDisciplina;
-  /** Free-text label when disciplina === 'outros' */
   disciplina_outro: string | null;
   title: string;
   description: string | null;
@@ -62,9 +56,7 @@ export interface PpiInstance {
   template_id: string | null;
   code: string;
   status: PpiInstanceStatus;
-  /** Free-text label when disciplina === 'outros' */
   disciplina_outro: string | null;
-  /** Date of the physical inspection (default today) */
   inspection_date: string | null;
   opened_at: string;
   closed_at: string | null;
@@ -72,6 +64,20 @@ export interface PpiInstance {
   created_by: string | null;
   created_at: string;
   updated_at: string;
+  // PRO fields
+  submitted_at: string | null;
+  submitted_by: string | null;
+  approved_at: string | null;
+  approved_by: string | null;
+  rejected_at: string | null;
+  rejected_by: string | null;
+  rejection_reason: string | null;
+  archived_at: string | null;
+  archived_by: string | null;
+  // soft delete
+  is_deleted: boolean;
+  deleted_at: string | null;
+  deleted_by: string | null;
 }
 
 export interface PpiInstanceItem {
@@ -87,6 +93,11 @@ export interface PpiInstanceItem {
   checked_at: string | null;
   requires_nc: boolean;
   nc_id: string | null;
+  // PRO snapshot fields
+  evidence_required: boolean;
+  method: string | null;
+  acceptance_criteria: string | null;
+  sort_order: number;
 }
 
 // ─── Input types ──────────────────────────────────────────────────────────────
@@ -130,6 +141,7 @@ export interface PpiInstanceFilters {
   status?: PpiInstanceStatus;
   disciplina?: PpiDisciplina;
   work_item_id?: string;
+  includeDeleted?: boolean;
 }
 
 export interface UpdateInstanceItemInput {
@@ -146,13 +158,29 @@ export interface BulkItemUpdate {
   notes?: string | null;
 }
 
+// ─── KPI type ─────────────────────────────────────────────────────────────────
+
+export interface PpiKpis {
+  total: number;
+  draft_count: number;
+  in_progress_count: number;
+  submitted_count: number;
+  approved_count: number;
+  rejected_count: number;
+  archived_count: number;
+  overdue_approval: number;
+  items_pass: number;
+  items_fail: number;
+  items_pending: number;
+  avg_cycle_days: number | null;
+}
+
 // ─── Service ──────────────────────────────────────────────────────────────────
 
 export const ppiService = {
 
   // ── Templates ──────────────────────────────────────────────────────────────
 
-  /** List all templates for a project. By default only active ones. */
   async listTemplates(
     projectId: string,
     opts?: { includeInactive?: boolean }
@@ -173,7 +201,6 @@ export const ppiService = {
     return (data ?? []) as PpiTemplate[];
   },
 
-  /** Get a single template with its items. */
   async getTemplate(templateId: string): Promise<PpiTemplate & { items: PpiTemplateItem[] }> {
     const [{ data: tmpl, error: e1 }, { data: items, error: e2 }] = await Promise.all([
       supabase.from("ppi_templates").select("*").eq("id", templateId).single(),
@@ -189,7 +216,6 @@ export const ppiService = {
     return { ...(tmpl as PpiTemplate), items: (items ?? []) as PpiTemplateItem[] };
   },
 
-  /** Create a template (without items). */
   async createTemplate(input: PpiTemplateInput): Promise<PpiTemplate> {
     const { data, error } = await supabase
       .from("ppi_templates")
@@ -221,7 +247,6 @@ export const ppiService = {
     return data as PpiTemplate;
   },
 
-  /** Add items to an existing template (batch). */
   async addTemplateItems(items: PpiTemplateItemInput[]): Promise<PpiTemplateItem[]> {
     if (items.length === 0) return [];
     const rows = items.map((it) => ({
@@ -243,7 +268,6 @@ export const ppiService = {
     return (data ?? []) as PpiTemplateItem[];
   },
 
-  /** Update template metadata (not items). */
   async updateTemplate(
     templateId: string,
     projectId: string,
@@ -275,7 +299,6 @@ export const ppiService = {
     return data as PpiTemplate;
   },
 
-  /** Soft-archive a template (sets is_active = false). Does NOT delete. */
   async archiveTemplate(templateId: string, projectId: string): Promise<PpiTemplate> {
     const { data, error } = await supabase
       .from("ppi_templates")
@@ -299,10 +322,6 @@ export const ppiService = {
 
   // ── Instances ──────────────────────────────────────────────────────────────
 
-  /**
-   * List PPI instances for a project with optional filters.
-   * Joins template to expose disciplina for filtering.
-   */
   async listInstances(
     projectId: string,
     filters?: PpiInstanceFilters
@@ -314,8 +333,11 @@ export const ppiService = {
         ppi_templates ( disciplina, code )
       `)
       .eq("project_id", projectId)
-      .eq("is_deleted", false)
       .order("created_at", { ascending: false });
+
+    if (!filters?.includeDeleted) {
+      q = q.eq("is_deleted", false);
+    }
 
     if (filters?.status)       q = q.eq("status", filters.status);
     if (filters?.work_item_id) q = q.eq("work_item_id", filters.work_item_id);
@@ -331,7 +353,6 @@ export const ppiService = {
     }));
   },
 
-  /** Get a single PPI instance with all its items. */
   async getInstance(
     instanceId: string
   ): Promise<PpiInstance & { items: PpiInstanceItem[] }> {
@@ -341,6 +362,7 @@ export const ppiService = {
         .from("ppi_instance_items")
         .select("*")
         .eq("instance_id", instanceId)
+        .order("sort_order", { ascending: true })
         .order("item_no", { ascending: true }),
     ]);
     if (e1) throw e1;
@@ -348,9 +370,6 @@ export const ppiService = {
     return { ...(inst as PpiInstance), items: (items ?? []) as PpiInstanceItem[] };
   },
 
-  /**
-   * Create a PPI instance via the atomic DB function fn_create_ppi_instance.
-   */
   async createInstanceFromTemplate(
     input: PpiInstanceInput,
     templateId: string
@@ -369,31 +388,13 @@ export const ppiService = {
 
     const row = (data as any[])[0];
     const instanceId    = row.instance_id    as string;
-    const generatedCode = row.generated_code as string;
     const hadExisting   = row.had_existing_items as boolean;
 
     const { items, ...instance } = await this.getInstance(instanceId);
 
-    await auditService.log({
-      projectId:   input.project_id,
-      entity:      "ppi_instances",
-      entityId:    instanceId,
-      action:      "INSERT",
-      module:      "ppi",
-      description: `PPI criado: ${generatedCode} a partir do template ${templateId}`,
-      diff: {
-        code:          generatedCode,
-        work_item_id:  input.work_item_id,
-        template_id:   templateId,
-        items_created: row.items_created,
-        had_existing:  hadExisting,
-      },
-    });
-
     return { ...instance, items, hadExistingItems: hadExisting };
   },
 
-  /** Create a blank PPI instance (no template) via the atomic DB function. */
   async createBlankInstance(input: PpiInstanceInput): Promise<PpiInstance & { generatedCode: string }> {
     const { data, error } = await supabase.rpc("fn_create_ppi_instance", {
       p_project_id:       input.project_id,
@@ -418,40 +419,30 @@ export const ppiService = {
       .single();
     if (fetchErr) throw fetchErr;
 
-    await auditService.log({
-      projectId:   input.project_id,
-      entity:      "ppi_instances",
-      entityId:    instanceId,
-      action:      "INSERT",
-      module:      "ppi",
-      description: `PPI criado (em branco): ${generatedCode}`,
-    });
-
     return { ...(inst as PpiInstance), generatedCode };
   },
 
   /**
    * Transition instance status via server-side validated DB function.
-   * The DB function enforces allowed transitions and sets closed_at automatically.
+   * Now supports rejection reason via p_reason parameter.
    */
   async updateInstanceStatus(
     instanceId: string,
     projectId: string,
     fromStatus: PpiInstanceStatus,
-    toStatus: PpiInstanceStatus
+    toStatus: PpiInstanceStatus,
+    reason?: string
   ): Promise<PpiInstance> {
-    // Use server-side validated transition function
     const { data, error } = await supabase.rpc("fn_ppi_instance_transition" as any, {
       p_instance_id: instanceId,
       p_to_status:   toStatus,
+      p_reason:      reason ?? null,
     });
     if (error) throw error;
 
-    // fn_ppi_instance_transition returns the updated row directly
     return (Array.isArray(data) ? data[0] : data) as PpiInstance;
   },
 
-  /** Update a single inspection item result. */
   async updateInstanceItemResult(
     itemId: string,
     instanceId: string,
@@ -490,10 +481,6 @@ export const ppiService = {
     return data as PpiInstanceItem;
   },
 
-  /**
-   * Bulk mark all pending items as 'ok' via server-side function.
-   * Returns the number of items updated.
-   */
   async bulkMarkAllOk(instanceId: string, projectId: string): Promise<number> {
     const { data, error } = await supabase.rpc("fn_ppi_bulk_mark_ok" as any, {
       p_instance_id: instanceId,
@@ -512,9 +499,6 @@ export const ppiService = {
     return data as number;
   },
 
-  /**
-   * Bulk save multiple item results in one transaction.
-   */
   async bulkSaveItems(
     instanceId: string,
     projectId: string,
@@ -538,9 +522,6 @@ export const ppiService = {
     return data as number;
   },
 
-  /**
-   * Link an NC to a specific instance item.
-   */
   async linkNcToItem(
     itemId: string,
     ncId: string,
@@ -566,10 +547,6 @@ export const ppiService = {
     return data as PpiInstanceItem;
   },
 
-  /**
-   * Update the inspection_date of a PPI instance.
-   * Only allowed when status is draft, in_progress or rejected.
-   */
   async updateInspectionDate(
     instanceId: string,
     projectId: string,
@@ -596,7 +573,6 @@ export const ppiService = {
     return data as PpiInstance;
   },
 
-  /** Soft-delete an instance. */
   async softDeleteInstance(instanceId: string, projectId: string): Promise<void> {
     const { data: { user } } = await supabase.auth.getUser();
     const { error } = await supabase
@@ -624,7 +600,18 @@ export const ppiService = {
     });
   },
 
-  // ── KPI helpers ────────────────────────────────────────────────────────────
+  // ── KPI ────────────────────────────────────────────────────────────────────
+
+  async getKpis(projectId: string): Promise<PpiKpis | null> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data, error } = await (supabase as any)
+      .from("vw_ppi_kpis")
+      .select("*")
+      .eq("project_id", projectId)
+      .maybeSingle();
+    if (error) throw error;
+    return data as PpiKpis | null;
+  },
 
   async getOpenCount(projectId: string): Promise<number> {
     const { count, error } = await supabase
