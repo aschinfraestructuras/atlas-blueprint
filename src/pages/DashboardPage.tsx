@@ -7,12 +7,14 @@ import { useNonConformities } from "@/hooks/useNonConformities";
 import { useSuppliers } from "@/hooks/useSuppliers";
 import { useWorkItems } from "@/hooks/useWorkItems";
 import { useMaterials } from "@/hooks/useMaterials";
+import { useProjectHealth } from "@/hooks/useProjectHealth";
 import { useRealtimeProject } from "@/hooks/useRealtimeProject";
 import {
   FolderKanban, FileText, FlaskConical, AlertTriangle,
   Clock, Building2, Timer, CheckCircle2, TrendingUp,
   ShieldCheck, Construction, ClipboardCheck, Hourglass,
   BarChart3, PieChart as PieChartIcon, Target, Activity, Truck, Package,
+  Ban, Gauge,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -278,6 +280,7 @@ export default function DashboardPage() {
   const { user } = useAuth();
   const { activeProject } = useProject();
   const { summary, ncMonthly, testsMonthly, docMetrics, qualityMetrics, loading } = useDashboardViews();
+  const { health: projectHealth, loading: healthLoading } = useProjectHealth(activeProject?.id);
   const { data: ncs, loading: ncLoading } = useNonConformities();
   const { data: suppliers, kpis, loading: supLoading } = useSuppliers();
   const { data: workItems, loading: wiLoading } = useWorkItems();
@@ -419,6 +422,17 @@ export default function DashboardPage() {
            EXECUTIVE DASHBOARD
         ═════════════════════════════════════════════════════════ */}
         <TabsContent value="executive" className="space-y-6 mt-0">
+
+          {/* ── Row 0: Global Health Indicators ─────────────── */}
+          {activeProject && (
+            <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
+              <KPICard label={t("health.ncOverdue")} value={projectHealth.total_nc_overdue} icon={AlertTriangle} loading={healthLoading} color={projectHealth.total_nc_overdue > 0 ? MOD.nc : MOD.muted} sub={`${projectHealth.total_nc_open} ${t("health.ncOpen").toLowerCase()}`} />
+              <KPICard label={t("health.testsFail30d")} value={projectHealth.total_tests_fail_30d} icon={FlaskConical} loading={healthLoading} color={projectHealth.total_tests_fail_30d > 0 ? MOD.nc : MOD.muted} sub={`${projectHealth.total_tests_pending} ${t("health.testsPending").toLowerCase()}`} />
+              <KPICard label={t("health.docsExpired")} value={projectHealth.total_documents_expired} icon={FileText} loading={healthLoading} color={projectHealth.total_documents_expired > 0 ? MOD.subcontractors : MOD.muted} sub={`${projectHealth.total_calibrations_expired} ${t("health.calibExpired").toLowerCase()}`} />
+              <KPICard label={t("health.activitiesBlocked")} value={projectHealth.activities_blocked} icon={Ban} loading={healthLoading} color={projectHealth.activities_blocked > 0 ? MOD.nc : MOD.muted} sub={`${projectHealth.total_ppi_pending} ${t("health.ppiPending").toLowerCase()}`} />
+              <PercentCard label={t("health.globalReadiness")} value={projectHealth.readiness_ratio} loading={healthLoading} color={projectHealth.readiness_ratio >= 80 ? MOD.suppliers : projectHealth.readiness_ratio >= 60 ? MOD.subcontractors : MOD.nc} icon={Gauge} sub={`Score: ${projectHealth.health_score}/100`} />
+            </div>
+          )}
 
           {/* ── Row 1: Critical Indicators ──────────────────────── */}
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
