@@ -2740,7 +2740,9 @@
       "rfi_due": "RFI (plazo)",
       "tech_office_due": "Of. Técnica (plazo)",
       "planning_due": "Planificación (plazo)",
-      "subcontractor_doc": "Doc. Subcontratista"
+      "subcontractor_doc": "Doc. Subcontratista",
+      "ppi_pending": "PPI Pendiente",
+      "ppi_approval": "PPI Pend. Aprobación"
     },
     "table": {
       "date": "Fecha",
