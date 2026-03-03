@@ -1335,46 +1335,58 @@ export type Database = {
       }
       ppi_instance_items: {
         Row: {
+          acceptance_criteria: string | null
           check_code: string
           checked_at: string | null
           checked_by: string | null
           evidence_file_id: string | null
+          evidence_required: boolean
           id: string
           instance_id: string
           item_no: number
           label: string
+          method: string | null
           nc_id: string | null
           notes: string | null
           requires_nc: boolean
           result: string
+          sort_order: number
         }
         Insert: {
+          acceptance_criteria?: string | null
           check_code: string
           checked_at?: string | null
           checked_by?: string | null
           evidence_file_id?: string | null
+          evidence_required?: boolean
           id?: string
           instance_id: string
           item_no: number
           label: string
+          method?: string | null
           nc_id?: string | null
           notes?: string | null
           requires_nc?: boolean
           result?: string
+          sort_order?: number
         }
         Update: {
+          acceptance_criteria?: string | null
           check_code?: string
           checked_at?: string | null
           checked_by?: string | null
           evidence_file_id?: string | null
+          evidence_required?: boolean
           id?: string
           instance_id?: string
           item_no?: number
           label?: string
+          method?: string | null
           nc_id?: string | null
           notes?: string | null
           requires_nc?: boolean
           result?: string
+          sort_order?: number
         }
         Relationships: [
           {
@@ -1402,6 +1414,10 @@ export type Database = {
       }
       ppi_instances: {
         Row: {
+          approved_at: string | null
+          approved_by: string | null
+          archived_at: string | null
+          archived_by: string | null
           closed_at: string | null
           code: string
           created_at: string
@@ -1415,12 +1431,21 @@ export type Database = {
           is_deleted: boolean
           opened_at: string
           project_id: string
+          rejected_at: string | null
+          rejected_by: string | null
+          rejection_reason: string | null
           status: string
+          submitted_at: string | null
+          submitted_by: string | null
           template_id: string | null
           updated_at: string
           work_item_id: string
         }
         Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          archived_at?: string | null
+          archived_by?: string | null
           closed_at?: string | null
           code: string
           created_at?: string
@@ -1434,12 +1459,21 @@ export type Database = {
           is_deleted?: boolean
           opened_at?: string
           project_id: string
+          rejected_at?: string | null
+          rejected_by?: string | null
+          rejection_reason?: string | null
           status?: string
+          submitted_at?: string | null
+          submitted_by?: string | null
           template_id?: string | null
           updated_at?: string
           work_item_id: string
         }
         Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          archived_at?: string | null
+          archived_by?: string | null
           closed_at?: string | null
           code?: string
           created_at?: string
@@ -1453,7 +1487,12 @@ export type Database = {
           is_deleted?: boolean
           opened_at?: string
           project_id?: string
+          rejected_at?: string | null
+          rejected_by?: string | null
+          rejection_reason?: string | null
           status?: string
+          submitted_at?: string | null
+          submitted_by?: string | null
           template_id?: string | null
           updated_at?: string
           work_item_id?: string
@@ -4255,6 +4294,46 @@ export type Database = {
         }
         Relationships: []
       }
+      vw_ppi_kpis: {
+        Row: {
+          approved_count: number | null
+          archived_count: number | null
+          avg_cycle_days: number | null
+          draft_count: number | null
+          in_progress_count: number | null
+          items_fail: number | null
+          items_pass: number | null
+          items_pending: number | null
+          overdue_approval: number | null
+          project_id: string | null
+          rejected_count: number | null
+          submitted_count: number | null
+          total: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ppi_instances_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ppi_instances_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "ppi_instances_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
       vw_project_health: {
         Row: {
           activities_blocked: number | null
@@ -4810,34 +4889,85 @@ export type Database = {
         Args: { p_instance_id: string; p_items: Json }
         Returns: number
       }
-      fn_ppi_instance_transition: {
-        Args: { p_instance_id: string; p_to_status: string }
-        Returns: {
-          closed_at: string | null
-          code: string
-          created_at: string
-          created_by: string | null
-          deleted_at: string | null
-          deleted_by: string | null
-          disciplina_outro: string | null
-          id: string
-          inspection_date: string | null
-          inspector_id: string | null
-          is_deleted: boolean
-          opened_at: string
-          project_id: string
-          status: string
-          template_id: string | null
-          updated_at: string
-          work_item_id: string
-        }
-        SetofOptions: {
-          from: "*"
-          to: "ppi_instances"
-          isOneToOne: true
-          isSetofReturn: false
-        }
-      }
+      fn_ppi_instance_transition:
+        | {
+            Args: { p_instance_id: string; p_to_status: string }
+            Returns: {
+              approved_at: string | null
+              approved_by: string | null
+              archived_at: string | null
+              archived_by: string | null
+              closed_at: string | null
+              code: string
+              created_at: string
+              created_by: string | null
+              deleted_at: string | null
+              deleted_by: string | null
+              disciplina_outro: string | null
+              id: string
+              inspection_date: string | null
+              inspector_id: string | null
+              is_deleted: boolean
+              opened_at: string
+              project_id: string
+              rejected_at: string | null
+              rejected_by: string | null
+              rejection_reason: string | null
+              status: string
+              submitted_at: string | null
+              submitted_by: string | null
+              template_id: string | null
+              updated_at: string
+              work_item_id: string
+            }
+            SetofOptions: {
+              from: "*"
+              to: "ppi_instances"
+              isOneToOne: true
+              isSetofReturn: false
+            }
+          }
+        | {
+            Args: {
+              p_instance_id: string
+              p_reason?: string
+              p_to_status: string
+            }
+            Returns: {
+              approved_at: string | null
+              approved_by: string | null
+              archived_at: string | null
+              archived_by: string | null
+              closed_at: string | null
+              code: string
+              created_at: string
+              created_by: string | null
+              deleted_at: string | null
+              deleted_by: string | null
+              disciplina_outro: string | null
+              id: string
+              inspection_date: string | null
+              inspector_id: string | null
+              is_deleted: boolean
+              opened_at: string
+              project_id: string
+              rejected_at: string | null
+              rejected_by: string | null
+              rejection_reason: string | null
+              status: string
+              submitted_at: string | null
+              submitted_by: string | null
+              template_id: string | null
+              updated_at: string
+              work_item_id: string
+            }
+            SetofOptions: {
+              from: "*"
+              to: "ppi_instances"
+              isOneToOne: true
+              isSetofReturn: false
+            }
+          }
       fn_recalc_work_item_readiness: {
         Args: { p_work_item_id: string }
         Returns: undefined
