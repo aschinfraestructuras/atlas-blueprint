@@ -9,6 +9,7 @@ import { documentService } from "@/lib/services/documentService";
 import type { Document } from "@/lib/services/documentService";
 import type { DocumentStatus } from "@/lib/services/documentService";
 import { exportDocumentListPdf, type DocExportLabels } from "@/lib/services/documentExportService";
+import { auditService } from "@/lib/services/auditService";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -144,14 +145,10 @@ export default function DocumentsPage() {
 
   // ── Delete ────────────────────────────────────────────────────────────────
   const handleDelete = async () => {
-    if (!deleteDoc) return;
+    if (!deleteDoc || !activeProject) return;
     setDeleting(true);
     try {
-      if (deleteDoc.file_path) {
-        await supabase.storage.from("qms-files").remove([deleteDoc.file_path]).catch(() => null);
-      }
-      const { error: dbErr } = await supabase.from("documents").delete().eq("id", deleteDoc.id);
-      if (dbErr) throw dbErr;
+      await documentService.softDelete(deleteDoc.id, activeProject.id);
       toast({ title: t("documents.toast.deleted") });
       refetch();
       setDeleteDoc(null);
@@ -266,7 +263,7 @@ export default function DocumentsPage() {
                   changeDescription: t("documents.form.changeDescription"),
                   uploadedAt: t("documents.export.uploadedAt"),
                 };
-                exportDocumentListPdf(toExport, labels, i18n.language, activeProject?.name ?? "Atlas");
+                exportDocumentListPdf(toExport, labels, i18n.language, activeProject?.name ?? "Atlas", activeProject?.id);
               }}>
               <FileDown className="h-3 w-3" />
               {t("documents.bulk.exportSelected")}

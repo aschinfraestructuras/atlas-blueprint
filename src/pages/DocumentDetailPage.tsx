@@ -360,7 +360,7 @@ export default function DocumentDetailPage() {
         changeDescription: t("documents.form.changeDescription"),
         uploadedAt: t("documents.export.uploadedAt"),
       };
-      exportDocumentPdf(doc, versions, labels, i18n.language, activeProject.name);
+      await exportDocumentPdf(doc, versions, labels, i18n.language, activeProject.name, activeProject.code);
     } catch {
       toast({ title: t("documents.toast.error"), variant: "destructive" });
     } finally { setExporting(false); }
