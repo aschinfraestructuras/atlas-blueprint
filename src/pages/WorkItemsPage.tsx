@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   Plus, Search, Construction, Pencil, Trash2, Eye, ClipboardCheck, Loader2,
+  ShieldCheck, ShieldAlert, AlertTriangle, FlaskConical,
 } from "lucide-react";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import {
@@ -68,6 +69,32 @@ function StatusBadge({ status }: { status: string }) {
     <span className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-muted/50 px-2.5 py-0.5 text-xs font-medium text-foreground">
       <span className="h-1.5 w-1.5 rounded-full flex-shrink-0" style={{ background: dotColor }} />
       {t(`workItems.status.${status}`, { defaultValue: status })}
+    </span>
+  );
+}
+
+function ReadinessBadge({ item }: { item: WorkItem }) {
+  const { t } = useTranslation();
+  const isBlocked = item.readiness_status === "blocked";
+  const indicators: string[] = [];
+  if (item.has_open_nc) indicators.push(t("workItems.readiness.openNc"));
+  if (item.has_pending_ppi) indicators.push(t("workItems.readiness.pendingPpi"));
+  if (item.has_pending_tests) indicators.push(t("workItems.readiness.pendingTests"));
+
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold",
+        isBlocked
+          ? "bg-destructive/10 text-destructive border border-destructive/20"
+          : "bg-primary/10 text-primary border border-primary/20",
+      )}
+      title={indicators.length > 0 ? indicators.join(", ") : undefined}
+    >
+      {isBlocked
+        ? <ShieldAlert className="h-3 w-3" />
+        : <ShieldCheck className="h-3 w-3" />}
+      {t(`workItems.readiness.${item.readiness_status ?? "not_ready"}`)}
     </span>
   );
 }
@@ -323,6 +350,9 @@ export default function WorkItemsPage() {
                 <TableHead className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                   {t("workItems.table.status")}
                 </TableHead>
+                <TableHead className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                  {t("workItems.table.readiness")}
+                </TableHead>
                 <TableHead className="text-right text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                   {t("workItems.table.actions")}
                 </TableHead>
@@ -356,6 +386,9 @@ export default function WorkItemsPage() {
                   </TableCell>
                   <TableCell>
                     <StatusBadge status={item.status} />
+                  </TableCell>
+                  <TableCell>
+                    <ReadinessBadge item={item} />
                   </TableCell>
                   <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
                     {/* Actions: visible only on row hover */}

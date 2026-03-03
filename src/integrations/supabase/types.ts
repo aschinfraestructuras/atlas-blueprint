@@ -3762,6 +3762,10 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      fn_recalc_work_item_readiness: {
+        Args: { p_work_item_id: string }
+        Returns: undefined
+      }
       fn_remove_project_member: {
         Args: { p_project_id: string; p_user_id: string }
         Returns: undefined

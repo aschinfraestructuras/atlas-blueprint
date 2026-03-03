@@ -1393,6 +1393,7 @@
       "element": "Elemento",
       "pk": "PK",
       "status": "Estado",
+      "readiness": "Disponibilidad",
       "actions": "Acciones"
     },
     "disciplines": {
@@ -1414,6 +1415,14 @@
       "approved":    "Aprobado",
       "archived":    "Archivado",
       "cancelled":   "Cancelado"
+    },
+    "readiness": {
+      "ready": "Listo",
+      "blocked": "Bloqueado",
+      "not_ready": "No Listo",
+      "openNc": "NC Abiertas",
+      "pendingPpi": "PPI Pendientes",
+      "pendingTests": "Ensayos Pendientes"
     },
     "detail": {
       "back": "Volver",
