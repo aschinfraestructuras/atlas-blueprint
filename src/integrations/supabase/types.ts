@@ -507,6 +507,96 @@ export type Database = {
           },
         ]
       }
+      laboratories: {
+        Row: {
+          accreditation_body: string | null
+          accreditation_code: string | null
+          contact_email: string | null
+          contact_name: string | null
+          contact_phone: string | null
+          created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
+          id: string
+          is_deleted: boolean
+          notes: string | null
+          project_id: string
+          scope: string | null
+          supplier_id: string
+          updated_at: string
+        }
+        Insert: {
+          accreditation_body?: string | null
+          accreditation_code?: string | null
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          is_deleted?: boolean
+          notes?: string | null
+          project_id: string
+          scope?: string | null
+          supplier_id: string
+          updated_at?: string
+        }
+        Update: {
+          accreditation_body?: string | null
+          accreditation_code?: string | null
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          is_deleted?: boolean
+          notes?: string | null
+          project_id?: string
+          scope?: string | null
+          supplier_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "laboratories_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "laboratories_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "laboratories_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "laboratories_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "laboratories_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "view_supplier_detail_metrics"
+            referencedColumns: ["supplier_id"]
+          },
+        ]
+      }
       material_documents: {
         Row: {
           created_at: string
@@ -2629,6 +2719,317 @@ export type Database = {
         }
         Relationships: []
       }
+      test_due_items: {
+        Row: {
+          activity_id: string | null
+          assigned_lab_supplier_id: string | null
+          created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
+          due_at_date: string | null
+          due_at_quantity: number | null
+          due_reason: string
+          id: string
+          is_deleted: boolean
+          plan_rule_id: string
+          project_id: string
+          related_test_result_id: string | null
+          scheduled_for: string | null
+          status: string
+          updated_at: string
+          waived_reason: string | null
+          work_item_id: string | null
+        }
+        Insert: {
+          activity_id?: string | null
+          assigned_lab_supplier_id?: string | null
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          due_at_date?: string | null
+          due_at_quantity?: number | null
+          due_reason?: string
+          id?: string
+          is_deleted?: boolean
+          plan_rule_id: string
+          project_id: string
+          related_test_result_id?: string | null
+          scheduled_for?: string | null
+          status?: string
+          updated_at?: string
+          waived_reason?: string | null
+          work_item_id?: string | null
+        }
+        Update: {
+          activity_id?: string | null
+          assigned_lab_supplier_id?: string | null
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          due_at_date?: string | null
+          due_at_quantity?: number | null
+          due_reason?: string
+          id?: string
+          is_deleted?: boolean
+          plan_rule_id?: string
+          project_id?: string
+          related_test_result_id?: string | null
+          scheduled_for?: string | null
+          status?: string
+          updated_at?: string
+          waived_reason?: string | null
+          work_item_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_due_items_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "planning_activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_due_items_assigned_lab_supplier_id_fkey"
+            columns: ["assigned_lab_supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_due_items_assigned_lab_supplier_id_fkey"
+            columns: ["assigned_lab_supplier_id"]
+            isOneToOne: false
+            referencedRelation: "view_supplier_detail_metrics"
+            referencedColumns: ["supplier_id"]
+          },
+          {
+            foreignKeyName: "test_due_items_plan_rule_id_fkey"
+            columns: ["plan_rule_id"]
+            isOneToOne: false
+            referencedRelation: "test_plan_rules"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_due_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_due_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "test_due_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "test_due_items_related_test_result_id_fkey"
+            columns: ["related_test_result_id"]
+            isOneToOne: false
+            referencedRelation: "test_results"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_due_items_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_plan_rules: {
+        Row: {
+          acceptance_criteria_override: string | null
+          activity_filter: Json | null
+          applies_to: string
+          created_at: string
+          created_by: string | null
+          default_lab_supplier_id: string | null
+          disciplina: string | null
+          event_triggers: string[] | null
+          frequency_type: string
+          frequency_unit: string | null
+          frequency_value: number | null
+          id: string
+          is_active: boolean
+          plan_id: string
+          requires_photos: boolean
+          requires_report: boolean
+          requires_witness: boolean
+          standards_override: string[] | null
+          test_id: string
+          updated_at: string
+          work_item_filter: Json | null
+        }
+        Insert: {
+          acceptance_criteria_override?: string | null
+          activity_filter?: Json | null
+          applies_to?: string
+          created_at?: string
+          created_by?: string | null
+          default_lab_supplier_id?: string | null
+          disciplina?: string | null
+          event_triggers?: string[] | null
+          frequency_type?: string
+          frequency_unit?: string | null
+          frequency_value?: number | null
+          id?: string
+          is_active?: boolean
+          plan_id: string
+          requires_photos?: boolean
+          requires_report?: boolean
+          requires_witness?: boolean
+          standards_override?: string[] | null
+          test_id: string
+          updated_at?: string
+          work_item_filter?: Json | null
+        }
+        Update: {
+          acceptance_criteria_override?: string | null
+          activity_filter?: Json | null
+          applies_to?: string
+          created_at?: string
+          created_by?: string | null
+          default_lab_supplier_id?: string | null
+          disciplina?: string | null
+          event_triggers?: string[] | null
+          frequency_type?: string
+          frequency_unit?: string | null
+          frequency_value?: number | null
+          id?: string
+          is_active?: boolean
+          plan_id?: string
+          requires_photos?: boolean
+          requires_report?: boolean
+          requires_witness?: boolean
+          standards_override?: string[] | null
+          test_id?: string
+          updated_at?: string
+          work_item_filter?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_plan_rules_default_lab_supplier_id_fkey"
+            columns: ["default_lab_supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_plan_rules_default_lab_supplier_id_fkey"
+            columns: ["default_lab_supplier_id"]
+            isOneToOne: false
+            referencedRelation: "view_supplier_detail_metrics"
+            referencedColumns: ["supplier_id"]
+          },
+          {
+            foreignKeyName: "test_plan_rules_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "test_plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_plan_rules_test_id_fkey"
+            columns: ["test_id"]
+            isOneToOne: false
+            referencedRelation: "tests_catalog"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_plan_rules_test_id_fkey"
+            columns: ["test_id"]
+            isOneToOne: false
+            referencedRelation: "view_advanced_quality_metrics"
+            referencedColumns: ["test_catalog_id"]
+          },
+        ]
+      }
+      test_plans: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          code: string
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          id: string
+          is_deleted: boolean
+          project_id: string
+          scope_disciplina: string | null
+          scope_notes: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          code: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          is_deleted?: boolean
+          project_id: string
+          scope_disciplina?: string | null
+          scope_notes?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          is_deleted?: boolean
+          project_id?: string
+          scope_disciplina?: string | null
+          scope_notes?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_plans_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_plans_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "test_plans_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
       test_results: {
         Row: {
           approved_at: string | null
@@ -2661,6 +3062,8 @@ export type Database = {
           status_workflow: string
           subcontractor_id: string | null
           supplier_id: string | null
+          template_id: string | null
+          template_version: number | null
           test_id: string
           updated_at: string
           updated_by: string | null
@@ -2697,6 +3100,8 @@ export type Database = {
           status_workflow?: string
           subcontractor_id?: string | null
           supplier_id?: string | null
+          template_id?: string | null
+          template_version?: number | null
           test_id: string
           updated_at?: string
           updated_by?: string | null
@@ -2733,6 +3138,8 @@ export type Database = {
           status_workflow?: string
           subcontractor_id?: string | null
           supplier_id?: string | null
+          template_id?: string | null
+          template_version?: number | null
           test_id?: string
           updated_at?: string
           updated_by?: string | null
@@ -2796,6 +3203,13 @@ export type Database = {
             referencedColumns: ["supplier_id"]
           },
           {
+            foreignKeyName: "test_results_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "test_templates"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "test_results_test_id_fkey"
             columns: ["test_id"]
             isOneToOne: false
@@ -2815,6 +3229,81 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "work_items"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_templates: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          form_schema: Json
+          id: string
+          is_active: boolean
+          project_id: string
+          test_id: string
+          title: string
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          form_schema?: Json
+          id?: string
+          is_active?: boolean
+          project_id: string
+          test_id: string
+          title: string
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          form_schema?: Json
+          id?: string
+          is_active?: boolean
+          project_id?: string
+          test_id?: string
+          title?: string
+          updated_at?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_templates_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_templates_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "test_templates_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "test_templates_test_id_fkey"
+            columns: ["test_id"]
+            isOneToOne: false
+            referencedRelation: "tests_catalog"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_templates_test_id_fkey"
+            columns: ["test_id"]
+            isOneToOne: false
+            referencedRelation: "view_advanced_quality_metrics"
+            referencedColumns: ["test_catalog_id"]
           },
         ]
       }
@@ -4259,6 +4748,8 @@ export type Database = {
           status_workflow: string
           subcontractor_id: string | null
           supplier_id: string | null
+          template_id: string | null
+          template_version: number | null
           test_id: string
           updated_at: string
           updated_by: string | null
@@ -4275,9 +4766,17 @@ export type Database = {
         Args: { p_days_ahead?: number; p_project_id: string }
         Returns: number
       }
+      fn_generate_due_tests: {
+        Args: { p_date_from?: string; p_date_to?: string; p_project_id: string }
+        Returns: number
+      }
       fn_invite_project_member: {
         Args: { p_email: string; p_project_id: string; p_role?: string }
         Returns: Json
+      }
+      fn_link_due_to_result: {
+        Args: { p_due_id: string; p_test_result_id: string }
+        Returns: undefined
       }
       fn_list_my_projects: {
         Args: never
@@ -4438,6 +4937,8 @@ export type Database = {
           status_workflow: string
           subcontractor_id: string | null
           supplier_id: string | null
+          template_id: string | null
+          template_version: number | null
           test_id: string
           updated_at: string
           updated_by: string | null
@@ -4449,6 +4950,10 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      fn_waive_due_test: {
+        Args: { p_due_id: string; p_reason: string }
+        Returns: undefined
       }
       get_project_role: {
         Args: { _project_id: string; _user_id: string }
