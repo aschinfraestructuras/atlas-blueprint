@@ -20,11 +20,16 @@ import { toast } from "@/hooks/use-toast";
 const SOURCE_ROUTES: Record<string, string> = {
   supplier_doc: "/suppliers",
   material_doc: "/materials",
+  subcontractor_doc: "/subcontractors",
   calibration: "/topography",
   nc_due: "/non-conformities",
-  rfi_due: "/technical-office",
-  tech_office_due: "/technical-office",
-  planning_due: "/planning",
+  rfi_due: "/technical-office/rfis",
+  tech_office_due: "/technical-office/items",
+  planning_due: "/planning/activities",
+  ppi_pending: "/ppi",
+  ppi_approval: "/ppi",
+  expiration_overdue: "/deadlines",
+  expiration_warning: "/deadlines",
 };
 
 export function NotificationBell() {
@@ -46,16 +51,20 @@ export function NotificationBell() {
       ]);
       setNotifications(items);
       setUnreadCount(count);
-    } catch { /* swallow */ }
+    } catch {
+      /* swallow */
+    }
   }, [activeProject]);
 
-  useEffect(() => { fetchNotifications(); }, [fetchNotifications]);
+  useEffect(() => {
+    fetchNotifications();
+  }, [fetchNotifications]);
 
   const handleMarkRead = async (n: Notification) => {
     if (!n.is_read) {
       await notificationService.markAsRead(n.id);
-      setUnreadCount(prev => Math.max(0, prev - 1));
-      setNotifications(prev => prev.map(x => x.id === n.id ? { ...x, is_read: true } : x));
+      setUnreadCount((prev) => Math.max(0, prev - 1));
+      setNotifications((prev) => prev.map((x) => (x.id === n.id ? { ...x, is_read: true } : x)));
     }
     if (n.link_entity_type && n.link_entity_id) {
       const base = SOURCE_ROUTES[n.link_entity_type] ?? "/expirations";
@@ -67,7 +76,7 @@ export function NotificationBell() {
     if (!activeProject) return;
     await notificationService.markAllAsRead(activeProject.id);
     setUnreadCount(0);
-    setNotifications(prev => prev.map(x => ({ ...x, is_read: true })));
+    setNotifications((prev) => prev.map((x) => ({ ...x, is_read: true })));
   };
 
   const handleGenerate = async () => {
@@ -100,11 +109,24 @@ export function NotificationBell() {
         <DropdownMenuLabel className="flex items-center justify-between">
           <span className="text-xs text-muted-foreground font-medium">{t("notifications.title")}</span>
           <div className="flex gap-1">
-            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleGenerate} disabled={generating} title={t("notifications.refresh")}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6"
+              onClick={handleGenerate}
+              disabled={generating}
+              title={t("notifications.refresh")}
+            >
               <RefreshCw className={cn("h-3 w-3", generating && "animate-spin")} />
             </Button>
             {unreadCount > 0 && (
-              <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleMarkAllRead} title={t("notifications.markAllRead")}>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6"
+                onClick={handleMarkAllRead}
+                title={t("notifications.markAllRead")}
+              >
                 <CheckCheck className="h-3 w-3" />
               </Button>
             )}
@@ -113,17 +135,15 @@ export function NotificationBell() {
         <DropdownMenuSeparator />
         <ScrollArea className="max-h-[320px]">
           {notifications.length === 0 ? (
-            <div className="py-8 text-center text-sm text-muted-foreground">
-              {t("notifications.empty")}
-            </div>
+            <div className="py-8 text-center text-sm text-muted-foreground">{t("notifications.empty")}</div>
           ) : (
-            notifications.map(n => (
+            notifications.map((n) => (
               <button
                 key={n.id}
                 onClick={() => handleMarkRead(n)}
                 className={cn(
                   "w-full text-left px-3 py-2.5 hover:bg-muted/50 transition-colors flex gap-2.5 border-b border-border/30 last:border-0",
-                  !n.is_read && "bg-primary/5"
+                  !n.is_read && "bg-primary/5",
                 )}
               >
                 <div className="mt-0.5 flex-shrink-0">
@@ -134,7 +154,12 @@ export function NotificationBell() {
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className={cn("text-xs leading-tight", !n.is_read ? "font-semibold text-foreground" : "text-muted-foreground")}>
+                  <p
+                    className={cn(
+                      "text-xs leading-tight",
+                      !n.is_read ? "font-semibold text-foreground" : "text-muted-foreground",
+                    )}
+                  >
                     {n.title}
                   </p>
                   {n.body && <p className="text-[10px] text-muted-foreground mt-0.5">{n.body}</p>}
@@ -151,7 +176,7 @@ export function NotificationBell() {
           <>
             <DropdownMenuSeparator />
             <button
-              onClick={() => navigate("/expirations")}
+              onClick={() => navigate("/deadlines")}
               className="w-full py-2 text-center text-xs text-primary hover:underline flex items-center justify-center gap-1"
             >
               {t("notifications.viewAll")}
