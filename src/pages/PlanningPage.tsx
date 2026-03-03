@@ -2,20 +2,29 @@ import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useProject } from "@/contexts/ProjectContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { usePlanning } from "@/hooks/usePlanning";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import { planningService } from "@/lib/services/planningService";
+import { auditService } from "@/lib/services/auditService";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import { exportWbsCsv, exportWbsPdf, exportActivitiesCsv, exportActivitiesPdf } from "@/lib/services/planningExportService";
-import { Plus, Pencil, Network, ListChecks, ShieldCheck, Trash2, Search, Eye, ChevronRight, ChevronDown, FolderPlus } from "lucide-react";
+import { RoleGate } from "@/components/RoleGate";
+import {
+  Plus, Pencil, Network, ListChecks, ShieldCheck, Trash2, Search, Eye,
+  ChevronRight, ChevronDown, FolderPlus, ChevronsUpDown, AlertTriangle,
+  CheckCircle2, Clock, Ban,
+} from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
@@ -29,6 +38,7 @@ import { CompletionCheckDialog } from "@/components/planning/CompletionCheckDial
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import type { WbsNode, Activity } from "@/lib/services/planningService";
+
 const STATUS_COLORS: Record<string, string> = {
   planned: "bg-muted text-muted-foreground",
   in_progress: "bg-primary/10 text-primary",
@@ -64,13 +74,14 @@ export default function PlanningPage() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { activeProject } = useProject();
+  const { user } = useAuth();
   const { wbs, activities, loading, error, refetch } = usePlanning();
   const { canCreate, isAdmin } = useProjectRole();
   const [activeTab, setActiveTab] = useState("activities");
 
   const [wbsDialogOpen, setWbsDialogOpen] = useState(false);
   const [editWbs, setEditWbs] = useState<WbsNode | null>(null);
-  const [parentWbs, setParentWbs] = useState<string | null>(null); // for "create child"
+  const [parentWbs, setParentWbs] = useState<string | null>(null);
   const [actDialogOpen, setActDialogOpen] = useState(false);
   const [editAct, setEditAct] = useState<Activity | null>(null);
   const [checkDialog, setCheckDialog] = useState<{ open: boolean; id: string; desc: string }>({ open: false, id: "", desc: "" });
@@ -80,19 +91,28 @@ export default function PlanningPage() {
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("__all__");
 
+  // KPIs
+  const kpis = useMemo(() => {
+    const totalWbs = wbs.length;
+    const totalAct = activities.length;
+    const inProgress = activities.filter(a => a.status === "in_progress").length;
+    const completed = activities.filter(a => a.status === "completed").length;
+    const blocked = activities.filter(a => a.status === "blocked").length;
+    const avgProgress = totalAct > 0 ? Math.round(activities.reduce((s, a) => s + a.progress_pct, 0) / totalAct) : 0;
+    return { totalWbs, totalAct, inProgress, completed, blocked, avgProgress };
+  }, [wbs, activities]);
+
   // Build WBS tree
+  type TreeNode = WbsNode & { children: TreeNode[]; depth: number };
   const wbsTree = useMemo(() => {
-    type TreeNode = WbsNode & { children: TreeNode[]; depth: number };
     const map = new Map<string, TreeNode>();
     const roots: TreeNode[] = [];
-    // Filter first
     let filtered = wbs;
     if (search) {
       const q = search.toLowerCase();
       filtered = wbs.filter(w => w.wbs_code.toLowerCase().includes(q) || w.description.toLowerCase().includes(q) || (w.zone ?? "").toLowerCase().includes(q));
     }
     filtered.forEach(w => map.set(w.id, { ...w, children: [], depth: 0 }));
-    // If search is active, show flat
     if (search) return Array.from(map.values());
     map.forEach(node => {
       if (node.parent_id && map.has(node.parent_id)) {
@@ -103,7 +123,6 @@ export default function PlanningPage() {
         roots.push(node);
       }
     });
-    // Flatten tree for rendering
     const flat: TreeNode[] = [];
     const walk = (nodes: TreeNode[]) => {
       for (const n of nodes) {
@@ -125,12 +144,11 @@ export default function PlanningPage() {
     return list;
   }, [activities, search, filterStatus]);
 
-  // WBS code uniqueness validation
   const wbsCodes = useMemo(() => new Set(wbs.map(w => w.wbs_code.toLowerCase())), [wbs]);
 
   if (!activeProject) return <NoProjectBanner />;
 
-  const meta = { projectName: activeProject.name, projectCode: activeProject.code, locale: i18n.language?.startsWith("es") ? "es" : "pt" };
+  const meta = { projectName: activeProject.name, projectCode: activeProject.code, locale: i18n.language?.startsWith("es") ? "es" : "pt", generatedBy: user?.email ?? undefined };
 
   const handleNewWbs = (pId?: string) => { setEditWbs(null); setParentWbs(pId ?? null); setWbsDialogOpen(true); };
   const handleEditWbs = (n: WbsNode) => { setEditWbs(n); setParentWbs(null); setWbsDialogOpen(true); };
@@ -145,7 +163,9 @@ export default function PlanningPage() {
     });
   };
 
-  // Check if a WBS node has children
+  const expandAll = () => setExpandedWbs(new Set(wbs.map(w => w.id)));
+  const collapseAll = () => setExpandedWbs(new Set());
+
   const hasChildren = (id: string) => wbs.some(w => w.parent_id === id);
 
   const handleDeleteWbs = async (id: string) => {
@@ -157,6 +177,31 @@ export default function PlanningPage() {
     catch { toast.error(t("common.deleteError", { defaultValue: "Erro ao eliminar" })); }
   };
 
+  const handleExport = (type: "csv" | "pdf") => {
+    if (activeTab === "wbs") {
+      type === "csv" ? exportWbsCsv(wbsTree as WbsNode[], meta) : exportWbsPdf(wbsTree as WbsNode[], meta);
+    } else {
+      type === "csv" ? exportActivitiesCsv(filteredActivities, meta) : exportActivitiesPdf(filteredActivities, meta);
+    }
+    auditService.log({
+      projectId: activeProject.id,
+      entity: activeTab === "wbs" ? "planning_wbs" : "planning_activities",
+      entityId: null as any,
+      action: "EXPORT",
+      module: "planning",
+      description: `${activeTab === "wbs" ? "WBS" : "Activities"} exported as ${type.toUpperCase()}`,
+    });
+  };
+
+  // Requirement indicators for activities
+  const getRequirementBadges = (a: Activity) => {
+    const badges: { label: string; color: string }[] = [];
+    if (a.requires_topography) badges.push({ label: "Topo", color: "bg-accent text-accent-foreground" });
+    if (a.requires_tests) badges.push({ label: t("planning.fields.reqTests", { defaultValue: "Ensaios" }), color: "bg-accent text-accent-foreground" });
+    if (a.requires_ppi) badges.push({ label: "PPI", color: "bg-accent text-accent-foreground" });
+    return badges;
+  };
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       <div className="flex items-center justify-between">
@@ -165,9 +210,40 @@ export default function PlanningPage() {
           <p className="text-sm text-muted-foreground">{t("planning.subtitle")}</p>
         </div>
         <ReportExportMenu options={[
-          { label: "CSV", icon: "csv", action: () => activeTab === "wbs" ? exportWbsCsv(wbsTree as WbsNode[], meta) : exportActivitiesCsv(filteredActivities, meta) },
-          { label: "PDF", icon: "pdf", action: () => activeTab === "wbs" ? exportWbsPdf(wbsTree as WbsNode[], meta) : exportActivitiesPdf(filteredActivities, meta) },
+          { label: "CSV", icon: "csv", action: () => handleExport("csv") },
+          { label: "PDF", icon: "pdf", action: () => handleExport("pdf") },
         ]} />
+      </div>
+
+      {/* KPIs */}
+      <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
+        <Card><CardContent className="pt-4 pb-3 text-center">
+          <div className="flex items-center justify-center gap-1 text-muted-foreground mb-1"><Network className="h-3.5 w-3.5" /><p className="text-xs">{t("planning.kpi.wbsNodes")}</p></div>
+          <p className="text-2xl font-bold text-foreground">{kpis.totalWbs}</p>
+        </CardContent></Card>
+        <Card><CardContent className="pt-4 pb-3 text-center">
+          <div className="flex items-center justify-center gap-1 text-muted-foreground mb-1"><ListChecks className="h-3.5 w-3.5" /><p className="text-xs">{t("planning.kpi.activities")}</p></div>
+          <p className="text-2xl font-bold text-foreground">{kpis.totalAct}</p>
+        </CardContent></Card>
+        <Card><CardContent className="pt-4 pb-3 text-center">
+          <div className="flex items-center justify-center gap-1 text-primary mb-1"><Clock className="h-3.5 w-3.5" /><p className="text-xs">{t("planning.kpi.inProgress")}</p></div>
+          <p className="text-2xl font-bold text-primary">{kpis.inProgress}</p>
+        </CardContent></Card>
+        <Card><CardContent className="pt-4 pb-3 text-center">
+          <div className="flex items-center justify-center gap-1 text-primary mb-1"><CheckCircle2 className="h-3.5 w-3.5" /><p className="text-xs">{t("planning.kpi.completed")}</p></div>
+          <p className="text-2xl font-bold text-primary">{kpis.completed}</p>
+        </CardContent></Card>
+        <Card><CardContent className="pt-4 pb-3 text-center">
+          <div className="flex items-center justify-center gap-1 text-destructive mb-1"><Ban className="h-3.5 w-3.5" /><p className="text-xs">{t("planning.kpi.blocked")}</p></div>
+          <p className="text-2xl font-bold text-destructive">{kpis.blocked}</p>
+        </CardContent></Card>
+        <Card><CardContent className="pt-4 pb-3 text-center">
+          <p className="text-xs text-muted-foreground mb-1">{t("planning.kpi.avgProgress")}</p>
+          <div className="flex items-center gap-2 justify-center">
+            <Progress value={kpis.avgProgress} className="h-2 w-12" />
+            <span className="text-2xl font-bold text-foreground">{kpis.avgProgress}%</span>
+          </div>
+        </CardContent></Card>
       </div>
 
       {error && <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">{error}</div>}
@@ -206,8 +282,18 @@ export default function PlanningPage() {
         </div>
 
         <TabsContent value="wbs" className="space-y-4">
-          <div className="flex justify-end gap-2">
-            {canCreate && <Button size="sm" className="gap-1.5" onClick={() => handleNewWbs()}><Plus className="h-3.5 w-3.5" /> {t("planning.wbs.add")}</Button>}
+          <div className="flex justify-between">
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" className="gap-1.5 text-xs" onClick={expandAll}>
+                <ChevronsUpDown className="h-3 w-3" />{t("planning.wbs.expandAll")}
+              </Button>
+              <Button variant="outline" size="sm" className="gap-1.5 text-xs" onClick={collapseAll}>
+                {t("planning.wbs.collapseAll")}
+              </Button>
+            </div>
+            <RoleGate action="create">
+              <Button size="sm" className="gap-1.5" onClick={() => handleNewWbs()}><Plus className="h-3.5 w-3.5" /> {t("planning.wbs.add")}</Button>
+            </RoleGate>
           </div>
           {loading ? (
             <div className="rounded-xl border border-border overflow-hidden divide-y divide-border">
@@ -250,11 +336,11 @@ export default function PlanningPage() {
                       <TableCell className="text-sm text-muted-foreground">{n.responsible || "—"}</TableCell>
                       <TableCell>
                         <div className="flex gap-1">
-                          {canCreate && (
-                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleNewWbs(n.id)} title={t("planning.wbs.addChild", { defaultValue: "Criar filho" })}>
+                          <RoleGate action="create">
+                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleNewWbs(n.id)} title={t("planning.wbs.addChild")}>
                               <FolderPlus className="h-3.5 w-3.5" />
                             </Button>
-                          )}
+                          </RoleGate>
                           <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditWbs(n)}><Pencil className="h-3.5 w-3.5" /></Button>
                           {isAdmin && <DeleteButton onConfirm={() => handleDeleteWbs(n.id)} />}
                         </div>
@@ -269,7 +355,9 @@ export default function PlanningPage() {
 
         <TabsContent value="activities" className="space-y-4">
           <div className="flex justify-end">
-            {canCreate && <Button size="sm" className="gap-1.5" onClick={handleNewAct}><Plus className="h-3.5 w-3.5" /> {t("planning.activity.add")}</Button>}
+            <RoleGate action="create">
+              <Button size="sm" className="gap-1.5" onClick={handleNewAct}><Plus className="h-3.5 w-3.5" /> {t("planning.activity.add")}</Button>
+            </RoleGate>
           </div>
           {loading ? (
             <div className="rounded-xl border border-border overflow-hidden divide-y divide-border">
@@ -293,40 +381,44 @@ export default function PlanningPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredActivities.map((a) => (
-                    <TableRow key={a.id} className="hover:bg-muted/20 transition-colors">
-                      <TableCell className="text-sm font-medium text-foreground max-w-[200px] truncate">{a.description}</TableCell>
-                      <TableCell className="text-xs font-mono text-muted-foreground">{a.wbs_code || "—"}</TableCell>
-                      <TableCell className="text-sm text-muted-foreground">{a.zone || "—"}</TableCell>
-                      <TableCell>
-                        <Badge variant="secondary" className={cn("text-xs", STATUS_COLORS[a.status] ?? "")}>
-                          {t(`planning.status.${a.status}`, { defaultValue: a.status })}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2 min-w-[80px]">
-                          <Progress value={a.progress_pct} className="h-2 flex-1" />
-                          <span className="text-xs text-muted-foreground">{a.progress_pct}%</span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-xs text-muted-foreground whitespace-nowrap">{a.planned_start || "?"} → {a.planned_end || "?"}</TableCell>
-                      <TableCell>
-                        <div className="flex gap-1">
-                          {a.requires_topography && <Badge variant="outline" className="text-[10px]">Topo</Badge>}
-                          {a.requires_tests && <Badge variant="outline" className="text-[10px]">{t("planning.fields.reqTests", { defaultValue: "Ensaios" })}</Badge>}
-                          {a.requires_ppi && <Badge variant="outline" className="text-[10px]">PPI</Badge>}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex gap-1">
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => navigate(`/planning/activities/${a.id}`)} title={t("common.view")}><Eye className="h-3.5 w-3.5" /></Button>
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditAct(a)} title={t("common.edit")}><Pencil className="h-3.5 w-3.5" /></Button>
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setCheckDialog({ open: true, id: a.id, desc: a.description })} title={t("planning.completion.title")}><ShieldCheck className="h-3.5 w-3.5" /></Button>
-                          {isAdmin && <DeleteButton onConfirm={() => handleDeleteActivity(a.id)} />}
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {filteredActivities.map((a) => {
+                    const reqBadges = getRequirementBadges(a);
+                    return (
+                      <TableRow key={a.id} className="hover:bg-muted/20 transition-colors">
+                        <TableCell className="text-sm font-medium text-foreground max-w-[200px] truncate">{a.description}</TableCell>
+                        <TableCell className="text-xs font-mono text-muted-foreground">{a.wbs_code || "—"}</TableCell>
+                        <TableCell className="text-sm text-muted-foreground">{a.zone || "—"}</TableCell>
+                        <TableCell>
+                          <Badge variant="secondary" className={cn("text-xs", STATUS_COLORS[a.status] ?? "")}>
+                            {t(`planning.status.${a.status}`, { defaultValue: a.status })}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2 min-w-[80px]">
+                            <Progress value={a.progress_pct} className="h-2 flex-1" />
+                            <span className="text-xs text-muted-foreground">{a.progress_pct}%</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-xs text-muted-foreground whitespace-nowrap">{a.planned_start || "?"} → {a.planned_end || "?"}</TableCell>
+                        <TableCell>
+                          <div className="flex gap-1">
+                            {reqBadges.map(b => (
+                              <Badge key={b.label} variant="outline" className="text-[10px]">{b.label}</Badge>
+                            ))}
+                            {reqBadges.length === 0 && <span className="text-xs text-muted-foreground">—</span>}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-1">
+                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => navigate(`/planning/activities/${a.id}`)} title={t("common.view")}><Eye className="h-3.5 w-3.5" /></Button>
+                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditAct(a)} title={t("common.edit")}><Pencil className="h-3.5 w-3.5" /></Button>
+                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setCheckDialog({ open: true, id: a.id, desc: a.description })} title={t("planning.completion.title")}><ShieldCheck className="h-3.5 w-3.5" /></Button>
+                            {isAdmin && <DeleteButton onConfirm={() => handleDeleteActivity(a.id)} />}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </div>

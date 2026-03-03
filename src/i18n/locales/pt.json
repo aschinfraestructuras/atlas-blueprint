@@ -1260,6 +1260,13 @@
   "plans": {
     "newPlan": "Novo Plano",
     "searchPlaceholder": "Pesquisar título, revisão…",
+    "kpi": {
+      "total": "Total",
+      "draft": "Rascunho",
+      "inReview": "Em Revisão",
+      "approved": "Aprovados",
+      "obsoleteArchived": "Obsoletos / Arquivados"
+    },
     "table": {
       "type": "Tipo",
       "title": "Título",
@@ -1309,7 +1316,11 @@
       "versionsTitle": "Histórico de Versões",
       "noVersions": "Sem versões registadas. Carregue o primeiro ficheiro.",
       "current": "Atual",
-      "attachments": "Anexos"
+      "attachments": "Anexos",
+      "timeline": "Linha temporal",
+      "linkedWorkItems": "Trabalhos Ligados",
+      "linkedActivities": "Atividades Ligadas",
+      "relatedItems": "Itens Relacionados"
     },
     "deleteConfirm": {
       "title": "Eliminar plano?",
@@ -2281,7 +2292,17 @@
       "parent": "Nó Pai",
       "zone": "Zona",
       "responsible": "Responsável",
-      "codeDuplicate": "Já existe um nó WBS com este código neste projeto."
+      "codeDuplicate": "Já existe um nó WBS com este código neste projeto.",
+      "expandAll": "Expandir tudo",
+      "collapseAll": "Recolher tudo"
+    },
+    "kpi": {
+      "wbsNodes": "Nós WBS",
+      "activities": "Atividades",
+      "inProgress": "Em Curso",
+      "completed": "Concluídas",
+      "blocked": "Bloqueadas",
+      "avgProgress": "Progresso Médio"
     },
     "activity": {
       "add": "Nova Atividade",

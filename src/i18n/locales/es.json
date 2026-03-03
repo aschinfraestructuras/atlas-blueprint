@@ -1199,6 +1199,13 @@
   "plans": {
     "newPlan": "Nuevo Plan",
     "searchPlaceholder": "Buscar título, revisión…",
+    "kpi": {
+      "total": "Total",
+      "draft": "Borrador",
+      "inReview": "En Revisión",
+      "approved": "Aprobados",
+      "obsoleteArchived": "Obsoletos / Archivados"
+    },
     "table": {
       "type": "Tipo",
       "title": "Título",
@@ -1248,7 +1255,11 @@
       "versionsTitle": "Historial de Versiones",
       "noVersions": "Sin versiones registradas. Suba el primer archivo.",
       "current": "Actual",
-      "attachments": "Adjuntos"
+      "attachments": "Adjuntos",
+      "timeline": "Línea temporal",
+      "linkedWorkItems": "Trabajos Enlazados",
+      "linkedActivities": "Actividades Enlazadas",
+      "relatedItems": "Ítems Relacionados"
     },
     "deleteConfirm": {
       "title": "¿Eliminar plan?",
@@ -2233,9 +2244,31 @@
     "title": "Planificación Estructurada",
     "subtitle": "WBS jerárquica, actividades planificadas y bloqueos inteligentes",
     "tabs": { "activities": "Actividades" },
-    "wbs": { "add": "Nueva WBS", "addChild": "Crear hijo", "createTitle": "Crear Nodo WBS", "editTitle": "Editar Nodo WBS", "code": "Código WBS", "parent": "Nodo Padre", "zone": "Zona", "responsible": "Responsable", "codeDuplicate": "Ya existe un nodo WBS con este código en este proyecto." },
+    "searchPlaceholder": "Buscar código, descripción, zona…",
+    "wbs": {
+      "add": "Nueva WBS",
+      "addChild": "Crear hijo",
+      "createTitle": "Crear Nodo WBS",
+      "editTitle": "Editar Nodo WBS",
+      "code": "Código WBS",
+      "parent": "Nodo Padre",
+      "zone": "Zona",
+      "responsible": "Responsable",
+      "codeDuplicate": "Ya existe un nodo WBS con este código en este proyecto.",
+      "expandAll": "Expandir todo",
+      "collapseAll": "Contraer todo"
+    },
+    "kpi": {
+      "wbsNodes": "Nodos WBS",
+      "activities": "Actividades",
+      "inProgress": "En Curso",
+      "completed": "Completadas",
+      "blocked": "Bloqueadas",
+      "avgProgress": "Progreso Medio"
+    },
     "activity": { "add": "Nueva Actividad", "createTitle": "Crear Actividad", "editTitle": "Editar Actividad" },
     "fields": { "plannedStart": "Inicio Planificado", "plannedEnd": "Fin Planificado", "actualStart": "Inicio Real", "actualEnd": "Fin Real", "progress": "Progreso", "zone": "Zona", "dates": "Fechas", "requirements": "Requisitos", "workItem": "Actividad (WI)", "subcontractor": "Subcontratista", "constraints": "Restricciones", "constraintsPlaceholder": "Ej: Depende de aprobación de material…", "reqTopography": "Requiere topografía", "reqTests": "Requiere ensayos", "reqPpi": "Requiere PPI" },
+    "filters": { "allStatuses": "Todos los estados" },
     "status": { "planned": "Planificado", "in_progress": "En curso", "blocked": "Bloqueado", "completed": "Completado", "cancelled": "Cancelado" },
     "toast": { "wbsCreated": "WBS creado", "wbsUpdated": "WBS actualizado", "activityCreated": "Actividad creada", "activityUpdated": "Actividad actualizada" },
     "completion": { "title": "Verificar Conclusión", "runCheck": "Ejecutar Verificación", "canComplete": "La actividad puede completarse — sin bloqueos.", "blocked": "La actividad NO puede completarse:" },
