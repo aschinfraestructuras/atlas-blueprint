@@ -20,6 +20,11 @@ export interface WorkItem {
   created_by: string | null;
   created_at: string;
   updated_at: string;
+  // Readiness engine fields
+  has_open_nc: boolean;
+  has_pending_ppi: boolean;
+  has_pending_tests: boolean;
+  readiness_status: 'ready' | 'blocked' | 'not_ready' | string;
 }
 
 export interface WorkItemInput {

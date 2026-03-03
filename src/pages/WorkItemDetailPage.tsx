@@ -5,6 +5,7 @@ import {
   ArrowLeft, Construction, FlaskConical, AlertTriangle, Paperclip,
   Pencil, Calendar, MapPin, ClipboardCheck, Plus, Eye, FileDown, FileText,
   CheckCircle2, XCircle, Clock, Crosshair, Target, Map, ListTodo,
+  ShieldCheck, ShieldAlert,
 } from "lucide-react";
 import {
   exportWorkItemTestsPdf,
@@ -836,7 +837,45 @@ export default function WorkItemDetailPage() {
         </CardContent>
       </Card>
 
-      {/* ── Tabs: Tests / NCs / PPI / Attachments ────────────────────── */}
+      {/* ── Readiness card ───────────────────────────────────────────── */}
+      <Card className="shadow-card">
+        <CardContent className="px-5 py-4 flex items-center gap-4 flex-wrap">
+          <div className="flex items-center gap-2">
+            {item.readiness_status === "blocked" ? (
+              <ShieldAlert className="h-5 w-5 text-destructive" />
+            ) : (
+              <ShieldCheck className="h-5 w-5 text-primary" />
+            )}
+            <span className={cn(
+              "text-sm font-bold",
+              item.readiness_status === "blocked" ? "text-destructive" : "text-primary",
+            )}>
+              {t(`workItems.readiness.${item.readiness_status ?? "not_ready"}`)}
+            </span>
+          </div>
+          <div className="flex items-center gap-3 flex-wrap">
+            {item.has_open_nc && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-destructive/10 border border-destructive/20 px-2.5 py-0.5 text-xs font-medium text-destructive">
+                <AlertTriangle className="h-3 w-3" />
+                {t("workItems.readiness.openNc")}
+              </span>
+            )}
+            {item.has_pending_ppi && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 border border-amber-500/20 px-2.5 py-0.5 text-xs font-medium text-amber-700 dark:text-amber-400">
+                <ClipboardCheck className="h-3 w-3" />
+                {t("workItems.readiness.pendingPpi")}
+              </span>
+            )}
+            {item.has_pending_tests && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/10 border border-blue-500/20 px-2.5 py-0.5 text-xs font-medium text-blue-700 dark:text-blue-400">
+                <FlaskConical className="h-3 w-3" />
+                {t("workItems.readiness.pendingTests")}
+              </span>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
       <Tabs defaultValue="ppi">
         <TabsList>
           <TabsTrigger value="ppi" className="gap-1.5">
