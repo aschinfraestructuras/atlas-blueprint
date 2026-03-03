@@ -61,7 +61,7 @@ const RPC_FUNCTIONS = [
   "get_project_role",
 ] as const;
 
-const STORAGE_BUCKETS = ["atlas_files", "qms-files"] as const;
+const STORAGE_BUCKETS = ["qms-files"] as const;
 
 // ─── Component ───────────────────────────────────────────────────────────────
 

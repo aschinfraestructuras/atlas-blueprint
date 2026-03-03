@@ -2808,6 +2808,16 @@
     "viewAll": "Ver todos os prazos",
     "generated": "{{count}} alertas gerados.",
     "generateError": "Erro ao gerar alertas."
+  },
+  "pagination": {
+    "showing": "{{from}}-{{to}} de {{total}}",
+    "noResults": "Sem resultados",
+    "page": "pág",
+    "first": "Primeira",
+    "last": "Última",
+    "next": "Seguinte",
+    "previous": "Anterior",
+    "rowsPerPage": "Linhas por página"
   }
 }
 

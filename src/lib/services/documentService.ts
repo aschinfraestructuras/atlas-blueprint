@@ -134,6 +134,34 @@ export const documentService = {
     return (data ?? []) as unknown as Document[];
   },
 
+  /** Server-side paginated query */
+  async getByProjectPaginated(
+    projectId: string,
+    options: {
+      from: number;
+      to: number;
+      status?: string;
+      search?: string;
+      disciplina?: string;
+    },
+  ): Promise<{ data: Document[]; count: number }> {
+    let q = supabase
+      .from("documents")
+      .select("*", { count: "exact" })
+      .eq("project_id", projectId)
+      .eq("is_deleted", false)
+      .order("created_at", { ascending: false })
+      .range(options.from, options.to);
+
+    if (options.status && options.status !== "all") q = q.eq("status", options.status);
+    if (options.disciplina && options.disciplina !== "all") q = q.eq("disciplina", options.disciplina);
+    if (options.search) q = q.or(`title.ilike.%${options.search}%,code.ilike.%${options.search}%`);
+
+    const { data, error, count } = await q;
+    if (error) throw error;
+    return { data: (data ?? []) as unknown as Document[], count: count ?? 0 };
+  },
+
   async getById(id: string): Promise<Document> {
     const { data, error } = await supabase
       .from("documents")

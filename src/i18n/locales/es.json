@@ -2525,6 +2525,16 @@
     "viewAll": "Ver todos los plazos",
     "generated": "{{count}} alertas generadas.",
     "generateError": "Error al generar alertas."
+  },
+  "pagination": {
+    "showing": "{{from}}-{{to}} de {{total}}",
+    "noResults": "Sin resultados",
+    "page": "pág",
+    "first": "Primera",
+    "last": "Última",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "rowsPerPage": "Filas por página"
   }
 }
 
