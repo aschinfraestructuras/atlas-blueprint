@@ -67,7 +67,7 @@ export function NotificationBell() {
       setNotifications((prev) => prev.map((x) => (x.id === n.id ? { ...x, is_read: true } : x)));
     }
     if (n.link_entity_type && n.link_entity_id) {
-      const base = SOURCE_ROUTES[n.link_entity_type] ?? "/expirations";
+      const base = SOURCE_ROUTES[n.link_entity_type] ?? "/deadlines";
       navigate(`${base}/${n.link_entity_id}`);
     }
   };
