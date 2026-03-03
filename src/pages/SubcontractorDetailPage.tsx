@@ -23,7 +23,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { ArrowLeft, HardHat, Plus, Trash2, FileCheck, AlertTriangle, Calendar, ClipboardList, Briefcase, History } from "lucide-react";
+import { ArrowLeft, HardHat, Plus, Trash2, FileCheck, AlertTriangle, ClipboardList, Briefcase, History, AlertCircle, FlaskConical } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import { exportSubcontractorDetailPdf } from "@/lib/services/subcontractorExportService";
@@ -61,6 +61,8 @@ export default function SubcontractorDetailPage() {
   const [docs, setDocs] = useState<SubcontractorDocument[]>([]);
   const [activities, setActivities] = useState<any[]>([]);
   const [workItems, setWorkItems] = useState<any[]>([]);
+  const [ncs, setNcs] = useState<any[]>([]);
+  const [tests, setTests] = useState<any[]>([]);
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
 
   // New doc form
@@ -117,6 +119,36 @@ export default function SubcontractorDetailPage() {
     } catch { setWorkItems([]); }
   }, [id, activeProject]);
 
+  const fetchNcs = useCallback(async () => {
+    if (!id || !activeProject) return;
+    try {
+      const { data } = await supabase
+        .from("non_conformities")
+        .select("*")
+        .eq("project_id", activeProject.id)
+        .eq("subcontractor_id", id)
+        .eq("is_deleted", false)
+        .order("created_at", { ascending: false });
+      setNcs(data ?? []);
+    } catch { setNcs([]); }
+  }, [id, activeProject]);
+
+  const fetchTests = useCallback(async () => {
+    if (!id || !activeProject) return;
+    try {
+      // Tests linked via work_items that belong to this subcontractor
+      const wiIds = workItems.map((wi: any) => wi.id);
+      if (wiIds.length === 0) { setTests([]); return; }
+      const { data } = await supabase
+        .from("test_results" as any)
+        .select("*")
+        .eq("project_id", activeProject.id)
+        .in("work_item_id", wiIds)
+        .order("created_at", { ascending: false });
+      setTests((data as any[]) ?? []);
+    } catch { setTests([]); }
+  }, [id, activeProject, workItems]);
+
   const fetchAudit = useCallback(async () => {
     if (!id || !activeProject) return;
     try {
@@ -137,7 +169,13 @@ export default function SubcontractorDetailPage() {
     fetchActivities();
     fetchWorkItems();
     fetchAudit();
-  }, [fetchSub, fetchDocs, fetchActivities, fetchWorkItems, fetchAudit]);
+    fetchNcs();
+  }, [fetchSub, fetchDocs, fetchActivities, fetchWorkItems, fetchAudit, fetchNcs]);
+
+  // Fetch tests after workItems are loaded
+  useEffect(() => {
+    if (workItems.length > 0) fetchTests();
+  }, [workItems, fetchTests]);
 
   // Check doc validity
   const docsWithStatus = useMemo(() => {
@@ -294,6 +332,14 @@ export default function SubcontractorDetailPage() {
           <TabsTrigger value="workitems">
             {t("subcontractors.detail.tabs.workItems")}
             {workItems.length > 0 && <Badge variant="secondary" className="ml-1.5 text-[10px] px-1.5 py-0">{workItems.length}</Badge>}
+          </TabsTrigger>
+          <TabsTrigger value="ncs">
+            {t("subcontractors.detail.tabs.ncs")}
+            {ncs.length > 0 && <Badge variant="secondary" className="ml-1.5 text-[10px] px-1.5 py-0">{ncs.length}</Badge>}
+          </TabsTrigger>
+          <TabsTrigger value="tests">
+            {t("subcontractors.detail.tabs.tests")}
+            {tests.length > 0 && <Badge variant="secondary" className="ml-1.5 text-[10px] px-1.5 py-0">{tests.length}</Badge>}
           </TabsTrigger>
           <TabsTrigger value="audit">{t("subcontractors.detail.tabs.audit")}</TabsTrigger>
         </TabsList>
@@ -471,6 +517,88 @@ export default function SubcontractorDetailPage() {
                         <TableCell className="text-sm font-medium">{wi.description ?? wi.title ?? "—"}</TableCell>
                         <TableCell><Badge variant="secondary" className="text-xs">{wi.status}</Badge></TableCell>
                         <TableCell className="text-sm text-muted-foreground">{new Date(wi.created_at).toLocaleDateString()}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Non-Conformities */}
+        <TabsContent value="ncs">
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <AlertCircle className="h-4 w-4 text-muted-foreground" />
+                {t("subcontractors.detail.linkedNCs")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {ncs.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-4 text-center">{t("common.noData")}</p>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-muted/40">
+                      <TableHead className="text-xs">{t("subcontractors.detail.ncCode")}</TableHead>
+                      <TableHead className="text-xs">{t("common.description")}</TableHead>
+                      <TableHead className="text-xs">{t("subcontractors.detail.severity")}</TableHead>
+                      <TableHead className="text-xs">{t("common.status")}</TableHead>
+                      <TableHead className="text-xs">{t("subcontractors.detail.dueDate")}</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {ncs.map((nc: any) => (
+                      <TableRow key={nc.id} className="cursor-pointer hover:bg-muted/20" onClick={() => navigate(`/non-conformities/${nc.id}`)}>
+                        <TableCell className="text-sm font-medium">{nc.code ?? "—"}</TableCell>
+                        <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">{nc.title ?? nc.description}</TableCell>
+                        <TableCell>
+                          <Badge variant="secondary" className={cn("text-xs", nc.severity === "critical" ? "bg-destructive/10 text-destructive" : nc.severity === "major" ? "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400" : "")}>
+                            {nc.severity}
+                          </Badge>
+                        </TableCell>
+                        <TableCell><Badge variant="secondary" className="text-xs">{nc.status}</Badge></TableCell>
+                        <TableCell className="text-sm text-muted-foreground">{nc.due_date ?? "—"}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Tests */}
+        <TabsContent value="tests">
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <FlaskConical className="h-4 w-4 text-muted-foreground" />
+                {t("subcontractors.detail.linkedTests")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {tests.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-4 text-center">{t("common.noData")}</p>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-muted/40">
+                      <TableHead className="text-xs">{t("subcontractors.detail.testCode")}</TableHead>
+                      <TableHead className="text-xs">{t("common.status")}</TableHead>
+                      <TableHead className="text-xs">{t("subcontractors.detail.testDate")}</TableHead>
+                      <TableHead className="text-xs">{t("subcontractors.detail.testResult")}</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {tests.map((tr: any) => (
+                      <TableRow key={tr.id}>
+                        <TableCell className="text-sm font-medium">{tr.code ?? "—"}</TableCell>
+                        <TableCell><Badge variant="secondary" className="text-xs">{tr.status}</Badge></TableCell>
+                        <TableCell className="text-sm text-muted-foreground">{tr.date ? new Date(tr.date).toLocaleDateString() : "—"}</TableCell>
+                        <TableCell className="text-sm text-muted-foreground">{tr.pass_fail ?? "—"}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>

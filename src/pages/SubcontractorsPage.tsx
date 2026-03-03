@@ -8,7 +8,7 @@ import { useProjectRole } from "@/hooks/useProjectRole";
 import { subcontractorService } from "@/lib/services/subcontractorService";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { useToast } from "@/hooks/use-toast";
-import { HardHat, Plus, Pencil, Trash2, Search, Eye } from "lucide-react";
+import { HardHat, Plus, Pencil, Trash2, Search, Eye, Users, AlertTriangle, CheckCircle, Clock } from "lucide-react";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
@@ -35,6 +36,7 @@ const STATUS_COLORS: Record<string, string> = {
   active: "bg-primary/20 text-primary",
   suspended: "bg-destructive/10 text-destructive",
   concluded: "bg-muted text-muted-foreground",
+  archived: "bg-muted text-muted-foreground",
 };
 
 const SUB_STATUSES = ["active", "suspended", "concluded"];
@@ -56,6 +58,17 @@ export default function SubcontractorsPage() {
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("__all__");
   const [filterDocStatus, setFilterDocStatus] = useState("__all__");
+
+  // KPIs
+  const kpis = useMemo(() => {
+    const total = subcontractors.length;
+    const active = subcontractors.filter(s => s.status === "active").length;
+    const docsExpired = subcontractors.filter(s => s.documentation_status === "expired").length;
+    const docsPending = subcontractors.filter(s => s.documentation_status === "pending").length;
+    const avgScore = subcontractors.filter(s => s.performance_score != null);
+    const avg = avgScore.length > 0 ? Math.round(avgScore.reduce((a, b) => a + (b.performance_score ?? 0), 0) / avgScore.length) : null;
+    return { total, active, docsExpired, docsPending, avgScore: avg };
+  }, [subcontractors]);
 
   const filtered = useMemo(() => {
     let list = subcontractors;
@@ -117,11 +130,60 @@ export default function SubcontractorsPage() {
         </div>
       </div>
 
+      {/* KPI Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <Card className="border-border/60">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2">
+              <Users className="h-4 w-4 text-muted-foreground" />
+              <span className="text-xs font-medium text-muted-foreground">{t("subcontractors.kpi.total")}</span>
+            </div>
+            <p className="text-2xl font-bold text-foreground mt-1">{kpis.total}</p>
+          </CardContent>
+        </Card>
+        <Card className="border-border/60">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2">
+              <CheckCircle className="h-4 w-4 text-primary" />
+              <span className="text-xs font-medium text-muted-foreground">{t("subcontractors.kpi.active")}</span>
+            </div>
+            <p className="text-2xl font-bold text-primary mt-1">{kpis.active}</p>
+          </CardContent>
+        </Card>
+        <Card className="border-border/60">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 text-destructive" />
+              <span className="text-xs font-medium text-muted-foreground">{t("subcontractors.kpi.docsExpired")}</span>
+            </div>
+            <p className="text-2xl font-bold text-destructive mt-1">{kpis.docsExpired}</p>
+          </CardContent>
+        </Card>
+        <Card className="border-border/60">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2">
+              <Clock className="h-4 w-4 text-yellow-600" />
+              <span className="text-xs font-medium text-muted-foreground">{t("subcontractors.kpi.docsPending")}</span>
+            </div>
+            <p className="text-2xl font-bold text-yellow-600 mt-1">{kpis.docsPending}</p>
+          </CardContent>
+        </Card>
+        <Card className="border-border/60">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2">
+              <HardHat className="h-4 w-4 text-muted-foreground" />
+              <span className="text-xs font-medium text-muted-foreground">{t("subcontractors.kpi.avgScore")}</span>
+            </div>
+            <p className="text-2xl font-bold text-foreground mt-1">{kpis.avgScore != null ? `${kpis.avgScore}/100` : "—"}</p>
+          </CardContent>
+        </Card>
+      </div>
+
       <FilterBar>
         <div className="relative flex-1 min-w-[180px]">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
           <Input
-            placeholder={t("subcontractors.searchPlaceholder", { defaultValue: "Pesquisar nome, especialidade, e-mail…" })}
+            placeholder={t("subcontractors.searchPlaceholder")}
             value={search}
             onChange={e => setSearch(e.target.value)}
             className="pl-8 h-8 text-sm"
@@ -129,24 +191,24 @@ export default function SubcontractorsPage() {
         </div>
         <Select value={filterStatus} onValueChange={setFilterStatus}>
           <SelectTrigger className="w-[160px] h-8 text-sm">
-            <SelectValue placeholder={t("subcontractors.filters.allStatuses", { defaultValue: "Todos os estados" })} />
+            <SelectValue placeholder={t("subcontractors.filters.allStatuses")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="__all__">{t("subcontractors.filters.allStatuses", { defaultValue: "Todos os estados" })}</SelectItem>
+            <SelectItem value="__all__">{t("subcontractors.filters.allStatuses")}</SelectItem>
             {SUB_STATUSES.map(s => (
-              <SelectItem key={s} value={s}>{t(`subcontractors.status.${s}`, { defaultValue: s })}</SelectItem>
+              <SelectItem key={s} value={s}>{t(`subcontractors.status.${s}`)}</SelectItem>
             ))}
           </SelectContent>
         </Select>
         <Select value={filterDocStatus} onValueChange={setFilterDocStatus}>
           <SelectTrigger className="w-[160px] h-8 text-sm">
-            <SelectValue placeholder={t("subcontractors.filters.allDocStatuses", { defaultValue: "Todos doc. status" })} />
+            <SelectValue placeholder={t("subcontractors.filters.allDocStatuses")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="__all__">{t("subcontractors.filters.allDocStatuses", { defaultValue: "Todos doc. status" })}</SelectItem>
-            <SelectItem value="pending">{t("subcontractors.docStatus.pending", { defaultValue: "Pendente" })}</SelectItem>
-            <SelectItem value="valid">{t("subcontractors.docStatus.valid", { defaultValue: "Válida" })}</SelectItem>
-            <SelectItem value="expired">{t("subcontractors.docStatus.expired", { defaultValue: "Expirada" })}</SelectItem>
+            <SelectItem value="__all__">{t("subcontractors.filters.allDocStatuses")}</SelectItem>
+            <SelectItem value="pending">{t("subcontractors.docStatus.pending")}</SelectItem>
+            <SelectItem value="valid">{t("subcontractors.docStatus.valid")}</SelectItem>
+            <SelectItem value="expired">{t("subcontractors.docStatus.expired")}</SelectItem>
           </SelectContent>
         </Select>
       </FilterBar>
@@ -173,8 +235,8 @@ export default function SubcontractorsPage() {
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.name")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("subcontractors.table.trade")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.status")}</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("subcontractors.table.docStatus", { defaultValue: "Doc. Status" })}</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("subcontractors.table.score", { defaultValue: "Score" })}</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("subcontractors.table.docStatus")}</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("subcontractors.table.score")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("subcontractors.table.contactEmail")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.date")}</TableHead>
                 <TableHead className="w-28">{t("common.actions")}</TableHead>
