@@ -2115,7 +2115,7 @@
   },
   "topography": {
     "title": "Topografia",
-    "subtitle": "Levantamentos, equipamentos, calibrações, pedidos e controlo geométrico",
+    "subtitle": "Equipamentos, calibrações, pedidos e controlo geométrico",
     "surveys": "Levantamentos",
     "equipment": "Equipamentos",
     "calibrations": "Calibrações",
@@ -2125,27 +2125,64 @@
     "newCalibration": "Registar Calibração",
     "newRequest": "Novo Pedido",
     "newControl": "Novo Controlo",
-    "calibrationBlocked": "Equipamento com calibração inválida. Atualizar certificado antes de registar medições.",
+    "calibrationBlocked": "Equipamento com calibração inválida. Atualize o certificado antes de registar medições.",
+    "calibrationHistory": "Histórico de Calibrações",
+    "noCalibrationsYet": "Sem calibrações registadas.",
     "noLinked": "Sem registos topográficos ligados a esta atividade.",
+    "deleteConfirm": "Este registo será eliminado permanentemente. Tem a certeza?",
     "searchPlaceholder": "Pesquisar código, tipo, zona…",
     "status": {
       "valid": "Válido",
       "expiring_soon": "Expira em breve",
       "expired": "Expirado"
     },
+    "kpi": {
+      "calibrated": "Calibrados",
+      "expiring30d": "Expira em 30d",
+      "expired": "Expirados",
+      "pendingRequests": "Pedidos Pendentes",
+      "ncControls": "Controlos NC"
+    },
     "requestStatus": {
       "pending": "Pendente",
+      "assigned": "Atribuído",
       "in_progress": "Em curso",
       "completed": "Concluído",
       "cancelled": "Cancelado"
+    },
+    "requestType": {
+      "implantacao": "Implantação",
+      "levantamento": "Levantamento",
+      "controlo": "Controlo",
+      "verificacao": "Verificação"
+    },
+    "priority": {
+      "low": "Baixa",
+      "normal": "Normal",
+      "high": "Alta",
+      "urgent": "Urgente"
     },
     "result": {
       "conforme": "Conforme",
       "nao_conforme": "Não conforme"
     },
+    "equipmentType": {
+      "estacao_total": "Estação Total",
+      "gnss": "GNSS",
+      "nivel_otico": "Nível Ótico",
+      "drone": "Drone",
+      "scanner_3d": "Scanner 3D",
+      "outros": "Outros"
+    },
+    "eqStatus": {
+      "active": "Ativo",
+      "inactive": "Inativo",
+      "archived": "Arquivado"
+    },
     "filters": {
       "allStatuses": "Todos os estados",
-      "allResults": "Todos os resultados"
+      "allResults": "Todos os resultados",
+      "allCalStatuses": "Todas as calibrações"
     },
     "table": {
       "code": "Código",
@@ -2163,7 +2200,53 @@
       "measuredValue": "Valor Medido",
       "deviation": "Desvio",
       "result": "Resultado",
-      "technician": "Técnico"
+      "technician": "Técnico",
+      "equipment": "Equipamento"
+    },
+    "form": {
+      "editEquipment": "Editar Equipamento",
+      "newEquipment": "Novo Equipamento Topográfico",
+      "editCalibration": "Editar Calibração",
+      "newCalibration": "Registar Calibração",
+      "editRequest": "Editar Pedido de Topografia",
+      "newRequest": "Novo Pedido de Topografia",
+      "editControl": "Editar Controlo Geométrico",
+      "newControl": "Novo Controlo Geométrico",
+      "controlDescription": "Registo de medição topográfica com verificação de calibração",
+      "blocked": "Bloqueado",
+      "selectEquipment": "Selecione equipamento",
+      "elementRequired": "Elemento é obrigatório",
+      "elementPlaceholder": "Ex: Eixo via, Cota plataforma",
+      "codeRequired": "Código é obrigatório",
+      "descriptionRequired": "Descrição é obrigatória",
+      "certEntity": "Entidade Certificadora",
+      "certEntityRequired": "Entidade certificadora é obrigatória",
+      "certEntityPlaceholder": "Ex: ISQ, CATIM",
+      "certNumber": "Nº Certificado",
+      "issueDate": "Data Emissão",
+      "validUntil": "Data Validade",
+      "validUntilRequired": "Data de validade é obrigatória",
+      "brand": "Marca",
+      "model": "Modelo",
+      "location": "Localização Atual",
+      "notes": "Notas",
+      "links": "Ligações",
+      "workItem": "Atividade (Work Item)",
+      "ncLinked": "NC associada",
+      "none": "Nenhuma"
+    },
+    "toast": {
+      "equipmentCreated": "Equipamento criado com sucesso",
+      "equipmentUpdated": "Equipamento atualizado",
+      "calibrationCreated": "Calibração registada com sucesso",
+      "calibrationUpdated": "Calibração atualizada",
+      "requestCreated": "Pedido criado com sucesso",
+      "requestUpdated": "Pedido atualizado com sucesso",
+      "controlCreated": "Controlo geométrico registado com sucesso",
+      "controlUpdated": "Controlo atualizado com sucesso",
+      "deleted": "Eliminado com sucesso",
+      "deleteError": "Erro ao eliminar",
+      "error": "Erro ao guardar"
     }
   },
   "planning": {
