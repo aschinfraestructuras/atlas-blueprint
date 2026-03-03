@@ -17,6 +17,8 @@ import { getNCTransitions } from "@/lib/stateMachines";
 import {
   AlertTriangle, Calendar, Plus, Pencil, ChevronDown, Trash2,
   Eye, Loader2, Database, Search, X, CheckSquare, Square, FileDown,
+  Clock, CheckCircle2, FlaskConical, ClipboardCheck, Timer,
+  PieChart,
 } from "lucide-react";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -38,7 +40,12 @@ import { NCFormDialog } from "@/components/nc/NCFormDialog";
 import { PageHeader } from "@/components/ui/page-header";
 import { FilterBar } from "@/components/ui/filter-bar";
 import { cn } from "@/lib/utils";
-
+import { ModuleKPICard } from "@/components/ModuleKPICard";
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 // ─── Dot colour for severity ──────────────────────────────────────────────────
 const SEVERITY_DOT: Record<string, string> = {
@@ -264,6 +271,47 @@ export default function NonConformitiesPage() {
 
   // ─── Guard ──────────────────────────────────────────────────────────────────
 
+  // ─── KPI computations ────────────────────────────────────────────
+  const now = new Date();
+  const d30ago = new Date(now); d30ago.setDate(d30ago.getDate() - 30);
+  const d30str = d30ago.toISOString().slice(0, 10);
+
+  const openNcs = ncs.filter(nc => !["closed", "archived"].includes(nc.status));
+  const overdueNcs = openNcs.filter(nc => nc.due_date && nc.due_date < now.toISOString().slice(0, 10));
+  const closed30d = ncs.filter(nc => nc.status === "closed" && nc.closure_date && nc.closure_date >= d30str);
+  const majorNcs = ncs.filter(nc => nc.severity === "major" || nc.severity === "high");
+  const minorNcs = ncs.filter(nc => nc.severity === "minor" || nc.severity === "low");
+  const linkedTests = ncs.filter(nc => nc.test_result_id);
+  const linkedPPI = ncs.filter(nc => nc.ppi_instance_id);
+
+  // Aging chart data
+  const agingData = useMemo(() => {
+    const bins = { "0-30": 0, "30-60": 0, "60+": 0 };
+    openNcs.forEach(nc => {
+      const detected = new Date(nc.detected_at ?? nc.created_at);
+      const days = Math.floor((now.getTime() - detected.getTime()) / 86400000);
+      if (days <= 30) bins["0-30"]++;
+      else if (days <= 60) bins["30-60"]++;
+      else bins["60+"]++;
+    });
+    return [
+      { label: t("moduleKpi.aging0_30"), value: bins["0-30"] },
+      { label: t("moduleKpi.aging30_60"), value: bins["30-60"] },
+      { label: t("moduleKpi.aging60plus"), value: bins["60+"] },
+    ];
+  }, [ncs, activeProject, t]);
+
+  // Root cause distribution
+  const rootCauseData = useMemo(() => {
+    const map: Record<string, number> = {};
+    ncs.forEach(nc => {
+      if (nc.category) map[nc.category] = (map[nc.category] ?? 0) + 1;
+    });
+    return Object.entries(map)
+      .map(([k, v]) => ({ label: t(`nc.category.${k}`, { defaultValue: k }), value: v }))
+      .sort((a, b) => b.value - a.value);
+  }, [ncs, t]);
+
   if (!activeProject) return <NoProjectBanner />;
 
   return (
@@ -310,6 +358,59 @@ export default function NonConformitiesPage() {
         }
       />
 
+      {/* ── KPI Row ──────────────────────────────────────────── */}
+      {!loading && ncs.length > 0 && (
+        <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-7">
+          <ModuleKPICard label={t("moduleKpi.open")} value={openNcs.length} icon={AlertTriangle} color="hsl(var(--destructive))" />
+          <ModuleKPICard label={t("moduleKpi.overdue")} value={overdueNcs.length} icon={Clock} color={overdueNcs.length > 0 ? "hsl(var(--destructive))" : undefined} />
+          <ModuleKPICard label={t("moduleKpi.closed30d")} value={closed30d.length} icon={CheckCircle2} color="hsl(158 45% 36%)" />
+          <ModuleKPICard label={t("moduleKpi.major")} value={majorNcs.length} icon={AlertTriangle} color="hsl(var(--primary))" />
+          <ModuleKPICard label={t("moduleKpi.minor")} value={minorNcs.length} icon={AlertTriangle} />
+          <ModuleKPICard label={t("moduleKpi.linkedToTests")} value={linkedTests.length} icon={FlaskConical} />
+          <ModuleKPICard label={t("moduleKpi.linkedToPPI")} value={linkedPPI.length} icon={ClipboardCheck} />
+        </div>
+      )}
+
+      {/* ── Charts Row ──────────────────────────────────────── */}
+      {!loading && openNcs.length > 0 && (
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <Card className="border shadow-none">
+            <CardHeader className="pb-1 pt-4 px-4">
+              <CardTitle className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground flex items-center gap-1.5">
+                <Timer className="h-3.5 w-3.5" />{t("moduleKpi.ncAgingChart")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="px-4 pb-4">
+              <ResponsiveContainer width="100%" height={120}>
+                <BarChart data={agingData} barCategoryGap="25%">
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                  <XAxis dataKey="label" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
+                  <YAxis allowDecimals={false} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} width={20} />
+                  <Tooltip />
+                  <Bar dataKey="value" fill="hsl(var(--destructive))" radius={[3, 3, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+          <Card className="border shadow-none">
+            <CardHeader className="pb-1 pt-4 px-4">
+              <CardTitle className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground flex items-center gap-1.5">
+                <PieChart className="h-3.5 w-3.5" />{t("moduleKpi.byDisciplina", { defaultValue: "Por Categoria" })}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="px-4 pb-4">
+              <ul className="space-y-1.5">
+                {rootCauseData.slice(0, 6).map(d => (
+                  <li key={d.label} className="flex items-center justify-between text-xs">
+                    <span className="text-muted-foreground truncate">{d.label}</span>
+                    <span className="font-bold tabular-nums text-foreground">{d.value}</span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       {/* ── Filters ─────────────────────────────────────────────────────── */}
       <FilterBar>

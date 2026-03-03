@@ -13,8 +13,9 @@ import { toast } from "@/hooks/use-toast";
 import {
   FlaskConical, Plus, Pencil, Search, Filter, Archive, Copy, Trash2,
   CheckCircle2, XCircle, Clock, AlertCircle, BookOpen, FileDown,
-  Loader2,
+  Loader2, AlertTriangle,
 } from "lucide-react";
+import { ModuleKPICard } from "@/components/ModuleKPICard";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
@@ -438,22 +439,27 @@ function ResultsTab() {
         </Button>
       </div>
 
-      {/* Stats row */}
-      {results.length > 0 && (
-        <div className="flex flex-wrap gap-3">
-          {[
-            { label: t("tests.stats.total"),    value: results.length,                                                               color: "" },
-            { label: t("tests.stats.approved"), value: results.filter((r) => r.status_workflow === "approved" || r.result_status === "pass").length, color: "text-primary" },
-            { label: t("tests.stats.failed"),   value: results.filter((r) => r.result_status === "fail").length,                         color: "text-destructive" },
-            { label: t("tests.stats.pending"),  value: results.filter((r) => ["draft","in_progress","submitted"].includes(r.status_workflow)).length, color: "text-muted-foreground" },
-          ].map((stat) => (
-            <div key={stat.label} className="rounded-lg border border-border px-3 py-2 bg-muted/20 flex items-center gap-2">
-              <span className={cn("text-lg font-bold", stat.color)}>{stat.value}</span>
-              <span className="text-xs text-muted-foreground">{stat.label}</span>
-            </div>
-          ))}
-        </div>
-      )}
+      {/* KPI Row */}
+      {results.length > 0 && (() => {
+        const total = results.length;
+        const pending = results.filter(r => ["draft","in_progress","submitted"].includes(r.status_workflow)).length;
+        const approved = results.filter(r => r.status_workflow === "approved" || r.result_status === "pass").length;
+        const failed = results.filter(r => r.result_status === "fail").length;
+        const inconclusive = results.filter(r => r.result_status === "inconclusive").length;
+        const linkedToNC = results.filter(r => (r as any).nc_id != null).length;
+        const failRate = total > 0 ? Math.round((failed / total) * 100) : 0;
+        return (
+          <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-7">
+            <ModuleKPICard label={t("moduleKpi.total")} value={total} icon={FlaskConical} />
+            <ModuleKPICard label={t("moduleKpi.pending")} value={pending} icon={Clock} />
+            <ModuleKPICard label={t("moduleKpi.approved")} value={approved} icon={CheckCircle2} color="hsl(var(--primary))" />
+            <ModuleKPICard label={t("moduleKpi.fail30d")} value={failed} icon={XCircle} color={failed > 0 ? "hsl(var(--destructive))" : undefined} />
+            <ModuleKPICard label={t("moduleKpi.inconclusive")} value={inconclusive} icon={AlertCircle} />
+            <ModuleKPICard label={t("moduleKpi.linkedToNC")} value={linkedToNC} icon={AlertTriangle} />
+            <ModuleKPICard label={t("moduleKpi.failureRate")} value={`${failRate}%`} icon={FlaskConical} color={failRate > 20 ? "hsl(var(--destructive))" : undefined} />
+          </div>
+        );
+      })()}
 
       {/* Table */}
       {loading ? (
