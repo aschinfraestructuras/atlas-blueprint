@@ -217,6 +217,9 @@
       "suppliersPendingQual": "Proveedores Pend. Calificación",
       "supplierDocsExpiring": "Docs Proveedor por Expirar (30d)",
       "suppliersWithNC": "Proveedores con NC Abierta"
+      "materialsDocsExpired": "Materiales con Docs Expirados",
+      "materialsWithNC": "Materiales con NC Abierta",
+      "materialsNonconformTests": "Materiales con Ensayos NC (30d)"
     },
     "adv": {
       "quality": "Calidad Técnica",
