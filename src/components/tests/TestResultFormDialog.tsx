@@ -5,9 +5,9 @@ import { z } from "zod";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import {
-  testService, TEST_RESULT_STATUS_WORKFLOW,
+  testService, TEST_WORKFLOW_STATUSES, TEST_RESULT_VALUES,
 } from "@/lib/services/testService";
-import type { TestResult, TestCatalogEntry, TestResultInput } from "@/lib/services/testService";
+import type { TestResult, TestCatalogEntry, TestResultInput, TestWorkflowStatus, TestResultValue } from "@/lib/services/testService";
 import { toast } from "@/hooks/use-toast";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import {
@@ -29,18 +29,18 @@ import { supabase } from "@/integrations/supabase/client";
 
 const schema = (t: (k: string) => string) =>
   z.object({
-    test_id:       z.string().min(1, t("tests.results.form.validation.testRequired")),
-    date:          z.string().min(1, t("tests.results.form.validation.dateRequired")),
-    status:        z.string().min(1),
-    sample_ref:    z.string().trim().max(100).optional().or(z.literal("")),
-    location:      z.string().trim().max(200).optional().or(z.literal("")),
-    pk_inicio:     z.string().optional().or(z.literal("")),
-    pk_fim:        z.string().optional().or(z.literal("")),
-    report_number: z.string().trim().optional().or(z.literal("")),
-    notes:         z.string().trim().optional().or(z.literal("")),
-    work_item_id:  z.string().optional().or(z.literal("")),
-    supplier_id:   z.string().optional().or(z.literal("")),
-    pass_fail:     z.string().optional().or(z.literal("")),
+    test_id:          z.string().min(1, t("tests.results.form.validation.testRequired")),
+    date:             z.string().min(1, t("tests.results.form.validation.dateRequired")),
+    status_workflow:  z.string().min(1),
+    result_status:    z.string().optional().or(z.literal("")),
+    sample_ref:       z.string().trim().max(100).optional().or(z.literal("")),
+    location:         z.string().trim().max(200).optional().or(z.literal("")),
+    pk_inicio:        z.string().optional().or(z.literal("")),
+    pk_fim:           z.string().optional().or(z.literal("")),
+    report_number:    z.string().trim().optional().or(z.literal("")),
+    notes:            z.string().trim().optional().or(z.literal("")),
+    work_item_id:     z.string().optional().or(z.literal("")),
+    supplier_id:      z.string().optional().or(z.literal("")),
   });
 
 type FormValues = z.infer<ReturnType<typeof schema>>;
@@ -70,8 +70,8 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
     resolver: zodResolver(schema(t)),
     defaultValues: {
       test_id: "", date: new Date().toISOString().split("T")[0],
-      status: "draft", sample_ref: "", location: "", pk_inicio: "", pk_fim: "",
-      report_number: "", notes: "", work_item_id: "", supplier_id: "", pass_fail: "",
+      status_workflow: "draft", result_status: "", sample_ref: "", location: "", pk_inicio: "", pk_fim: "",
+      report_number: "", notes: "", work_item_id: "", supplier_id: "",
     },
   });
 
@@ -94,24 +94,24 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
   useEffect(() => {
     if (!open) return;
     form.reset(testResult ? {
-      test_id:       testResult.test_id,
-      date:          testResult.date,
-      status:        testResult.status,
-      sample_ref:    testResult.sample_ref ?? "",
-      location:      testResult.location ?? "",
-      pk_inicio:     testResult.pk_inicio != null ? String(testResult.pk_inicio) : "",
-      pk_fim:        testResult.pk_fim != null ? String(testResult.pk_fim) : "",
-      report_number: testResult.report_number ?? "",
-      notes:         testResult.notes ?? "",
-      work_item_id:  testResult.work_item_id ?? "",
-      supplier_id:   testResult.supplier_id ?? "",
-      pass_fail:     testResult.pass_fail ?? "",
+      test_id:          testResult.test_id,
+      date:             testResult.date,
+      status_workflow:  testResult.status_workflow ?? "draft",
+      result_status:    testResult.result_status ?? "",
+      sample_ref:       testResult.sample_ref ?? "",
+      location:         testResult.location ?? "",
+      pk_inicio:        testResult.pk_inicio != null ? String(testResult.pk_inicio) : "",
+      pk_fim:           testResult.pk_fim != null ? String(testResult.pk_fim) : "",
+      report_number:    testResult.report_number ?? "",
+      notes:            testResult.notes ?? "",
+      work_item_id:     testResult.work_item_id ?? "",
+      supplier_id:      testResult.supplier_id ?? "",
     } : {
       test_id: "", date: new Date().toISOString().split("T")[0],
-      status: "draft", sample_ref: "", location: "", pk_inicio: "", pk_fim: "",
+      status_workflow: "draft", result_status: "", sample_ref: "", location: "", pk_inicio: "", pk_fim: "",
       report_number: "", notes: "",
       work_item_id:  preselectedWorkItemId ?? "",
-      supplier_id: "", pass_fail: "",
+      supplier_id: "",
     });
     setCreatingNew(false);
     setNewTestName(""); setNewTestCode("");
@@ -142,18 +142,19 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
     setSubmitting(true);
     try {
       const input: TestResultInput = {
-        project_id:    activeProject.id,
-        test_id:       values.test_id,
-        date:          values.date,
-        status:        values.status,
-        sample_ref:    values.sample_ref || undefined,
-        location:      values.location   || undefined,
-        pk_inicio:     values.pk_inicio  ? Number(values.pk_inicio)  : undefined,
-        pk_fim:        values.pk_fim     ? Number(values.pk_fim)     : undefined,
-        report_number: values.report_number || undefined,
-        notes:         values.notes        || undefined,
-        work_item_id:  values.work_item_id  || undefined,
-        supplier_id:   values.supplier_id   || undefined,
+        project_id:       activeProject.id,
+        test_id:          values.test_id,
+        date:             values.date,
+        status_workflow:  values.status_workflow as TestWorkflowStatus,
+        result_status:    (values.result_status || undefined) as TestResultValue | undefined,
+        sample_ref:       values.sample_ref || undefined,
+        location:         values.location   || undefined,
+        pk_inicio:        values.pk_inicio  ? Number(values.pk_inicio)  : undefined,
+        pk_fim:           values.pk_fim     ? Number(values.pk_fim)     : undefined,
+        report_number:    values.report_number || undefined,
+        notes:            values.notes        || undefined,
+        work_item_id:     values.work_item_id  || undefined,
+        supplier_id:      values.supplier_id   || undefined,
       };
       if (isEdit && testResult) {
         await testService.update(testResult.id, activeProject.id, input);
@@ -250,13 +251,13 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
                   <FormMessage />
                 </FormItem>
               )} />
-              <FormField control={form.control} name="status" render={({ field }) => (
+              <FormField control={form.control} name="status_workflow" render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t("common.status")}</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                     <SelectContent>
-                      {TEST_RESULT_STATUS_WORKFLOW.map((s) => (
+                      {TEST_WORKFLOW_STATUSES.map((s) => (
                         <SelectItem key={s} value={s}>{t(`tests.status.${s}`)}</SelectItem>
                       ))}
                     </SelectContent>
@@ -265,6 +266,23 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
                 </FormItem>
               )} />
             </div>
+
+            {/* Result status */}
+            <FormField control={form.control} name="result_status" render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("tests.export.passFail")} <span className="text-xs text-muted-foreground">({t("common.optional")})</span></FormLabel>
+                <Select onValueChange={(v) => field.onChange(v === "__none__" ? "" : v)} value={field.value || "__none__"}>
+                  <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                  <SelectContent>
+                    <SelectItem value="__none__">—</SelectItem>
+                    {TEST_RESULT_VALUES.map((v) => (
+                      <SelectItem key={v} value={v}>{t(`tests.status.${v}`)}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )} />
 
             {/* Work item */}
             <FormField control={form.control} name="work_item_id" render={({ field }) => (

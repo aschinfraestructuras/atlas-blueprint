@@ -2261,10 +2261,12 @@ export type Database = {
           report_number: string | null
           result: Json | null
           result_payload: Json | null
+          result_status: string | null
           reviewed_at: string | null
           reviewed_by: string | null
           sample_ref: string | null
           status: string
+          status_workflow: string
           subcontractor_id: string | null
           supplier_id: string | null
           test_id: string
@@ -2292,10 +2294,12 @@ export type Database = {
           report_number?: string | null
           result?: Json | null
           result_payload?: Json | null
+          result_status?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           sample_ref?: string | null
           status?: string
+          status_workflow?: string
           subcontractor_id?: string | null
           supplier_id?: string | null
           test_id: string
@@ -2323,10 +2327,12 @@ export type Database = {
           report_number?: string | null
           result?: Json | null
           result_payload?: Json | null
+          result_status?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           sample_ref?: string | null
           status?: string
+          status_workflow?: string
           subcontractor_id?: string | null
           supplier_id?: string | null
           test_id?: string
@@ -2418,6 +2424,9 @@ export type Database = {
           disciplina: string
           disciplina_outro: string | null
           frequency: string | null
+          frequency_type: string | null
+          frequency_unit: string | null
+          frequency_value: number | null
           id: string
           laboratorio: string | null
           laboratorio_outro: string | null
@@ -2440,6 +2449,9 @@ export type Database = {
           disciplina?: string
           disciplina_outro?: string | null
           frequency?: string | null
+          frequency_type?: string | null
+          frequency_unit?: string | null
+          frequency_value?: number | null
           id?: string
           laboratorio?: string | null
           laboratorio_outro?: string | null
@@ -2462,6 +2474,9 @@ export type Database = {
           disciplina?: string
           disciplina_outro?: string | null
           frequency?: string | null
+          frequency_type?: string | null
+          frequency_unit?: string | null
+          frequency_value?: number | null
           id?: string
           laboratorio?: string | null
           laboratorio_outro?: string | null
@@ -2863,6 +2878,9 @@ export type Database = {
           disciplina: string
           disciplina_outro: string | null
           elemento: string | null
+          has_open_nc: boolean
+          has_pending_ppi: boolean
+          has_pending_tests: boolean
           id: string
           lote: string | null
           obra: string | null
@@ -2870,6 +2888,7 @@ export type Database = {
           pk_fim: number | null
           pk_inicio: number | null
           project_id: string
+          readiness_status: string
           sector: string
           status: string
           subcontractor_id: string | null
@@ -2881,6 +2900,9 @@ export type Database = {
           disciplina?: string
           disciplina_outro?: string | null
           elemento?: string | null
+          has_open_nc?: boolean
+          has_pending_ppi?: boolean
+          has_pending_tests?: boolean
           id?: string
           lote?: string | null
           obra?: string | null
@@ -2888,6 +2910,7 @@ export type Database = {
           pk_fim?: number | null
           pk_inicio?: number | null
           project_id: string
+          readiness_status?: string
           sector: string
           status?: string
           subcontractor_id?: string | null
@@ -2899,6 +2922,9 @@ export type Database = {
           disciplina?: string
           disciplina_outro?: string | null
           elemento?: string | null
+          has_open_nc?: boolean
+          has_pending_ppi?: boolean
+          has_pending_tests?: boolean
           id?: string
           lote?: string | null
           obra?: string | null
@@ -2906,6 +2932,7 @@ export type Database = {
           pk_fim?: number | null
           pk_inicio?: number | null
           project_id?: string
+          readiness_status?: string
           sector?: string
           status?: string
           subcontractor_id?: string | null
@@ -3658,10 +3685,12 @@ export type Database = {
           report_number: string | null
           result: Json | null
           result_payload: Json | null
+          result_status: string | null
           reviewed_at: string | null
           reviewed_by: string | null
           sample_ref: string | null
           status: string
+          status_workflow: string
           subcontractor_id: string | null
           supplier_id: string | null
           test_id: string
@@ -3814,10 +3843,12 @@ export type Database = {
           report_number: string | null
           result: Json | null
           result_payload: Json | null
+          result_status: string | null
           reviewed_at: string | null
           reviewed_by: string | null
           sample_ref: string | null
           status: string
+          status_workflow: string
           subcontractor_id: string | null
           supplier_id: string | null
           test_id: string

@@ -52,13 +52,11 @@ function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
 
 // ─── Result styles ────────────────────────────────────────────────────────────
 
-const RESULT_STYLES: Record<PpiItemResult, string> = {
+const RESULT_STYLES: Record<string, string> = {
   pending: "border-amber-300/60 bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-300",
-  ok:      "border-emerald-400/40 bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400",
-  nok:     "border-destructive/40 bg-destructive/10 text-destructive",
-  na:      "border-border text-muted-foreground bg-muted/40",
   pass:    "border-emerald-400/40 bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400",
   fail:    "border-destructive/40 bg-destructive/10 text-destructive",
+  na:      "border-border text-muted-foreground bg-muted/40",
 };
 
 function ResultBadge({ result, t }: { result: PpiItemResult; t: (k: string) => string }) {
@@ -245,7 +243,7 @@ export default function PPIDetailPage() {
       setDirtyItems(new Set());
 
       // Check if any NOK items were saved — open NC prompt for the first one
-      const nokItems = updated.filter((it) => (it.result === "nok" || it.result === "fail") && !it.nc_id);
+      const nokItems = updated.filter((it) => it.result === "fail" && !it.nc_id);
       if (nokItems.length > 0) {
         setNcDialogItem(nokItems[0]);
       }
@@ -359,8 +357,8 @@ export default function PPIDetailPage() {
   // ── Progress ───────────────────────────────────────────────────────────────
 
   const pendingCount = items.filter((it) => it.result === "pending").length;
-  const okCount      = items.filter((it) => it.result === "ok" || it.result === "pass").length;
-  const nokCount     = items.filter((it) => it.result === "nok" || it.result === "fail").length;
+  const okCount      = items.filter((it) => it.result === "pass").length;
+  const nokCount     = items.filter((it) => it.result === "fail").length;
   const naCount      = items.filter((it) => it.result === "na").length;
   const totalReviewed = okCount + nokCount + naCount;
   const progressPct   = items.length > 0 ? Math.round((totalReviewed / items.length) * 100) : 0;
@@ -678,7 +676,7 @@ export default function PPIDetailPage() {
                       {items.map((item) => {
                         const d = draft[item.id] ?? { result: item.result, notes: item.notes ?? "" };
                         const isDirty    = dirtyItems.has(item.id);
-                        const isNok      = d.result === "nok" || d.result === "fail";
+                        const isNok      = d.result === "fail";
                         const hasNc      = !!item.nc_id;
                         const itemSaving = saving === item.id;
 
@@ -728,7 +726,7 @@ export default function PPIDetailPage() {
                                       {t("ppi.instances.results.pending")}
                                     </span>
                                   )}
-                                  {(["ok", "nok", "na"] as PpiItemResult[]).map((r) => (
+                                  {(["pass", "fail", "na"] as PpiItemResult[]).map((r) => (
                                     <button
                                       key={r}
                                       disabled={itemSaving || bulkSaving}
