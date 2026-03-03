@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,19 +12,8 @@ import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { topographyRequestService, type TopographyRequest } from "@/lib/services/topographyService";
 import { toast } from "sonner";
 
-const REQUEST_TYPES = [
-  { value: "implantacao", label: "Implantação" },
-  { value: "levantamento", label: "Levantamento" },
-  { value: "controlo", label: "Controlo" },
-  { value: "verificacao", label: "Verificação" },
-];
-
-const PRIORITIES = [
-  { value: "low", label: "Baixa" },
-  { value: "normal", label: "Normal" },
-  { value: "high", label: "Alta" },
-  { value: "urgent", label: "Urgente" },
-];
+const REQUEST_TYPES = ["implantacao", "levantamento", "controlo", "verificacao"];
+const PRIORITIES = ["low", "normal", "high", "urgent"];
 
 interface Props {
   open: boolean;
@@ -34,6 +24,7 @@ interface Props {
 }
 
 export function RequestFormDialog({ open, onOpenChange, projectId, editRequest, onSuccess }: Props) {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const isEdit = !!editRequest;
   const [form, setForm] = useState({
@@ -46,7 +37,7 @@ export function RequestFormDialog({ open, onOpenChange, projectId, editRequest, 
   });
 
   const handleSubmit = async () => {
-    if (!form.description.trim()) { toast.error("Descrição é obrigatória"); return; }
+    if (!form.description.trim()) { toast.error(t("topography.form.descriptionRequired")); return; }
     setLoading(true);
     try {
       if (editRequest) {
@@ -58,7 +49,7 @@ export function RequestFormDialog({ open, onOpenChange, projectId, editRequest, 
           priority: form.priority,
           responsible: form.responsible || null,
         });
-        toast.success("Pedido atualizado com sucesso");
+        toast.success(t("topography.toast.requestUpdated"));
       } else {
         await topographyRequestService.create({
           project_id: projectId,
@@ -69,12 +60,12 @@ export function RequestFormDialog({ open, onOpenChange, projectId, editRequest, 
           priority: form.priority,
           responsible: form.responsible || null,
         });
-        toast.success("Pedido criado com sucesso");
+        toast.success(t("topography.toast.requestCreated"));
       }
       setForm({ request_type: "implantacao", description: "", zone: "", request_date: new Date().toISOString().split("T")[0], priority: "normal", responsible: "" });
       onSuccess();
     } catch (e: any) {
-      toast.error(e.message || "Erro ao guardar pedido");
+      toast.error(e.message || t("topography.toast.error"));
     } finally {
       setLoading(false);
     }
@@ -83,35 +74,35 @@ export function RequestFormDialog({ open, onOpenChange, projectId, editRequest, 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
-        <DialogHeader><DialogTitle>{isEdit ? "Editar Pedido de Topografia" : "Novo Pedido de Topografia"}</DialogTitle></DialogHeader>
+        <DialogHeader><DialogTitle>{isEdit ? t("topography.form.editRequest") : t("topography.form.newRequest")}</DialogTitle></DialogHeader>
         <ScrollArea className="max-h-[70vh] pr-1">
           <div className="space-y-4 pb-1">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>Tipo *</Label>
+                <Label>{t("topography.table.requestType")} *</Label>
                 <Select value={form.request_type} onValueChange={v => setForm(f => ({ ...f, request_type: v }))}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    {REQUEST_TYPES.map(t => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}
+                    {REQUEST_TYPES.map(rt => <SelectItem key={rt} value={rt}>{t(`topography.requestType.${rt}`)}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
               <div>
-                <Label>Prioridade</Label>
+                <Label>{t("topography.table.priority")}</Label>
                 <Select value={form.priority} onValueChange={v => setForm(f => ({ ...f, priority: v }))}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    {PRIORITIES.map(p => <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>)}
+                    {PRIORITIES.map(p => <SelectItem key={p} value={p}>{t(`topography.priority.${p}`)}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
             </div>
-            <div><Label>Descrição *</Label><Textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} rows={3} /></div>
+            <div><Label>{t("common.description")} *</Label><Textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} rows={3} /></div>
             <div className="grid grid-cols-2 gap-4">
-              <div><Label>Zona</Label><Input value={form.zone} onChange={e => setForm(f => ({ ...f, zone: e.target.value }))} placeholder="Ex: PK 12+500" /></div>
-              <div><Label>Data</Label><Input type="date" value={form.request_date} onChange={e => setForm(f => ({ ...f, request_date: e.target.value }))} /></div>
+              <div><Label>{t("topography.table.zone")}</Label><Input value={form.zone} onChange={e => setForm(f => ({ ...f, zone: e.target.value }))} placeholder="Ex: PK 12+500" /></div>
+              <div><Label>{t("common.date")}</Label><Input type="date" value={form.request_date} onChange={e => setForm(f => ({ ...f, request_date: e.target.value }))} /></div>
             </div>
-            <div><Label>Responsável</Label><Input value={form.responsible} onChange={e => setForm(f => ({ ...f, responsible: e.target.value }))} /></div>
+            <div><Label>{t("topography.table.responsible")}</Label><Input value={form.responsible} onChange={e => setForm(f => ({ ...f, responsible: e.target.value }))} /></div>
 
             {isEdit && editRequest && (
               <>
@@ -124,7 +115,7 @@ export function RequestFormDialog({ open, onOpenChange, projectId, editRequest, 
               </>
             )}
 
-            <Button onClick={handleSubmit} disabled={loading} className="w-full">{loading ? "A guardar…" : isEdit ? "Guardar Alterações" : "Criar Pedido"}</Button>
+            <Button onClick={handleSubmit} disabled={loading} className="w-full">{loading ? t("common.loading") : isEdit ? t("common.save") : t("topography.newRequest")}</Button>
           </div>
         </ScrollArea>
       </DialogContent>
