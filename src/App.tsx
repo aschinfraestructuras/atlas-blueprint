@@ -44,6 +44,7 @@ import MapMasPage from "./pages/MapMasPage";
 import ExpirationsPage from "./pages/ExpirationsPage";
 import DeadlinesPage from "./pages/DeadlinesPage";
 import QCReportPage from "./pages/QCReportPage";
+import LaboratoriesPage from "./pages/LaboratoriesPage";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 const queryClient = new QueryClient();
 
@@ -75,6 +76,7 @@ const App = () => (
               <Route path="/documents" element={<ProtectedLayout><DocumentsPage /></ProtectedLayout>} />
               <Route path="/documents/:id" element={<ProtectedLayout><DocumentDetailPage /></ProtectedLayout>} />
               <Route path="/tests" element={<ProtectedLayout><TestsPage /></ProtectedLayout>} />
+              <Route path="/laboratories" element={<ProtectedLayout><LaboratoriesPage /></ProtectedLayout>} />
               <Route path="/suppliers" element={<ProtectedLayout><SuppliersPage /></ProtectedLayout>} />
               <Route path="/suppliers/:id" element={<ProtectedLayout><SupplierDetailPage /></ProtectedLayout>} />
               <Route path="/non-conformities" element={<ProtectedLayout><NonConformitiesPage /></ProtectedLayout>} />
