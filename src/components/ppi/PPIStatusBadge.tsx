@@ -34,10 +34,8 @@ export function PPIStatusBadge({ status }: { status: PpiInstanceStatus | string 
 
 // ─── Result badge for item-level results ──────────────────────────────────────
 
-const RESULT_COLORS: Partial<Record<PpiItemResult, string>> = {
-  ok:      "border-emerald-400/40 bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400",
+const RESULT_COLORS: Partial<Record<PpiItemResult | string, string>> = {
   pass:    "border-emerald-400/40 bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400",
-  nok:     "border-destructive/40 bg-destructive/10 text-destructive",
   fail:    "border-destructive/40 bg-destructive/10 text-destructive",
   na:      "border-border text-muted-foreground bg-muted/40",
   pending: "border-amber-300/60 bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-300",

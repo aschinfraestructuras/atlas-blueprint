@@ -377,7 +377,8 @@ function ResultsTab() {
     exportTestResultsBulkPdf(toExport, exportLabels, i18n.language, activeProject?.name ?? "Atlas");
   };
 
-  const STATUSES = ["draft", "in_progress", "completed", "approved", "archived", "pending", "pass", "fail", "inconclusive"];
+  const WORKFLOW_STATUSES = ["draft", "in_progress", "submitted", "reviewed", "approved", "archived"];
+  const RESULT_STATUSES = ["pass", "fail", "inconclusive", "na"];
 
   return (
     <div className="space-y-4">
@@ -395,8 +396,11 @@ function ResultsTab() {
           <SelectTrigger className="h-8 w-[150px] text-sm"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t("tests.results.filters.allStatuses")}</SelectItem>
-            {STATUSES.map((s) => (
+            {WORKFLOW_STATUSES.map((s) => (
               <SelectItem key={s} value={s}>{t(`tests.status.${s}`, { defaultValue: s })}</SelectItem>
+            ))}
+            {RESULT_STATUSES.map((s) => (
+              <SelectItem key={`r-${s}`} value={`result:${s}`}>{t(`tests.status.${s}`, { defaultValue: s })}</SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -439,9 +443,9 @@ function ResultsTab() {
         <div className="flex flex-wrap gap-3">
           {[
             { label: t("tests.stats.total"),    value: results.length,                                                               color: "" },
-            { label: t("tests.stats.approved"), value: results.filter((r) => r.status === "approved" || r.pass_fail === "pass").length, color: "text-primary" },
-            { label: t("tests.stats.failed"),   value: results.filter((r) => r.pass_fail === "fail").length,                         color: "text-destructive" },
-            { label: t("tests.stats.pending"),  value: results.filter((r) => ["draft","pending","in_progress"].includes(r.status)).length, color: "text-muted-foreground" },
+            { label: t("tests.stats.approved"), value: results.filter((r) => r.status_workflow === "approved" || r.result_status === "pass").length, color: "text-primary" },
+            { label: t("tests.stats.failed"),   value: results.filter((r) => r.result_status === "fail").length,                         color: "text-destructive" },
+            { label: t("tests.stats.pending"),  value: results.filter((r) => ["draft","in_progress","submitted"].includes(r.status_workflow)).length, color: "text-muted-foreground" },
           ].map((stat) => (
             <div key={stat.label} className="rounded-lg border border-border px-3 py-2 bg-muted/20 flex items-center gap-2">
               <span className={cn("text-lg font-bold", stat.color)}>{stat.value}</span>
@@ -516,17 +520,18 @@ function ResultsTab() {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1.5 flex-wrap">
-                        <Badge variant="secondary" className={cn("text-xs gap-1", STATUS_COLORS[r.status] ?? "")}>
-                          <StatusIcon status={r.status} />
-                          {t(`tests.status.${r.status}`, { defaultValue: r.status })}
+                        <Badge variant="secondary" className={cn("text-xs gap-1", STATUS_COLORS[r.status_workflow] ?? "")}>
+                          <StatusIcon status={r.status_workflow} />
+                          {t(`tests.status.${r.status_workflow}`, { defaultValue: r.status_workflow })}
                         </Badge>
-                        {r.pass_fail && (
+                        {r.result_status && (
                           <Badge variant="outline" className={cn("text-[10px] py-0",
-                            r.pass_fail === "pass" ? "border-primary/40 text-primary" :
-                            r.pass_fail === "fail" ? "border-destructive/40 text-destructive" :
+                            r.result_status === "pass" ? "border-primary/40 text-primary" :
+                            r.result_status === "fail" ? "border-destructive/40 text-destructive" :
+                            r.result_status === "na" ? "border-border text-muted-foreground" :
                             "border-orange-400/40 text-orange-600",
                           )}>
-                            {t(`tests.status.${r.pass_fail}`, { defaultValue: r.pass_fail })}
+                            {t(`tests.status.${r.result_status}`, { defaultValue: r.result_status })}
                           </Badge>
                         )}
                       </div>

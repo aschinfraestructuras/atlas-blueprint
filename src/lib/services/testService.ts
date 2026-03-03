@@ -1,19 +1,32 @@
 import { supabase } from "@/integrations/supabase/client";
 import { auditService } from "./auditService";
 
-// ─── Workflow statuses ─────────────────────────────────────────────────────────
+// ─── Workflow statuses (normalized) ──────────────────────────────────────────
+// status_workflow: lifecycle state of the record
+export const TEST_WORKFLOW_STATUSES = [
+  "draft", "in_progress", "submitted", "reviewed", "approved", "archived",
+] as const;
+export type TestWorkflowStatus = typeof TEST_WORKFLOW_STATUSES[number];
+
+// result_status: technical outcome of the test
+export const TEST_RESULT_VALUES = ["pass", "fail", "inconclusive", "na"] as const;
+export type TestResultValue = typeof TEST_RESULT_VALUES[number];
+
+// ── DEPRECATED: kept for backward compat during transition ──
 export const TEST_RESULT_STATUSES = [
   "draft", "in_progress", "completed", "approved", "archived",
   "pending", "pass", "fail", "inconclusive",
 ] as const;
 export type TestResultStatus = typeof TEST_RESULT_STATUSES[number];
 
-export const TEST_RESULT_STATUS_WORKFLOW = ["draft", "in_progress", "completed", "approved", "archived"] as const;
-export type TestResultWorkflowStatus = typeof TEST_RESULT_STATUS_WORKFLOW[number];
+export const TEST_RESULT_STATUS_WORKFLOW = TEST_WORKFLOW_STATUSES;
+export type TestResultWorkflowStatus = TestWorkflowStatus;
 
 export const TEST_RESULT_STATUS_LABELS: Record<string, string> = {
   draft:        "tests.status.draft",
   in_progress:  "tests.status.in_progress",
+  submitted:    "tests.status.submitted",
+  reviewed:     "tests.status.reviewed",
   completed:    "tests.status.completed",
   approved:     "tests.status.approved",
   archived:     "tests.status.archived",
@@ -21,6 +34,7 @@ export const TEST_RESULT_STATUS_LABELS: Record<string, string> = {
   pass:         "tests.status.pass",
   fail:         "tests.status.fail",
   inconclusive: "tests.status.inconclusive",
+  na:           "tests.status.na",
 };
 
 export const TEST_DISCIPLINES = [
@@ -61,8 +75,14 @@ export interface TestResult {
   project_id: string;
   test_id: string;
   code: string | null;
+  /** @deprecated Use status_workflow instead */
   status: string;
+  /** @deprecated Use result_status instead */
   pass_fail: string | null;
+  /** Normalized workflow state */
+  status_workflow: TestWorkflowStatus;
+  /** Normalized technical result */
+  result_status: TestResultValue | null;
   sample_ref: string | null;
   location: string | null;
   pk_inicio: number | null;
@@ -94,7 +114,10 @@ export interface TestResultInput {
   project_id: string;
   test_id: string;
   date: string;
+  /** @deprecated Use status_workflow */
   status?: string;
+  status_workflow?: TestWorkflowStatus;
+  result_status?: TestResultValue | null;
   sample_ref?: string;
   location?: string;
   pk_inicio?: number;
@@ -271,24 +294,27 @@ export const testService = {
   },
 
   async create(input: TestResultInput): Promise<TestResult> {
+    const wfStatus = input.status_workflow ?? (input.status as TestWorkflowStatus) ?? "draft";
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const payload: any = {
-      project_id:      input.project_id,
-      test_id:         input.test_id,
-      date:            input.date,
-      status:          input.status ?? "draft",
-      sample_ref:      input.sample_ref ?? null,
-      location:        input.location ?? null,
-      pk_inicio:       input.pk_inicio ?? null,
-      pk_fim:          input.pk_fim ?? null,
-      material:        input.material ?? null,
-      material_outro:  input.material_outro ?? null,
-      report_number:   input.report_number ?? null,
-      notes:           input.notes ?? null,
-      result_payload:  input.result_payload ?? {},
-      supplier_id:     input.supplier_id ?? null,
-      subcontractor_id:input.subcontractor_id ?? null,
-      work_item_id:    input.work_item_id ?? null,
+      project_id:       input.project_id,
+      test_id:          input.test_id,
+      date:             input.date,
+      status:           wfStatus, // keep legacy column in sync
+      status_workflow:  wfStatus,
+      result_status:    input.result_status ?? null,
+      sample_ref:       input.sample_ref ?? null,
+      location:         input.location ?? null,
+      pk_inicio:        input.pk_inicio ?? null,
+      pk_fim:           input.pk_fim ?? null,
+      material:         input.material ?? null,
+      material_outro:   input.material_outro ?? null,
+      report_number:    input.report_number ?? null,
+      notes:            input.notes ?? null,
+      result_payload:   input.result_payload ?? {},
+      supplier_id:      input.supplier_id ?? null,
+      subcontractor_id: input.subcontractor_id ?? null,
+      work_item_id:     input.work_item_id ?? null,
     };
 
     const { data, error } = await supabase
@@ -304,16 +330,20 @@ export const testService = {
       entityId: (data as unknown as TestResult).id,
       action: "INSERT",
       module: "tests",
-      diff: { test_id: input.test_id, date: input.date, status: input.status ?? "draft" },
+      diff: { test_id: input.test_id, date: input.date, status_workflow: wfStatus },
     });
     return data as unknown as TestResult;
   },
 
   async update(id: string, projectId: string, updates: Partial<Omit<TestResultInput, "project_id">>): Promise<TestResult> {
+    // Sync legacy + new columns
+    const payload: any = { ...updates };
+    if (updates.status_workflow) {
+      payload.status = updates.status_workflow; // keep legacy in sync
+    }
     const { data, error } = await supabase
       .from("test_results")
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .update(updates as any)
+      .update(payload)
       .eq("id", id)
       .select(RESULT_SELECT)
       .single();

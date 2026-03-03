@@ -16,11 +16,12 @@ export const PPI_INSTANCE_STATUSES = [
 
 export type PpiInstanceStatus = typeof PPI_INSTANCE_STATUSES[number];
 
-// 'pending' = not yet reviewed (initial state from template clone)
-// 'ok'/'nok' = new canonical values (ok = pass, nok = fail with NC flag)
-// 'na'       = not applicable (user explicitly marks N/A)
-// 'pass'/'fail' = legacy aliases (kept for backward compat)
-export const PPI_ITEM_RESULTS = ["pending", "ok", "nok", "na", "pass", "fail"] as const;
+// Standardized item results after normalization migration:
+// 'pending' = not yet reviewed (initial)
+// 'pass'    = item passes inspection (was 'ok')
+// 'fail'    = item fails inspection, requires NC (was 'nok')
+// 'na'      = not applicable
+export const PPI_ITEM_RESULTS = ["pending", "pass", "fail", "na"] as const;
 export type PpiItemResult = typeof PPI_ITEM_RESULTS[number];
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -457,14 +458,14 @@ export const ppiService = {
     updates: UpdateInstanceItemInput
   ): Promise<PpiInstanceItem> {
     const { data: { user } } = await supabase.auth.getUser();
-    const isNok = updates.result === "nok" || updates.result === "fail";
+    const isFail = updates.result === "fail";
     const payload = {
       result:           updates.result,
       notes:            updates.notes            ?? null,
       evidence_file_id: updates.evidence_file_id ?? null,
       checked_by:       updates.checked_by       ?? user?.id ?? null,
       checked_at:       updates.checked_at       ?? new Date().toISOString(),
-      requires_nc:      isNok,
+      requires_nc:      isFail,
     };
 
     const { data, error } = await supabase
@@ -481,8 +482,8 @@ export const ppiService = {
       entityId: itemId,
       action: "UPDATE",
       module: "ppi",
-      description: `Item resultado: ${updates.result}${isNok ? " (requer NC)" : ""}`,
-      diff: { instance_id: instanceId, result: updates.result, requires_nc: isNok },
+      description: `Item resultado: ${updates.result}${isFail ? " (requer NC)" : ""}`,
+      diff: { instance_id: instanceId, result: updates.result, requires_nc: isFail },
     });
 
     return data as PpiInstanceItem;

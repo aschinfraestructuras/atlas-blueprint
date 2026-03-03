@@ -594,12 +594,15 @@
       "draft":        "Rascunho",
       "pending":      "Pendente",
       "in_progress":  "Em Curso",
+      "submitted":    "Submetido",
+      "reviewed":     "Revisto",
       "completed":    "Concluído",
       "approved":     "Aprovado",
       "archived":     "Arquivado",
       "pass":         "Conforme",
       "fail":         "Não Conforme",
-      "inconclusive": "Inconclusivo"
+      "inconclusive": "Inconclusivo",
+      "na":           "N/A"
     },
 
     "stats": {

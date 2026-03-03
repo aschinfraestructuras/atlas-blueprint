@@ -147,8 +147,8 @@ function buildSinglePdfHtml(
   locale: string,
   projectName: string,
 ): string {
-  const okCount      = inst.items.filter((i) => i.result === "ok"  || i.result === "pass").length;
-  const nokCount     = inst.items.filter((i) => i.result === "nok" || i.result === "fail").length;
+  const okCount      = inst.items.filter((i) => i.result === "pass").length;
+  const nokCount     = inst.items.filter((i) => i.result === "fail").length;
   const naCount      = inst.items.filter((i) => i.result === "na").length;
   const pendingCount = inst.items.filter((i) => i.result === "pending").length;
   const reviewed     = okCount + nokCount + naCount;
@@ -470,8 +470,8 @@ export function exportInstancesCsv(
   ];
 
   const rows = instances.map((inst) => {
-    const ok      = inst.items.filter((i) => i.result === "ok"  || i.result === "pass").length;
-    const nok     = inst.items.filter((i) => i.result === "nok" || i.result === "fail").length;
+    const ok      = inst.items.filter((i) => i.result === "pass").length;
+    const nok     = inst.items.filter((i) => i.result === "fail").length;
     const na      = inst.items.filter((i) => i.result === "na").length;
     const pending = inst.items.filter((i) => i.result === "pending").length;
     const total   = inst.items.length;
