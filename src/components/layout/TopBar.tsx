@@ -5,6 +5,7 @@ import { useProject } from "@/contexts/ProjectContext";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import { useTheme } from "@/components/theme/ThemeProvider";
 import { GlobalSearchDialog } from "@/components/search/GlobalSearchDialog";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 import {
   LogOut,
   User,
@@ -157,6 +158,9 @@ export function TopBar({ onMobileMenuOpen }: TopBarProps) {
         </kbd>
       </Button>
       <GlobalSearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
+
+      {/* Notifications */}
+      <NotificationBell />
 
       {/* Theme toggle */}
       <DropdownMenu>
