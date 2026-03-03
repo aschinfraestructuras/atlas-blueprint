@@ -274,6 +274,41 @@ export const testService = {
     return (data ?? []) as unknown as TestResult[];
   },
 
+  /** Server-side paginated query */
+  async getByProjectPaginated(
+    projectId: string,
+    options: {
+      from: number;
+      to: number;
+      status?: string;
+      search?: string;
+      work_item_id?: string;
+      supplier_id?: string;
+      dateFrom?: string;
+      dateTo?: string;
+    },
+  ): Promise<{ data: TestResult[]; count: number }> {
+    let q = supabase
+      .from("test_results")
+      .select(RESULT_SELECT, { count: "exact" })
+      .eq("project_id", projectId)
+      .eq("is_deleted", false)
+      .order("date", { ascending: false })
+      .order("created_at", { ascending: false })
+      .range(options.from, options.to);
+
+    if (options.status && options.status !== "all") q = q.eq("status", options.status);
+    if (options.work_item_id) q = q.eq("work_item_id", options.work_item_id);
+    if (options.supplier_id)  q = q.eq("supplier_id", options.supplier_id);
+    if (options.dateFrom)     q = q.gte("date", options.dateFrom);
+    if (options.dateTo)       q = q.lte("date", options.dateTo);
+    if (options.search)       q = q.or(`code.ilike.%${options.search}%,material.ilike.%${options.search}%,location.ilike.%${options.search}%`);
+
+    const { data, error, count } = await q;
+    if (error) throw error;
+    return { data: (data ?? []) as unknown as TestResult[], count: count ?? 0 };
+  },
+
   async getByWorkItem(workItemId: string): Promise<TestResult[]> {
     const { data, error } = await supabase
       .from("test_results")

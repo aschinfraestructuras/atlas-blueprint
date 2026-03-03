@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useProject } from "@/contexts/ProjectContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { useProjectRole } from "@/hooks/useProjectRole";
+import { usePermissions } from "@/hooks/usePermissions";
 import { useNonConformities } from "@/hooks/useNonConformities";
 import { ncService } from "@/lib/services/ncService";
 import { ncDemoService } from "@/lib/services/ncDemoService";
@@ -111,7 +111,7 @@ export default function NonConformitiesPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { data: ncs, loading, error, refetch } = useNonConformities();
-  const { canCreate, canEdit, canValidate } = useProjectRole();
+  const { canCreate, canEdit, canValidate } = usePermissions();
 
   // Filters
   const [search, setSearch]             = useState("");

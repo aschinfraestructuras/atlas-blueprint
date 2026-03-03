@@ -104,6 +104,32 @@ export const materialService = {
     return (data ?? []) as unknown as Material[];
   },
 
+  /** Server-side paginated query */
+  async getByProjectPaginated(
+    projectId: string,
+    options: {
+      from: number;
+      to: number;
+      category?: string;
+      search?: string;
+    },
+  ): Promise<{ data: Material[]; count: number }> {
+    let q = supabase
+      .from("materials" as any)
+      .select("*", { count: "exact" })
+      .eq("project_id", projectId)
+      .eq("is_deleted", false)
+      .order("created_at", { ascending: false })
+      .range(options.from, options.to);
+
+    if (options.category && options.category !== "all") q = q.eq("category", options.category);
+    if (options.search) q = q.or(`name.ilike.%${options.search}%,code.ilike.%${options.search}%`);
+
+    const { data, error, count } = await q;
+    if (error) throw error;
+    return { data: (data ?? []) as unknown as Material[], count: count ?? 0 };
+  },
+
   async getById(id: string): Promise<Material> {
     const { data, error } = await supabase
       .from("materials" as any)

@@ -119,6 +119,34 @@ export const ncService = {
     return (data ?? []) as unknown as NonConformity[];
   },
 
+  /** Server-side paginated query with filters */
+  async getByProjectPaginated(
+    projectId: string,
+    options: {
+      from: number;
+      to: number;
+      status?: string;
+      severity?: string;
+      search?: string;
+    },
+  ): Promise<{ data: NonConformity[]; count: number }> {
+    let q = supabase
+      .from("non_conformities")
+      .select("*", { count: "exact" })
+      .eq("project_id", projectId)
+      .eq("is_deleted", false)
+      .order("created_at", { ascending: false })
+      .range(options.from, options.to);
+
+    if (options.status && options.status !== "all") q = q.eq("status", options.status);
+    if (options.severity && options.severity !== "all") q = q.eq("severity", options.severity);
+    if (options.search) q = q.or(`title.ilike.%${options.search}%,code.ilike.%${options.search}%,description.ilike.%${options.search}%`);
+
+    const { data, error, count } = await q;
+    if (error) throw error;
+    return { data: (data ?? []) as unknown as NonConformity[], count: count ?? 0 };
+  },
+
   async getById(id: string): Promise<NonConformity | null> {
     const { data, error } = await supabase
       .from("non_conformities")
