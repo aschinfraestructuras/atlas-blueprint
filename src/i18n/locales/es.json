@@ -500,9 +500,13 @@
       "lockedNotice": "Este documento está bloqueado para edición. Solo se pueden añadir adjuntos.",
       "changeDescription": "Descripción del cambio",
       "changeDescriptionPlaceholder": "Describa lo que cambió en esta versión…",
+      "template": "Modelo de formulario",
+      "templatePlaceholder": "Seleccionar modelo…",
+      "noTemplate": "Sin modelo (documento en blanco)",
       "validation": {
         "titleRequired": "El título es obligatorio.",
         "typeRequired": "El tipo es obligatorio.",
+        "disciplinaRequired": "La disciplina es obligatoria.",
         "fileUrlInvalid": "Introduzca una URL válida."
       }
     },
