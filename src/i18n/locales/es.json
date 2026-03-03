@@ -216,10 +216,10 @@
       "nonConform": "No Conformes",
       "suppliersPendingQual": "Proveedores Pend. Calificación",
       "supplierDocsExpiring": "Docs Proveedor por Expirar (30d)",
-      "suppliersWithNC": "Proveedores con NC Abierta"
+      "suppliersWithNC": "Proveedores con NC Abierta",
       "materialsDocsExpired": "Materiales con Docs Expirados",
       "materialsWithNC": "Materiales con NC Abierta",
-      "materialsNonconformTests": "Materiales con Ensayos NC (30d)",
+      "materialsNonconformTests": "Materiales con Ensayos NC (30d)"
     },
     "adv": {
       "quality": "Calidad Técnica",
@@ -686,10 +686,18 @@
       "catalog": "Catálogo"
     },
     "status": {
-      "draft": "Borrador", "pending": "Pendiente", "in_progress": "En Curso",
-      "submitted": "Enviado", "reviewed": "Revisado", "completed": "Completado",
-      "approved": "Aprobado", "archived": "Archivado",
-      "pass": "Conforme", "fail": "No Conforme", "inconclusive": "Inconcluso", "na": "N/A"
+      "draft": "Borrador",
+      "pending": "Pendiente",
+      "in_progress": "En Curso",
+      "submitted": "Enviado",
+      "reviewed": "Revisado",
+      "completed": "Completado",
+      "approved": "Aprobado",
+      "archived": "Archivado",
+      "pass": "Conforme",
+      "fail": "No Conforme",
+      "inconclusive": "Inconcluso",
+      "na": "N/A"
     },
     "stats": { "total": "Total", "approved": "Aprobados", "failed": "No Conformes", "pending": "Pendientes" },
     "due": {
@@ -699,143 +707,335 @@
       "generated": "Pendientes generados",
       "generatedCount": "{{count}} ensayo(s) pendiente(s) generado(s).",
       "noGenerated": "Ningún ensayo pendiente generado. Verifique si hay planes activos y work items en curso.",
-      "schedule": "Programar", "start": "Iniciar Ensayo", "waive": "Dispensar",
-      "waiveReason": "Motivo de la Dispensa", "waiveReasonPlaceholder": "Justifique la dispensa…",
-      "waived": "Ensayo dispensado.", "started": "Ensayo iniciado.", "scheduled": "Ensayo programado.",
+      "schedule": "Programar",
+      "start": "Iniciar Ensayo",
+      "waive": "Dispensar",
+      "waiveReason": "Motivo de la Dispensa",
+      "waiveReasonPlaceholder": "Justifique la dispensa…",
+      "waived": "Ensayo dispensado.",
+      "started": "Ensayo iniciado.",
+      "scheduled": "Ensayo programado.",
       "empty": "Sin ensayos pendientes. Use «Generar Pendientes» para programar ensayos.",
       "status": {
-        "due": "Pendiente", "scheduled": "Programado", "in_progress": "En Curso",
-        "done": "Completado", "overdue": "Atrasado", "waived": "Dispensado"
+        "due": "Pendiente",
+        "scheduled": "Programado",
+        "in_progress": "En Curso",
+        "done": "Completado",
+        "overdue": "Atrasado",
+        "waived": "Dispensado"
       },
-      "table": { "test": "Ensayo", "context": "Contexto", "reason": "Motivo", "dueDate": "Fecha Límite", "lab": "Laboratorio", "status": "Estado" },
+      "table": {
+        "test": "Ensayo",
+        "context": "Contexto",
+        "reason": "Motivo",
+        "dueDate": "Fecha Límite",
+        "lab": "Laboratorio",
+        "status": "Estado"
+      },
       "reasons": {
-        "activity_in_progress": "Actividad en curso", "periodic": "Periódico",
-        "quantity_threshold": "Umbral de cantidad", "manual_rule": "Regla manual", "manual": "Manual"
+        "activity_in_progress": "Actividad en curso",
+        "periodic": "Periódico",
+        "quantity_threshold": "Umbral de cantidad",
+        "manual_rule": "Regla manual",
+        "manual": "Manual"
       },
       "kpi": {
-        "totalDue": "Total Pendientes", "overdue": "Atrasados", "scheduled7d": "Programados (7d)",
-        "pass30d": "Conformes (30d)", "fail30d": "No Conformes (30d)", "pending": "Pendientes"
+        "totalDue": "Total Pendientes",
+        "overdue": "Atrasados",
+        "scheduled7d": "Programados (7d)",
+        "pass30d": "Conformes (30d)",
+        "fail30d": "No Conformes (30d)",
+        "pending": "Pendientes"
       }
     },
     "plans": {
-      "title": "Planes de Ensayos", "newPlan": "Nuevo Plan",
+      "title": "Planes de Ensayos",
+      "newPlan": "Nuevo Plan",
       "empty": "Sin planes de ensayos. Cree el primero para definir reglas.",
       "status": { "draft": "Borrador", "active": "Activo", "archived": "Archivado" },
       "form": {
-        "titleCreate": "Nuevo Plan de Ensayos", "titleEdit": "Editar Plan",
-        "code": "Código", "codePlaceholder": "ej: PIE-001",
-        "title": "Título", "titlePlaceholder": "ej: Plan de Inspección y Ensayos - Tierras",
-        "disciplina": "Disciplina", "scopeNotes": "Notas de Ámbito",
-        "createBtn": "Crear Plan", "saveBtn": "Guardar"
+        "titleCreate": "Nuevo Plan de Ensayos",
+        "titleEdit": "Editar Plan",
+        "code": "Código",
+        "codePlaceholder": "ej: PIE-001",
+        "title": "Título",
+        "titlePlaceholder": "ej: Plan de Inspección y Ensayos - Tierras",
+        "disciplina": "Disciplina",
+        "scopeNotes": "Notas de Ámbito",
+        "createBtn": "Crear Plan",
+        "saveBtn": "Guardar"
       },
       "rules": {
-        "title": "Reglas de Ensayo", "newRule": "Nueva Regla",
+        "title": "Reglas de Ensayo",
+        "newRule": "Nueva Regla",
         "empty": "Sin reglas. Añada reglas para definir cuándo se exige cada ensayo.",
         "appliesTo": "Se aplica a",
         "appliesOptions": { "work_item": "Work Item", "activity": "Actividad", "both": "Ambos" },
         "frequencyType": "Tipo de Frecuencia",
         "frequencyOptions": { "quantity": "Cantidad", "time": "Temporal", "event": "Evento", "manual": "Manual" },
-        "frequencyValue": "Valor", "frequencyUnit": "Unidad",
-        "unitOptions": { "m": "m", "m2": "m²", "m3": "m³", "t": "t", "lot": "lote", "layer": "capa", "day": "día", "week": "semana", "month": "mes" },
-        "requiresReport": "Informe obligatorio", "requiresPhotos": "Fotos obligatorias",
-        "requiresWitness": "Testigo obligatorio", "defaultLab": "Laboratorio predeterminado",
-        "created": "Regla creada.", "deleted": "Regla eliminada."
+        "frequencyValue": "Valor",
+        "frequencyUnit": "Unidad",
+        "unitOptions": {
+          "m": "m",
+          "m2": "m²",
+          "m3": "m³",
+          "t": "t",
+          "lot": "lote",
+          "layer": "capa",
+          "day": "día",
+          "week": "semana",
+          "month": "mes"
+        },
+        "requiresReport": "Informe obligatorio",
+        "requiresPhotos": "Fotos obligatorias",
+        "requiresWitness": "Testigo obligatorio",
+        "defaultLab": "Laboratorio predeterminado",
+        "created": "Regla creada.",
+        "deleted": "Regla eliminada."
       },
       "toast": { "created": "Plan creado.", "updated": "Plan actualizado.", "deleted": "Plan eliminado." }
     },
     "templates": {
-      "title": "Plantillas de Ensayo", "hasTemplate": "Con plantilla", "noTemplate": "Sin plantilla",
-      "builtinTemplates": { "density_in_situ": "Densidad In Situ", "plate_load": "Placa de Carga", "concrete_control": "Control de Hormigón" },
-      "autoPassFail": "Pass/Fail automático", "computed": "Calculado",
-      "criteria": "Criterios de Aceptación", "criteriaPass": "Conforme", "criteriaFail": "No Conforme"
+      "title": "Plantillas de Ensayo",
+      "hasTemplate": "Con plantilla",
+      "noTemplate": "Sin plantilla",
+      "builtinTemplates": {
+        "density_in_situ": "Densidad In Situ",
+        "plate_load": "Placa de Carga",
+        "concrete_control": "Control de Hormigón"
+      },
+      "autoPassFail": "Pass/Fail automático",
+      "computed": "Calculado",
+      "criteria": "Criterios de Aceptación",
+      "criteriaPass": "Conforme",
+      "criteriaFail": "No Conforme"
     },
     "catalog": {
-      "newEntry": "Nuevo Tipo de Ensayo", "searchPlaceholder": "Buscar código, nombre, norma…",
-      "clone": "Clonar", "archive": "Archivar", "activate": "Activar",
+      "newEntry": "Nuevo Tipo de Ensayo",
+      "searchPlaceholder": "Buscar código, nombre, norma…",
+      "clone": "Clonar",
+      "archive": "Archivar",
+      "activate": "Activar",
       "empty": "Ningún ensayo en el catálogo. Cree el primero o use «Datos Demo».",
-      "filters": { "allDisciplines": "Todas las disciplinas", "showInactive": "Mostrar archivados", "hideInactive": "Ocultar archivados" },
-      "table": { "code": "Código", "name": "Tipo de Ensayo", "disciplina": "Disciplina", "standards": "Normas", "unit": "Unidad", "material": "Material", "laboratorio": "Laboratorio" },
+      "filters": {
+        "allDisciplines": "Todas las disciplinas",
+        "showInactive": "Mostrar archivados",
+        "hideInactive": "Ocultar archivados"
+      },
+      "table": {
+        "code": "Código",
+        "name": "Tipo de Ensayo",
+        "disciplina": "Disciplina",
+        "standards": "Normas",
+        "unit": "Unidad",
+        "material": "Material",
+        "laboratorio": "Laboratorio"
+      },
       "status": { "active": "Activo", "archived": "Archivado" },
       "form": {
-        "titleCreate": "Nuevo Tipo de Ensayo", "titleEdit": "Editar Tipo de Ensayo",
-        "code": "Código", "codePlaceholder": "ej: TST-SOIL-DENS",
-        "name": "Nombre", "namePlaceholder": "ej: Densidad In Situ",
-        "disciplina": "Disciplina", "disciplinaPlaceholder": "Seleccionar disciplina…", "disciplinaOutro": "Disciplina (otro)",
-        "material": "Material", "materialPlaceholder": "ej: Suelo, Hormigón, Betún…", "materialOutro": "Material (otro)",
-        "laboratorio": "Laboratorio / Método", "laboratorioPlaceholder": "ej: Laboratorio Geotécnico", "laboratorioOutro": "Laboratorio (otro)",
-        "standards": "Normas (una por línea)", "standardsPlaceholder": "ej: EN 12390-3\nASTM D1883",
-        "unit": "Unidad", "unitPlaceholder": "ej: MPa, %, mm",
-        "frequency": "Frecuencia de Ensayo", "frequencyPlaceholder": "ej: 1 por cada 100 m³",
-        "acceptanceCriteria": "Criterios de Aceptación", "acceptanceCriteriaPlaceholder": "ej: fck ≥ 30 MPa",
-        "description": "Descripción / Método", "descriptionPlaceholder": "Describa el procedimiento de ensayo…",
-        "createBtn": "Crear tipo de ensayo", "saveBtn": "Guardar cambios",
+        "titleCreate": "Nuevo Tipo de Ensayo",
+        "titleEdit": "Editar Tipo de Ensayo",
+        "code": "Código",
+        "codePlaceholder": "ej: TST-SOIL-DENS",
+        "name": "Nombre",
+        "namePlaceholder": "ej: Densidad In Situ",
+        "disciplina": "Disciplina",
+        "disciplinaPlaceholder": "Seleccionar disciplina…",
+        "disciplinaOutro": "Disciplina (otro)",
+        "material": "Material",
+        "materialPlaceholder": "ej: Suelo, Hormigón, Betún…",
+        "materialOutro": "Material (otro)",
+        "laboratorio": "Laboratorio / Método",
+        "laboratorioPlaceholder": "ej: Laboratorio Geotécnico",
+        "laboratorioOutro": "Laboratorio (otro)",
+        "standards": "Normas (una por línea)",
+        "standardsPlaceholder": "ej: EN 12390-3\nASTM D1883",
+        "unit": "Unidad",
+        "unitPlaceholder": "ej: MPa, %, mm",
+        "frequency": "Frecuencia de Ensayo",
+        "frequencyPlaceholder": "ej: 1 por cada 100 m³",
+        "acceptanceCriteria": "Criterios de Aceptación",
+        "acceptanceCriteriaPlaceholder": "ej: fck ≥ 30 MPa",
+        "description": "Descripción / Método",
+        "descriptionPlaceholder": "Describa el procedimiento de ensayo…",
+        "createBtn": "Crear tipo de ensayo",
+        "saveBtn": "Guardar cambios",
         "validation": { "codeRequired": "El código es obligatorio.", "nameRequired": "El nombre es obligatorio." }
       },
-      "toast": { "created": "Tipo de ensayo creado.", "updated": "Tipo de ensayo actualizado.", "archived": "Ensayo archivado.", "activated": "Ensayo activado.", "cloned": "Ensayo clonado.", "error": "Ocurrió un error. Inténtelo de nuevo." }
+      "toast": {
+        "created": "Tipo de ensayo creado.",
+        "updated": "Tipo de ensayo actualizado.",
+        "archived": "Ensayo archivado.",
+        "activated": "Ensayo activado.",
+        "cloned": "Ensayo clonado.",
+        "error": "Ocurrió un error. Inténtelo de nuevo."
+      }
     },
     "results": {
-      "newResult": "Nuevo Ensayo", "searchPlaceholder": "Buscar código, referencia, ubicación…",
+      "newResult": "Nuevo Ensayo",
+      "searchPlaceholder": "Buscar código, referencia, ubicación…",
       "empty": "Ningún resultado registrado. Haga clic en «Nuevo Ensayo» para comenzar.",
       "filters": { "allStatuses": "Todos los estados", "allDisciplines": "Todas las disciplinas" },
-      "table": { "code": "Código", "test": "Tipo de Ensayo", "sampleRef": "Ref. Muestra", "location": "Ubicación / PK", "date": "Fecha", "status": "Estado", "passFail": "Resultado", "supplier": "Laboratorio", "workItem": "Work Item", "report": "Nº Informe" },
-      "form": {
-        "titleCreate": "Registrar Ensayo", "titleEdit": "Editar Registro de Ensayo",
-        "catalogEntry": "Tipo de Ensayo", "testType": "Tipo de Ensayo",
-        "catalogPlaceholder": "Seleccionar del catálogo…", "testTypePlaceholder": "Seleccionar del catálogo…",
-        "addNewTestType": "Crear nuevo tipo de ensayo",
-        "workItem": "Work Item (Tramo / Elemento)", "workItemPlaceholder": "Seleccionar work item…",
-        "date": "Fecha del Ensayo", "sampleRef": "Ref. Muestra / Lote", "sampleRefPlaceholder": "ej: AM-2024-001",
-        "location": "Ubicación", "locationPlaceholder": "ej: Km 12+500, Viga V1…",
-        "pkInicio": "PK Inicio (m)", "pkFim": "PK Fin (m)",
-        "material": "Material", "materialPlaceholder": "ej: Hormigón C30/37", "materialOutro": "Material (otro)",
-        "reportNumber": "Nº Informe de Ensayo", "reportPlaceholder": "ej: LAB-2026-0001",
-        "supplier": "Laboratorio / Proveedor", "supplierPlaceholder": "Seleccionar laboratorio…",
-        "notes": "Observaciones", "notesPlaceholder": "Observaciones adicionales sobre el ensayo…",
-        "status": "Estado", "passFail": "Resultado (Pass/Fail)", "passFailPlaceholder": "Seleccionar resultado…",
-        "passFailOptions": { "pass": "Conforme", "fail": "No Conforme", "inconclusive": "Inconcluso", "na": "N/A" },
-        "createBtn": "Registrar Ensayo", "saveBtn": "Guardar",
-        "noWorkItem": "— Sin work item —", "noSupplier": "— Sin laboratorio —",
-        "validation": { "catalogRequired": "Seleccione un tipo de ensayo del catálogo.", "dateRequired": "La fecha del ensayo es obligatoria." }
+      "table": {
+        "code": "Código",
+        "test": "Tipo de Ensayo",
+        "sampleRef": "Ref. Muestra",
+        "location": "Ubicación / PK",
+        "date": "Fecha",
+        "status": "Estado",
+        "passFail": "Resultado",
+        "supplier": "Laboratorio",
+        "workItem": "Work Item",
+        "report": "Nº Informe"
       },
-      "toast": { "created": "Ensayo registrado con éxito.", "updated": "Ensayo actualizado con éxito.", "error": "Ocurrió un error. Inténtelo de nuevo.", "archived": "Ensayo archivado." }
+      "form": {
+        "titleCreate": "Registrar Ensayo",
+        "titleEdit": "Editar Registro de Ensayo",
+        "catalogEntry": "Tipo de Ensayo",
+        "testType": "Tipo de Ensayo",
+        "catalogPlaceholder": "Seleccionar del catálogo…",
+        "testTypePlaceholder": "Seleccionar del catálogo…",
+        "addNewTestType": "Crear nuevo tipo de ensayo",
+        "workItem": "Work Item (Tramo / Elemento)",
+        "workItemPlaceholder": "Seleccionar work item…",
+        "date": "Fecha del Ensayo",
+        "sampleRef": "Ref. Muestra / Lote",
+        "sampleRefPlaceholder": "ej: AM-2024-001",
+        "location": "Ubicación",
+        "locationPlaceholder": "ej: Km 12+500, Viga V1…",
+        "pkInicio": "PK Inicio (m)",
+        "pkFim": "PK Fin (m)",
+        "material": "Material",
+        "materialPlaceholder": "ej: Hormigón C30/37",
+        "materialOutro": "Material (otro)",
+        "reportNumber": "Nº Informe de Ensayo",
+        "reportPlaceholder": "ej: LAB-2026-0001",
+        "supplier": "Laboratorio / Proveedor",
+        "supplierPlaceholder": "Seleccionar laboratorio…",
+        "notes": "Observaciones",
+        "notesPlaceholder": "Observaciones adicionales sobre el ensayo…",
+        "status": "Estado",
+        "passFail": "Resultado (Pass/Fail)",
+        "passFailPlaceholder": "Seleccionar resultado…",
+        "passFailOptions": { "pass": "Conforme", "fail": "No Conforme", "inconclusive": "Inconcluso", "na": "N/A" },
+        "createBtn": "Registrar Ensayo",
+        "saveBtn": "Guardar",
+        "noWorkItem": "— Sin work item —",
+        "noSupplier": "— Sin laboratorio —",
+        "validation": {
+          "catalogRequired": "Seleccione un tipo de ensayo del catálogo.",
+          "dateRequired": "La fecha del ensayo es obligatoria."
+        }
+      },
+      "toast": {
+        "created": "Ensayo registrado con éxito.",
+        "updated": "Ensayo actualizado con éxito.",
+        "error": "Ocurrió un error. Inténtelo de nuevo.",
+        "archived": "Ensayo archivado."
+      }
     },
-    "demo": { "button": "Datos Demo", "alreadyExists": "Los datos demo ya existen en este proyecto.", "created": "Datos demo creados", "catalogEntries": "tipos de ensayo", "results": "resultados" },
-    "workItemTab": { "createTest": "Crear Ensayo", "exportSummary": "Exportar Resumen PDF", "empty": "Ningún ensayo asociado a este work item.", "stats": { "total": "Total", "approved": "Aprobados", "failed": "No Conformes", "pending": "Pendientes" } },
+    "demo": {
+      "button": "Datos Demo",
+      "alreadyExists": "Los datos demo ya existen en este proyecto.",
+      "created": "Datos demo creados",
+      "catalogEntries": "tipos de ensayo",
+      "results": "resultados"
+    },
+    "workItemTab": {
+      "createTest": "Crear Ensayo",
+      "exportSummary": "Exportar Resumen PDF",
+      "empty": "Ningún ensayo asociado a este work item.",
+      "stats": { "total": "Total", "approved": "Aprobados", "failed": "No Conformes", "pending": "Pendientes" }
+    },
     "export": {
-      "exportSingle": "Exportar PDF", "exportBulk": "Exportar seleccionados", "exportWI": "Exportar resumen WI",
+      "exportSingle": "Exportar PDF",
+      "exportBulk": "Exportar seleccionados",
+      "exportWI": "Exportar resumen WI",
       "noSelection": "Seleccione al menos un ensayo para exportar.",
-      "reportTitle": "Informe de Ensayo", "bulkReportTitle": "Informe de Ensayos en Lote",
-      "wiSummaryTitle": "Resumen de Ensayos por Work Item", "generatedOn": "Generado el",
-      "project": "Proyecto", "workItem": "Work Item", "date": "Fecha", "laboratory": "Laboratorio",
-      "reportNumber": "Nº Informe", "technician": "Técnico", "testCode": "Código", "testName": "Tipo de Ensayo",
-      "discipline": "Disciplina", "standards": "Normas Aplicables", "method": "Método",
-      "acceptanceCriteria": "Criterios de Aceptación", "sampleRef": "Ref. Muestra", "location": "Ubicación / PK",
-      "pkRange": "Intervalo PK", "status": "Estado", "passFail": "Resultado", "notes": "Observaciones",
-      "attachments": "Adjuntos", "results": "Resultados", "page": "Página", "of": "de", "approvalRate": "Tasa de Aprobación"
+      "reportTitle": "Informe de Ensayo",
+      "bulkReportTitle": "Informe de Ensayos en Lote",
+      "wiSummaryTitle": "Resumen de Ensayos por Work Item",
+      "generatedOn": "Generado el",
+      "project": "Proyecto",
+      "workItem": "Work Item",
+      "date": "Fecha",
+      "laboratory": "Laboratorio",
+      "reportNumber": "Nº Informe",
+      "technician": "Técnico",
+      "testCode": "Código",
+      "testName": "Tipo de Ensayo",
+      "discipline": "Disciplina",
+      "standards": "Normas Aplicables",
+      "method": "Método",
+      "acceptanceCriteria": "Criterios de Aceptación",
+      "sampleRef": "Ref. Muestra",
+      "location": "Ubicación / PK",
+      "pkRange": "Intervalo PK",
+      "status": "Estado",
+      "passFail": "Resultado",
+      "notes": "Observaciones",
+      "attachments": "Adjuntos",
+      "results": "Resultados",
+      "page": "Página",
+      "of": "de",
+      "approvalRate": "Tasa de Aprobación"
     },
     "table": { "name": "Ensayo", "sampleRef": "Ref. Muestra", "location": "Ubicación" },
     "form": {
-      "titleCreate": "Nuevo Ensayo", "titleEdit": "Editar Ensayo",
-      "testType": "Tipo de ensayo", "testTypePlaceholder": "Seleccionar ensayo del catálogo…",
-      "addNewTestType": "Crear nuevo tipo de ensayo", "newTestTypeLabel": "Nuevo tipo de ensayo",
-      "newTestCodePlaceholder": "Código (ej: ENS-01)", "newTestNamePlaceholder": "Nombre del ensayo",
-      "addTestTypeBtn": "Añadir al catálogo", "sampleRefPlaceholder": "ej: AM-2024-001",
-      "locationPlaceholder": "ej: Planta 2 — Hormigón A", "createBtn": "Registrar ensayo",
+      "titleCreate": "Nuevo Ensayo",
+      "titleEdit": "Editar Ensayo",
+      "testType": "Tipo de ensayo",
+      "testTypePlaceholder": "Seleccionar ensayo del catálogo…",
+      "addNewTestType": "Crear nuevo tipo de ensayo",
+      "newTestTypeLabel": "Nuevo tipo de ensayo",
+      "newTestCodePlaceholder": "Código (ej: ENS-01)",
+      "newTestNamePlaceholder": "Nombre del ensayo",
+      "addTestTypeBtn": "Añadir al catálogo",
+      "sampleRefPlaceholder": "ej: AM-2024-001",
+      "locationPlaceholder": "ej: Planta 2 — Hormigón A",
+      "createBtn": "Registrar ensayo",
       "validation": { "testRequired": "Seleccione un tipo de ensayo.", "dateRequired": "La fecha es obligatoria." }
     },
-    "toast": { "created": "Ensayo registrado con éxito.", "updated": "Ensayo actualizado con éxito.", "catalogCreated": "Tipo de ensayo añadido al catálogo.", "error": "Ocurrió un error. Inténtelo de nuevo." }
+    "toast": {
+      "created": "Ensayo registrado con éxito.",
+      "updated": "Ensayo actualizado con éxito.",
+      "catalogCreated": "Tipo de ensayo añadido al catálogo.",
+      "error": "Ocurrió un error. Inténtelo de nuevo."
+    }
   },
   "laboratories": {
-    "title": "Laboratorios", "subtitle": "Gestión de laboratorios acreditados",
-    "newLab": "Nuevo Laboratorio", "empty": "Sin laboratorios registrados.",
-    "selectSupplier": "Seleccionar Proveedor", "selectSupplierPlaceholder": "Seleccionar proveedor existente…",
-    "accreditationBody": "Entidad Acreditadora", "accreditationBodyPlaceholder": "ej: ENAC",
-    "accreditationCode": "Código de Acreditación", "accreditationCodePlaceholder": "ej: L0001",
-    "scope": "Ámbito / Tipos de Ensayo", "scopePlaceholder": "ej: Suelos, Hormigón",
-    "contactName": "Contacto", "contactEmail": "Email", "contactPhone": "Teléfono",
-    "stats": { "total": "Total Labs", "tests30d": "Ensayos (30d)", "pass30d": "Conformes (30d)", "fail30d": "Fallos (30d)" },
-    "toast": { "created": "Laboratorio creado.", "updated": "Laboratorio actualizado.", "deleted": "Laboratorio eliminado." },
-    "form": { "titleCreate": "Nuevo Laboratorio", "titleEdit": "Editar Laboratorio", "createBtn": "Crear Laboratorio", "saveBtn": "Guardar" }
+    "title": "Laboratorios",
+    "subtitle": "Gestión de laboratorios acreditados",
+    "newLab": "Nuevo Laboratorio",
+    "empty": "Sin laboratorios registrados.",
+    "selectSupplier": "Seleccionar Proveedor",
+    "selectSupplierPlaceholder": "Seleccionar proveedor existente…",
+    "accreditationBody": "Entidad Acreditadora",
+    "accreditationBodyPlaceholder": "ej: ENAC",
+    "accreditationCode": "Código de Acreditación",
+    "accreditationCodePlaceholder": "ej: L0001",
+    "scope": "Ámbito / Tipos de Ensayo",
+    "scopePlaceholder": "ej: Suelos, Hormigón",
+    "contactName": "Contacto",
+    "contactEmail": "Email",
+    "contactPhone": "Teléfono",
+    "stats": {
+      "total": "Total Labs",
+      "tests30d": "Ensayos (30d)",
+      "pass30d": "Conformes (30d)",
+      "fail30d": "Fallos (30d)"
+    },
+    "toast": {
+      "created": "Laboratorio creado.",
+      "updated": "Laboratorio actualizado.",
+      "deleted": "Laboratorio eliminado."
+    },
+    "form": {
+      "titleCreate": "Nuevo Laboratorio",
+      "titleEdit": "Editar Laboratorio",
+      "createBtn": "Crear Laboratorio",
+      "saveBtn": "Guardar"
+    }
   },
   "suppliers": {
     "newSupplier": "Nuevo Proveedor",
@@ -919,7 +1119,12 @@
         "score": "Puntuación",
         "result": "Resultado",
         "notes": "Observaciones",
-        "results": { "approved": "Aprobado", "pending": "Pendiente", "rejected": "Rechazado", "conditional": "Condicional" }
+        "results": {
+          "approved": "Aprobado",
+          "pending": "Pendiente",
+          "rejected": "Rechazado",
+          "conditional": "Condicional"
+        }
       }
     },
     "docTypes": {
@@ -987,43 +1192,43 @@
       "dueDate": "Plazo"
     },
     "severity": {
-      "minor":    "Menor",
-      "major":    "Mayor",
+      "minor": "Menor",
+      "major": "Mayor",
       "critical": "Crítica",
-      "low":      "Baja",
-      "medium":   "Media",
-      "high":     "Alta"
+      "low": "Baja",
+      "medium": "Media",
+      "high": "Alta"
     },
     "category": {
-      "qualidade":  "Calidad",
-      "seguranca":  "Seguridad",
-      "ambiente":   "Medio Ambiente",
-      "producao":   "Producción",
-      "outros":     "Otros"
+      "qualidade": "Calidad",
+      "seguranca": "Seguridad",
+      "ambiente": "Medio Ambiente",
+      "producao": "Producción",
+      "outros": "Otros"
     },
     "origin": {
-      "manual":   "Manual",
-      "ppi":      "PPI",
-      "test":     "Ensayo",
+      "manual": "Manual",
+      "ppi": "PPI",
+      "test": "Ensayo",
       "document": "Documento",
-      "audit":    "Auditoría"
+      "audit": "Auditoría"
     },
     "status": {
-      "draft":                "Borrador",
-      "open":                 "Abierta",
-      "in_progress":          "En Curso",
+      "draft": "Borrador",
+      "open": "Abierta",
+      "in_progress": "En Curso",
       "pending_verification": "Pendiente Verificación",
-      "closed":               "Cerrada",
-      "archived":             "Archivada",
-      "under_review":         "En Revisión"
+      "closed": "Cerrada",
+      "archived": "Archivada",
+      "under_review": "En Revisión"
     },
     "transitions": {
-      "label":                "Cambiar estado",
-      "open":                 "Abrir",
-      "in_progress":          "Iniciar",
+      "label": "Cambiar estado",
+      "open": "Abrir",
+      "in_progress": "Iniciar",
       "pending_verification": "Enviar a Verificación",
-      "closed":               "Cerrar",
-      "archived":             "Archivar"
+      "closed": "Cerrar",
+      "archived": "Archivar"
     },
     "form": {
       "titleCreate": "Nueva No Conformidad",
@@ -1497,24 +1702,24 @@
       "actions": "Acciones"
     },
     "disciplines": {
-      "geral":      "General",
-      "terras":     "Movimiento de tierras",
-      "firmes":     "Firmes",
-      "betao":      "Hormigón",
-      "drenagem":   "Drenaje",
+      "geral": "General",
+      "terras": "Movimiento de tierras",
+      "firmes": "Firmes",
+      "betao": "Hormigón",
+      "drenagem": "Drenaje",
       "estruturas": "Estructuras",
-      "ferrovia":   "Ferroviario",
-      "instalacoes":"Instalaciones",
-      "outros":     "Otros"
+      "ferrovia": "Ferroviario",
+      "instalacoes": "Instalaciones",
+      "outros": "Otros"
     },
     "status": {
-      "planned":     "Previsto",
+      "planned": "Previsto",
       "in_progress": "En Ejecución",
-      "hold":        "En Espera",
-      "completed":   "Completado",
-      "approved":    "Aprobado",
-      "archived":    "Archivado",
-      "cancelled":   "Cancelado"
+      "hold": "En Espera",
+      "completed": "Completado",
+      "approved": "Aprobado",
+      "archived": "Archivado",
+      "cancelled": "Cancelado"
     },
     "readiness": {
       "ready": "Listo",
@@ -1538,15 +1743,15 @@
       "pk": "PK",
       "createdAt": "Creado el",
       "tabs": {
-        "ppi":         "Inspecciones PPI",
-        "tests":       "Ensayos",
-        "ncs":         "No Conformidades",
-        "planning":    "Planificación",
+        "ppi": "Inspecciones PPI",
+        "tests": "Ensayos",
+        "ncs": "No Conformidades",
+        "planning": "Planificación",
         "attachments": "Adjuntos"
       },
       "ppiTab": {
         "createPPI": "Crear PPI",
-        "empty":     "Ninguna inspección PPI asociada a este work item."
+        "empty": "Ninguna inspección PPI asociada a este work item."
       },
       "emptyTests": "Ningún ensayo asociado",
       "emptyNcs": "Ninguna no conformidad asociada",
@@ -1785,11 +1990,11 @@
       },
       "results": {
         "pending": "Pendiente",
-        "ok":      "Conforme",
-        "nok":     "No Conforme",
-        "na":      "N/A",
-        "pass":    "Conforme",
-        "fail":    "No Conforme"
+        "ok": "Conforme",
+        "nok": "No Conforme",
+        "na": "N/A",
+        "pass": "Conforme",
+        "fail": "No Conforme"
       },
       "validation": {
         "codeRequired": "El código de la inspección es obligatorio.",
@@ -1819,31 +2024,31 @@
       }
     },
     "transitions": {
-      "start":   "Iniciar",
-      "submit":  "Enviar",
+      "start": "Iniciar",
+      "submit": "Enviar",
       "approve": "Aprobar",
-      "reject":  "Rechazar",
-      "reopen":  "Reabrir",
+      "reject": "Rechazar",
+      "reopen": "Reabrir",
       "archive": "Archivar"
     },
     "disciplinas": {
-      "geral":       "General",
-      "terras":      "Movimiento de Tierras",
-      "firmes":      "Firmes",
-      "betao":       "Hormigón",
-      "estruturas":  "Estructuras",
-      "drenagem":    "Drenaje",
-      "ferrovia":    "Ferroviario",
+      "geral": "General",
+      "terras": "Movimiento de Tierras",
+      "firmes": "Firmes",
+      "betao": "Hormigón",
+      "estruturas": "Estructuras",
+      "drenagem": "Drenaje",
+      "ferrovia": "Ferroviario",
       "instalacoes": "Instalaciones",
-      "outros":      "Otros"
+      "outros": "Otros"
     },
     "status": {
-      "draft":       "Borrador",
+      "draft": "Borrador",
       "in_progress": "En Curso",
-      "submitted":   "Enviado",
-      "approved":    "Aprobado",
-      "rejected":    "Rechazado",
-      "archived":    "Archivado"
+      "submitted": "Enviado",
+      "approved": "Aprobado",
+      "rejected": "Rechazado",
+      "archived": "Archivado"
     },
     "kpi": {
       "total": "Total",
@@ -1854,7 +2059,7 @@
       "overdueApproval": "Aprobación Atrasada"
     },
     "templateStatus": {
-      "active":   "Activo",
+      "active": "Activo",
       "inactive": "Archivado"
     },
     "rejection": {
@@ -1868,13 +2073,13 @@
     },
     "demo": {
       "templates": {
-        "button":   "Crear plantillas demo",
-        "tooltip":  "Crea 2 plantillas de ejemplo (PPI-EST-FOUND y PPI-DRN-PIPE) si aún no existen en este proyecto.",
-        "created":  "Plantillas demo creadas: {{codes}}",
+        "button": "Crear plantillas demo",
+        "tooltip": "Crea 2 plantillas de ejemplo (PPI-EST-FOUND y PPI-DRN-PIPE) si aún no existen en este proyecto.",
+        "created": "Plantillas demo creadas: {{codes}}",
         "allExist": "Las plantillas demo ya existen: {{codes}}"
       },
       "instance": {
-        "button":  "Demo PPI",
+        "button": "Demo PPI",
         "created": "Inspección demo creada: {{code}}"
       },
       "error": "Error al crear datos demo. Verifique los permisos o si existe una plantilla activa."
@@ -1896,9 +2101,9 @@
       "selected": "seleccionados",
       "inspectionDate": "Fecha de inspección",
       "fields": {
-        "project":         "Proyecto",
-        "discipline":      "Disciplina",
-        "linkedNc":        "NC Vinculada",
+        "project": "Proyecto",
+        "discipline": "Disciplina",
+        "linkedNc": "NC Vinculada",
         "attachmentCount": "Nº Adjuntos"
       }
     }
@@ -1949,27 +2154,51 @@
     "newMaterial": "Nuevo Material",
     "searchPlaceholder": "Buscar código, nombre, especificación…",
     "table": { "code": "Código" },
-    "filters": { "allStatuses": "Todos los estados", "allCategories": "Todas las categorías", "allApprovals": "Todas las aprobaciones" },
+    "filters": {
+      "allStatuses": "Todos los estados",
+      "allCategories": "Todas las categorías",
+      "allApprovals": "Todas las aprobaciones"
+    },
     "status": { "active": "Activo", "discontinued": "Descontinuado", "archived": "Archivado" },
     "categories": {
-      "betao": "Hormigón", "aco": "Acero", "solos": "Suelos", "agregado": "Árido",
-      "mbc": "MBC / Asfáltico", "pintura": "Pintura", "geossintetico": "Geosintético",
-      "soldadura": "Soldadura", "tubagem": "Tubería", "prefabricado": "Prefabricado", "outro": "Otro"
+      "betao": "Hormigón",
+      "aco": "Acero",
+      "solos": "Suelos",
+      "agregado": "Árido",
+      "mbc": "MBC / Asfáltico",
+      "pintura": "Pintura",
+      "geossintetico": "Geosintético",
+      "soldadura": "Soldadura",
+      "tubagem": "Tubería",
+      "prefabricado": "Prefabricado",
+      "outro": "Otro"
     },
     "actions": { "archive": "Archivar", "activate": "Activar" },
     "kpi": {
-      "total": "Total", "active": "Activos", "discontinued": "Descontinuados",
-      "docsExpired": "Docs Expirados", "withOpenNC": "Con NC Abierta", "nonconformTests": "Ensayos NC (30d)",
+      "total": "Total",
+      "active": "Activos",
+      "discontinued": "Descontinuados",
+      "docsExpired": "Docs Expirados",
+      "withOpenNC": "Con NC Abierta",
+      "nonconformTests": "Ensayos NC (30d)",
       "pendingApproval": "Pendientes MAP/MAS"
     },
     "form": {
-      "titleCreate": "Nuevo Material", "titleEdit": "Editar Material",
-      "name": "Nombre", "namePlaceholder": "ej: Hormigón C30/37 XC2",
-      "category": "Categoría", "subcategory": "Subcategoría", "subcategoryPlaceholder": "ej: Estructural",
-      "specification": "Especificación", "specificationPlaceholder": "ej: C30/37 XC2 Cl 0.4 Dmax22 S3",
-      "unit": "Unidad", "unitPlaceholder": "Seleccionar…",
-      "normativeRefs": "Referencias Normativas", "normativeRefsPlaceholder": "ej: EN 206, UNE-EN 13670",
-      "acceptanceCriteria": "Criterios de Aceptación", "acceptanceCriteriaPlaceholder": "ej: fck ≥ 30 MPa a 28 días",
+      "titleCreate": "Nuevo Material",
+      "titleEdit": "Editar Material",
+      "name": "Nombre",
+      "namePlaceholder": "ej: Hormigón C30/37 XC2",
+      "category": "Categoría",
+      "subcategory": "Subcategoría",
+      "subcategoryPlaceholder": "ej: Estructural",
+      "specification": "Especificación",
+      "specificationPlaceholder": "ej: C30/37 XC2 Cl 0.4 Dmax22 S3",
+      "unit": "Unidad",
+      "unitPlaceholder": "Seleccionar…",
+      "normativeRefs": "Referencias Normativas",
+      "normativeRefsPlaceholder": "ej: EN 206, UNE-EN 13670",
+      "acceptanceCriteria": "Criterios de Aceptación",
+      "acceptanceCriteriaPlaceholder": "ej: fck ≥ 30 MPa a 28 días",
       "createBtn": "Crear material",
       "supplierLabel": "Proveedor principal",
       "supplierPlaceholder": "Seleccionar proveedor…",
@@ -2028,27 +2257,44 @@
       "replaced": "Reemplazado"
     },
     "detail": {
-      "suppliersCount": "Proveedores", "testsTotal": "Ensayos", "testsNC": "Ensayos NC",
-      "ncOpen": "NC Abiertas", "docsExpiring": "Docs por Expirar", "docsExpired": "Docs Expirados",
+      "suppliersCount": "Proveedores",
+      "testsTotal": "Ensayos",
+      "testsNC": "Ensayos NC",
+      "ncOpen": "NC Abiertas",
+      "docsExpiring": "Docs por Expirar",
+      "docsExpired": "Docs Expirados",
       "workItems": "Actividades",
       "materialDocs": "Documentos del material",
       "docType": "Tipo de documento",
       "validFrom": "Válido desde",
       "validTo": "Válido hasta",
       "tabs": {
-        "summary": "Resumen", "approval": "MAP/MAS", "suppliers": "Proveedores", "documents": "Documentos",
-        "tests": "Ensayos", "ncs": "No Conformidades", "workItems": "Aplicación en Obra", "audit": "Auditoría"
+        "summary": "Resumen",
+        "approval": "MAP/MAS",
+        "suppliers": "Proveedores",
+        "documents": "Documentos",
+        "tests": "Ensayos",
+        "ncs": "No Conformidades",
+        "workItems": "Aplicación en Obra",
+        "audit": "Auditoría"
       },
       "noSuppliers": "Sin proveedores asociados.",
-      "noTests": "Sin ensayos registrados.", "createTest": "Crear Ensayo",
-      "noNCs": "Sin no conformidades.", "createNC": "Crear NC",
-      "noWorkItems": "Sin actividades asociadas.", "noAudit": "Sin registros de auditoría.",
-      "workItemId": "Actividad", "lotRef": "Lote / Guía", "quantity": "Cantidad"
+      "noTests": "Sin ensayos registrados.",
+      "createTest": "Crear Ensayo",
+      "noNCs": "Sin no conformidades.",
+      "createNC": "Crear NC",
+      "noWorkItems": "Sin actividades asociadas.",
+      "noAudit": "Sin registros de auditoría.",
+      "workItemId": "Actividad",
+      "lotRef": "Lote / Guía",
+      "quantity": "Cantidad"
     },
     "export": { "reportTitle": "Ficha de Material" },
     "toast": {
-      "created": "Material creado con éxito.", "updated": "Material actualizado.",
-      "archived": "Material archivado.", "activated": "Material activado.",
+      "created": "Material creado con éxito.",
+      "updated": "Material actualizado.",
+      "archived": "Material archivado.",
+      "activated": "Material activado.",
       "error": "Ocurrió un error. Inténtelo de nuevo."
     }
   },
@@ -2267,14 +2513,47 @@
       "avgProgress": "Progreso Medio"
     },
     "activity": { "add": "Nueva Actividad", "createTitle": "Crear Actividad", "editTitle": "Editar Actividad" },
-    "fields": { "plannedStart": "Inicio Planificado", "plannedEnd": "Fin Planificado", "actualStart": "Inicio Real", "actualEnd": "Fin Real", "progress": "Progreso", "zone": "Zona", "dates": "Fechas", "requirements": "Requisitos", "workItem": "Actividad (WI)", "subcontractor": "Subcontratista", "constraints": "Restricciones", "constraintsPlaceholder": "Ej: Depende de aprobación de material…", "reqTopography": "Requiere topografía", "reqTests": "Requiere ensayos", "reqPpi": "Requiere PPI" },
+    "fields": {
+      "plannedStart": "Inicio Planificado",
+      "plannedEnd": "Fin Planificado",
+      "actualStart": "Inicio Real",
+      "actualEnd": "Fin Real",
+      "progress": "Progreso",
+      "zone": "Zona",
+      "dates": "Fechas",
+      "requirements": "Requisitos",
+      "workItem": "Actividad (WI)",
+      "subcontractor": "Subcontratista",
+      "constraints": "Restricciones",
+      "constraintsPlaceholder": "Ej: Depende de aprobación de material…",
+      "reqTopography": "Requiere topografía",
+      "reqTests": "Requiere ensayos",
+      "reqPpi": "Requiere PPI"
+    },
     "filters": { "allStatuses": "Todos los estados" },
-    "status": { "planned": "Planificado", "in_progress": "En curso", "blocked": "Bloqueado", "completed": "Completado", "cancelled": "Cancelado" },
-    "toast": { "wbsCreated": "WBS creado", "wbsUpdated": "WBS actualizado", "activityCreated": "Actividad creada", "activityUpdated": "Actividad actualizada" },
-    "completion": { "title": "Verificar Conclusión", "runCheck": "Ejecutar Verificación", "canComplete": "La actividad puede completarse — sin bloqueos.", "blocked": "La actividad NO puede completarse:" },
+    "status": {
+      "planned": "Planificado",
+      "in_progress": "En curso",
+      "blocked": "Bloqueado",
+      "completed": "Completado",
+      "cancelled": "Cancelado"
+    },
+    "toast": {
+      "wbsCreated": "WBS creado",
+      "wbsUpdated": "WBS actualizado",
+      "activityCreated": "Actividad creada",
+      "activityUpdated": "Actividad actualizada"
+    },
+    "completion": {
+      "title": "Verificar Conclusión",
+      "runCheck": "Ejecutar Verificación",
+      "canComplete": "La actividad puede completarse — sin bloqueos.",
+      "blocked": "La actividad NO puede completarse:"
+    },
     "detail": {
       "tabs": { "overview": "Resumen", "requirements": "Requisitos", "evidence": "Evidencias", "links": "Enlaces" },
-      "met": "Cumplido", "notMet": "Pendiente",
+      "met": "Cumplido",
+      "notMet": "Pendiente",
       "noRequirements": "Esta actividad no tiene requisitos obligatorios.",
       "noLinks": "Sin enlaces a Work Items o Subcontratistas."
     }
@@ -2540,4 +2819,3 @@
     "rowsPerPage": "Filas por página"
   }
 }
-
