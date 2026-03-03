@@ -603,7 +603,9 @@
     "unknownTest": "Ensaio desconhecido",
 
     "tabs": {
+      "due": "Devidos",
       "results": "Resultados",
+      "plan": "Plano",
       "catalog": "Catálogo"
     },
 
@@ -627,6 +629,130 @@
       "approved": "Aprovados",
       "failed":   "Não Conformes",
       "pending":  "Pendentes"
+    },
+
+    "due": {
+      "title": "Ensaios Devidos",
+      "generateBtn": "Gerar Devidos",
+      "generating": "A gerar…",
+      "generated": "Devidos gerados",
+      "generatedCount": "{{count}} ensaio(s) devido(s) gerado(s).",
+      "noGenerated": "Nenhum ensaio devido gerado. Verifique se existem planos ativos e work items em curso.",
+      "schedule": "Agendar",
+      "start": "Iniciar Ensaio",
+      "waive": "Dispensar",
+      "waiveReason": "Motivo da Dispensa",
+      "waiveReasonPlaceholder": "Justifique a dispensa deste ensaio…",
+      "waived": "Ensaio dispensado.",
+      "started": "Ensaio iniciado.",
+      "scheduled": "Ensaio agendado.",
+      "empty": "Sem ensaios devidos. Use «Gerar Devidos» para programar ensaios com base no plano ativo.",
+      "status": {
+        "due": "Devido",
+        "scheduled": "Agendado",
+        "in_progress": "Em Curso",
+        "done": "Concluído",
+        "overdue": "Em Atraso",
+        "waived": "Dispensado"
+      },
+      "table": {
+        "test": "Ensaio",
+        "context": "Contexto",
+        "reason": "Motivo",
+        "dueDate": "Data Limite",
+        "lab": "Laboratório",
+        "status": "Estado"
+      },
+      "reasons": {
+        "activity_in_progress": "Atividade em curso",
+        "periodic": "Periódico",
+        "quantity_threshold": "Limiar de quantidade",
+        "manual_rule": "Regra manual",
+        "manual": "Manual"
+      },
+      "kpi": {
+        "totalDue": "Total Devidos",
+        "overdue": "Em Atraso",
+        "scheduled7d": "Agendados (7d)",
+        "pass30d": "Conformes (30d)",
+        "fail30d": "Não Conformes (30d)",
+        "pending": "Pendentes"
+      }
+    },
+
+    "plans": {
+      "title": "Planos de Ensaios",
+      "newPlan": "Novo Plano",
+      "empty": "Sem planos de ensaios. Crie o primeiro para definir regras de ensaio.",
+      "status": {
+        "draft": "Rascunho",
+        "active": "Ativo",
+        "archived": "Arquivado"
+      },
+      "form": {
+        "titleCreate": "Novo Plano de Ensaios",
+        "titleEdit": "Editar Plano",
+        "code": "Código",
+        "codePlaceholder": "ex: PIE-001",
+        "title": "Título",
+        "titlePlaceholder": "ex: Plano de Inspeção e Ensaios - Terras",
+        "disciplina": "Disciplina",
+        "scopeNotes": "Notas de Âmbito",
+        "createBtn": "Criar Plano",
+        "saveBtn": "Guardar"
+      },
+      "rules": {
+        "title": "Regras de Ensaio",
+        "newRule": "Nova Regra",
+        "empty": "Sem regras. Adicione regras para definir quando cada ensaio é exigido.",
+        "appliesTo": "Aplica-se a",
+        "appliesOptions": {
+          "work_item": "Work Item",
+          "activity": "Atividade",
+          "both": "Ambos"
+        },
+        "frequencyType": "Tipo de Frequência",
+        "frequencyOptions": {
+          "quantity": "Quantidade",
+          "time": "Temporal",
+          "event": "Evento",
+          "manual": "Manual"
+        },
+        "frequencyValue": "Valor",
+        "frequencyUnit": "Unidade",
+        "unitOptions": {
+          "m": "m", "m2": "m²", "m3": "m³", "t": "t",
+          "lot": "lote", "layer": "camada",
+          "day": "dia", "week": "semana", "month": "mês"
+        },
+        "requiresReport": "Relatório obrigatório",
+        "requiresPhotos": "Fotos obrigatórias",
+        "requiresWitness": "Testemunha obrigatória",
+        "defaultLab": "Laboratório padrão",
+        "created": "Regra criada.",
+        "deleted": "Regra eliminada."
+      },
+      "toast": {
+        "created": "Plano criado.",
+        "updated": "Plano atualizado.",
+        "deleted": "Plano eliminado."
+      }
+    },
+
+    "templates": {
+      "title": "Templates de Ensaio",
+      "hasTemplate": "Tem template",
+      "noTemplate": "Sem template",
+      "builtinTemplates": {
+        "density_in_situ": "Densidade In Situ",
+        "plate_load": "Placa de Carga",
+        "concrete_control": "Controlo de Betão"
+      },
+      "autoPassFail": "Pass/Fail automático",
+      "computed": "Calculado",
+      "criteria": "Critérios de Aceitação",
+      "criteriaPass": "Conforme",
+      "criteriaFail": "Não Conforme"
     },
 
     "catalog": {
@@ -764,7 +890,8 @@
       "toast": {
         "created": "Ensaio registado com sucesso.",
         "updated": "Ensaio atualizado com sucesso.",
-        "error":   "Ocorreu um erro. Tente novamente."
+        "error":   "Ocorreu um erro. Tente novamente.",
+        "archived": "Ensaio arquivado."
       }
     },
 
@@ -852,6 +979,40 @@
       "updated":       "Ensaio atualizado com sucesso.",
       "catalogCreated":"Tipo de ensaio adicionado ao catálogo.",
       "error":         "Ocorreu um erro. Tente novamente."
+    }
+  },
+  "laboratories": {
+    "title": "Laboratórios",
+    "subtitle": "Gestão de laboratórios acreditados",
+    "newLab": "Novo Laboratório",
+    "empty": "Sem laboratórios registados. Adicione um fornecedor como laboratório.",
+    "selectSupplier": "Selecionar Fornecedor",
+    "selectSupplierPlaceholder": "Selecionar fornecedor existente…",
+    "accreditationBody": "Entidade Acreditadora",
+    "accreditationBodyPlaceholder": "ex: IPAC",
+    "accreditationCode": "Código de Acreditação",
+    "accreditationCodePlaceholder": "ex: L0001",
+    "scope": "Âmbito / Tipos de Ensaio",
+    "scopePlaceholder": "ex: Solos, Betão, Betuminosos",
+    "contactName": "Contacto",
+    "contactEmail": "Email",
+    "contactPhone": "Telefone",
+    "stats": {
+      "total": "Total Labs",
+      "tests30d": "Ensaios (30d)",
+      "pass30d": "Conformes (30d)",
+      "fail30d": "Falhas (30d)"
+    },
+    "toast": {
+      "created": "Laboratório criado.",
+      "updated": "Laboratório atualizado.",
+      "deleted": "Laboratório eliminado."
+    },
+    "form": {
+      "titleCreate": "Novo Laboratório",
+      "titleEdit": "Editar Laboratório",
+      "createBtn": "Criar Laboratório",
+      "saveBtn": "Guardar"
     }
   },
   "suppliers": {

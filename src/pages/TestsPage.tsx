@@ -725,12 +725,20 @@ export default function TestsPage() {
         </Button>
       </div>
 
-      {/* Tabs */}
-      <Tabs defaultValue="results">
+      {/* Tabs — 4 PRO tabs */}
+      <Tabs defaultValue="due">
         <TabsList>
+          <TabsTrigger value="due" className="gap-1.5">
+            <Clock className="h-3.5 w-3.5" />
+            {t("tests.tabs.due")}
+          </TabsTrigger>
           <TabsTrigger value="results" className="gap-1.5">
             <FlaskConical className="h-3.5 w-3.5" />
             {t("tests.tabs.results")}
+          </TabsTrigger>
+          <TabsTrigger value="plan" className="gap-1.5">
+            <BookOpen className="h-3.5 w-3.5" />
+            {t("tests.tabs.plan")}
           </TabsTrigger>
           <TabsTrigger value="catalog" className="gap-1.5">
             <BookOpen className="h-3.5 w-3.5" />
@@ -738,8 +746,14 @@ export default function TestsPage() {
           </TabsTrigger>
         </TabsList>
 
+        <TabsContent value="due" className="mt-5">
+          <DueTab />
+        </TabsContent>
         <TabsContent value="results" className="mt-5">
           <ResultsTab />
+        </TabsContent>
+        <TabsContent value="plan" className="mt-5">
+          <PlanTab />
         </TabsContent>
         <TabsContent value="catalog" className="mt-5">
           <CatalogTab />
