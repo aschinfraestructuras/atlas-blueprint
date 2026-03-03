@@ -1297,6 +1297,13 @@
   "subcontractors": {
     "newSubcontractor": "Nuevo Subcontratista",
     "searchPlaceholder": "Buscar nombre, especialidad, correo…",
+    "kpi": {
+      "total": "Total",
+      "active": "Activos",
+      "docsExpired": "Docs Expirados",
+      "docsPending": "Docs Pendientes",
+      "avgScore": "Score Medio"
+    },
     "table": {
       "trade": "Especialidad",
       "contactEmail": "Correo",
@@ -1337,6 +1344,8 @@
         "docs": "Documentación",
         "activities": "Actividades",
         "workItems": "Work Items",
+        "ncs": "No Conformidades",
+        "tests": "Ensayos",
         "audit": "Auditoría"
       },
       "generalInfo": "Información General",
@@ -1363,10 +1372,18 @@
       "expiringSoonBadge": "Expira pronto",
       "linkedActivities": "Actividades Asociadas",
       "linkedWorkItems": "Work Items Asociados",
+      "linkedNCs": "No Conformidades Asociadas",
+      "linkedTests": "Ensayos Asociados",
       "auditHistory": "Historial de Auditoría",
       "zone": "Zona",
       "progress": "Progreso",
-      "plannedDates": "Fechas Planificadas"
+      "plannedDates": "Fechas Planificadas",
+      "ncCode": "Código",
+      "severity": "Severidad",
+      "dueDate": "Plazo",
+      "testCode": "Código",
+      "testDate": "Fecha",
+      "testResult": "Resultado"
     },
     "deleteConfirm": {
       "title": "¿Eliminar subcontratista?",
