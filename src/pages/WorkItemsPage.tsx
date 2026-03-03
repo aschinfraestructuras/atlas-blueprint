@@ -142,7 +142,7 @@ export default function WorkItemsPage() {
     if (!deleteItem || !activeProject) return;
     setDeleting(true);
     try {
-      await workItemService.delete(deleteItem.id, activeProject.id);
+      await workItemService.softDelete(deleteItem.id, activeProject.id);
       toast({ title: t("workItems.toast.deleted") });
       refetch();
     } catch (err) {

@@ -107,12 +107,14 @@ export interface NCUpdateInput {
 
 export const ncService = {
 
-  async getByProject(projectId: string): Promise<NonConformity[]> {
-    const { data, error } = await supabase
+  async getByProject(projectId: string, includeDeleted = false): Promise<NonConformity[]> {
+    let q = supabase
       .from("non_conformities")
       .select("*")
       .eq("project_id", projectId)
       .order("created_at", { ascending: false });
+    if (!includeDeleted) q = q.eq("is_deleted", false);
+    const { data, error } = await q;
     if (error) throw error;
     return (data ?? []) as unknown as NonConformity[];
   },
@@ -243,9 +245,37 @@ export const ncService = {
       .from("non_conformities")
       .select("*", { count: "exact", head: true })
       .eq("project_id", projectId)
+      .eq("is_deleted", false)
       .neq("status", "closed")
       .neq("status", "archived");
     if (error) throw error;
     return count ?? 0;
+  },
+
+  async softDelete(id: string, projectId: string): Promise<void> {
+    const { data: { user } } = await supabase.auth.getUser();
+    const { error } = await supabase
+      .from("non_conformities")
+      .update({ is_deleted: true, deleted_at: new Date().toISOString(), deleted_by: user?.id ?? null } as any)
+      .eq("id", id);
+    if (error) throw error;
+    await auditService.log({
+      projectId, entity: "non_conformities", entityId: id,
+      action: "DELETE", module: "non_conformities",
+      description: "NC eliminada (soft)",
+    });
+  },
+
+  async restore(id: string, projectId: string): Promise<void> {
+    const { error } = await supabase
+      .from("non_conformities")
+      .update({ is_deleted: false, deleted_at: null, deleted_by: null } as any)
+      .eq("id", id);
+    if (error) throw error;
+    await auditService.log({
+      projectId, entity: "non_conformities", entityId: id,
+      action: "UPDATE", module: "non_conformities",
+      description: "NC restaurada",
+    });
   },
 };

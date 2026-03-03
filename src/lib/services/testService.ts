@@ -259,6 +259,7 @@ export const testService = {
       .from("test_results")
       .select(RESULT_SELECT)
       .eq("project_id", projectId)
+      .eq("is_deleted", false)
       .order("date", { ascending: false })
       .order("created_at", { ascending: false });
 
@@ -399,18 +400,41 @@ export const testService = {
   async archiveResult(id: string, projectId: string): Promise<void> {
     const { error } = await supabase
       .from("test_results")
-      .update({ status: "archived" } as any)
+      .update({ status: "archived", status_workflow: "archived" } as any)
       .eq("id", id)
       .eq("project_id", projectId);
     if (error) throw error;
     await auditService.log({
-      projectId,
-      entity: "test_results",
-      entityId: id,
-      action: "STATUS_CHANGE",
-      module: "tests",
-      description: "Test result archived",
-      diff: { status: "archived" },
+      projectId, entity: "test_results", entityId: id,
+      action: "ARCHIVE", module: "tests",
+      description: "Ensaio arquivado",
+    });
+  },
+
+  async softDelete(id: string, projectId: string): Promise<void> {
+    const { data: { user } } = await supabase.auth.getUser();
+    const { error } = await supabase
+      .from("test_results")
+      .update({ is_deleted: true, deleted_at: new Date().toISOString(), deleted_by: user?.id ?? null } as any)
+      .eq("id", id);
+    if (error) throw error;
+    await auditService.log({
+      projectId, entity: "test_results", entityId: id,
+      action: "DELETE", module: "tests",
+      description: "Ensaio eliminado (soft)",
+    });
+  },
+
+  async restore(id: string, projectId: string): Promise<void> {
+    const { error } = await supabase
+      .from("test_results")
+      .update({ is_deleted: false, deleted_at: null, deleted_by: null } as any)
+      .eq("id", id);
+    if (error) throw error;
+    await auditService.log({
+      projectId, entity: "test_results", entityId: id,
+      action: "UPDATE", module: "tests",
+      description: "Ensaio restaurado",
     });
   },
 };

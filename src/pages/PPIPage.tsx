@@ -154,7 +154,7 @@ export default function PPIPage() {
     if (!deleteItem || !activeProject) return;
     setDeleting(true);
     try {
-      await ppiService.deleteInstance(deleteItem, activeProject.id);
+      await ppiService.softDeleteInstance(deleteItem, activeProject.id);
       toast({ title: t("ppi.instances.toast.deleted") });
       refetch();
     } catch (err) {

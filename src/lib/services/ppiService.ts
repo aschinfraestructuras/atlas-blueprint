@@ -314,6 +314,7 @@ export const ppiService = {
         ppi_templates ( disciplina, code )
       `)
       .eq("project_id", projectId)
+      .eq("is_deleted", false)
       .order("created_at", { ascending: false });
 
     if (filters?.status)       q = q.eq("status", filters.status);
@@ -595,20 +596,31 @@ export const ppiService = {
     return data as PpiInstance;
   },
 
-  /** Delete an instance (cascade deletes items via FK). */
-  async deleteInstance(instanceId: string, projectId: string): Promise<void> {
+  /** Soft-delete an instance. */
+  async softDeleteInstance(instanceId: string, projectId: string): Promise<void> {
+    const { data: { user } } = await supabase.auth.getUser();
     const { error } = await supabase
       .from("ppi_instances")
-      .delete()
+      .update({ is_deleted: true, deleted_at: new Date().toISOString(), deleted_by: user?.id ?? null } as any)
       .eq("id", instanceId);
     if (error) throw error;
-
     await auditService.log({
-      projectId,
-      entity: "ppi_instances",
-      entityId: instanceId,
-      action: "DELETE",
-      module: "ppi",
+      projectId, entity: "ppi_instances", entityId: instanceId,
+      action: "DELETE", module: "ppi",
+      description: "PPI eliminado (soft)",
+    });
+  },
+
+  async restoreInstance(instanceId: string, projectId: string): Promise<void> {
+    const { error } = await supabase
+      .from("ppi_instances")
+      .update({ is_deleted: false, deleted_at: null, deleted_by: null } as any)
+      .eq("id", instanceId);
+    if (error) throw error;
+    await auditService.log({
+      projectId, entity: "ppi_instances", entityId: instanceId,
+      action: "UPDATE", module: "ppi",
+      description: "PPI restaurado",
     });
   },
 
@@ -619,6 +631,7 @@ export const ppiService = {
       .from("ppi_instances")
       .select("*", { count: "exact", head: true })
       .eq("project_id", projectId)
+      .eq("is_deleted", false)
       .in("status", ["draft", "in_progress", "submitted"]);
     if (error) throw error;
     return count ?? 0;

@@ -64,12 +64,14 @@ export const WORK_ITEM_STATUS_OPTIONS: { value: WorkItemStatus; label: string }[
 // ─── Service ──────────────────────────────────────────────────────────────────
 
 export const workItemService = {
-  async getByProject(projectId: string): Promise<WorkItem[]> {
-    const { data, error } = await supabase
+  async getByProject(projectId: string, includeDeleted = false): Promise<WorkItem[]> {
+    let q = supabase
       .from("work_items")
       .select("*")
       .eq("project_id", projectId)
       .order("created_at", { ascending: false });
+    if (!includeDeleted) q = q.eq("is_deleted", false);
+    const { data, error } = await q;
     if (error) throw error;
     return (data ?? []) as WorkItem[];
   },
@@ -138,10 +140,11 @@ export const workItemService = {
     return data as WorkItem;
   },
 
-  async delete(id: string, projectId: string): Promise<void> {
+  async softDelete(id: string, projectId: string): Promise<void> {
+    const { data: { user } } = await supabase.auth.getUser();
     const { error } = await supabase
       .from("work_items")
-      .delete()
+      .update({ is_deleted: true, deleted_at: new Date().toISOString(), deleted_by: user?.id ?? null } as any)
       .eq("id", id);
     if (error) throw error;
     await auditService.log({
@@ -150,6 +153,23 @@ export const workItemService = {
       entityId: id,
       action: "DELETE",
       module: "work_items",
+      description: "Work Item eliminado (soft)",
+    });
+  },
+
+  async restore(id: string, projectId: string): Promise<void> {
+    const { error } = await supabase
+      .from("work_items")
+      .update({ is_deleted: false, deleted_at: null, deleted_by: null } as any)
+      .eq("id", id);
+    if (error) throw error;
+    await auditService.log({
+      projectId,
+      entity: "work_items",
+      entityId: id,
+      action: "UPDATE",
+      module: "work_items",
+      description: "Work Item restaurado",
     });
   },
 

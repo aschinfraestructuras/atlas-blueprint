@@ -114,12 +114,14 @@ export interface SupplierEvaluationInput {
 }
 
 export const supplierService = {
-  async getByProject(projectId: string): Promise<Supplier[]> {
-    const { data, error } = await supabase
+  async getByProject(projectId: string, includeDeleted = false): Promise<Supplier[]> {
+    let q = supabase
       .from("suppliers")
       .select("*")
       .eq("project_id", projectId)
       .order("created_at", { ascending: false });
+    if (!includeDeleted) q = q.eq("is_deleted", false);
+    const { data, error } = await q;
     if (error) throw error;
     return data as Supplier[];
   },
@@ -198,6 +200,33 @@ export const supplierService = {
       projectId, entity: "suppliers", entityId: id,
       action: "STATUS_CHANGE", module: "suppliers",
       diff: { to: "active" },
+    });
+  },
+
+  async softDelete(id: string, projectId: string): Promise<void> {
+    const { data: { user } } = await supabase.auth.getUser();
+    const { error } = await supabase
+      .from("suppliers")
+      .update({ is_deleted: true, deleted_at: new Date().toISOString(), deleted_by: user?.id ?? null } as any)
+      .eq("id", id);
+    if (error) throw error;
+    await auditService.log({
+      projectId, entity: "suppliers", entityId: id,
+      action: "DELETE", module: "suppliers",
+      description: "Fornecedor eliminado (soft)",
+    });
+  },
+
+  async restore(id: string, projectId: string): Promise<void> {
+    const { error } = await supabase
+      .from("suppliers")
+      .update({ is_deleted: false, deleted_at: null, deleted_by: null } as any)
+      .eq("id", id);
+    if (error) throw error;
+    await auditService.log({
+      projectId, entity: "suppliers", entityId: id,
+      action: "UPDATE", module: "suppliers",
+      description: "Fornecedor restaurado",
     });
   },
 

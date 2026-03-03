@@ -84,7 +84,7 @@ export default function SubcontractorsPage() {
     if (!deletingSub || !activeProject) return;
     setDeleting(true);
     try {
-      await subcontractorService.delete(deletingSub.id, activeProject.id);
+      await subcontractorService.softDelete(deletingSub.id, activeProject.id);
       toast({ title: t("subcontractors.toast.deleted") });
       refetch();
     } catch (err) {
