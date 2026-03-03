@@ -96,6 +96,7 @@
     "health": "Saúde do Sistema",
     "mapMas": "Aprovação MAP/MAS",
     "expirations": "Expirações",
+    "deadlines": "Prazos",
     "qcReport": "Relatório QC"
   },
   "topbar": {
@@ -2353,6 +2354,56 @@
     "title": "Pesquisa Global",
     "placeholder": "Pesquisar por código, nome, referência…",
     "noResults": "Sem resultados."
+  },
+  "deadlines": {
+    "title": "Centro de Prazos Críticos",
+    "subtitle": "Consolidação de todos os prazos, expirações e atrasos do projeto",
+    "empty": "Sem prazos no período selecionado.",
+    "days": "dias",
+    "generateAlerts": "Gerar alertas",
+    "searchPlaceholder": "Pesquisar entidade, documento…",
+    "kpi": {
+      "overdue": "Atrasados",
+      "in7d": "Vence em 7d",
+      "in30d": "Vence em 30d",
+      "total": "Total no Período"
+    },
+    "filters": {
+      "allSeverities": "Todas as severidades",
+      "sources": "Fontes",
+      "sourceTypes": "Tipos de fonte"
+    },
+    "severity": {
+      "critical": "Crítico",
+      "warning": "Aviso",
+      "info": "Informação"
+    },
+    "sources": {
+      "supplier_doc": "Doc. Fornecedor",
+      "material_doc": "Doc. Material",
+      "calibration": "Calibração",
+      "nc_due": "NC (prazo)",
+      "rfi_due": "RFI (prazo)",
+      "tech_office_due": "Of. Técnica (prazo)",
+      "planning_due": "Planeamento (prazo)"
+    },
+    "table": {
+      "date": "Data",
+      "type": "Tipo",
+      "entity": "Entidade",
+      "status": "Estado",
+      "days": "Dias",
+      "severity": "Severidade"
+    }
+  },
+  "notifications": {
+    "title": "Notificações",
+    "empty": "Sem notificações.",
+    "refresh": "Atualizar alertas",
+    "markAllRead": "Marcar todas como lidas",
+    "viewAll": "Ver todos os prazos",
+    "generated": "{{count}} alertas gerados.",
+    "generateError": "Erro ao gerar alertas."
   }
 }
 

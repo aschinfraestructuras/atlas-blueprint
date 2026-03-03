@@ -41,6 +41,7 @@ import PlanningPage from "./pages/PlanningPage";
 import ActivityDetailPage from "./pages/ActivityDetailPage";
 import MapMasPage from "./pages/MapMasPage";
 import ExpirationsPage from "./pages/ExpirationsPage";
+import DeadlinesPage from "./pages/DeadlinesPage";
 import QCReportPage from "./pages/QCReportPage";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 const queryClient = new QueryClient();
@@ -97,6 +98,7 @@ const App = () => (
               <Route path="/materials/:id" element={<ProtectedLayout><MaterialDetailPage /></ProtectedLayout>} />
               <Route path="/materials/map-mas" element={<ProtectedLayout><MapMasPage /></ProtectedLayout>} />
               <Route path="/expirations" element={<ProtectedLayout><ExpirationsPage /></ProtectedLayout>} />
+              <Route path="/deadlines" element={<ProtectedLayout><DeadlinesPage /></ProtectedLayout>} />
               <Route path="/reports/qc" element={<ProtectedLayout><QCReportPage /></ProtectedLayout>} />
               <Route path="/topography" element={<ProtectedLayout><TopographyPage /></ProtectedLayout>} />
               <Route path="/planning" element={<ProtectedLayout><PlanningPage /></ProtectedLayout>} />

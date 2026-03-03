@@ -869,6 +869,60 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          is_read: boolean
+          link_entity_id: string | null
+          link_entity_type: string | null
+          project_id: string
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          link_entity_id?: string | null
+          link_entity_type?: string | null
+          project_id: string
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          link_entity_id?: string | null
+          link_entity_type?: string | null
+          project_id?: string
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
       planning_activities: {
         Row: {
           actual_end: string | null
@@ -3340,6 +3394,23 @@ export type Database = {
           },
         ]
       }
+      vw_deadlines: {
+        Row: {
+          assigned_to: string | null
+          days_remaining: number | null
+          doc_type: string | null
+          document_id: string | null
+          due_date: string | null
+          entity_id: string | null
+          entity_label: string | null
+          id: string | null
+          project_id: string | null
+          severity: string | null
+          source: string | null
+          status: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       fn_accept_project_invite: { Args: { p_token: string }; Returns: Json }
@@ -3827,6 +3898,10 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      fn_generate_deadline_notifications: {
+        Args: { p_days_ahead?: number; p_project_id: string }
+        Returns: number
       }
       fn_invite_project_member: {
         Args: { p_email: string; p_project_id: string; p_role?: string }
