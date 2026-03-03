@@ -1154,6 +1154,8 @@
   "technicalOffice": {
     "newItem": "Novo Item",
     "newRfi": "Novo RFI",
+    "subtitle": "RFIs, Submittals, Transmittals e Clarificações",
+    "searchPlaceholder": "Pesquisar código, assunto…",
     "table": {
       "type": "Tipo",
       "title": "Título",
@@ -1166,7 +1168,12 @@
     "types": {
       "RFI": "RFI",
       "Submittal": "Submittal",
-      "Clarification": "Clarificação"
+      "SUBMITTAL": "Submittal",
+      "Clarification": "Pedido Esclarecimento",
+      "CLARIFICATION": "Pedido Esclarecimento",
+      "TRANSMITTAL": "Transmittal",
+      "APPROVAL_REQUEST": "Pedido de Aprovação",
+      "CHANGE_NOTICE": "Alteração / VO"
     },
     "priority": {
       "low": "Baixa",
@@ -1175,18 +1182,40 @@
       "urgent": "Urgente"
     },
     "status": {
+      "draft": "Rascunho",
       "open": "Aberto",
       "in_review": "Em Análise",
-      "answered": "Respondido",
       "in_progress": "Em Curso",
+      "responded": "Respondido",
+      "answered": "Respondido",
       "closed": "Fechado",
       "cancelled": "Cancelado",
+      "archived": "Arquivado",
       "awaiting_response": "Aguarda Resposta"
     },
     "filters": {
       "allStatuses": "Todos os estados",
       "allPriorities": "Todas as prioridades",
+      "allTypes": "Todos os tipos",
       "overdue": "⚠ Atrasados"
+    },
+    "tabs": {
+      "all": "Todos",
+      "others": "Outros"
+    },
+    "kpi": {
+      "open": "Abertos",
+      "inReview": "Em Análise",
+      "overdue": "Atrasados",
+      "closed30": "Fechados (30d)"
+    },
+    "detail": {
+      "tabDetails": "Detalhes",
+      "tabMessages": "Mensagens",
+      "tabAttachments": "Anexos",
+      "recipient": "Destinatário",
+      "respondedAt": "Respondido em",
+      "noDescription": "Sem descrição."
     },
     "rfi": {
       "createTitle": "Novo RFI",
@@ -1213,7 +1242,7 @@
       "titleEdit": "Editar Item",
       "type": "Tipo",
       "title": "Título",
-      "titlePlaceholder": "ex: RFI sobre espessura de betão",
+      "titlePlaceholder": "ex: Submittal sobre betão armado",
       "descriptionPlaceholder": "Descreva o pedido ou clarificação…",
       "dueDate": "Prazo de resposta",
       "createBtn": "Criar item"
@@ -1221,6 +1250,7 @@
     "toast": {
       "created": "Item criado com sucesso.",
       "updated": "Item atualizado com sucesso.",
+      "deleted": "Item eliminado.",
       "rfiCreated": "RFI criado com sucesso.",
       "rfiUpdated": "RFI atualizado.",
       "rfiDeleted": "RFI eliminado.",

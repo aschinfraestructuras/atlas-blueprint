@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useProject } from "@/contexts/ProjectContext";
-import { technicalOfficeService, type TechnicalOfficeItem } from "@/lib/services/technicalOfficeService";
+import { technicalOfficeService, type TechnicalOfficeItem, type TechOfficeMessage } from "@/lib/services/technicalOfficeService";
 
 export function useTechnicalOffice() {
   const { activeProject } = useProject();
@@ -25,4 +25,26 @@ export function useTechnicalOffice() {
   useEffect(() => { fetch(); }, [fetch]);
 
   return { data, loading, error, refetch: fetch };
+}
+
+export function useTechOfficeMessages(itemId: string | null) {
+  const [messages, setMessages] = useState<TechOfficeMessage[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const fetch = useCallback(async () => {
+    if (!itemId) { setMessages([]); return; }
+    setLoading(true);
+    try {
+      const result = await technicalOfficeService.getMessages(itemId);
+      setMessages(result);
+    } catch {
+      setMessages([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [itemId]);
+
+  useEffect(() => { fetch(); }, [fetch]);
+
+  return { messages, loading, refetch: fetch };
 }
