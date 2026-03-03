@@ -19,8 +19,19 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 import {
-  Clock, AlertTriangle, Truck, Package, Crosshair, Inbox,
-  CalendarClock, Construction, Eye, Search, RefreshCw, Filter, Bell,
+  Clock,
+  AlertTriangle,
+  Truck,
+  Package,
+  Crosshair,
+  Inbox,
+  CalendarClock,
+  Construction,
+  Eye,
+  Search,
+  RefreshCw,
+  Filter,
+  Bell,
 } from "lucide-react";
 
 const SOURCE_ICONS: Record<string, React.ElementType> = {
@@ -36,11 +47,14 @@ const SOURCE_ICONS: Record<string, React.ElementType> = {
 const SOURCE_ROUTES: Record<string, string> = {
   supplier_doc: "/suppliers",
   material_doc: "/materials",
+  subcontractor_doc: "/subcontractors",
   calibration: "/topography",
   nc_due: "/non-conformities",
-  rfi_due: "/technical-office",
-  tech_office_due: "/technical-office",
+  rfi_due: "/technical-office/rfis",
+  tech_office_due: "/technical-office/items",
   planning_due: "/planning/activities",
+  ppi_pending: "/ppi",
+  ppi_approval: "/ppi",
 };
 
 const SEVERITY_COLORS: Record<string, string> = {
@@ -50,7 +64,16 @@ const SEVERITY_COLORS: Record<string, string> = {
 };
 
 const ALL_SOURCES = [
-  "supplier_doc", "material_doc", "calibration", "nc_due", "rfi_due", "tech_office_due", "planning_due",
+  "supplier_doc",
+  "material_doc",
+  "calibration",
+  "nc_due",
+  "rfi_due",
+  "tech_office_due",
+  "planning_due",
+  "ppi_pending",
+  "ppi_approval",
+  "subcontractor_doc",
 ] as const;
 
 export default function DeadlinesPage() {
@@ -67,45 +90,56 @@ export default function DeadlinesPage() {
   const [generating, setGenerating] = useState(false);
 
   const fetchData = useCallback(async () => {
-    if (!activeProject) { setItems([]); setLoading(false); return; }
+    if (!activeProject) {
+      setItems([]);
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     try {
       const result = await deadlineService.getAll(activeProject.id, Number(daysFilter));
       setItems(result);
-    } catch { /* swallow */ }
-    finally { setLoading(false); }
+    } catch {
+      /* swallow */
+    } finally {
+      setLoading(false);
+    }
   }, [activeProject, daysFilter]);
 
-  useEffect(() => { fetchData(); }, [fetchData]);
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const filtered = useMemo(() => {
     let result = items;
     if (activeSources.size < ALL_SOURCES.length) {
-      result = result.filter(i => activeSources.has(i.source));
+      result = result.filter((i) => activeSources.has(i.source));
     }
     if (severityFilter !== "all") {
-      result = result.filter(i => i.severity === severityFilter);
+      result = result.filter((i) => i.severity === severityFilter);
     }
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
-      result = result.filter(i =>
-        i.entity_label?.toLowerCase().includes(q) ||
-        i.doc_type?.toLowerCase().includes(q) ||
-        i.status?.toLowerCase().includes(q)
+      result = result.filter(
+        (i) =>
+          i.entity_label?.toLowerCase().includes(q) ||
+          i.doc_type?.toLowerCase().includes(q) ||
+          i.status?.toLowerCase().includes(q),
       );
     }
     return result;
   }, [items, activeSources, severityFilter, searchQuery]);
 
   // KPIs
-  const overdue = items.filter(i => i.days_remaining < 0).length;
-  const in7d = items.filter(i => i.days_remaining >= 0 && i.days_remaining <= 7).length;
-  const in30d = items.filter(i => i.days_remaining >= 0 && i.days_remaining <= 30).length;
+  const overdue = items.filter((i) => i.days_remaining < 0).length;
+  const in7d = items.filter((i) => i.days_remaining >= 0 && i.days_remaining <= 7).length;
+  const in30d = items.filter((i) => i.days_remaining >= 0 && i.days_remaining <= 30).length;
 
   const toggleSource = (src: string) => {
-    setActiveSources(prev => {
+    setActiveSources((prev) => {
       const next = new Set(prev);
-      if (next.has(src)) next.delete(src); else next.add(src);
+      if (next.has(src)) next.delete(src);
+      else next.add(src);
       return next;
     });
   };
@@ -150,13 +184,20 @@ export default function DeadlinesPage() {
         {[
           { label: t("deadlines.kpi.overdue"), value: overdue, color: "text-destructive", bg: "bg-destructive/10" },
           { label: t("deadlines.kpi.in7d"), value: in7d, color: "text-destructive", bg: "bg-destructive/10" },
-          { label: t("deadlines.kpi.in30d"), value: in30d, color: "text-yellow-600 dark:text-yellow-400", bg: "bg-yellow-500/10" },
+          {
+            label: t("deadlines.kpi.in30d"),
+            value: in30d,
+            color: "text-yellow-600 dark:text-yellow-400",
+            bg: "bg-yellow-500/10",
+          },
           { label: t("deadlines.kpi.total"), value: items.length, color: "text-foreground", bg: "bg-muted" },
-        ].map(kpi => (
+        ].map((kpi) => (
           <Card key={kpi.label} className="border-0 bg-card shadow-card">
             <CardContent className="p-4 text-center">
               <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{kpi.label}</p>
-              <p className={cn("text-2xl font-black tabular-nums mt-1", kpi.value > 0 ? kpi.color : "text-foreground")}>{loading ? "—" : kpi.value}</p>
+              <p className={cn("text-2xl font-black tabular-nums mt-1", kpi.value > 0 ? kpi.color : "text-foreground")}>
+                {loading ? "—" : kpi.value}
+              </p>
             </CardContent>
           </Card>
         ))}
@@ -169,13 +210,15 @@ export default function DeadlinesPage() {
           <Input
             placeholder={t("deadlines.searchPlaceholder")}
             value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
+            onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-8 h-9 w-[200px] text-sm"
           />
         </div>
 
         <Select value={daysFilter} onValueChange={setDaysFilter}>
-          <SelectTrigger className="w-[130px] h-9 text-sm"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="w-[130px] h-9 text-sm">
+            <SelectValue />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value="7">7 {t("deadlines.days")}</SelectItem>
             <SelectItem value="15">15 {t("deadlines.days")}</SelectItem>
@@ -186,7 +229,9 @@ export default function DeadlinesPage() {
         </Select>
 
         <Select value={severityFilter} onValueChange={setSeverityFilter}>
-          <SelectTrigger className="w-[140px] h-9 text-sm"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="w-[140px] h-9 text-sm">
+            <SelectValue />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t("deadlines.filters.allSeverities")}</SelectItem>
             <SelectItem value="critical">{t("deadlines.severity.critical")}</SelectItem>
@@ -201,13 +246,15 @@ export default function DeadlinesPage() {
               <Filter className="h-3.5 w-3.5" />
               {t("deadlines.filters.sources")}
               {activeSources.size < ALL_SOURCES.length && (
-                <Badge variant="secondary" className="ml-1 text-[10px] px-1.5 py-0">{activeSources.size}</Badge>
+                <Badge variant="secondary" className="ml-1 text-[10px] px-1.5 py-0">
+                  {activeSources.size}
+                </Badge>
               )}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-56 p-3">
             <p className="text-xs font-semibold text-muted-foreground mb-2">{t("deadlines.filters.sourceTypes")}</p>
-            {ALL_SOURCES.map(src => (
+            {ALL_SOURCES.map((src) => (
               <label key={src} className="flex items-center gap-2 py-1 cursor-pointer">
                 <Checkbox checked={activeSources.has(src)} onCheckedChange={() => toggleSource(src)} />
                 <span className="text-sm">{t(`deadlines.sources.${src}`)}</span>
@@ -220,7 +267,9 @@ export default function DeadlinesPage() {
       {/* Table */}
       {loading ? (
         <div className="space-y-2">
-          {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Skeleton key={i} className="h-12 w-full" />
+          ))}
         </div>
       ) : filtered.length === 0 ? (
         <EmptyState icon={Clock} subtitleKey="deadlines.empty" />
@@ -230,21 +279,35 @@ export default function DeadlinesPage() {
             <TableHeader>
               <TableRow className="bg-muted/40">
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground w-8" />
-                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("deadlines.table.date")}</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("deadlines.table.type")}</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("deadlines.table.entity")}</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("deadlines.table.status")}</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("deadlines.table.days")}</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("deadlines.table.severity")}</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  {t("deadlines.table.date")}
+                </TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  {t("deadlines.table.type")}
+                </TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  {t("deadlines.table.entity")}
+                </TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  {t("deadlines.table.status")}
+                </TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  {t("deadlines.table.days")}
+                </TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  {t("deadlines.table.severity")}
+                </TableHead>
                 <TableHead className="w-10" />
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filtered.map(item => {
+              {filtered.map((item) => {
                 const Icon = SOURCE_ICONS[item.source] ?? Clock;
                 return (
                   <TableRow key={`${item.source}-${item.id}`} className="hover:bg-muted/20">
-                    <TableCell><Icon className="h-3.5 w-3.5 text-muted-foreground" /></TableCell>
+                    <TableCell>
+                      <Icon className="h-3.5 w-3.5 text-muted-foreground" />
+                    </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
                       {item.due_date ? new Date(item.due_date).toLocaleDateString() : "—"}
                     </TableCell>
@@ -257,12 +320,18 @@ export default function DeadlinesPage() {
                       {item.entity_label}
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">{item.status}</TableCell>
-                    <TableCell className={cn(
-                      "text-sm font-bold tabular-nums",
-                      item.days_remaining < 0 ? "text-destructive" :
-                      item.days_remaining <= 7 ? "text-destructive" :
-                      item.days_remaining <= 30 ? "text-yellow-600 dark:text-yellow-400" : "text-foreground"
-                    )}>
+                    <TableCell
+                      className={cn(
+                        "text-sm font-bold tabular-nums",
+                        item.days_remaining < 0
+                          ? "text-destructive"
+                          : item.days_remaining <= 7
+                            ? "text-destructive"
+                            : item.days_remaining <= 30
+                              ? "text-yellow-600 dark:text-yellow-400"
+                              : "text-foreground",
+                      )}
+                    >
                       {item.days_remaining}d
                     </TableCell>
                     <TableCell>
@@ -271,7 +340,13 @@ export default function DeadlinesPage() {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleNavigate(item)} title={t("common.view")}>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7"
+                        onClick={() => handleNavigate(item)}
+                        title={t("common.view")}
+                      >
                         <Eye className="h-3.5 w-3.5" />
                       </Button>
                     </TableCell>
