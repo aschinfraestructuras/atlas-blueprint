@@ -2739,7 +2739,8 @@
       "nc_due": "NC (plazo)",
       "rfi_due": "RFI (plazo)",
       "tech_office_due": "Of. Técnica (plazo)",
-      "planning_due": "Planificación (plazo)"
+      "planning_due": "Planificación (plazo)",
+      "subcontractor_doc": "Doc. Subcontratista"
     },
     "table": {
       "date": "Fecha",

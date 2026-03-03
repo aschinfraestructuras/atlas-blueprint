@@ -2794,7 +2794,8 @@
       "nc_due": "NC (prazo)",
       "rfi_due": "RFI (prazo)",
       "tech_office_due": "Of. Técnica (prazo)",
-      "planning_due": "Planeamento (prazo)"
+      "planning_due": "Planeamento (prazo)",
+      "subcontractor_doc": "Doc. Subcontratado"
     },
     "table": {
       "date": "Data",
