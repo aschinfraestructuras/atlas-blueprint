@@ -10,19 +10,25 @@ import {
   type MaterialDetailMetrics,
   type WorkItemMaterial,
 } from "@/lib/services/materialService";
+import { exportMaterialPdf } from "@/lib/services/materialExportService";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, Package, FileText, Truck, FlaskConical, AlertTriangle, History, Construction, Plus } from "lucide-react";
+import { ArrowLeft, Package, Plus, History, CheckCircle2, XCircle, SendHorizontal, AlertTriangle, Clock, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { MaterialFormDialog } from "@/components/materials/MaterialFormDialog";
 import { LinkedDocumentsPanel } from "@/components/documents/LinkedDocumentsPanel";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
+import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { classifySupabaseError } from "@/lib/utils/supabaseError";
 
 const STATUS_COLORS: Record<string, string> = {
   active: "bg-primary/15 text-primary",
@@ -30,12 +36,21 @@ const STATUS_COLORS: Record<string, string> = {
   archived: "bg-muted text-muted-foreground",
 };
 
+const APPROVAL_COLORS: Record<string, string> = {
+  pending: "bg-muted text-muted-foreground",
+  submitted: "bg-accent text-accent-foreground",
+  in_review: "bg-primary/15 text-primary",
+  approved: "bg-chart-2/15 text-chart-2",
+  rejected: "bg-destructive/10 text-destructive",
+  conditional: "bg-amber-500/15 text-amber-600",
+};
+
 export default function MaterialDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { activeProject } = useProject();
-  const { canEdit, canCreate } = useProjectRole();
+  const { canEdit, canCreate, canValidate } = useProjectRole();
 
   const [material, setMaterial] = useState<Material | null>(null);
   const [metrics, setMetrics] = useState<MaterialDetailMetrics | null>(null);
@@ -47,6 +62,8 @@ export default function MaterialDetailPage() {
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [editOpen, setEditOpen] = useState(false);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [rejectReason, setRejectReason] = useState("");
 
   const fetchAll = useCallback(async () => {
     if (!id || !activeProject) return;
@@ -65,15 +82,13 @@ export default function MaterialDetailPage() {
       setSupplierLinks(sl);
       setWorkItemLinks(wl);
 
-      const { data: ncData } = await (supabase
-        .from("non_conformities") as any)
+      const { data: ncData } = await (supabase.from("non_conformities") as any)
         .select("id, code, title, severity, status, detected_at")
         .eq("material_id", id)
         .order("detected_at", { ascending: false });
       setNcs(ncData ?? []);
 
-      const { data: trData } = await (supabase
-        .from("test_results") as any)
+      const { data: trData } = await (supabase.from("test_results") as any)
         .select("id, code, date, status, pass_fail, sample_ref")
         .eq("material_id", id)
         .order("date", { ascending: false });
@@ -108,13 +123,43 @@ export default function MaterialDetailPage() {
 
   if (!material) return <div className="text-center py-12 text-muted-foreground">{t("common.noData")}</div>;
 
-  const handleExportCsv = () => {
-    const headers = [t("materials.table.code"), t("common.name"), t("materials.form.category"), t("materials.form.specification"), t("materials.form.unit"), t("common.status")];
-    const row = [material.code, material.name, material.category, material.specification ?? "", material.unit ?? "", material.status];
-    const csv = [headers.join(";"), row.join(";")].join("\n");
-    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a"); a.href = url; a.download = `MAT_${activeProject.code}_${material.code}.csv`; a.click(); URL.revokeObjectURL(url);
+  const handleApprovalAction = async (action: "submit" | "review" | "approve" | "reject" | "conditional") => {
+    setActionLoading(true);
+    try {
+      if (action === "submit") await materialService.submitForApproval(material.id, activeProject.id);
+      else if (action === "review") await materialService.sendToReview(material.id, activeProject.id);
+      else if (action === "approve") await materialService.approve(material.id, activeProject.id);
+      else if (action === "reject") {
+        if (!rejectReason.trim()) { toast({ title: t("materials.approval.reasonRequired"), variant: "destructive" }); setActionLoading(false); return; }
+        await materialService.reject(material.id, activeProject.id, rejectReason.trim());
+      }
+      else if (action === "conditional") {
+        if (!rejectReason.trim()) { toast({ title: t("materials.approval.reasonRequired"), variant: "destructive" }); setActionLoading(false); return; }
+        await materialService.setConditional(material.id, activeProject.id, rejectReason.trim());
+      }
+      toast({ title: t(`materials.approval.toast.${action}`) });
+      setRejectReason("");
+      fetchAll();
+    } catch (err) {
+      const info = classifySupabaseError(err, t);
+      toast({ title: info.title, description: info.description ?? info.raw, variant: "destructive" });
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleExportPdf = () => {
+    exportMaterialPdf({
+      material,
+      metrics,
+      docs,
+      workItemLinks,
+      ncs: ncs.map(nc => ({ code: nc.code ?? "", title: nc.title ?? "", severity: nc.severity ?? "", status: nc.status ?? "" })),
+      tests: tests.map(tr => ({ code: tr.code ?? "", date: tr.date, pass_fail: tr.pass_fail ?? "", status: tr.status ?? "" })),
+      projectName: activeProject.name,
+      projectCode: activeProject.code,
+      t,
+    });
   };
 
   return (
@@ -125,15 +170,18 @@ export default function MaterialDetailPage() {
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <Package className="h-5 w-5 text-muted-foreground" />
             <h1 className="text-xl font-bold text-foreground truncate">{material.name}</h1>
             <Badge variant="secondary" className={cn("text-xs", STATUS_COLORS[material.status] ?? "")}>{t(`materials.status.${material.status}`)}</Badge>
+            <Badge variant="secondary" className={cn("text-xs", APPROVAL_COLORS[material.approval_status] ?? "")}>
+              {t(`materials.approval.statuses.${material.approval_status}`)}
+            </Badge>
           </div>
           <p className="text-sm text-muted-foreground mt-0.5">{material.code} · {t(`materials.categories.${material.category}`, { defaultValue: material.category })}</p>
         </div>
         <div className="flex gap-2">
-          <ReportExportMenu options={[{ label: "CSV", icon: "csv" as const, action: handleExportCsv }]} />
+          <ReportExportMenu options={[{ label: "PDF", icon: "pdf" as const, action: handleExportPdf }]} />
           {canEdit && (
             <Button size="sm" variant="outline" onClick={() => setEditOpen(true)}>{t("common.edit")}</Button>
           )}
@@ -164,8 +212,9 @@ export default function MaterialDetailPage() {
 
       {/* Tabs */}
       <Tabs defaultValue="summary" className="space-y-4">
-        <TabsList className="bg-muted/50">
+        <TabsList className="bg-muted/50 flex-wrap">
           <TabsTrigger value="summary">{t("materials.detail.tabs.summary")}</TabsTrigger>
+          <TabsTrigger value="approval">{t("materials.detail.tabs.approval")}</TabsTrigger>
           <TabsTrigger value="suppliers">{t("materials.detail.tabs.suppliers")}</TabsTrigger>
           <TabsTrigger value="documents">{t("materials.detail.tabs.documents")}</TabsTrigger>
           <TabsTrigger value="tests">{t("materials.detail.tabs.tests")}</TabsTrigger>
@@ -185,12 +234,133 @@ export default function MaterialDetailPage() {
                 [t("materials.form.unit"), material.unit ?? "—"],
                 [t("materials.form.normativeRefs"), material.normative_refs ?? "—"],
                 [t("materials.form.acceptanceCriteria"), material.acceptance_criteria ?? "—"],
+                [t("materials.approval.required"), material.approval_required ? t("common.yes") : t("common.no")],
               ].map(([label, value], i) => (
                 <div key={i}>
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{label}</p>
                   <p className="text-sm text-foreground mt-0.5 whitespace-pre-wrap">{value}</p>
                 </div>
               ))}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Approval (MAP/MAS) */}
+        <TabsContent value="approval">
+          <Card className="border-0 shadow-card">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4" />
+                {t("materials.approval.title")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Timeline */}
+              <div className="flex items-center gap-2 flex-wrap">
+                {["pending", "submitted", "in_review", "approved"].map((step, i) => (
+                  <div key={step} className="flex items-center gap-1">
+                    <Badge variant="secondary" className={cn("text-xs", material.approval_status === step ? APPROVAL_COLORS[step] : "bg-muted/40 text-muted-foreground")}>
+                      {t(`materials.approval.statuses.${step}`)}
+                    </Badge>
+                    {i < 3 && <span className="text-muted-foreground">→</span>}
+                  </div>
+                ))}
+              </div>
+
+              {/* Current status details */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("materials.approval.currentStatus")}</p>
+                  <Badge variant="secondary" className={cn("text-sm mt-1", APPROVAL_COLORS[material.approval_status] ?? "")}>
+                    {t(`materials.approval.statuses.${material.approval_status}`)}
+                  </Badge>
+                </div>
+                {material.submitted_at && (
+                  <div>
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("materials.approval.submittedAt")}</p>
+                    <p className="text-sm text-foreground mt-0.5">{new Date(material.submitted_at).toLocaleString()}</p>
+                  </div>
+                )}
+                {material.approved_at && (
+                  <div>
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("materials.approval.approvedAt")}</p>
+                    <p className="text-sm text-foreground mt-0.5">{new Date(material.approved_at).toLocaleString()}</p>
+                  </div>
+                )}
+                {material.rejection_reason && (
+                  <div className="md:col-span-2">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("materials.approval.rejectionReason")}</p>
+                    <p className="text-sm text-destructive mt-0.5">{material.rejection_reason}</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Approval required toggle */}
+              {canEdit && (
+                <div className="flex items-center gap-3 pt-2 border-t border-border">
+                  <Switch
+                    checked={material.approval_required}
+                    onCheckedChange={async (checked) => {
+                      try {
+                        await materialService.update(material.id, activeProject.id, { approval_required: checked });
+                        fetchAll();
+                      } catch { /* */ }
+                    }}
+                  />
+                  <Label className="text-sm">{t("materials.approval.requireApproval")}</Label>
+                </div>
+              )}
+
+              {/* Rejection / Conditional reason input */}
+              {canValidate && (material.approval_status === "submitted" || material.approval_status === "in_review") && (
+                <div className="space-y-2 pt-2 border-t border-border">
+                  <Label className="text-xs">{t("materials.approval.notesLabel")}</Label>
+                  <Textarea
+                    value={rejectReason}
+                    onChange={e => setRejectReason(e.target.value)}
+                    placeholder={t("materials.approval.notesPlaceholder")}
+                    rows={2}
+                  />
+                </div>
+              )}
+
+              {/* Action buttons */}
+              <div className="flex gap-2 flex-wrap pt-2">
+                {canEdit && material.approval_status === "pending" && (
+                  <Button size="sm" className="gap-1.5" onClick={() => handleApprovalAction("submit")} disabled={actionLoading}>
+                    {actionLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <SendHorizontal className="h-3.5 w-3.5" />}
+                    {t("materials.approval.actions.submit")}
+                  </Button>
+                )}
+                {canEdit && material.approval_status === "submitted" && (
+                  <Button size="sm" variant="outline" className="gap-1.5" onClick={() => handleApprovalAction("review")} disabled={actionLoading}>
+                    <Clock className="h-3.5 w-3.5" />
+                    {t("materials.approval.actions.sendToReview")}
+                  </Button>
+                )}
+                {canValidate && (material.approval_status === "submitted" || material.approval_status === "in_review") && (
+                  <>
+                    <Button size="sm" className="gap-1.5 bg-chart-2 hover:bg-chart-2/90" onClick={() => handleApprovalAction("approve")} disabled={actionLoading}>
+                      <CheckCircle2 className="h-3.5 w-3.5" />
+                      {t("materials.approval.actions.approve")}
+                    </Button>
+                    <Button size="sm" variant="outline" className="gap-1.5 text-amber-600 border-amber-600/30" onClick={() => handleApprovalAction("conditional")} disabled={actionLoading}>
+                      <AlertTriangle className="h-3.5 w-3.5" />
+                      {t("materials.approval.actions.conditional")}
+                    </Button>
+                    <Button size="sm" variant="destructive" className="gap-1.5" onClick={() => handleApprovalAction("reject")} disabled={actionLoading}>
+                      <XCircle className="h-3.5 w-3.5" />
+                      {t("materials.approval.actions.reject")}
+                    </Button>
+                  </>
+                )}
+                {canEdit && (material.approval_status === "rejected" || material.approval_status === "conditional") && (
+                  <Button size="sm" className="gap-1.5" onClick={() => handleApprovalAction("submit")} disabled={actionLoading}>
+                    <SendHorizontal className="h-3.5 w-3.5" />
+                    {t("materials.approval.actions.resubmit")}
+                  </Button>
+                )}
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -231,6 +401,40 @@ export default function MaterialDetailPage() {
         {/* Documents */}
         <TabsContent value="documents">
           <LinkedDocumentsPanel entityType="material" entityId={material.id} projectId={activeProject.id} />
+          {docs.length > 0 && (
+            <Card className="border-0 shadow-card mt-4">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm">{t("materials.detail.materialDocs")}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>{t("materials.detail.docType")}</TableHead>
+                      <TableHead>{t("materials.detail.validFrom")}</TableHead>
+                      <TableHead>{t("materials.detail.validTo")}</TableHead>
+                      <TableHead>{t("common.status")}</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {docs.map(d => (
+                      <TableRow key={d.id}>
+                        <TableCell className="text-sm">{t(`materials.docTypes.${d.doc_type}`, { defaultValue: d.doc_type })}</TableCell>
+                        <TableCell className="text-sm">{d.valid_from ? new Date(d.valid_from).toLocaleDateString() : "—"}</TableCell>
+                        <TableCell className="text-sm">{d.valid_to ? new Date(d.valid_to).toLocaleDateString() : "—"}</TableCell>
+                        <TableCell>
+                          <Badge variant="secondary" className={cn("text-xs",
+                            d.status === "expired" ? "bg-destructive/10 text-destructive" :
+                            d.status === "valid" ? "bg-primary/15 text-primary" : ""
+                          )}>{t(`materials.docStatuses.${d.status}`, { defaultValue: d.status })}</Badge>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
 
         {/* Tests */}

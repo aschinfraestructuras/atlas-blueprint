@@ -14,9 +14,21 @@ export interface Material {
   normative_refs: string | null;
   acceptance_criteria: string | null;
   status: string;
+  // Approval workflow
+  approval_status: string;
+  approval_required: boolean;
+  approved_at: string | null;
+  approved_by: string | null;
+  submitted_at: string | null;
+  submitted_by: string | null;
+  rejection_reason: string | null;
+  current_approved_doc_id: string | null;
+  supplier_id: string | null;
+  // Metadata
   created_by: string | null;
   created_at: string;
   updated_at: string;
+  is_deleted: boolean;
 }
 
 export interface MaterialInput {
@@ -28,6 +40,8 @@ export interface MaterialInput {
   unit?: string;
   normative_refs?: string;
   acceptance_criteria?: string;
+  supplier_id?: string;
+  approval_required?: boolean;
 }
 
 export interface MaterialDocument {
@@ -36,7 +50,9 @@ export interface MaterialDocument {
   material_id: string;
   document_id: string;
   doc_type: string;
+  valid_from: string | null;
   valid_to: string | null;
+  status: string;
   created_at: string;
 }
 
@@ -110,10 +126,22 @@ export const materialService = {
       p_acceptance_criteria: input.acceptance_criteria ?? null,
     });
     if (error) throw error;
-    return data as unknown as Material;
+
+    // Update additional fields not in RPC
+    const mat = data as unknown as Material;
+    if (input.supplier_id || input.approval_required !== undefined) {
+      const updates: Record<string, unknown> = {};
+      if (input.supplier_id) updates.supplier_id = input.supplier_id;
+      if (input.approval_required !== undefined) updates.approval_required = input.approval_required;
+      await supabase.from("materials" as any).update(updates).eq("id", mat.id);
+    }
+    return mat;
   },
 
-  async update(id: string, projectId: string, updates: Partial<Omit<MaterialInput, "project_id">>): Promise<Material> {
+  async update(id: string, projectId: string, updates: Partial<Omit<MaterialInput, "project_id">> & {
+    approval_required?: boolean;
+    supplier_id?: string | null;
+  }): Promise<Material> {
     const { data, error } = await supabase
       .from("materials" as any)
       .update(updates)
@@ -129,6 +157,109 @@ export const materialService = {
     return data as unknown as Material;
   },
 
+  // ── Approval Workflow ───────────────────────────────────────────
+  async submitForApproval(id: string, projectId: string): Promise<Material> {
+    const { data: { user } } = await supabase.auth.getUser();
+    const { data, error } = await supabase
+      .from("materials" as any)
+      .update({
+        approval_status: "submitted",
+        submitted_at: new Date().toISOString(),
+        submitted_by: user?.id,
+        rejection_reason: null,
+      })
+      .eq("id", id)
+      .select()
+      .single();
+    if (error) throw error;
+    await auditService.log({
+      projectId, entity: "materials", entityId: id,
+      action: "SUBMIT", module: "materials",
+      description: "Material submetido para aprovação MAP/MAS",
+    });
+    return data as unknown as Material;
+  },
+
+  async sendToReview(id: string, projectId: string): Promise<Material> {
+    const { data, error } = await supabase
+      .from("materials" as any)
+      .update({ approval_status: "in_review" })
+      .eq("id", id)
+      .select()
+      .single();
+    if (error) throw error;
+    await auditService.log({
+      projectId, entity: "materials", entityId: id,
+      action: "STATUS_CHANGE", module: "materials",
+      description: "Material enviado para revisão",
+      diff: { approval_status: "in_review" },
+    });
+    return data as unknown as Material;
+  },
+
+  async approve(id: string, projectId: string): Promise<Material> {
+    const { data: { user } } = await supabase.auth.getUser();
+    const { data, error } = await supabase
+      .from("materials" as any)
+      .update({
+        approval_status: "approved",
+        approved_at: new Date().toISOString(),
+        approved_by: user?.id,
+        rejection_reason: null,
+      })
+      .eq("id", id)
+      .select()
+      .single();
+    if (error) throw error;
+    await auditService.log({
+      projectId, entity: "materials", entityId: id,
+      action: "APPROVE", module: "materials",
+      description: "Material aprovado (MAP/MAS)",
+    });
+    return data as unknown as Material;
+  },
+
+  async reject(id: string, projectId: string, reason: string): Promise<Material> {
+    const { data, error } = await supabase
+      .from("materials" as any)
+      .update({
+        approval_status: "rejected",
+        rejection_reason: reason,
+      })
+      .eq("id", id)
+      .select()
+      .single();
+    if (error) throw error;
+    await auditService.log({
+      projectId, entity: "materials", entityId: id,
+      action: "REJECT", module: "materials",
+      description: "Material rejeitado (MAP/MAS)",
+      diff: { rejection_reason: reason },
+    });
+    return data as unknown as Material;
+  },
+
+  async setConditional(id: string, projectId: string, reason: string): Promise<Material> {
+    const { data, error } = await supabase
+      .from("materials" as any)
+      .update({
+        approval_status: "conditional",
+        rejection_reason: reason,
+      })
+      .eq("id", id)
+      .select()
+      .single();
+    if (error) throw error;
+    await auditService.log({
+      projectId, entity: "materials", entityId: id,
+      action: "STATUS_CHANGE", module: "materials",
+      description: "Material aprovado com condições",
+      diff: { approval_status: "conditional", reason },
+    });
+    return data as unknown as Material;
+  },
+
+  // ── Status & Lifecycle ──────────────────────────────────────────
   async archive(id: string, projectId: string): Promise<void> {
     const { error } = await supabase
       .from("materials" as any)
@@ -193,7 +324,7 @@ export const materialService = {
     return (data ?? []) as unknown as MaterialDocument[];
   },
 
-  async addDocument(input: { project_id: string; material_id: string; document_id: string; doc_type: string; valid_to?: string }): Promise<MaterialDocument> {
+  async addDocument(input: { project_id: string; material_id: string; document_id: string; doc_type: string; valid_from?: string; valid_to?: string; status?: string }): Promise<MaterialDocument> {
     const { data, error } = await supabase
       .from("material_documents" as any)
       .insert(input)
@@ -231,6 +362,18 @@ export const materialService = {
       .order("created_at", { ascending: false });
     if (error) throw error;
     return (data ?? []) as unknown as WorkItemMaterial[];
+  },
+
+  // ── Approval KPIs ───────────────────────────────────────────────
+  async getPendingApprovalCount(projectId: string): Promise<number> {
+    const { count, error } = await supabase
+      .from("materials" as any)
+      .select("id", { count: "exact", head: true })
+      .eq("project_id", projectId)
+      .eq("is_deleted", false)
+      .in("approval_status", ["pending", "submitted", "in_review"]);
+    if (error) return 0;
+    return count ?? 0;
   },
 
   // ── KPIs ────────────────────────────────────────────────────────

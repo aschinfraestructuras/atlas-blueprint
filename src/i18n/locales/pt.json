@@ -1927,7 +1927,7 @@
     "newMaterial": "Novo Material",
     "searchPlaceholder": "Pesquisar código, nome, especificação…",
     "table": { "code": "Código" },
-    "filters": { "allStatuses": "Todos os estados", "allCategories": "Todas as categorias" },
+    "filters": { "allStatuses": "Todos os estados", "allCategories": "Todas as categorias", "allApprovals": "Todas as aprovações" },
     "status": { "active": "Ativo", "discontinued": "Descontinuado", "archived": "Arquivado" },
     "categories": {
       "betao": "Betão", "aco": "Aço", "solos": "Solos", "agregado": "Agregado",
@@ -1937,7 +1937,8 @@
     "actions": { "archive": "Arquivar", "activate": "Ativar" },
     "kpi": {
       "total": "Total", "active": "Ativos", "discontinued": "Descontinuados",
-      "docsExpired": "Docs Expirados", "withOpenNC": "Com NC Aberta", "nonconformTests": "Ensaios NC (30d)"
+      "docsExpired": "Docs Expirados", "withOpenNC": "Com NC Aberta", "nonconformTests": "Ensaios NC (30d)",
+      "pendingApproval": "Pendentes MAP/MAS"
     },
     "form": {
       "titleCreate": "Novo Material", "titleEdit": "Editar Material",
@@ -1947,14 +1948,73 @@
       "unit": "Unidade", "unitPlaceholder": "Selecionar…",
       "normativeRefs": "Referências Normativas", "normativeRefsPlaceholder": "ex: EN 206, NP EN 13670",
       "acceptanceCriteria": "Critérios de Aceitação", "acceptanceCriteriaPlaceholder": "ex: fck ≥ 30 MPa aos 28 dias",
-      "createBtn": "Criar material"
+      "createBtn": "Criar material",
+      "supplierLabel": "Fornecedor principal",
+      "supplierPlaceholder": "Selecionar fornecedor…",
+      "approvalRequired": "Requer aprovação MAP/MAS"
+    },
+    "approval": {
+      "title": "Aprovação MAP/MAS",
+      "mapMas": "MAP/MAS",
+      "status": "Estado de aprovação",
+      "currentStatus": "Estado atual",
+      "required": "Aprovação obrigatória",
+      "requireApproval": "Requer aprovação MAP/MAS",
+      "submittedAt": "Submetido em",
+      "approvedAt": "Aprovado em",
+      "rejectionReason": "Motivo de rejeição/condição",
+      "reasonRequired": "Indique o motivo.",
+      "notesLabel": "Observações / Motivo",
+      "notesPlaceholder": "Motivo de rejeição ou condições de aprovação…",
+      "statuses": {
+        "pending": "Pendente",
+        "submitted": "Submetido",
+        "in_review": "Em revisão",
+        "approved": "Aprovado",
+        "rejected": "Rejeitado",
+        "conditional": "Condicional",
+        "archived": "Arquivado"
+      },
+      "actions": {
+        "submit": "Submeter",
+        "sendToReview": "Enviar para revisão",
+        "approve": "Aprovar",
+        "reject": "Rejeitar",
+        "conditional": "Aprovar com condições",
+        "resubmit": "Resubmeter"
+      },
+      "toast": {
+        "submit": "Material submetido para aprovação.",
+        "review": "Material enviado para revisão.",
+        "approve": "Material aprovado.",
+        "reject": "Material rejeitado.",
+        "conditional": "Material aprovado com condições."
+      }
+    },
+    "docTypes": {
+      "DoP/CE": "DoP / Marcação CE",
+      "ficha_tecnica": "Ficha Técnica",
+      "FDS": "Ficha de Dados de Segurança",
+      "certificado": "Certificado de Conformidade",
+      "MAP/MAS": "MAP/MAS",
+      "other": "Outro"
+    },
+    "docStatuses": {
+      "valid": "Válido",
+      "expired": "Expirado",
+      "pending": "Pendente",
+      "replaced": "Substituído"
     },
     "detail": {
       "suppliersCount": "Fornecedores", "testsTotal": "Ensaios", "testsNC": "Ensaios NC",
       "ncOpen": "NC Abertas", "docsExpiring": "Docs a Expirar", "docsExpired": "Docs Expirados",
       "workItems": "Atividades",
+      "materialDocs": "Documentos do material",
+      "docType": "Tipo de documento",
+      "validFrom": "Válido desde",
+      "validTo": "Válido até",
       "tabs": {
-        "summary": "Resumo", "suppliers": "Fornecedores", "documents": "Documentos",
+        "summary": "Resumo", "approval": "MAP/MAS", "suppliers": "Fornecedores", "documents": "Documentos",
         "tests": "Ensaios", "ncs": "Não Conformidades", "workItems": "Aplicação em Obra", "audit": "Auditoria"
       },
       "noSuppliers": "Sem fornecedores associados.",
@@ -1963,6 +2023,7 @@
       "noWorkItems": "Sem atividades associadas.", "noAudit": "Sem registos de auditoria.",
       "workItemId": "Atividade", "lotRef": "Lote / Guia", "quantity": "Quantidade"
     },
+    "export": { "reportTitle": "Ficha de Material" },
     "toast": {
       "created": "Material criado com sucesso.", "updated": "Material atualizado.",
       "archived": "Material arquivado.", "activated": "Material ativado.",
