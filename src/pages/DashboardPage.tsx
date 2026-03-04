@@ -60,19 +60,25 @@ function useCountUp(target: number, duration = 800) {
 
 // ── KPI Indicator Card ────────────────────────────────────────────
 function KPICard({
-  label, value, icon: Icon, loading, color, sub, suffix,
+  label, value, icon: Icon, loading, color, sub, suffix, severity,
 }: {
   label: string; value: number; icon: React.ElementType;
   loading: boolean; color: string; sub?: string; suffix?: string;
+  severity?: "negative" | "attention" | "positive";
 }) {
   const animated = useCountUp(loading ? 0 : value);
+  const borderColor = severity === "negative" && value > 0
+    ? "#ef4444"
+    : severity === "attention" && value > 0
+      ? "#f59e0b"
+      : "#22c55e";
   if (loading) return (
     <Card className="border-0 bg-card shadow-card overflow-hidden">
       <CardContent className="p-5"><Skeleton className="h-3 w-24 mb-5" /><Skeleton className="h-10 w-16 mb-3" /><Skeleton className="h-2.5 w-20" /></CardContent>
     </Card>
   );
   return (
-    <Card className="border-0 bg-card shadow-card hover:shadow-card-hover transition-all duration-200 animate-fade-in overflow-hidden relative group">
+    <Card className="border-0 bg-card shadow-card hover:shadow-card-hover transition-all duration-200 animate-fade-in overflow-hidden relative group" style={{ borderLeft: `4px solid ${borderColor}` }}>
       <div className="absolute top-0 left-0 right-0 h-[3px]" style={{ background: color }} />
       <CardContent className="p-5">
         <div className="flex items-start justify-between mb-3">
@@ -372,7 +378,7 @@ export default function DashboardPage() {
   const failureByMaterial = useMemo(() => {
     const map: Record<string, { fail: number; total: number }> = {};
     qualityMetrics.forEach(q => {
-      const mat = q.material ?? t("common.noData");
+      const mat = q.disciplina ?? t("common.noData");
       if (!map[mat]) map[mat] = { fail: 0, total: 0 };
       map[mat].fail += q.non_conform;
       map[mat].total += q.total;
@@ -425,46 +431,79 @@ export default function DashboardPage() {
 
           {/* ── Row 0: Global Health Indicators ─────────────── */}
           {activeProject && (
-            <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
-              <KPICard label={t("health.ncOverdue")} value={projectHealth.total_nc_overdue} icon={AlertTriangle} loading={healthLoading} color={projectHealth.total_nc_overdue > 0 ? MOD.nc : MOD.muted} sub={`${projectHealth.total_nc_open} ${t("health.ncOpen").toLowerCase()}`} />
-              <KPICard label={t("health.testsFail30d")} value={projectHealth.total_tests_fail_30d} icon={FlaskConical} loading={healthLoading} color={projectHealth.total_tests_fail_30d > 0 ? MOD.nc : MOD.muted} sub={`${projectHealth.total_tests_pending} ${t("health.testsPending").toLowerCase()}`} />
-              <KPICard label={t("health.docsExpired")} value={projectHealth.total_documents_expired} icon={FileText} loading={healthLoading} color={projectHealth.total_documents_expired > 0 ? MOD.subcontractors : MOD.muted} sub={`${projectHealth.total_calibrations_expired} ${t("health.calibExpired").toLowerCase()}`} />
-              <KPICard label={t("health.activitiesBlocked")} value={projectHealth.activities_blocked} icon={Ban} loading={healthLoading} color={projectHealth.activities_blocked > 0 ? MOD.nc : MOD.muted} sub={`${projectHealth.total_ppi_pending} ${t("health.ppiPending").toLowerCase()}`} />
-              <PercentCard label={t("health.globalReadiness")} value={projectHealth.readiness_ratio} loading={healthLoading} color={projectHealth.readiness_ratio >= 80 ? MOD.suppliers : projectHealth.readiness_ratio >= 60 ? MOD.subcontractors : MOD.nc} icon={Gauge} sub={`Score: ${projectHealth.health_score}/100`} />
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
+              <KPICard label={t("health.ncOverdue")} value={projectHealth.total_nc_overdue} icon={AlertTriangle} loading={healthLoading} color={projectHealth.total_nc_overdue > 0 ? "#ef4444" : MOD.muted} sub={`${projectHealth.total_nc_open} ${t("health.ncOpen").toLowerCase()}`} severity="negative" />
+              <KPICard label={t("health.testsFail30d")} value={projectHealth.total_tests_fail_30d} icon={FlaskConical} loading={healthLoading} color={projectHealth.total_tests_fail_30d > 0 ? "#ef4444" : MOD.muted} sub={`${projectHealth.total_tests_pending} ${t("health.testsPending").toLowerCase()}`} severity="negative" />
+              <KPICard label={t("health.docsExpired")} value={projectHealth.total_documents_expired} icon={FileText} loading={healthLoading} color={projectHealth.total_documents_expired > 0 ? "#f59e0b" : MOD.muted} sub={`${projectHealth.total_calibrations_expired} ${t("health.calibExpired").toLowerCase()}`} severity="attention" />
+              <KPICard label={t("health.activitiesBlocked")} value={projectHealth.activities_blocked} icon={Ban} loading={healthLoading} color={projectHealth.activities_blocked > 0 ? "#ef4444" : MOD.muted} sub={`${projectHealth.total_ppi_pending} ${t("health.ppiPending").toLowerCase()}`} severity="negative" />
+              {/* Health Score Gauge */}
+              <Card className="border-0 bg-card shadow-card hover:shadow-card-hover transition-all duration-200 animate-fade-in overflow-hidden">
+                <CardContent className="p-4 flex flex-col items-center justify-center">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground leading-none mb-2">{t("health.score")}</p>
+                  <div className="relative w-[100px] h-[55px]">
+                    <ResponsiveContainer width="100%" height={55}>
+                      <PieChart>
+                        <Pie
+                          data={[
+                            { value: projectHealth.health_score },
+                            { value: 100 - projectHealth.health_score },
+                          ]}
+                          cx="50%"
+                          cy="100%"
+                          startAngle={180}
+                          endAngle={0}
+                          innerRadius={30}
+                          outerRadius={48}
+                          dataKey="value"
+                          strokeWidth={0}
+                          isAnimationActive
+                          animationDuration={700}
+                        >
+                          <Cell fill={projectHealth.health_score >= 70 ? "#22c55e" : projectHealth.health_score >= 40 ? "#f59e0b" : "#ef4444"} />
+                          <Cell fill="hsl(var(--muted))" />
+                        </Pie>
+                      </PieChart>
+                    </ResponsiveContainer>
+                    <div className="absolute inset-0 flex items-end justify-center pb-0 pointer-events-none">
+                      <span className="text-xl font-black tabular-nums text-foreground">{healthLoading ? "—" : `${projectHealth.health_score}%`}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           )}
 
           {/* ── Row 1: Critical Indicators ──────────────────────── */}
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-            <KPICard label={t("dashboard.exec.wiOpen")} value={summary.wi_in_progress} icon={Construction} loading={loading} color={MOD.projects} sub={`${summary.wi_total} total`} />
-            <KPICard label={t("dashboard.exec.ppiPending")} value={summary.ppi_submitted} icon={ClipboardCheck} loading={loading} color={MOD.subcontractors} sub={`${summary.ppi_approved} ${t("dashboard.kpi.approved").toLowerCase()}`} />
-            <KPICard label={t("dashboard.exec.testsNC")} value={summary.tests_non_conform} icon={FlaskConical} loading={loading} color={MOD.nc} sub={`${summary.tests_total} total`} />
-            <KPICard label={t("dashboard.exec.ncOpen")} value={summary.nc_open} icon={AlertTriangle} loading={loading} color={MOD.nc} sub={`${summary.nc_closed} ${t("dashboard.kpi.ncClosed").toLowerCase()}`} />
+            <KPICard label={t("dashboard.exec.wiOpen")} value={summary.wi_in_progress} icon={Construction} loading={loading} color={MOD.projects} sub={`${summary.wi_total} total`} severity="positive" />
+            <KPICard label={t("dashboard.exec.ppiPending")} value={summary.ppi_submitted} icon={ClipboardCheck} loading={loading} color={MOD.subcontractors} sub={`${summary.ppi_approved} ${t("dashboard.kpi.approved").toLowerCase()}`} severity="attention" />
+            <KPICard label={t("dashboard.exec.testsNC")} value={summary.tests_non_conform} icon={FlaskConical} loading={loading} color={MOD.nc} sub={`${summary.tests_total} total`} severity="negative" />
+            <KPICard label={t("dashboard.exec.ncOpen")} value={summary.nc_open} icon={AlertTriangle} loading={loading} color={MOD.nc} sub={`${summary.nc_closed} ${t("dashboard.kpi.ncClosed").toLowerCase()}`} severity="negative" />
           </div>
 
           {/* ── Row 1b: Supplier Indicators ──────────────────────── */}
           {kpis && (
             <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
-              <KPICard label={t("dashboard.exec.suppliersPendingQual")} value={kpis.suppliers_pending_qualification} icon={Truck} loading={supLoading} color={MOD.suppliers} sub={`${kpis.suppliers_active} ${t("suppliers.status.active").toLowerCase()}`} />
-              <KPICard label={t("dashboard.exec.supplierDocsExpiring")} value={kpis.supplier_docs_expiring_30d} icon={FileText} loading={supLoading} color={kpis.supplier_docs_expiring_30d > 0 ? MOD.subcontractors : MOD.suppliers} sub={`${kpis.supplier_docs_expired} ${t("suppliers.detail.docsExpired").toLowerCase()}`} />
-              <KPICard label={t("dashboard.exec.suppliersWithNC")} value={kpis.suppliers_with_open_nc} icon={AlertTriangle} loading={supLoading} color={kpis.suppliers_with_open_nc > 0 ? MOD.nc : MOD.suppliers} sub={`${kpis.suppliers_total} total`} />
+              <KPICard label={t("dashboard.exec.suppliersPendingQual")} value={kpis.suppliers_pending_qualification} icon={Truck} loading={supLoading} color={MOD.suppliers} sub={`${kpis.suppliers_active} ${t("suppliers.status.active").toLowerCase()}`} severity="attention" />
+              <KPICard label={t("dashboard.exec.supplierDocsExpiring")} value={kpis.supplier_docs_expiring_30d} icon={FileText} loading={supLoading} color={kpis.supplier_docs_expiring_30d > 0 ? MOD.subcontractors : MOD.suppliers} sub={`${kpis.supplier_docs_expired} ${t("suppliers.detail.docsExpired").toLowerCase()}`} severity="attention" />
+              <KPICard label={t("dashboard.exec.suppliersWithNC")} value={kpis.suppliers_with_open_nc} icon={AlertTriangle} loading={supLoading} color={kpis.suppliers_with_open_nc > 0 ? MOD.nc : MOD.suppliers} sub={`${kpis.suppliers_total} total`} severity="negative" />
             </div>
           )}
 
           {/* ── Row 1c: Material Indicators ──────────────────────── */}
           {matKpis && (
             <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
-              <KPICard label={t("dashboard.exec.materialsDocsExpired")} value={matKpis.materials_with_expired_docs} icon={Package} loading={matLoading} color={matKpis.materials_with_expired_docs > 0 ? MOD.subcontractors : MOD.suppliers} sub={`${matKpis.materials_active} ${t("materials.status.active").toLowerCase()}`} />
-              <KPICard label={t("dashboard.exec.materialsWithNC")} value={matKpis.materials_with_open_nc} icon={Package} loading={matLoading} color={matKpis.materials_with_open_nc > 0 ? MOD.nc : MOD.suppliers} sub={`${matKpis.materials_total} total`} />
-              <KPICard label={t("dashboard.exec.materialsNonconformTests")} value={matKpis.materials_with_nonconform_tests_30d} icon={Package} loading={matLoading} color={matKpis.materials_with_nonconform_tests_30d > 0 ? MOD.nc : MOD.suppliers} sub={`${matKpis.materials_total} total`} />
+              <KPICard label={t("dashboard.exec.materialsDocsExpired")} value={matKpis.materials_with_expired_docs} icon={Package} loading={matLoading} color={matKpis.materials_with_expired_docs > 0 ? MOD.subcontractors : MOD.suppliers} sub={`${matKpis.materials_active} ${t("materials.status.active").toLowerCase()}`} severity="negative" />
+              <KPICard label={t("dashboard.exec.materialsWithNC")} value={matKpis.materials_with_open_nc} icon={Package} loading={matLoading} color={matKpis.materials_with_open_nc > 0 ? MOD.nc : MOD.suppliers} sub={`${matKpis.materials_total} total`} severity="negative" />
+              <KPICard label={t("dashboard.exec.materialsNonconformTests")} value={matKpis.materials_with_nonconform_tests_30d} icon={Package} loading={matLoading} color={matKpis.materials_with_nonconform_tests_30d > 0 ? MOD.nc : MOD.suppliers} sub={`${matKpis.materials_total} total`} severity="negative" />
             </div>
           )}
 
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
             <PercentCard label={t("dashboard.exec.ppiConform")} value={summary.ppi_conform_pct} loading={loading} color={MOD.suppliers} icon={ClipboardCheck} sub={`${summary.ppi_approved}/${summary.ppi_total}`} />
             <PercentCard label={t("dashboard.exec.testsConform")} value={summary.tests_conform_pct} loading={loading} color={MOD.tests} icon={FlaskConical} sub={`${summary.tests_completed} ${t("dashboard.stats.completed")}`} />
-            <KPICard label={t("dashboard.exec.ncAging")} value={summary.nc_avg_aging} icon={Timer} loading={loading} color={summary.nc_avg_aging > 30 ? MOD.nc : summary.nc_avg_aging > 14 ? MOD.subcontractors : MOD.suppliers} suffix={t("dashboard.kpi.days")} sub={t("dashboard.kpi.openNcCount", { count: summary.nc_open })} />
-            <KPICard label={t("dashboard.exec.docsReview")} value={summary.docs_in_review} icon={FileText} loading={loading} color={MOD.documents} sub={`${summary.docs_total} total`} />
+            <KPICard label={t("dashboard.exec.ncAging")} value={summary.nc_avg_aging} icon={Timer} loading={loading} color={summary.nc_avg_aging > 30 ? MOD.nc : summary.nc_avg_aging > 14 ? MOD.subcontractors : MOD.suppliers} suffix={t("dashboard.kpi.days")} sub={t("dashboard.kpi.openNcCount", { count: summary.nc_open })} severity="negative" />
+            <KPICard label={t("dashboard.exec.docsReview")} value={summary.docs_in_review} icon={FileText} loading={loading} color={MOD.documents} sub={`${summary.docs_total} total`} severity="attention" />
           </div>
 
           {/* ── Row 3: 6-Month Trends ──────────────────────────── */}
@@ -487,8 +526,8 @@ export default function DashboardPage() {
               icon={FlaskConical}
               emptyMsg={emptyMsg}
               bars={[
-                { key: "conform", color: MOD.suppliers, label: t("dashboard.exec.conform") },
-                { key: "non_conform", color: MOD.nc, label: t("dashboard.exec.nonConform") },
+                { key: "conform", color: "#22c55e", label: t("dashboard.exec.conform") },
+                { key: "non_conform", color: "#ef4444", label: t("dashboard.exec.nonConform") },
               ]}
             />
           </div>
@@ -518,10 +557,10 @@ export default function DashboardPage() {
                 loading={loading}
                 icon={BarChart3}
                 emptyMsg={emptyMsg}
-                bars={[
-                  { key: "conform", color: MOD.suppliers, label: t("dashboard.exec.conform") },
-                  { key: "non_conform", color: MOD.nc, label: t("dashboard.exec.nonConform") },
-                ]}
+              bars={[
+                { key: "conform", color: "#22c55e", label: t("dashboard.exec.conform") },
+                { key: "non_conform", color: "#ef4444", label: t("dashboard.exec.nonConform") },
+              ]}
               />
             </TabsContent>
 
@@ -552,10 +591,30 @@ export default function DashboardPage() {
 
             {/* ── C. NC & Risco ───────────────────────────────────── */}
             <TabsContent value="ncRisk" className="space-y-5 mt-0">
-              <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
                 <HBarList title={t("dashboard.adv.ncByDiscipline")} data={ncByDiscipline} loading={ncLoading || wiLoading} icon={AlertTriangle} emptyMsg={emptyMsg} />
                 <HBarList title={t("dashboard.adv.ncBySupplier")} data={ncBySupplier} loading={ncLoading || supLoading} icon={Building2} emptyMsg={emptyMsg} />
                 <HBarList title={t("dashboard.adv.ncBySeverity")} data={ncBySeverity} loading={ncLoading} icon={Activity} emptyMsg={emptyMsg} />
+                <DonutCard
+                  title={t("dashboard.adv.ncBySeverity")}
+                  data={(() => {
+                    const sevColors: Record<string, string> = { critical: "#ef4444", major: "#f97316", minor: "#f59e0b", low: "#22c55e" };
+                    const map: Record<string, number> = {};
+                    ncs.filter(n => ["open", "in_progress"].includes((n as any).status)).forEach(n => {
+                      const sev = (n as any).severity ?? "medium";
+                      map[sev] = (map[sev] ?? 0) + 1;
+                    });
+                    return Object.entries(map).map(([k, v]) => ({
+                      name: t(`nc.severity.${k}`, { defaultValue: k }),
+                      value: v,
+                      color: sevColors[k] ?? "#94a3b8",
+                    }));
+                  })()}
+                  loading={ncLoading}
+                  icon={PieChartIcon}
+                  total={ncs.filter(n => ["open", "in_progress"].includes((n as any).status)).length}
+                  emptyMsg={emptyMsg}
+                />
               </div>
               <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
                 <div className="md:col-span-2">
@@ -571,7 +630,7 @@ export default function DashboardPage() {
                     ]}
                   />
                 </div>
-                <KPICard label={t("dashboard.kpi.ncLeadTimeTitle")} value={summary.nc_avg_lead_time} icon={Hourglass} loading={loading} color={summary.nc_avg_lead_time > 30 ? MOD.nc : MOD.suppliers} suffix={t("dashboard.kpi.daysToClose")} sub={t("dashboard.kpi.closedNcCount", { count: summary.nc_closed })} />
+                <KPICard label={t("dashboard.kpi.ncLeadTimeTitle")} value={summary.nc_avg_lead_time} icon={Hourglass} loading={loading} color={summary.nc_avg_lead_time > 30 ? MOD.nc : MOD.suppliers} suffix={t("dashboard.kpi.daysToClose")} sub={t("dashboard.kpi.closedNcCount", { count: summary.nc_closed })} severity="negative" />
               </div>
             </TabsContent>
 
@@ -581,7 +640,7 @@ export default function DashboardPage() {
                 <HBarList title={t("dashboard.adv.wiByDiscipline")} data={wiByDiscipline} loading={wiLoading} icon={Construction} emptyMsg={emptyMsg} />
                 <div className="grid gap-4">
                   <PercentCard label={t("dashboard.exec.ppiConform")} value={summary.ppi_conform_pct} loading={loading} color={MOD.suppliers} icon={ClipboardCheck} sub={`${summary.ppi_approved} / ${summary.ppi_total}`} />
-                  <KPICard label={t("dashboard.exec.ppiPending")} value={summary.ppi_submitted} icon={ClipboardCheck} loading={loading} color={MOD.subcontractors} />
+                  <KPICard label={t("dashboard.exec.ppiPending")} value={summary.ppi_submitted} icon={ClipboardCheck} loading={loading} color={MOD.subcontractors} severity="attention" />
                 </div>
               </div>
             </TabsContent>

@@ -4277,6 +4277,46 @@ export type Database = {
           },
         ]
       }
+      vw_audit_log: {
+        Row: {
+          action: string | null
+          created_at: string | null
+          description: string | null
+          diff: Json | null
+          entity: string | null
+          entity_id: string | null
+          id: number | null
+          module: string | null
+          performed_by: string | null
+          project_id: string | null
+          user_display_name: string | null
+          user_email: string | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_log_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "audit_log_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "audit_log_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
       vw_deadlines: {
         Row: {
           assigned_to: string | null
@@ -4841,6 +4881,10 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      fn_dashboard_summary: {
+        Args: { p_months?: number; p_project_id: string }
+        Returns: Json
+      }
       fn_generate_deadline_notifications: {
         Args: { p_days_ahead?: number; p_project_id: string }
         Returns: number
@@ -4968,6 +5012,11 @@ export type Database = {
               isSetofReturn: false
             }
           }
+      fn_project_health_kpis: { Args: { p_project_id: string }; Returns: Json }
+      fn_qc_report_summary: {
+        Args: { p_end_date: string; p_project_id: string; p_start_date: string }
+        Returns: Json
+      }
       fn_recalc_work_item_readiness: {
         Args: { p_work_item_id: string }
         Returns: undefined
