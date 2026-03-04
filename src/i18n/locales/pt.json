@@ -178,7 +178,7 @@
       "ncRisk": "NC & Risco",
       "operational": "Operacional",
       "testsByType": "Ensaios por Tipo",
-      "failureByMaterial": "Taxa Reprovação por Material (%)",
+      "failureByMaterial": "Taxa Reprovação por Disciplina (%)",
       "docsByType": "Documentos por Tipo",
       "avgApproval": "Tempo Médio Aprovação (dias)",
       "ncByDiscipline": "NC por Disciplina",
@@ -2822,7 +2822,20 @@
     "calibExpired": "Calibrações Expiradas",
     "activitiesBlocked": "Atividades Bloqueadas",
     "readiness": "Prontidão",
-    "globalReadiness": "Prontidão Global"
+    "globalReadiness": "Prontidão Global",
+    "module": "Sistema",
+    "title": "Verificação de Saúde",
+    "subtitle": "Testes automáticos de integridade do sistema",
+    "runChecks": "Executar verificações",
+    "lastRun": "Última execução",
+    "noProject": "Selecione um projeto ativo para executar as verificações.",
+    "ready": "Clique em «Executar verificações» para testar a integridade do sistema.",
+    "cat": {
+      "tables": "Tabelas",
+      "rls": "RLS / Permissões",
+      "functions": "Funções RPC",
+      "storage": "Armazenamento"
+    }
   },
   "moduleKpi": {
     "total": "Total",

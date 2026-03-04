@@ -12,13 +12,14 @@ export interface AuditEntry {
   performed_by: string | null;
   description: string | null;
   created_at: string;
+  user_display_name: string | null;
 }
 
 export const auditService = {
   async getByProject(projectId: string, filters?: { module?: string; dateFrom?: string; dateTo?: string }): Promise<AuditEntry[]> {
-    let query = supabase
-      .from("audit_log")
-      .select("id, project_id, user_id, entity, entity_id, action, diff, module, performed_by, description, created_at")
+    let query = (supabase as any)
+      .from("vw_audit_log")
+      .select("id, project_id, user_id, entity, entity_id, action, diff, module, performed_by, description, created_at, user_display_name")
       .eq("project_id", projectId)
       .order("created_at", { ascending: false })
       .limit(500);

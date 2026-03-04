@@ -43,65 +43,32 @@ export default function QCReportPage() {
       const pid = activeProject.id;
       const locale = i18n.language;
 
-      // Fetch data in parallel
-      const [ncRes, testRes, docsRes, calRes, suppDocRes, subDocRes] = await Promise.all([
-        supabase.from("non_conformities").select("id, code, title, severity, status, detected_at, due_date").eq("project_id", pid),
-        supabase.from("test_results" as any).select("id, code, status, pass_fail, test_date, report_number").eq("project_id", pid),
-        supabase.from("documents").select("id, title, code, status, doc_type, updated_at").eq("project_id", pid).eq("is_deleted", false),
-        supabase.from("equipment_calibrations").select("id, certificate_number, valid_until, status").eq("project_id", pid),
-        supabase.from("supplier_documents").select("id, doc_type, valid_to, status").eq("project_id", pid),
-        supabase.from("subcontractor_documents").select("id, doc_type, valid_to, status").eq("project_id", pid),
-      ]);
+      // Single RPC call instead of 6 parallel fetches
+      const { data: summary, error: summaryError } = await (supabase as any).rpc(
+        "fn_qc_report_summary",
+        {
+          p_project_id: pid,
+          p_start_date: startDate,
+          p_end_date: endDate,
+        }
+      );
+      if (summaryError) throw summaryError;
 
-      const ncs = ncRes.data ?? [];
-      const tests = testRes.data ?? [];
-      const docs = docsRes.data ?? [];
-      const cals = calRes.data ?? [];
-      const suppDocs = suppDocRes.data ?? [];
-      const subDocs = subDocRes.data ?? [];
+      const testsPass = summary.tests_pass ?? 0;
+      const testsFail = summary.tests_fail ?? 0;
+      const testsPending = summary.tests_pending ?? 0;
+      const ncsOpen = summary.nc_open ?? 0;
+      const ncsClosed = summary.nc_closed_period ?? 0;
+      const docsApproved = summary.docs_approved ?? 0;
+      const docsInReview = summary.docs_review ?? 0;
+      const expiringTotal = summary.expiring_total ?? 0;
 
-      // Filter by period
-      const inPeriod = (dateStr: string | null) => {
-        if (!dateStr) return false;
-        const d = dateStr.slice(0, 10);
-        return d >= startDate && d <= endDate;
-      };
-
-      const periodNcs = ncs.filter(n => inPeriod(n.detected_at));
-      const periodTests = tests.filter((t: any) => inPeriod(t.test_date));
-
-      // KPIs
-      const testsPass = periodTests.filter((t: any) => t.pass_fail === "pass").length;
-      const testsFail = periodTests.filter((t: any) => t.pass_fail === "fail").length;
-      const testsPending = periodTests.filter((t: any) => !["pass", "fail"].includes(t.pass_fail ?? "")).length;
-      const ncsOpen = ncs.filter(n => ["open", "in_progress"].includes(n.status)).length;
-      const ncsClosed = periodNcs.filter(n => ["closed", "verified"].includes(n.status)).length;
-      const docsApproved = docs.filter(d => d.status === "approved").length;
-      const docsInReview = docs.filter(d => d.status === "in_review").length;
-
-      const today = new Date();
-      const thirtyDays = new Date(today); thirtyDays.setDate(thirtyDays.getDate() + 30);
-      const expiringCals = cals.filter(c => new Date(c.valid_until) <= thirtyDays && new Date(c.valid_until) >= today).length;
-      const expiringSuppDocs = suppDocs.filter(d => d.valid_to && new Date(d.valid_to) <= thirtyDays && new Date(d.valid_to) >= today).length;
-      const expiringSubDocs = subDocs.filter(d => d.valid_to && new Date(d.valid_to) <= thirtyDays && new Date(d.valid_to) >= today).length;
-
-      // Critical NCs (top 10)
-      const criticalNcs = ncs
-        .filter(n => ["open", "in_progress"].includes(n.status))
-        .sort((a, b) => {
-          const sev: Record<string, number> = { critical: 0, major: 1, high: 2, medium: 3, minor: 4, low: 5 };
-          return (sev[a.severity] ?? 9) - (sev[b.severity] ?? 9);
-        })
-        .slice(0, 10);
-
-      // Failed tests
-      const failedTests = periodTests.filter((t: any) => t.pass_fail === "fail").slice(0, 10);
-
-      // Expired calibrations
-      const expiredCals = cals.filter(c => new Date(c.valid_until) < today).slice(0, 10);
+      const criticalNcs = (summary.critical_ncs ?? []) as any[];
+      const failedTests = (summary.failed_tests ?? []) as any[];
+      const expiredCals = (summary.expired_cals ?? []) as any[];
 
       // Generate simple checksum
-      const contentStr = JSON.stringify({ periodNcs: periodNcs.length, periodTests: periodTests.length, ncsOpen, startDate, endDate });
+      const contentStr = JSON.stringify({ testsPass, testsFail, ncsOpen, startDate, endDate });
       const checksum = Array.from(new TextEncoder().encode(contentStr)).reduce((a, b) => ((a << 5) - a + b) | 0, 0).toString(16);
 
       const meta: ReportMeta = {
@@ -132,7 +99,7 @@ export default function QCReportPage() {
           ${kpiRow(t("qcReport.kpi.ncClosed"), ncsClosed)}
           ${kpiRow(t("qcReport.kpi.docsApproved"), docsApproved)}
           ${kpiRow(t("qcReport.kpi.docsReview"), docsInReview)}
-          ${kpiRow(t("qcReport.kpi.expiring"), expiringCals + expiringSuppDocs + expiringSubDocs)}
+          ${kpiRow(t("qcReport.kpi.expiring"), expiringTotal)}
           ${kpiRow(t("qcReport.kpi.period"), `${fmtDate(startDate, locale)} — ${fmtDate(endDate, locale)}`)}
         </div>
 

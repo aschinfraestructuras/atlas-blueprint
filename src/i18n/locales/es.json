@@ -158,7 +158,20 @@
     "calibExpired": "Calibraciones Expiradas",
     "activitiesBlocked": "Actividades Bloqueadas",
     "readiness": "Preparación",
-    "globalReadiness": "Preparación Global"
+    "globalReadiness": "Preparación Global",
+    "module": "Sistema",
+    "title": "Verificación de Salud",
+    "subtitle": "Pruebas automáticas de integridad del sistema",
+    "runChecks": "Ejecutar verificaciones",
+    "lastRun": "Última ejecución",
+    "noProject": "Seleccione un proyecto activo para ejecutar las verificaciones.",
+    "ready": "Haga clic en «Ejecutar verificaciones» para probar la integridad del sistema.",
+    "cat": {
+      "tables": "Tablas",
+      "rls": "RLS / Permisos",
+      "functions": "Funciones RPC",
+      "storage": "Almacenamiento"
+    }
   },
   "moduleKpi": {
     "total": "Total",
@@ -227,7 +240,7 @@
       "ncRisk": "NC & Riesgo",
       "operational": "Operacional",
       "testsByType": "Ensayos por Tipo",
-      "failureByMaterial": "Tasa Reprobación por Material (%)",
+      "failureByMaterial": "Tasa Reprobación por Disciplina (%)",
       "docsByType": "Documentos por Tipo",
       "avgApproval": "Tiempo Medio Aprobación (días)",
       "ncByDiscipline": "NC por Disciplina",

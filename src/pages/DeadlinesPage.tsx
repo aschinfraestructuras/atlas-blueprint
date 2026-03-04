@@ -18,7 +18,6 @@ import { FilterBar } from "@/components/ui/filter-bar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
-import { ..., ClipboardCheck } from "lucide-react";
 import {
   Clock,
   AlertTriangle,
@@ -33,6 +32,7 @@ import {
   RefreshCw,
   Filter,
   Bell,
+  ClipboardCheck,
 } from "lucide-react";
 
 const SOURCE_ICONS: Record<string, React.ElementType> = {
