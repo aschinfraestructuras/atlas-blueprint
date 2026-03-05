@@ -197,7 +197,7 @@ export default function AuditLogPage() {
                     </span>
                   </TableCell>
                   <TableCell className="text-xs text-muted-foreground">
-                    {(entry as any).user_display_name || (entry.user_id ? entry.user_id.slice(0, 8) + "…" : "—")}
+                    {entry.user_display_name || "—"}
                   </TableCell>
                 </TableRow>
               ))}

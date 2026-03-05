@@ -676,6 +676,150 @@ export type Database = {
           },
         ]
       }
+      material_lots: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          ce_marking_ok: boolean | null
+          created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
+          delivery_note_ref: string | null
+          id: string
+          is_deleted: boolean
+          lot_code: string
+          lot_ref: string | null
+          material_id: string
+          nc_id: string | null
+          notes: string | null
+          pame_code: string | null
+          physical_state: string
+          project_id: string
+          quantity_received: number | null
+          received_by: string | null
+          reception_date: string
+          reception_status: string
+          rejection_reason: string | null
+          storage_location: string | null
+          supplier_id: string | null
+          unit: string | null
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          ce_marking_ok?: boolean | null
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          delivery_note_ref?: string | null
+          id?: string
+          is_deleted?: boolean
+          lot_code: string
+          lot_ref?: string | null
+          material_id: string
+          nc_id?: string | null
+          notes?: string | null
+          pame_code?: string | null
+          physical_state?: string
+          project_id: string
+          quantity_received?: number | null
+          received_by?: string | null
+          reception_date?: string
+          reception_status?: string
+          rejection_reason?: string | null
+          storage_location?: string | null
+          supplier_id?: string | null
+          unit?: string | null
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          ce_marking_ok?: boolean | null
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          delivery_note_ref?: string | null
+          id?: string
+          is_deleted?: boolean
+          lot_code?: string
+          lot_ref?: string | null
+          material_id?: string
+          nc_id?: string | null
+          notes?: string | null
+          pame_code?: string | null
+          physical_state?: string
+          project_id?: string
+          quantity_received?: number | null
+          received_by?: string | null
+          reception_date?: string
+          reception_status?: string
+          rejection_reason?: string | null
+          storage_location?: string | null
+          supplier_id?: string | null
+          unit?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "material_lots_material_id_fkey"
+            columns: ["material_id"]
+            isOneToOne: false
+            referencedRelation: "materials"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "material_lots_material_id_fkey"
+            columns: ["material_id"]
+            isOneToOne: false
+            referencedRelation: "view_material_detail_metrics"
+            referencedColumns: ["material_id"]
+          },
+          {
+            foreignKeyName: "material_lots_nc_id_fkey"
+            columns: ["nc_id"]
+            isOneToOne: false
+            referencedRelation: "non_conformities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "material_lots_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "material_lots_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "material_lots_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "material_lots_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "material_lots_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "view_supplier_detail_metrics"
+            referencedColumns: ["supplier_id"]
+          },
+        ]
+      }
       materials: {
         Row: {
           acceptance_criteria: string | null
@@ -694,6 +838,8 @@ export type Database = {
           is_deleted: boolean
           name: string
           normative_refs: string | null
+          pame_code: string | null
+          pame_status: string | null
           project_id: string
           rejection_reason: string | null
           specification: string | null
@@ -722,6 +868,8 @@ export type Database = {
           is_deleted?: boolean
           name: string
           normative_refs?: string | null
+          pame_code?: string | null
+          pame_status?: string | null
           project_id: string
           rejection_reason?: string | null
           specification?: string | null
@@ -750,6 +898,8 @@ export type Database = {
           is_deleted?: boolean
           name?: string
           normative_refs?: string | null
+          pame_code?: string | null
+          pame_status?: string | null
           project_id?: string
           rejection_reason?: string | null
           specification?: string | null
@@ -1342,6 +1492,7 @@ export type Database = {
           evidence_file_id: string | null
           evidence_required: boolean
           id: string
+          inspection_point_type: string | null
           instance_id: string
           item_no: number
           label: string
@@ -1360,6 +1511,7 @@ export type Database = {
           evidence_file_id?: string | null
           evidence_required?: boolean
           id?: string
+          inspection_point_type?: string | null
           instance_id: string
           item_no: number
           label: string
@@ -1378,6 +1530,7 @@ export type Database = {
           evidence_file_id?: string | null
           evidence_required?: boolean
           id?: string
+          inspection_point_type?: string | null
           instance_id?: string
           item_no?: number
           label?: string
@@ -1541,6 +1694,7 @@ export type Database = {
           check_code: string
           evidence_required: boolean
           id: string
+          inspection_point_type: string | null
           item_no: number
           label: string
           method: string | null
@@ -1553,6 +1707,7 @@ export type Database = {
           check_code: string
           evidence_required?: boolean
           id?: string
+          inspection_point_type?: string | null
           item_no: number
           label: string
           method?: string | null
@@ -1565,6 +1720,7 @@ export type Database = {
           check_code?: string
           evidence_required?: boolean
           id?: string
+          inspection_point_type?: string | null
           item_no?: number
           label?: string
           method?: string | null
@@ -4319,18 +4475,14 @@ export type Database = {
       }
       vw_deadlines: {
         Row: {
-          assigned_to: string | null
           days_remaining: number | null
-          doc_type: string | null
-          document_id: string | null
+          doc_name: string | null
           due_date: string | null
-          entity_id: string | null
-          entity_label: string | null
           id: string | null
           project_id: string | null
+          related_id: string | null
           severity: string | null
           source: string | null
-          status: string | null
         }
         Relationships: []
       }
@@ -4499,6 +4651,8 @@ export type Database = {
           is_deleted: boolean
           name: string
           normative_refs: string | null
+          pame_code: string | null
+          pame_status: string | null
           project_id: string
           rejection_reason: string | null
           specification: string | null

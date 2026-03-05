@@ -24,6 +24,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { MaterialFormDialog } from "@/components/materials/MaterialFormDialog";
+import { MaterialReceptionDialog } from "@/components/materials/MaterialReceptionDialog";
 import { LinkedDocumentsPanel } from "@/components/documents/LinkedDocumentsPanel";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import { toast } from "@/hooks/use-toast";
@@ -42,7 +43,41 @@ const APPROVAL_COLORS: Record<string, string> = {
   in_review: "bg-primary/15 text-primary",
   approved: "bg-chart-2/15 text-chart-2",
   rejected: "bg-destructive/10 text-destructive",
-  conditional: "bg-amber-500/15 text-amber-600",
+  conditional: "bg-accent text-accent-foreground",
+};
+
+const PAME_COLORS: Record<string, string> = {
+  pending: "bg-muted text-muted-foreground",
+  submitted: "bg-accent text-accent-foreground",
+  approved: "bg-primary/15 text-primary",
+  conditional: "bg-accent text-accent-foreground",
+  rejected: "bg-destructive/10 text-destructive",
+};
+
+const RECEPTION_STATUS_COLORS: Record<string, string> = {
+  pending: "bg-muted text-muted-foreground",
+  approved: "bg-primary/15 text-primary",
+  quarantine: "bg-accent text-accent-foreground",
+  rejected: "bg-destructive/10 text-destructive",
+};
+
+const PHYSICAL_STATE_COLORS: Record<string, string> = {
+  conforme: "bg-primary/15 text-primary",
+  nao_conforme: "bg-destructive/10 text-destructive",
+};
+
+type MaterialLot = {
+  id: string;
+  lot_code: string;
+  reception_date: string;
+  delivery_note_ref: string | null;
+  lot_ref: string | null;
+  ce_marking_ok: boolean | null;
+  physical_state: string;
+  reception_status: string;
+  nc_id: string | null;
+  suppliers?: { id: string; name: string | null } | null;
+  non_conformities?: { id: string; code: string | null } | null;
 };
 
 export default function MaterialDetailPage() {
@@ -60,8 +95,10 @@ export default function MaterialDetailPage() {
   const [tests, setTests] = useState<any[]>([]);
   const [workItemLinks, setWorkItemLinks] = useState<WorkItemMaterial[]>([]);
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
+  const [lots, setLots] = useState<MaterialLot[]>([]);
   const [loading, setLoading] = useState(true);
   const [editOpen, setEditOpen] = useState(false);
+  const [receptionOpen, setReceptionOpen] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
 
@@ -82,26 +119,32 @@ export default function MaterialDetailPage() {
       setSupplierLinks(sl);
       setWorkItemLinks(wl);
 
-      const { data: ncData } = await (supabase.from("non_conformities") as any)
-        .select("id, code, title, severity, status, detected_at")
-        .eq("material_id", id)
-        .order("detected_at", { ascending: false });
+      const [{ data: ncData }, { data: trData }, { data: logData }, { data: lotsData }] = await Promise.all([
+        (supabase.from("non_conformities") as any)
+          .select("id, code, title, severity, status, detected_at")
+          .eq("material_id", id)
+          .order("detected_at", { ascending: false }),
+        (supabase.from("test_results") as any)
+          .select("id, code, date, status, pass_fail, sample_ref")
+          .eq("material_id", id)
+          .order("date", { ascending: false }),
+        supabase
+          .from("audit_log")
+          .select("id, action, diff, created_at, description")
+          .eq("entity", "materials")
+          .eq("entity_id", id)
+          .order("created_at", { ascending: false })
+          .limit(50),
+        (supabase.from("material_lots") as any)
+          .select("id, lot_code, reception_date, delivery_note_ref, lot_ref, ce_marking_ok, physical_state, reception_status, nc_id, suppliers:supplier_id(id, name), non_conformities:nc_id(id, code)")
+          .eq("material_id", id)
+          .order("reception_date", { ascending: false }),
+      ]);
+
       setNcs(ncData ?? []);
-
-      const { data: trData } = await (supabase.from("test_results") as any)
-        .select("id, code, date, status, pass_fail, sample_ref")
-        .eq("material_id", id)
-        .order("date", { ascending: false });
       setTests(trData ?? []);
-
-      const { data: logData } = await supabase
-        .from("audit_log")
-        .select("id, action, diff, created_at, description")
-        .eq("entity", "materials")
-        .eq("entity_id", id)
-        .order("created_at", { ascending: false })
-        .limit(50);
       setAuditLogs(logData ?? []);
+      setLots((lotsData ?? []) as MaterialLot[]);
     } catch (err) {
       console.error(err);
     } finally {
@@ -132,8 +175,7 @@ export default function MaterialDetailPage() {
       else if (action === "reject") {
         if (!rejectReason.trim()) { toast({ title: t("materials.approval.reasonRequired"), variant: "destructive" }); setActionLoading(false); return; }
         await materialService.reject(material.id, activeProject.id, rejectReason.trim());
-      }
-      else if (action === "conditional") {
+      } else if (action === "conditional") {
         if (!rejectReason.trim()) { toast({ title: t("materials.approval.reasonRequired"), variant: "destructive" }); setActionLoading(false); return; }
         await materialService.setConditional(material.id, activeProject.id, rejectReason.trim());
       }
@@ -164,7 +206,6 @@ export default function MaterialDetailPage() {
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto animate-fade-in">
-      {/* Header */}
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="icon" onClick={() => navigate("/materials")} className="h-8 w-8">
           <ArrowLeft className="h-4 w-4" />
@@ -188,7 +229,6 @@ export default function MaterialDetailPage() {
         </div>
       </div>
 
-      {/* Metrics */}
       {metrics && (
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
           {[
@@ -210,11 +250,11 @@ export default function MaterialDetailPage() {
         </div>
       )}
 
-      {/* Tabs */}
       <Tabs defaultValue="summary" className="space-y-4">
         <TabsList className="bg-muted/50 flex-wrap">
           <TabsTrigger value="summary">{t("materials.detail.tabs.summary")}</TabsTrigger>
           <TabsTrigger value="approval">{t("materials.detail.tabs.approval")}</TabsTrigger>
+          <TabsTrigger value="reception">{t("materials.detail.tabs.reception")}</TabsTrigger>
           <TabsTrigger value="suppliers">{t("materials.detail.tabs.suppliers")}</TabsTrigger>
           <TabsTrigger value="documents">{t("materials.detail.tabs.documents")}</TabsTrigger>
           <TabsTrigger value="tests">{t("materials.detail.tabs.tests")}</TabsTrigger>
@@ -223,7 +263,6 @@ export default function MaterialDetailPage() {
           <TabsTrigger value="audit">{t("materials.detail.tabs.audit")}</TabsTrigger>
         </TabsList>
 
-        {/* Summary */}
         <TabsContent value="summary">
           <Card className="border-0 shadow-card">
             <CardContent className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -232,20 +271,25 @@ export default function MaterialDetailPage() {
                 [t("materials.form.subcategory"), material.subcategory ?? "—"],
                 [t("materials.form.specification"), material.specification ?? "—"],
                 [t("materials.form.unit"), material.unit ?? "—"],
+                [t("materials.pameCode"), material.pame_code ? (
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <Badge variant="secondary" className="text-xs font-mono">{material.pame_code}</Badge>
+                    <Badge variant="secondary" className={cn("text-xs", PAME_COLORS[material.pame_status ?? "pending"] ?? "")}>{t(`materials.pameStatuses.${material.pame_status ?? "pending"}`)}</Badge>
+                  </div>
+                ) : "—"],
                 [t("materials.form.normativeRefs"), material.normative_refs ?? "—"],
                 [t("materials.form.acceptanceCriteria"), material.acceptance_criteria ?? "—"],
                 [t("materials.approval.required"), material.approval_required ? t("common.yes") : t("common.no")],
               ].map(([label, value], i) => (
                 <div key={i}>
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{label}</p>
-                  <p className="text-sm text-foreground mt-0.5 whitespace-pre-wrap">{value}</p>
+                  <div className="text-sm text-foreground mt-0.5 whitespace-pre-wrap">{value}</div>
                 </div>
               ))}
             </CardContent>
           </Card>
         </TabsContent>
 
-        {/* Approval (MAP/MAS) */}
         <TabsContent value="approval">
           <Card className="border-0 shadow-card">
             <CardHeader className="pb-2">
@@ -255,7 +299,6 @@ export default function MaterialDetailPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Timeline */}
               <div className="flex items-center gap-2 flex-wrap">
                 {["pending", "submitted", "in_review", "approved"].map((step, i) => (
                   <div key={step} className="flex items-center gap-1">
@@ -267,7 +310,6 @@ export default function MaterialDetailPage() {
                 ))}
               </div>
 
-              {/* Current status details */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("materials.approval.currentStatus")}</p>
@@ -295,7 +337,6 @@ export default function MaterialDetailPage() {
                 )}
               </div>
 
-              {/* Approval required toggle */}
               {canEdit && (
                 <div className="flex items-center gap-3 pt-2 border-t border-border">
                   <Switch
@@ -304,14 +345,15 @@ export default function MaterialDetailPage() {
                       try {
                         await materialService.update(material.id, activeProject.id, { approval_required: checked });
                         fetchAll();
-                      } catch { /* */ }
+                      } catch {
+                        // noop
+                      }
                     }}
                   />
                   <Label className="text-sm">{t("materials.approval.requireApproval")}</Label>
                 </div>
               )}
 
-              {/* Rejection / Conditional reason input */}
               {canValidate && (material.approval_status === "submitted" || material.approval_status === "in_review") && (
                 <div className="space-y-2 pt-2 border-t border-border">
                   <Label className="text-xs">{t("materials.approval.notesLabel")}</Label>
@@ -324,7 +366,6 @@ export default function MaterialDetailPage() {
                 </div>
               )}
 
-              {/* Action buttons */}
               <div className="flex gap-2 flex-wrap pt-2">
                 {canEdit && material.approval_status === "pending" && (
                   <Button size="sm" className="gap-1.5" onClick={() => handleApprovalAction("submit")} disabled={actionLoading}>
@@ -344,7 +385,7 @@ export default function MaterialDetailPage() {
                       <CheckCircle2 className="h-3.5 w-3.5" />
                       {t("materials.approval.actions.approve")}
                     </Button>
-                    <Button size="sm" variant="outline" className="gap-1.5 text-amber-600 border-amber-600/30" onClick={() => handleApprovalAction("conditional")} disabled={actionLoading}>
+                    <Button size="sm" variant="outline" className="gap-1.5" onClick={() => handleApprovalAction("conditional")} disabled={actionLoading}>
                       <AlertTriangle className="h-3.5 w-3.5" />
                       {t("materials.approval.actions.conditional")}
                     </Button>
@@ -365,7 +406,61 @@ export default function MaterialDetailPage() {
           </Card>
         </TabsContent>
 
-        {/* Suppliers */}
+        <TabsContent value="reception">
+          <Card className="border-0 shadow-card">
+            <CardHeader className="pb-2 flex flex-row items-center justify-between">
+              <CardTitle className="text-sm">{t("materials.reception.title")}</CardTitle>
+              {canCreate && <Button size="sm" onClick={() => setReceptionOpen(true)}>{t("materials.reception.newReception")}</Button>}
+            </CardHeader>
+            <CardContent>
+              {lots.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-6">{t("common.noData")}</p>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>{t("materials.reception.table.lotCode")}</TableHead>
+                      <TableHead>{t("materials.reception.table.date")}</TableHead>
+                      <TableHead>{t("materials.reception.table.supplier")}</TableHead>
+                      <TableHead>{t("materials.reception.table.deliveryNote")}</TableHead>
+                      <TableHead>{t("materials.reception.table.lotRef")}</TableHead>
+                      <TableHead>{t("materials.reception.table.ceMarking")}</TableHead>
+                      <TableHead>{t("materials.reception.table.physicalState")}</TableHead>
+                      <TableHead>{t("materials.reception.table.status")}</TableHead>
+                      <TableHead>{t("materials.reception.table.nc")}</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {lots.map((lot) => (
+                      <TableRow key={lot.id}>
+                        <TableCell className="font-mono text-xs">{lot.lot_code}</TableCell>
+                        <TableCell className="text-sm">{new Date(lot.reception_date).toLocaleDateString()}</TableCell>
+                        <TableCell className="text-sm">{lot.suppliers?.name ?? "—"}</TableCell>
+                        <TableCell className="text-sm">{lot.delivery_note_ref ?? "—"}</TableCell>
+                        <TableCell className="text-sm">{lot.lot_ref ?? "—"}</TableCell>
+                        <TableCell className="text-sm">{lot.ce_marking_ok ? "✅" : "❌"}</TableCell>
+                        <TableCell>
+                          <Badge variant="secondary" className={cn("text-xs", PHYSICAL_STATE_COLORS[lot.physical_state] ?? "")}>{lot.physical_state === "conforme" ? t("common.conforming", { defaultValue: "Conforme" }) : t("common.nonConforming", { defaultValue: "Não conforme" })}</Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="secondary" className={cn("text-xs", RECEPTION_STATUS_COLORS[lot.reception_status] ?? "")}>{t(`materials.reception.status.${lot.reception_status}`)}</Badge>
+                        </TableCell>
+                        <TableCell>
+                          {lot.nc_id ? (
+                            <button className="text-xs text-primary underline underline-offset-2" onClick={() => navigate(`/non-conformities/${lot.nc_id}`)}>
+                              {lot.non_conformities?.code ?? "NC"}
+                            </button>
+                          ) : "—"}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         <TabsContent value="suppliers">
           <Card className="border-0 shadow-card">
             <CardContent className="p-6">
@@ -398,7 +493,6 @@ export default function MaterialDetailPage() {
           </Card>
         </TabsContent>
 
-        {/* Documents */}
         <TabsContent value="documents">
           <LinkedDocumentsPanel entityType="material" entityId={material.id} projectId={activeProject.id} />
           {docs.length > 0 && (
@@ -437,7 +531,6 @@ export default function MaterialDetailPage() {
           )}
         </TabsContent>
 
-        {/* Tests */}
         <TabsContent value="tests">
           <Card className="border-0 shadow-card">
             <CardHeader className="pb-2 flex flex-row items-center justify-between">
@@ -478,7 +571,6 @@ export default function MaterialDetailPage() {
           </Card>
         </TabsContent>
 
-        {/* NCs */}
         <TabsContent value="ncs">
           <Card className="border-0 shadow-card">
             <CardHeader className="pb-2 flex flex-row items-center justify-between">
@@ -519,7 +611,6 @@ export default function MaterialDetailPage() {
           </Card>
         </TabsContent>
 
-        {/* Work Items */}
         <TabsContent value="workItems">
           <Card className="border-0 shadow-card">
             <CardContent className="p-6">
@@ -551,7 +642,6 @@ export default function MaterialDetailPage() {
           </Card>
         </TabsContent>
 
-        {/* Audit */}
         <TabsContent value="audit">
           <Card className="border-0 shadow-card">
             <CardContent className="p-6">
@@ -577,6 +667,7 @@ export default function MaterialDetailPage() {
       </Tabs>
 
       <MaterialFormDialog open={editOpen} onOpenChange={setEditOpen} material={material} onSuccess={fetchAll} />
+      <MaterialReceptionDialog open={receptionOpen} onOpenChange={setReceptionOpen} projectId={activeProject.id} material={material} onSuccess={fetchAll} />
     </div>
   );
 }

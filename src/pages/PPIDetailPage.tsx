@@ -67,6 +67,12 @@ function ResultBadge({ result, t }: { result: PpiItemResult; t: (k: string) => s
   );
 }
 
+const INSPECTION_POINT_BADGE: Record<string, string> = {
+  hp: "bg-destructive/10 text-destructive",
+  wp: "bg-accent text-accent-foreground",
+  rp: "bg-primary/15 text-primary",
+};
+
 // ─── Status workflow config ───────────────────────────────────────────────────
 
 type Transition = {
@@ -374,6 +380,7 @@ export default function PPIDetailPage() {
   const availableTransitions = instance
     ? TRANSITIONS.filter((tr) => tr.from === instance.status)
     : [];
+  const hasHoldPointWarning = pendingTransition?.to === "submitted" && items.some((item) => item.inspection_point_type === "hp" && (item.result === "pending" || item.result === "fail"));
 
   // ── Render ─────────────────────────────────────────────────────────────────
 
@@ -712,7 +719,12 @@ export default function PPIDetailPage() {
 
                             {/* Label — check_code oculto (apenas interno) */}
                             <td className="px-4 py-3 align-top pt-4">
-                              <p className="font-medium text-foreground text-sm">{item.label}</p>
+                              <div className="flex items-center gap-2 flex-wrap">
+                                {item.inspection_point_type && item.inspection_point_type !== "na" && (
+                                  <Badge variant="secondary" className={cn("text-[10px] font-bold", INSPECTION_POINT_BADGE[item.inspection_point_type] ?? "")}>{item.inspection_point_type.toUpperCase()}</Badge>
+                                )}
+                                <p className="font-medium text-foreground text-sm">{item.label}</p>
+                              </div>
                               {isNok && (
                                 <div className="mt-1.5 flex items-center gap-1">
                                   {hasNc ? (
@@ -884,7 +896,9 @@ export default function PPIDetailPage() {
             <AlertDialogDescription>
               {pendingTransition?.to === "rejected"
                 ? t("ppi.rejection.description", { code: instance.code })
-                : `${instance.code} · ${t("ppi.status." + instance.status)} → ${t("ppi.status." + (pendingTransition?.to ?? "draft"))}`}
+                : hasHoldPointWarning
+                  ? t("ppi.instances.detail.holdPointWarning")
+                  : `${instance.code} · ${t("ppi.status." + instance.status)} → ${t("ppi.status." + (pendingTransition?.to ?? "draft"))}`}
             </AlertDialogDescription>
           </AlertDialogHeader>
           {pendingTransition?.to === "rejected" && (

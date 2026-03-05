@@ -126,6 +126,7 @@ export default function PPITemplatesPage() {
             label:               it.label,
             method:              it.method,
             acceptance_criteria: it.acceptance_criteria,
+            inspection_point_type: it.inspection_point_type,
             required:            it.required,
             evidence_required:   it.evidence_required,
             sort_order:          it.sort_order,

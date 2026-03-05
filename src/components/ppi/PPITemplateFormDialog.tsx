@@ -40,6 +40,7 @@ const itemSchema = z.object({
   label:               z.string().min(1),
   method:              z.string().optional(),
   acceptance_criteria: z.string().optional(),
+  inspection_point_type: z.string().default("na"),
   required:            z.boolean().default(true),
   evidence_required:   z.boolean().default(false),
 });
@@ -115,6 +116,7 @@ export function PPITemplateFormDialog({ open, onOpenChange, template, onSuccess 
           label:               it.label,
           method:              it.method ?? "",
           acceptance_criteria: it.acceptance_criteria ?? "",
+          inspection_point_type: it.inspection_point_type ?? "na",
           required:            it.required,
           evidence_required:   it.evidence_required,
         }));
@@ -126,7 +128,7 @@ export function PPITemplateFormDialog({ open, onOpenChange, template, onSuccess 
   }, [open, template, form]);
 
   function addItem() {
-    append({ check_code: "", label: "", method: "", acceptance_criteria: "", required: true, evidence_required: false });
+    append({ check_code: "", label: "", method: "", acceptance_criteria: "", inspection_point_type: "na", required: true, evidence_required: false });
   }
 
   async function onSubmit(values: FormValues) {
@@ -172,21 +174,22 @@ export function PPITemplateFormDialog({ open, onOpenChange, template, onSuccess 
         templateId = created.id;
       }
 
-      if (values.items.length > 0) {
-        await ppiService.addTemplateItems(
-          values.items.map((it, idx) => ({
-            template_id:         templateId,
-            item_no:             idx + 1,
-            check_code:          it.check_code,
-            label:               it.label,
-            method:              it.method || null,
-            acceptance_criteria: it.acceptance_criteria || null,
-            required:            it.required,
-            evidence_required:   it.evidence_required,
-            sort_order:          idx + 1,
-          }))
-        );
-      }
+        if (values.items.length > 0) {
+          await ppiService.addTemplateItems(
+            values.items.map((it, idx) => ({
+              template_id:         templateId,
+              item_no:             idx + 1,
+              check_code:          it.check_code,
+              label:               it.label,
+              method:              it.method || null,
+              acceptance_criteria: it.acceptance_criteria || null,
+              inspection_point_type: it.inspection_point_type || "na",
+              required:            it.required,
+              evidence_required:   it.evidence_required,
+              sort_order:          idx + 1,
+            }))
+          );
+        }
 
       toast({ title: isEdit ? t("ppi.templates.toast.updated") : t("ppi.templates.toast.created") });
       onOpenChange(false);
@@ -313,6 +316,7 @@ export function PPITemplateFormDialog({ open, onOpenChange, template, onSuccess 
                         <TableHead className="text-xs">{t("ppi.templates.items.checkCode")}</TableHead>
                         <TableHead className="text-xs">{t("ppi.templates.items.label")}</TableHead>
                         <TableHead className="text-xs hidden md:table-cell">{t("ppi.templates.items.method")}</TableHead>
+                        <TableHead className="text-xs w-[160px]">{t("ppi.inspectionPointType")}</TableHead>
                         <TableHead className="text-xs hidden lg:table-cell">{t("ppi.templates.items.criteria")}</TableHead>
                         <TableHead className="text-xs text-center w-20">{t("ppi.templates.items.required")}</TableHead>
                         <TableHead className="text-xs text-center w-20">{t("ppi.templates.items.evidenceRequired")}</TableHead>
@@ -343,6 +347,21 @@ export function PPITemplateFormDialog({ open, onOpenChange, template, onSuccess 
                               placeholder={t("ppi.templates.items.method")}
                               {...form.register(`items.${idx}.method`)}
                             />
+                          </TableCell>
+                          <TableCell className="w-[160px]">
+                            <Select
+                              value={form.watch(`items.${idx}.inspection_point_type`) ?? "na"}
+                              onValueChange={(value) => form.setValue(`items.${idx}.inspection_point_type`, value)}
+                            >
+                              <SelectTrigger className="h-7 text-xs w-full">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {(["hp", "wp", "rp", "na"] as const).map((type) => (
+                                  <SelectItem key={type} value={type}>{t(`ppi.inspectionPointTypes.${type}`)}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
                           </TableCell>
                           <TableCell className="hidden lg:table-cell">
                             <Input
