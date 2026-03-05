@@ -13,6 +13,8 @@ export interface Material {
   unit: string | null;
   normative_refs: string | null;
   acceptance_criteria: string | null;
+  pame_code: string | null;
+  pame_status: string | null;
   status: string;
   // Approval workflow
   approval_status: string;
@@ -42,6 +44,8 @@ export interface MaterialInput {
   acceptance_criteria?: string;
   supplier_id?: string;
   approval_required?: boolean;
+  pame_code?: string;
+  pame_status?: string;
 }
 
 export interface MaterialDocument {
@@ -155,10 +159,12 @@ export const materialService = {
 
     // Update additional fields not in RPC
     const mat = data as unknown as Material;
-    if (input.supplier_id || input.approval_required !== undefined) {
+    if (input.supplier_id || input.approval_required !== undefined || input.pame_code !== undefined || input.pame_status !== undefined) {
       const updates: Record<string, unknown> = {};
       if (input.supplier_id) updates.supplier_id = input.supplier_id;
       if (input.approval_required !== undefined) updates.approval_required = input.approval_required;
+      if (input.pame_code !== undefined) updates.pame_code = input.pame_code || null;
+      if (input.pame_status !== undefined) updates.pame_status = input.pame_status || null;
       await supabase.from("materials" as any).update(updates).eq("id", mat.id);
     }
     return mat;

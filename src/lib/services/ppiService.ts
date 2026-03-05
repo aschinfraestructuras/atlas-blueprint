@@ -44,6 +44,7 @@ export interface PpiTemplateItem {
   label: string;
   method: string | null;
   acceptance_criteria: string | null;
+  inspection_point_type: string | null;
   required: boolean;
   evidence_required: boolean;
   sort_order: number;
@@ -97,6 +98,7 @@ export interface PpiInstanceItem {
   evidence_required: boolean;
   method: string | null;
   acceptance_criteria: string | null;
+  inspection_point_type: string | null;
   sort_order: number;
 }
 
@@ -121,6 +123,7 @@ export interface PpiTemplateItemInput {
   label: string;
   method?: string | null;
   acceptance_criteria?: string | null;
+  inspection_point_type?: string | null;
   required?: boolean;
   evidence_required?: boolean;
   sort_order?: number;
@@ -256,6 +259,7 @@ export const ppiService = {
       label:               it.label,
       method:              it.method              ?? null,
       acceptance_criteria: it.acceptance_criteria ?? null,
+      inspection_point_type: it.inspection_point_type ?? "na",
       required:            it.required            ?? true,
       evidence_required:   it.evidence_required   ?? false,
       sort_order:          it.sort_order          ?? it.item_no,

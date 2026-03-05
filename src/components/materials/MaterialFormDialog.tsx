@@ -38,6 +38,8 @@ export function MaterialFormDialog({ open, onOpenChange, material, onSuccess }: 
   const [subcategory, setSubcategory] = useState("");
   const [specification, setSpecification] = useState("");
   const [unit, setUnit] = useState("");
+  const [pameCode, setPameCode] = useState("");
+  const [pameStatus, setPameStatus] = useState("pending");
   const [normativeRefs, setNormativeRefs] = useState("");
   const [acceptanceCriteria, setAcceptanceCriteria] = useState("");
   const [saving, setSaving] = useState(false);
@@ -49,11 +51,13 @@ export function MaterialFormDialog({ open, onOpenChange, material, onSuccess }: 
       setSubcategory(material.subcategory ?? "");
       setSpecification(material.specification ?? "");
       setUnit(material.unit ?? "");
+      setPameCode(material.pame_code ?? "");
+      setPameStatus(material.pame_status ?? "pending");
       setNormativeRefs(material.normative_refs ?? "");
       setAcceptanceCriteria(material.acceptance_criteria ?? "");
     } else {
       setName(""); setCategory("betao"); setSubcategory("");
-      setSpecification(""); setUnit(""); setNormativeRefs(""); setAcceptanceCriteria("");
+      setSpecification(""); setUnit(""); setPameCode(""); setPameStatus("pending"); setNormativeRefs(""); setAcceptanceCriteria("");
     }
   }, [material, open]);
 
@@ -68,6 +72,8 @@ export function MaterialFormDialog({ open, onOpenChange, material, onSuccess }: 
           subcategory: subcategory || undefined,
           specification: specification || undefined,
           unit: unit || undefined,
+          pame_code: pameCode || undefined,
+          pame_status: pameStatus || undefined,
           normative_refs: normativeRefs || undefined,
           acceptance_criteria: acceptanceCriteria || undefined,
         });
@@ -80,6 +86,8 @@ export function MaterialFormDialog({ open, onOpenChange, material, onSuccess }: 
           subcategory: subcategory || undefined,
           specification: specification || undefined,
           unit: unit || undefined,
+          pame_code: pameCode || undefined,
+          pame_status: pameStatus || undefined,
           normative_refs: normativeRefs || undefined,
           acceptance_criteria: acceptanceCriteria || undefined,
         });
@@ -137,6 +145,24 @@ export function MaterialFormDialog({ open, onOpenChange, material, onSuccess }: 
                 <SelectTrigger><SelectValue placeholder={t("materials.form.unitPlaceholder")} /></SelectTrigger>
                 <SelectContent>
                   {UNITS.map(u => <SelectItem key={u} value={u}>{u}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="grid gap-1.5">
+              <Label>{t("materials.pameCode")}</Label>
+              <Input value={pameCode} onChange={e => setPameCode(e.target.value)} placeholder="VF.02" />
+            </div>
+            <div className="grid gap-1.5">
+              <Label>{t("materials.pameStatus")}</Label>
+              <Select value={pameStatus} onValueChange={setPameStatus}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {(["pending", "submitted", "approved", "conditional", "rejected"] as const).map(status => (
+                    <SelectItem key={status} value={status}>{t(`materials.pameStatuses.${status}`)}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

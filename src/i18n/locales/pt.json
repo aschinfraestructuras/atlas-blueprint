@@ -1952,6 +1952,13 @@
         "inactive": "Arquivado"
       }
     },
+    "inspectionPointType": "Tipo de Ponto",
+    "inspectionPointTypes": {
+      "hp": "HP — Hold Point",
+      "wp": "WP — Witness Point",
+      "rp": "RP — Review Point",
+      "na": "N/A"
+    },
     "instances": {
       "title": "Instâncias PPI",
       "subtitle": "Registos de inspeção ativos",
@@ -2003,6 +2010,7 @@
         "createNcDescription": "O item {{item}} foi marcado como Não Conforme. Deseja criar uma NC associada?",
         "createNcConfirm": "Criar NC",
         "createNcSkip": "Ignorar",
+        "holdPointWarning": "Existem Hold-Points não concluídos. Confirmar mesmo assim?",
         "deleteDraft": "Eliminar rascunho",
         "deleteDraftDescription": "Esta ação é irreversível. O rascunho {{code}} e todos os seus itens serão permanentemente eliminados.",
         "deleteDraftConfirm": "Eliminar permanentemente"
@@ -2253,6 +2261,58 @@
       "supplierPlaceholder": "Selecionar fornecedor…",
       "approvalRequired": "Requer aprovação MAP/MAS"
     },
+    "pameCode": "Código PAME",
+    "pameStatus": "Estado PAME",
+    "pameStatuses": {
+      "pending": "Pendente",
+      "submitted": "Submetido",
+      "approved": "Aprovado",
+      "conditional": "Aprovação Condicional",
+      "rejected": "Rejeitado"
+    },
+    "reception": {
+      "title": "Receção",
+      "newReception": "Nova Receção",
+      "table": {
+        "lotCode": "Código Lote",
+        "date": "Data",
+        "supplier": "Fornecedor",
+        "deliveryNote": "Guia Remessa",
+        "lotRef": "Nº Lote",
+        "ceMarking": "Marc. CE",
+        "physicalState": "Estado Físico",
+        "status": "Estado",
+        "nc": "NC"
+      },
+      "form": {
+        "date": "Data de Receção",
+        "supplier": "Fornecedor",
+        "pameCode": "Código PAME",
+        "deliveryNote": "Guia de Remessa Nº",
+        "lotRef": "Nº Lote / Rastreabilidade",
+        "quantity": "Quantidade Recebida",
+        "unit": "Unidade",
+        "ceMarking": "Marcação CE presente e legível?",
+        "physicalState": "Estado físico do material",
+        "storageLocation": "Local de armazenagem no estaleiro",
+        "notes": "Observações",
+        "rejectionReason": "Motivo de rejeição / quarentena"
+      },
+      "status": {
+        "pending": "Pendente",
+        "approved": "Aprovado",
+        "quarantine": "Quarentena",
+        "rejected": "Rejeitado"
+      },
+      "actions": {
+        "approveAndSave": "Guardar e Aprovar",
+        "saveQuarantine": "Guardar em Quarentena",
+        "reject": "Rejeitar",
+        "createNc": "Criar NC",
+        "createNcPrompt": "Receção não conforme. Criar NC?",
+        "ncCreated": "NC criada com sucesso"
+      }
+    },
     "approval": {
       "title": "Aprovação MAP/MAS",
       "mapMas": "MAP/MAS",
@@ -2320,6 +2380,7 @@
       "tabs": {
         "summary": "Resumo",
         "approval": "MAP/MAS",
+        "reception": "Receção",
         "suppliers": "Fornecedores",
         "documents": "Documentos",
         "tests": "Ensaios",
