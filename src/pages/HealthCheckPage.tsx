@@ -128,8 +128,8 @@ export default function HealthCheckPage() {
         category: "rls",
         status: data ? "pass" : "warn",
         message: data
-          ? `Membro confirmado (${dur}ms)`
-          : `Não é membro do projeto ativo (${dur}ms)`,
+          ? `${t("health.checks.memberConfirmed", { defaultValue: "Membro confirmado" })} (${dur}ms)`
+          : `${t("health.checks.notMember", { defaultValue: "Não é membro do projeto ativo" })} (${dur}ms)`,
         durationMs: dur,
       });
     } catch (err) {
@@ -152,7 +152,7 @@ export default function HealthCheckPage() {
         name: "get_project_role",
         category: "rls",
         status: data ? "pass" : "warn",
-        message: data ? `Role: ${data} (${dur}ms)` : `Sem role atribuída (${dur}ms)`,
+        message: data ? `Role: ${data} (${dur}ms)` : `${t("health.checks.noRole", { defaultValue: "Sem role atribuída" })} (${dur}ms)`,
         durationMs: dur,
       });
     } catch (err) {
@@ -197,7 +197,7 @@ export default function HealthCheckPage() {
           name: bucket,
           category: "storage",
           status: error ? "warn" : "pass",
-          message: error ? error.message : `Acessível (${dur}ms)`,
+          message: error ? error.message : `${t("health.checks.accessible", { defaultValue: "Acessível" })} (${dur}ms)`,
           durationMs: dur,
         });
       } catch (err) {
@@ -271,12 +271,12 @@ export default function HealthCheckPage() {
           </Badge>
           {warnCount > 0 && (
             <Badge variant="outline" className="gap-1.5 text-xs bg-amber-500/10 text-amber-700 border-amber-500/20">
-              <AlertCircle className="h-3 w-3" /> {warnCount} Avisos
+              <AlertCircle className="h-3 w-3" /> {warnCount} {t("health.checks.warnings", { defaultValue: "Avisos" })}
             </Badge>
           )}
           {failCount > 0 && (
             <Badge variant="outline" className="gap-1.5 text-xs bg-destructive/10 text-destructive border-destructive/20">
-              <XCircle className="h-3 w-3" /> {failCount} Falhas
+              <XCircle className="h-3 w-3" /> {failCount} {t("health.checks.failures", { defaultValue: "Falhas" })}
             </Badge>
           )}
           <span className="text-xs text-muted-foreground ml-auto">

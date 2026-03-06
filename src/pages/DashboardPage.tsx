@@ -437,9 +437,10 @@ export default function DashboardPage() {
               <KPICard label={t("health.docsExpired")} value={projectHealth.total_documents_expired} icon={FileText} loading={healthLoading} color={projectHealth.total_documents_expired > 0 ? "#f59e0b" : MOD.muted} sub={`${projectHealth.total_calibrations_expired} ${t("health.calibExpired").toLowerCase()}`} severity="attention" />
               <KPICard label={t("health.activitiesBlocked")} value={projectHealth.activities_blocked} icon={Ban} loading={healthLoading} color={projectHealth.activities_blocked > 0 ? "#ef4444" : MOD.muted} sub={`${projectHealth.total_ppi_pending} ${t("health.ppiPending").toLowerCase()}`} severity="negative" />
               {/* Health Score Gauge */}
-              <Card className="border-0 bg-card shadow-card hover:shadow-card-hover transition-all duration-200 animate-fade-in overflow-hidden">
-                <CardContent className="p-4 flex flex-col items-center justify-center">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground leading-none mb-2">{t("health.score")}</p>
+              <Card className="border-0 bg-card shadow-card hover:shadow-card-hover transition-all duration-200 animate-fade-in overflow-hidden relative" style={{ borderLeft: `4px solid ${projectHealth.health_score >= 70 ? "#22c55e" : projectHealth.health_score >= 40 ? "#f59e0b" : "#ef4444"}` }}>
+                <div className="absolute top-0 left-0 right-0 h-[3px]" style={{ background: projectHealth.health_score >= 70 ? "#22c55e" : projectHealth.health_score >= 40 ? "#f59e0b" : "#ef4444" }} />
+                <CardContent className="p-5 flex flex-col items-center justify-center">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground leading-none mb-3">{t("health.score")}</p>
                   <div className="relative w-[100px] h-[55px]">
                     <ResponsiveContainer width="100%" height={55}>
                       <PieChart>

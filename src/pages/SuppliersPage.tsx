@@ -5,7 +5,7 @@ import { useProject } from "@/contexts/ProjectContext";
 import { useSuppliers } from "@/hooks/useSuppliers";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import { supplierService } from "@/lib/services/supplierService";
-import { Truck, Plus, Pencil, Search, Archive, RotateCcw, Eye, Trash2 } from "lucide-react";
+import { Truck, Plus, Pencil, Search, Archive, RotateCcw, Eye, Trash2, PieChart as PieChartIcon, AlertTriangle } from "lucide-react";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
@@ -126,23 +126,77 @@ export default function SuppliersPage() {
         </div>
       </div>
 
-      {/* KPI Cards */}
+      {/* KPI Cards + Charts */}
       {kpis && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {[
-            { label: t("suppliers.kpi.total"), value: kpis.suppliers_total },
-            { label: t("suppliers.kpi.pendingQual"), value: kpis.suppliers_pending_qualification },
-            { label: t("suppliers.kpi.docsExpiring"), value: kpis.supplier_docs_expiring_30d },
-            { label: t("suppliers.kpi.withOpenNC"), value: kpis.suppliers_with_open_nc },
-          ].map((k, i) => (
-            <Card key={i} className="border-0 bg-card shadow-card">
-              <CardContent className="p-4 text-center">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{k.label}</p>
-                <p className="text-2xl font-black tabular-nums mt-1 text-foreground">{k.value}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {[
+              { label: t("suppliers.kpi.total"), value: kpis.suppliers_total },
+              { label: t("suppliers.kpi.pendingQual"), value: kpis.suppliers_pending_qualification },
+              { label: t("suppliers.kpi.docsExpiring"), value: kpis.supplier_docs_expiring_30d },
+              { label: t("suppliers.kpi.withOpenNC"), value: kpis.suppliers_with_open_nc },
+            ].map((k, i) => (
+              <Card key={i} className="border-0 bg-card shadow-card">
+                <CardContent className="p-4 text-center">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{k.label}</p>
+                  <p className="text-2xl font-black tabular-nums mt-1 text-foreground">{k.value}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* Distribution charts */}
+          {suppliers.length > 0 && (
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <Card className="border shadow-none">
+                <CardContent className="pt-4 pb-4 px-4">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground flex items-center gap-1.5 mb-3">
+                    <PieChartIcon className="h-3.5 w-3.5" />{t("suppliers.form.category")}
+                  </p>
+                  <ul className="space-y-1.5">
+                    {(() => {
+                      const catMap: Record<string, number> = {};
+                      suppliers.forEach(s => { if (s.category) catMap[s.category] = (catMap[s.category] ?? 0) + 1; });
+                      return Object.entries(catMap)
+                        .sort((a, b) => b[1] - a[1])
+                        .slice(0, 6)
+                        .map(([k, v]) => (
+                          <li key={k} className="flex items-center justify-between text-xs">
+                            <span className="text-muted-foreground truncate">{t(`suppliers.categories.${k}`, { defaultValue: k })}</span>
+                            <span className="font-bold tabular-nums text-foreground">{v}</span>
+                          </li>
+                        ));
+                    })()}
+                  </ul>
+                </CardContent>
+              </Card>
+              <Card className="border shadow-none">
+                <CardContent className="pt-4 pb-4 px-4">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground flex items-center gap-1.5 mb-3">
+                    <AlertTriangle className="h-3.5 w-3.5" />{t("suppliers.form.qualificationStatus")}
+                  </p>
+                  <ul className="space-y-1.5">
+                    {(() => {
+                      const qualMap: Record<string, number> = {};
+                      suppliers.forEach(s => {
+                        const q = s.qualification_status ?? s.approval_status;
+                        qualMap[q] = (qualMap[q] ?? 0) + 1;
+                      });
+                      return Object.entries(qualMap)
+                        .sort((a, b) => b[1] - a[1])
+                        .map(([k, v]) => (
+                          <li key={k} className="flex items-center justify-between text-xs">
+                            <span className="text-muted-foreground truncate">{t(`suppliers.qualificationStatus.${k}`, { defaultValue: k })}</span>
+                            <span className="font-bold tabular-nums text-foreground">{v}</span>
+                          </li>
+                        ));
+                    })()}
+                  </ul>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+        </>
       )}
 
       {/* Filters */}

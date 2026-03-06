@@ -32,7 +32,11 @@
     "confirmRestore": "¿Está seguro de que desea restaurar?",
     "export": "Exportar",
     "exportPdf": "Exportar PDF",
-    "exportCsv": "Exportar CSV"
+    "exportCsv": "Exportar CSV",
+    "yes": "Sí",
+    "no": "No",
+    "conforming": "Conforme",
+    "nonConforming": "No conforme"
   },
   "auth": {
     "signIn": "Iniciar sesión",
@@ -171,6 +175,14 @@
       "rls": "RLS / Permisos",
       "functions": "Funciones RPC",
       "storage": "Almacenamiento"
+    },
+    "checks": {
+      "memberConfirmed": "Miembro confirmado",
+      "notMember": "No es miembro del proyecto activo",
+      "noRole": "Sin rol asignado",
+      "accessible": "Accesible",
+      "warnings": "Avisos",
+      "failures": "Fallos"
     }
   },
   "moduleKpi": {
@@ -2148,21 +2160,6 @@
     "pdfDetail": "PDF — Detalle",
     "csvList": "CSV — Lista"
   },
-  "health": {
-    "module": "Sistema",
-    "title": "Verificación de Salud",
-    "subtitle": "Pruebas automáticas de integridad del sistema",
-    "runChecks": "Ejecutar verificaciones",
-    "lastRun": "Última ejecución",
-    "noProject": "Seleccione un proyecto activo para ejecutar las verificaciones.",
-    "ready": "Haga clic en «Ejecutar verificaciones» para probar la integridad del sistema.",
-    "cat": {
-      "tables": "Tablas",
-      "rls": "RLS / Permisos",
-      "functions": "Funciones RPC",
-      "storage": "Storage"
-    }
-  },
   "materials": {
     "newMaterial": "Nuevo Material",
     "searchPlaceholder": "Buscar código, nombre, especificación…",
@@ -2765,22 +2762,6 @@
       "days": "Días",
       "severity": "Severidad"
     }
-  },
-  "health": {
-    "healthy": "Saludable",
-    "attention": "Atención",
-    "critical": "Crítico",
-    "score": "Health Score",
-    "ncOpen": "NC Abiertas",
-    "ncOverdue": "NC en Atraso",
-    "testsPending": "Ensayos Pendientes",
-    "testsFail30d": "Ensayos Reprobados (30d)",
-    "ppiPending": "PPI Pendientes",
-    "docsExpired": "Documentos Expirados",
-    "calibExpired": "Calibraciones Expiradas",
-    "activitiesBlocked": "Actividades Bloqueadas",
-    "readiness": "Prontitud",
-    "globalReadiness": "Prontitud Global"
   },
   "moduleKpi": {
     "total": "Total",

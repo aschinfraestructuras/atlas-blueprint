@@ -32,7 +32,11 @@
     "confirmRestore": "Tem a certeza que deseja restaurar?",
     "export": "Exportar",
     "exportPdf": "Exportar PDF",
-    "exportCsv": "Exportar CSV"
+    "exportCsv": "Exportar CSV",
+    "yes": "Sim",
+    "no": "Não",
+    "conforming": "Conforme",
+    "nonConforming": "Não conforme"
   },
   "auth": {
     "signIn": "Iniciar sessão",
@@ -2191,21 +2195,6 @@
     "pdfList": "PDF — Lista",
     "pdfDetail": "PDF — Detalhe",
     "csvList": "CSV — Lista"
-  },
-  "health": {
-    "module": "Sistema",
-    "title": "Verificação de Saúde",
-    "subtitle": "Testes automáticos de integridade do sistema",
-    "runChecks": "Executar verificações",
-    "lastRun": "Última execução",
-    "noProject": "Selecione um projeto ativo para executar as verificações.",
-    "ready": "Clique em «Executar verificações» para testar a integridade do sistema.",
-    "cat": {
-      "tables": "Tabelas",
-      "rls": "RLS / Permissões",
-      "functions": "Funções RPC",
-      "storage": "Storage"
-    }
   },
   "materials": {
     "newMaterial": "Novo Material",
