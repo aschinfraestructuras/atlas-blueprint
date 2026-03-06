@@ -5,7 +5,7 @@ import { useProject } from "@/contexts/ProjectContext";
 import { useMaterials } from "@/hooks/useMaterials";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import { materialService } from "@/lib/services/materialService";
-import { Package, Plus, Pencil, Search, Archive, RotateCcw, Eye, Trash2 } from "lucide-react";
+import { Package, Plus, Pencil, Search, Archive, RotateCcw, Eye, Trash2, PieChart as PieChartIcon } from "lucide-react";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
@@ -130,25 +130,76 @@ export default function MaterialsPage() {
             )}
           </div>
 
-          {/* KPI Cards */}
+          {/* KPI Cards + Charts */}
           {kpis && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-              {[
-                { label: t("materials.kpi.total"), value: kpis.materials_total },
-                { label: t("materials.kpi.active"), value: kpis.materials_active },
-                { label: t("materials.kpi.discontinued"), value: kpis.materials_discontinued },
-                { label: t("materials.kpi.docsExpired"), value: kpis.materials_with_expired_docs },
-                { label: t("materials.kpi.withOpenNC"), value: kpis.materials_with_open_nc },
-                { label: t("materials.kpi.nonconformTests"), value: kpis.materials_with_nonconform_tests_30d },
-              ].map((k, i) => (
-                <Card key={i} className="border-0 bg-card shadow-card">
-                  <CardContent className="p-4 text-center">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{k.label}</p>
-                    <p className="text-2xl font-black tabular-nums mt-1 text-foreground">{k.value}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                {[
+                  { label: t("materials.kpi.total"), value: kpis.materials_total },
+                  { label: t("materials.kpi.active"), value: kpis.materials_active },
+                  { label: t("materials.kpi.discontinued"), value: kpis.materials_discontinued },
+                  { label: t("materials.kpi.docsExpired"), value: kpis.materials_with_expired_docs },
+                  { label: t("materials.kpi.withOpenNC"), value: kpis.materials_with_open_nc },
+                  { label: t("materials.kpi.nonconformTests"), value: kpis.materials_with_nonconform_tests_30d },
+                ].map((k, i) => (
+                  <Card key={i} className="border-0 bg-card shadow-card">
+                    <CardContent className="p-4 text-center">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{k.label}</p>
+                      <p className="text-2xl font-black tabular-nums mt-1 text-foreground">{k.value}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              {/* Distribution charts */}
+              {materials.length > 0 && (
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <Card className="border shadow-none">
+                    <CardContent className="pt-4 pb-4 px-4">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground flex items-center gap-1.5 mb-3">
+                        <PieChartIcon className="h-3.5 w-3.5" />{t("materials.form.category")}
+                      </p>
+                      <ul className="space-y-1.5">
+                        {(() => {
+                          const catMap: Record<string, number> = {};
+                          materials.forEach(m => { catMap[m.category] = (catMap[m.category] ?? 0) + 1; });
+                          return Object.entries(catMap)
+                            .sort((a, b) => b[1] - a[1])
+                            .slice(0, 6)
+                            .map(([k, v]) => (
+                              <li key={k} className="flex items-center justify-between text-xs">
+                                <span className="text-muted-foreground truncate">{t(`materials.categories.${k}`, { defaultValue: k })}</span>
+                                <span className="font-bold tabular-nums text-foreground">{v}</span>
+                              </li>
+                            ));
+                        })()}
+                      </ul>
+                    </CardContent>
+                  </Card>
+                  <Card className="border shadow-none">
+                    <CardContent className="pt-4 pb-4 px-4">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground flex items-center gap-1.5 mb-3">
+                        <Package className="h-3.5 w-3.5" />{t("materials.approval.mapMas")}
+                      </p>
+                      <ul className="space-y-1.5">
+                        {(() => {
+                          const statusMap: Record<string, number> = {};
+                          materials.forEach(m => { statusMap[m.approval_status] = (statusMap[m.approval_status] ?? 0) + 1; });
+                          return Object.entries(statusMap)
+                            .sort((a, b) => b[1] - a[1])
+                            .map(([k, v]) => (
+                              <li key={k} className="flex items-center justify-between text-xs">
+                                <span className="text-muted-foreground truncate">{t(`materials.approval.statuses.${k}`, { defaultValue: k })}</span>
+                                <span className="font-bold tabular-nums text-foreground">{v}</span>
+                              </li>
+                            ));
+                        })()}
+                      </ul>
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
+            </>
           )}
 
           {/* Filters */}

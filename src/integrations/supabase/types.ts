@@ -5077,6 +5077,10 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      fn_next_lot_code: {
+        Args: { p_material_code: string; p_project_id: string }
+        Returns: string
+      }
       fn_next_ppi_code: { Args: { p_project_id: string }; Returns: string }
       fn_next_tech_office_code: {
         Args: { p_prefix: string; p_project_id: string }

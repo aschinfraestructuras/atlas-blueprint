@@ -13,7 +13,7 @@ import { toast } from "@/hooks/use-toast";
 import {
   FlaskConical, Plus, Pencil, Search, Filter, Archive, Copy, Trash2,
   CheckCircle2, XCircle, Clock, AlertCircle, BookOpen, FileDown,
-  Loader2, AlertTriangle,
+  Loader2, AlertTriangle, PieChart as PieChartIcon, BarChart3,
 } from "lucide-react";
 import { ModuleKPICard } from "@/components/ModuleKPICard";
 import {
@@ -37,6 +37,11 @@ import { TEST_DISCIPLINES } from "@/lib/services/testService";
 import { supabase } from "@/integrations/supabase/client";
 import { DueTab } from "@/components/tests/DueTab";
 import { PlanTab } from "@/components/tests/PlanTab";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 // ─── Status helpers ───────────────────────────────────────────────────────────
 
@@ -441,7 +446,7 @@ function ResultsTab() {
         </Button>
       </div>
 
-      {/* KPI Row */}
+      {/* KPI Row + Charts */}
       {results.length > 0 && (() => {
         const total = results.length;
         const pending = results.filter(r => ["draft","in_progress","submitted"].includes(r.status_workflow)).length;
@@ -450,16 +455,85 @@ function ResultsTab() {
         const inconclusive = results.filter(r => r.result_status === "inconclusive").length;
         const linkedToNC = results.filter(r => (r as any).nc_id != null).length;
         const failRate = total > 0 ? Math.round((failed / total) * 100) : 0;
+
+        // Distribution by discipline
+        const discMap: Record<string, number> = {};
+        results.forEach(r => {
+          const tc = r.tests_catalog as any;
+          const disc = tc?.disciplina ?? "geral";
+          discMap[disc] = (discMap[disc] ?? 0) + 1;
+        });
+        const discData = Object.entries(discMap)
+          .map(([k, v]) => ({ label: t(`ppi.disciplinas.${k}`, { defaultValue: k }), value: v }))
+          .sort((a, b) => b.value - a.value);
+
+        // Pass/fail by month (last 6 months)
+        const monthData: { label: string; pass: number; fail: number }[] = [];
+        for (let i = 5; i >= 0; i--) {
+          const d = new Date();
+          d.setMonth(d.getMonth() - i);
+          const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+          const label = d.toLocaleDateString(undefined, { month: 'short' });
+          const monthResults = results.filter(r => r.date.startsWith(key));
+          monthData.push({
+            label,
+            pass: monthResults.filter(r => r.result_status === "pass").length,
+            fail: monthResults.filter(r => r.result_status === "fail").length,
+          });
+        }
+
         return (
-          <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-7">
-            <ModuleKPICard label={t("moduleKpi.total")} value={total} icon={FlaskConical} />
-            <ModuleKPICard label={t("moduleKpi.pending")} value={pending} icon={Clock} />
-            <ModuleKPICard label={t("moduleKpi.approved")} value={approved} icon={CheckCircle2} color="hsl(var(--primary))" />
-            <ModuleKPICard label={t("moduleKpi.fail30d")} value={failed} icon={XCircle} color={failed > 0 ? "hsl(var(--destructive))" : undefined} />
-            <ModuleKPICard label={t("moduleKpi.inconclusive")} value={inconclusive} icon={AlertCircle} />
-            <ModuleKPICard label={t("moduleKpi.linkedToNC")} value={linkedToNC} icon={AlertTriangle} />
-            <ModuleKPICard label={t("moduleKpi.failureRate")} value={`${failRate}%`} icon={FlaskConical} color={failRate > 20 ? "hsl(var(--destructive))" : undefined} />
-          </div>
+          <>
+            <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-7">
+              <ModuleKPICard label={t("moduleKpi.total")} value={total} icon={FlaskConical} />
+              <ModuleKPICard label={t("moduleKpi.pending")} value={pending} icon={Clock} />
+              <ModuleKPICard label={t("moduleKpi.approved")} value={approved} icon={CheckCircle2} color="hsl(var(--primary))" />
+              <ModuleKPICard label={t("moduleKpi.fail30d")} value={failed} icon={XCircle} color={failed > 0 ? "hsl(var(--destructive))" : undefined} />
+              <ModuleKPICard label={t("moduleKpi.inconclusive")} value={inconclusive} icon={AlertCircle} />
+              <ModuleKPICard label={t("moduleKpi.linkedToNC")} value={linkedToNC} icon={AlertTriangle} />
+              <ModuleKPICard label={t("moduleKpi.failureRate")} value={`${failRate}%`} icon={FlaskConical} color={failRate > 20 ? "hsl(var(--destructive))" : undefined} />
+            </div>
+
+            {/* Charts row */}
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <Card className="border shadow-none">
+                <CardHeader className="pb-1 pt-4 px-4">
+                  <CardTitle className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground flex items-center gap-1.5">
+                    <BarChart3 className="h-3.5 w-3.5" />{t("moduleKpi.testsPerMonth")}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="px-4 pb-4">
+                  <ResponsiveContainer width="100%" height={120}>
+                    <BarChart data={monthData} barCategoryGap="25%">
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                      <XAxis dataKey="label" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
+                      <YAxis allowDecimals={false} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} width={20} />
+                      <Tooltip />
+                      <Bar dataKey="pass" name={t("tests.status.pass")} fill="#22c55e" radius={[3, 3, 0, 0]} />
+                      <Bar dataKey="fail" name={t("tests.status.fail")} fill="#ef4444" radius={[3, 3, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+              <Card className="border shadow-none">
+                <CardHeader className="pb-1 pt-4 px-4">
+                  <CardTitle className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground flex items-center gap-1.5">
+                    <PieChartIcon className="h-3.5 w-3.5" />{t("moduleKpi.byDisciplina")}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="px-4 pb-4">
+                  <ul className="space-y-1.5">
+                    {discData.slice(0, 6).map(d => (
+                      <li key={d.label} className="flex items-center justify-between text-xs">
+                        <span className="text-muted-foreground truncate">{d.label}</span>
+                        <span className="font-bold tabular-nums text-foreground">{d.value}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            </div>
+          </>
         );
       })()}
 
