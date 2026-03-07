@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProject } from "@/contexts/ProjectContext";
 import { useDashboardViews } from "@/hooks/useDashboardViews";
@@ -14,7 +15,7 @@ import {
   Clock, Building2, Timer, CheckCircle2, TrendingUp,
   ShieldCheck, Construction, ClipboardCheck, Hourglass,
   BarChart3, PieChart as PieChartIcon, Target, Activity, Truck, Package,
-  Ban, Gauge,
+  Ban, Gauge, ArrowRight,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
