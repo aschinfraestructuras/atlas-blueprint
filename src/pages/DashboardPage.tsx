@@ -285,6 +285,7 @@ function HBarList({
 // ══════════════════════════════════════════════════════════════════
 export default function DashboardPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { activeProject } = useProject();
   const { summary, ncMonthly, testsMonthly, docMetrics, qualityMetrics, loading } = useDashboardViews();
