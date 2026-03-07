@@ -629,6 +629,13 @@ export default function WorkItemDetailPage() {
   const navigate          = useNavigate();
   const { activeProject } = useProject();
 
+  useEffect(() => {
+    if (!id || id === "undefined" || id.trim() === "") {
+      toast({ title: t("common.recordNotFound", { defaultValue: "Registo não encontrado." }), variant: "destructive" });
+      navigate("/work-items", { replace: true });
+    }
+  }, [id]);
+
   const [item,       setItem]       = useState<WorkItem | null>(null);
   const [loading,    setLoading]    = useState(true);
   const [editOpen,   setEditOpen]   = useState(false);

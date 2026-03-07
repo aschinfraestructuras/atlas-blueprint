@@ -286,6 +286,13 @@ export default function DocumentDetailPage() {
   const navigate = useNavigate();
   const { activeProject } = useProject();
   const { user } = useAuth();
+
+  useEffect(() => {
+    if (!id || id === "undefined" || id.trim() === "") {
+      toast({ title: t("common.recordNotFound", { defaultValue: "Registo não encontrado." }), variant: "destructive" });
+      navigate("/documents", { replace: true });
+    }
+  }, [id]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [doc, setDoc] = useState<Document | null>(null);

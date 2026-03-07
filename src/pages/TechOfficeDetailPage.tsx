@@ -53,6 +53,13 @@ export default function TechOfficeDetailPage() {
   const { activeProject } = useProject();
   const { isAdmin } = useProjectRole();
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (!id || id === "undefined" || id.trim() === "") {
+      toast({ title: t("common.recordNotFound", { defaultValue: "Registo não encontrado." }), variant: "destructive" });
+      navigate("/technical-office", { replace: true });
+    }
+  }, [id]);
   const { data: workItems } = useWorkItems();
 
   const [item, setItem] = useState<TechnicalOfficeItem | null>(null);

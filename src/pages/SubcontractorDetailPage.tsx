@@ -56,6 +56,13 @@ export default function SubcontractorDetailPage() {
   const { user } = useAuth();
   const { toast } = useToast();
 
+  useEffect(() => {
+    if (!id || id === "undefined" || id.trim() === "") {
+      toast({ title: t("common.recordNotFound", { defaultValue: "Registo não encontrado." }), variant: "destructive" });
+      navigate("/subcontractors", { replace: true });
+    }
+  }, [id]);
+
   const [sub, setSub] = useState<Subcontractor | null>(null);
   const [loading, setLoading] = useState(true);
   const [docs, setDocs] = useState<SubcontractorDocument[]>([]);

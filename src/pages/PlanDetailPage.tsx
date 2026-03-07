@@ -57,6 +57,13 @@ export default function PlanDetailPage() {
   const navigate = useNavigate();
   const { activeProject } = useProject();
   const { user } = useAuth();
+
+  useEffect(() => {
+    if (!id || id === "undefined" || id.trim() === "") {
+      toast({ title: t("common.recordNotFound", { defaultValue: "Registo não encontrado." }), variant: "destructive" });
+      navigate("/plans", { replace: true });
+    }
+  }, [id]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [plan, setPlan] = useState<Plan | null>(null);
