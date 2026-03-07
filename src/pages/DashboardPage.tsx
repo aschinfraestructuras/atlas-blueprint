@@ -412,9 +412,36 @@ export default function DashboardPage() {
       </div>
 
       {!activeProject && (
-        <div className="flex items-center gap-3 rounded-xl border border-border bg-card shadow-card px-5 py-3.5">
-          <Building2 className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-          <p className="text-sm text-muted-foreground">{t("dashboard.noProjectSelected")}</p>
+        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-card py-16 px-6 text-center">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted mb-4">
+            <FolderKanban className="h-6 w-6 text-muted-foreground" />
+          </div>
+          <h3 className="text-base font-semibold text-foreground mb-1">{t("dashboard.noProjectTitle")}</h3>
+          <p className="text-sm text-muted-foreground max-w-sm mb-6">{t("dashboard.noProjectDescription")}</p>
+          <div className="flex gap-3">
+            <Button onClick={() => navigate("/projects")} className="gap-2">
+              <FolderKanban className="h-4 w-4" /> {t("dashboard.goToProjects")}
+            </Button>
+            <Button variant="outline" onClick={() => navigate("/documents")} className="gap-2">
+              <FileText className="h-4 w-4" /> {t("nav.documents")}
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* ── Quick Actions ───────────────────────────────────────── */}
+      {activeProject && (
+        <div className="flex flex-wrap gap-2">
+          {[
+            { label: t("nav.tests"), icon: FlaskConical, to: "/tests" },
+            { label: t("nav.nonConformities"), icon: AlertTriangle, to: "/non-conformities" },
+            { label: t("nav.ppi"), icon: ClipboardCheck, to: "/ppi" },
+            { label: t("nav.documents"), icon: FileText, to: "/documents" },
+          ].map((qa) => (
+            <Button key={qa.to} variant="outline" size="sm" className="gap-1.5 text-xs" onClick={() => navigate(qa.to)}>
+              <qa.icon className="h-3.5 w-3.5" /> {qa.label} <ArrowRight className="h-3 w-3 ml-1 opacity-50" />
+            </Button>
+          ))}
         </div>
       )}
 
