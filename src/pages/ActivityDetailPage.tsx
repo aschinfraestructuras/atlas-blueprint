@@ -47,6 +47,13 @@ export default function ActivityDetailPage() {
   const navigate = useNavigate();
   const { activeProject } = useProject();
 
+  useEffect(() => {
+    if (!id || id === "undefined" || id.trim() === "") {
+      toast({ title: t("common.recordNotFound", { defaultValue: "Registo não encontrado." }), variant: "destructive" });
+      navigate("/planning/activities", { replace: true });
+    }
+  }, [id]);
+
   const [activity, setActivity] = useState<Activity | null>(null);
   const [loading, setLoading] = useState(true);
   const [completionCheck, setCompletionCheck] = useState<CompletionCheck | null>(null);
