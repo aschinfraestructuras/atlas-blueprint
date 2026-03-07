@@ -24,28 +24,52 @@ export function MainLayout({ children }: MainLayoutProps) {
 
   // Dynamic browser tab title
   useEffect(() => {
-    const routeMap: Record<string, string> = {
-      "/": t("nav.dashboard"),
-      "/projects": t("nav.projects"),
-      "/documents": t("nav.documents"),
-      "/tests": t("nav.tests"),
-      "/suppliers": t("nav.suppliers"),
-      "/materials": t("nav.materials"),
-      "/materials/map-mas": t("nav.mapMas"),
-      "/non-conformities": t("nav.nonConformities"),
-      "/technical-office": t("nav.technicalOffice"),
-      "/plans": t("nav.plans"),
-      "/planning": t("nav.planning"),
-      "/topography": t("nav.topography"),
-      "/subcontractors": t("nav.subcontractors"),
-      "/work-items": t("nav.workItems"),
-      "/ppi": t("nav.ppi"),
-      "/expirations": t("nav.expirations"),
-      "/reports/qc": t("nav.qcReport"),
-      "/audit": t("nav.auditLog"),
-      "/settings": t("nav.settings"),
-    };
-    const page = routeMap[location.pathname] ?? "";
+    function getPageTitle(pathname: string): string {
+      const exactRoutes: Record<string, string> = {
+        "/": t("nav.dashboard"),
+        "/projects": t("nav.projects"),
+        "/documents": t("nav.documents"),
+        "/tests": t("nav.tests"),
+        "/suppliers": t("nav.suppliers"),
+        "/materials": t("nav.materials"),
+        "/materials/map-mas": t("nav.mapMas"),
+        "/non-conformities": t("nav.nonConformities"),
+        "/technical-office": t("nav.technicalOffice"),
+        "/plans": t("nav.plans"),
+        "/planning": t("nav.planning"),
+        "/topography": t("nav.topography"),
+        "/subcontractors": t("nav.subcontractors"),
+        "/work-items": t("nav.workItems"),
+        "/ppi": t("nav.ppi"),
+        "/expirations": t("nav.expirations"),
+        "/deadlines": t("nav.deadlines"),
+        "/reports/qc": t("nav.qcReport"),
+        "/audit": t("nav.auditLog"),
+        "/settings": t("nav.settings"),
+        "/laboratories": t("nav.laboratories"),
+      };
+      if (exactRoutes[pathname]) return exactRoutes[pathname];
+
+      // Detail pages — map to their parent module title
+      const prefixRoutes: [string, string][] = [
+        ["/documents/", t("nav.documents")],
+        ["/non-conformities/", t("nav.nonConformities")],
+        ["/work-items/", t("nav.workItems")],
+        ["/ppi/", t("nav.ppi")],
+        ["/suppliers/", t("nav.suppliers")],
+        ["/materials/", t("nav.materials")],
+        ["/subcontractors/", t("nav.subcontractors")],
+        ["/plans/", t("nav.plans")],
+        ["/planning/", t("nav.planning")],
+        ["/technical-office/", t("nav.technicalOffice")],
+      ];
+      for (const [prefix, title] of prefixRoutes) {
+        if (pathname.startsWith(prefix)) return title;
+      }
+      return "";
+    }
+
+    const page = getPageTitle(location.pathname);
     const proj = activeProject?.name ?? "";
     document.title = ["Atlas QMS", proj, page].filter(Boolean).join(" · ");
   }, [location.pathname, activeProject, t]);
