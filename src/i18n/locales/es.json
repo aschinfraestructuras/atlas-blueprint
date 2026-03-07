@@ -223,6 +223,9 @@
     "subtitle": "Aquí tiene un resumen del estado actual de sus proyectos.",
     "subtitleProject": "Visualizando datos del proyecto: {{project}}",
     "noProjectSelected": "Seleccione un proyecto en la parte superior para filtrar los datos.",
+    "noProjectTitle": "Ningún proyecto seleccionado",
+    "noProjectDescription": "Seleccione o cree un proyecto para ver los indicadores y datos de calidad.",
+    "goToProjects": "Ver proyectos",
     "noData": "Sin datos en el período seleccionado.",
     "tabs": {
       "executive": "Panel Ejecutivo",
