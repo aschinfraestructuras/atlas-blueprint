@@ -153,6 +153,9 @@
     "subtitle": "Aqui está um resumo do estado atual dos seus projetos.",
     "subtitleProject": "A visualizar dados do projeto: {{project}}",
     "noProjectSelected": "Selecione um projeto no topo para filtrar os dados.",
+    "noProjectTitle": "Nenhum projeto selecionado",
+    "noProjectDescription": "Selecione ou crie um projeto para visualizar os indicadores e dados de qualidade.",
+    "goToProjects": "Ver projetos",
     "noData": "Sem dados no período selecionado.",
     "tabs": {
       "executive": "Painel Executivo",
@@ -2856,7 +2859,8 @@
       "status": "Estado",
       "days": "Dias",
       "severity": "Severidade"
-    }
+    },
+    "noEntityLink": "Sem entidade associada — a redirecionar para a lista."
   },
   "health": {
     "healthy": "Saudável",

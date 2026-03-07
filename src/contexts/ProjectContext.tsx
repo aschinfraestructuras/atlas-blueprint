@@ -20,7 +20,7 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
   const [projects, setProjects] = useState<Project[]>([]);
   const [activeProject, setActiveProjectState] = useState<Project | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchProjects = useCallback(async () => {
@@ -33,22 +33,19 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
     try {
       setError(null);
 
-      // Auto-claim pending invites sent to this authenticated email
       try {
         await memberService.claimMyPendingInvites();
       } catch (claimErr) {
         console.warn("[ProjectContext] claimMyPendingInvites failed", claimErr);
       }
 
-      // Source of truth for project visibility: membership-aware RPC
-      const data = await memberService.getMyProjects() as Project[];
+      const data = (await memberService.getMyProjects()) as Project[];
       setProjects(data);
 
-      // Restore persisted active project or default to first
       const savedId = localStorage.getItem(PROJECT_STORAGE_KEY);
       const saved = savedId ? data.find((p) => p.id === savedId) : null;
       setActiveProjectState(saved ?? data[0] ?? null);
-    } catch (err) {
+    } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Failed to load projects");
     } finally {
       setLoading(false);
@@ -80,7 +77,7 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function useProject() {
+export function useProject(): ProjectContextValue {
   const ctx = useContext(ProjectContext);
   if (!ctx) throw new Error("useProject must be used within ProjectProvider");
   return ctx;
