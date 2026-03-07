@@ -2764,7 +2764,8 @@
       "status": "Estado",
       "days": "Días",
       "severity": "Severidad"
-    }
+    },
+    "noEntityLink": "Sin entidad asociada — redirigiendo a la lista."
   },
   "moduleKpi": {
     "total": "Total",

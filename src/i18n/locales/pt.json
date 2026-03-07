@@ -2859,7 +2859,8 @@
       "status": "Estado",
       "days": "Dias",
       "severity": "Severidade"
-    }
+    },
+    "noEntityLink": "Sem entidade associada — a redirecionar para a lista."
   },
   "health": {
     "healthy": "Saudável",
