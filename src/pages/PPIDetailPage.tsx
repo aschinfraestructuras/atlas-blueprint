@@ -107,6 +107,13 @@ export default function PPIDetailPage() {
   const { activeProject } = useProject();
   const { user }          = useAuth();
 
+  useEffect(() => {
+    if (!id || id === "undefined" || id.trim() === "") {
+      toast({ title: t("common.recordNotFound", { defaultValue: "Registo não encontrado." }), variant: "destructive" });
+      navigate("/ppi", { replace: true });
+    }
+  }, [id]);
+
   const [instance,    setInstance]    = useState<PpiInstance | null>(null);
   const [items,       setItems]       = useState<PpiInstanceItem[]>([]);
   const [loading,     setLoading]     = useState(true);

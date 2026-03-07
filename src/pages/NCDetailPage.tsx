@@ -121,6 +121,13 @@ export default function NCDetailPage() {
   const navigate = useNavigate();
   const { activeProject } = useProject();
 
+  useEffect(() => {
+    if (!id || id === "undefined" || id.trim() === "") {
+      toast({ title: t("common.recordNotFound", { defaultValue: "Registo não encontrado." }), variant: "destructive" });
+      navigate("/non-conformities", { replace: true });
+    }
+  }, [id]);
+
   const [nc, setNc] = useState<NonConformity | null>(null);
   const [loading, setLoading] = useState(true);
   const [auditLogs, setAuditLogs] = useState<AuditEntry[]>([]);

@@ -52,6 +52,13 @@ export default function RfiDetailPage() {
   const { activeProject } = useProject();
   const { isAdmin } = useProjectRole();
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (!id || id === "undefined" || id.trim() === "") {
+      toast({ title: t("common.recordNotFound", { defaultValue: "Registo não encontrado." }), variant: "destructive" });
+      navigate("/technical-office", { replace: true });
+    }
+  }, [id]);
   const { data: workItems } = useWorkItems();
 
   const [rfi, setRfi] = useState<Rfi | null>(null);

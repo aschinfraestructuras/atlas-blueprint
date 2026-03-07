@@ -48,6 +48,13 @@ export default function SupplierDetailPage() {
   const { activeProject } = useProject();
   const { canEdit, canCreate } = useProjectRole();
 
+  useEffect(() => {
+    if (!id || id === "undefined" || id.trim() === "") {
+      toast({ title: t("common.recordNotFound", { defaultValue: "Registo não encontrado." }), variant: "destructive" });
+      navigate("/suppliers", { replace: true });
+    }
+  }, [id]);
+
   const [supplier, setSupplier] = useState<Supplier | null>(null);
   const [metrics, setMetrics] = useState<SupplierDetailMetrics | null>(null);
   const [docs, setDocs] = useState<SupplierDocument[]>([]);

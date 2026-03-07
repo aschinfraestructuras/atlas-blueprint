@@ -87,6 +87,13 @@ export default function MaterialDetailPage() {
   const { activeProject } = useProject();
   const { canEdit, canCreate, canValidate } = useProjectRole();
 
+  useEffect(() => {
+    if (!id || id === "undefined" || id.trim() === "") {
+      toast({ title: t("common.recordNotFound", { defaultValue: "Registo não encontrado." }), variant: "destructive" });
+      navigate("/materials", { replace: true });
+    }
+  }, [id]);
+
   const [material, setMaterial] = useState<Material | null>(null);
   const [metrics, setMetrics] = useState<MaterialDetailMetrics | null>(null);
   const [docs, setDocs] = useState<MaterialDocument[]>([]);
