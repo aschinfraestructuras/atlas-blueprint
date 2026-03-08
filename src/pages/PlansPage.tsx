@@ -209,6 +209,17 @@ export default function PlansPage() {
             ))}
           </SelectContent>
         </Select>
+        <Select value={filterDiscipline} onValueChange={setFilterDiscipline}>
+          <SelectTrigger className="w-[160px] h-8 text-sm">
+            <SelectValue placeholder={t("plans.filters.allDisciplines")} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="__all__">{t("plans.filters.allDisciplines")}</SelectItem>
+            {DISCIPLINES.map(d => (
+              <SelectItem key={d} value={d}>{t(`plans.disciplines.${d}`, { defaultValue: d })}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </FilterBar>
 
       {error && (
