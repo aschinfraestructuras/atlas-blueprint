@@ -1743,10 +1743,12 @@
     "disciplines": {
       "geral": "Geral",
       "terras": "Terraplenagem",
+      "terraplenagem": "Terraplenagem / Via",
       "betao": "Betão",
       "ferrovia": "Ferrovia",
       "catenaria": "Catenária",
       "st": "Sinalização / Telecom",
+      "sinalizacao": "Sinalização Ferroviária",
       "drenagem": "Drenagem",
       "estruturas": "Estruturas",
       "telecom": "Telecomunicações",
@@ -1754,6 +1756,15 @@
       "ambiente": "Ambiente / Segurança",
       "via": "Superestrutura de Via",
       "geotecnia": "Geologia / Geotecnia",
+      "topografia": "Cartografia / Topografia",
+      "geologia_geotecnia": "Geologia e Geotecnia",
+      "restabelecimentos": "Restabelecimentos / Serventias",
+      "muros_suporte": "Muros de Suporte",
+      "hidraulica": "Hidráulica",
+      "estradas": "Estradas / Pavimentos",
+      "seguranca": "Segurança",
+      "eletrica": "Elétrica / Energia",
+      "mecanica": "Mecânica",
       "outros": "Outros"
     },
     "status": {
