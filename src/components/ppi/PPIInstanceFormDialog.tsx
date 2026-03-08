@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,7 +17,7 @@ import {
   Form, FormControl, FormField, FormItem, FormLabel, FormMessage,
 } from "@/components/ui/form";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
@@ -43,7 +43,6 @@ type FormValues = z.infer<ReturnType<typeof makeSchema>>;
 interface Props {
   open: boolean;
   onOpenChange: (v: boolean) => void;
-  /** Pre-fill work_item_id (from WorkItem detail page shortcut) */
   preselectedWorkItemId?: string;
   onSuccess: (instanceId: string) => void;
 }
@@ -66,10 +65,6 @@ export function PPIInstanceFormDialog({
   const [loadingWI,  setLoadingWI]  = useState(false);
   const [loadingTpl, setLoadingTpl] = useState(false);
   const [noActiveTemplates, setNoActiveTemplates] = useState(false);
-  const [disciplineMismatch, setDisciplineMismatch] = useState<{
-    workItemDisciplina: string;
-    templateDisciplina: string;
-  } | null>(null);
 
   const schema = makeSchema(t);
   const form = useForm<FormValues>({
@@ -97,7 +92,6 @@ export function PPIInstanceFormDialog({
       inspector_id:    "",
       inspection_date: format(new Date(), "yyyy-MM-dd"),
     });
-    setDisciplineMismatch(null);
     setNoActiveTemplates(false);
 
     setLoadingWI(true);
@@ -119,39 +113,48 @@ export function PPIInstanceFormDialog({
       .finally(() => setLoadingTpl(false));
   }, [open, activeProject, preselectedWorkItemId, form]);
 
-  // ── Discipline mismatch check ──────────────────────────────────────────────
+  // ── Selected WI discipline ─────────────────────────────────────────────────
+
+  const selectedWI = useMemo(
+    () => workItems.find(w => w.id === watchedWorkItemId),
+    [workItems, watchedWorkItemId],
+  );
+
+  // ── Templates grouped by discipline match ──────────────────────────────────
+
+  const { matchingTemplates, otherTemplates } = useMemo(() => {
+    if (!selectedWI) return { matchingTemplates: templates, otherTemplates: [] as PpiTemplate[] };
+    const matching = templates.filter(tp => tp.disciplina === selectedWI.disciplina);
+    const other = templates.filter(tp => tp.disciplina !== selectedWI.disciplina);
+    return { matchingTemplates: matching, otherTemplates: other };
+  }, [templates, selectedWI]);
+
+  // ── Auto-select single matching template ───────────────────────────────────
 
   useEffect(() => {
-    if (!watchedWorkItemId || !watchedTemplateId || watchedTemplateId === "__none__") {
-      setDisciplineMismatch(null);
-      return;
+    if (!selectedWI || loadingTpl) return;
+    if (matchingTemplates.length === 1 && !watchedTemplateId) {
+      form.setValue("template_id", matchingTemplates[0].id);
     }
-    const wi  = workItems.find((w) => w.id === watchedWorkItemId);
-    const tpl = templates.find((tp) => tp.id === watchedTemplateId);
-    if (wi && tpl && wi.disciplina !== tpl.disciplina) {
-      setDisciplineMismatch({
-        workItemDisciplina: wi.disciplina,
-        templateDisciplina: tpl.disciplina,
-      });
-    } else {
-      setDisciplineMismatch(null);
+  }, [selectedWI, matchingTemplates, loadingTpl, watchedTemplateId, form]);
+
+  // ── Discipline mismatch check ──────────────────────────────────────────────
+
+  const disciplineMismatch = useMemo(() => {
+    if (!watchedTemplateId || watchedTemplateId === "__none__" || !selectedWI) return null;
+    const tpl = templates.find(tp => tp.id === watchedTemplateId);
+    if (tpl && selectedWI.disciplina !== tpl.disciplina) {
+      return { workItemDisciplina: selectedWI.disciplina, templateDisciplina: tpl.disciplina };
     }
-  }, [watchedWorkItemId, watchedTemplateId, workItems, templates]);
-
-  // ── Validate chosen template is still active ───────────────────────────────
-
-  function getSelectedTemplate(): PpiTemplate | undefined {
-    if (!watchedTemplateId || watchedTemplateId === "__none__") return undefined;
-    return templates.find((tp) => tp.id === watchedTemplateId);
-  }
+    return null;
+  }, [watchedTemplateId, selectedWI, templates]);
 
   // ── Submit ─────────────────────────────────────────────────────────────────
 
   async function onSubmit(values: FormValues) {
     if (!activeProject || !user) return;
 
-    // Client-side active-template guard
-    const selectedTpl = getSelectedTemplate();
+    const selectedTpl = templates.find(tp => tp.id === values.template_id);
     if (selectedTpl && !selectedTpl.is_active) {
       toast({
         title: t("ppi.instances.toast.error"),
@@ -182,10 +185,7 @@ export function PPIInstanceFormDialog({
         const result = await ppiService.createInstanceFromTemplate(input, effectiveTemplateId);
         instanceId = result.id;
         if (result.hadExistingItems) {
-          toast({
-            title: t("ppi.instances.toast.created"),
-            description: t("ppi.instances.toast.hadExistingItems"),
-          });
+          toast({ title: t("ppi.instances.toast.created"), description: t("ppi.instances.toast.hadExistingItems") });
         } else {
           toast({ title: t("ppi.instances.toast.created") });
         }
@@ -284,7 +284,7 @@ export function PPIInstanceFormDialog({
               </Alert>
             )}
 
-            {/* Template (optional) — only shown when templates exist */}
+            {/* Template — grouped by discipline match */}
             {!noActiveTemplates && (
               <FormField
                 control={form.control}
@@ -312,12 +312,33 @@ export function PPIInstanceFormDialog({
                         <SelectItem value="__none__">
                           {t("ppi.instances.form.noTemplate")}
                         </SelectItem>
-                        {templates.map((tpl) => (
+                        {selectedWI && matchingTemplates.length > 0 && (
+                          <SelectGroup>
+                            <SelectLabel className="text-xs text-muted-foreground">
+                              {t("ppi.instances.form.matchingDiscipline")}
+                            </SelectLabel>
+                            {matchingTemplates.map((tpl) => (
+                              <SelectItem key={tpl.id} value={tpl.id}>
+                                [{tpl.code}] {tpl.title}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        )}
+                        {selectedWI && otherTemplates.length > 0 && (
+                          <SelectGroup>
+                            <SelectLabel className="text-xs text-muted-foreground">
+                              {t("ppi.instances.form.otherDisciplines")}
+                            </SelectLabel>
+                            {otherTemplates.map((tpl) => (
+                              <SelectItem key={tpl.id} value={tpl.id}>
+                                [{tpl.code}] {tpl.title} — {t(`ppi.disciplinas.${tpl.disciplina}`, { defaultValue: tpl.disciplina })}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        )}
+                        {!selectedWI && templates.map((tpl) => (
                           <SelectItem key={tpl.id} value={tpl.id}>
-                            [{tpl.code}] {tpl.title} —{" "}
-                            {t(`ppi.disciplinas.${tpl.disciplina}`, {
-                              defaultValue: tpl.disciplina,
-                            })}
+                            [{tpl.code}] {tpl.title} — {t(`ppi.disciplinas.${tpl.disciplina}`, { defaultValue: tpl.disciplina })}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -333,14 +354,14 @@ export function PPIInstanceFormDialog({
               <Alert className="border-warning/40 bg-warning/5 py-2">
                 <AlertTriangle className="h-4 w-4 text-warning" />
                 <AlertDescription className="text-warning-foreground text-xs ml-1">
-                  {t("ppi.instances.form.disciplineMismatch", {
-                    workItem: t(
-                      `workItems.disciplines.${disciplineMismatch.workItemDisciplina}`,
-                      { defaultValue: disciplineMismatch.workItemDisciplina }
-                    ),
-                    template: t(
+                  {t("ppi.instances.form.disciplineMismatchInline", {
+                    templateDisciplina: t(
                       `ppi.disciplinas.${disciplineMismatch.templateDisciplina}`,
                       { defaultValue: disciplineMismatch.templateDisciplina }
+                    ),
+                    wiDisciplina: t(
+                      `workItems.disciplines.${disciplineMismatch.workItemDisciplina}`,
+                      { defaultValue: disciplineMismatch.workItemDisciplina }
                     ),
                   })}
                 </AlertDescription>
