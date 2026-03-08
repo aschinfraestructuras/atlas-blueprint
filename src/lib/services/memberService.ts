@@ -4,8 +4,8 @@ import type { Database } from "@/integrations/supabase/types";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- tables not in generated types
 const db = supabase as any;
 
-const untypedRpc = (fn: string, params: Record<string, unknown>) =>
-  (supabase.rpc as unknown as (fn: string, params: Record<string, unknown>) => ReturnType<typeof supabase.rpc>)(fn, params);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- RPCs not in generated types
+const dbRpc = (fn: string, params: Record<string, unknown>) => db.rpc(fn, params);
 
 export interface ProjectMember {
   project_id: string;
