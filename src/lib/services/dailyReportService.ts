@@ -205,7 +205,7 @@ export const dailyReportService = {
     if (error) throw error;
     return (data ?? []) as unknown as MaterialRow[];
   },
-  async addMaterial(row: Omit<MaterialRow, "id" | "created_at">): Promise<MaterialRow> {
+  async addMaterial(row: Omit<MaterialRow, "id" | "created_at" | "material_id" | "pame_reference"> & { material_id?: string | null; pame_reference?: string | null }): Promise<MaterialRow> {
     const { data, error } = await supabase.from("daily_report_materials" as any).insert(row as any).select().single();
     if (error) throw error;
     return data as unknown as MaterialRow;
