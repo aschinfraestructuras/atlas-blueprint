@@ -134,6 +134,7 @@ export function NCFormDialog({
   });
 
   const watchedOrigin = form.watch("origin");
+  const watchedCategory = form.watch("category");
   const watchedClassification = form.watch("classification");
   const isMaior = watchedClassification === "maior";
   const showClosure = isEdit && nc && ["in_review", "closed"].includes(nc.status);
