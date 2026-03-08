@@ -79,7 +79,8 @@ export default function QCReportPage() {
   const DISCIPLINES = ["geral", "estruturas", "geotecnia", "hidraulica", "estradas", "ambiente", "seguranca", "eletrica", "mecanica"];
   const SEVERITIES = ["minor", "major", "critical"];
 
-  if (!activeProject) return <NoProjectBanner />;
+  // ── Helper to get WI label ─────────────────────────────────────────────────
+  const wiLabel = (wi: any) => `${wi.sector} ${wi.obra ? `· ${wi.obra}` : ""} ${wi.elemento ? `· ${wi.elemento}` : ""}`.trim().slice(0, 50);
 
   // ── Fetch data ─────────────────────────────────────────────────────────────
   const fetchData = useCallback(async () => {
