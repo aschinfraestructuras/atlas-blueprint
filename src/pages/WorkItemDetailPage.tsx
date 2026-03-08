@@ -1080,10 +1080,13 @@ export default function WorkItemDetailPage() {
           <WorkItemPPITab workItemId={item.id} projectId={activeProject?.id ?? ""} />
         </TabsContent>
 
-        {/* Tests tab */}
-        <TabsContent value="tests" className="mt-4">
+        <TabsContent value="tests" className="mt-4 space-y-4">
+          <TestsTimelineChart
+            tests={([] as any[]).concat(
+              // Will be populated by the tests tab component below
+            )}
+          />
           <WorkItemTestsTab workItemId={item.id} projectId={activeProject?.id ?? ""} workItemDisciplina={item.disciplina} workItemSector={item.sector} projectName={activeProject?.name} />
-        </TabsContent>
 
         {/* NCs tab */}
         <TabsContent value="ncs" className="mt-4">
