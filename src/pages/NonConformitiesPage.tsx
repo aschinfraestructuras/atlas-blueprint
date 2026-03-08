@@ -163,11 +163,11 @@ export default function NonConformitiesPage() {
   }, [ncs, search, filterStatus, filterSeverity, filterOrigin, filterCategory, filterClassification, filterDiscipline, dateFrom, dateTo, activeProject]);
 
   const hasFilters = search || filterStatus !== "all" || filterSeverity !== "all" ||
-    filterOrigin !== "all" || filterCategory !== "all" || dateFrom || dateTo;
+    filterOrigin !== "all" || filterCategory !== "all" || filterClassification !== "all" || filterDiscipline !== "all" || dateFrom || dateTo;
 
   const clearFilters = () => {
     setSearch(""); setFilterStatus("all"); setFilterSeverity("all");
-    setFilterOrigin("all"); setFilterCategory("all"); setDateFrom(""); setDateTo("");
+    setFilterOrigin("all"); setFilterCategory("all"); setFilterClassification("all"); setFilterDiscipline("all"); setDateFrom(""); setDateTo("");
   };
 
   // ─── Actions ────────────────────────────────────────────────────────────────
