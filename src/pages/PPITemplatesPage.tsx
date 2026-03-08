@@ -195,6 +195,16 @@ export default function PPITemplatesPage() {
           </div>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
+          <Button
+            variant="outline"
+            onClick={handleSeedPF17A}
+            disabled={seeding}
+            className="gap-2"
+            title={t("ppi.seed.tooltip")}
+          >
+            {seeding ? <Loader2 className="h-4 w-4 animate-spin" /> : <Database className="h-4 w-4" />}
+            {seeding ? t("ppi.seed.running") : t("ppi.seed.button")}
+          </Button>
           <Button onClick={() => { setEditTemplate(null); setFormOpen(true); }} className="gap-2">
             <Plus className="h-4 w-4" /> {t("ppi.templates.new")}
           </Button>
