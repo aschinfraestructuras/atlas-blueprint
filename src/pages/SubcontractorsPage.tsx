@@ -60,6 +60,7 @@ export default function SubcontractorsPage() {
   const { user } = useAuth();
   const { data: subcontractors, loading, error, refetch } = useSubcontractors();
   const { canCreate, canDelete } = useProjectRole();
+  const reportMeta = useReportMeta();
   const { toast } = useToast();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingSub, setEditingSub] = useState<Subcontractor | null>(null);
