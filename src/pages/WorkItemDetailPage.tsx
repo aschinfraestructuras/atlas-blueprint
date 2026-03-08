@@ -41,6 +41,7 @@ import { toast } from "@/hooks/use-toast";
 import { topographyRequestService, topographyControlService, type TopographyRequest, type TopographyControl } from "@/lib/services/topographyService";
 import { surveyService, type SurveyRecord } from "@/lib/services/surveyService";
 import { planningService, type Activity } from "@/lib/services/planningService";
+import { TestsTimelineChart } from "@/components/dashboard/TestsTimelineChart";
 
 // ─── Status badge ─────────────────────────────────────────────────────────────
 
@@ -350,7 +351,20 @@ function WorkItemTestsTab({
   };
 
   return (
-    <>
+    <div className="space-y-4">
+      {/* Tests Timeline */}
+      {tests.length > 0 && (
+        <TestsTimelineChart
+          tests={tests.map(tr => ({
+            id: tr.id,
+            date: tr.date,
+            pass_fail: tr.pass_fail ?? null,
+            status: tr.status,
+            code: tr.code,
+            test_name: (tr.tests_catalog as any)?.name,
+          }))}
+        />
+      )}
       <Card className="shadow-card">
         <CardHeader className="pb-3 pt-4 px-5 flex flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2 flex-wrap">
@@ -509,7 +523,7 @@ function WorkItemTestsTab({
         preselectedWorkItemId={workItemId}
         onSuccess={load}
       />
-    </>
+    </div>
   );
 }
 
@@ -1079,7 +1093,6 @@ export default function WorkItemDetailPage() {
           <WorkItemPPITab workItemId={item.id} projectId={activeProject?.id ?? ""} />
         </TabsContent>
 
-        {/* Tests tab */}
         <TabsContent value="tests" className="mt-4">
           <WorkItemTestsTab workItemId={item.id} projectId={activeProject?.id ?? ""} workItemDisciplina={item.disciplina} workItemSector={item.sector} projectName={activeProject?.name} />
         </TabsContent>
