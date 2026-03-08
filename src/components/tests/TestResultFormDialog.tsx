@@ -190,7 +190,10 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-1">
 
-            {/* Test type */}
+            {/* Traceability chain — edit only */}
+            {isEdit && testResult && activeProject && (
+              <TraceabilityChain testResultId={testResult.id} projectId={activeProject.id} />
+            )}
             <FormField control={form.control} name="test_id" render={({ field }) => (
               <FormItem>
                 <FormLabel>{t("tests.results.form.testType")}</FormLabel>
