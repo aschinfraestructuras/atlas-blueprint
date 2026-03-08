@@ -48,8 +48,9 @@ describe("useProjectRole can() logic", () => {
 
   describe("role-level helpers", () => {
     it("isAdmin is only true for admin", () => {
-      expect("admin" === "admin").toBe(true);
-      expect("viewer" === "admin").toBe(false);
+      const isAdmin = (r: string) => r === "admin";
+      expect(isAdmin("admin")).toBe(true);
+      expect(isAdmin("viewer")).toBe(false);
     });
 
     it("isManager includes admin and project_manager", () => {
