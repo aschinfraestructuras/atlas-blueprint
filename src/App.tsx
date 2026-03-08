@@ -48,6 +48,8 @@ import ExpirationsPage from "./pages/ExpirationsPage";
 import DeadlinesPage from "./pages/DeadlinesPage";
 import QCReportPage from "./pages/QCReportPage";
 import LaboratoriesPage from "./pages/LaboratoriesPage";
+import DailyReportsPage from "./pages/DailyReportsPage";
+import DailyReportDetailPage from "./pages/DailyReportDetailPage";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 const queryClient = new QueryClient();
 
