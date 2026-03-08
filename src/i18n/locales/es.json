@@ -1301,6 +1301,7 @@
     },
     "transitions": {
       "label": "Cambiar estado",
+      "changeTo": "Transitar a",
       "open": "Abrir",
       "in_progress": "Iniciar",
       "pending_verification": "Enviar a Verificación",
