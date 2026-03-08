@@ -209,6 +209,16 @@ export default function TopographyPage() {
     return opts;
   };
 
+  // Calculate days until expiration for equipment
+  const getCalibrationDaysInfo = (validUntil: string | null) => {
+    if (!validUntil) return null;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const expDate = new Date(validUntil);
+    const diffDays = Math.ceil((expDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -216,11 +226,22 @@ export default function TopographyPage() {
         <ReportExportMenu options={getExportOptions()} />
       </div>
 
+      {/* Expiring calibration alert banner */}
+      {expiringCount > 0 && (
+        <div className="rounded-lg border border-yellow-500/30 bg-yellow-500/5 px-4 py-3 text-sm text-yellow-700 dark:text-yellow-400 flex items-start gap-2">
+          <AlertTriangle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+          <p>
+            <span className="font-semibold">{t("topography.alert.expiringTitle", { count: expiringCount })}</span>
+            {" — "}{t("topography.alert.expiringDesc")}
+          </p>
+        </div>
+      )}
+
       {/* KPI cards */}
       <div className="grid gap-4 md:grid-cols-6">
-        <Card><CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">{t("topography.equipment")}</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold">{equipment.length}</div></CardContent></Card>
+        <Card><CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">{t("topography.kpi.totalEmes")}</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold">{equipment.length}</div></CardContent></Card>
         <Card><CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-primary"><CheckCircle className="inline h-4 w-4 mr-1" />{t("topography.kpi.calibrated")}</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-primary">{validCount}</div></CardContent></Card>
-        <Card><CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground"><Clock className="inline h-4 w-4 mr-1" />{t("topography.kpi.expiring30d")}</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold">{expiringCount}</div></CardContent></Card>
+        <Card className={expiringCount > 0 ? "border-yellow-500/50" : ""}><CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-yellow-600"><Clock className="inline h-4 w-4 mr-1" />{t("topography.kpi.expiring30d")}</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-yellow-600">{expiringCount}</div></CardContent></Card>
         <Card className={expiredCount > 0 ? "border-destructive/50" : ""}><CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-destructive"><ShieldAlert className="inline h-4 w-4 mr-1" />{t("topography.kpi.expired")}</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-destructive">{expiredCount}</div></CardContent></Card>
         <Card><CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground"><FileText className="inline h-4 w-4 mr-1" />{t("topography.kpi.pendingRequests")}</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold">{pendingReqCount}</div></CardContent></Card>
         <Card><CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground"><Target className="inline h-4 w-4 mr-1" />{t("topography.kpi.ncControls")}</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold">{ncControlCount}</div></CardContent></Card>
