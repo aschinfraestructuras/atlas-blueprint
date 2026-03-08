@@ -147,7 +147,7 @@ export function PPIExportMenu({ instances, loading, projectName, variant = "bulk
         {variant === "single" && (
           <DropdownMenuItem
             className="gap-2 text-sm"
-            onClick={() => run(() => exportSinglePdf(instances[0], labels, locale, projectName))}
+            onClick={() => run(() => exportSinglePdf(instances[0], labels, locale, projectName, logo))}
           >
             <FileText className="h-3.5 w-3.5 text-primary" />
             {t("ppi.export.pdfSingle")}
