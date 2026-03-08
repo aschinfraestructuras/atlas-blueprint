@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { useTranslation } from "react-i18next";
 import {
   ArrowLeft, FileText, CheckCircle2, Clock, RotateCcw,
