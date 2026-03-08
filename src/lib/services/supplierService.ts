@@ -288,7 +288,7 @@ export const supplierService = {
   },
 
   async removeDocument(id: string): Promise<void> {
-    const { error } = await untypedFrom("supplier_documents")
+    const { error } = await db.from("supplier_documents")
       .delete()
       .eq("id", id);
     if (error) throw error;
