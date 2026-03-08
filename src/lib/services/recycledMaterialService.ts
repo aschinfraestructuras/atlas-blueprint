@@ -81,7 +81,7 @@ export const recycledMaterialService = {
   },
 
   async create(input: RecycledMaterialInput, userId: string): Promise<RecycledMaterial> {
-    const { data, error } = await untypedFrom("recycled_materials")
+    const { data, error } = await db.from("recycled_materials")
       .insert({ ...input, created_by: userId })
       .select()
       .single();
