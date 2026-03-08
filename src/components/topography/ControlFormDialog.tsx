@@ -29,7 +29,7 @@ export function ControlFormDialog({ open, onOpenChange, projectId, equipment, ed
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const isEdit = !!editControl;
-  const [workItems, setWorkItems] = useState<{ id: string; sector: string }[]>([]);
+  const [workItems, setWorkItems] = useState<{ id: string; sector: string; elemento?: string | null; parte?: string | null }[]>([]);
   const [form, setForm] = useState({
     equipment_id: editControl?.equipment_id ?? "",
     element: editControl?.element ?? "",
@@ -67,7 +67,7 @@ export function ControlFormDialog({ open, onOpenChange, projectId, equipment, ed
       } else {
         setForm({ equipment_id: "", element: "", zone: "", tolerance: "", measured_value: "", deviation: "", result: "conforme", execution_date: new Date().toISOString().split("T")[0], technician: "", notes: "", work_item_id: "__none__", ppi_id: "__none__", nc_id: "__none__" });
       }
-      supabase.from("work_items").select("id, sector").eq("project_id", projectId).order("sector").then(({ data }) => {
+      supabase.from("work_items").select("id, sector, elemento, parte").eq("project_id", projectId).order("sector").then(({ data }) => {
         setWorkItems(data ?? []);
       });
     }
@@ -203,7 +203,7 @@ export function ControlFormDialog({ open, onOpenChange, projectId, equipment, ed
                   <SelectTrigger><SelectValue placeholder={t("topography.form.none")} /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="__none__">{t("topography.form.none")}</SelectItem>
-                    {workItems.map(wi => <SelectItem key={wi.id} value={wi.id}>{wi.sector}</SelectItem>)}
+                    {workItems.map(wi => <SelectItem key={wi.id} value={wi.id}>{wi.sector}{wi.elemento ? ` — ${wi.elemento}` : ""}{wi.parte ? ` (${wi.parte})` : ""}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>

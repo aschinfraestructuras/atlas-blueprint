@@ -1,7 +1,10 @@
 import { useState, useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { useProject } from "@/contexts/ProjectContext";
 import { useProjectRole } from "@/hooks/useProjectRole";
+import { usePlanning } from "@/hooks/usePlanning";
+import { planningService, type Activity } from "@/lib/services/planningService";
 import { supabase } from "@/integrations/supabase/client";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { EmptyState } from "@/components/EmptyState";
@@ -11,12 +14,12 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Progress } from "@/components/ui/progress";
 import { RowActionMenu } from "@/components/ui/row-action-menu";
-import { AuditFormDialog, type AuditActivity } from "@/components/audits/AuditFormDialog";
+import { ActivityFormDialog } from "@/components/planning/ActivityFormDialog";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { CalendarClock, ChevronDown, ChevronRight, CheckCircle2, Plus } from "lucide-react";
+import { CalendarClock, ChevronDown, ChevronRight, CheckCircle2, Plus, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/ui/page-header";
@@ -36,44 +39,25 @@ const STATUS_BADGE: Record<string, string> = {
 
 export default function AuditsPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { activeProject } = useProject();
   const { canCreate, canEdit, canDelete } = useProjectRole();
-  const [audits, setAudits] = useState<AuditActivity[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { wbs, activities, loading: planningLoading, refetch } = usePlanning();
+
   const [expanded, setExpanded] = useState<string | null>(null);
-
-  // CRUD state
   const [formOpen, setFormOpen] = useState(false);
-  const [editAudit, setEditAudit] = useState<AuditActivity | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<AuditActivity | null>(null);
+  const [editActivity, setEditActivity] = useState<Activity | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Activity | null>(null);
 
-  const fetchAudits = useCallback(async () => {
-    if (!activeProject) { setAudits([]); setLoading(false); return; }
-    setLoading(true);
-    try {
-      const { data } = await (supabase as any)
-        .from("planning_activities")
-        .select("id, description, planned_start, planned_end, status, progress_pct, constraints_text")
-        .eq("project_id", activeProject.id)
-        .like("description", "AI-%")
-        .order("planned_start", { ascending: true });
-      setAudits((data ?? []) as AuditActivity[]);
-    } catch { /* swallow */ }
-    finally { setLoading(false); }
-  }, [activeProject]);
-
-  useEffect(() => { fetchAudits(); }, [fetchAudits]);
+  // Filter only audit activities (AI-* prefix)
+  const audits = activities.filter(a => a.description.startsWith("AI-"));
 
   const handleDelete = async () => {
-    if (!deleteTarget) return;
+    if (!deleteTarget || !activeProject) return;
     try {
-      const { error } = await (supabase as any)
-        .from("planning_activities")
-        .delete()
-        .eq("id", deleteTarget.id);
-      if (error) throw error;
+      await planningService.deleteActivity(deleteTarget.id, activeProject.id);
       toast.success(t("common.deleted", { defaultValue: "Eliminado com sucesso" }));
-      fetchAudits();
+      refetch();
     } catch (err: any) {
       toast.error(err.message ?? "Erro");
     } finally {
@@ -81,13 +65,13 @@ export default function AuditsPage() {
     }
   };
 
-  const handleEdit = (audit: AuditActivity) => {
-    setEditAudit(audit);
+  const handleEdit = (audit: Activity) => {
+    setEditActivity(audit);
     setFormOpen(true);
   };
 
   const handleCreate = () => {
-    setEditAudit(null);
+    setEditActivity(null);
     setFormOpen(true);
   };
 
@@ -101,15 +85,27 @@ export default function AuditsPage() {
         title={t("audits.title", { defaultValue: "Programa de Auditorias" })}
         subtitle={t("audits.subtitle", { defaultValue: "Auditorias internas do programa de qualidade" })}
         icon={CalendarClock}
-        actions={canCreate ? (
-          <Button onClick={handleCreate} size="sm">
-            <Plus className="h-4 w-4 mr-1.5" />
-            {t("audits.create", { defaultValue: "Nova Auditoria" })}
-          </Button>
-        ) : undefined}
+        actions={
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate("/planning")}
+            >
+              <ExternalLink className="h-3.5 w-3.5 mr-1.5" />
+              {t("audits.goToPlanning", { defaultValue: "Planificação" })}
+            </Button>
+            {canCreate && (
+              <Button onClick={handleCreate} size="sm">
+                <Plus className="h-4 w-4 mr-1.5" />
+                {t("audits.create", { defaultValue: "Nova Auditoria" })}
+              </Button>
+            )}
+          </div>
+        }
       />
 
-      {loading ? (
+      {planningLoading ? (
         <div className="space-y-3">
           {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-24 w-full" />)}
         </div>
@@ -140,7 +136,6 @@ export default function AuditsPage() {
               <Card key={audit.id} className="border-0 bg-card shadow-card">
                 <CardContent className="p-5">
                   <div className="flex items-center gap-3">
-                    {/* Expand toggle */}
                     <div
                       className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer"
                       onClick={() => setExpanded(isExpanded ? null : audit.id)}
@@ -160,7 +155,6 @@ export default function AuditsPage() {
                       </div>
                     </div>
 
-                    {/* Right side: dates + actions */}
                     <div className="flex items-center gap-3 flex-shrink-0">
                       <div className="text-right">
                         {audit.planned_start && (
@@ -180,7 +174,8 @@ export default function AuditsPage() {
                       {(canEdit || canDelete) && (
                         <RowActionMenu
                           actions={[
-                            ...(canEdit ? [{ key: "edit", labelKey: "common.edit", icon: undefined, onClick: () => handleEdit(audit) }] : []),
+                            ...(canEdit ? [{ key: "edit", labelKey: "common.edit", onClick: () => handleEdit(audit) }] : []),
+                            { key: "detail", labelKey: "common.view", onClick: () => navigate(`/planning/activities/${audit.id}`) },
                             ...(canDelete ? [{ key: "delete", labelKey: "common.delete", onClick: () => setDeleteTarget(audit), variant: "destructive" as const }] : []),
                           ]}
                         />
@@ -188,14 +183,12 @@ export default function AuditsPage() {
                     </div>
                   </div>
 
-                  {/* Timeline bar */}
                   {audit.planned_start && audit.planned_end && (
                     <div className="mt-3">
                       <Progress value={timelinePct} className="h-1.5" />
                     </div>
                   )}
 
-                  {/* Expanded detail */}
                   {isExpanded && (
                     <div className="mt-4 border-t border-border pt-4 space-y-4">
                       {checklist.length > 0 && (
@@ -222,6 +215,15 @@ export default function AuditsPage() {
                           <p className="text-sm text-muted-foreground whitespace-pre-wrap">{audit.constraints_text}</p>
                         </div>
                       )}
+
+                      <Button
+                        variant="link"
+                        size="sm"
+                        className="p-0 h-auto text-xs"
+                        onClick={() => navigate(`/planning/activities/${audit.id}`)}
+                      >
+                        {t("audits.viewDetail", { defaultValue: "Ver detalhe completo na Planificação" })} →
+                      </Button>
                     </div>
                   )}
                 </CardContent>
@@ -231,12 +233,13 @@ export default function AuditsPage() {
         </div>
       )}
 
-      {/* Create/Edit Dialog */}
-      <AuditFormDialog
+      {/* Reuse the Planning ActivityFormDialog */}
+      <ActivityFormDialog
         open={formOpen}
         onOpenChange={setFormOpen}
-        editAudit={editAudit}
-        onSuccess={fetchAudits}
+        wbsNodes={wbs}
+        editActivity={editActivity}
+        onSuccess={refetch}
       />
 
       {/* Delete Confirmation */}
