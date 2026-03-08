@@ -5,7 +5,7 @@ import {
   ArrowLeft, Construction, FlaskConical, AlertTriangle, Paperclip,
   Pencil, Calendar, MapPin, ClipboardCheck, Plus, Eye, FileDown, FileText,
   CheckCircle2, XCircle, Clock, Crosshair, Target, Map, ListTodo,
-  ShieldCheck, ShieldAlert,
+  ShieldCheck, ShieldAlert, Copy,
 } from "lucide-react";
 import {
   exportWorkItemTestsPdf,
@@ -222,17 +222,20 @@ function WorkItemTestsTab({
   projectId,
   workItemSector,
   projectName,
+  workItemDisciplina,
 }: {
   workItemId: string;
   projectId: string;
   workItemSector?: string;
   projectName?: string;
+  workItemDisciplina?: string;
 }) {
   const { t, i18n } = useTranslation();
   const [tests,     setTests]     = useState<TestResult[]>([]);
   const [loading,   setLoading]   = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing,   setEditing]   = useState<TestResult | null>(null);
+  const [suggestedCount, setSuggestedCount] = useState(0);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -245,6 +248,23 @@ function WorkItemTestsTab({
       setLoading(false);
     }
   }, [workItemId]);
+
+  // Load suggested test count from test_plan_rules
+  useEffect(() => {
+    if (!projectId || !workItemDisciplina) return;
+    (async () => {
+      try {
+        const { count } = await supabase
+          .from("test_plan_rules" as any)
+          .select("*", { count: "exact", head: true })
+          .eq("project_id", projectId)
+          .eq("disciplina", workItemDisciplina);
+        setSuggestedCount(count ?? 0);
+      } catch {
+        setSuggestedCount(0);
+      }
+    })();
+  }, [projectId, workItemDisciplina]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -378,9 +398,17 @@ function WorkItemTestsTab({
               ))}
             </div>
           ) : tests.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-10 gap-2 text-muted-foreground">
+            <div className="flex flex-col items-center justify-center py-10 gap-3 text-muted-foreground">
               <FlaskConical className="h-6 w-6 opacity-40" />
               <p className="text-sm">{t("tests.workItemTab.empty")}</p>
+              {workItemDisciplina && suggestedCount > 0 && (
+                <p className="text-xs text-center max-w-sm">
+                  {t("workItems.detail.testsTab.suggestion", {
+                    discipline: t(`workItems.disciplines.${workItemDisciplina}`, { defaultValue: workItemDisciplina }),
+                    count: suggestedCount,
+                  })}
+                </p>
+              )}
               <Button
                 size="sm"
                 variant="outline"
@@ -789,13 +817,34 @@ export default function WorkItemDetailPage() {
             </p>
             <h1 className="text-xl font-extrabold tracking-tight text-foreground flex items-center gap-2">
               <Construction className="h-5 w-5 text-muted-foreground" />
-              {item.sector}
+              {item.obra ? `${item.obra} — ${item.sector}` : item.sector}
             </h1>
-            <div className="flex items-center gap-2 mt-1.5">
-              <StatusBadge status={item.status} />
-              <span className="text-xs text-muted-foreground">
+            <p className="text-sm text-muted-foreground mt-0.5">{item.sector}</p>
+            <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+              <Badge variant="outline" className="text-xs">
                 {t(`workItems.disciplines.${item.disciplina}`, { defaultValue: item.disciplina })}
-              </span>
+              </Badge>
+              <StatusBadge status={item.status} />
+            </div>
+
+            {/* Elemento + PK contextual info */}
+            <div className="mt-2 space-y-1">
+              {item.elemento ? (
+                <p className="text-sm text-foreground font-medium">
+                  {t("workItems.detail.element")}: {item.elemento}
+                  {item.parte ? ` · ${item.parte}` : ""}
+                </p>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-muted/50 px-2.5 py-1 text-xs text-muted-foreground">
+                  <Copy className="h-3 w-3" />
+                  {t("workItems.detail.baseActivity")}
+                </span>
+              )}
+              {(item.pk_inicio != null) && (
+                <p className="text-sm font-mono text-muted-foreground">
+                  PK {formatPk(item.pk_inicio, item.pk_fim)}
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -927,7 +976,7 @@ export default function WorkItemDetailPage() {
 
         {/* Tests tab */}
         <TabsContent value="tests" className="mt-4">
-          <WorkItemTestsTab workItemId={item.id} projectId={activeProject?.id ?? ""} />
+          <WorkItemTestsTab workItemId={item.id} projectId={activeProject?.id ?? ""} workItemDisciplina={item.disciplina} workItemSector={item.sector} projectName={activeProject?.name} />
         </TabsContent>
 
         {/* NCs tab */}
