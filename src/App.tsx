@@ -53,6 +53,7 @@ import DailyReportDetailPage from "./pages/DailyReportDetailPage";
 import RecycledMaterialsPage from "./pages/RecycledMaterialsPage";
 import SGQMatrixPage from "./pages/SGQMatrixPage";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
