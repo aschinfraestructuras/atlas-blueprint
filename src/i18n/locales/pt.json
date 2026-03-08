@@ -36,7 +36,8 @@
     "yes": "Sim",
     "no": "Não",
     "conforming": "Conforme",
-    "nonConforming": "Não conforme"
+    "nonConforming": "Não conforme",
+    "invalidId": "ID inválido — não é possível abrir este registo"
   },
   "auth": {
     "signIn": "Iniciar sessão",
@@ -120,7 +121,7 @@
     "plans": "Planos",
     "planning": "Planeamento",
     "survey": "Levantamentos",
-    "topography": "Topografia",
+    "topography": "Medições & Equipamentos",
     "subcontractors": "Subempreiteiros",
     "workItems": "Atividades",
     "ppi": "Inspeções PPI",
@@ -403,8 +404,8 @@
       "subtitle": "Gestão de RFIs, Submittals e Clarificações"
     },
     "plans": {
-      "title": "Planeamento & Planos",
-      "subtitle": "Planos de qualidade, PIE, PPI, ITP e cronograma"
+      "title": "Planos Técnicos de Obra",
+      "subtitle": "Method Statements, programas de betonagens, montagem, tráfego e cronograma"
     },
     "survey": {
       "title": "Topografia",
@@ -1618,17 +1619,38 @@
     },
     "table": {
       "type": "Tipo",
+      "code": "Código",
       "title": "Título",
-      "revision": "Rev."
+      "revision": "Rev.",
+      "discipline": "Disciplina"
     },
     "types": {
+      "MS": "Method Statement",
+      "PlanEsc": "Plano de Escavação / Terraplanagem",
+      "PlanBet": "Programa de Betonagens",
+      "PlanMont": "Plano de Montagem",
+      "PlanTraf": "Plano de Tráfego / Desvios",
+      "PlanSeg": "Plano de Segurança de Frente",
+      "Schedule": "Programa de Trabalhos",
+      "Drawing": "Planta / Plano de Obra",
+      "Other": "Outro",
       "PQO": "PQO",
       "PIE": "PIE",
       "PPI": "PPI",
       "ITP": "ITP",
       "MethodStatement": "Method Statement",
-      "TestPlan": "Plano de Ensaios",
-      "Schedule": "Cronograma"
+      "TestPlan": "Plano de Ensaios"
+    },
+    "disciplines": {
+      "geral": "Geral",
+      "terras": "Terraplenagem",
+      "betao": "Betão",
+      "ferrovia": "Ferrovia",
+      "catenaria": "Catenária",
+      "st": "Sinalização / Telecom",
+      "drenagem": "Drenagem",
+      "estruturas": "Estruturas",
+      "outros": "Outros"
     },
     "status": {
       "draft": "Rascunho",
@@ -1640,7 +1662,8 @@
     },
     "filters": {
       "allTypes": "Todos os tipos",
-      "allStatuses": "Todos os estados"
+      "allStatuses": "Todos os estados",
+      "allDisciplines": "Todas as disciplinas"
     },
     "form": {
       "titleCreate": "Novo Plano",
@@ -1650,7 +1673,14 @@
       "titlePlaceholder": "ex: Plano de Qualidade da Obra",
       "revision": "Revisão",
       "fileUrl": "URL do ficheiro",
-      "createBtn": "Criar plano"
+      "createBtn": "Criar plano",
+      "code": "Código do Documento",
+      "discipline": "Disciplina",
+      "responsible": "Responsável",
+      "approvalDate": "Data de Aprovação",
+      "docReference": "Referência Documental",
+      "notes": "Notas",
+      "notesPlaceholder": "Observações adicionais…"
     },
     "detail": {
       "breadcrumb": "Planos",
@@ -2689,8 +2719,8 @@
     }
   },
   "topography": {
-    "title": "Topografia",
-    "subtitle": "Equipamentos, calibrações, pedidos e controlo geométrico",
+    "title": "Medições & Equipamentos",
+    "subtitle": "EMEs, calibrações, pedidos e controlos topográficos",
     "surveys": "Levantamentos",
     "equipment": "Equipamentos",
     "calibrations": "Calibrações",

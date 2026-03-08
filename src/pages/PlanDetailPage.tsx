@@ -155,7 +155,7 @@ export default function PlanDetailPage() {
     ["draft", "under_review", "approved", "obsolete", "archived"].forEach(s => {
       statusLabels[s] = t(`plans.status.${s}`, { defaultValue: s });
     });
-    ["PQO", "PIE", "PPI", "ITP", "MethodStatement", "TestPlan", "Schedule"].forEach(pt => {
+    ["MS", "PlanEsc", "PlanBet", "PlanMont", "PlanTraf", "PlanSeg", "Schedule", "Drawing", "Other"].forEach(pt => {
       typeLabels[pt] = t(`plans.types.${pt}`, { defaultValue: pt });
     });
     exportPlanDetailPdf(plan, versions, meta, statusLabels, typeLabels);
@@ -241,13 +241,23 @@ export default function PlanDetailPage() {
         </CardHeader>
         <CardContent>
           <InfoRow label={t("plans.form.planType")} value={t(`plans.types.${plan.plan_type}`, { defaultValue: plan.plan_type })} />
+          <InfoRow label={t("plans.form.code")} value={plan.code} />
           <InfoRow label={t("plans.form.title")} value={plan.title} />
+          <InfoRow label={t("plans.form.discipline")} value={
+            plan.discipline ? (
+              <Badge variant="secondary" className="text-[10px]">{t(`plans.disciplines.${plan.discipline}`, { defaultValue: plan.discipline })}</Badge>
+            ) : "—"
+          } />
+          <InfoRow label={t("plans.form.responsible")} value={plan.responsible} />
+          <InfoRow label={t("plans.form.approvalDate")} value={plan.approval_date ? new Date(plan.approval_date).toLocaleDateString() : null} />
           <InfoRow label={t("plans.form.revision")} value={plan.revision ?? "0"} />
+          <InfoRow label={t("plans.form.docReference")} value={plan.doc_reference} />
           <InfoRow label={t("common.status")} value={
             <Badge variant="secondary" className={cn("text-xs", STATUS_COLORS[plan.status])}>
               {t(`plans.status.${plan.status}`, { defaultValue: plan.status })}
             </Badge>
           } />
+          <InfoRow label={t("plans.form.notes")} value={plan.notes} />
           <InfoRow label={t("plans.detail.createdAt", { defaultValue: "Criado em" })} value={new Date(plan.created_at).toLocaleDateString()} />
           <InfoRow label={t("plans.detail.updatedAt", { defaultValue: "Atualizado em" })} value={new Date(plan.updated_at).toLocaleDateString()} />
           {plan.file_url && (

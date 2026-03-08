@@ -46,8 +46,9 @@ const STATUS_COLORS: Record<string, string> = {
   superseded: "bg-destructive/10 text-destructive",
 };
 
-const PLAN_TYPES = ["PQO", "PIE", "PPI", "ITP", "MethodStatement", "TestPlan", "Schedule"];
+const PLAN_TYPES = ["MS", "PlanEsc", "PlanBet", "PlanMont", "PlanTraf", "PlanSeg", "Schedule", "Drawing", "Other"];
 const PLAN_STATUSES = ["draft", "under_review", "approved", "obsolete", "archived", "superseded"];
+const DISCIPLINES = ["geral", "terras", "betao", "ferrovia", "catenaria", "st", "drenagem", "estruturas", "outros"];
 
 export default function PlansPage() {
   const { t, i18n } = useTranslation();
@@ -66,17 +67,19 @@ export default function PlansPage() {
   const [search, setSearch] = useState("");
   const [filterType, setFilterType] = useState("__all__");
   const [filterStatus, setFilterStatus] = useState("__all__");
+  const [filterDiscipline, setFilterDiscipline] = useState("__all__");
 
   const filtered = useMemo(() => {
     let list = plans;
     if (search) {
       const q = search.toLowerCase();
-      list = list.filter(p => p.title.toLowerCase().includes(q) || (p.revision ?? "").toLowerCase().includes(q));
+      list = list.filter(p => p.title.toLowerCase().includes(q) || (p.revision ?? "").toLowerCase().includes(q) || (p.code ?? "").toLowerCase().includes(q));
     }
     if (filterType !== "__all__") list = list.filter(p => p.plan_type === filterType);
     if (filterStatus !== "__all__") list = list.filter(p => p.status === filterStatus);
+    if (filterDiscipline !== "__all__") list = list.filter(p => (p as any).discipline === filterDiscipline);
     return list;
-  }, [plans, search, filterType, filterStatus]);
+  }, [plans, search, filterType, filterStatus, filterDiscipline]);
 
   // KPIs
   const kpis = useMemo(() => {
@@ -206,6 +209,17 @@ export default function PlansPage() {
             ))}
           </SelectContent>
         </Select>
+        <Select value={filterDiscipline} onValueChange={setFilterDiscipline}>
+          <SelectTrigger className="w-[160px] h-8 text-sm">
+            <SelectValue placeholder={t("plans.filters.allDisciplines")} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="__all__">{t("plans.filters.allDisciplines")}</SelectItem>
+            {DISCIPLINES.map(d => (
+              <SelectItem key={d} value={d}>{t(`plans.disciplines.${d}`, { defaultValue: d })}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </FilterBar>
 
       {error && (
@@ -227,8 +241,10 @@ export default function PlansPage() {
           <Table>
             <TableHeader>
               <TableRow className="bg-muted/40">
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("plans.table.code")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("plans.table.type")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("plans.table.title")}</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("plans.table.discipline")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("plans.table.revision")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.status")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.date")}</TableHead>
@@ -238,12 +254,18 @@ export default function PlansPage() {
             <TableBody>
               {filtered.map((plan) => (
                 <TableRow key={plan.id} className="hover:bg-muted/20 transition-colors cursor-pointer" onClick={() => navigate(`/plans/${plan.id}`)}>
+                  <TableCell className="font-mono text-xs text-muted-foreground">{(plan as any).code ?? "—"}</TableCell>
                   <TableCell>
                     <Badge variant="outline" className="text-xs font-mono">
                       {t(`plans.types.${plan.plan_type}`, { defaultValue: plan.plan_type })}
                     </Badge>
                   </TableCell>
                   <TableCell className="font-medium text-sm text-foreground">{plan.title}</TableCell>
+                  <TableCell>
+                    {(plan as any).discipline ? (
+                      <Badge variant="secondary" className="text-[10px]">{t(`plans.disciplines.${(plan as any).discipline}`, { defaultValue: (plan as any).discipline })}</Badge>
+                    ) : "—"}
+                  </TableCell>
                   <TableCell className="text-muted-foreground font-mono text-xs">{plan.revision ?? "—"}</TableCell>
                   <TableCell>
                     <Badge variant="secondary" className={cn("text-xs", STATUS_COLORS[plan.status] ?? "")}>

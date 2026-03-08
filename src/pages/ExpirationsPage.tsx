@@ -93,14 +93,18 @@ export default function ExpirationsPage() {
 
   if (!activeProject) return <NoProjectBanner />;
   
+  const isValidUUID = (id: string | null | undefined): boolean => {
+    if (!id) return false;
+    return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+  };
+
   const handleNavigate = (item: ExpiringItem) => {
     const base = DOMAIN_ROUTES[item.domain] ?? "/";
     const id = item.entity_id;
-    const isValid = id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
-    if (isValid) {
+    if (isValidUUID(id)) {
       navigate(`${base}/${id}`);
     } else {
-      toast({ title: t("common.idInvalid", { defaultValue: "ID inválido" }), description: t("common.idInvalidDesc", { defaultValue: "Este registo não pode ser aberto." }), variant: "destructive" });
+      toast({ title: t("common.invalidId"), variant: "destructive" });
       navigate(base);
     }
   };
