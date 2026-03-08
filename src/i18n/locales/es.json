@@ -1294,6 +1294,15 @@
       "menor": "NC MENOR",
       "observacao": "Observación"
     },
+    "classificationCE": {
+      "C": "Corrección",
+      "AC": "Acción Correctiva"
+    },
+    "auditOrigin": {
+      "auditoria_interna": "Auditoría Interna",
+      "auditoria_ip": "Auditoría IP/Fiscalización",
+      "extra_auditoria": "Extra-Auditoría"
+    },
     "filters": {
       "allStatuses": "Todos los estados",
       "allSeverities": "Todas las gravedades",
