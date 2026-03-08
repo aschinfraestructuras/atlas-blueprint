@@ -2014,7 +2014,15 @@
       "created": "Work Item criado com sucesso.",
       "updated": "Work Item atualizado com sucesso.",
       "deleted": "Work Item eliminado.",
+      "duplicated": "Atividade duplicada — preencha o elemento e PK.",
       "error": "Ocorreu um erro. Tente novamente."
+    },
+    "actions": {
+      "duplicate": "Duplicar atividade",
+      "createPPI": "Criar PPI"
+    },
+    "groups": {
+      "obras": "obras"
     },
     "deleteConfirm": {
       "title": "Eliminar Work Item?",
