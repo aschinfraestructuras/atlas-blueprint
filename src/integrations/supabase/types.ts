@@ -2390,6 +2390,8 @@ export type Database = {
       subcontractors: {
         Row: {
           contact_email: string | null
+          contact_name: string | null
+          contact_phone: string | null
           contract: string | null
           created_at: string
           created_by: string
@@ -2399,6 +2401,7 @@ export type Database = {
           id: string
           is_deleted: boolean
           name: string
+          notes: string | null
           performance_score: number | null
           project_id: string
           status: string
@@ -2408,6 +2411,8 @@ export type Database = {
         }
         Insert: {
           contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
           contract?: string | null
           created_at?: string
           created_by: string
@@ -2417,6 +2422,7 @@ export type Database = {
           id?: string
           is_deleted?: boolean
           name: string
+          notes?: string | null
           performance_score?: number | null
           project_id: string
           status?: string
@@ -2426,6 +2432,8 @@ export type Database = {
         }
         Update: {
           contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
           contract?: string | null
           created_at?: string
           created_by?: string
@@ -2435,6 +2443,7 @@ export type Database = {
           id?: string
           is_deleted?: boolean
           name?: string
+          notes?: string | null
           performance_score?: number | null
           project_id?: string
           status?: string
