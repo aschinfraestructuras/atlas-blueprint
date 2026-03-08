@@ -92,7 +92,7 @@ export default function RfiDetailPage() {
       })
       .catch(() => {
         toast({ variant: "destructive", title: t("common.error", { defaultValue: "Erro" }) });
-        navigate("/rfis");
+        navigate("/technical-office");
       })
       .finally(() => setLoading(false));
   }, [id]);
