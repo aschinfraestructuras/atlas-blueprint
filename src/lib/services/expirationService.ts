@@ -1,5 +1,9 @@
 import { supabase } from "@/integrations/supabase/client";
 
+// Helper to access tables not in generated types
+const untypedFrom = (table: string) =>
+  (supabase as unknown as { from: (t: string) => ReturnType<typeof supabase.from> }).from(table);
+
 export interface ExpiringItem {
   id: string;
   domain: "supplier" | "subcontractor" | "calibration" | "material" | "personnel";
@@ -33,6 +37,42 @@ function daysRemaining(validTo: string): number {
   return Math.ceil((vt.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
 }
 
+interface SupplierDocResult {
+  id: string;
+  doc_type: string;
+  valid_to: string;
+  supplier_id: string;
+  suppliers: { name: string } | null;
+}
+
+interface SubDocResult {
+  id: string;
+  doc_type: string;
+  title: string;
+  valid_to: string;
+  subcontractor_id: string;
+}
+
+interface CalibrationResult {
+  id: string;
+  valid_until: string;
+  equipment_id: string;
+}
+
+interface EquipmentResult {
+  id: string;
+  code: string;
+  model: string;
+}
+
+interface MatDocResult {
+  id: string;
+  doc_type: string;
+  valid_to: string;
+  material_id: string;
+  materials: { name: string; code: string } | null;
+}
+
 export const expirationService = {
   async getAll(projectId: string, maxDays = 90): Promise<ExpiringItem[]> {
     const cutoff = new Date();
@@ -42,14 +82,13 @@ export const expirationService = {
     const results: ExpiringItem[] = [];
 
     // 1. Supplier documents
-    const { data: supDocs } = await supabase
-      .from("supplier_documents" as any)
+    const { data: supDocs } = await untypedFrom("supplier_documents")
       .select("id, doc_type, valid_to, supplier_id, suppliers:supplier_id(name)")
       .eq("project_id", projectId)
       .not("valid_to", "is", null)
       .lte("valid_to", cutoffStr);
 
-    (supDocs ?? []).forEach((d: any) => {
+    ((supDocs ?? []) as unknown as SupplierDocResult[]).forEach((d) => {
       results.push({
         id: d.id,
         domain: "supplier",
@@ -80,7 +119,7 @@ export const expirationService = {
         .in("id", subIds);
       const subMap = Object.fromEntries((subs ?? []).map(s => [s.id, s.name]));
 
-      subDocs.forEach((d: any) => {
+      subDocs.forEach((d) => {
         results.push({
           id: d.id,
           domain: "subcontractor",
@@ -88,29 +127,28 @@ export const expirationService = {
           entity_id: d.subcontractor_id,
           doc_title: d.title,
           doc_type: d.doc_type,
-          valid_to: d.valid_to,
-          days_remaining: daysRemaining(d.valid_to),
-          status: classifyExpiration(d.valid_to),
+          valid_to: d.valid_to!,
+          days_remaining: daysRemaining(d.valid_to!),
+          status: classifyExpiration(d.valid_to!),
         });
       });
     }
 
     // 3. Equipment calibrations
     const { data: cals } = await supabase
-      .from("equipment_calibrations" as any)
+      .from("equipment_calibrations")
       .select("id, valid_until, equipment_id")
       .eq("project_id", projectId)
       .lte("valid_until", cutoffStr);
 
     if (cals) {
-      const eqIds = [...new Set((cals as any[]).map(c => c.equipment_id))];
-      const { data: eqs } = await supabase
-        .from("topography_equipment" as any)
+      const eqIds = [...new Set(cals.map(c => c.equipment_id))];
+      const { data: eqs } = await untypedFrom("topography_equipment")
         .select("id, code, model")
         .in("id", eqIds);
-      const eqMap = Object.fromEntries((eqs as any[] ?? []).map(e => [e.id, `${e.code} — ${e.model}`]));
+      const eqMap = Object.fromEntries(((eqs ?? []) as unknown as EquipmentResult[]).map(e => [e.id, `${e.code} — ${e.model}`]));
 
-      (cals as any[]).forEach((c: any) => {
+      cals.forEach((c) => {
         results.push({
           id: c.id,
           domain: "calibration",
@@ -126,14 +164,13 @@ export const expirationService = {
     }
 
     // 4. Material documents
-    const { data: matDocs } = await supabase
-      .from("material_documents" as any)
+    const { data: matDocs } = await untypedFrom("material_documents")
       .select("id, doc_type, valid_to, material_id, materials:material_id(name, code)")
       .eq("project_id", projectId)
       .not("valid_to", "is", null)
       .lte("valid_to", cutoffStr);
 
-    (matDocs as any[] ?? []).forEach((d: any) => {
+    ((matDocs ?? []) as unknown as MatDocResult[]).forEach((d) => {
       results.push({
         id: d.id,
         domain: "material",

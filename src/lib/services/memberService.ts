@@ -1,4 +1,12 @@
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
+
+// Helper to access tables not in generated types
+const untypedFrom = (table: string) =>
+  (supabase as unknown as { from: (t: string) => ReturnType<typeof supabase.from> }).from(table);
+
+const untypedRpc = (fn: string, params: Record<string, unknown>) =>
+  (supabase.rpc as unknown as (fn: string, params: Record<string, unknown>) => ReturnType<typeof supabase.rpc>)(fn, params);
 
 export interface ProjectMember {
   project_id: string;
@@ -31,10 +39,15 @@ export interface InviteMemberResult {
   token?: string;
 }
 
+interface ProfileRow {
+  user_id: string;
+  full_name: string | null;
+  email: string | null;
+}
+
 export const memberService = {
   async getMembers(projectId: string): Promise<ProjectMember[]> {
-    const { data, error } = await supabase
-      .from("project_members")
+    const { data, error } = await untypedFrom("project_members")
       .select("project_id, user_id, role, is_active, created_at")
       .eq("project_id", projectId)
       .eq("is_active", true)
@@ -42,61 +55,60 @@ export const memberService = {
     if (error) throw error;
 
     // Fetch profiles for these users
-    const userIds = (data ?? []).map(m => m.user_id);
+    const members = (data ?? []) as unknown as Array<{ project_id: string; user_id: string; role: string; is_active: boolean; created_at: string }>;
+    const userIds = members.map(m => m.user_id);
     let profiles: Record<string, { full_name: string | null; email: string | null }> = {};
     if (userIds.length > 0) {
-      const { data: profileData } = await supabase
-        .from("profiles")
+      const { data: profileData } = await untypedFrom("profiles")
         .select("user_id, full_name, email")
         .in("user_id", userIds);
-      (profileData ?? []).forEach(p => {
+      ((profileData ?? []) as unknown as ProfileRow[]).forEach(p => {
         profiles[p.user_id] = { full_name: p.full_name, email: p.email };
       });
     }
 
-    return (data ?? []).map(m => ({
+    return members.map(m => ({
       ...m,
       profile: profiles[m.user_id] ?? { full_name: null, email: null },
     }));
   },
 
   async getPendingInvites(projectId: string): Promise<ProjectInvite[]> {
-    const { data, error } = await (supabase as any)
-      .from("project_invites")
+    const { data, error } = await untypedFrom("project_invites")
       .select("*")
       .eq("project_id", projectId)
       .is("accepted_at", null)
       .order("created_at", { ascending: false });
     if (error) throw error;
-    return (data ?? []) as ProjectInvite[];
+    return (data ?? []) as unknown as ProjectInvite[];
   },
 
   async invite(projectId: string, email: string, role: string): Promise<InviteMemberResult> {
-    const { data, error } = await supabase.rpc("fn_invite_project_member" as any, {
+    const { data, error } = await untypedRpc("fn_invite_project_member", {
       p_project_id: projectId,
       p_email: email,
       p_role: role,
     });
     if (error) throw error;
-    return data as InviteMemberResult;
+    return data as unknown as InviteMemberResult;
   },
 
   async acceptInvite(token: string): Promise<{ status: string; project_id: string }> {
-    const { data, error } = await supabase.rpc("fn_accept_project_invite" as any, {
+    const { data, error } = await untypedRpc("fn_accept_project_invite", {
       p_token: token,
     });
     if (error) throw error;
-    return data as any;
+    return data as unknown as { status: string; project_id: string };
   },
 
   async claimMyPendingInvites(): Promise<{ status: string; claimed: number }> {
-    const { data, error } = await supabase.rpc("fn_claim_my_pending_invites" as any);
+    const { data, error } = await untypedRpc("fn_claim_my_pending_invites", {});
     if (error) throw error;
-    return (data ?? { status: "ok", claimed: 0 }) as { status: string; claimed: number };
+    return (data ?? { status: "ok", claimed: 0 }) as unknown as { status: string; claimed: number };
   },
 
   async updateRole(projectId: string, userId: string, newRole: string): Promise<void> {
-    const { error } = await supabase.rpc("fn_update_member_role" as any, {
+    const { error } = await untypedRpc("fn_update_member_role", {
       p_project_id: projectId,
       p_user_id: userId,
       p_new_role: newRole,
@@ -105,7 +117,7 @@ export const memberService = {
   },
 
   async removeMember(projectId: string, userId: string): Promise<void> {
-    const { error } = await supabase.rpc("fn_remove_project_member" as any, {
+    const { error } = await untypedRpc("fn_remove_project_member", {
       p_project_id: projectId,
       p_user_id: userId,
     });
@@ -113,16 +125,15 @@ export const memberService = {
   },
 
   async deleteInvite(inviteId: string): Promise<void> {
-    const { error } = await (supabase as any)
-      .from("project_invites")
+    const { error } = await untypedFrom("project_invites")
       .delete()
       .eq("id", inviteId);
     if (error) throw error;
   },
 
   async getMyProjects() {
-    const { data, error } = await supabase.rpc("fn_list_my_projects" as any);
+    const { data, error } = await untypedRpc("fn_list_my_projects", {});
     if (error) throw error;
-    return data as any[];
+    return data as unknown as Array<Database["public"]["Tables"]["projects"]["Row"]>;
   },
 };

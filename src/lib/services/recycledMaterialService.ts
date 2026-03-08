@@ -1,5 +1,9 @@
 import { supabase } from "@/integrations/supabase/client";
 
+// Helper to access tables not in generated types
+const untypedFrom = (table: string) =>
+  (supabase as unknown as { from: (t: string) => ReturnType<typeof supabase.from> }).from(table);
+
 export interface RecycledMaterial {
   id: string;
   project_id: string;
@@ -59,8 +63,7 @@ export interface RecycledMaterialDocument {
 
 export const recycledMaterialService = {
   async getByProject(projectId: string): Promise<RecycledMaterial[]> {
-    const { data, error } = await supabase
-      .from("recycled_materials" as any)
+    const { data, error } = await untypedFrom("recycled_materials")
       .select("*")
       .eq("project_id", projectId)
       .eq("is_deleted", false)
@@ -70,8 +73,7 @@ export const recycledMaterialService = {
   },
 
   async getById(id: string): Promise<RecycledMaterial> {
-    const { data, error } = await supabase
-      .from("recycled_materials" as any)
+    const { data, error } = await untypedFrom("recycled_materials")
       .select("*")
       .eq("id", id)
       .single();
@@ -80,9 +82,8 @@ export const recycledMaterialService = {
   },
 
   async create(input: RecycledMaterialInput, userId: string): Promise<RecycledMaterial> {
-    const { data, error } = await supabase
-      .from("recycled_materials" as any)
-      .insert({ ...input, created_by: userId } as any)
+    const { data, error } = await untypedFrom("recycled_materials")
+      .insert({ ...input, created_by: userId })
       .select()
       .single();
     if (error) throw error;
@@ -90,9 +91,8 @@ export const recycledMaterialService = {
   },
 
   async update(id: string, input: Partial<RecycledMaterialInput>): Promise<RecycledMaterial> {
-    const { data, error } = await supabase
-      .from("recycled_materials" as any)
-      .update({ ...input, updated_at: new Date().toISOString() } as any)
+    const { data, error } = await untypedFrom("recycled_materials")
+      .update({ ...input, updated_at: new Date().toISOString() })
       .eq("id", id)
       .select()
       .single();
@@ -101,16 +101,14 @@ export const recycledMaterialService = {
   },
 
   async softDelete(id: string): Promise<void> {
-    const { error } = await supabase
-      .from("recycled_materials" as any)
-      .update({ is_deleted: true, updated_at: new Date().toISOString() } as any)
+    const { error } = await untypedFrom("recycled_materials")
+      .update({ is_deleted: true, updated_at: new Date().toISOString() })
       .eq("id", id);
     if (error) throw error;
   },
 
   async getDocuments(recycledMaterialId: string): Promise<RecycledMaterialDocument[]> {
-    const { data, error } = await supabase
-      .from("recycled_material_documents" as any)
+    const { data, error } = await untypedFrom("recycled_material_documents")
       .select("*")
       .eq("recycled_material_id", recycledMaterialId)
       .order("uploaded_at", { ascending: false });
@@ -119,22 +117,20 @@ export const recycledMaterialService = {
   },
 
   async nextReference(projectId: string, type: string): Promise<string> {
-    const { data } = await supabase
-      .from("recycled_materials" as any)
+    const { data } = await untypedFrom("recycled_materials")
       .select("reference_number")
       .eq("project_id", projectId)
-      .like("reference_number", `${type}-%` as any);
-    const count = (data as any[] | null)?.length ?? 0;
+      .like("reference_number", `${type}-%`);
+    const count = (data as unknown[] | null)?.length ?? 0;
     return `${type}-${String(count + 1).padStart(3, "0")}`;
   },
 
   async getProjectStats(projectId: string): Promise<{ total: number; approved: number; pending: number; avgPct: number }> {
-    const { data } = await supabase
-      .from("recycled_materials" as any)
+    const { data } = await untypedFrom("recycled_materials")
       .select("status, recycled_content_pct")
       .eq("project_id", projectId)
       .eq("is_deleted", false);
-    const items = (data ?? []) as any[];
+    const items = (data ?? []) as Array<{ status: string; recycled_content_pct: number | null }>;
     const approved = items.filter(i => i.status === "approved").length;
     const pending = items.filter(i => i.status === "pending").length;
     const pcts = items.filter(i => i.recycled_content_pct != null).map(i => Number(i.recycled_content_pct));

@@ -1,5 +1,11 @@
 import { supabase } from "@/integrations/supabase/client";
 import { auditService } from "./auditService";
+import type { Database } from "@/integrations/supabase/types";
+
+// ── Supabase row types ───────────────────────────────────────────
+type MaterialRow = Database["public"]["Tables"]["materials"]["Row"];
+type MaterialUpdate = Database["public"]["Tables"]["materials"]["Update"];
+type MaterialDocRow = Database["public"]["Tables"]["material_documents"]["Row"];
 
 // ── Types ─────────────────────────────────────────────────────────
 export interface Material {
@@ -94,11 +100,20 @@ export interface WorkItemMaterial {
   created_at: string;
 }
 
+interface SupplierMaterialLink {
+  id: string;
+  supplier_id: string;
+  material_id: string;
+  project_id: string;
+  created_at: string;
+  suppliers: { id: string; name: string; code: string | null; status: string } | null;
+}
+
 // ── Service ───────────────────────────────────────────────────────
 export const materialService = {
   async getByProject(projectId: string, includeDeleted = false): Promise<Material[]> {
     let q = supabase
-      .from("materials" as any)
+      .from("materials")
       .select("*")
       .eq("project_id", projectId)
       .order("created_at", { ascending: false });
@@ -119,7 +134,7 @@ export const materialService = {
     },
   ): Promise<{ data: Material[]; count: number }> {
     let q = supabase
-      .from("materials" as any)
+      .from("materials")
       .select("*", { count: "exact" })
       .eq("project_id", projectId)
       .eq("is_deleted", false)
@@ -136,7 +151,7 @@ export const materialService = {
 
   async getById(id: string): Promise<Material> {
     const { data, error } = await supabase
-      .from("materials" as any)
+      .from("materials")
       .select("*")
       .eq("id", id)
       .single();
@@ -145,7 +160,7 @@ export const materialService = {
   },
 
   async create(input: MaterialInput): Promise<Material> {
-    const { data, error } = await supabase.rpc("fn_create_material" as any, {
+    const { data, error } = await supabase.rpc("fn_create_material", {
       p_project_id: input.project_id,
       p_name: input.name,
       p_category: input.category,
@@ -160,12 +175,12 @@ export const materialService = {
     // Update additional fields not in RPC
     const mat = data as unknown as Material;
     if (input.supplier_id || input.approval_required !== undefined || input.pame_code !== undefined || input.pame_status !== undefined) {
-      const updates: Record<string, unknown> = {};
+      const updates: MaterialUpdate = {};
       if (input.supplier_id) updates.supplier_id = input.supplier_id;
       if (input.approval_required !== undefined) updates.approval_required = input.approval_required;
       if (input.pame_code !== undefined) updates.pame_code = input.pame_code || null;
       if (input.pame_status !== undefined) updates.pame_status = input.pame_status || null;
-      await supabase.from("materials" as any).update(updates).eq("id", mat.id);
+      await supabase.from("materials").update(updates).eq("id", mat.id);
     }
     return mat;
   },
@@ -175,8 +190,8 @@ export const materialService = {
     supplier_id?: string | null;
   }): Promise<Material> {
     const { data, error } = await supabase
-      .from("materials" as any)
-      .update(updates)
+      .from("materials")
+      .update(updates as MaterialUpdate)
       .eq("id", id)
       .select()
       .single();
@@ -192,14 +207,15 @@ export const materialService = {
   // ── Approval Workflow ───────────────────────────────────────────
   async submitForApproval(id: string, projectId: string): Promise<Material> {
     const { data: { user } } = await supabase.auth.getUser();
+    const payload: MaterialUpdate = {
+      approval_status: "submitted",
+      submitted_at: new Date().toISOString(),
+      submitted_by: user?.id,
+      rejection_reason: null,
+    };
     const { data, error } = await supabase
-      .from("materials" as any)
-      .update({
-        approval_status: "submitted",
-        submitted_at: new Date().toISOString(),
-        submitted_by: user?.id,
-        rejection_reason: null,
-      })
+      .from("materials")
+      .update(payload)
       .eq("id", id)
       .select()
       .single();
@@ -213,9 +229,10 @@ export const materialService = {
   },
 
   async sendToReview(id: string, projectId: string): Promise<Material> {
+    const payload: MaterialUpdate = { approval_status: "in_review" };
     const { data, error } = await supabase
-      .from("materials" as any)
-      .update({ approval_status: "in_review" })
+      .from("materials")
+      .update(payload)
       .eq("id", id)
       .select()
       .single();
@@ -231,14 +248,15 @@ export const materialService = {
 
   async approve(id: string, projectId: string): Promise<Material> {
     const { data: { user } } = await supabase.auth.getUser();
+    const payload: MaterialUpdate = {
+      approval_status: "approved",
+      approved_at: new Date().toISOString(),
+      approved_by: user?.id,
+      rejection_reason: null,
+    };
     const { data, error } = await supabase
-      .from("materials" as any)
-      .update({
-        approval_status: "approved",
-        approved_at: new Date().toISOString(),
-        approved_by: user?.id,
-        rejection_reason: null,
-      })
+      .from("materials")
+      .update(payload)
       .eq("id", id)
       .select()
       .single();
@@ -252,12 +270,13 @@ export const materialService = {
   },
 
   async reject(id: string, projectId: string, reason: string): Promise<Material> {
+    const payload: MaterialUpdate = {
+      approval_status: "rejected",
+      rejection_reason: reason,
+    };
     const { data, error } = await supabase
-      .from("materials" as any)
-      .update({
-        approval_status: "rejected",
-        rejection_reason: reason,
-      })
+      .from("materials")
+      .update(payload)
       .eq("id", id)
       .select()
       .single();
@@ -272,12 +291,13 @@ export const materialService = {
   },
 
   async setConditional(id: string, projectId: string, reason: string): Promise<Material> {
+    const payload: MaterialUpdate = {
+      approval_status: "conditional",
+      rejection_reason: reason,
+    };
     const { data, error } = await supabase
-      .from("materials" as any)
-      .update({
-        approval_status: "conditional",
-        rejection_reason: reason,
-      })
+      .from("materials")
+      .update(payload)
       .eq("id", id)
       .select()
       .single();
@@ -293,9 +313,10 @@ export const materialService = {
 
   // ── Status & Lifecycle ──────────────────────────────────────────
   async archive(id: string, projectId: string): Promise<void> {
+    const payload: MaterialUpdate = { status: "archived" };
     const { error } = await supabase
-      .from("materials" as any)
-      .update({ status: "archived" })
+      .from("materials")
+      .update(payload)
       .eq("id", id);
     if (error) throw error;
     await auditService.log({
@@ -306,9 +327,10 @@ export const materialService = {
   },
 
   async activate(id: string, projectId: string): Promise<void> {
+    const payload: MaterialUpdate = { status: "active" };
     const { error } = await supabase
-      .from("materials" as any)
-      .update({ status: "active" })
+      .from("materials")
+      .update(payload)
       .eq("id", id);
     if (error) throw error;
     await auditService.log({
@@ -320,9 +342,10 @@ export const materialService = {
 
   async softDelete(id: string, projectId: string): Promise<void> {
     const { data: { user } } = await supabase.auth.getUser();
+    const payload: MaterialUpdate = { is_deleted: true, deleted_at: new Date().toISOString(), deleted_by: user?.id ?? null };
     const { error } = await supabase
-      .from("materials" as any)
-      .update({ is_deleted: true, deleted_at: new Date().toISOString(), deleted_by: user?.id ?? null })
+      .from("materials")
+      .update(payload)
       .eq("id", id);
     if (error) throw error;
     await auditService.log({
@@ -333,9 +356,10 @@ export const materialService = {
   },
 
   async restore(id: string, projectId: string): Promise<void> {
+    const payload: MaterialUpdate = { is_deleted: false, deleted_at: null, deleted_by: null };
     const { error } = await supabase
-      .from("materials" as any)
-      .update({ is_deleted: false, deleted_at: null, deleted_by: null })
+      .from("materials")
+      .update(payload)
       .eq("id", id);
     if (error) throw error;
     await auditService.log({
@@ -348,7 +372,7 @@ export const materialService = {
   // ── Material Documents ──────────────────────────────────────────
   async getDocuments(materialId: string): Promise<MaterialDocument[]> {
     const { data, error } = await supabase
-      .from("material_documents" as any)
+      .from("material_documents")
       .select("*")
       .eq("material_id", materialId)
       .order("created_at", { ascending: false });
@@ -358,7 +382,7 @@ export const materialService = {
 
   async addDocument(input: { project_id: string; material_id: string; document_id: string; doc_type: string; valid_from?: string; valid_to?: string; status?: string }): Promise<MaterialDocument> {
     const { data, error } = await supabase
-      .from("material_documents" as any)
+      .from("material_documents")
       .insert(input)
       .select()
       .single();
@@ -368,27 +392,27 @@ export const materialService = {
 
   async removeDocument(id: string): Promise<void> {
     const { error } = await supabase
-      .from("material_documents" as any)
+      .from("material_documents")
       .delete()
       .eq("id", id);
     if (error) throw error;
   },
 
   // ── Supplier-Material links ─────────────────────────────────────
-  async getSupplierLinks(materialId: string): Promise<any[]> {
-    const { data, error } = await supabase
-      .from("supplier_materials" as any)
+  async getSupplierLinks(materialId: string): Promise<SupplierMaterialLink[]> {
+    const { data, error } = await (supabase as unknown as { from: (table: string) => ReturnType<typeof supabase.from> })
+      .from("supplier_materials")
       .select("*, suppliers:supplier_id(id, name, code, status)")
       .eq("material_id", materialId)
       .order("created_at", { ascending: false });
     if (error) throw error;
-    return (data ?? []) as any[];
+    return (data ?? []) as unknown as SupplierMaterialLink[];
   },
 
   // ── Work Item Materials ─────────────────────────────────────────
   async getWorkItemLinks(materialId: string): Promise<WorkItemMaterial[]> {
-    const { data, error } = await supabase
-      .from("work_item_materials" as any)
+    const { data, error } = await (supabase as unknown as { from: (table: string) => ReturnType<typeof supabase.from> })
+      .from("work_item_materials")
       .select("*")
       .eq("material_id", materialId)
       .order("created_at", { ascending: false });
@@ -399,7 +423,7 @@ export const materialService = {
   // ── Approval KPIs ───────────────────────────────────────────────
   async getPendingApprovalCount(projectId: string): Promise<number> {
     const { count, error } = await supabase
-      .from("materials" as any)
+      .from("materials")
       .select("id", { count: "exact", head: true })
       .eq("project_id", projectId)
       .eq("is_deleted", false)
@@ -410,16 +434,16 @@ export const materialService = {
 
   // ── KPIs ────────────────────────────────────────────────────────
   async getKPIs(projectId: string): Promise<MaterialKPI | null> {
-    const { data, error } = await supabase
-      .from("view_materials_kpi" as any)
+    const { data, error } = await (supabase as unknown as { from: (table: string) => ReturnType<typeof supabase.from> })
+      .from("view_materials_kpi")
       .select("*")
       .eq("project_id", projectId)
       .maybeSingle();
     if (error) throw error;
     if (!data) return null;
-    const d = data as any;
+    const d = data as Record<string, unknown>;
     return {
-      project_id: d.project_id,
+      project_id: d.project_id as string,
       materials_total: Number(d.materials_total) || 0,
       materials_active: Number(d.materials_active) || 0,
       materials_discontinued: Number(d.materials_discontinued) || 0,
@@ -431,16 +455,16 @@ export const materialService = {
 
   async getDetailMetrics(materialId: string): Promise<MaterialDetailMetrics | null> {
     const { data, error } = await supabase
-      .from("view_material_detail_metrics" as any)
+      .from("view_material_detail_metrics")
       .select("*")
       .eq("material_id", materialId)
       .maybeSingle();
     if (error) throw error;
     if (!data) return null;
-    const d = data as any;
+    const d = data as Record<string, unknown>;
     return {
-      material_id: d.material_id,
-      project_id: d.project_id,
+      material_id: d.material_id as string,
+      project_id: d.project_id as string,
       suppliers_count: Number(d.suppliers_count) || 0,
       docs_expired: Number(d.docs_expired) || 0,
       docs_expiring_30d: Number(d.docs_expiring_30d) || 0,
