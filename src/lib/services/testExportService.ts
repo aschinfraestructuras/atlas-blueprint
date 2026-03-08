@@ -638,8 +638,9 @@ export function exportTestResultPdf(
   locale: string,
   projectName: string,
   workItemSector?: string,
+  logoUrl?: string | null,
 ): void {
-  const html     = buildSingleHtml(result, labels, locale, projectName, workItemSector);
+  const html     = buildSingleHtml(result, labels, locale, projectName, workItemSector, logoUrl);
   const filename = buildTestFilename(result, projectName, workItemSector);
   printHtml(html, filename);
 }
@@ -649,9 +650,10 @@ export function exportTestResultsBulkPdf(
   labels: TestExportLabels,
   locale: string,
   projectName: string,
+  logoUrl?: string | null,
 ): void {
   if (!results.length) return;
-  const html     = buildBulkHtml(results, labels, locale, projectName);
+  const html     = buildBulkHtml(results, labels, locale, projectName, logoUrl);
   const filename = buildBulkFilename(projectName);
   printHtml(html, filename);
 }
@@ -662,9 +664,10 @@ export function exportWorkItemTestsPdf(
   locale: string,
   projectName: string,
   workItemSector: string,
+  logoUrl?: string | null,
 ): void {
   if (!results.length) return;
-  const html     = buildWorkItemSummaryHtml(results, labels, locale, projectName, workItemSector);
+  const html     = buildWorkItemSummaryHtml(results, labels, locale, projectName, workItemSector, logoUrl);
   const filename = buildWorkItemSummaryFilename(projectName, workItemSector);
   printHtml(html, filename);
 }
