@@ -415,6 +415,7 @@ function buildBulkHtml(
   labels: TestExportLabels,
   locale: string,
   projectName: string,
+  logoUrl?: string | null,
 ): string {
   const tableRows = results.map((r) => {
     const tc      = r.tests_catalog as Partial<TestCatalogEntry> | null;
