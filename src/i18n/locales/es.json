@@ -1600,7 +1600,10 @@
       "titlePlaceholder": "ej: Submittal sobre hormigón armado",
       "descriptionPlaceholder": "Describa la solicitud o aclaración…",
       "dueDate": "Plazo de respuesta",
-      "createBtn": "Crear ítem"
+      "createBtn": "Crear ítem",
+      "assignedTo": "Responsable",
+      "assignedToPlaceholder": "Nombre del responsable",
+      "ncRelated": "NC Asociada"
     },
     "toast": {
       "created": "Ítem creado con éxito.",
