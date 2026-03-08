@@ -107,7 +107,7 @@ export const recycledMaterialService = {
   },
 
   async getDocuments(recycledMaterialId: string): Promise<RecycledMaterialDocument[]> {
-    const { data, error } = await untypedFrom("recycled_material_documents")
+    const { data, error } = await db.from("recycled_material_documents")
       .select("*")
       .eq("recycled_material_id", recycledMaterialId)
       .order("uploaded_at", { ascending: false });
