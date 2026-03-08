@@ -66,6 +66,15 @@ export default function SupplierDetailPage() {
   const [loading, setLoading] = useState(true);
   const [editOpen, setEditOpen] = useState(false);
   const [addMaterialOpen, setAddMaterialOpen] = useState(false);
+  const [evalDialogOpen, setEvalDialogOpen] = useState(false);
+  const [evalLoading, setEvalLoading] = useState(false);
+  const [evalForm, setEvalForm] = useState({
+    quality: 75,
+    delivery: 75,
+    ncManagement: 75,
+    cooperation: 75,
+    notes: "",
+  });
 
   const fetchAll = useCallback(async () => {
     if (!id || !activeProject) return;
