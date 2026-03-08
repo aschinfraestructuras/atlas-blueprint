@@ -82,16 +82,16 @@
     --chart-4:           30 65% 45%;
     --chart-5:           0 55% 48%;
 
-    /* ── Sidebar — Slate Azulado Médio ────────────────────────────── */
-    --sidebar-background:       215 25% 27%;
-    --sidebar-foreground:       210 15% 90%;
-    --sidebar-primary:          210 60% 72%;
+    /* ── Sidebar — Vibrant Indigo-Blue ────────────────────────────── */
+    --sidebar-background:       235 55% 38%;
+    --sidebar-foreground:       230 30% 92%;
+    --sidebar-primary:          220 80% 78%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent:           215 22% 33%;
-    --sidebar-accent-foreground: 210 20% 93%;
-    --sidebar-border:           215 18% 36%;
-    --sidebar-ring:             210 55% 58%;
-    --sidebar:                  215 25% 27%;
+    --sidebar-accent:           235 45% 48%;
+    --sidebar-accent-foreground: 230 30% 96%;
+    --sidebar-border:           235 40% 48%;
+    --sidebar-ring:             225 65% 65%;
+    --sidebar:                  235 55% 38%;
   }
 
   .dark {
