@@ -1832,7 +1832,17 @@
       "areaPkPlaceholder": "ej: PK 1+500 o Bloque A",
       "descriptionPlaceholder": "Observaciones del levantamiento…",
       "fileUrl": "URL del archivo",
-      "createBtn": "Crear registro"
+      "createBtn": "Crear registro",
+      "surveyType": "Tipo de Levantamiento",
+      "responsible": "Responsable",
+      "responsiblePlaceholder": "Nombre del topógrafo"
+    },
+    "surveyTypes": {
+      "implantacao": "Implantación",
+      "levantamiento": "Levantamiento Topográfico",
+      "controlo_geometrico": "Control Geométrico",
+      "nivelamento": "Nivelación",
+      "as_built": "As-Built"
     },
     "toast": {
       "created": "Registro creado con éxito.",
