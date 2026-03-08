@@ -422,7 +422,7 @@ export function exportBulkPdf(
   );
 
   // Shared CSS wrapper
-  const firstHtml = buildSinglePdfHtml(instances[0], labels, locale, projectName);
+  const firstHtml = buildSinglePdfHtml(instances[0], labels, locale, projectName, logoUrl);
   const styleMatch = firstHtml.match(/<style>([\s\S]*?)<\/style>/);
   const css = styleMatch ? styleMatch[1] : "";
 
