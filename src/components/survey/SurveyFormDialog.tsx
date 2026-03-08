@@ -57,20 +57,22 @@ export function SurveyFormDialog({ open, onOpenChange, record, onSuccess }: Prop
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { area_or_pk: "", description: "", date: today, status: "pending", file_url: "" },
+    defaultValues: { area_or_pk: "", survey_type: "", responsible: "", description: "", date: today, status: "pending", file_url: "" },
   });
 
   useEffect(() => {
     if (record) {
       form.reset({
         area_or_pk: record.area_or_pk,
+        survey_type: "",
+        responsible: "",
         description: record.description ?? "",
         date: record.date,
         status: (record.status as typeof STATUSES[number]) ?? "pending",
         file_url: record.file_url ?? "",
       });
     } else {
-      form.reset({ area_or_pk: "", description: "", date: today, status: "pending", file_url: "" });
+      form.reset({ area_or_pk: "", survey_type: "", responsible: "", description: "", date: today, status: "pending", file_url: "" });
     }
   }, [record, open, form, today]);
 
