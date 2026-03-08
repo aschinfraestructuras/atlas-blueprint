@@ -2629,7 +2629,13 @@
       "createBtn": "Crear material",
       "supplierLabel": "Proveedor principal",
       "supplierPlaceholder": "Seleccionar proveedor…",
-      "approvalRequired": "Requiere aprobación MAP/MAS"
+      "approvalRequired": "Requiere aprobación MAP/MAS",
+      "pameDisciplina": "Disciplina PAME",
+      "pamePrioridade": "Prioridad PAME",
+      "pameNorma": "Norma Aplicable",
+      "pameDocsReq": "Documentos Requeridos",
+      "pameDocsReqPlaceholder": "ej: FT, CE, DA, Informe de ensayo",
+      "pamePpiRef": "Referencia PPI"
     },
     "pame": {
       "title": "Plan de Materiales (PAME)",
