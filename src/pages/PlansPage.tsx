@@ -73,12 +73,13 @@ export default function PlansPage() {
     let list = plans;
     if (search) {
       const q = search.toLowerCase();
-      list = list.filter(p => p.title.toLowerCase().includes(q) || (p.revision ?? "").toLowerCase().includes(q));
+      list = list.filter(p => p.title.toLowerCase().includes(q) || (p.revision ?? "").toLowerCase().includes(q) || (p.code ?? "").toLowerCase().includes(q));
     }
     if (filterType !== "__all__") list = list.filter(p => p.plan_type === filterType);
     if (filterStatus !== "__all__") list = list.filter(p => p.status === filterStatus);
+    if (filterDiscipline !== "__all__") list = list.filter(p => (p as any).discipline === filterDiscipline);
     return list;
-  }, [plans, search, filterType, filterStatus]);
+  }, [plans, search, filterType, filterStatus, filterDiscipline]);
 
   // KPIs
   const kpis = useMemo(() => {
