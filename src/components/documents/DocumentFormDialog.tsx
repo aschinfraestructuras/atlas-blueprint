@@ -44,12 +44,17 @@ const STATUS_COLORS: Record<DocumentStatus, string> = {
 
 const DOC_TYPES = [
   "procedure", "instruction", "plan", "report", "certificate",
-  "drawing", "specification", "form", "record", "other",
+  "drawing", "specification", "form", "record",
+  "mdj", "med", "dpu", "cte", "egt", "interoperability_report",
+  "other",
 ];
 
 const DISCIPLINAS = [
   "geral", "estruturas", "geotecnia", "hidraulica", "estradas",
-  "ambiente", "seguranca", "eletrica", "mecanica", "outro",
+  "ambiente", "seguranca", "eletrica", "mecanica",
+  "topografia", "drenagem", "restabelecimentos", "geologia_geotecnia",
+  "muros_suporte", "terraplenagem", "ferrovia", "catenaria", "sinalizacao",
+  "outro",
 ];
 
 const schema = (t: (k: string) => string) =>
