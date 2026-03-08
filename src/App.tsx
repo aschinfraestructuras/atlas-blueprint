@@ -53,6 +53,7 @@ import DailyReportDetailPage from "./pages/DailyReportDetailPage";
 import RecycledMaterialsPage from "./pages/RecycledMaterialsPage";
 import SGQMatrixPage from "./pages/SGQMatrixPage";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -77,6 +78,7 @@ function ProtectedLayout({ children }: { children: React.ReactNode }) {
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
+    <ErrorBoundary>
     <ThemeProvider>
     <TooltipProvider>
       <Toaster />
@@ -142,6 +144,7 @@ const App = () => (
       </BrowserRouter>
     </TooltipProvider>
     </ThemeProvider>
+    </ErrorBoundary>
   </QueryClientProvider>
 );
 
