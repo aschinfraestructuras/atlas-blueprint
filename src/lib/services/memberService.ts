@@ -46,19 +46,18 @@ interface ProfileRow {
 
 export const memberService = {
   async getMembers(projectId: string): Promise<ProjectMember[]> {
-    const { data, error } = await untypedFrom("project_members")
+    const { data, error } = await db.from("project_members")
       .select("project_id, user_id, role, is_active, created_at")
       .eq("project_id", projectId)
       .eq("is_active", true)
       .order("created_at", { ascending: true });
     if (error) throw error;
 
-    // Fetch profiles for these users
     const members = (data ?? []) as unknown as Array<{ project_id: string; user_id: string; role: string; is_active: boolean; created_at: string }>;
     const userIds = members.map(m => m.user_id);
     let profiles: Record<string, { full_name: string | null; email: string | null }> = {};
     if (userIds.length > 0) {
-      const { data: profileData } = await untypedFrom("profiles")
+      const { data: profileData } = await db.from("profiles")
         .select("user_id, full_name, email")
         .in("user_id", userIds);
       ((profileData ?? []) as unknown as ProfileRow[]).forEach(p => {
@@ -73,7 +72,7 @@ export const memberService = {
   },
 
   async getPendingInvites(projectId: string): Promise<ProjectInvite[]> {
-    const { data, error } = await untypedFrom("project_invites")
+    const { data, error } = await db.from("project_invites")
       .select("*")
       .eq("project_id", projectId)
       .is("accepted_at", null)
@@ -83,55 +82,46 @@ export const memberService = {
   },
 
   async invite(projectId: string, email: string, role: string): Promise<InviteMemberResult> {
-    const { data, error } = await untypedRpc("fn_invite_project_member", {
-      p_project_id: projectId,
-      p_email: email,
-      p_role: role,
+    const { data, error } = await dbRpc("fn_invite_project_member", {
+      p_project_id: projectId, p_email: email, p_role: role,
     });
     if (error) throw error;
     return data as unknown as InviteMemberResult;
   },
 
   async acceptInvite(token: string): Promise<{ status: string; project_id: string }> {
-    const { data, error } = await untypedRpc("fn_accept_project_invite", {
-      p_token: token,
-    });
+    const { data, error } = await dbRpc("fn_accept_project_invite", { p_token: token });
     if (error) throw error;
     return data as unknown as { status: string; project_id: string };
   },
 
   async claimMyPendingInvites(): Promise<{ status: string; claimed: number }> {
-    const { data, error } = await untypedRpc("fn_claim_my_pending_invites", {});
+    const { data, error } = await dbRpc("fn_claim_my_pending_invites", {});
     if (error) throw error;
     return (data ?? { status: "ok", claimed: 0 }) as unknown as { status: string; claimed: number };
   },
 
   async updateRole(projectId: string, userId: string, newRole: string): Promise<void> {
-    const { error } = await untypedRpc("fn_update_member_role", {
-      p_project_id: projectId,
-      p_user_id: userId,
-      p_new_role: newRole,
+    const { error } = await dbRpc("fn_update_member_role", {
+      p_project_id: projectId, p_user_id: userId, p_new_role: newRole,
     });
     if (error) throw error;
   },
 
   async removeMember(projectId: string, userId: string): Promise<void> {
-    const { error } = await untypedRpc("fn_remove_project_member", {
-      p_project_id: projectId,
-      p_user_id: userId,
+    const { error } = await dbRpc("fn_remove_project_member", {
+      p_project_id: projectId, p_user_id: userId,
     });
     if (error) throw error;
   },
 
   async deleteInvite(inviteId: string): Promise<void> {
-    const { error } = await untypedFrom("project_invites")
-      .delete()
-      .eq("id", inviteId);
+    const { error } = await db.from("project_invites").delete().eq("id", inviteId);
     if (error) throw error;
   },
 
   async getMyProjects() {
-    const { data, error } = await untypedRpc("fn_list_my_projects", {});
+    const { data, error } = await dbRpc("fn_list_my_projects", {});
     if (error) throw error;
     return data as unknown as Array<Database["public"]["Tables"]["projects"]["Row"]>;
   },

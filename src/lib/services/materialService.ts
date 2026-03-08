@@ -2,10 +2,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { auditService } from "./auditService";
 import type { Database } from "@/integrations/supabase/types";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- tables/views not in generated types
+const db = supabase as any;
+
 // ── Supabase row types ───────────────────────────────────────────
-type MaterialRow = Database["public"]["Tables"]["materials"]["Row"];
 type MaterialUpdate = Database["public"]["Tables"]["materials"]["Update"];
-type MaterialDocRow = Database["public"]["Tables"]["material_documents"]["Row"];
 
 // ── Types ─────────────────────────────────────────────────────────
 export interface Material {
