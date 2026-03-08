@@ -70,6 +70,8 @@ export interface MaterialRow {
   quantity: number | null;
   unit: string | null;
   lot_number: string | null;
+  material_id: string | null;
+  pame_reference: string | null;
   created_at: string;
 }
 
