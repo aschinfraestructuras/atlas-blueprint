@@ -59,7 +59,7 @@ export default function RecycledMaterialsPage() {
 
   return (
     <div className="space-y-6 p-6">
-      <ArchivedBanner />
+      {isArchived && <ArchivedBanner />}
 
       <PageHeader
         icon={Leaf}
