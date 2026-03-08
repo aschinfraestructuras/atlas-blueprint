@@ -9,6 +9,9 @@ export interface Subcontractor {
   trade: string | null;
   status: string;          // active | suspended | concluded
   contact_email: string | null;
+  contact_name: string | null;
+  contact_phone: string | null;
+  notes: string | null;
   supplier_id: string | null;
   contract: string | null;
   documentation_status: string; // pending | valid | expired
@@ -24,6 +27,9 @@ export interface SubcontractorInput {
   trade?: string;
   status?: string;
   contact_email?: string;
+  contact_name?: string;
+  contact_phone?: string;
+  notes?: string;
   supplier_id?: string;
   contract?: string;
   documentation_status?: string;
@@ -53,11 +59,14 @@ export const subcontractorService = {
         trade: input.trade ?? null,
         status: input.status ?? "active",
         contact_email: input.contact_email ?? null,
+        contact_name: input.contact_name ?? null,
+        contact_phone: input.contact_phone ?? null,
+        notes: input.notes ?? null,
         supplier_id: input.supplier_id ?? null,
         contract: input.contract ?? null,
         documentation_status: input.documentation_status ?? "pending",
         performance_score: input.performance_score ?? null,
-      })
+      } as any)
       .select()
       .single();
     if (error) throw error;
@@ -79,7 +88,7 @@ export const subcontractorService = {
   ): Promise<Subcontractor> {
     const { data, error } = await supabase
       .from("subcontractors")
-      .update(updates)
+      .update(updates as any)
       .eq("id", id)
       .select()
       .single();
@@ -90,22 +99,23 @@ export const subcontractorService = {
       entityId: id,
       action: "UPDATE",
       module: "subcontractors",
-      diff: updates as Record<string, unknown>,
+      diff: updates,
     });
     return data as Subcontractor;
   },
 
   async softDelete(id: string, projectId: string): Promise<void> {
-    const { data: { user } } = await supabase.auth.getUser();
     const { error } = await supabase
       .from("subcontractors")
-      .update({ is_deleted: true, deleted_at: new Date().toISOString(), deleted_by: user?.id ?? null } as any)
+      .update({ is_deleted: true, deleted_at: new Date().toISOString() } as any)
       .eq("id", id);
     if (error) throw error;
     await auditService.log({
-      projectId, entity: "subcontractors", entityId: id,
-      action: "DELETE", module: "subcontractors",
-      description: "Subempreiteiro eliminado (soft)",
+      projectId,
+      entity: "subcontractors",
+      entityId: id,
+      action: "SOFT_DELETE",
+      module: "subcontractors",
     });
   },
 
@@ -116,22 +126,11 @@ export const subcontractorService = {
       .eq("id", id);
     if (error) throw error;
     await auditService.log({
-      projectId, entity: "subcontractors", entityId: id,
-      action: "UPDATE", module: "subcontractors",
-      description: "Subempreiteiro restaurado",
-    });
-  },
-
-  async archive(id: string, projectId: string): Promise<void> {
-    const { error } = await supabase
-      .from("subcontractors")
-      .update({ status: "archived" } as any)
-      .eq("id", id);
-    if (error) throw error;
-    await auditService.log({
-      projectId, entity: "subcontractors", entityId: id,
-      action: "ARCHIVE", module: "subcontractors",
-      description: "Subempreiteiro arquivado",
+      projectId,
+      entity: "subcontractors",
+      entityId: id,
+      action: "RESTORE",
+      module: "subcontractors",
     });
   },
 };

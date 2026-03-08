@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProject } from "@/contexts/ProjectContext";
 import { useWorkItems } from "@/hooks/useWorkItems";
+import { useNonConformities } from "@/hooks/useNonConformities";
 import { technicalOfficeService, type TechnicalOfficeItem, TECH_OFFICE_TYPES, TECH_OFFICE_STATUSES, PRIORITIES } from "@/lib/services/technicalOfficeService";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { useToast } from "@/hooks/use-toast";
@@ -33,7 +34,9 @@ const schema = z.object({
   priority: z.enum(PRIORITIES).default("normal"),
   deadline: z.string().optional(),
   recipient: z.string().optional(),
+  assigned_to: z.string().optional(),
   work_item_id: z.string().optional(),
+  nc_id: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -51,11 +54,12 @@ export function TechnicalOfficeFormDialog({ open, onOpenChange, item, onSuccess 
   const { activeProject } = useProject();
   const { toast } = useToast();
   const { data: workItems } = useWorkItems();
+  const { data: ncs } = useNonConformities();
   const isEdit = !!item;
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { type: "SUBMITTAL", title: "", description: "", status: "open", priority: "normal", deadline: "", recipient: "", work_item_id: "" },
+    defaultValues: { type: "SUBMITTAL", title: "", description: "", status: "open", priority: "normal", deadline: "", recipient: "", assigned_to: "", work_item_id: "", nc_id: "" },
   });
 
   useEffect(() => {
@@ -68,10 +72,12 @@ export function TechnicalOfficeFormDialog({ open, onOpenChange, item, onSuccess 
         priority: (item.priority as typeof PRIORITIES[number]) ?? "normal",
         deadline: item.deadline ?? item.due_date ?? "",
         recipient: item.recipient ?? "",
+        assigned_to: item.assigned_to ?? "",
         work_item_id: item.work_item_id ?? "",
+        nc_id: item.nc_id ?? "",
       });
     } else {
-      form.reset({ type: "SUBMITTAL", title: "", description: "", status: "open", priority: "normal", deadline: "", recipient: "", work_item_id: "" });
+      form.reset({ type: "SUBMITTAL", title: "", description: "", status: "open", priority: "normal", deadline: "", recipient: "", assigned_to: "", work_item_id: "", nc_id: "" });
     }
   }, [item, open, form]);
 
@@ -87,7 +93,9 @@ export function TechnicalOfficeFormDialog({ open, onOpenChange, item, onSuccess 
           priority: values.priority,
           deadline: values.deadline || undefined,
           recipient: values.recipient || undefined,
+          assigned_to: values.assigned_to || undefined,
           work_item_id: values.work_item_id || null,
+          nc_id: values.nc_id || null,
         });
         toast({ title: t("technicalOffice.toast.updated") });
       } else {
@@ -101,7 +109,9 @@ export function TechnicalOfficeFormDialog({ open, onOpenChange, item, onSuccess 
           priority: values.priority,
           deadline: values.deadline || undefined,
           recipient: values.recipient || undefined,
+          assigned_to: values.assigned_to || undefined,
           work_item_id: values.work_item_id || null,
+          nc_id: values.nc_id || null,
         });
         toast({ title: t("technicalOffice.toast.created") });
       }
@@ -211,6 +221,14 @@ export function TechnicalOfficeFormDialog({ open, onOpenChange, item, onSuccess 
                   )} />
                 </div>
 
+                <FormField control={form.control} name="assigned_to" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("technicalOffice.form.assignedTo")} <span className="text-muted-foreground text-xs">({t("common.optional")})</span></FormLabel>
+                    <FormControl><Input placeholder={t("technicalOffice.form.assignedToPlaceholder", { defaultValue: "Nome do responsável" })} {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+
                 <FormField control={form.control} name="work_item_id" render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t("technicalOffice.rfi.workItem", { defaultValue: "Atividade" })} <span className="text-muted-foreground text-xs">({t("common.optional")})</span></FormLabel>
@@ -220,6 +238,22 @@ export function TechnicalOfficeFormDialog({ open, onOpenChange, item, onSuccess 
                         <SelectItem value="__none__">—</SelectItem>
                         {workItems.map(wi => (
                           <SelectItem key={wi.id} value={wi.id}>{wi.sector} — {wi.disciplina}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+
+                <FormField control={form.control} name="nc_id" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("technicalOffice.form.ncRelated")} <span className="text-muted-foreground text-xs">({t("common.optional")})</span></FormLabel>
+                    <Select onValueChange={(v) => field.onChange(v === "__none__" ? "" : v)} value={field.value || "__none__"}>
+                      <FormControl><SelectTrigger><SelectValue placeholder={t("rfis.form.ncNone")} /></SelectTrigger></FormControl>
+                      <SelectContent>
+                        <SelectItem value="__none__">{t("rfis.form.ncNone")}</SelectItem>
+                        {ncs.map(nc => (
+                          <SelectItem key={nc.id} value={nc.id}>{nc.code ?? "NC"} — {nc.title ?? nc.description?.slice(0, 40)}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>

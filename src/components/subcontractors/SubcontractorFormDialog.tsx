@@ -17,6 +17,7 @@ import {
   Form, FormControl, FormField, FormItem, FormLabel, FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
@@ -35,7 +36,10 @@ const schema = z.object({
   name: z.string().min(1),
   trade: z.string().optional(),
   status: z.enum(STATUSES).default("active"),
+  contact_name: z.string().trim().max(120).optional().or(z.literal("")),
   contact_email: z.string().email().optional().or(z.literal("")),
+  contact_phone: z.string().trim().max(30).optional().or(z.literal("")),
+  notes: z.string().trim().max(1000).optional().or(z.literal("")),
   supplier_id: z.string().optional(),
   contract: z.string().optional(),
   documentation_status: z.enum(DOC_STATUSES).default("pending"),
@@ -75,7 +79,7 @@ export function SubcontractorFormDialog({ open, onOpenChange, subcontractor, onS
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { name: "", trade: "", status: "active", contact_email: "", supplier_id: "", contract: "", documentation_status: "pending", performance_score: "" },
+    defaultValues: { name: "", trade: "", status: "active", contact_name: "", contact_email: "", contact_phone: "", notes: "", supplier_id: "", contract: "", documentation_status: "pending", performance_score: "" },
   });
 
   useEffect(() => {
@@ -84,14 +88,17 @@ export function SubcontractorFormDialog({ open, onOpenChange, subcontractor, onS
         name: subcontractor.name,
         trade: subcontractor.trade ?? "",
         status: (subcontractor.status as typeof STATUSES[number]) ?? "active",
+        contact_name: subcontractor.contact_name ?? "",
         contact_email: subcontractor.contact_email ?? "",
+        contact_phone: subcontractor.contact_phone ?? "",
+        notes: subcontractor.notes ?? "",
         supplier_id: subcontractor.supplier_id ?? "",
         contract: subcontractor.contract ?? "",
         documentation_status: (subcontractor.documentation_status as typeof DOC_STATUSES[number]) ?? "pending",
         performance_score: subcontractor.performance_score?.toString() ?? "",
       });
     } else {
-      form.reset({ name: "", trade: "", status: "active", contact_email: "", supplier_id: "", contract: "", documentation_status: "pending", performance_score: "" });
+      form.reset({ name: "", trade: "", status: "active", contact_name: "", contact_email: "", contact_phone: "", notes: "", supplier_id: "", contract: "", documentation_status: "pending", performance_score: "" });
     }
   }, [subcontractor, open, form]);
 
@@ -105,7 +112,10 @@ export function SubcontractorFormDialog({ open, onOpenChange, subcontractor, onS
           name: values.name,
           trade: values.trade || undefined,
           status: values.status,
+          contact_name: values.contact_name || undefined,
           contact_email: values.contact_email || undefined,
+          contact_phone: values.contact_phone || undefined,
+          notes: values.notes || undefined,
           supplier_id: supplierIdValue,
           contract: values.contract || undefined,
           documentation_status: values.documentation_status,
@@ -119,7 +129,10 @@ export function SubcontractorFormDialog({ open, onOpenChange, subcontractor, onS
           name: values.name,
           trade: values.trade || undefined,
           status: values.status,
+          contact_name: values.contact_name || undefined,
           contact_email: values.contact_email || undefined,
+          contact_phone: values.contact_phone || undefined,
+          notes: values.notes || undefined,
           supplier_id: supplierIdValue,
           contract: values.contract || undefined,
           documentation_status: values.documentation_status,
@@ -146,7 +159,7 @@ export function SubcontractorFormDialog({ open, onOpenChange, subcontractor, onS
         title: newDoc.title.trim(),
         valid_to: newDoc.valid_to || undefined,
       });
-      sonnerToast.success("Documento adicionado");
+      sonnerToast.success(t("subcontractors.toast.docAdded", { defaultValue: "Documento adicionado" }));
       setNewDoc({ doc_type: "seguro", title: "", valid_to: "" });
       fetchDocs();
     } catch (e: any) {
@@ -160,7 +173,7 @@ export function SubcontractorFormDialog({ open, onOpenChange, subcontractor, onS
     if (!activeProject) return;
     try {
       await subcontractorDocService.delete(docId, activeProject.id);
-      sonnerToast.success("Documento removido");
+      sonnerToast.success(t("subcontractors.toast.docRemoved", { defaultValue: "Documento removido" }));
       fetchDocs();
     } catch { sonnerToast.error("Erro ao remover"); }
   };
@@ -178,6 +191,9 @@ export function SubcontractorFormDialog({ open, onOpenChange, subcontractor, onS
           <div className="space-y-4 pb-1">
             <Form {...form}>
               <form id="sub-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                {/* ── Section: Dados Gerais ── */}
+                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{t("subcontractors.form.sectionGeneral")}</p>
+
                 <FormField control={form.control} name="name" render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t("subcontractors.form.name")}</FormLabel>
@@ -208,18 +224,10 @@ export function SubcontractorFormDialog({ open, onOpenChange, subcontractor, onS
                   )} />
                 </div>
 
-                <FormField control={form.control} name="contact_email" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t("subcontractors.form.contactEmail")} <span className="text-muted-foreground text-xs">({t("common.optional")})</span></FormLabel>
-                    <FormControl><Input type="email" placeholder="email@empresa.com" {...field} /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-
                 <FormField control={form.control} name="contract" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Contrato <span className="text-muted-foreground text-xs">({t("common.optional")})</span></FormLabel>
-                    <FormControl><Input placeholder="Referência do contrato" {...field} /></FormControl>
+                    <FormLabel>{t("subcontractors.form.contract")} <span className="text-muted-foreground text-xs">({t("common.optional")})</span></FormLabel>
+                    <FormControl><Input placeholder={t("subcontractors.form.contractPlaceholder", { defaultValue: "Referência do contrato" })} {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
@@ -227,13 +235,13 @@ export function SubcontractorFormDialog({ open, onOpenChange, subcontractor, onS
                 <div className="grid grid-cols-2 gap-4">
                   <FormField control={form.control} name="documentation_status" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Estado Documentação</FormLabel>
+                      <FormLabel>{t("subcontractors.form.docStatus")}</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                         <SelectContent>
-                          <SelectItem value="pending">Pendente</SelectItem>
-                          <SelectItem value="valid">Válida</SelectItem>
-                          <SelectItem value="expired">Expirada</SelectItem>
+                          <SelectItem value="pending">{t("subcontractors.docStatus.pending")}</SelectItem>
+                          <SelectItem value="valid">{t("subcontractors.docStatus.valid")}</SelectItem>
+                          <SelectItem value="expired">{t("subcontractors.docStatus.expired")}</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -241,7 +249,7 @@ export function SubcontractorFormDialog({ open, onOpenChange, subcontractor, onS
                   )} />
                   <FormField control={form.control} name="performance_score" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Score Desempenho <span className="text-muted-foreground text-xs">(0-100)</span></FormLabel>
+                      <FormLabel>{t("subcontractors.form.score")} <span className="text-muted-foreground text-xs">(0-100)</span></FormLabel>
                       <FormControl><Input type="number" min={0} max={100} placeholder="—" {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
@@ -263,6 +271,44 @@ export function SubcontractorFormDialog({ open, onOpenChange, subcontractor, onS
                     </FormItem>
                   )} />
                 )}
+
+                <Separator />
+
+                {/* ── Section: Contacto ── */}
+                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{t("subcontractors.form.sectionContact")}</p>
+
+                <FormField control={form.control} name="contact_name" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("subcontractors.form.contactName")} <span className="text-muted-foreground text-xs">({t("common.optional")})</span></FormLabel>
+                    <FormControl><Input placeholder={t("subcontractors.form.contactNamePlaceholder", { defaultValue: "Nome do responsável" })} {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField control={form.control} name="contact_email" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("subcontractors.form.contactEmail")} <span className="text-muted-foreground text-xs">({t("common.optional")})</span></FormLabel>
+                      <FormControl><Input type="email" placeholder="email@empresa.com" {...field} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="contact_phone" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("subcontractors.form.contactPhone")} <span className="text-muted-foreground text-xs">({t("common.optional")})</span></FormLabel>
+                      <FormControl><Input placeholder="+351 912 345 678" {...field} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                </div>
+
+                <FormField control={form.control} name="notes" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("subcontractors.form.notes")} <span className="text-muted-foreground text-xs">({t("common.optional")})</span></FormLabel>
+                    <FormControl><Textarea rows={3} placeholder={t("subcontractors.form.notesPlaceholder", { defaultValue: "Observações gerais…" })} {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
               </form>
             </Form>
 
@@ -272,7 +318,7 @@ export function SubcontractorFormDialog({ open, onOpenChange, subcontractor, onS
                 <div className="space-y-3">
                   <div className="flex items-center gap-1.5 text-sm font-medium text-foreground">
                     <FileCheck className="h-3.5 w-3.5 text-muted-foreground" />
-                    Documentação Obrigatória
+                    {t("subcontractors.form.mandatoryDocs", { defaultValue: "Documentação Obrigatória" })}
                     {docs.length > 0 && <Badge variant="secondary" className="ml-1 px-1.5 py-0 text-xs">{docs.length}</Badge>}
                   </div>
 
@@ -286,10 +332,10 @@ export function SubcontractorFormDialog({ open, onOpenChange, subcontractor, onS
                               <p className="text-xs font-medium text-foreground">{d.title}</p>
                               <p className="text-xs text-muted-foreground">
                                 {DOC_TYPES.find(dt => dt.value === d.doc_type)?.label ?? d.doc_type}
-                                {d.valid_to ? ` · Válido até ${d.valid_to}` : ""}
+                                {d.valid_to ? ` · ${t("subcontractors.form.validUntil", { defaultValue: "Válido até" })} ${d.valid_to}` : ""}
                               </p>
                             </div>
-                            {isExpired && <Badge variant="destructive" className="text-[10px]">Expirado</Badge>}
+                            {isExpired && <Badge variant="destructive" className="text-[10px]">{t("subcontractors.docStatus.expired")}</Badge>}
                             <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground hover:text-destructive" onClick={() => handleDeleteDoc(d.id)}>
                               <Trash2 className="h-3 w-3" />
                             </Button>
@@ -301,7 +347,7 @@ export function SubcontractorFormDialog({ open, onOpenChange, subcontractor, onS
 
                   <div className="grid grid-cols-[1fr_1fr_auto_auto] gap-2 items-end">
                     <div>
-                      <label className="text-xs font-medium text-muted-foreground">Tipo</label>
+                      <label className="text-xs font-medium text-muted-foreground">{t("documents.form.type", { defaultValue: "Tipo" })}</label>
                       <Select value={newDoc.doc_type} onValueChange={v => setNewDoc(d => ({ ...d, doc_type: v }))}>
                         <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
                         <SelectContent>
@@ -310,11 +356,11 @@ export function SubcontractorFormDialog({ open, onOpenChange, subcontractor, onS
                       </Select>
                     </div>
                     <div>
-                      <label className="text-xs font-medium text-muted-foreground">Título</label>
+                      <label className="text-xs font-medium text-muted-foreground">{t("documents.form.title", { defaultValue: "Título" })}</label>
                       <Input className="h-8 text-xs" value={newDoc.title} onChange={e => setNewDoc(d => ({ ...d, title: e.target.value }))} placeholder="Ex: Seguro RC" />
                     </div>
                     <div>
-                      <label className="text-xs font-medium text-muted-foreground">Validade</label>
+                      <label className="text-xs font-medium text-muted-foreground">{t("subcontractors.form.validity", { defaultValue: "Validade" })}</label>
                       <Input type="date" className="h-8 text-xs" value={newDoc.valid_to} onChange={e => setNewDoc(d => ({ ...d, valid_to: e.target.value }))} />
                     </div>
                     <Button size="sm" variant="outline" className="h-8" onClick={handleAddDoc} disabled={addingDoc || !newDoc.title.trim()}>

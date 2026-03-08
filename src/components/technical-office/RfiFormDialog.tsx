@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProject } from "@/contexts/ProjectContext";
 import { useWorkItems } from "@/hooks/useWorkItems";
+import { useNonConformities } from "@/hooks/useNonConformities";
 import { rfiService, type Rfi } from "@/lib/services/rfiService";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { useToast } from "@/hooks/use-toast";
@@ -48,6 +49,8 @@ const schema = z.object({
   status: z.enum(STATUSES).default("open"),
   deadline: z.string().optional(),
   work_item_id: z.string().optional(),
+  recipient: z.string().optional(),
+  nc_id: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -65,6 +68,7 @@ export function RfiFormDialog({ open, onOpenChange, rfi, onSuccess }: Props) {
   const { activeProject } = useProject();
   const { toast } = useToast();
   const { data: workItems } = useWorkItems();
+  const { data: ncs } = useNonConformities();
   const isEdit = !!rfi;
 
   const form = useForm<FormValues>({
@@ -74,6 +78,7 @@ export function RfiFormDialog({ open, onOpenChange, rfi, onSuccess }: Props) {
       ppi_ref: "", doc_reference: "",
       priority: "normal", status: "open",
       deadline: getDefaultDeadline(), work_item_id: "",
+      recipient: "", nc_id: "",
     },
   });
 
@@ -90,6 +95,8 @@ export function RfiFormDialog({ open, onOpenChange, rfi, onSuccess }: Props) {
         status: (rfi.status as typeof STATUSES[number]) ?? "open",
         deadline: rfi.deadline ?? "",
         work_item_id: rfi.work_item_id ?? "",
+        recipient: rfi.recipient ?? "",
+        nc_id: rfi.nc_id ?? "",
       });
     } else {
       form.reset({
@@ -97,6 +104,7 @@ export function RfiFormDialog({ open, onOpenChange, rfi, onSuccess }: Props) {
         ppi_ref: "", doc_reference: "",
         priority: "normal", status: "open",
         deadline: getDefaultDeadline(), work_item_id: "",
+        recipient: "", nc_id: "",
       });
     }
   }, [rfi, open, form]);
@@ -114,6 +122,8 @@ export function RfiFormDialog({ open, onOpenChange, rfi, onSuccess }: Props) {
         priority: values.priority,
         deadline: values.deadline || null,
         work_item_id: values.work_item_id || null,
+        recipient: values.recipient || null,
+        nc_id: values.nc_id || null,
       };
 
       if (rfi) {
@@ -197,6 +207,14 @@ export function RfiFormDialog({ open, onOpenChange, rfi, onSuccess }: Props) {
                   )} />
                 </div>
 
+                <FormField control={form.control} name="recipient" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("rfis.form.recipient")} <span className="text-muted-foreground text-xs">({t("common.optional")})</span></FormLabel>
+                    <FormControl><Input placeholder={t("rfis.form.recipientPlaceholder", { defaultValue: "Nome / entidade a quem se dirige" })} {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+
                 <FormField control={form.control} name="priority" render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t("technicalOffice.table.priority", { defaultValue: "Prioridade" })}</FormLabel>
@@ -218,7 +236,7 @@ export function RfiFormDialog({ open, onOpenChange, rfi, onSuccess }: Props) {
 
                 <FormField control={form.control} name="doc_reference" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Referência documental <span className="text-muted-foreground text-xs">({t("common.optional")})</span></FormLabel>
+                    <FormLabel>{t("rfis.form.docReference", { defaultValue: "Referência documental" })} <span className="text-muted-foreground text-xs">({t("common.optional")})</span></FormLabel>
                     <FormControl><Input placeholder="Ex: DES-EST-001 Rev.B" {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
@@ -258,6 +276,22 @@ export function RfiFormDialog({ open, onOpenChange, rfi, onSuccess }: Props) {
                         <SelectItem value="__none__">—</SelectItem>
                         {workItems.map(wi => (
                           <SelectItem key={wi.id} value={wi.id}>{wi.sector} — {wi.disciplina}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+
+                <FormField control={form.control} name="nc_id" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("rfis.form.ncRelated")} <span className="text-muted-foreground text-xs">({t("common.optional")})</span></FormLabel>
+                    <Select onValueChange={(v) => field.onChange(v === "__none__" ? "" : v)} value={field.value || "__none__"}>
+                      <FormControl><SelectTrigger><SelectValue placeholder={t("rfis.form.ncNone")} /></SelectTrigger></FormControl>
+                      <SelectContent>
+                        <SelectItem value="__none__">{t("rfis.form.ncNone")}</SelectItem>
+                        {ncs.map(nc => (
+                          <SelectItem key={nc.id} value={nc.id}>{nc.code ?? "NC"} — {nc.title ?? nc.description?.slice(0, 40)}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
