@@ -4,7 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   ArrowLeft, Construction, FlaskConical, AlertTriangle, Paperclip,
-  Pencil, Calendar, MapPin, ClipboardCheck, Plus, Eye, FileDown, FileText,
+  Pencil, Calendar, MapPin, ClipboardCheck, Plus, Eye, FileDown, FileText, Loader2,
   CheckCircle2, XCircle, Clock, Crosshair, Target, Map, ListTodo,
   ShieldCheck, ShieldAlert, Copy, Package, Trash2,
 } from "lucide-react";
