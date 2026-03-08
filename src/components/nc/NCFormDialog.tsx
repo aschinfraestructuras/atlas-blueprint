@@ -53,7 +53,7 @@ const schema = (t: (k: string) => string) =>
     // PG-03 fields
     location_pk:         z.string().trim().max(200).optional().or(z.literal("")),
     discipline:          z.string().optional().or(z.literal("")),
-    classification:      z.string().min(1, t("nc.form.validation.classificationRequired", { defaultValue: "Classificação obrigatória" })),
+    classification:      z.string().min(1, t("nc.form.validation.classificationRequired")),
     ppi_instance_id:     z.string().optional().or(z.literal("")),
     violated_requirement: z.string().trim().max(500).optional().or(z.literal("")),
     // Correction
