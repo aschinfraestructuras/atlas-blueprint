@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useTheme } from "@/components/theme/ThemeProvider";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
@@ -7,7 +8,7 @@ import {
   Settings, Users, ShieldCheck, Sliders, Globe, Bell, Lock,
   Building2, Mail, UserCheck, Key, Database, ChevronRight,
   Plus, Trash2, UserMinus, Loader2, Sun, Moon, Monitor,
-  ImageIcon, Upload, X,
+  ImageIcon, Upload, X, ClipboardList, HardDrive, Check, Eye, Pencil, ShieldAlert,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
