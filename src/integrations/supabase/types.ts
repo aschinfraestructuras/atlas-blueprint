@@ -5110,7 +5110,6 @@ export type Database = {
           performed_by: string | null
           project_id: string | null
           user_display_name: string | null
-          user_email: string | null
           user_id: string | null
         }
         Relationships: [
