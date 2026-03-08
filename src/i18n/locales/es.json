@@ -1164,9 +1164,22 @@
         "audit": "Auditoría"
       },
       "evaluations": {
+        "title": "Evaluaciones",
+        "new": "Nueva Evaluación",
         "score": "Puntuación",
         "result": "Resultado",
         "notes": "Observaciones",
+        "preview": "Resultado previsto",
+        "created": "Evaluación registrada con éxito.",
+        "ncWarning": "Score < 60 — NC Mayor generada automáticamente (PG-05)",
+        "ncWarningTitle": "Evaluación con score inferior a 60",
+        "ncWarningDesc": "NC Mayor generada automáticamente conforme PG-05.",
+        "criteria": {
+          "quality": "Calidad del trabajo/producto",
+          "delivery": "Cumplimiento de plazos",
+          "ncManagement": "Gestión de No Conformidades",
+          "cooperation": "Cooperación con el SGC"
+        },
         "results": {
           "approved": "Aprobado",
           "pending": "Pendiente",
