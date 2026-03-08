@@ -305,7 +305,7 @@ export const supplierService = {
   },
 
   async addMaterial(input: { project_id: string; supplier_id: string; material_name: string; is_primary?: boolean; lead_time_days?: number; unit_price?: number; currency?: string }): Promise<SupplierMaterial> {
-    const { data, error } = await untypedFrom("supplier_materials")
+    const { data, error } = await db.from("supplier_materials")
       .insert(input)
       .select()
       .single();
