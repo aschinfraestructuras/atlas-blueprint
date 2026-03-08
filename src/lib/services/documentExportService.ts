@@ -112,6 +112,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-s
           padding-bottom:10px; border-bottom:3px solid ${B.primary}; margin-bottom:16px; }
 .brand  { display:flex; align-items:center; gap:10px; }
 .brand-bar { width:6px; height:40px; background:${B.primary}; border-radius:3px; }
+.brand-logo { height:40px; width:40px; object-fit:contain; border-radius:6px; }
 .brand-text .app { font-size:18px; font-weight:800; color:${B.primary}; letter-spacing:-.5px; }
 .brand-text .sub { font-size:9px; font-weight:600; color:${B.muted}; text-transform:uppercase; letter-spacing:.1em; }
 .meta { text-align:right; }
