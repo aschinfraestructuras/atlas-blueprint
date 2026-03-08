@@ -100,8 +100,10 @@ function buildLabels(t: (k: string, opts?: Record<string, unknown>) => string): 
 export function PPIExportMenu({ instances, loading, projectName, variant = "bulk" }: Props) {
   const { t } = useTranslation();
   const [busy, setBusy] = useState(false);
+  const { logoUrl, logoBase64 } = useProjectLogo();
 
   const locale = i18n.language?.slice(0, 2) ?? "pt";
+  const logo = logoBase64 || logoUrl;
 
   async function run(fn: () => void | Promise<void>) {
     if (instances.length === 0) {
