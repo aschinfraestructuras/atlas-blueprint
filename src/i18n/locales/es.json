@@ -2726,8 +2726,8 @@
     }
   },
   "topography": {
-    "title": "Topografía",
-    "subtitle": "Equipos, calibraciones, solicitudes y control geométrico",
+    "title": "Mediciones & Equipos",
+    "subtitle": "EMEs, calibraciones, solicitudes y controles topográficos",
     "surveys": "Levantamientos",
     "equipment": "Equipos",
     "calibrations": "Calibraciones",
