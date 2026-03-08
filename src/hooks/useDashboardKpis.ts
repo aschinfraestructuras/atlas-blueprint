@@ -82,7 +82,7 @@ export function useDashboardKpis() {
         // Ensaios total (catálogo activo)
         (supabase as any).from("tests_catalog")
           .select("id", { count: "exact", head: true })
-          .eq("project_id", pid).eq("is_active", true),
+          .eq("project_id", pid).eq("active", true),
         // Materiais aprovados PAME
         (supabase as any).from("materials")
           .select("id", { count: "exact", head: true })
