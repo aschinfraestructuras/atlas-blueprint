@@ -58,6 +58,12 @@ const schema = (t: (k: string) => string) =>
     disciplina: z.string().min(1, t("documents.form.validation.disciplinaRequired")),
     status:   z.enum(DOCUMENT_STATUSES),
     revision: z.string().trim().max(20).optional().or(z.literal("")),
+    code:     z.string().trim().max(50).optional().or(z.literal("")),
+    issued_at: z.string().optional().or(z.literal("")),
+    tags:     z.string().optional().or(z.literal("")),
+    file_url: z.string().optional().or(z.literal("")),
+    disciplina_outro: z.string().optional().or(z.literal("")),
+    type_outro: z.string().optional().or(z.literal("")),
   });
 
 type FormValues = z.infer<ReturnType<typeof schema>>;
@@ -94,15 +100,30 @@ export function DocumentFormDialog({ open, onOpenChange, document: doc, onSucces
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema(t)),
-    defaultValues: { title: "", doc_type: "", disciplina: "geral", status: "draft", revision: "" },
+    defaultValues: { title: "", doc_type: "", disciplina: "geral", status: "draft", revision: "", code: "", issued_at: "", tags: "", file_url: "", disciplina_outro: "", type_outro: "" },
   });
+
+  const watchDisciplina = form.watch("disciplina");
+  const watchDocType = form.watch("doc_type");
 
   useEffect(() => {
     if (open) {
       form.reset(
         doc
-          ? { title: doc.title, doc_type: doc.doc_type, disciplina: doc.disciplina || "geral", status: doc.status, revision: doc.revision ?? "" }
-          : { title: "", doc_type: "", disciplina: "geral", status: "draft", revision: "" }
+          ? {
+              title: doc.title,
+              doc_type: doc.doc_type,
+              disciplina: doc.disciplina || "geral",
+              status: doc.status,
+              revision: doc.revision ?? "",
+              code: doc.code ?? "",
+              issued_at: doc.issued_at ?? "",
+              tags: (doc.tags ?? []).join(", "),
+              file_url: doc.file_url ?? "",
+              disciplina_outro: doc.disciplina_outro ?? "",
+              type_outro: doc.type_outro ?? "",
+            }
+          : { title: "", doc_type: "", disciplina: "geral", status: "draft", revision: "", code: "", issued_at: "", tags: "", file_url: "", disciplina_outro: "", type_outro: "" }
       );
       setPendingFile(null);
       setSelectedTemplate("");
@@ -174,7 +195,22 @@ export function DocumentFormDialog({ open, onOpenChange, document: doc, onSucces
   const onSubmit = async (values: FormValues) => {
     if (!user || !activeProject) return;
     setSubmitting(true);
+
+    // Parse tags
+    const tagsArray = values.tags
+      ? values.tags.split(",").map(s => s.trim()).filter(Boolean)
+      : [];
+
     try {
+      const extraFields: Record<string, unknown> = {
+        code: values.code || null,
+        issued_at: values.issued_at || null,
+        tags: tagsArray.length > 0 ? tagsArray : null,
+        file_url: values.file_url || null,
+        disciplina_outro: values.disciplina === "outro" ? (values.disciplina_outro || null) : null,
+        type_outro: values.doc_type === "other" ? (values.type_outro || null) : null,
+      };
+
       if (isEdit && doc) {
         await documentService.update(doc.id, activeProject.id, {
           title: values.title,
@@ -182,7 +218,8 @@ export function DocumentFormDialog({ open, onOpenChange, document: doc, onSucces
           disciplina: values.disciplina,
           status: values.status as DocumentStatus,
           revision: values.revision || undefined,
-        });
+          ...extraFields,
+        } as any);
         toast({ title: t("documents.toast.updated") });
       } else {
         // Find template form_schema if selected
@@ -196,7 +233,8 @@ export function DocumentFormDialog({ open, onOpenChange, document: doc, onSucces
           status: values.status as DocumentStatus,
           revision: values.revision || "0",
           created_by: user.id,
-        });
+          ...extraFields,
+        } as any);
 
         // If template has form_schema, save it to the document
         if (tpl?.form_schema) {
@@ -393,6 +431,31 @@ export function DocumentFormDialog({ open, onOpenChange, document: doc, onSucces
               )} />
             </div>
 
+            {/* Conditional "outro" fields */}
+            {watchDocType === "other" && (
+              <FormField control={form.control} name="type_outro" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("documents.form.typeOutro")}</FormLabel>
+                  <FormControl>
+                    <Input placeholder={t("documents.form.typeOutro")} disabled={!editable} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            )}
+
+            {watchDisciplina === "outro" && (
+              <FormField control={form.control} name="disciplina_outro" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("documents.form.disciplinaOutro")}</FormLabel>
+                  <FormControl>
+                    <Input placeholder={t("documents.form.disciplinaOutro")} disabled={!editable} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            )}
+
             <div className="grid grid-cols-2 gap-3">
               <FormField control={form.control} name="status" render={({ field }) => (
                 <FormItem>
@@ -424,6 +487,61 @@ export function DocumentFormDialog({ open, onOpenChange, document: doc, onSucces
                 </FormItem>
               )} />
             </div>
+
+            {/* New fields: code, issued_at, file_url, tags */}
+            <div className="grid grid-cols-2 gap-3">
+              <FormField control={form.control} name="code" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    {t("documents.form.code")}
+                    <span className="text-xs text-muted-foreground font-normal ml-1">({t("common.optional")})</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input placeholder="PG-PF17A-01" disabled={!editable} className="font-mono" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+              <FormField control={form.control} name="issued_at" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    {t("documents.form.issuedAt")}
+                    <span className="text-xs text-muted-foreground font-normal ml-1">({t("common.optional")})</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input type="date" disabled={!editable} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            </div>
+
+            <FormField control={form.control} name="file_url" render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  {t("documents.form.fileUrl")}
+                  <span className="text-xs text-muted-foreground font-normal ml-1">({t("common.optional")})</span>
+                </FormLabel>
+                <FormControl>
+                  <Input placeholder="https://…" disabled={!editable} {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+
+            <FormField control={form.control} name="tags" render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  {t("documents.form.tags")}
+                  <span className="text-xs text-muted-foreground font-normal ml-1">({t("common.optional")})</span>
+                </FormLabel>
+                <FormControl>
+                  <Input placeholder={t("documents.form.tagsPlaceholder")} disabled={!editable} {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
 
             {/* ── Main document file ─────────────────────────────────────────── */}
             <Separator />
