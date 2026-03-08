@@ -21,6 +21,7 @@ import NCDetailPage from "./pages/NCDetailPage";
 import AuditLogPage from "./pages/AuditLogPage";
 import SettingsPage from "./pages/SettingsPage";
 import TechnicalOfficePage from "./pages/TechnicalOfficePage";
+import RFIsPage from "./pages/RFIsPage";
 import RfiDetailPage from "./pages/RfiDetailPage";
 import TechOfficeDetailPage from "./pages/TechOfficeDetailPage";
 import PlansPage from "./pages/PlansPage";
