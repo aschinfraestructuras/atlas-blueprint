@@ -304,7 +304,7 @@ export function NCFormDialog({
                 <div className="grid grid-cols-2 gap-3">
                   <FormField control={form.control} name="discipline" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t("nc.form.discipline", { defaultValue: "Disciplina" })}</FormLabel>
+                      <FormLabel>{t("nc.form.discipline")}</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value || ""}>
                         <FormControl><SelectTrigger><SelectValue placeholder="—" /></SelectTrigger></FormControl>
                         <SelectContent>
