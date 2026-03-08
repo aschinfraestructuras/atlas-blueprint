@@ -237,6 +237,7 @@ function WorkItemTestsTab({
   workItemDisciplina?: string;
 }) {
   const { t, i18n } = useTranslation();
+  const { logoUrl, logoBase64 } = useProjectLogo();
   const [tests,     setTests]     = useState<TestResult[]>([]);
   const [loading,   setLoading]   = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
