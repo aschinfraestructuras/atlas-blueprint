@@ -1,3 +1,4 @@
+import { useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useProjectRole } from "@/hooks/useProjectRole";
@@ -5,7 +6,7 @@ import { useProjectLogo } from "@/hooks/useProjectLogo";
 import {
   LayoutDashboard, FolderKanban, FileText, Truck, Package,
   FlaskConical, AlertTriangle, ScrollText, Settings,
-  ShieldCheck, ChevronLeft, ChevronRight, X,
+  ShieldCheck, ChevronLeft, ChevronRight, X, ChevronDown,
   Inbox, BookOpen, Map, HardHat, Construction, ClipboardCheck, Crosshair, CalendarClock,
   Clock, FileCheck, BarChart3, Building2, MapPin, ClipboardList, Leaf,
 } from "lucide-react";
@@ -25,17 +26,20 @@ interface SidebarNavItem {
 interface SidebarSection {
   sectionKey: string;
   items: SidebarNavItem[];
+  collapsible?: boolean;
 }
 
 const NAV_SECTIONS: SidebarSection[] = [
   {
     sectionKey: "core",
+    collapsible: false,
     items: [
       { labelKey: "nav.dashboard", url: "/", icon: LayoutDashboard, exact: true },
     ],
   },
   {
     sectionKey: "projectManagement",
+    collapsible: true,
     items: [
       { labelKey: "nav.projects",       url: "/projects",         icon: FolderKanban },
       { labelKey: "nav.documents",      url: "/documents",        icon: FileText },
@@ -49,9 +53,9 @@ const NAV_SECTIONS: SidebarSection[] = [
   },
   {
     sectionKey: "technicalOfficeSection",
+    collapsible: true,
     items: [
       { labelKey: "nav.technicalOffice", url: "/technical-office", icon: Inbox },
-      
       { labelKey: "nav.plans",           url: "/plans",            icon: BookOpen },
       { labelKey: "nav.planning",        url: "/planning",         icon: CalendarClock },
       { labelKey: "nav.audits",          url: "/audits",           icon: FileCheck },
@@ -59,11 +63,11 @@ const NAV_SECTIONS: SidebarSection[] = [
   },
   {
     sectionKey: "fieldSection",
+    collapsible: true,
     items: [
       { labelKey: "nav.topography",    url: "/topography",      icon: Crosshair },
       { labelKey: "nav.subcontractors", url: "/subcontractors",  icon: HardHat },
       { labelKey: "nav.workItems",      url: "/work-items",      icon: Construction },
-      
       { labelKey: "nav.ppi",            url: "/ppi",             icon: ClipboardCheck },
       { labelKey: "nav.dailyReports",   url: "/daily-reports",   icon: ClipboardList },
       { labelKey: "nav.recycledMaterials", url: "/recycled-materials", icon: Leaf },
@@ -71,6 +75,7 @@ const NAV_SECTIONS: SidebarSection[] = [
   },
   {
     sectionKey: "system",
+    collapsible: true,
     items: [
       { labelKey: "nav.deadlines",    url: "/deadlines",     icon: Clock },
       { labelKey: "nav.qcReport",     url: "/reports/qc",    icon: BarChart3 },
@@ -81,17 +86,37 @@ const NAV_SECTIONS: SidebarSection[] = [
   },
 ];
 
-function SectionLabel({ label, collapsed }: { label: string; collapsed: boolean }) {
+/* ── Section Label (collapsible) ─────────────────────────────── */
+
+function SectionLabel({ label, collapsed, open, onToggle, collapsible }: {
+  label: string; collapsed: boolean; open: boolean; onToggle: () => void; collapsible?: boolean;
+}) {
   if (collapsed) return <div className="my-2.5 h-px mx-2.5 bg-sidebar-border/40" />;
+
   return (
-    <div className="flex items-center gap-2 px-3 mb-1 mt-4">
-      <span className="text-[9px] font-semibold uppercase tracking-[0.18em] whitespace-nowrap text-sidebar-foreground/35">
+    <button
+      type="button"
+      onClick={collapsible ? onToggle : undefined}
+      className={cn(
+        "flex items-center gap-2 px-3 mb-1 mt-4 w-full text-left group/section",
+        collapsible && "cursor-pointer hover:opacity-80 transition-opacity"
+      )}
+    >
+      <span className="text-[9px] font-semibold uppercase tracking-[0.18em] whitespace-nowrap text-sidebar-foreground/35 select-none">
         {label}
       </span>
       <div className="flex-1 h-px bg-sidebar-border/30" />
-    </div>
+      {collapsible && (
+        <ChevronDown className={cn(
+          "h-2.5 w-2.5 text-sidebar-foreground/25 transition-transform duration-200 flex-shrink-0",
+          !open && "-rotate-90"
+        )} />
+      )}
+    </button>
   );
 }
+
+/* ── Nav Item ────────────────────────────────────────────────── */
 
 function NavItem({ item, active, collapsed, onClose }: {
   item: SidebarNavItem; active: boolean; collapsed: boolean; onClose?: () => void;
@@ -127,6 +152,8 @@ function NavItem({ item, active, collapsed, onClose }: {
   );
 }
 
+/* ── Sidebar Content ─────────────────────────────────────────── */
+
 function SidebarContent({ collapsed, onClose }: { collapsed: boolean; onClose?: () => void }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -134,8 +161,23 @@ function SidebarContent({ collapsed, onClose }: { collapsed: boolean; onClose?: 
   const { can, isAdmin } = useProjectRole();
   const { logoUrl } = useProjectLogo();
 
+  // Track which sections are open — default all open
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>(() => {
+    const initial: Record<string, boolean> = {};
+    NAV_SECTIONS.forEach(s => { initial[s.sectionKey] = true; });
+    return initial;
+  });
+
+  const toggleSection = useCallback((key: string) => {
+    setOpenSections(prev => ({ ...prev, [key]: !prev[key] }));
+  }, []);
+
   const isActive = (url: string, exact?: boolean) =>
     exact ? location.pathname === url : location.pathname.startsWith(url);
+
+  // Auto-open section if it contains active route
+  const sectionContainsActive = (section: SidebarSection) =>
+    section.items.some(item => isActive(item.url, item.exact));
 
   return (
     <div className="flex flex-col h-full bg-sidebar">
@@ -177,22 +219,43 @@ function SidebarContent({ collapsed, onClose }: { collapsed: boolean; onClose?: 
 
       {/* ── Navigation ───────────────────────────────────────────── */}
       <nav className="flex-1 overflow-y-auto py-3 space-y-0.5" style={{ scrollbarWidth: "none" }}>
-        {NAV_SECTIONS.map((section, idx) => (
-          <div key={section.sectionKey}>
-            {idx > 0 && <SectionLabel label={t(`nav.sections.${section.sectionKey}`)} collapsed={collapsed} />}
-            <div className="space-y-[2px]">
-              {section.items
-                .filter(item => {
-                  if (item.adminOnly && !isAdmin) return false;
-                  if (item.requiredAction && !can(item.requiredAction)) return false;
-                  return true;
-                })
-                .map(item => (
+        {NAV_SECTIONS.map((section, idx) => {
+          const filteredItems = section.items.filter(item => {
+            if (item.adminOnly && !isAdmin) return false;
+            if (item.requiredAction && !can(item.requiredAction)) return false;
+            return true;
+          });
+
+          if (filteredItems.length === 0) return null;
+
+          // Force open if section contains active route
+          const isOpen = openSections[section.sectionKey] || sectionContainsActive(section);
+
+          return (
+            <div key={section.sectionKey}>
+              {idx > 0 && (
+                <SectionLabel
+                  label={t(`nav.sections.${section.sectionKey}`)}
+                  collapsed={collapsed}
+                  open={isOpen}
+                  onToggle={() => toggleSection(section.sectionKey)}
+                  collapsible={section.collapsible}
+                />
+              )}
+              {/* Animated collapse */}
+              <div
+                className={cn(
+                  "space-y-[2px] overflow-hidden transition-all duration-200",
+                  idx > 0 && !isOpen && !collapsed ? "max-h-0 opacity-0" : "max-h-[600px] opacity-100"
+                )}
+              >
+                {filteredItems.map(item => (
                   <NavItem key={item.url} item={item} active={isActive(item.url, item.exact)} collapsed={collapsed} onClose={onClose} />
                 ))}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </nav>
 
       {/* ── Footer ───────────────────────────────────────────────── */}
@@ -208,6 +271,8 @@ function SidebarContent({ collapsed, onClose }: { collapsed: boolean; onClose?: 
     </div>
   );
 }
+
+/* ── Main Sidebar ────────────────────────────────────────────── */
 
 interface AppSidebarProps {
   collapsed: boolean;
