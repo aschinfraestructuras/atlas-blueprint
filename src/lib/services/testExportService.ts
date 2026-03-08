@@ -378,7 +378,7 @@ function buildSingleHtml(
 </head>
 <body>
 
-${headerHtml(labels.reportTitle, labels, locale)}
+${headerHtml(labels.reportTitle, labels, locale, logoUrl)}
 
 <!-- Verdict -->
 <div class="verdict" style="border-color:${pfColor};background:${pfColor}14">
