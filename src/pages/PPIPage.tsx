@@ -392,6 +392,15 @@ export default function PPIPage() {
                     <TableCell className="hidden lg:table-cell text-xs text-muted-foreground">
                       {new Date(inst.opened_at).toLocaleDateString()}
                     </TableCell>
+                    <TableCell className="hidden md:table-cell">
+                      {(inst as any).hp_pending_count > 0 ? (
+                        <Badge variant="secondary" className="bg-destructive/10 text-destructive text-xs font-bold">
+                          {(inst as any).hp_pending_count}
+                        </Badge>
+                      ) : (
+                        <span className="text-muted-foreground text-xs">—</span>
+                      )}
+                    </TableCell>
                     <TableCell onClick={(e) => e.stopPropagation()}>
                       <div className="flex items-center justify-end gap-1">
                         <Button
