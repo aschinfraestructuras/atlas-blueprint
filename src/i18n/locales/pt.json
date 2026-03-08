@@ -2788,6 +2788,15 @@
       "lotRef": "Lote / Guia",
       "quantity": "Quantidade"
     },
+    "usageTab": "Registos de Uso",
+    "usageTable": {
+      "date": "Data",
+      "report": "Parte Diária",
+      "quantity": "Quantidade",
+      "lot": "Lote",
+      "workItem": "Atividade",
+      "total": "Total acumulado"
+    },
     "export": { "reportTitle": "Ficha de Material" },
     "toast": {
       "created": "Material criado com sucesso.",

@@ -140,6 +140,31 @@ export function SurveyFormDialog({ open, onOpenChange, record, onSuccess }: Prop
                   )} />
                 </div>
 
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField control={form.control} name="survey_type" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("survey.form.surveyType", { defaultValue: "Tipo de Levantamento" })}</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value || "__none__"}>
+                        <FormControl><SelectTrigger><SelectValue placeholder="—" /></SelectTrigger></FormControl>
+                        <SelectContent>
+                          <SelectItem value="__none__">—</SelectItem>
+                          {SURVEY_TYPES.map(st => (
+                            <SelectItem key={st} value={st}>{t(`survey.surveyTypes.${st}`, { defaultValue: st })}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="responsible" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("survey.form.responsible", { defaultValue: "Responsável" })} <span className="text-muted-foreground text-xs">({t("common.optional")})</span></FormLabel>
+                      <FormControl><Input placeholder={t("survey.form.responsiblePlaceholder", { defaultValue: "Nome do topógrafo" })} {...field} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                </div>
+
                 <FormField control={form.control} name="description" render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t("common.description")} <span className="text-muted-foreground text-xs">({t("common.optional")})</span></FormLabel>
