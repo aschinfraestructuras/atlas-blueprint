@@ -16,11 +16,13 @@ export interface NonConformity {
   category: string;           // qualidade | segurança | ambiente | producao | outros
   category_outro: string | null;
   origin: string;             // manual | ppi | test | document | audit
+  classification: string | null; // maior | menor | observacao | C | AC
   // Estado e datas
   status: string;             // draft | open | in_progress | pending_verification | closed | archived
   detected_at: string | null;
   due_date: string | null;
   closure_date: string | null;
+  actual_completion_date: string | null;
   // Responsáveis
   responsible: string | null;
   assigned_to: string | null;
@@ -28,13 +30,23 @@ export interface NonConformity {
   approver: string | null;
   // CAPA
   correction: string | null;
+  correction_type: string | null;
   root_cause: string | null;
+  root_cause_method: string | null;
   corrective_action: string | null;
   preventive_action: string | null;
+  ac_efficacy_indicator: string | null;
+  deviation_justification: string | null;
+  efficacy_analysis: string | null;
   verification_method: string | null;
   verification_result: string | null;
   verified_by: string | null;
   verified_at: string | null;
+  // Disciplina
+  discipline: string | null;
+  discipline_outro: string | null;
+  // Auditoria
+  audit_origin_type: string | null;
   // Ligações opcionais
   work_item_id: string | null;
   ppi_instance_id: string | null;
@@ -46,6 +58,13 @@ export interface NonConformity {
   // Legado (origin_entity_*)
   origin_entity_id: string | null;
   origin_entity_type: string | null;
+  // PG-03 fields
+  location_pk: string | null;
+  violated_requirement: string | null;
+  fip_validated_at: string | null;
+  fip_validated_by: string | null;
+  fip_validation_required: boolean;
+  validation_deadline: string | null;
   // Metadados
   created_by: string | null;
   updated_by: string | null;
