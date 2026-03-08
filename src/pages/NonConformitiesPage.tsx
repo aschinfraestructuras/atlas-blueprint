@@ -119,6 +119,8 @@ export default function NonConformitiesPage() {
   const [filterSeverity, setFilterSeverity] = useState("all");
   const [filterOrigin, setFilterOrigin] = useState("all");
   const [filterCategory, setFilterCategory] = useState("all");
+  const [filterClassification, setFilterClassification] = useState("all");
+  const [filterDiscipline, setFilterDiscipline] = useState("all");
   const [dateFrom, setDateFrom]         = useState("");
   const [dateTo, setDateTo]             = useState("");
 
