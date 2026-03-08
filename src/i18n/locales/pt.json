@@ -2037,6 +2037,27 @@
       "inExecution": "em execução",
       "baseActivity": "Actividade base"
     },
+    "export": {
+      "button": "Exportar",
+      "csvList": "CSV — Lista de Work Items",
+      "pdfSingle": "PDF — Este Work Item",
+      "reportTitle": "Ficha de Work Item",
+      "generatedOn": "Gerado em",
+      "fields": {
+        "sector": "Sector",
+        "discipline": "Disciplina",
+        "obra": "Obra",
+        "parte": "Parte",
+        "elemento": "Elemento",
+        "lote": "Lote",
+        "pk": "PK",
+        "status": "Estado",
+        "ncs": "NCs",
+        "ppis": "PPIs",
+        "tests": "Ensaios",
+        "createdAt": "Data de criação"
+      }
+    },
     "deleteConfirm": {
       "title": "Eliminar Work Item?",
       "description": "O work item «{{sector}}» será eliminado permanentemente. Os ensaios e NCs associados perderão a ligação."

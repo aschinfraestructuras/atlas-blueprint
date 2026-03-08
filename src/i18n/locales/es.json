@@ -2232,7 +2232,8 @@
         "createNcSkip": "Omitir",
         "deleteDraft": "Eliminar borrador",
         "deleteDraftDescription": "Esta acción es irreversible. El borrador {{code}} y todos sus elementos serán eliminados permanentemente.",
-        "deleteDraftConfirm": "Eliminar permanentemente"
+        "deleteDraftConfirm": "Eliminar permanentemente",
+        "holdPointWarning": "Existen Hold-Points sin completar. ¿Confirmar de todas formas?"
       },
       "form": {
         "titleCreate": "Nueva Inspección PPI",
