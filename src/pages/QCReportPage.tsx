@@ -430,6 +430,8 @@ export default function QCReportPage() {
     filterSubcontractor !== "all" && `Sub: ${subcontractors.find(s => s.id === filterSubcontractor)?.name ?? filterSubcontractor}`,
   ].filter(Boolean);
 
+  if (!activeProject) return <NoProjectBanner />;
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto animate-fade-in">
       <PageHeader
