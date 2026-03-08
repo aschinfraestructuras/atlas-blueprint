@@ -36,7 +36,8 @@
     "yes": "Sí",
     "no": "No",
     "conforming": "Conforme",
-    "nonConforming": "No conforme"
+    "nonConforming": "No conforme",
+    "invalidId": "ID inválido — no es posible abrir este registro"
   },
   "auth": {
     "signIn": "Iniciar sesión",

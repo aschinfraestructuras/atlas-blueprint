@@ -36,7 +36,8 @@
     "yes": "Sim",
     "no": "Não",
     "conforming": "Conforme",
-    "nonConforming": "Não conforme"
+    "nonConforming": "Não conforme",
+    "invalidId": "ID inválido — não é possível abrir este registo"
   },
   "auth": {
     "signIn": "Iniciar sessão",
