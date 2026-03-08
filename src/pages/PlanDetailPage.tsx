@@ -155,7 +155,7 @@ export default function PlanDetailPage() {
     ["draft", "under_review", "approved", "obsolete", "archived"].forEach(s => {
       statusLabels[s] = t(`plans.status.${s}`, { defaultValue: s });
     });
-    ["PQO", "PIE", "PPI", "ITP", "MethodStatement", "TestPlan", "Schedule"].forEach(pt => {
+    ["MS", "PlanEsc", "PlanBet", "PlanMont", "PlanTraf", "PlanSeg", "Schedule", "Drawing", "Other"].forEach(pt => {
       typeLabels[pt] = t(`plans.types.${pt}`, { defaultValue: pt });
     });
     exportPlanDetailPdf(plan, versions, meta, statusLabels, typeLabels);
