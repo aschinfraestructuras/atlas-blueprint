@@ -47,6 +47,7 @@ export default function ActivityDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { activeProject } = useProject();
+  const reportMeta = useReportMeta();
 
   useEffect(() => {
     if (!id || id === "undefined" || id.trim() === "") {
