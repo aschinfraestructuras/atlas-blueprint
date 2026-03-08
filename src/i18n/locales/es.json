@@ -1769,7 +1769,8 @@
       "updated": "Subcontratista actualizado con éxito.",
       "deleted": "Subcontratista eliminado.",
       "error": "Ocurrió un error. Inténtelo de nuevo."
-    }
+    },
+    "fipPending": "Aprobación F/IP pendiente"
   },
   "audit": {
     "table": {
