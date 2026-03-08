@@ -2904,6 +2904,8 @@
     },
     "detail": {
       "tabs": { "overview": "Resumen", "requirements": "Requisitos", "evidence": "Evidencias", "links": "Enlaces" },
+      "reqMet": "{{count}} solicitud(es) en progreso/completadas",
+      "reqNotMet": "Ninguna solicitud topográfica registrada o todas pendientes",
       "met": "Cumplido",
       "notMet": "Pendiente",
       "noRequirements": "Esta actividad no tiene requisitos obligatorios.",
