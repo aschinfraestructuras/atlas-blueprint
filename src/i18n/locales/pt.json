@@ -602,6 +602,10 @@
       "template": "Modelo de formulário",
       "templatePlaceholder": "Selecionar modelo…",
       "noTemplate": "Sem modelo (documento em branco)",
+      "code": "Código do documento",
+      "issuedAt": "Data de emissão",
+      "tags": "Etiquetas",
+      "tagsPlaceholder": "ex: qualidade, betão, segurança",
       "validation": {
         "titleRequired": "O título é obrigatório.",
         "typeRequired": "O tipo é obrigatório.",
