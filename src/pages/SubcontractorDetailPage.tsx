@@ -458,6 +458,11 @@ export default function SubcontractorDetailPage() {
           </Card>
         </TabsContent>
 
+        {/* Materials (PAME) - read-only */}
+        <TabsContent value="materials">
+          <SubMaterialsSection projectId={activeProject.id} subId={sub.id} supplierId={sub.supplier_id} />
+        </TabsContent>
+
         {/* Activities */}
         <TabsContent value="activities">
           <Card>
