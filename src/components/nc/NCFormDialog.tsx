@@ -358,7 +358,7 @@ export function NCFormDialog({
                   <FormItem>
                     <FormLabel>{t("nc.form.classification")} *</FormLabel>
                     <FormControl>
-                      <RadioGroup onValueChange={field.onChange} value={field.value} className="flex gap-4">
+                      <RadioGroup onValueChange={field.onChange} value={field.value} className="flex flex-wrap gap-4">
                         <div className="flex items-center gap-2">
                           <RadioGroupItem value="maior" id="cls-maior" />
                           <Label htmlFor="cls-maior" className="text-sm font-medium text-destructive">{t("nc.form.classificationMaior")}</Label>
@@ -370,6 +370,15 @@ export function NCFormDialog({
                         <div className="flex items-center gap-2">
                           <RadioGroupItem value="observacao" id="cls-obs" />
                           <Label htmlFor="cls-obs" className="text-sm font-medium text-muted-foreground">{t("nc.form.classificationObs")}</Label>
+                        </div>
+                        <Separator orientation="vertical" className="h-5 mx-1" />
+                        <div className="flex items-center gap-2">
+                          <RadioGroupItem value="C" id="cls-c" />
+                          <Label htmlFor="cls-c" className="text-sm font-medium text-blue-600 dark:text-blue-400">{t("nc.form.classificationC")}</Label>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <RadioGroupItem value="AC" id="cls-ac" />
+                          <Label htmlFor="cls-ac" className="text-sm font-medium text-amber-600 dark:text-amber-400">{t("nc.form.classificationAC")}</Label>
                         </div>
                       </RadioGroup>
                     </FormControl>
@@ -389,6 +398,12 @@ export function NCFormDialog({
                 )}
                 {watchedClassification === "observacao" && (
                   <Badge variant="secondary" className="text-xs">{t("nc.form.classificationBannerObs")}</Badge>
+                )}
+                {watchedClassification === "C" && (
+                  <Badge variant="secondary" className="text-xs bg-blue-500/10 text-blue-700 dark:text-blue-400">{t("nc.form.classificationC")}</Badge>
+                )}
+                {watchedClassification === "AC" && (
+                  <Badge variant="secondary" className="text-xs bg-amber-500/10 text-amber-700 dark:text-amber-400">{t("nc.form.classificationAC")}</Badge>
                 )}
 
                 <FormField control={form.control} name="responsible" render={({ field }) => (
