@@ -698,6 +698,23 @@ export default function WorkItemDetailPage() {
   const [topoRequests, setTopoRequests] = useState<any[]>([]);
   const [topoControls, setTopoControls] = useState<any[]>([]);
 
+  async function handleExportFicha() {
+    if (!item) return;
+    setReportLoading(true);
+    try {
+      const { data, error } = await supabase.rpc("fn_work_item_report", {
+        p_work_item_id: item.id,
+      });
+      if (error) throw error;
+      setReportData(data as unknown as WorkItemReportData);
+      setReportOpen(true);
+    } catch {
+      toast({ title: t("workItems.report.errorLoading"), variant: "destructive" });
+    } finally {
+      setReportLoading(false);
+    }
+  }
+
   async function handleExportPdf() {
     if (!item || !activeProject) return;
     const locale = i18n.language ?? "pt";
