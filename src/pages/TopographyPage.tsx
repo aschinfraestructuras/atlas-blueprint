@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useReportMeta } from "@/hooks/useReportMeta";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import { useSurveys } from "@/hooks/useSurveys";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
@@ -99,6 +100,7 @@ export default function TopographyPage() {
   const { activeProject } = useProject();
   const { user } = useAuth();
   const { isAdmin, canCreate, canDelete } = useProjectRole();
+  const reportMeta = useReportMeta();
   const [activeTab, setActiveTab] = useState("equipment");
 
   const { data: equipment, loading: eqLoading, refetch: refetchEq } = useTopographyEquipment();
@@ -158,7 +160,7 @@ export default function TopographyPage() {
 
   if (!activeProject) return <NoProjectBanner />;
 
-  const meta = { projectName: activeProject.name, projectCode: activeProject.code, locale: "pt", generatedBy: user?.email ?? undefined };
+  const meta = reportMeta ?? { projectName: activeProject.name, projectCode: activeProject.code, locale: "pt", generatedBy: user?.email ?? undefined };
   const expiredCount = equipment.filter(e => e.calibration_status === "expired").length;
   const expiringCount = equipment.filter(e => e.calibration_status === "expiring_soon").length;
   const validCount = equipment.filter(e => e.calibration_status === "valid").length;

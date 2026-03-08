@@ -15,6 +15,7 @@ import { exportWorkItemsCsv } from "@/lib/services/workItemExportService";
 import { useWorkItems } from "@/hooks/useWorkItems";
 import { useProject } from "@/contexts/ProjectContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useReportMeta } from "@/hooks/useReportMeta";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import { RoleGate, RoleGateAdmin } from "@/components/RoleGate";
 import {
@@ -174,6 +175,7 @@ export default function WorkItemsPage() {
   const { user }                   = useAuth();
   const { data, loading, refetch } = useWorkItems();
   const { canCreate, canEdit, canDelete } = useProjectRole();
+  const reportMeta = useReportMeta();
 
   const [dialogOpen, setDialogOpen]   = useState(false);
   const [editItem,   setEditItem]     = useState<WorkItem | null>(null);
@@ -334,7 +336,7 @@ export default function WorkItemsPage() {
     generateListPdf({
       reportTitle: t("workItems.export.reportTitle"),
       labels: { appName: "Atlas QMS", reportTitle: t("workItems.export.reportTitle"), generatedOn: t("workItems.export.generatedOn") },
-      meta: { projectName: activeProject.name, projectCode: activeProject.code, locale },
+      meta: reportMeta ?? { projectName: activeProject.name, projectCode: activeProject.code, locale },
       columns,
       rows,
       footerRef: `${filtered.length} work items`,

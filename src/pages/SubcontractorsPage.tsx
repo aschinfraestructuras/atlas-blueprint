@@ -28,6 +28,7 @@ import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { SubcontractorFormDialog } from "@/components/subcontractors/SubcontractorFormDialog";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import { exportSubcontractorsCsv, exportSubcontractorsPdf } from "@/lib/services/subcontractorExportService";
+import { useReportMeta } from "@/hooks/useReportMeta";
 import { cn } from "@/lib/utils";
 import type { Subcontractor } from "@/lib/services/subcontractorService";
 import type { ReportMeta } from "@/lib/services/reportService";
@@ -59,6 +60,7 @@ export default function SubcontractorsPage() {
   const { user } = useAuth();
   const { data: subcontractors, loading, error, refetch } = useSubcontractors();
   const { canCreate, canDelete } = useProjectRole();
+  const reportMeta = useReportMeta();
   const { toast } = useToast();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingSub, setEditingSub] = useState<Subcontractor | null>(null);
@@ -102,7 +104,7 @@ export default function SubcontractorsPage() {
 
   if (!activeProject) return <NoProjectBanner />;
 
-  const meta: ReportMeta = {
+  const meta: ReportMeta = reportMeta ?? {
     projectName: activeProject.name,
     projectCode: activeProject.code,
     locale: "pt",

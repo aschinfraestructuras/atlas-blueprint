@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProject } from "@/contexts/ProjectContext";
 import { useProjectRole } from "@/hooks/useProjectRole";
+import { useReportMeta } from "@/hooks/useReportMeta";
 import { useWorkItems } from "@/hooks/useWorkItems";
 import { technicalOfficeService, type TechnicalOfficeItem, type TechOfficeMessage, TECH_OFFICE_STATUSES } from "@/lib/services/technicalOfficeService";
 import { useTechOfficeMessages } from "@/hooks/useTechnicalOffice";
@@ -52,6 +53,7 @@ export default function TechOfficeDetailPage() {
   const { user } = useAuth();
   const { activeProject } = useProject();
   const { isAdmin } = useProjectRole();
+  const reportMeta = useReportMeta();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -96,7 +98,7 @@ export default function TechOfficeDetailPage() {
   const isOpen = !["closed", "cancelled", "archived"].includes(item.status);
   const effectiveDeadline = item.deadline ?? item.due_date;
   const isOverdue = effectiveDeadline && new Date(effectiveDeadline) < new Date() && isOpen;
-  const meta = { projectName: activeProject.name, projectCode: activeProject.code, locale: "pt", generatedBy: user.email ?? undefined };
+  const meta = reportMeta ?? { projectName: activeProject.name, projectCode: activeProject.code, locale: "pt", generatedBy: user.email ?? undefined };
 
   const refreshItem = async () => {
     try { const r = await technicalOfficeService.getById(item.id); setItem(r); } catch {}

@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
+import { useReportMeta } from "@/hooks/useReportMeta";
 import { planningService, type Activity, type CompletionCheck } from "@/lib/services/planningService";
 import { supabase } from "@/integrations/supabase/client";
 import { auditService } from "@/lib/services/auditService";
@@ -46,6 +47,7 @@ export default function ActivityDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { activeProject } = useProject();
+  const reportMeta = useReportMeta();
 
   useEffect(() => {
     if (!id || id === "undefined" || id.trim() === "") {
@@ -228,7 +230,7 @@ export default function ActivityDetailPage() {
     );
   }
 
-  const meta = { projectName: activeProject.name, projectCode: activeProject.code, locale: "pt" };
+  const meta = reportMeta ?? { projectName: activeProject.name, projectCode: activeProject.code, locale: "pt" };
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">

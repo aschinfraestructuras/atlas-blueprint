@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useProject } from "@/contexts/ProjectContext";
+import { useReportMeta } from "@/hooks/useReportMeta";
 import { useTechnicalOffice } from "@/hooks/useTechnicalOffice";
 import { useRfis } from "@/hooks/useRfis";
 import { useProjectRole } from "@/hooks/useProjectRole";
@@ -90,6 +91,7 @@ export default function TechnicalOfficePage() {
   const { data: items, loading, error, refetch } = useTechnicalOffice();
   const { data: rfis, loading: rfisLoading, refetch: refetchRfis } = useRfis();
   const { canCreate, isAdmin } = useProjectRole();
+  const reportMeta = useReportMeta();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("all");
 
@@ -189,7 +191,7 @@ export default function TechnicalOfficePage() {
 
   if (!activeProject) return <NoProjectBanner />;
 
-  const meta = { projectName: activeProject.name, projectCode: activeProject.code, locale: "pt" };
+  const meta = reportMeta ?? { projectName: activeProject.name, projectCode: activeProject.code, locale: "pt" };
 
   const handleNew = () => { setEditingItem(null); setDialogOpen(true); };
 

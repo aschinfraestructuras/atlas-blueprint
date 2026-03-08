@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useProject } from "@/contexts/ProjectContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useReportMeta } from "@/hooks/useReportMeta";
 import { usePlanning } from "@/hooks/usePlanning";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import { planningService } from "@/lib/services/planningService";
@@ -77,6 +78,7 @@ export default function PlanningPage() {
   const { user } = useAuth();
   const { wbs, activities, loading, error, refetch } = usePlanning();
   const { canCreate, isAdmin } = useProjectRole();
+  const reportMeta = useReportMeta();
   const [activeTab, setActiveTab] = useState("activities");
 
   const [wbsDialogOpen, setWbsDialogOpen] = useState(false);
@@ -148,7 +150,7 @@ export default function PlanningPage() {
 
   if (!activeProject) return <NoProjectBanner />;
 
-  const meta = { projectName: activeProject.name, projectCode: activeProject.code, locale: i18n.language?.startsWith("es") ? "es" : "pt", generatedBy: user?.email ?? undefined };
+  const meta = reportMeta ?? { projectName: activeProject.name, projectCode: activeProject.code, locale: i18n.language?.startsWith("es") ? "es" : "pt", generatedBy: user?.email ?? undefined };
 
   const handleNewWbs = (pId?: string) => { setEditWbs(null); setParentWbs(pId ?? null); setWbsDialogOpen(true); };
   const handleEditWbs = (n: WbsNode) => { setEditWbs(n); setParentWbs(null); setWbsDialogOpen(true); };

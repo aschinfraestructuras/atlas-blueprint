@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProject } from "@/contexts/ProjectContext";
+import { useReportMeta } from "@/hooks/useReportMeta";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import { useWorkItems } from "@/hooks/useWorkItems";
 import { rfiService, type Rfi, type RfiMessage } from "@/lib/services/rfiService";
@@ -54,6 +55,7 @@ export default function RfiDetailPage() {
   const { activeProject } = useProject();
   const { isAdmin } = useProjectRole();
   const { toast } = useToast();
+  const reportMeta = useReportMeta();
 
   useEffect(() => {
     if (!id || id === "undefined" || id.trim() === "") {
@@ -131,7 +133,7 @@ export default function RfiDetailPage() {
     ? Math.ceil((new Date(responseDeadline).getTime() - today.getTime()) / 86400000)
     : null;
 
-  const meta = {
+  const meta = reportMeta ?? {
     projectName: activeProject.name,
     projectCode: activeProject.code,
     locale: "pt",
