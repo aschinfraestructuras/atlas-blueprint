@@ -232,7 +232,7 @@ export const calibrationService = {
 
 export const topographyRequestService = {
   async getByProject(projectId: string): Promise<TopographyRequest[]> {
-    const { data, error } = await untypedFrom("topography_requests")
+    const { data, error } = await db.from("topography_requests")
       .select("*")
       .eq("project_id", projectId)
       .order("request_date", { ascending: false });
