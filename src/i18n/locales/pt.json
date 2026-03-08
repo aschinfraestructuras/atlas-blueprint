@@ -128,7 +128,8 @@
     "mapMas": "Aprovação MAP/MAS",
     "expirations": "Expirações",
     "deadlines": "Prazos",
-    "qcReport": "Relatório QC"
+    "qcReport": "Relatório QC",
+    "audits": "Auditorias"
   },
   "topbar": {
     "language": "Idioma",
