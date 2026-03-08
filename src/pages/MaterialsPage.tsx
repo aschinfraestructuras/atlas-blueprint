@@ -24,7 +24,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import type { Material } from "@/lib/services/materialService";
-import MapMasPage from "@/pages/MapMasPage";
+
 
 const STATUS_COLORS: Record<string, string> = {
   active: "bg-primary/15 text-primary",
@@ -107,7 +107,6 @@ export default function MaterialsPage() {
         <TabsList>
           <TabsTrigger value="materials">{t("pages.materials.title")}</TabsTrigger>
           <TabsTrigger value="pame">{t("materials.pame.title", { defaultValue: "Plano PAME" })}</TabsTrigger>
-          <TabsTrigger value="mapmas">{t("mapMas.title")}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="materials" className="space-y-6 mt-4">
@@ -180,7 +179,7 @@ export default function MaterialsPage() {
                   <Card className="border shadow-none">
                     <CardContent className="pt-4 pb-4 px-4">
                       <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground flex items-center gap-1.5 mb-3">
-                        <Package className="h-3.5 w-3.5" />{t("materials.approval.mapMas")}
+                        <Package className="h-3.5 w-3.5" />{t("materials.approval.title", { defaultValue: "Aprovação" })}
                       </p>
                       <ul className="space-y-1.5">
                         {(() => {
@@ -266,7 +265,7 @@ export default function MaterialsPage() {
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("materials.form.specification")}</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("materials.form.unit")}</TableHead>
                      <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.status")}</TableHead>
-                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("materials.approval.mapMas")}</TableHead>
+                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("materials.approval.title", { defaultValue: "Aprovação" })}</TableHead>
                      <TableHead className="w-28" />
                   </TableRow>
                 </TableHeader>
@@ -325,9 +324,6 @@ export default function MaterialsPage() {
           <PameTab materials={materials} />
         </TabsContent>
 
-        <TabsContent value="mapmas" className="mt-4">
-          <MapMasPage />
-        </TabsContent>
       </Tabs>
     </div>
   );
