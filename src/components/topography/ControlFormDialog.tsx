@@ -29,7 +29,7 @@ export function ControlFormDialog({ open, onOpenChange, projectId, equipment, ed
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const isEdit = !!editControl;
-  const [workItems, setWorkItems] = useState<{ id: string; sector: string }[]>([]);
+  const [workItems, setWorkItems] = useState<{ id: string; sector: string; elemento?: string | null; parte?: string | null }[]>([]);
   const [form, setForm] = useState({
     equipment_id: editControl?.equipment_id ?? "",
     element: editControl?.element ?? "",
