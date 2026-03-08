@@ -28,6 +28,7 @@ import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { SubcontractorFormDialog } from "@/components/subcontractors/SubcontractorFormDialog";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import { exportSubcontractorsCsv, exportSubcontractorsPdf } from "@/lib/services/subcontractorExportService";
+import { useReportMeta } from "@/hooks/useReportMeta";
 import { cn } from "@/lib/utils";
 import type { Subcontractor } from "@/lib/services/subcontractorService";
 import type { ReportMeta } from "@/lib/services/reportService";
