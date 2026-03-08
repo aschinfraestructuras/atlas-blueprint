@@ -504,6 +504,7 @@ function buildWorkItemSummaryHtml(
   locale: string,
   projectName: string,
   workItemSector: string,
+  logoUrl?: string | null,
 ): string {
   const total    = results.length;
   const approved = results.filter((r) => r.status === "approved" || r.pass_fail === "pass").length;
