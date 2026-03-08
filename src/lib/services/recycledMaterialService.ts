@@ -72,7 +72,7 @@ export const recycledMaterialService = {
   },
 
   async getById(id: string): Promise<RecycledMaterial> {
-    const { data, error } = await untypedFrom("recycled_materials")
+    const { data, error } = await db.from("recycled_materials")
       .select("*")
       .eq("id", id)
       .single();
