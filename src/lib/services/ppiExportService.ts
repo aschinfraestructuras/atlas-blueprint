@@ -406,12 +406,13 @@ export function exportBulkPdf(
   labels: ExportLabels,
   locale: string,
   projectName: string,
+  logoUrl?: string | null,
 ): void {
   if (instances.length === 0) return;
 
   // Build pages concatenated — CSS page-break between them
   const pages = instances.map((inst) =>
-    buildSinglePdfHtml(inst, labels, locale, projectName)
+    buildSinglePdfHtml(inst, labels, locale, projectName, logoUrl)
       .replace("<!DOCTYPE html>", "")
       .replace(/<html[^>]*>/, "")
       .replace("</html>", "")
