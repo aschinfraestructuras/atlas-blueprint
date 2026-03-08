@@ -112,9 +112,16 @@ export default function TechnicalOfficePage() {
       created_at: r.created_at,
       work_item_id: r.work_item_id,
       nc_id: r.nc_id,
+      discipline: (r as any).discipline,
       _source: "rfi" as const,
     }));
-    return [...toItems, ...rfiItems].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    // Sort by deadline ASC (most urgent first), nulls last
+    return [...toItems, ...rfiItems].sort((a, b) => {
+      if (a._deadline && b._deadline) return a._deadline.localeCompare(b._deadline);
+      if (a._deadline) return -1;
+      if (b._deadline) return 1;
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    });
   }, [items, rfis]);
 
   const filtered = useMemo(() => {
@@ -292,21 +299,26 @@ export default function TechnicalOfficePage() {
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("technicalOffice.table.code")}</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("technicalOffice.table.type")}</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("technicalOffice.table.subject", { defaultValue: "Assunto" })}</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("nc.form.discipline", { defaultValue: "Disciplina" })}</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("technicalOffice.table.priority")}</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.status")}</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("technicalOffice.table.deadline")}</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("technicalOffice.table.daysOpen", { defaultValue: "Dias" })}</TableHead>
                     <TableHead className="w-20">{t("common.actions")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filtered.map((row) => {
-                    const today = new Date().toISOString().slice(0, 10);
-                    const isOverdue = row._deadline && row._deadline < today && !["closed", "cancelled", "archived"].includes(row.status);
+                    const today = new Date();
+                    const todayStr = today.toISOString().slice(0, 10);
+                    const isOverdue = row._deadline && row._deadline < todayStr && !["closed", "cancelled", "archived"].includes(row.status);
+                    const daysOpen = Math.max(0, Math.floor((today.getTime() - new Date(row.created_at).getTime()) / 86400000));
                     return (
                       <TableRow key={`${row._source}-${row.id}`} className="hover:bg-muted/20 transition-colors cursor-pointer" onClick={() => handleRowClick(row)}>
                         <TableCell className="font-mono text-xs font-medium">{row.code ?? "—"}</TableCell>
                         <TableCell><Badge variant="secondary" className="text-xs">{t(`technicalOffice.types.${row.type}`, { defaultValue: row.type })}</Badge></TableCell>
                         <TableCell className="font-medium text-sm text-foreground max-w-[250px] truncate">{row.title}</TableCell>
+                        <TableCell className="text-xs text-muted-foreground">{(row as any).discipline ? t(`nc.discipline.${(row as any).discipline}`, { defaultValue: (row as any).discipline }) : "—"}</TableCell>
                         <TableCell>
                           <Badge variant={(PRIORITY_COLORS[row.priority] || "secondary") as any} className="text-xs">
                             {t(`technicalOffice.priority.${row.priority}`, { defaultValue: row.priority })}
@@ -321,6 +333,7 @@ export default function TechnicalOfficePage() {
                           {isOverdue && <AlertTriangle className="h-3 w-3 inline mr-1" />}
                           {row._deadline ? new Date(row._deadline).toLocaleDateString() : "—"}
                         </TableCell>
+                        <TableCell className="text-xs text-muted-foreground tabular-nums">{daysOpen}d</TableCell>
                         <TableCell onClick={(e) => e.stopPropagation()}>
                           <div className="flex gap-1">
                             <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={() => handleRowClick(row)}>
