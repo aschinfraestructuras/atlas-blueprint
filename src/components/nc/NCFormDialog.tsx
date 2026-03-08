@@ -626,6 +626,54 @@ export function NCFormDialog({
                     <FormMessage />
                   </FormItem>
                 )} />
+
+                <Separator className="my-2" />
+                <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                  {t("nc.form.seguimentoSection", { defaultValue: "Seguimento CE" })}
+                </p>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <FormField control={form.control} name="actual_completion_date" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("nc.form.actualCompletionDate", { defaultValue: "Data Real de Implementação" })}</FormLabel>
+                      <FormControl><Input type="date" {...field} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="due_date" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("nc.table.dueDate")} <span className="text-xs text-muted-foreground">({t("common.optional")})</span></FormLabel>
+                      <FormControl><Input type="date" {...field} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                </div>
+
+                <FormField control={form.control} name="deviation_justification" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("nc.form.deviationJustification", { defaultValue: "Justificação de Desvios" })}</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder={t("nc.form.deviationJustificationPlaceholder", { defaultValue: "Justifique eventuais desvios face à data/método planeado…" })}
+                        className="resize-none" rows={3} {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+
+                <FormField control={form.control} name="efficacy_analysis" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("nc.form.efficacyAnalysis", { defaultValue: "Análise de Eficácia" })}</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder={t("nc.form.efficacyAnalysisPlaceholder", { defaultValue: "Descreva como foi verificada a eficácia da ação implementada…" })}
+                        className="resize-none" rows={3} {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
               </TabsContent>
 
               {/* ── SECÇÃO 6: FECHO (só em edit com status in_review/closed) ── */}
