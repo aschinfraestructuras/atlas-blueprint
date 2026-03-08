@@ -39,6 +39,7 @@ export function useDashboardKpis() {
     if (!activeProject) { setData(EMPTY); setLoading(false); return; }
     setLoading(true);
     const pid = activeProject.id;
+    const today = new Date().toISOString().split("T")[0];
     const in30d = new Date(Date.now() + 30 * 86400000).toISOString().split("T")[0];
 
     try {
@@ -47,7 +48,7 @@ export function useDashboardKpis() {
         ppiApprovedRes, ppiTotalRes,
         testsCompletedRes, testsTotalRes,
         matApprovedRes, matTotalRes,
-        recentNcRes, recentLotRes, recentPpiRes,
+        recentNcRes, recentLotRes, recentPpiRes, recentTestRes,
       ] = await Promise.all([
         // NCs abertas (not closed, not archived)
         (supabase as any).from("non_conformities")
@@ -57,14 +58,14 @@ export function useDashboardKpis() {
         (supabase as any).from("materials")
           .select("id", { count: "exact", head: true })
           .eq("project_id", pid).not("pame_code", "is", null).eq("pame_status", "pending"),
-        // EMEs com calibração a expirar ≤30d
+        // EMEs com calibração a expirar ≤30d (ainda não expirados)
         (supabase as any).from("topography_equipment")
           .select("id", { count: "exact", head: true })
-          .eq("project_id", pid).eq("status", "active").lte("calibration_valid_until", in30d),
-        // Próxima auditoria
+          .eq("project_id", pid).eq("status", "active").gte("calibration_valid_until", today).lte("calibration_valid_until", in30d),
+        // Próxima auditoria (AI-PF17A-*)
         (supabase as any).from("planning_activities")
           .select("description, planned_start")
-          .eq("project_id", pid).eq("status", "planned").like("description", "AI-%")
+          .eq("project_id", pid).eq("status", "planned").like("description", "AI-PF17A-%")
           .order("planned_start", { ascending: true }).limit(1),
         // PPIs aprovados
         (supabase as any).from("ppi_instances")
