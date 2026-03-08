@@ -1092,7 +1092,8 @@
       "code": "Código",
       "category": "Categoría",
       "nifCif": "NIF/CIF",
-      "approvalStatus": "Calificación"
+      "approvalStatus": "Calificación",
+      "pameMaterials": "Mat. PAME"
     },
     "status": {
       "active": "Activo",
