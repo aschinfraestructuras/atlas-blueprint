@@ -49,8 +49,7 @@ export default function PPITemplatesPage() {
   const [dupCode,     setDupCode]     = useState("");
   const [duplicating, setDuplicating] = useState(false);
 
-  // Demo seed
-  const [seeding, setSeeding] = useState(false);
+
 
   // ── Filtering ──────────────────────────────────────────────────────────────
   const filtered = useMemo(() => {

@@ -254,22 +254,6 @@ export default function NonConformitiesPage() {
     }
   }, [filtered, selected, t, activeProject]);
 
-  // Demo seed
-  const handleSeedDemo = useCallback(async () => {
-    if (!activeProject || !user) return;
-    setSeeding(true);
-    try {
-      const { created, skipped } = await ncDemoService.seedDemoNCs(activeProject.id);
-      if (created > 0) toast({ title: t("nc.demo.created", { count: created }) });
-      else toast({ title: t("nc.demo.allExist", { count: skipped }) });
-      refetch();
-    } catch (err) {
-      const info = classifySupabaseError(err, t);
-      toast({ title: info.title, description: info.description ?? info.raw, variant: "destructive" });
-    } finally {
-      setSeeding(false);
-    }
-  }, [activeProject, user, refetch, t]);
 
   // ─── Guard ──────────────────────────────────────────────────────────────────
 
