@@ -321,10 +321,110 @@ export default function MaterialsPage() {
           <MaterialFormDialog open={dialogOpen} onOpenChange={setDialogOpen} material={editingMaterial} onSuccess={refetch} />
         </TabsContent>
 
+        <TabsContent value="pame" className="mt-4">
+          <PameTab materials={materials} />
+        </TabsContent>
+
         <TabsContent value="mapmas" className="mt-4">
           <MapMasPage />
         </TabsContent>
       </Tabs>
+    </div>
+  );
+}
+
+// ─── PAME Tab ─────────────────────────────────────────────────────────────────
+
+const PAME_STATUS_COLORS: Record<string, string> = {
+  pending: "bg-muted text-muted-foreground",
+  submitted: "bg-primary/15 text-primary",
+  approved: "bg-chart-2/15 text-chart-2",
+  rejected: "bg-destructive/10 text-destructive",
+};
+const PAME_PRIORITY_COLORS: Record<string, string> = {
+  high: "bg-destructive/10 text-destructive",
+  medium: "bg-amber-500/15 text-amber-600",
+  low: "bg-chart-2/15 text-chart-2",
+};
+const PAME_DISCIPLINES = ["terras", "betao", "ferrovia", "catenaria", "st", "drenagem", "estruturas", "outros"];
+
+function PameTab({ materials }: { materials: Material[] }) {
+  const { t } = useTranslation();
+  const [filterDiscipline, setFilterDiscipline] = useState("all");
+  const [filterPriority, setFilterPriority] = useState("all");
+
+  const pameItems = useMemo(() => {
+    let list = materials.filter(m => m.pame_code);
+    if (filterDiscipline !== "all") list = list.filter(m => (m as any).pame_disciplina === filterDiscipline);
+    if (filterPriority !== "all") list = list.filter(m => (m as any).pame_prioridade === filterPriority);
+    return list;
+  }, [materials, filterDiscipline, filterPriority]);
+
+  return (
+    <div className="space-y-4">
+      <FilterBar>
+        <Select value={filterDiscipline} onValueChange={setFilterDiscipline}>
+          <SelectTrigger className="w-[160px] h-9 text-sm"><SelectValue placeholder="Disciplina" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{t("materials.filters.allCategories")}</SelectItem>
+            {PAME_DISCIPLINES.map(d => (
+              <SelectItem key={d} value={d}>{t(`nc.discipline.${d}`, { defaultValue: d })}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select value={filterPriority} onValueChange={setFilterPriority}>
+          <SelectTrigger className="w-[140px] h-9 text-sm"><SelectValue placeholder="Prioridade" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todas</SelectItem>
+            <SelectItem value="high">Alta</SelectItem>
+            <SelectItem value="medium">Média</SelectItem>
+            <SelectItem value="low">Baixa</SelectItem>
+          </SelectContent>
+        </Select>
+      </FilterBar>
+
+      {pameItems.length === 0 ? (
+        <EmptyState icon={Package} subtitleKey="emptyState.materials.subtitle" />
+      ) : (
+        <div className="rounded-xl border border-border overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-muted/40">
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Código PAME</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Material</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Disciplina</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Norma</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Prioridade</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">PPI</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Estado</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {pameItems.map(m => (
+                <TableRow key={m.id} className="hover:bg-muted/20">
+                  <TableCell className="font-mono text-xs">{(m as any).pame_code}</TableCell>
+                  <TableCell className="text-sm font-medium text-foreground">{m.name}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground">{t(`nc.discipline.${(m as any).pame_disciplina}`, { defaultValue: (m as any).pame_disciplina ?? "—" })}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground">{(m as any).pame_norma ?? "—"}</TableCell>
+                  <TableCell>
+                    {(m as any).pame_prioridade ? (
+                      <Badge variant="secondary" className={cn("text-xs", PAME_PRIORITY_COLORS[(m as any).pame_prioridade] ?? "")}>
+                        {(m as any).pame_prioridade === "high" ? "Alta" : (m as any).pame_prioridade === "medium" ? "Média" : "Baixa"}
+                      </Badge>
+                    ) : "—"}
+                  </TableCell>
+                  <TableCell className="text-xs text-muted-foreground">{(m as any).pame_ppi_ref ?? "—"}</TableCell>
+                  <TableCell>
+                    <Badge variant="secondary" className={cn("text-xs", PAME_STATUS_COLORS[(m as any).pame_status] ?? "")}>
+                      {t(`materials.approval.statuses.${(m as any).pame_status}`, { defaultValue: (m as any).pame_status ?? "pending" })}
+                    </Badge>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
     </div>
   );
 }

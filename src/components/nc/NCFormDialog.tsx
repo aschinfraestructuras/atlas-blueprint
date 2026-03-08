@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -10,6 +10,7 @@ import type { NonConformity } from "@/lib/services/ncService";
 import { toast } from "@/hooks/use-toast";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { withOtherRefinement } from "@/components/ui/select-with-other";
+import { usePPIInstances } from "@/hooks/usePPI";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
@@ -23,12 +24,19 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, AlertCircle } from "lucide-react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Loader2, AlertCircle, AlertTriangle } from "lucide-react";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { cn } from "@/lib/utils";
 
 // ─── Schema ───────────────────────────────────────────────────────────────────
+
+const DISCIPLINES = ["terras", "betao", "ferrovia", "catenaria", "st", "drenagem", "estruturas", "outros"] as const;
+const CORRECTION_TYPES = ["accept", "repair", "demolish", "reject"] as const;
+const ROOT_CAUSE_METHODS = ["5whys", "ishikawa", "other"] as const;
 
 const schema = (t: (k: string) => string) =>
   z.object({
@@ -42,13 +50,29 @@ const schema = (t: (k: string) => string) =>
     responsible:         z.string().trim().max(120).optional().or(z.literal("")),
     due_date:            z.string().optional().or(z.literal("")),
     detected_at:         z.string().optional().or(z.literal("")),
-    // CAPA
+    // PG-03 fields
+    location_pk:         z.string().trim().max(200).optional().or(z.literal("")),
+    discipline:          z.string().optional().or(z.literal("")),
+    classification:      z.string().min(1, t("nc.form.validation.classificationRequired", { defaultValue: "Classificação obrigatória" })),
+    ppi_instance_id:     z.string().optional().or(z.literal("")),
+    violated_requirement: z.string().trim().max(500).optional().or(z.literal("")),
+    // Correction
+    correction_type:     z.string().optional().or(z.literal("")),
     correction:          z.string().trim().max(2000).optional().or(z.literal("")),
+    // Root cause
+    root_cause_method:   z.string().optional().or(z.literal("")),
     root_cause:          z.string().trim().max(2000).optional().or(z.literal("")),
+    // Corrective action
     corrective_action:   z.string().trim().max(2000).optional().or(z.literal("")),
     preventive_action:   z.string().trim().max(2000).optional().or(z.literal("")),
+    assigned_to:         z.string().trim().max(200).optional().or(z.literal("")),
+    ac_efficacy_indicator: z.string().trim().max(500).optional().or(z.literal("")),
+    // Closure
     verification_method: z.string().trim().max(500).optional().or(z.literal("")),
     verification_result: z.string().trim().max(500).optional().or(z.literal("")),
+    verified_at:         z.string().optional().or(z.literal("")),
+    closure_date:        z.string().optional().or(z.literal("")),
+    fip_validated_by:    z.string().trim().max(200).optional().or(z.literal("")),
   }).superRefine((val, ctx) => {
     withOtherRefinement(val, ctx, "category", "category_outro", t("nc.form.validation.categoryOutroRequired"));
   });
@@ -61,7 +85,6 @@ interface NCFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   nc?: NonConformity | null;
-  /** Override de origem (ex: criado a partir de PPI ou Ensaio) */
   originOverride?: string;
   onSuccess: () => void;
 }
@@ -73,8 +96,14 @@ const defaultValues = (origin?: string): FormValues => ({
   severity: "major", category: "qualidade", category_outro: "",
   origin: origin ?? "manual", reference: "", responsible: "",
   due_date: "", detected_at: new Date().toISOString().split("T")[0],
-  correction: "", root_cause: "", corrective_action: "",
-  preventive_action: "", verification_method: "", verification_result: "",
+  location_pk: "", discipline: "", classification: "",
+  ppi_instance_id: "", violated_requirement: "",
+  correction_type: "", correction: "",
+  root_cause_method: "", root_cause: "",
+  corrective_action: "", preventive_action: "",
+  assigned_to: "", ac_efficacy_indicator: "",
+  verification_method: "", verification_result: "",
+  verified_at: "", closure_date: "", fip_validated_by: "",
 });
 
 // ─── Componente ───────────────────────────────────────────────────────────────
@@ -87,6 +116,7 @@ export function NCFormDialog({
   const { activeProject } = useProject();
   const [submitting, setSubmitting] = useState(false);
   const isEdit = !!nc;
+  const { data: ppiInstances } = usePPIInstances();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema(t)),
@@ -94,6 +124,9 @@ export function NCFormDialog({
   });
 
   const watchedCategory = form.watch("category");
+  const watchedClassification = form.watch("classification");
+  const isMaior = watchedClassification === "maior";
+  const showClosure = isEdit && nc && ["in_review", "closed"].includes(nc.status);
 
   useEffect(() => {
     if (!open) return;
@@ -102,18 +135,30 @@ export function NCFormDialog({
       description:         nc.description,
       severity:            nc.severity,
       category:            nc.category ?? "qualidade",
-      category_outro:      nc.category_outro ?? "",
+      category_outro:      (nc as any).category_outro ?? "",
       origin:              nc.origin ?? "manual",
       reference:           nc.reference ?? "",
       responsible:         nc.responsible ?? "",
       due_date:            nc.due_date ?? "",
       detected_at:         nc.detected_at ?? "",
+      location_pk:         (nc as any).location_pk ?? "",
+      discipline:          (nc as any).discipline ?? "",
+      classification:      (nc as any).classification ?? "",
+      ppi_instance_id:     nc.ppi_instance_id ?? "",
+      violated_requirement: (nc as any).violated_requirement ?? "",
+      correction_type:     (nc as any).correction_type ?? "",
       correction:          nc.correction ?? "",
+      root_cause_method:   (nc as any).root_cause_method ?? "",
       root_cause:          nc.root_cause ?? "",
       corrective_action:   nc.corrective_action ?? "",
-      preventive_action:   nc.preventive_action ?? "",
+      preventive_action:   (nc as any).preventive_action ?? "",
+      assigned_to:         "",
+      ac_efficacy_indicator: (nc as any).ac_efficacy_indicator ?? "",
       verification_method: nc.verification_method ?? "",
       verification_result: nc.verification_result ?? "",
+      verified_at:         (nc as any).verified_at ? new Date((nc as any).verified_at).toISOString().split("T")[0] : "",
+      closure_date:        nc.closure_date ?? "",
+      fip_validated_by:    (nc as any).fip_validated_by ?? "",
     } : defaultValues(originOverride));
   }, [open, nc, form, originOverride]);
 
@@ -121,40 +166,44 @@ export function NCFormDialog({
     if (!user || !activeProject) return;
     setSubmitting(true);
     try {
+      const payload: Record<string, unknown> = {
+        title:               values.title,
+        description:         values.description,
+        severity:            values.severity,
+        category:            values.category,
+        category_outro:      values.category === "outros" ? (values.category_outro || undefined) : undefined,
+        origin:              values.origin,
+        reference:           values.reference || undefined,
+        responsible:         values.responsible || undefined,
+        due_date:            values.due_date || undefined,
+        detected_at:         values.detected_at || undefined,
+        location_pk:         values.location_pk || undefined,
+        discipline:          values.discipline || undefined,
+        classification:      values.classification || undefined,
+        ppi_instance_id:     values.ppi_instance_id || undefined,
+        violated_requirement: values.violated_requirement || undefined,
+        correction_type:     values.correction_type || undefined,
+        correction:          values.correction || undefined,
+        root_cause_method:   values.root_cause_method || undefined,
+        root_cause:          values.root_cause || undefined,
+        corrective_action:   values.corrective_action || undefined,
+        preventive_action:   values.preventive_action || undefined,
+        ac_efficacy_indicator: values.ac_efficacy_indicator || undefined,
+        verification_method: values.verification_method || undefined,
+        verification_result: values.verification_result || undefined,
+        verified_at:         values.verified_at || undefined,
+        closure_date:        values.closure_date || undefined,
+        fip_validated_by:    values.fip_validated_by || undefined,
+      };
+
       if (isEdit && nc) {
-        await ncService.update(nc.id, activeProject.id, {
-          title:               values.title,
-          description:         values.description,
-          severity:            values.severity,
-          category:            values.category,
-          category_outro:      values.category === "outros" ? (values.category_outro || undefined) : undefined,
-          origin:              values.origin,
-          reference:           values.reference || undefined,
-          responsible:         values.responsible || undefined,
-          due_date:            values.due_date || undefined,
-          detected_at:         values.detected_at || undefined,
-          correction:          values.correction || undefined,
-          root_cause:          values.root_cause || undefined,
-          corrective_action:   values.corrective_action || undefined,
-          preventive_action:   values.preventive_action || undefined,
-          verification_method: values.verification_method || undefined,
-          verification_result: values.verification_result || undefined,
-        }, nc.status);
+        await ncService.update(nc.id, activeProject.id, payload as any, nc.status);
         toast({ title: t("nc.toast.updated") });
       } else {
         await ncService.create({
-          project_id:     activeProject.id,
-          title:          values.title,
-          description:    values.description,
-          severity:       values.severity,
-          category:       values.category,
-          category_outro: values.category === "outros" ? (values.category_outro || undefined) : undefined,
-          origin:         values.origin,
-          reference:      values.reference || undefined,
-          responsible:    values.responsible || undefined,
-          due_date:       values.due_date || undefined,
-          detected_at:    values.detected_at || undefined,
-        });
+          project_id: activeProject.id,
+          ...payload,
+        } as any);
         toast({ title: t("nc.toast.created") });
       }
       onSuccess();
@@ -173,7 +222,7 @@ export function NCFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[640px] max-h-[92vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[720px] max-h-[92vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-base font-semibold">
             {isEdit ? t("nc.form.titleEdit") : t("nc.form.titleCreate")}
@@ -186,22 +235,43 @@ export function NCFormDialog({
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-0 pt-1">
             <Tabs defaultValue="identification" className="w-full">
-              <TabsList className="w-full mb-4">
-                <TabsTrigger value="identification" className="flex-1 text-xs">
-                  {t("nc.form.tabs.identification")}
+              <TabsList className="w-full mb-4 flex-wrap h-auto gap-1">
+                <TabsTrigger value="identification" className="text-xs">
+                  1. {t("nc.form.tabs.identification", { defaultValue: "Identificação" })}
                 </TabsTrigger>
-                <TabsTrigger value="capa" className="flex-1 text-xs">
-                  {t("nc.form.tabs.capa")}
+                <TabsTrigger value="description" className="text-xs">
+                  2. {t("nc.form.tabs.description", { defaultValue: "Descrição" })}
                 </TabsTrigger>
+                <TabsTrigger value="correction" className="text-xs">
+                  3. {t("nc.form.tabs.correction", { defaultValue: "Correcção" })}
+                </TabsTrigger>
+                <TabsTrigger value="rootcause" className="text-xs">
+                  4. {t("nc.form.tabs.rootCause", { defaultValue: "Causa Raiz" })}
+                </TabsTrigger>
+                <TabsTrigger value="capa" className="text-xs">
+                  5. {t("nc.form.tabs.capa", { defaultValue: "Acção Corretiva" })}
+                </TabsTrigger>
+                {showClosure && (
+                  <TabsTrigger value="closure" className="text-xs">
+                    6. {t("nc.form.tabs.closure", { defaultValue: "Fecho" })}
+                  </TabsTrigger>
+                )}
                 {isEdit && (
-                  <TabsTrigger value="attachments" className="flex-1 text-xs">
+                  <TabsTrigger value="attachments" className="text-xs">
                     {t("nc.form.tabs.attachments")}
                   </TabsTrigger>
                 )}
               </TabsList>
 
-              {/* ── TAB 1: IDENTIFICAÇÃO ───────────────────────────────────── */}
+              {/* ── SECÇÃO 1: IDENTIFICAÇÃO ─────────────────────────────── */}
               <TabsContent value="identification" className="space-y-4 mt-0">
+                {/* Code (read-only) */}
+                {nc?.code && (
+                  <div>
+                    <Label className="text-xs text-muted-foreground">{t("nc.table.code", { defaultValue: "Código" })}</Label>
+                    <p className="font-mono text-sm mt-0.5">{nc.code}</p>
+                  </div>
+                )}
 
                 {/* Título */}
                 <FormField control={form.control} name="title" render={({ field }) => (
@@ -214,16 +284,94 @@ export function NCFormDialog({
                   </FormItem>
                 )} />
 
-                {/* Descrição */}
-                <FormField control={form.control} name="description" render={({ field }) => (
+                <div className="grid grid-cols-2 gap-3">
+                  <FormField control={form.control} name="detected_at" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("nc.form.detectedAt")}</FormLabel>
+                      <FormControl><Input type="date" {...field} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="location_pk" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("nc.form.locationPk", { defaultValue: "PK / Zona de obra" })}</FormLabel>
+                      <FormControl><Input placeholder="Ex: PK 12+500" {...field} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <FormField control={form.control} name="discipline" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("nc.form.discipline", { defaultValue: "Disciplina" })}</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value || ""}>
+                        <FormControl><SelectTrigger><SelectValue placeholder="—" /></SelectTrigger></FormControl>
+                        <SelectContent>
+                          {DISCIPLINES.map(d => (
+                            <SelectItem key={d} value={d}>{t(`nc.discipline.${d}`, { defaultValue: d })}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="ppi_instance_id" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>PPI <span className="text-xs text-muted-foreground">({t("common.optional")})</span></FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value || "__none__"}>
+                        <FormControl><SelectTrigger><SelectValue placeholder="—" /></SelectTrigger></FormControl>
+                        <SelectContent>
+                          <SelectItem value="__none__">—</SelectItem>
+                          {ppiInstances.map(p => (
+                            <SelectItem key={p.id} value={p.id}>{p.code}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                </div>
+
+                {/* Classification - REQUIRED */}
+                <FormField control={form.control} name="classification" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t("nc.form.description")}</FormLabel>
+                    <FormLabel>{t("nc.form.classification", { defaultValue: "Classificação" })} *</FormLabel>
                     <FormControl>
-                      <Textarea
-                        placeholder={t("nc.form.descriptionPlaceholder")}
-                        className="resize-none" rows={3} {...field}
-                      />
+                      <RadioGroup onValueChange={field.onChange} value={field.value} className="flex gap-4">
+                        <div className="flex items-center gap-2">
+                          <RadioGroupItem value="maior" id="cls-maior" />
+                          <Label htmlFor="cls-maior" className="text-sm font-medium text-destructive">NC MAIOR</Label>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <RadioGroupItem value="menor" id="cls-menor" />
+                          <Label htmlFor="cls-menor" className="text-sm font-medium">NC MENOR</Label>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <RadioGroupItem value="observacao" id="cls-obs" />
+                          <Label htmlFor="cls-obs" className="text-sm font-medium text-muted-foreground">OBSERVAÇÃO</Label>
+                        </div>
+                      </RadioGroup>
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+
+                {/* Classification banners */}
+                {watchedClassification === "maior" && (
+                  <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-2 text-sm text-destructive flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4 flex-shrink-0" />
+                    <span>⚠ Prazo: ≤ 4h · Notificação F/IP obrigatória</span>
+                  </div>
+                )}
+                {watchedClassification === "menor" && (
+                  <Badge variant="secondary" className="text-xs">Prazo: ≤ 1 dia útil</Badge>
+                )}
+
+                <FormField control={form.control} name="responsible" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("nc.form.responsibleDetected", { defaultValue: "Detectada por" })}</FormLabel>
+                    <FormControl><Input placeholder={t("nc.form.responsiblePlaceholder")} {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
@@ -266,9 +414,7 @@ export function NCFormDialog({
                   <FormField control={form.control} name="category_outro" render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t("nc.form.categoryOutro")}</FormLabel>
-                      <FormControl>
-                        <Input placeholder={t("nc.form.categoryOutroPlaceholder")} {...field} />
-                      </FormControl>
+                      <FormControl><Input placeholder={t("nc.form.categoryOutroPlaceholder")} {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )} />
@@ -292,145 +438,197 @@ export function NCFormDialog({
                       <FormMessage />
                     </FormItem>
                   )} />
-                  <FormField control={form.control} name="reference" render={({ field }) => (
+                  <FormField control={form.control} name="due_date" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>
-                        {t("nc.table.reference")}{" "}
-                        <span className="text-xs text-muted-foreground font-normal">({t("common.optional")})</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input placeholder={t("nc.form.referencePlaceholder")} className="font-mono" {...field} />
-                      </FormControl>
+                      <FormLabel>{t("nc.table.dueDate")}</FormLabel>
+                      <FormControl><Input type="date" {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )} />
                 </div>
+              </TabsContent>
 
-                {/* Responsável + Data deteção */}
+              {/* ── SECÇÃO 2: DESCRIÇÃO ─────────────────────────────────── */}
+              <TabsContent value="description" className="space-y-4 mt-0">
+                <FormField control={form.control} name="description" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("nc.form.description")} *</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder={t("nc.form.descriptionPlaceholder")} className="resize-none" rows={5} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="violated_requirement" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("nc.form.violatedRequirement", { defaultValue: "Requisito violado (norma/CE/PPI)" })}</FormLabel>
+                    <FormControl><Input placeholder="Ex: EN 206-1 cl. 8.2.1" {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              </TabsContent>
+
+              {/* ── SECÇÃO 3: CORRECÇÃO IMEDIATA ────────────────────────── */}
+              <TabsContent value="correction" className="space-y-4 mt-0">
+                <FormField control={form.control} name="correction_type" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("nc.form.correctionType", { defaultValue: "Tipo de correcção" })}</FormLabel>
+                    <FormControl>
+                      <RadioGroup onValueChange={field.onChange} value={field.value || ""} className="space-y-2">
+                        {CORRECTION_TYPES.map(ct => (
+                          <div key={ct} className="flex items-center gap-2">
+                            <RadioGroupItem value={ct} id={`ct-${ct}`} />
+                            <Label htmlFor={`ct-${ct}`} className="text-sm">
+                              {t(`nc.correctionType.${ct}`, {
+                                defaultValue: ct === "accept" ? "Aceitar (derrogação F/IP)" :
+                                  ct === "repair" ? "Reparar" :
+                                  ct === "demolish" ? "Demolir e refazer" : "Rejeitar/devolver"
+                              })}
+                            </Label>
+                          </div>
+                        ))}
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="correction" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("nc.form.correction")}</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder={t("nc.form.correctionPlaceholder")} className="resize-none" rows={3} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              </TabsContent>
+
+              {/* ── SECÇÃO 4: CAUSA RAIZ (visível sempre, destaque se maior) ── */}
+              <TabsContent value="rootcause" className="space-y-4 mt-0">
+                {!isMaior && (
+                  <div className="rounded-lg bg-muted/40 border border-border px-4 py-2 text-xs text-muted-foreground">
+                    Secção obrigatória apenas para NC MAIOR. Pode preencher opcionalmente.
+                  </div>
+                )}
+                <FormField control={form.control} name="root_cause_method" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("nc.form.rootCauseMethod", { defaultValue: "Método de análise" })}</FormLabel>
+                    <FormControl>
+                      <RadioGroup onValueChange={field.onChange} value={field.value || ""} className="flex gap-4">
+                        {ROOT_CAUSE_METHODS.map(m => (
+                          <div key={m} className="flex items-center gap-2">
+                            <RadioGroupItem value={m} id={`rcm-${m}`} />
+                            <Label htmlFor={`rcm-${m}`} className="text-sm">
+                              {m === "5whys" ? "5 Porquês" : m === "ishikawa" ? "Ishikawa" : "Outro"}
+                            </Label>
+                          </div>
+                        ))}
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="root_cause" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("nc.form.rootCause")}</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder={t("nc.form.rootCausePlaceholder")} className="resize-none" rows={4} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              </TabsContent>
+
+              {/* ── SECÇÃO 5: ACÇÃO CORRETIVA ──────────────────────────── */}
+              <TabsContent value="capa" className="space-y-4 mt-0">
+                <FormField control={form.control} name="corrective_action" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("nc.form.correctiveAction")}</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder={t("nc.form.correctiveActionPlaceholder")} className="resize-none" rows={3} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+
                 <div className="grid grid-cols-2 gap-3">
-                  <FormField control={form.control} name="responsible" render={({ field }) => (
+                  <FormField control={form.control} name="assigned_to" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>
-                        {t("nc.table.responsible")}{" "}
-                        <span className="text-xs text-muted-foreground font-normal">({t("common.optional")})</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input placeholder={t("nc.form.responsiblePlaceholder")} {...field} />
-                      </FormControl>
+                      <FormLabel>{t("nc.form.assignedTo", { defaultValue: "Responsável pela acção" })}</FormLabel>
+                      <FormControl><Input {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )} />
-                  <FormField control={form.control} name="detected_at" render={({ field }) => (
+                  <FormField control={form.control} name="due_date" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t("nc.form.detectedAt")}</FormLabel>
+                      <FormLabel>{t("nc.form.actionDeadline", { defaultValue: "Prazo acção" })}</FormLabel>
                       <FormControl><Input type="date" {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )} />
                 </div>
 
-                {/* Prazo */}
-                <FormField control={form.control} name="due_date" render={({ field }) => (
+                <FormField control={form.control} name="ac_efficacy_indicator" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>
-                      {t("nc.table.dueDate")}{" "}
-                      <span className="text-xs text-muted-foreground font-normal">({t("common.optional")})</span>
-                    </FormLabel>
-                    <FormControl><Input type="date" {...field} /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-              </TabsContent>
-
-              {/* ── TAB 2: CAPA ───────────────────────────────────────────── */}
-              <TabsContent value="capa" className="space-y-4 mt-0">
-                <div className="rounded-lg bg-muted/40 border border-border px-4 py-2 text-xs text-muted-foreground">
-                  {t("nc.form.capaHint")}
-                </div>
-
-                <FormField control={form.control} name="correction" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      {t("nc.form.correction")}{" "}
-                      <span className="text-xs text-muted-foreground font-normal">({t("common.optional")})</span>
-                    </FormLabel>
-                    <FormControl>
-                      <Textarea placeholder={t("nc.form.correctionPlaceholder")} className="resize-none" rows={2} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-
-                <FormField control={form.control} name="root_cause" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      {t("nc.form.rootCause")}{" "}
-                      <span className="text-xs text-muted-foreground font-normal">({t("common.optional")})</span>
-                    </FormLabel>
-                    <FormControl>
-                      <Textarea placeholder={t("nc.form.rootCausePlaceholder")} className="resize-none" rows={3} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-
-                <FormField control={form.control} name="corrective_action" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      {t("nc.form.correctiveAction")}{" "}
-                      <span className="text-xs text-muted-foreground font-normal">({t("common.optional")})</span>
-                    </FormLabel>
-                    <FormControl>
-                      <Textarea placeholder={t("nc.form.correctiveActionPlaceholder")} className="resize-none" rows={2} {...field} />
-                    </FormControl>
+                    <FormLabel>{t("nc.form.efficacyIndicator", { defaultValue: "Indicador de eficácia" })}</FormLabel>
+                    <FormControl><Input placeholder="Ex: Verificar em 30 dias se NC recorre" {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
 
                 <FormField control={form.control} name="preventive_action" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>
-                      {t("nc.form.preventiveAction")}{" "}
-                      <span className="text-xs text-muted-foreground font-normal">({t("common.optional")})</span>
-                    </FormLabel>
+                    <FormLabel>{t("nc.form.preventiveAction")}</FormLabel>
                     <FormControl>
                       <Textarea placeholder={t("nc.form.preventiveActionPlaceholder")} className="resize-none" rows={2} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
-
-                <Separator />
-
-                <div className="grid grid-cols-2 gap-3">
-                  <FormField control={form.control} name="verification_method" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        {t("nc.form.verificationMethod")}{" "}
-                        <span className="text-xs text-muted-foreground font-normal">({t("common.optional")})</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input placeholder={t("nc.form.verificationMethodPlaceholder")} {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
-                  <FormField control={form.control} name="verification_result" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        {t("nc.form.verificationResult")}{" "}
-                        <span className="text-xs text-muted-foreground font-normal">({t("common.optional")})</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input placeholder={t("nc.form.verificationResultPlaceholder")} {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
-                </div>
               </TabsContent>
 
-              {/* ── TAB 3: ANEXOS (só em modo edição) ─────────────────────── */}
+              {/* ── SECÇÃO 6: FECHO (só em edit com status in_review/closed) ── */}
+              {showClosure && (
+                <TabsContent value="closure" className="space-y-4 mt-0">
+                  <FormField control={form.control} name="verification_result" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("nc.form.verificationResult")}</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder={t("nc.form.verificationResultPlaceholder")} className="resize-none" rows={3} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  <div className="grid grid-cols-2 gap-3">
+                    <FormField control={form.control} name="verified_at" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("nc.form.verifiedAt", { defaultValue: "Data verificação" })}</FormLabel>
+                        <FormControl><Input type="date" {...field} /></FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                    <FormField control={form.control} name="closure_date" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("nc.form.closureDate", { defaultValue: "Data fecho" })}</FormLabel>
+                        <FormControl><Input type="date" {...field} /></FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                  </div>
+                  <FormField control={form.control} name="fip_validated_by" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        {t("nc.form.fipValidatedBy", { defaultValue: "Validado por F/IP" })}
+                        {(nc as any)?.fip_validation_required && <span className="text-destructive ml-1">*</span>}
+                      </FormLabel>
+                      <FormControl><Input {...field} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                </TabsContent>
+              )}
+
+              {/* ── TAB: ANEXOS (só em modo edição) ────────────────────── */}
               {isEdit && (
                 <TabsContent value="attachments" className="mt-0">
                   {activeProject && nc && (
