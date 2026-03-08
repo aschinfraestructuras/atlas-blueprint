@@ -524,6 +524,9 @@ export default function SettingsPage() {
           </Select>
         </div>
       </SettingsSection>
+
+      {/* ── 6. Branding / Logo ───────────────────────────────────────── */}
+      <BrandingSection />
     </div>
   );
 }
