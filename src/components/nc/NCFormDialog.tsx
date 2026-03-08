@@ -53,6 +53,7 @@ const schema = (t: (k: string) => string) =>
     // PG-03 fields
     location_pk:         z.string().trim().max(200).optional().or(z.literal("")),
     discipline:          z.string().optional().or(z.literal("")),
+    discipline_outro:    z.string().trim().max(100).optional().or(z.literal("")),
     classification:      z.string().min(1, t("nc.form.validation.classificationRequired")),
     ppi_instance_id:     z.string().optional().or(z.literal("")),
     violated_requirement: z.string().trim().max(500).optional().or(z.literal("")),
@@ -75,6 +76,7 @@ const schema = (t: (k: string) => string) =>
     fip_validated_by:    z.string().trim().max(200).optional().or(z.literal("")),
   }).superRefine((val, ctx) => {
     withOtherRefinement(val, ctx, "category", "category_outro", t("nc.form.validation.categoryOutroRequired"));
+    withOtherRefinement(val, ctx, "discipline", "discipline_outro", t("nc.form.validation.disciplineOutroRequired"), "outros");
   });
 
 type FormValues = z.infer<ReturnType<typeof schema>>;
