@@ -1815,7 +1815,8 @@
       "updated": "Subempreiteiro atualizado com sucesso.",
       "deleted": "Subempreiteiro eliminado.",
       "error": "Ocorreu um erro. Tente novamente."
-    }
+    },
+    "fipPending": "Aprovação F/IP pendente"
   },
   "audit": {
     "table": {
