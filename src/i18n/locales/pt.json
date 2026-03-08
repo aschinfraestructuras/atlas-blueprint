@@ -1829,6 +1829,9 @@
     }
   },
   "subcontractors": {
+    "materialsSection": "Materiais Associados (PAME)",
+    "recycledCard": "Reciclados PPGRCD",
+    "viewInPame": "Ver no PAME",
     "newSubcontractor": "Novo Subempreiteiro",
     "searchPlaceholder": "Pesquisar nome, especialidade, e-mail…",
     "kpi": {
