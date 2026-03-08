@@ -298,7 +298,7 @@ export const topographyControlService = {
 
   async create(input: Partial<TopographyControl> & { project_id: string; equipment_id: string; element: string }): Promise<TopographyControl> {
     const { data: { user } } = await supabase.auth.getUser();
-    const { data, error } = await untypedFrom("topography_controls")
+    const { data, error } = await db.from("topography_controls")
       .insert({ ...input, created_by: user?.id })
       .select()
       .single();
