@@ -210,6 +210,7 @@ function buildSingleHtml(
   labels: DocExportLabels,
   locale: string,
   projectName: string,
+  logoUrl?: string | null,
 ): string {
   const statusLabel = labels.statuses[doc.status] ?? doc.status;
   const typeLabel = labels.docTypes[doc.doc_type] ?? doc.doc_type;
