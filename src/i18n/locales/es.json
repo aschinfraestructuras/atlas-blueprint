@@ -1265,7 +1265,8 @@
       "reference": "Referencia",
       "severity": "Gravedad",
       "responsible": "Responsable",
-      "dueDate": "Plazo"
+      "dueDate": "Plazo",
+      "origin": "Origen"
     },
     "severity": {
       "minor": "Menor",
