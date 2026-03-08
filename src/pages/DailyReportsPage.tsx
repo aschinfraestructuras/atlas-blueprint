@@ -60,6 +60,9 @@ export default function DailyReportsPage() {
     validated: data.filter(r => r.status === "validated").length,
   }), [data]);
 
+  // Keyboard shortcut: N → new report
+  useKeyboardShortcut("n", () => { if (!isArchived && activeProject) setDialogOpen(true); }, { enabled: !isArchived && !!activeProject });
+
   if (!activeProject) return <NoProjectBanner />;
 
   return (
