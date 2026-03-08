@@ -145,26 +145,6 @@ export default function PPITemplatesPage() {
     }
   }
 
-  // ── Demo seed ──────────────────────────────────────────────────────────────
-  async function handleSeedDemos() {
-    if (!activeProject || !user) return;
-    setSeeding(true);
-    try {
-      const { created, skipped } = await ppiDemoService.seedDemoTemplates(activeProject.id, user.id);
-      if (created.length > 0) {
-        toast({ title: t("ppi.demo.templates.created", { codes: created.join(", ") }) });
-      } else {
-        toast({ title: t("ppi.demo.templates.allExist", { codes: skipped.join(", ") }) });
-      }
-      refetch();
-    } catch (err) {
-      const info = classifySupabaseError(err, t);
-      toast({ title: info.title, description: info.description ?? info.raw, variant: "destructive" });
-    } finally {
-      setSeeding(false);
-    }
-  }
-
   if (!activeProject) return <NoProjectBanner />;
 
   return (
