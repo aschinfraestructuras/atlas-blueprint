@@ -11,6 +11,7 @@ import { DOCUMENT_STATUSES } from "@/lib/services/documentService";
 import type { DocumentStatus } from "@/lib/services/documentService";
 import { DOCUMENT_TEMPLATES, type DocumentTemplate } from "@/lib/services/documentTemplates";
 import { toast } from "@/hooks/use-toast";
+import { SelectWithOther, withOtherRefinement } from "@/components/ui/select-with-other";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
