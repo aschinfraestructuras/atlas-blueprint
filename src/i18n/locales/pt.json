@@ -2024,7 +2024,10 @@
       "createPPI": "Criar PPI"
     },
     "groups": {
-      "obras": "obras"
+      "obras": "obras",
+      "frentes": "frentes",
+      "inExecution": "em execução",
+      "baseActivity": "Actividade base"
     },
     "deleteConfirm": {
       "title": "Eliminar Work Item?",
