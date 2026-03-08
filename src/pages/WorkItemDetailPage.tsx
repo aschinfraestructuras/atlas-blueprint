@@ -523,7 +523,7 @@ function WorkItemTestsTab({
         preselectedWorkItemId={workItemId}
         onSuccess={load}
       />
-    </>
+    </div>
   );
 }
 
