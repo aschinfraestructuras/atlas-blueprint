@@ -254,12 +254,18 @@ export default function PlansPage() {
             <TableBody>
               {filtered.map((plan) => (
                 <TableRow key={plan.id} className="hover:bg-muted/20 transition-colors cursor-pointer" onClick={() => navigate(`/plans/${plan.id}`)}>
+                  <TableCell className="font-mono text-xs text-muted-foreground">{(plan as any).code ?? "—"}</TableCell>
                   <TableCell>
                     <Badge variant="outline" className="text-xs font-mono">
                       {t(`plans.types.${plan.plan_type}`, { defaultValue: plan.plan_type })}
                     </Badge>
                   </TableCell>
                   <TableCell className="font-medium text-sm text-foreground">{plan.title}</TableCell>
+                  <TableCell>
+                    {(plan as any).discipline ? (
+                      <Badge variant="secondary" className="text-[10px]">{t(`plans.disciplines.${(plan as any).discipline}`, { defaultValue: (plan as any).discipline })}</Badge>
+                    ) : "—"}
+                  </TableCell>
                   <TableCell className="text-muted-foreground font-mono text-xs">{plan.revision ?? "—"}</TableCell>
                   <TableCell>
                     <Badge variant="secondary" className={cn("text-xs", STATUS_COLORS[plan.status] ?? "")}>
