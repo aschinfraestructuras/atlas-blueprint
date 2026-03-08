@@ -1846,7 +1846,18 @@
       "linkedSupplier": "Fornecedor associado",
       "linkedSupplierPlaceholder": "Selecionar fornecedor…",
       "noSupplier": "Sem fornecedor",
-      "createBtn": "Criar subempreiteiro"
+      "createBtn": "Criar subempreiteiro",
+      "sectionGeneral": "Dados Gerais",
+      "sectionContact": "Contacto",
+      "contract": "Contrato",
+      "contractPlaceholder": "Referência do contrato",
+      "docStatus": "Estado Documentação",
+      "score": "Score Desempenho",
+      "contactName": "Nome do responsável",
+      "contactNamePlaceholder": "Nome do responsável",
+      "contactPhone": "Telefone de contacto",
+      "notes": "Observações",
+      "notesPlaceholder": "Observações gerais…"
     },
     "detail": {
       "tabs": {
