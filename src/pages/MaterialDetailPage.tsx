@@ -651,6 +651,10 @@ export default function MaterialDetailPage() {
           </Card>
         </TabsContent>
 
+        <TabsContent value="usage">
+          <MaterialUsageTab materialId={material.id} projectId={activeProject.id} />
+        </TabsContent>
+
         <TabsContent value="recycled">
           <Card className="border-0 shadow-card">
             <CardContent className="p-6">

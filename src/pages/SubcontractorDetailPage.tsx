@@ -691,3 +691,111 @@ function Row({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
+
+function SubMaterialsSection({ projectId, subId, supplierId }: { projectId: string; subId: string; supplierId: string | null }) {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const [pameMaterials, setPameMaterials] = useState<any[]>([]);
+  const [recycledStats, setRecycledStats] = useState<{ count: number; avgPct: number } | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      // Get materials linked to this subcontractor's supplier
+      if (!supplierId) { setPameMaterials([]); return; }
+      const { data } = await supabase
+        .from("materials")
+        .select("id, code, name, approval_status, approved_at, pame_code")
+        .eq("project_id", projectId)
+        .eq("supplier_id", supplierId)
+        .eq("is_deleted", false)
+        .order("code");
+      setPameMaterials(data ?? []);
+    })();
+  }, [projectId, supplierId]);
+
+  useEffect(() => {
+    if (!supplierId) return;
+    (async () => {
+      const { data } = await supabase
+        .from("recycled_materials" as any)
+        .select("recycled_content_pct")
+        .eq("project_id", projectId)
+        .eq("supplier_id", supplierId)
+        .eq("is_deleted", false);
+      const rows = (data ?? []) as any[];
+      if (rows.length > 0) {
+        const avg = rows.reduce((s: number, r: any) => s + (r.recycled_content_pct ?? 0), 0) / rows.length;
+        setRecycledStats({ count: rows.length, avgPct: Math.round(avg * 10) / 10 });
+      }
+    })();
+  }, [projectId, supplierId]);
+
+  return (
+    <div className="space-y-4">
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm flex items-center gap-2">
+            <Package className="h-4 w-4 text-muted-foreground" />
+            {t("subcontractors.materialsSection")}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {pameMaterials.length === 0 ? (
+            <p className="text-sm text-muted-foreground py-4 text-center">{t("common.noData")}</p>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-muted/40">
+                  <TableHead className="text-xs">Código PAME</TableHead>
+                  <TableHead className="text-xs">{t("common.name")}</TableHead>
+                  <TableHead className="text-xs">{t("common.status")}</TableHead>
+                  <TableHead className="text-xs">{t("common.date")}</TableHead>
+                  <TableHead className="w-12" />
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {pameMaterials.map((m: any) => (
+                  <TableRow key={m.id}>
+                    <TableCell className="font-mono text-xs">{m.pame_code ?? m.code}</TableCell>
+                    <TableCell className="text-sm font-medium">{m.name}</TableCell>
+                    <TableCell>
+                      <Badge variant="secondary" className={cn("text-xs",
+                        m.approval_status === "approved" ? "bg-chart-2/15 text-chart-2" :
+                        m.approval_status === "rejected" ? "bg-destructive/10 text-destructive" : ""
+                      )}>{t(`materials.approval.statuses.${m.approval_status}`, { defaultValue: m.approval_status })}</Badge>
+                    </TableCell>
+                    <TableCell className="text-xs text-muted-foreground">{m.approved_at ? new Date(m.approved_at).toLocaleDateString() : "—"}</TableCell>
+                    <TableCell>
+                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => navigate(`/materials/${m.id}`)} title={t("subcontractors.viewInPame")}>
+                        <Eye className="h-3.5 w-3.5" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
+
+      {recycledStats && recycledStats.count > 0 && (
+        <Card>
+          <CardContent className="p-4 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Leaf className="h-4 w-4 text-chart-2" />
+              <span className="text-sm font-medium">{t("subcontractors.recycledCard")}</span>
+            </div>
+            <div className="flex items-center gap-4 text-sm">
+              <span className="tabular-nums font-bold">{recycledStats.count} {t("recycled.kpi.total").toLowerCase()}</span>
+              <span className="text-muted-foreground">·</span>
+              <span className="tabular-nums">{recycledStats.avgPct}% {t("recycled.kpi.avgPct").toLowerCase()}</span>
+              <Button variant="outline" size="sm" onClick={() => navigate("/recycled-materials")}>
+                {t("recycled.title")} →
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+}
