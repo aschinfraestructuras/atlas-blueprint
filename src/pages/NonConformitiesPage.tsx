@@ -448,6 +448,8 @@ export default function NonConformitiesPage() {
             {["maior","menor","observacao"].map(c => (
               <SelectItem key={c} value={c}>{t(`nc.classification.${c}`)}</SelectItem>
             ))}
+            <SelectItem value="C">{t("nc.classificationCE.C", { defaultValue: "C — Correção" })}</SelectItem>
+            <SelectItem value="AC">{t("nc.classificationCE.AC", { defaultValue: "AC — Ação Corretiva" })}</SelectItem>
           </SelectContent>
         </Select>
 

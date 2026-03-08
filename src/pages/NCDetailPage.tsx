@@ -487,6 +487,28 @@ export default function NCDetailPage() {
                 <CapaField label={t("nc.form.verificationResult")} value={nc.verification_result} />
               </div>
 
+              {/* Seguimento CE */}
+              {(nc.actual_completion_date || nc.deviation_justification || nc.efficacy_analysis) && (
+                <>
+                  <Separator />
+                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                    {t("nc.form.seguimentoSection", { defaultValue: "Seguimento CE" })}
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <CapaField label={t("nc.form.actualCompletionDate", { defaultValue: "Data Real de Implementação" })} value={
+                      nc.actual_completion_date ? new Date(nc.actual_completion_date + "T00:00:00").toLocaleDateString() : null
+                    } />
+                    {nc.due_date && (
+                      <CapaField label={t("nc.table.dueDate")} value={
+                        new Date(nc.due_date + "T00:00:00").toLocaleDateString()
+                      } />
+                    )}
+                  </div>
+                  <CapaField label={t("nc.form.deviationJustification", { defaultValue: "Justificação de Desvios" })} value={nc.deviation_justification} />
+                  <CapaField label={t("nc.form.efficacyAnalysis", { defaultValue: "Análise de Eficácia" })} value={nc.efficacy_analysis} />
+                </>
+              )}
+
               {(!nc.correction && !nc.root_cause && !nc.corrective_action && !nc.preventive_action) && (
                 <div className="flex flex-col items-center justify-center py-8 gap-2 text-muted-foreground">
                   <Shield className="h-8 w-8 opacity-30" />
