@@ -999,6 +999,8 @@
         "locationPlaceholder": "ej: Km 12+500, Viga V1…",
         "pkInicio": "PK Inicio (m)",
         "pkFim": "PK Fin (m)",
+        "pkStart": "PK Inicio (m)",
+        "pkEnd": "PK Fin (m)",
         "material": "Material",
         "materialPlaceholder": "ej: Hormigón C30/37",
         "materialOutro": "Material (otro)",
