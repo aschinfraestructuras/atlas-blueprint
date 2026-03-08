@@ -66,13 +66,12 @@ export default function DailyReportsPage() {
         icon={ClipboardList}
         title={t("dailyReports.title")}
         subtitle={t("dailyReports.subtitle")}
-      >
-        {!isArchived && (
+        actions={!isArchived ? (
           <Button onClick={() => setDialogOpen(true)} size="sm">
             <Plus className="h-4 w-4 mr-1" /> {t("dailyReports.new")}
           </Button>
-        )}
-      </PageHeader>
+        ) : undefined}
+      />
 
       {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
