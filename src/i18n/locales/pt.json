@@ -2813,9 +2813,11 @@
   "planning": {
     "title": "Planeamento Estruturado",
     "subtitle": "WBS hierárquica, atividades planeadas e bloqueios inteligentes",
+    "searchPlaceholder": "Pesquisar código, descrição, zona…",
     "tabs": {
       "activities": "Atividades"
     },
+    "filters": { "allStatuses": "Todos os estados" },
     "wbs": {
       "add": "Nova WBS",
       "addChild": "Criar filho",
