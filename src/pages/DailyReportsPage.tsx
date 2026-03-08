@@ -75,10 +75,10 @@ export default function DailyReportsPage() {
 
       {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <ModuleKPICard label="Total" value={kpis.total} />
-        <ModuleKPICard label={t("dailyReports.status.draft")} value={kpis.draft} />
-        <ModuleKPICard label={t("dailyReports.status.submitted")} value={kpis.submitted} />
-        <ModuleKPICard label={t("dailyReports.status.validated")} value={kpis.validated} />
+        <ModuleKPICard label="Total" value={kpis.total} icon={Hash} />
+        <ModuleKPICard label={t("dailyReports.status.draft")} value={kpis.draft} icon={FileText} />
+        <ModuleKPICard label={t("dailyReports.status.submitted")} value={kpis.submitted} icon={Send} />
+        <ModuleKPICard label={t("dailyReports.status.validated")} value={kpis.validated} icon={CheckCircle} />
       </div>
 
       {/* Filters */}
