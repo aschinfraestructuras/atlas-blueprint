@@ -288,7 +288,7 @@ export const topographyRequestService = {
 
 export const topographyControlService = {
   async getByProject(projectId: string): Promise<TopographyControl[]> {
-    const { data, error } = await untypedFrom("topography_controls")
+    const { data, error } = await db.from("topography_controls")
       .select("*")
       .eq("project_id", projectId)
       .order("execution_date", { ascending: false });
