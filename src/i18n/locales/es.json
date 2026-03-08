@@ -1933,7 +1933,11 @@
       },
       "emptyTests": "Ningún ensayo asociado",
       "emptyNcs": "Ninguna no conformidad asociada",
-      "loadError": "Work item no encontrado"
+      "loadError": "Work item no encontrado",
+      "baseActivity": "Actividad base — duplicar para crear frente de obra",
+      "testsTab": {
+        "suggestion": "El plan PE-PF17A-001 tiene {{count}} ensayos aplicables para la disciplina {{discipline}}"
+      }
     },
     "form": {
       "titleCreate": "Nuevo Work Item",
