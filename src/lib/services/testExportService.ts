@@ -460,7 +460,7 @@ thead th { font-size: 8.5px; }
 </head>
 <body>
 
-${headerHtml(labels.bulkReportTitle, labels, locale)}
+${headerHtml(labels.bulkReportTitle, labels, locale, logoUrl)}
 
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:6px">
   <div>
