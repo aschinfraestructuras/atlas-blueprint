@@ -1474,39 +1474,57 @@ export type Database = {
       }
       plans: {
         Row: {
+          approval_date: string | null
+          code: string | null
           created_at: string
           created_by: string
+          discipline: string | null
+          doc_reference: string | null
           document_id: string | null
           file_url: string | null
           id: string
+          notes: string | null
           plan_type: string
           project_id: string
+          responsible: string | null
           revision: string | null
           status: string
           title: string
           updated_at: string
         }
         Insert: {
+          approval_date?: string | null
+          code?: string | null
           created_at?: string
           created_by: string
+          discipline?: string | null
+          doc_reference?: string | null
           document_id?: string | null
           file_url?: string | null
           id?: string
+          notes?: string | null
           plan_type?: string
           project_id: string
+          responsible?: string | null
           revision?: string | null
           status?: string
           title: string
           updated_at?: string
         }
         Update: {
+          approval_date?: string | null
+          code?: string | null
           created_at?: string
           created_by?: string
+          discipline?: string | null
+          doc_reference?: string | null
           document_id?: string | null
           file_url?: string | null
           id?: string
+          notes?: string | null
           plan_type?: string
           project_id?: string
+          responsible?: string | null
           revision?: string | null
           status?: string
           title?: string
