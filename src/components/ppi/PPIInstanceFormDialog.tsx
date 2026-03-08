@@ -251,6 +251,7 @@ export function PPIInstanceFormDialog({
                         <SelectItem key={wi.id} value={wi.id}>
                           {wi.sector}
                           {wi.obra ? ` · ${wi.obra}` : ""}
+                          {wi.parte ? ` · ${wi.parte}` : ""}
                           {` (${t(`workItems.disciplines.${wi.disciplina}`, { defaultValue: wi.disciplina })})`}
                         </SelectItem>
                       ))}
