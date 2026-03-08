@@ -789,13 +789,34 @@ export default function WorkItemDetailPage() {
             </p>
             <h1 className="text-xl font-extrabold tracking-tight text-foreground flex items-center gap-2">
               <Construction className="h-5 w-5 text-muted-foreground" />
-              {item.sector}
+              {item.obra ? `${item.obra} — ${item.sector}` : item.sector}
             </h1>
-            <div className="flex items-center gap-2 mt-1.5">
-              <StatusBadge status={item.status} />
-              <span className="text-xs text-muted-foreground">
+            <p className="text-sm text-muted-foreground mt-0.5">{item.sector}</p>
+            <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+              <Badge variant="outline" className="text-xs">
                 {t(`workItems.disciplines.${item.disciplina}`, { defaultValue: item.disciplina })}
-              </span>
+              </Badge>
+              <StatusBadge status={item.status} />
+            </div>
+
+            {/* Elemento + PK contextual info */}
+            <div className="mt-2 space-y-1">
+              {item.elemento ? (
+                <p className="text-sm text-foreground font-medium">
+                  {t("workItems.detail.element")}: {item.elemento}
+                  {item.parte ? ` · ${item.parte}` : ""}
+                </p>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-muted/50 px-2.5 py-1 text-xs text-muted-foreground">
+                  <Copy className="h-3 w-3" />
+                  {t("workItems.detail.baseActivity")}
+                </span>
+              )}
+              {(item.pk_inicio != null) && (
+                <p className="text-sm font-mono text-muted-foreground">
+                  PK {formatPk(item.pk_inicio, item.pk_fim)}
+                </p>
+              )}
             </div>
           </div>
         </div>
