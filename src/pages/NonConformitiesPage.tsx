@@ -579,6 +579,9 @@ export default function NonConformitiesPage() {
                   {t("nc.table.origin")}
                 </TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground w-28">
+                  {t("nc.form.classification")}
+                </TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground w-28">
                   {t("nc.table.severity")}
                 </TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground w-44">
