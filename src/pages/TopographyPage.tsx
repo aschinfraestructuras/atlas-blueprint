@@ -159,7 +159,7 @@ export default function TopographyPage() {
 
   if (!activeProject) return <NoProjectBanner />;
 
-  const meta = { projectName: activeProject.name, projectCode: activeProject.code, locale: "pt", generatedBy: user?.email ?? undefined };
+  const meta = useReportMeta() ?? { projectName: activeProject.name, projectCode: activeProject.code, locale: "pt", generatedBy: user?.email ?? undefined };
   const expiredCount = equipment.filter(e => e.calibration_status === "expired").length;
   const expiringCount = equipment.filter(e => e.calibration_status === "expiring_soon").length;
   const validCount = equipment.filter(e => e.calibration_status === "valid").length;

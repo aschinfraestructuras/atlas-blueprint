@@ -229,7 +229,7 @@ export default function ActivityDetailPage() {
     );
   }
 
-  const meta = { projectName: activeProject.name, projectCode: activeProject.code, locale: "pt" };
+  const meta = useReportMeta() ?? { projectName: activeProject.name, projectCode: activeProject.code, locale: "pt" };
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">

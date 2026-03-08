@@ -149,7 +149,7 @@ export default function PlanningPage() {
 
   if (!activeProject) return <NoProjectBanner />;
 
-  const meta = { projectName: activeProject.name, projectCode: activeProject.code, locale: i18n.language?.startsWith("es") ? "es" : "pt", generatedBy: user?.email ?? undefined };
+  const meta = useReportMeta() ?? { projectName: activeProject.name, projectCode: activeProject.code, locale: i18n.language?.startsWith("es") ? "es" : "pt", generatedBy: user?.email ?? undefined };
 
   const handleNewWbs = (pId?: string) => { setEditWbs(null); setParentWbs(pId ?? null); setWbsDialogOpen(true); };
   const handleEditWbs = (n: WbsNode) => { setEditWbs(n); setParentWbs(null); setWbsDialogOpen(true); };

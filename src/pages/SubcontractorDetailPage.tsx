@@ -225,7 +225,7 @@ export default function SubcontractorDetailPage() {
     );
   }
 
-  const meta: ReportMeta = {
+  const meta: ReportMeta = useReportMeta() ?? {
     projectName: activeProject.name,
     projectCode: activeProject.code,
     locale: "pt",
