@@ -2211,7 +2211,9 @@
         "saving": "A guardar…",
         "createBtn": "Criar Inspeção",
         "cancel": "Cancelar",
-        "disciplineMismatch": "Atenção: a disciplina do work item ({{workItem}}) é diferente da disciplina do template ({{template}}). Pode continuar, mas verifique se a seleção está correta."
+        "disciplineMismatchInline": "Este template é de disciplina '{{templateDisciplina}}' — o work item é '{{wiDisciplina}}'",
+        "matchingDiscipline": "Mesma disciplina",
+        "otherDisciplines": "Outras disciplinas"
       },
       "items": {
         "itemNo": "Nº",
