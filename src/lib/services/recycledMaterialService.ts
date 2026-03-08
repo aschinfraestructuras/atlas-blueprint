@@ -125,7 +125,7 @@ export const recycledMaterialService = {
   },
 
   async getProjectStats(projectId: string): Promise<{ total: number; approved: number; pending: number; avgPct: number }> {
-    const { data } = await untypedFrom("recycled_materials")
+    const { data } = await db.from("recycled_materials")
       .select("status, recycled_content_pct")
       .eq("project_id", projectId)
       .eq("is_deleted", false);
