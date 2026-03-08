@@ -182,6 +182,7 @@ export function NCFormDialog({
         detected_at:         values.detected_at || undefined,
         location_pk:         values.location_pk || undefined,
         discipline:          values.discipline || undefined,
+        discipline_outro:    values.discipline === "outros" ? (values.discipline_outro || undefined) : undefined,
         classification:      values.classification || undefined,
         ppi_instance_id:     values.ppi_instance_id || undefined,
         violated_requirement: values.violated_requirement || undefined,
