@@ -91,7 +91,7 @@ export function SupplierFormDialog({ open, onOpenChange, supplier, onSuccess }: 
               status: supplier.status ?? "active",
             }
           : {
-              name: "", category: "", nif_cif: "", country: "", address: "",
+              name: "", category: "", category_outro: "", nif_cif: "", country: "", address: "",
               contact_name: "", contact_email: "", contact_phone: "", notes: "",
               qualification_status: "pending", status: "active",
             }
