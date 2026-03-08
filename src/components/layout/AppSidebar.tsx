@@ -49,6 +49,7 @@ const NAV_SECTIONS: SidebarSection[] = [
     sectionKey: "technicalOfficeSection",
     items: [
       { labelKey: "nav.technicalOffice", url: "/technical-office", icon: Inbox },
+      { labelKey: "nav.rfis",            url: "/rfis",             icon: MessageSquareText },
       { labelKey: "nav.plans",           url: "/plans",            icon: BookOpen },
       { labelKey: "nav.planning",        url: "/planning",         icon: CalendarClock },
     ],
