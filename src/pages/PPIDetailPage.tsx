@@ -691,8 +691,6 @@ export default function PPIDetailPage() {
                     <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-500" /> <span className="text-amber-600 font-semibold">WP</span> <span className="text-muted-foreground">{t("ppi.ipt.wp.short", { defaultValue: "Presença prevista" })}</span></span>
                     <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-primary" /> <span className="text-primary font-semibold">RP</span> <span className="text-muted-foreground">{t("ppi.ipt.rp.short", { defaultValue: "Revisão documental" })}</span></span>
                   </div>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-border bg-muted/40">
                         <th className="text-left px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground w-10">
