@@ -407,9 +407,10 @@ export async function exportDocumentListPdf(
   locale: string,
   projectName: string,
   projectId?: string,
+  logoUrl?: string | null,
 ): Promise<void> {
   if (docs.length === 0) return;
-  const html = buildListHtml(docs, labels, locale, projectName);
+  const html = buildListHtml(docs, labels, locale, projectName, logoUrl);
   const filename = `${sanitize(projectName)}_Documentos_${docs.length}_${new Date().toISOString().slice(0, 10)}.pdf`;
   printHtml(html, filename);
 
