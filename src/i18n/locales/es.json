@@ -1357,6 +1357,8 @@
       "detectedAt": "Fecha de Detección",
       "locationPk": "PK / Zona de obra",
       "discipline": "Disciplina",
+      "disciplineOtro": "Especificar disciplina",
+      "disciplineOtroPlaceholder": "ej: Estructuras especiales, Impermeabilización…",
       "classification": "Clasificación",
       "classificationMaior": "NC MAYOR",
       "classificationMenor": "NC MENOR",
@@ -1400,7 +1402,8 @@
         "severityRequired": "La gravedad es obligatoria.",
         "correctiveActionRequired": "La acción correctiva es obligatoria para cerrar la NC.",
         "categoryOutroRequired": "Especifique la categoría cuando selecciona «Otros».",
-        "classificationRequired": "La clasificación es obligatoria."
+        "classificationRequired": "La clasificación es obligatoria.",
+        "disciplineOutroRequired": "Especifique la disciplina cuando selecciona «Otros»."
       }
     },
     "toast": {
@@ -2112,11 +2115,11 @@
   },
   "ppi": {
     "title": "Planes de Puntos de Inspección (PPI)",
-    "subtitle": "Gestionar plantillas e instancias de inspección por work item",
+    "subtitle": "Gestionar plantillas e inspecciones por frente de obra",
     "nav": "PPI",
     "templates": {
-      "title": "Plantillas PPI",
-      "subtitle": "Plantillas reutilizables de puntos de inspección",
+      "title": "Planes de Inspección PPI",
+      "subtitle": "Biblioteca de planes de inspección reutilizables por disciplina",
       "new": "Nueva Plantilla",
       "edit": "Editar Plantilla",
       "archive": "Archivar",
@@ -2215,7 +2218,7 @@
       }
     },
     "instances": {
-      "title": "Instancias PPI",
+      "title": "Inspecciones PPI",
       "subtitle": "Registros de inspección activos",
       "new": "Nueva Inspección",
       "newFromTemplate": "Nueva Inspección (desde Plantilla)",

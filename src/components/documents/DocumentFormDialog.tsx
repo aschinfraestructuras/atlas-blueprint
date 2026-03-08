@@ -11,6 +11,7 @@ import { DOCUMENT_STATUSES } from "@/lib/services/documentService";
 import type { DocumentStatus } from "@/lib/services/documentService";
 import { DOCUMENT_TEMPLATES, type DocumentTemplate } from "@/lib/services/documentTemplates";
 import { toast } from "@/hooks/use-toast";
+import { SelectWithOther, withOtherRefinement } from "@/components/ui/select-with-other";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
@@ -397,64 +398,35 @@ export function DocumentFormDialog({ open, onOpenChange, document: doc, onSucces
 
             <div className="grid grid-cols-2 gap-3">
               <FormField control={form.control} name="doc_type" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("documents.form.type")}</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value} disabled={!editable}>
-                    <FormControl>
-                      <SelectTrigger><SelectValue placeholder={t("documents.form.typePlaceholder")} /></SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {DOC_TYPES.map((type) => (
-                        <SelectItem key={type} value={type}>{t(`documents.docTypes.${type}`)}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
+                <SelectWithOther
+                  label={t("documents.form.type")}
+                  options={DOC_TYPES.map((type) => ({ value: type, label: t(`documents.docTypes.${type}`) }))}
+                  value={field.value}
+                  onChange={field.onChange}
+                  otherValue="other"
+                  otherFieldName="type_outro"
+                  control={form.control}
+                  otherLabel={t("documents.form.typeOutro", { defaultValue: "Especificar tipo" })}
+                  otherPlaceholder={t("documents.form.typeOutro", { defaultValue: "Especificar tipo de documento" })}
+                  disabled={!editable}
+                />
               )} />
 
               <FormField control={form.control} name="disciplina" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("documents.form.disciplina")}</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value} disabled={!editable}>
-                    <FormControl>
-                      <SelectTrigger><SelectValue placeholder={t("documents.form.disciplinaPlaceholder")} /></SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {DISCIPLINAS.map((d) => (
-                        <SelectItem key={d} value={d}>{t(`documents.disciplinas.${d}`, { defaultValue: d })}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
+                <SelectWithOther
+                  label={t("documents.form.disciplina")}
+                  options={DISCIPLINAS.map((d) => ({ value: d, label: t(`documents.disciplinas.${d}`, { defaultValue: d }) }))}
+                  value={field.value}
+                  onChange={field.onChange}
+                  otherValue="outro"
+                  otherFieldName="disciplina_outro"
+                  control={form.control}
+                  otherLabel={t("documents.form.disciplinaOutro", { defaultValue: "Especificar disciplina" })}
+                  otherPlaceholder="ex: Estruturas especiais"
+                  disabled={!editable}
+                />
               )} />
             </div>
-
-            {/* Conditional "outro" fields */}
-            {watchDocType === "other" && (
-              <FormField control={form.control} name="type_outro" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("documents.form.typeOutro")}</FormLabel>
-                  <FormControl>
-                    <Input placeholder={t("documents.form.typeOutro")} disabled={!editable} {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-            )}
-
-            {watchDisciplina === "outro" && (
-              <FormField control={form.control} name="disciplina_outro" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("documents.form.disciplinaOutro")}</FormLabel>
-                  <FormControl>
-                    <Input placeholder={t("documents.form.disciplinaOutro")} disabled={!editable} {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-            )}
 
             <div className="grid grid-cols-2 gap-3">
               <FormField control={form.control} name="status" render={({ field }) => (

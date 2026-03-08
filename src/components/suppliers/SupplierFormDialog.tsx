@@ -8,6 +8,7 @@ import { useProject } from "@/contexts/ProjectContext";
 import { supplierService } from "@/lib/services/supplierService";
 import type { Supplier } from "@/lib/services/supplierService";
 import { toast } from "@/hooks/use-toast";
+import { SelectWithOther, withOtherRefinement } from "@/components/ui/select-with-other";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
@@ -30,6 +31,7 @@ const schema = (t: (k: string) => string) =>
   z.object({
     name: z.string().trim().min(1, t("suppliers.form.validation.nameRequired")).max(200),
     category: z.string().trim().max(100).optional().or(z.literal("")),
+    category_outro: z.string().trim().max(100).optional().or(z.literal("")),
     nif_cif: z.string().trim().max(30).optional().or(z.literal("")),
     country: z.string().trim().max(80).optional().or(z.literal("")),
     address: z.string().trim().max(300).optional().or(z.literal("")),
@@ -39,6 +41,8 @@ const schema = (t: (k: string) => string) =>
     notes: z.string().trim().max(2000).optional().or(z.literal("")),
     qualification_status: z.string().min(1),
     status: z.string().min(1),
+  }).superRefine((val, ctx) => {
+    withOtherRefinement(val, ctx, "category", "category_outro", t("suppliers.form.validation.categoryOutroRequired"), "other");
   });
 
 type FormValues = z.infer<ReturnType<typeof schema>>;
@@ -62,7 +66,7 @@ export function SupplierFormDialog({ open, onOpenChange, supplier, onSuccess }: 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema(t)),
     defaultValues: {
-      name: "", category: "", nif_cif: "", country: "", address: "",
+      name: "", category: "", category_outro: "", nif_cif: "", country: "", address: "",
       contact_name: "", contact_email: "", contact_phone: "", notes: "",
       qualification_status: "pending", status: "active",
     },
@@ -75,6 +79,7 @@ export function SupplierFormDialog({ open, onOpenChange, supplier, onSuccess }: 
           ? {
               name: supplier.name,
               category: supplier.category ?? "",
+              category_outro: (supplier as any).category_outro ?? "",
               nif_cif: supplier.nif_cif ?? "",
               country: supplier.country ?? "",
               address: supplier.address ?? "",
@@ -86,7 +91,7 @@ export function SupplierFormDialog({ open, onOpenChange, supplier, onSuccess }: 
               status: supplier.status ?? "active",
             }
           : {
-              name: "", category: "", nif_cif: "", country: "", address: "",
+              name: "", category: "", category_outro: "", nif_cif: "", country: "", address: "",
               contact_name: "", contact_email: "", contact_phone: "", notes: "",
               qualification_status: "pending", status: "active",
             }
@@ -102,6 +107,7 @@ export function SupplierFormDialog({ open, onOpenChange, supplier, onSuccess }: 
         await supplierService.update(supplier.id, activeProject.id, {
           name: values.name,
           category: values.category || undefined,
+          category_outro: values.category === "other" ? (values.category_outro || undefined) : undefined,
           nif_cif: values.nif_cif || undefined,
           country: values.country || undefined,
           address: values.address || undefined,
@@ -118,6 +124,7 @@ export function SupplierFormDialog({ open, onOpenChange, supplier, onSuccess }: 
           project_id: activeProject.id,
           name: values.name,
           category: values.category || undefined,
+          category_outro: values.category === "other" ? (values.category_outro || undefined) : undefined,
           nif_cif: values.nif_cif || undefined,
           country: values.country || undefined,
           address: values.address || undefined,
@@ -168,18 +175,17 @@ export function SupplierFormDialog({ open, onOpenChange, supplier, onSuccess }: 
                 {/* Row 2: Category + NIF */}
                 <div className="grid grid-cols-2 gap-3">
                   <FormField control={form.control} name="category" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t("suppliers.form.category")} <span className="text-xs text-muted-foreground font-normal">({t("common.optional")})</span></FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                        <FormControl><SelectTrigger><SelectValue placeholder={t("suppliers.form.categoryPlaceholder")} /></SelectTrigger></FormControl>
-                        <SelectContent>
-                          {CATEGORIES.map((cat) => (
-                            <SelectItem key={cat} value={cat}>{t(`suppliers.categories.${cat}`)}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
+                    <SelectWithOther
+                      label={t("suppliers.form.category")}
+                      options={CATEGORIES.map((cat) => ({ value: cat, label: t(`suppliers.categories.${cat}`) }))}
+                      value={field.value ?? ""}
+                      onChange={field.onChange}
+                      otherValue="other"
+                      otherFieldName="category_outro"
+                      control={form.control}
+                      otherLabel={t("suppliers.form.categoryOutro", { defaultValue: "Especificar categoria" })}
+                      otherPlaceholder={t("suppliers.form.categoryOutroPlaceholder", { defaultValue: "ex: Topografia, Transporte" })}
+                    />
                   )} />
 
                   <FormField control={form.control} name="nif_cif" render={({ field }) => (

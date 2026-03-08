@@ -9,7 +9,7 @@ import { ncService } from "@/lib/services/ncService";
 import type { NonConformity } from "@/lib/services/ncService";
 import { toast } from "@/hooks/use-toast";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
-import { withOtherRefinement } from "@/components/ui/select-with-other";
+import { withOtherRefinement, SelectWithOther } from "@/components/ui/select-with-other";
 import { usePPIInstances } from "@/hooks/usePPI";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
@@ -53,6 +53,7 @@ const schema = (t: (k: string) => string) =>
     // PG-03 fields
     location_pk:         z.string().trim().max(200).optional().or(z.literal("")),
     discipline:          z.string().optional().or(z.literal("")),
+    discipline_outro:    z.string().trim().max(100).optional().or(z.literal("")),
     classification:      z.string().min(1, t("nc.form.validation.classificationRequired")),
     ppi_instance_id:     z.string().optional().or(z.literal("")),
     violated_requirement: z.string().trim().max(500).optional().or(z.literal("")),
@@ -75,6 +76,7 @@ const schema = (t: (k: string) => string) =>
     fip_validated_by:    z.string().trim().max(200).optional().or(z.literal("")),
   }).superRefine((val, ctx) => {
     withOtherRefinement(val, ctx, "category", "category_outro", t("nc.form.validation.categoryOutroRequired"));
+    withOtherRefinement(val, ctx, "discipline", "discipline_outro", t("nc.form.validation.disciplineOutroRequired"), "outros");
   });
 
 type FormValues = z.infer<ReturnType<typeof schema>>;
@@ -96,7 +98,7 @@ const defaultValues = (origin?: string): FormValues => ({
   severity: "major", category: "qualidade", category_outro: "",
   origin: origin ?? "manual", reference: "", responsible: "",
   due_date: "", detected_at: new Date().toISOString().split("T")[0],
-  location_pk: "", discipline: "", classification: "",
+  location_pk: "", discipline: "", discipline_outro: "", classification: "",
   ppi_instance_id: "", violated_requirement: "",
   correction_type: "", correction: "",
   root_cause_method: "", root_cause: "",
@@ -143,6 +145,7 @@ export function NCFormDialog({
       detected_at:         nc.detected_at ?? "",
       location_pk:         (nc as any).location_pk ?? "",
       discipline:          (nc as any).discipline ?? "",
+      discipline_outro:    (nc as any).discipline_outro ?? "",
       classification:      (nc as any).classification ?? "",
       ppi_instance_id:     nc.ppi_instance_id ?? "",
       violated_requirement: (nc as any).violated_requirement ?? "",
@@ -179,6 +182,7 @@ export function NCFormDialog({
         detected_at:         values.detected_at || undefined,
         location_pk:         values.location_pk || undefined,
         discipline:          values.discipline || undefined,
+        discipline_outro:    values.discipline === "outros" ? (values.discipline_outro || undefined) : undefined,
         classification:      values.classification || undefined,
         ppi_instance_id:     values.ppi_instance_id || undefined,
         violated_requirement: values.violated_requirement || undefined,
@@ -303,18 +307,17 @@ export function NCFormDialog({
 
                 <div className="grid grid-cols-2 gap-3">
                   <FormField control={form.control} name="discipline" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t("nc.form.discipline")}</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value || ""}>
-                        <FormControl><SelectTrigger><SelectValue placeholder="—" /></SelectTrigger></FormControl>
-                        <SelectContent>
-                          {DISCIPLINES.map(d => (
-                            <SelectItem key={d} value={d}>{t(`nc.discipline.${d}`, { defaultValue: d })}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
+                    <SelectWithOther
+                      label={t("nc.form.discipline")}
+                      options={DISCIPLINES.map(d => ({ value: d, label: t(`nc.discipline.${d}`, { defaultValue: d }) }))}
+                      value={field.value || ""}
+                      onChange={field.onChange}
+                      otherValue="outros"
+                      otherFieldName="discipline_outro"
+                      control={form.control}
+                      otherLabel={t("nc.form.disciplineOtro")}
+                      otherPlaceholder={t("nc.form.disciplineOtroPlaceholder")}
+                    />
                   )} />
                   <FormField control={form.control} name="ppi_instance_id" render={({ field }) => (
                     <FormItem>

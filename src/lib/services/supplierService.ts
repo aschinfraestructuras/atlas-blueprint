@@ -28,6 +28,7 @@ export interface SupplierInput {
   project_id: string;
   name: string;
   category?: string;
+  category_outro?: string;
   nif_cif?: string;
   country?: string;
   address?: string;
