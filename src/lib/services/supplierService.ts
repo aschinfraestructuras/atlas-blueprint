@@ -279,7 +279,7 @@ export const supplierService = {
   },
 
   async addDocument(input: { project_id: string; supplier_id: string; document_id: string; doc_type: string; valid_from?: string; valid_to?: string }): Promise<SupplierDocument> {
-    const { data, error } = await untypedFrom("supplier_documents")
+    const { data, error } = await db.from("supplier_documents")
       .insert(input)
       .select()
       .single();
