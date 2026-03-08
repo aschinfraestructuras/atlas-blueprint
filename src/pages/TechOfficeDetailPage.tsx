@@ -61,7 +61,7 @@ export default function TechOfficeDetailPage() {
       toast({ title: t("common.recordNotFound", { defaultValue: "Registo não encontrado." }), variant: "destructive" });
       navigate("/technical-office", { replace: true });
     }
-  }, [id]);
+  }, [id, navigate, t, toast]);
   const { data: workItems } = useWorkItems();
 
   const [item, setItem] = useState<TechnicalOfficeItem | null>(null);
