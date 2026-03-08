@@ -1679,10 +1679,12 @@
     },
     "table": {
       "trade": "Especialidad",
+      "specialty": "Especialidad",
       "contactEmail": "Correo",
       "linkedSupplier": "Proveedor",
       "docStatus": "Doc. Status",
-      "score": "Score"
+      "score": "Score",
+      "fipApproval": "Aprobación F/IP"
     },
     "filters": {
       "allStatuses": "Todos los estados",
