@@ -1877,7 +1877,7 @@
     },
     "surveyTypes": {
       "implantacao": "Implantación",
-      "levantamiento": "Levantamiento Topográfico",
+      "levantamento": "Levantamiento Topográfico",
       "controlo_geometrico": "Control Geométrico",
       "nivelamento": "Nivelación",
       "as_built": "As-Built"
