@@ -159,42 +159,82 @@ export default function MaterialsPage() {
                       <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground flex items-center gap-1.5 mb-3">
                         <PieChartIcon className="h-3.5 w-3.5" />{t("materials.form.category")}
                       </p>
-                      <ul className="space-y-1.5">
-                        {(() => {
-                          const catMap: Record<string, number> = {};
-                          materials.forEach(m => { catMap[m.category] = (catMap[m.category] ?? 0) + 1; });
-                          return Object.entries(catMap)
-                            .sort((a, b) => b[1] - a[1])
-                            .slice(0, 6)
-                            .map(([k, v]) => (
-                              <li key={k} className="flex items-center justify-between text-xs">
-                                <span className="text-muted-foreground truncate">{t(`materials.categories.${k}`, { defaultValue: k })}</span>
-                                <span className="font-bold tabular-nums text-foreground">{v}</span>
-                              </li>
-                            ));
-                        })()}
-                      </ul>
+                      {(() => {
+                        const catMap: Record<string, number> = {};
+                        materials.forEach(m => { catMap[m.category] = (catMap[m.category] ?? 0) + 1; });
+                        const entries = Object.entries(catMap).sort((a, b) => b[1] - a[1]).slice(0, 8);
+                        const maxVal = Math.max(...entries.map(e => e[1]), 1);
+                        const COLORS = [
+                          "hsl(var(--primary))", "hsl(var(--chart-2))", "hsl(var(--chart-3))",
+                          "hsl(var(--chart-4))", "hsl(var(--chart-5))", "hsl(var(--accent-foreground))",
+                          "hsl(var(--muted-foreground))", "hsl(var(--chart-1))",
+                        ];
+                        return (
+                          <div className="space-y-2">
+                            {entries.map(([k, v], i) => (
+                              <div key={k} className="flex items-center gap-2">
+                                <span className="text-xs text-muted-foreground w-24 truncate text-right">{t(`materials.categories.${k}`, { defaultValue: k })}</span>
+                                <div className="flex-1 h-5 bg-muted/30 rounded-full overflow-hidden">
+                                  <div
+                                    className="h-full rounded-full transition-all duration-500 ease-out"
+                                    style={{ width: `${(v / maxVal) * 100}%`, backgroundColor: COLORS[i % COLORS.length] }}
+                                  />
+                                </div>
+                                <span className="text-xs font-bold tabular-nums text-foreground w-8 text-right">{v}</span>
+                              </div>
+                            ))}
+                          </div>
+                        );
+                      })()}
                     </CardContent>
                   </Card>
                   <Card className="border shadow-none">
                     <CardContent className="pt-4 pb-4 px-4">
                       <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground flex items-center gap-1.5 mb-3">
-                        <Package className="h-3.5 w-3.5" />{t("materials.approval.title", { defaultValue: "Aprovação" })}
+                        <Package className="h-3.5 w-3.5" />{t("materials.approval.title", { defaultValue: "Aprovação MAP/MAS" })}
                       </p>
-                      <ul className="space-y-1.5">
-                        {(() => {
-                          const statusMap: Record<string, number> = {};
-                          materials.forEach(m => { statusMap[m.approval_status] = (statusMap[m.approval_status] ?? 0) + 1; });
-                          return Object.entries(statusMap)
-                            .sort((a, b) => b[1] - a[1])
-                            .map(([k, v]) => (
-                              <li key={k} className="flex items-center justify-between text-xs">
-                                <span className="text-muted-foreground truncate">{t(`materials.approval.statuses.${k}`, { defaultValue: k })}</span>
-                                <span className="font-bold tabular-nums text-foreground">{v}</span>
-                              </li>
-                            ));
-                        })()}
-                      </ul>
+                      {(() => {
+                        const statusMap: Record<string, number> = {};
+                        materials.forEach(m => { statusMap[m.approval_status] = (statusMap[m.approval_status] ?? 0) + 1; });
+                        const entries = Object.entries(statusMap).sort((a, b) => b[1] - a[1]);
+                        const total = entries.reduce((s, e) => s + e[1], 0) || 1;
+                        const STATUS_CHART_COLORS: Record<string, string> = {
+                          pending: "hsl(var(--muted-foreground))",
+                          submitted: "hsl(var(--chart-4))",
+                          in_review: "hsl(var(--primary))",
+                          approved: "hsl(var(--chart-2))",
+                          rejected: "hsl(var(--destructive))",
+                          conditional: "hsl(var(--chart-5))",
+                        };
+                        return (
+                          <div className="space-y-3">
+                            {/* Stacked bar */}
+                            <div className="h-6 rounded-full overflow-hidden flex">
+                              {entries.map(([k, v]) => (
+                                <div
+                                  key={k}
+                                  className="h-full transition-all duration-500"
+                                  style={{
+                                    width: `${(v / total) * 100}%`,
+                                    backgroundColor: STATUS_CHART_COLORS[k] ?? "hsl(var(--muted-foreground))",
+                                  }}
+                                  title={`${t(`materials.approval.statuses.${k}`, { defaultValue: k })}: ${v}`}
+                                />
+                              ))}
+                            </div>
+                            {/* Legend */}
+                            <div className="flex flex-wrap gap-x-4 gap-y-1">
+                              {entries.map(([k, v]) => (
+                                <div key={k} className="flex items-center gap-1.5">
+                                  <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: STATUS_CHART_COLORS[k] ?? "hsl(var(--muted-foreground))" }} />
+                                  <span className="text-xs text-muted-foreground">{t(`materials.approval.statuses.${k}`, { defaultValue: k })}</span>
+                                  <span className="text-xs font-bold tabular-nums text-foreground">{v}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })()}
                     </CardContent>
                   </Card>
                 </div>

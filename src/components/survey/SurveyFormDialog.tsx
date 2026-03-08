@@ -25,9 +25,12 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 
 const STATUSES = ["pending", "validated", "rejected"] as const;
+const SURVEY_TYPES = ["implantacao", "levantamento", "controlo_geometrico", "nivelamento", "as_built"] as const;
 
 const schema = z.object({
   area_or_pk: z.string().min(1),
+  survey_type: z.string().optional(),
+  responsible: z.string().optional(),
   description: z.string().optional(),
   date: z.string().min(1),
   status: z.enum(STATUSES).default("pending"),
@@ -54,20 +57,22 @@ export function SurveyFormDialog({ open, onOpenChange, record, onSuccess }: Prop
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { area_or_pk: "", description: "", date: today, status: "pending", file_url: "" },
+    defaultValues: { area_or_pk: "", survey_type: "", responsible: "", description: "", date: today, status: "pending", file_url: "" },
   });
 
   useEffect(() => {
     if (record) {
       form.reset({
         area_or_pk: record.area_or_pk,
+        survey_type: "",
+        responsible: "",
         description: record.description ?? "",
         date: record.date,
         status: (record.status as typeof STATUSES[number]) ?? "pending",
         file_url: record.file_url ?? "",
       });
     } else {
-      form.reset({ area_or_pk: "", description: "", date: today, status: "pending", file_url: "" });
+      form.reset({ area_or_pk: "", survey_type: "", responsible: "", description: "", date: today, status: "pending", file_url: "" });
     }
   }, [record, open, form, today]);
 
@@ -130,6 +135,31 @@ export function SurveyFormDialog({ open, onOpenChange, record, onSuccess }: Prop
                     <FormItem>
                       <FormLabel>{t("common.date")}</FormLabel>
                       <FormControl><Input type="date" {...field} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField control={form.control} name="survey_type" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("survey.form.surveyType", { defaultValue: "Tipo de Levantamento" })}</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value || "__none__"}>
+                        <FormControl><SelectTrigger><SelectValue placeholder="—" /></SelectTrigger></FormControl>
+                        <SelectContent>
+                          <SelectItem value="__none__">—</SelectItem>
+                          {SURVEY_TYPES.map(st => (
+                            <SelectItem key={st} value={st}>{t(`survey.surveyTypes.${st}`, { defaultValue: st })}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="responsible" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("survey.form.responsible", { defaultValue: "Responsável" })} <span className="text-muted-foreground text-xs">({t("common.optional")})</span></FormLabel>
+                      <FormControl><Input placeholder={t("survey.form.responsiblePlaceholder", { defaultValue: "Nome do topógrafo" })} {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )} />

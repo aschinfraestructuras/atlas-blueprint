@@ -1695,7 +1695,11 @@
   },
   "rfis": {
     "form": {
-      "ncNone": "Sin NC asociada"
+      "ncNone": "Sin NC asociada",
+      "ncRelated": "NC Asociada",
+      "recipient": "Destinatario",
+      "recipientPlaceholder": "Nombre / entidad destinataria",
+      "docReference": "Referencia documental"
     }
   },
   "plans": {
@@ -1828,7 +1832,17 @@
       "areaPkPlaceholder": "ej: PK 1+500 o Bloque A",
       "descriptionPlaceholder": "Observaciones del levantamiento…",
       "fileUrl": "URL del archivo",
-      "createBtn": "Crear registro"
+      "createBtn": "Crear registro",
+      "surveyType": "Tipo de Levantamiento",
+      "responsible": "Responsable",
+      "responsiblePlaceholder": "Nombre del topógrafo"
+    },
+    "surveyTypes": {
+      "implantacao": "Implantación",
+      "levantamiento": "Levantamiento Topográfico",
+      "controlo_geometrico": "Control Geométrico",
+      "nivelamento": "Nivelación",
+      "as_built": "As-Built"
     },
     "toast": {
       "created": "Registro creado con éxito.",
@@ -2791,6 +2805,15 @@
       "workItemId": "Actividad",
       "lotRef": "Lote / Guía",
       "quantity": "Cantidad"
+    },
+    "usageTab": "Registros de Uso",
+    "usageTable": {
+      "date": "Fecha",
+      "report": "Parte Diario",
+      "quantity": "Cantidad",
+      "lot": "Lote",
+      "workItem": "Actividad",
+      "total": "Total acumulado"
     },
     "export": { "reportTitle": "Ficha de Material" },
     "toast": {
