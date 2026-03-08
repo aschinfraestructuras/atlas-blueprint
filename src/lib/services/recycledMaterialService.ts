@@ -90,7 +90,7 @@ export const recycledMaterialService = {
   },
 
   async update(id: string, input: Partial<RecycledMaterialInput>): Promise<RecycledMaterial> {
-    const { data, error } = await untypedFrom("recycled_materials")
+    const { data, error } = await db.from("recycled_materials")
       .update({ ...input, updated_at: new Date().toISOString() })
       .eq("id", id)
       .select()
