@@ -107,7 +107,6 @@ export default function MaterialsPage() {
         <TabsList>
           <TabsTrigger value="materials">{t("pages.materials.title")}</TabsTrigger>
           <TabsTrigger value="pame">{t("materials.pame.title", { defaultValue: "Plano PAME" })}</TabsTrigger>
-          <TabsTrigger value="mapmas">{t("mapMas.title")}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="materials" className="space-y-6 mt-4">
