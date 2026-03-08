@@ -28,6 +28,7 @@ import { cn } from "@/lib/utils";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import { exportSubcontractorDetailPdf } from "@/lib/services/subcontractorExportService";
 import type { ReportMeta } from "@/lib/services/reportService";
+import { useReportMeta } from "@/hooks/useReportMeta";
 
 const DOC_STATUS_COLORS: Record<string, string> = {
   valid: "bg-primary/20 text-primary",
