@@ -222,17 +222,20 @@ function WorkItemTestsTab({
   projectId,
   workItemSector,
   projectName,
+  workItemDisciplina,
 }: {
   workItemId: string;
   projectId: string;
   workItemSector?: string;
   projectName?: string;
+  workItemDisciplina?: string;
 }) {
   const { t, i18n } = useTranslation();
   const [tests,     setTests]     = useState<TestResult[]>([]);
   const [loading,   setLoading]   = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing,   setEditing]   = useState<TestResult | null>(null);
+  const [suggestedCount, setSuggestedCount] = useState(0);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -245,6 +248,23 @@ function WorkItemTestsTab({
       setLoading(false);
     }
   }, [workItemId]);
+
+  // Load suggested test count from test_plan_rules
+  useEffect(() => {
+    if (!projectId || !workItemDisciplina) return;
+    (async () => {
+      try {
+        const { count } = await supabase
+          .from("test_plan_rules" as any)
+          .select("*", { count: "exact", head: true })
+          .eq("project_id", projectId)
+          .eq("disciplina", workItemDisciplina);
+        setSuggestedCount(count ?? 0);
+      } catch {
+        setSuggestedCount(0);
+      }
+    })();
+  }, [projectId, workItemDisciplina]);
 
   useEffect(() => { load(); }, [load]);
 
