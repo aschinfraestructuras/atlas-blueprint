@@ -1538,6 +1538,58 @@
       "error": "Ocorreu um erro. Tente novamente."
     }
   },
+  "rfi": {
+    "page": {
+      "title": "RFIs",
+      "subtitle": "Pedidos de Informação e Esclarecimento"
+    },
+    "searchPlaceholder": "Pesquisar código, assunto…",
+    "kpi": {
+      "open": "Em Aberto",
+      "answered": "Respondidos",
+      "overdue": "Em Atraso",
+      "closed": "Fechados"
+    },
+    "table": {
+      "code": "Código",
+      "subject": "Assunto",
+      "discipline": "Disciplina",
+      "priority": "Prioridade",
+      "responseDeadline": "Prazo Resposta",
+      "daysOpen": "Dias"
+    },
+    "filters": {
+      "allStatuses": "Todos os estados",
+      "overdue": "⚠ Em atraso",
+      "allDisciplines": "Todas disciplinas",
+      "allPriorities": "Todas prioridades"
+    },
+    "priority": {
+      "normal": "Normal",
+      "urgent": "Urgente",
+      "critical": "Crítico"
+    },
+    "status": {
+      "overdue": "Atrasado"
+    },
+    "detail": {
+      "responseDeadline": "Prazo de resposta:",
+      "daysRemaining": "dias restantes",
+      "details": "Detalhes",
+      "zone": "Zona/PK",
+      "docRef": "Ref. Doc.",
+      "ppiRef": "PPI Ref.",
+      "response": "Resposta",
+      "responseTextPlaceholder": "Texto da resposta…",
+      "respondedByPlaceholder": "Respondido por (nome/cargo)",
+      "registerResponse": "Registar Resposta",
+      "noResponseYet": "Sem resposta registada.",
+      "closeRfi": "Fechar RFI",
+      "links": "Ligações",
+      "responseRequired": "Resposta obrigatória.",
+      "responseRegistered": "Resposta registada com sucesso."
+    }
+  },
   "plans": {
     "newPlan": "Novo Plano",
     "searchPlaceholder": "Pesquisar título, revisão…",
