@@ -24,7 +24,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import type { Material } from "@/lib/services/materialService";
-import MapMasPage from "@/pages/MapMasPage";
+
 
 const STATUS_COLORS: Record<string, string> = {
   active: "bg-primary/15 text-primary",
