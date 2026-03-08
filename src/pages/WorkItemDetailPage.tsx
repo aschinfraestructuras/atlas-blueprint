@@ -941,6 +941,10 @@ export default function WorkItemDetailPage() {
           </div>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
+          <Button variant="outline" size="sm" onClick={handleExportFicha} disabled={reportLoading} className="gap-2">
+            {reportLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FileDown className="h-3.5 w-3.5" />}
+            {t("workItems.report.exportButton")}
+          </Button>
           <Button variant="outline" size="sm" onClick={handleExportPdf} className="gap-2">
             <FileDown className="h-3.5 w-3.5" /> {t("common.exportPdf", { defaultValue: "Exportar PDF" })}
           </Button>
