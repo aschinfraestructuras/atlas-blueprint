@@ -976,7 +976,7 @@ export default function WorkItemDetailPage() {
 
         {/* Tests tab */}
         <TabsContent value="tests" className="mt-4">
-          <WorkItemTestsTab workItemId={item.id} projectId={activeProject?.id ?? ""} />
+          <WorkItemTestsTab workItemId={item.id} projectId={activeProject?.id ?? ""} workItemDisciplina={item.disciplina} workItemSector={item.sector} projectName={activeProject?.name} />
         </TabsContent>
 
         {/* NCs tab */}

@@ -143,16 +143,25 @@ function buildGroups(items: WorkItem[]): SectorGroup[] {
   return result;
 }
 
-function StatusCountBadges({ counts, t }: { counts: Record<string, number>; t: (k: string, o?: any) => string }) {
-  const entries = Object.entries(counts);
+function GroupSummary({ items, t }: { items: WorkItem[]; t: (k: string, o?: any) => string }) {
+  const frentesCount = items.filter(wi => wi.elemento).length;
+  const inProgressCount = items.filter(wi => wi.status === "in_progress").length;
+
+  if (frentesCount === 0) {
+    return (
+      <span className="text-[10px] text-muted-foreground ml-2">
+        {t("workItems.groups.baseActivity")}
+      </span>
+    );
+  }
+
+  const parts: string[] = [];
+  parts.push(`${frentesCount} ${t("workItems.groups.frentes")}`);
+  if (inProgressCount > 0) parts.push(`${inProgressCount} ${t("workItems.groups.inExecution")}`);
+
   return (
-    <span className="inline-flex items-center gap-1.5 ml-2">
-      {entries.map(([status, count]) => (
-        <span key={status} className="inline-flex items-center gap-1 text-[10px] text-muted-foreground">
-          <span className="h-1.5 w-1.5 rounded-full flex-shrink-0" style={{ background: STATUS_DOT[status] ?? "hsl(215 15% 55%)" }} />
-          {count} {t(`workItems.status.${status}`, { defaultValue: status })}
-        </span>
-      ))}
+    <span className="text-[10px] text-muted-foreground ml-2">
+      {parts.join(" · ")}
     </span>
   );
 }
