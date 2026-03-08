@@ -83,6 +83,12 @@ export const planService = {
         revision: input.revision ?? "0",
         status: input.status ?? "draft",
         file_url: input.file_url ?? null,
+        code: input.code ?? null,
+        discipline: input.discipline ?? null,
+        responsible: input.responsible ?? null,
+        approval_date: input.approval_date ?? null,
+        doc_reference: input.doc_reference ?? null,
+        notes: input.notes ?? null,
       })
       .select()
       .single();
