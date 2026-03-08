@@ -220,6 +220,19 @@ export default function SubcontractorsPage() {
             <SelectItem value="expired">{t("subcontractors.docStatus.expired")}</SelectItem>
           </SelectContent>
         </Select>
+        {uniqueTrades.length > 0 && (
+          <Select value={filterTrade} onValueChange={setFilterTrade}>
+            <SelectTrigger className="w-[170px] h-8 text-sm">
+              <SelectValue placeholder={t("subcontractors.filters.allTrades")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__all__">{t("subcontractors.filters.allTrades")}</SelectItem>
+              {uniqueTrades.map(tr => (
+                <SelectItem key={tr} value={tr}>{TRADE_BADGES[tr]?.label ?? tr}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
       </FilterBar>
 
       {error && (
