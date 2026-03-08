@@ -1592,7 +1592,10 @@
       "titlePlaceholder": "ex: Submittal sobre betão armado",
       "descriptionPlaceholder": "Descreva o pedido ou clarificação…",
       "dueDate": "Prazo de resposta",
-      "createBtn": "Criar item"
+      "createBtn": "Criar item",
+      "assignedTo": "Responsável",
+      "assignedToPlaceholder": "Nome do responsável",
+      "ncRelated": "NC Associada"
     },
     "toast": {
       "created": "Item criado com sucesso.",
