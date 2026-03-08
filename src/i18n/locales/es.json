@@ -132,7 +132,8 @@
     "qcReport": "Informe QC",
     "audits": "Auditorías",
     "dailyReports": "Parte Diario",
-    "recycledMaterials": "Reciclados / PPGRCD"
+    "recycledMaterials": "Reciclados / PPGRCD",
+    "sgqMatrix": "Matriz SGC"
   },
   "topbar": {
     "language": "Idioma",
@@ -617,7 +618,16 @@
       "seguranca": "Seguridad",
       "eletrica": "Eléctrica",
       "mecanica": "Mecánica",
-      "outro": "Otro"
+      "outro": "Otro",
+      "catenaria": "Catenaria",
+      "drenagem": "Drenaje",
+      "ferrovia": "Ferrocarril / Vía Férrea",
+      "geologia_geotecnia": "Geología y Geotecnia",
+      "muros_suporte": "Muros de Contención",
+      "restabelecimentos": "Restituciones / Servidumbres",
+      "sinalizacao": "Señalización Ferroviaria",
+      "terraplenagem": "Explanación / Vía",
+      "topografia": "Cartografía / Topografía"
     },
     "actions": {
       "upload": "Subir archivo",
@@ -649,7 +659,14 @@
       "specification": "Especificación",
       "form": "Impreso",
       "record": "Registro",
-      "other": "Otro"
+      "other": "Otro",
+      "cte": "Condiciones Técnicas Especiales (CTE)",
+      "dpu": "Definición de Precios Unitarios (DPU)",
+      "egt": "Estudio Geológico y Geotécnico (EGT)",
+      "index": "Índice",
+      "interoperability_report": "Informe de Interoperabilidad",
+      "mdj": "Memoria Descriptiva y Justificativa (MDJ)",
+      "med": "Mediciones Detalladas (MED)"
     },
     "form": {
       "titleCreate": "Nuevo Documento",
@@ -1734,7 +1751,12 @@
       "PPI": "PPI",
       "ITP": "ITP",
       "MethodStatement": "Method Statement",
-      "TestPlan": "Plan de Ensayos"
+      "TestPlan": "Plan de Ensayos",
+      "PlanAmb": "Plan Ambiental / PPGRCD",
+      "PlanEns": "Plan de Ensayos",
+      "PlanInsp": "Plan de Inspección y Ensayo (PIE)",
+      "PlanQual": "Plan de Calidad (PCC)",
+      "PlanTopo": "Plan de Topografía"
     },
     "disciplines": {
       "geral": "General",
@@ -1745,7 +1767,23 @@
       "st": "Señalización / Telecom",
       "drenagem": "Drenaje",
       "estruturas": "Estructuras",
-      "outros": "Otros"
+      "outros": "Otros",
+      "ambiente": "Medio Ambiente / Seguridad",
+      "edificacoes": "Edificaciones",
+      "eletrica": "Eléctrica / Energía",
+      "estradas": "Carreteras / Pavimentos",
+      "geologia_geotecnia": "Geología y Geotecnia",
+      "geotecnia": "Geología / Geotecnia",
+      "hidraulica": "Hidráulica",
+      "mecanica": "Mecánica",
+      "muros_suporte": "Muros de Contención",
+      "restabelecimentos": "Restituciones / Servidumbres",
+      "seguranca": "Seguridad",
+      "sinalizacao": "Señalización Ferroviaria",
+      "telecom": "Telecomunicaciones",
+      "terraplenagem": "Explanación / Vía",
+      "topografia": "Cartografía / Topografía",
+      "via": "Superestructura de Vía"
     },
     "status": {
       "draft": "Borrador",
@@ -1839,7 +1877,7 @@
     },
     "surveyTypes": {
       "implantacao": "Implantación",
-      "levantamiento": "Levantamiento Topográfico",
+      "levantamento": "Levantamiento Topográfico",
       "controlo_geometrico": "Control Geométrico",
       "nivelamento": "Nivelación",
       "as_built": "As-Built"
