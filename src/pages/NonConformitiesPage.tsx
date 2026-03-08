@@ -647,6 +647,19 @@ export default function NonConformitiesPage() {
                       </span>
                     </TableCell>
 
+                    {/* Classificação */}
+                    <TableCell>
+                      {(nc as any).classification ? (
+                        <Badge variant="secondary" className={cn("text-xs",
+                          (nc as any).classification === "maior" ? "bg-destructive/10 text-destructive" :
+                          (nc as any).classification === "menor" ? "bg-amber-500/15 text-amber-600 dark:text-amber-400" :
+                          "bg-primary/10 text-primary"
+                        )}>
+                          {t(`nc.classification.${(nc as any).classification}`, { defaultValue: (nc as any).classification })}
+                        </Badge>
+                      ) : <span className="text-xs text-muted-foreground">—</span>}
+                    </TableCell>
+
                     {/* Severidade */}
                     <TableCell>
                       <span className={cn(
