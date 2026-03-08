@@ -468,6 +468,26 @@ export default function NonConformitiesPage() {
           </SelectContent>
         </Select>
 
+        <Select value={filterClassification} onValueChange={setFilterClassification}>
+          <SelectTrigger className="h-8 w-40 text-sm bg-background"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{t("nc.filters.allClassifications")}</SelectItem>
+            {["maior","menor","observacao"].map(c => (
+              <SelectItem key={c} value={c}>{t(`nc.classification.${c}`)}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Select value={filterDiscipline} onValueChange={setFilterDiscipline}>
+          <SelectTrigger className="h-8 w-40 text-sm bg-background"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{t("nc.filters.allDisciplines")}</SelectItem>
+            {["terras","betao","ferrovia","catenaria","st","drenagem","estruturas","outros"].map(d => (
+              <SelectItem key={d} value={d}>{t(`nc.discipline.${d}`)}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
         <Input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)}
           className="h-8 w-36 text-sm bg-background" title={t("nc.filters.from")} />
         <Input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)}
