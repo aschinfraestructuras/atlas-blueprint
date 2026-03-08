@@ -26,7 +26,7 @@ import RfiDetailPage from "./pages/RfiDetailPage";
 import TechOfficeDetailPage from "./pages/TechOfficeDetailPage";
 import PlansPage from "./pages/PlansPage";
 import PlanDetailPage from "./pages/PlanDetailPage";
-import SurveyPage from "./pages/SurveyPage";
+
 import SubcontractorsPage from "./pages/SubcontractorsPage";
 import SubcontractorDetailPage from "./pages/SubcontractorDetailPage";
 import WorkItemsPage from "./pages/WorkItemsPage";
@@ -97,7 +97,7 @@ const App = () => (
               <Route path="/technical-office/items/:id" element={<ProtectedLayout><TechOfficeDetailPage /></ProtectedLayout>} />
               <Route path="/plans" element={<ProtectedLayout><PlansPage /></ProtectedLayout>} />
               <Route path="/plans/:id" element={<ProtectedLayout><PlanDetailPage /></ProtectedLayout>} />
-              <Route path="/survey" element={<ProtectedLayout><SurveyPage /></ProtectedLayout>} />
+              {/* Survey consolidated into /topography */}
               <Route path="/subcontractors" element={<ProtectedLayout><SubcontractorsPage /></ProtectedLayout>} />
               <Route path="/subcontractors/:id" element={<ProtectedLayout><SubcontractorDetailPage /></ProtectedLayout>} />
               <Route path="/work-items" element={<ProtectedLayout><WorkItemsPage /></ProtectedLayout>} />
