@@ -572,7 +572,7 @@ thead th { font-size: 8.5px; }
 </head>
 <body>
 
-${headerHtml(labels.wiSummaryTitle, labels, locale)}
+${headerHtml(labels.wiSummaryTitle, labels, locale, logoUrl)}
 
 <div style="margin-bottom:4px">
   <div style="font-size:18px;font-weight:800;color:${BRAND.primary}">${workItemSector}</div>
