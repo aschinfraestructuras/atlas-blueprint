@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
