@@ -2448,6 +2448,158 @@ export type Database = {
           },
         ]
       }
+      recycled_material_documents: {
+        Row: {
+          document_name: string
+          document_type: string
+          document_url: string | null
+          id: string
+          recycled_material_id: string
+          uploaded_at: string | null
+          uploaded_by: string | null
+        }
+        Insert: {
+          document_name: string
+          document_type: string
+          document_url?: string | null
+          id?: string
+          recycled_material_id: string
+          uploaded_at?: string | null
+          uploaded_by?: string | null
+        }
+        Update: {
+          document_name?: string
+          document_type?: string
+          document_url?: string | null
+          id?: string
+          recycled_material_id?: string
+          uploaded_at?: string | null
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recycled_material_documents_recycled_material_id_fkey"
+            columns: ["recycled_material_id"]
+            isOneToOne: false
+            referencedRelation: "recycled_materials"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      recycled_materials: {
+        Row: {
+          application_date: string | null
+          application_location: string | null
+          certificate_number: string | null
+          composition: string | null
+          created_at: string | null
+          created_by: string | null
+          document_ref: string | null
+          id: string
+          is_deleted: boolean | null
+          material_name: string
+          observations: string | null
+          project_id: string
+          quantity_planned: number | null
+          quantity_used: number | null
+          recycled_content_pct: number | null
+          reference_number: string
+          reference_type: string
+          serial_number: string | null
+          status: string
+          supplier_id: string | null
+          supplier_name: string | null
+          unit: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          application_date?: string | null
+          application_location?: string | null
+          certificate_number?: string | null
+          composition?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          document_ref?: string | null
+          id?: string
+          is_deleted?: boolean | null
+          material_name: string
+          observations?: string | null
+          project_id: string
+          quantity_planned?: number | null
+          quantity_used?: number | null
+          recycled_content_pct?: number | null
+          reference_number: string
+          reference_type: string
+          serial_number?: string | null
+          status?: string
+          supplier_id?: string | null
+          supplier_name?: string | null
+          unit?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          application_date?: string | null
+          application_location?: string | null
+          certificate_number?: string | null
+          composition?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          document_ref?: string | null
+          id?: string
+          is_deleted?: boolean | null
+          material_name?: string
+          observations?: string | null
+          project_id?: string
+          quantity_planned?: number | null
+          quantity_used?: number | null
+          recycled_content_pct?: number | null
+          reference_number?: string
+          reference_type?: string
+          serial_number?: string | null
+          status?: string
+          supplier_id?: string | null
+          supplier_name?: string | null
+          unit?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recycled_materials_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recycled_materials_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "recycled_materials_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "recycled_materials_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recycled_materials_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "view_supplier_detail_metrics"
+            referencedColumns: ["supplier_id"]
+          },
+        ]
+      }
       rfi_messages: {
         Row: {
           attachment_url: string | null
