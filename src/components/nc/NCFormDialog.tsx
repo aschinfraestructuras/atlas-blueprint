@@ -294,7 +294,7 @@ export function NCFormDialog({
                   )} />
                   <FormField control={form.control} name="location_pk" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t("nc.form.locationPk", { defaultValue: "PK / Zona de obra" })}</FormLabel>
+                      <FormLabel>{t("nc.form.locationPk")}</FormLabel>
                       <FormControl><Input placeholder="Ex: PK 12+500" {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
@@ -304,7 +304,7 @@ export function NCFormDialog({
                 <div className="grid grid-cols-2 gap-3">
                   <FormField control={form.control} name="discipline" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t("nc.form.discipline", { defaultValue: "Disciplina" })}</FormLabel>
+                      <FormLabel>{t("nc.form.discipline")}</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value || ""}>
                         <FormControl><SelectTrigger><SelectValue placeholder="—" /></SelectTrigger></FormControl>
                         <SelectContent>
@@ -336,20 +336,20 @@ export function NCFormDialog({
                 {/* Classification - REQUIRED */}
                 <FormField control={form.control} name="classification" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t("nc.form.classification", { defaultValue: "Classificação" })} *</FormLabel>
+                    <FormLabel>{t("nc.form.classification")} *</FormLabel>
                     <FormControl>
                       <RadioGroup onValueChange={field.onChange} value={field.value} className="flex gap-4">
                         <div className="flex items-center gap-2">
                           <RadioGroupItem value="maior" id="cls-maior" />
-                          <Label htmlFor="cls-maior" className="text-sm font-medium text-destructive">NC MAIOR</Label>
+                          <Label htmlFor="cls-maior" className="text-sm font-medium text-destructive">{t("nc.form.classificationMaior")}</Label>
                         </div>
                         <div className="flex items-center gap-2">
                           <RadioGroupItem value="menor" id="cls-menor" />
-                          <Label htmlFor="cls-menor" className="text-sm font-medium">NC MENOR</Label>
+                          <Label htmlFor="cls-menor" className="text-sm font-medium">{t("nc.form.classificationMenor")}</Label>
                         </div>
                         <div className="flex items-center gap-2">
                           <RadioGroupItem value="observacao" id="cls-obs" />
-                          <Label htmlFor="cls-obs" className="text-sm font-medium text-muted-foreground">OBSERVAÇÃO</Label>
+                          <Label htmlFor="cls-obs" className="text-sm font-medium text-muted-foreground">{t("nc.form.classificationObs")}</Label>
                         </div>
                       </RadioGroup>
                     </FormControl>
@@ -361,16 +361,19 @@ export function NCFormDialog({
                 {watchedClassification === "maior" && (
                   <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-2 text-sm text-destructive flex items-center gap-2">
                     <AlertTriangle className="h-4 w-4 flex-shrink-0" />
-                    <span>⚠ Prazo: ≤ 4h · Notificação F/IP obrigatória</span>
+                    <span>{t("nc.form.classificationBannerMaior")}</span>
                   </div>
                 )}
                 {watchedClassification === "menor" && (
-                  <Badge variant="secondary" className="text-xs">Prazo: ≤ 1 dia útil</Badge>
+                  <Badge variant="secondary" className="text-xs bg-amber-500/15 text-amber-600 dark:text-amber-400">{t("nc.form.classificationBannerMenor")}</Badge>
+                )}
+                {watchedClassification === "observacao" && (
+                  <Badge variant="secondary" className="text-xs">{t("nc.form.classificationBannerObs")}</Badge>
                 )}
 
                 <FormField control={form.control} name="responsible" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t("nc.form.responsibleDetected", { defaultValue: "Detectada por" })}</FormLabel>
+                    <FormLabel>{t("nc.form.responsibleDetected")}</FormLabel>
                     <FormControl><Input placeholder={t("nc.form.responsiblePlaceholder")} {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>

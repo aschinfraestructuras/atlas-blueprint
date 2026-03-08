@@ -119,6 +119,8 @@ export default function NonConformitiesPage() {
   const [filterSeverity, setFilterSeverity] = useState("all");
   const [filterOrigin, setFilterOrigin] = useState("all");
   const [filterCategory, setFilterCategory] = useState("all");
+  const [filterClassification, setFilterClassification] = useState("all");
+  const [filterDiscipline, setFilterDiscipline] = useState("all");
   const [dateFrom, setDateFrom]         = useState("");
   const [dateTo, setDateTo]             = useState("");
 
@@ -151,19 +153,21 @@ export default function NonConformitiesPage() {
       const matchesSeverity = filterSeverity === "all" || nc.severity === filterSeverity;
       const matchesOrigin   = filterOrigin === "all"   || nc.origin === filterOrigin;
       const matchesCategory = filterCategory === "all" || nc.category === filterCategory;
+      const matchesClassification = filterClassification === "all" || (nc as any).classification === filterClassification;
+      const matchesDiscipline = filterDiscipline === "all" || (nc as any).discipline === filterDiscipline;
       const detectedAt = nc.detected_at ?? nc.created_at;
       const matchesFrom = !dateFrom || detectedAt >= dateFrom;
       const matchesTo   = !dateTo   || detectedAt <= dateTo;
-      return matchesSearch && matchesStatus && matchesSeverity && matchesOrigin && matchesCategory && matchesFrom && matchesTo;
+      return matchesSearch && matchesStatus && matchesSeverity && matchesOrigin && matchesCategory && matchesClassification && matchesDiscipline && matchesFrom && matchesTo;
     });
-  }, [ncs, search, filterStatus, filterSeverity, filterOrigin, filterCategory, dateFrom, dateTo, activeProject]);
+  }, [ncs, search, filterStatus, filterSeverity, filterOrigin, filterCategory, filterClassification, filterDiscipline, dateFrom, dateTo, activeProject]);
 
   const hasFilters = search || filterStatus !== "all" || filterSeverity !== "all" ||
-    filterOrigin !== "all" || filterCategory !== "all" || dateFrom || dateTo;
+    filterOrigin !== "all" || filterCategory !== "all" || filterClassification !== "all" || filterDiscipline !== "all" || dateFrom || dateTo;
 
   const clearFilters = () => {
     setSearch(""); setFilterStatus("all"); setFilterSeverity("all");
-    setFilterOrigin("all"); setFilterCategory("all"); setDateFrom(""); setDateTo("");
+    setFilterOrigin("all"); setFilterCategory("all"); setFilterClassification("all"); setFilterDiscipline("all"); setDateFrom(""); setDateTo("");
   };
 
   // ─── Actions ────────────────────────────────────────────────────────────────
@@ -464,6 +468,26 @@ export default function NonConformitiesPage() {
           </SelectContent>
         </Select>
 
+        <Select value={filterClassification} onValueChange={setFilterClassification}>
+          <SelectTrigger className="h-8 w-40 text-sm bg-background"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{t("nc.filters.allClassifications")}</SelectItem>
+            {["maior","menor","observacao"].map(c => (
+              <SelectItem key={c} value={c}>{t(`nc.classification.${c}`)}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Select value={filterDiscipline} onValueChange={setFilterDiscipline}>
+          <SelectTrigger className="h-8 w-40 text-sm bg-background"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{t("nc.filters.allDisciplines")}</SelectItem>
+            {["terras","betao","ferrovia","catenaria","st","drenagem","estruturas","outros"].map(d => (
+              <SelectItem key={d} value={d}>{t(`nc.discipline.${d}`)}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
         <Input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)}
           className="h-8 w-36 text-sm bg-background" title={t("nc.filters.from")} />
         <Input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)}
@@ -555,6 +579,9 @@ export default function NonConformitiesPage() {
                   {t("nc.table.origin")}
                 </TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground w-28">
+                  {t("nc.form.classification")}
+                </TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground w-28">
                   {t("nc.table.severity")}
                 </TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground w-44">
@@ -618,6 +645,19 @@ export default function NonConformitiesPage() {
                       <span className="text-xs text-muted-foreground capitalize">
                         {t(`nc.origin.${nc.origin}`, { defaultValue: nc.origin })}
                       </span>
+                    </TableCell>
+
+                    {/* Classificação */}
+                    <TableCell>
+                      {(nc as any).classification ? (
+                        <Badge variant="secondary" className={cn("text-xs",
+                          (nc as any).classification === "maior" ? "bg-destructive/10 text-destructive" :
+                          (nc as any).classification === "menor" ? "bg-amber-500/15 text-amber-600 dark:text-amber-400" :
+                          "bg-primary/10 text-primary"
+                        )}>
+                          {t(`nc.classification.${(nc as any).classification}`, { defaultValue: (nc as any).classification })}
+                        </Badge>
+                      ) : <span className="text-xs text-muted-foreground">—</span>}
                     </TableCell>
 
                     {/* Severidade */}

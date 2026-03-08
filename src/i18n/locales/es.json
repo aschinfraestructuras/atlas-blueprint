@@ -295,8 +295,33 @@
       "closedNcCount": "{{count}} NC cerradas",
       "noClosedNcs": "Sin NCs cerradas",
       "ncOpened": "Abiertas",
-      "ncClosed": "Cerradas"
+      "ncClosed": "Cerradas",
+      "ncOpen": "NCs Abiertas",
+      "pamePending": "PAME Pendientes",
+      "emesExpiring": "EMEs ≤30d",
+      "nextAudit": "Próxima Auditoría"
     },
+    "progress": {
+      "title": "Progreso del SGC",
+      "ppi": "PPIs Aprobados",
+      "tests": "Ensayos Realizados",
+      "materials": "Materiales Aprobados (PAME)"
+    },
+    "recent": {
+      "title": "Actividad Reciente",
+      "empty": "Sin actividad reciente"
+    },
+    "actions": {
+      "newProject": "Nuevo Proyecto",
+      "newDocument": "Nuevo Documento",
+      "newTest": "Nuevo Ensayo",
+      "newNC": "Nueva NC",
+      "openNc": "Abrir NC",
+      "reception": "Recepción Material",
+      "test": "Registrar Ensayo",
+      "rfi": "Nuevo RFI"
+    },
+    "noAudit": "Sin auditorías planificadas",
     "charts": {
       "tests": "Ensayos",
       "suppliers": "Proveedores",
@@ -308,12 +333,6 @@
     "nextActions": "Próximas Acciones",
     "allClear": "Sin acciones pendientes 🎉",
     "quickActions": "Acciones Rápidas",
-    "actions": {
-      "newProject": "Nuevo Proyecto",
-      "newDocument": "Nuevo Documento",
-      "newTest": "Nuevo Ensayo",
-      "newNC": "Nueva NC"
-    },
     "activity": {
       "documentApproved": "Documento aprobado",
       "testCompleted": "Ensayo completado",
@@ -1207,9 +1226,22 @@
   "nc": {
     "newNC": "Nueva NC",
     "searchPlaceholder": "Buscar código, título, responsable…",
+    "classification": {
+      "maior": "NC MAYOR",
+      "menor": "NC MENOR",
+      "observacao": "Observación"
+    },
     "filters": {
       "allStatuses": "Todos los estados",
-      "allSeverities": "Todas las gravedades"
+      "allSeverities": "Todas las gravedades",
+      "allOrigins": "Todos los orígenes",
+      "allCategories": "Todas las categorías",
+      "allClassifications": "Todas las clasificaciones",
+      "allDisciplines": "Todas las disciplinas",
+      "from": "Desde",
+      "to": "Hasta",
+      "clear": "Limpiar filtros",
+      "results": "resultados"
     },
     "table": {
       "code": "Código NC",
@@ -1258,12 +1290,32 @@
       "closed": "Cerrar",
       "archived": "Archivar"
     },
+    "discipline": {
+      "terras": "Tierras",
+      "betao": "Hormigón",
+      "ferrovia": "Ferrocarril",
+      "catenaria": "Catenaria",
+      "st": "Señalización y Telecomunicaciones",
+      "drenagem": "Drenaje",
+      "estruturas": "Estructuras",
+      "outros": "Otros"
+    },
+    "correctionType": {
+      "accept": "Aceptar (derogación F/IP)",
+      "repair": "Reparar/retrabajar",
+      "demolish": "Demoler y rehacer",
+      "reject": "Rechazar/devolver"
+    },
     "form": {
       "titleCreate": "Nueva No Conformidad",
       "titleEdit": "Editar No Conformidad",
       "tabs": {
         "identification": "Identificación",
-        "capa": "CAPA",
+        "description": "Descripción",
+        "correction": "Corrección",
+        "rootCause": "Causa Raíz",
+        "capa": "Acción Correctiva",
+        "closure": "Cierre",
         "attachments": "Adjuntos"
       },
       "title": "Título",
@@ -1276,27 +1328,54 @@
       "origin": "Origen",
       "referencePlaceholder": "ej: REF-2024-001",
       "responsiblePlaceholder": "ej: Juan García",
+      "responsibleDetected": "Detectada por",
       "detectedAt": "Fecha de Detección",
+      "locationPk": "PK / Zona de obra",
+      "discipline": "Disciplina",
+      "classification": "Clasificación",
+      "classificationMaior": "NC MAYOR",
+      "classificationMenor": "NC MENOR",
+      "classificationObs": "OBSERVACIÓN",
+      "classificationBannerMaior": "⚠ Plazo validación: ≤ 4 horas · Notificación F/IP obligatoria",
+      "classificationBannerMenor": "Plazo: ≤ 1 día hábil",
+      "classificationBannerObs": "Sin plazo de validación",
+      "violatedRequirement": "Requisito violado (norma/CE/PPI)",
+      "correctionType": "Tipo de corrección",
+      "correctionTypePlaceholder": "Seleccionar tipo de corrección",
       "capaHint": "Complete los campos CAPA cuando el análisis esté concluido. Pueden completarse gradualmente.",
       "correction": "Corrección Inmediata",
       "correctionPlaceholder": "Acción inmediata tomada para contener el problema…",
+      "correctionDueDate": "Fecha prevista de corrección",
+      "rootCauseMethod": "Método de análisis",
+      "rootCauseMethodHint": "Sección obligatoria solo para NC MAYOR. Puede rellenar opcionalmente.",
+      "rootCause5whys": "5 Porqués",
+      "rootCauseIshikawa": "Diagrama Ishikawa",
+      "rootCauseOther": "Otro",
       "rootCause": "Causa Raíz",
       "rootCausePlaceholder": "Análisis 5W / Ishikawa — describa la causa raíz…",
       "correctiveAction": "Acción Correctiva",
       "correctiveActionPlaceholder": "Acción(es) para eliminar la causa raíz…",
+      "assignedTo": "Responsable de la acción",
+      "actionDeadline": "Plazo acción",
+      "efficacyIndicator": "Indicador de eficacia",
+      "efficacyIndicatorPlaceholder": "Ej: 0 reincidencias en 30 días",
       "preventiveAction": "Acción Preventiva",
       "preventiveActionPlaceholder": "Acción(es) para prevenir recurrencia…",
       "verificationMethod": "Método de Verificación",
       "verificationMethodPlaceholder": "ej: Inspección visual, Re-ensayo",
       "verificationResult": "Resultado de Verificación",
       "verificationResultPlaceholder": "ej: Conforme, No Conforme",
+      "verifiedAt": "Fecha verificación",
+      "closureDate": "Fecha cierre",
+      "fipValidatedBy": "Validado por F/IP",
       "createBtn": "Registrar NC",
       "validation": {
         "titleRequired": "El título es obligatorio.",
         "descriptionRequired": "La descripción es obligatoria.",
         "severityRequired": "La gravedad es obligatoria.",
         "correctiveActionRequired": "La acción correctiva es obligatoria para cerrar la NC.",
-        "categoryOutroRequired": "Especifique la categoría cuando selecciona «Otros»."
+        "categoryOutroRequired": "Especifique la categoría cuando selecciona «Otros».",
+        "classificationRequired": "La clasificación es obligatoria."
       }
     },
     "toast": {
@@ -2216,6 +2295,35 @@
       "supplierLabel": "Proveedor principal",
       "supplierPlaceholder": "Seleccionar proveedor…",
       "approvalRequired": "Requiere aprobación MAP/MAS"
+    },
+    "pame": {
+      "title": "Plan de Materiales (PAME)",
+      "total": "Total PAME",
+      "pending": "Pendientes",
+      "submitted": "Sometidos",
+      "approved": "Aprobados",
+      "table": {
+        "pameCode": "Código PAME",
+        "material": "Material",
+        "discipline": "Disciplina",
+        "norm": "Norma",
+        "priority": "Prioridad",
+        "ppiRef": "PPI Ref",
+        "status": "Estado PAME"
+      },
+      "status": {
+        "pending": "Pendiente",
+        "submitted": "Sometido F/IP",
+        "approved": "Aprobado",
+        "rejected": "Rechazado"
+      },
+      "priority": {
+        "high": "Alta",
+        "medium": "Media",
+        "low": "Baja"
+      },
+      "allPriorities": "Todas las prioridades",
+      "allDisciplines": "Todas las disciplinas"
     },
     "approval": {
       "title": "Aprobación MAP/MAS",
