@@ -1,53 +1,42 @@
-import { useState, useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProject } from "@/contexts/ProjectContext";
 import { useDashboardKpis } from "@/hooks/useDashboardKpis";
+import { useDashboardViews } from "@/hooks/useDashboardViews";
+import { useProjectHealth } from "@/hooks/useProjectHealth";
 import { useRealtimeProject } from "@/hooks/useRealtimeProject";
 import {
   AlertTriangle, Package, Crosshair, CalendarClock,
-  ClipboardCheck, FlaskConical, FileText, FolderKanban,
-  Plus, Inbox, ArrowRight, Clock,
+  ClipboardCheck, FlaskConical, Clock, ArrowRight,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Progress } from "@/components/ui/progress";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
-import { NCFormDialog } from "@/components/nc/NCFormDialog";
-import { RfiFormDialog } from "@/components/technical-office/RfiFormDialog";
+import { HealthGauge } from "@/components/dashboard/HealthGauge";
+import { SparklineKPI } from "@/components/dashboard/SparklineKPI";
+import { NCBarChart } from "@/components/dashboard/NCBarChart";
+import { TestsDonutChart } from "@/components/dashboard/TestsDonutChart";
 import { cn } from "@/lib/utils";
 
-// ── Semaphore colors ──────────────────────────────────────────────
-function ncSemaphore(v: number) { return v === 0 ? "text-emerald-600" : v <= 3 ? "text-amber-500" : "text-destructive"; }
-function ncBorder(v: number) { return v === 0 ? "border-l-emerald-500" : v <= 3 ? "border-l-amber-500" : "border-l-destructive"; }
-function pameSemaphore(v: number) { return v === 0 ? "text-emerald-600" : v <= 15 ? "text-amber-500" : "text-destructive"; }
-function pameBorder(v: number) { return v === 0 ? "border-l-emerald-500" : v <= 15 ? "border-l-amber-500" : "border-l-destructive"; }
-function emeSemaphore(v: number) { return v === 0 ? "text-emerald-600" : v <= 2 ? "text-amber-500" : "text-destructive"; }
-function emeBorder(v: number) { return v === 0 ? "border-l-emerald-500" : v <= 2 ? "border-l-amber-500" : "border-l-destructive"; }
-function auditSemaphore(daysUntil: number | null) {
-  if (daysUntil === null) return "text-muted-foreground";
-  return daysUntil > 60 ? "text-emerald-600" : daysUntil >= 30 ? "text-amber-500" : "text-destructive";
-}
-function auditBorder(daysUntil: number | null) {
-  if (daysUntil === null) return "border-l-border";
-  return daysUntil > 60 ? "border-l-emerald-500" : daysUntil >= 30 ? "border-l-amber-500" : "border-l-destructive";
-}
+// ── Semaphore logic ───────────────────────────────────────────────
+function ncSemaphore(v: number) { return v === 0 ? "145 55% 42%" : v <= 3 ? "38 85% 50%" : "0 65% 50%"; }
+function pameSemaphore(v: number) { return v === 0 ? "145 55% 42%" : v <= 15 ? "38 85% 50%" : "0 65% 50%"; }
+function emeSemaphore(v: number) { return v === 0 ? "145 55% 42%" : v <= 2 ? "38 85% 50%" : "0 65% 50%"; }
 
 function daysUntilDate(dateStr: string | null): number | null {
   if (!dateStr) return null;
-  const diff = Math.ceil((new Date(dateStr).getTime() - Date.now()) / 86400000);
-  return diff;
+  return Math.ceil((new Date(dateStr).getTime() - Date.now()) / 86400000);
 }
 
-// ── Activity icon/color by type ───────────────────────────────────
-const ACTIVITY_CFG: Record<string, { icon: React.ElementType; color: string }> = {
-  nc:   { icon: AlertTriangle, color: "text-destructive" },
-  lot:  { icon: Package, color: "text-primary" },
-  ppi:  { icon: ClipboardCheck, color: "text-emerald-600" },
-  test: { icon: FlaskConical, color: "text-amber-500" },
+// ── Activity icon/color ───────────────────────────────────────────
+const ACTIVITY_CFG: Record<string, { icon: React.ElementType; cls: string }> = {
+  nc:   { icon: AlertTriangle,  cls: "text-destructive" },
+  lot:  { icon: Package,        cls: "text-primary" },
+  ppi:  { icon: ClipboardCheck, cls: "text-emerald-600" },
+  test: { icon: FlaskConical,   cls: "text-amber-500" },
 };
 
 // ══════════════════════════════════════════════════════════════════
@@ -56,28 +45,31 @@ export default function DashboardPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { activeProject } = useProject();
-  const { data: kpis, loading, refetch } = useDashboardKpis();
+  const { data: kpis, loading: kpiLoading, refetch } = useDashboardKpis();
+  const { ncMonthly, testsMonthly, loading: viewsLoading } = useDashboardViews();
+  const { health, loading: healthLoading } = useProjectHealth(activeProject?.id);
 
-  // Realtime
+  const loading = kpiLoading || viewsLoading || healthLoading;
+
+  // Realtime subscriptions
   const refetchAll = useCallback(() => { refetch(); }, [refetch]);
   useRealtimeProject("non_conformities", refetchAll);
   useRealtimeProject("materials", refetchAll);
   useRealtimeProject("ppi_instances", refetchAll);
 
-  // Quick action dialogs
-  const [ncOpen, setNcOpen] = useState(false);
-  const [rfiOpen, setRfiOpen] = useState(false);
+  // Build sparkline data from monthly views (last 6 months)
+  const ncSpark = useMemo(() => ncMonthly.slice(-6).map(m => ({ v: m.opened })), [ncMonthly]);
+  const testsSpark = useMemo(() => testsMonthly.slice(-6).map(m => ({ v: m.conform + m.non_conform })), [testsMonthly]);
 
   const displayName = user?.email?.split("@")[0] ?? "—";
+  const auditDays = daysUntilDate(kpis.nextAudit?.planned_start ?? null);
 
   if (!activeProject) return <NoProjectBanner />;
-
-  const auditDays = daysUntilDate(kpis.nextAudit?.planned_start ?? null);
 
   return (
     <div className="space-y-6 max-w-[1100px] mx-auto animate-fade-in">
 
-      {/* ── Header ──────────────────────────────────────────── */}
+      {/* ── Header ────────────────────────────────────────── */}
       <div className="space-y-1">
         <p className="text-[10px] font-extrabold uppercase tracking-[0.20em] text-muted-foreground/60">
           {t("dashboard.welcome")}
@@ -88,156 +80,205 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      {/* ══ ZONA A — KPIs de saúde do SGQ ══════════════════ */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        {/* NCs Abertas */}
-        <Card
-          className={cn("border-0 border-l-4 bg-card shadow-card hover:shadow-card-hover cursor-pointer transition-all", ncBorder(kpis.ncOpen))}
-          onClick={() => navigate("/non-conformities")}
-        >
-          <CardContent className="p-5">
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
-                {t("dashboard.kpi.ncOpen", { defaultValue: "NCs Abertas" })}
-              </p>
-              <AlertTriangle className={cn("h-4 w-4", ncSemaphore(kpis.ncOpen))} />
-            </div>
-            {loading ? <Skeleton className="h-10 w-16" /> : (
-              <p className={cn("text-4xl font-black tabular-nums", ncSemaphore(kpis.ncOpen))}>
-                {kpis.ncOpen}
-              </p>
-            )}
+      {/* ══ ZONA A — Health Gauge + Highlights ═══════════════ */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Gauge card */}
+        <Card className="border-0 bg-card shadow-card flex items-center justify-center py-6">
+          <CardContent className="p-0">
+            <HealthGauge
+              score={health.health_score}
+              status={health.health_status}
+              loading={healthLoading}
+            />
+            <p className="text-[10px] font-bold uppercase tracking-widest text-center text-muted-foreground mt-3">
+              {t("health.score", { defaultValue: "Health Score" })}
+            </p>
           </CardContent>
         </Card>
 
-        {/* PAME Pendentes */}
-        <Card
-          className={cn("border-0 border-l-4 bg-card shadow-card hover:shadow-card-hover cursor-pointer transition-all", pameBorder(kpis.pamePending))}
-          onClick={() => navigate("/materials")}
-        >
-          <CardContent className="p-5">
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
-                {t("dashboard.kpi.pamePending", { defaultValue: "PAME Pendentes" })}
-              </p>
-              <Package className={cn("h-4 w-4", pameSemaphore(kpis.pamePending))} />
+        {/* Health breakdown */}
+        <Card className="border-0 bg-card shadow-card md:col-span-2">
+          <CardHeader className="pb-2 pt-4 px-5">
+            <CardTitle className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+              {t("dashboard.healthBreakdown", { defaultValue: "Indicadores de Saúde" })}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="px-5 pb-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+              {[
+                { label: t("health.ncOverdue", { defaultValue: "NC Atrasadas" }), val: health.total_nc_overdue, bad: health.total_nc_overdue > 0 },
+                { label: t("health.testsFail30d", { defaultValue: "Ensaios Fail 30d" }), val: health.total_tests_fail_30d, bad: health.total_tests_fail_30d > 0 },
+                { label: t("health.docsExpired", { defaultValue: "Docs Expirados" }), val: health.total_documents_expired, bad: health.total_documents_expired > 0 },
+                { label: t("health.calibExpired", { defaultValue: "Calib. Expiradas" }), val: health.total_calibrations_expired, bad: health.total_calibrations_expired > 0 },
+              ].map((item) => (
+                <div key={item.label} className="text-center py-2">
+                  {healthLoading ? <Skeleton className="h-8 w-10 mx-auto" /> : (
+                    <p className={cn(
+                      "text-2xl font-black tabular-nums",
+                      item.bad ? "text-destructive" : "text-emerald-600",
+                    )}>
+                      {item.val}
+                    </p>
+                  )}
+                  <p className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground mt-0.5">
+                    {item.label}
+                  </p>
+                </div>
+              ))}
             </div>
-            {loading ? <Skeleton className="h-10 w-16" /> : (
-              <p className={cn("text-4xl font-black tabular-nums", pameSemaphore(kpis.pamePending))}>
-                {kpis.pamePending}
-              </p>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* EMEs a expirar */}
-        <Card
-          className={cn("border-0 border-l-4 bg-card shadow-card hover:shadow-card-hover cursor-pointer transition-all", emeBorder(kpis.emesExpiring30d))}
-          onClick={() => navigate("/topography")}
-        >
-          <CardContent className="p-5">
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
-                {t("dashboard.kpi.emesExpiring", { defaultValue: "EMEs ≤30d" })}
-              </p>
-              <Crosshair className={cn("h-4 w-4", emeSemaphore(kpis.emesExpiring30d))} />
-            </div>
-            {loading ? <Skeleton className="h-10 w-16" /> : (
-              <p className={cn("text-4xl font-black tabular-nums", emeSemaphore(kpis.emesExpiring30d))}>
-                {kpis.emesExpiring30d}
-              </p>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Próxima Auditoria */}
-        <Card
-          className={cn("border-0 border-l-4 bg-card shadow-card hover:shadow-card-hover cursor-pointer transition-all", auditBorder(auditDays))}
-          onClick={() => navigate("/planning")}
-        >
-          <CardContent className="p-5">
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
-                {t("dashboard.kpi.nextAudit", { defaultValue: "Próxima Auditoria" })}
-              </p>
-              <CalendarClock className={cn("h-4 w-4", auditSemaphore(auditDays))} />
-            </div>
-            {loading ? <Skeleton className="h-10 w-16" /> : kpis.nextAudit ? (
-              <div>
-                <p className={cn("text-2xl font-black tabular-nums", auditSemaphore(auditDays))}>
-                  {auditDays !== null ? `${auditDays}d` : "—"}
-                </p>
-                <p className="text-[10px] text-muted-foreground mt-1 truncate">
-                  {kpis.nextAudit.description}
-                </p>
+            {/* Readiness bar */}
+            <div className="mt-4">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                  {t("health.globalReadiness", { defaultValue: "Preparação Global" })}
+                </span>
+                <span className="text-sm font-black tabular-nums text-foreground">
+                  {healthLoading ? "—" : `${Math.round(health.readiness_ratio)}%`}
+                </span>
               </div>
-            ) : (
-              <p className="text-sm text-muted-foreground">{t("dashboard.noAudit", { defaultValue: "Sem auditorias planeadas" })}</p>
-            )}
+              <div className="h-2 w-full rounded-full bg-secondary overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all duration-700 ease-out"
+                  style={{
+                    width: `${health.readiness_ratio}%`,
+                    backgroundColor: health.readiness_ratio >= 70 ? "hsl(145, 55%, 42%)" : health.readiness_ratio >= 40 ? "hsl(38, 85%, 50%)" : "hsl(0, 65%, 50%)",
+                  }}
+                />
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* ══ ZONA B — Barras de progresso ════════════════════ */}
-      <Card className="border-0 bg-card shadow-card">
-        <CardHeader className="pb-2 pt-5 px-5">
-          <CardTitle className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
-            {t("dashboard.progress.title", { defaultValue: "Progresso do SGQ" })}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="px-5 pb-5 space-y-4">
-          {/* PPIs Aprovados */}
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-sm font-medium text-foreground flex items-center gap-1.5">
-                <ClipboardCheck className="h-3.5 w-3.5 text-muted-foreground" />
-                {t("dashboard.progress.ppi", { defaultValue: "PPIs Aprovados" })}
-              </span>
-              <span className="text-sm font-bold tabular-nums text-foreground">
-                {loading ? "—" : `${kpis.ppiApproved} / ${kpis.ppiTotal}`}
-              </span>
-            </div>
-            <Progress value={kpis.ppiTotal > 0 ? (kpis.ppiApproved / kpis.ppiTotal) * 100 : 0} className="h-2" />
-          </div>
-          {/* Ensaios Realizados */}
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-sm font-medium text-foreground flex items-center gap-1.5">
-                <FlaskConical className="h-3.5 w-3.5 text-muted-foreground" />
-                {t("dashboard.progress.tests", { defaultValue: "Ensaios Realizados" })}
-              </span>
-              <span className="text-sm font-bold tabular-nums text-foreground">
-                {loading ? "—" : `${kpis.testsCompleted} / ${kpis.testsTotal}`}
-              </span>
-            </div>
-            <Progress value={kpis.testsTotal > 0 ? (kpis.testsCompleted / kpis.testsTotal) * 100 : 0} className="h-2" />
-          </div>
-          {/* Materiais Aprovados */}
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-sm font-medium text-foreground flex items-center gap-1.5">
-                <Package className="h-3.5 w-3.5 text-muted-foreground" />
-                {t("dashboard.progress.materials", { defaultValue: "Materiais Aprovados (PAME)" })}
-              </span>
-              <span className="text-sm font-bold tabular-nums text-foreground">
-                {loading ? "—" : `${kpis.matApproved} / ${kpis.matTotal}`}
-              </span>
-            </div>
-            <Progress value={kpis.matTotal > 0 ? (kpis.matApproved / kpis.matTotal) * 100 : 0} className="h-2" />
-          </div>
-        </CardContent>
-      </Card>
+      {/* ══ ZONA B — KPI Strip ══════════════════════════════ */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <SparklineKPI
+          label={t("dashboard.kpi.ncOpen", { defaultValue: "NCs Abertas" })}
+          value={kpis.ncOpen}
+          icon={AlertTriangle}
+          sparkData={ncSpark}
+          color={ncSemaphore(kpis.ncOpen)}
+          onClick={() => navigate("/non-conformities")}
+          loading={kpiLoading}
+        />
+        <SparklineKPI
+          label={t("dashboard.kpi.pamePending", { defaultValue: "PAME Pendentes" })}
+          value={kpis.pamePending}
+          icon={Package}
+          color={pameSemaphore(kpis.pamePending)}
+          onClick={() => navigate("/materials")}
+          loading={kpiLoading}
+        />
+        <SparklineKPI
+          label={t("dashboard.kpi.emesExpiring", { defaultValue: "EMEs ≤30d" })}
+          value={kpis.emesExpiring30d}
+          icon={Crosshair}
+          color={emeSemaphore(kpis.emesExpiring30d)}
+          onClick={() => navigate("/topography")}
+          loading={kpiLoading}
+        />
+        <SparklineKPI
+          label={t("dashboard.kpi.nextAudit", { defaultValue: "Próxima Auditoria" })}
+          value={auditDays !== null ? `${auditDays}d` : "—"}
+          icon={CalendarClock}
+          onClick={() => navigate("/planning")}
+          loading={kpiLoading}
+        />
+      </div>
 
-      {/* ══ ZONA C — Actividade recente ═════════════════════ */}
+      {/* ══ ZONA C — Charts Grid ════════════════════════════ */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <NCBarChart data={ncMonthly} loading={viewsLoading} />
+        <TestsDonutChart data={testsMonthly} loading={viewsLoading} />
+      </div>
+
+      {/* ══ ZONA D — Module Progress (radial-inspired) ══════ */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {[
+          {
+            icon: ClipboardCheck,
+            label: t("dashboard.progress.ppi", { defaultValue: "PPIs Aprovados" }),
+            approved: kpis.ppiApproved,
+            total: kpis.ppiTotal,
+            route: "/ppi",
+          },
+          {
+            icon: FlaskConical,
+            label: t("dashboard.progress.tests", { defaultValue: "Ensaios Realizados" }),
+            approved: kpis.testsCompleted,
+            total: kpis.testsTotal,
+            route: "/tests",
+          },
+          {
+            icon: Package,
+            label: t("dashboard.progress.materials", { defaultValue: "Materiais PAME" }),
+            approved: kpis.matApproved,
+            total: kpis.matTotal,
+            route: "/materials",
+          },
+        ].map((mod) => {
+          const pct = mod.total > 0 ? Math.round((mod.approved / mod.total) * 100) : 0;
+          const color = pct >= 70 ? "hsl(145, 55%, 42%)" : pct >= 40 ? "hsl(38, 85%, 50%)" : "hsl(var(--muted-foreground))";
+          return (
+            <Card
+              key={mod.label}
+              className="border-0 bg-card shadow-card cursor-pointer hover:shadow-card-hover transition-all"
+              onClick={() => navigate(mod.route)}
+            >
+              <CardContent className="p-5 flex items-center gap-4">
+                {/* Circular progress */}
+                <div className="relative flex-shrink-0">
+                  <svg width="56" height="56" viewBox="0 0 56 56">
+                    <circle
+                      cx="28" cy="28" r="24"
+                      fill="none"
+                      stroke="hsl(var(--muted))"
+                      strokeWidth="5"
+                    />
+                    <circle
+                      cx="28" cy="28" r="24"
+                      fill="none"
+                      stroke={color}
+                      strokeWidth="5"
+                      strokeLinecap="round"
+                      strokeDasharray={`${pct * 1.508} 150.8`}
+                      transform="rotate(-90 28 28)"
+                      className="transition-all duration-700 ease-out"
+                    />
+                  </svg>
+                  <span className="absolute inset-0 flex items-center justify-center text-xs font-black tabular-nums text-foreground">
+                    {kpiLoading ? "—" : `${pct}%`}
+                  </span>
+                </div>
+                {/* Text */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <mod.icon className="h-3.5 w-3.5 text-muted-foreground" />
+                    <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground truncate">
+                      {mod.label}
+                    </p>
+                  </div>
+                  <p className="text-lg font-black tabular-nums text-foreground">
+                    {kpiLoading ? "—" : `${mod.approved} / ${mod.total}`}
+                  </p>
+                </div>
+                <ArrowRight className="h-4 w-4 text-muted-foreground/40" />
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+
+      {/* ══ ZONA E — Recent Activity ════════════════════════ */}
       <Card className="border-0 bg-card shadow-card">
-        <CardHeader className="pb-2 pt-5 px-5">
+        <CardHeader className="pb-2 pt-4 px-5">
           <CardTitle className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground flex items-center gap-1.5">
             <Clock className="h-3.5 w-3.5" />
             {t("dashboard.recent.title", { defaultValue: "Actividade Recente" })}
           </CardTitle>
         </CardHeader>
-        <CardContent className="px-5 pb-5">
-          {loading ? (
+        <CardContent className="px-5 pb-4">
+          {kpiLoading ? (
             <div className="space-y-2">
               {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-8 w-full" />)}
             </div>
@@ -260,9 +301,12 @@ export default function DashboardPage() {
                     className="flex items-center gap-3 py-2.5 cursor-pointer hover:bg-muted/30 -mx-2 px-2 rounded-lg transition-colors"
                     onClick={() => navigate(route)}
                   >
-                    <Icon className={cn("h-3.5 w-3.5 flex-shrink-0", cfg.color)} />
+                    <Icon className={cn("h-3.5 w-3.5 flex-shrink-0", cfg.cls)} />
                     <span className="font-mono text-xs text-muted-foreground w-28 flex-shrink-0">{item.code}</span>
                     <span className="text-sm text-foreground flex-1 truncate">{item.label || "—"}</span>
+                    <Badge variant="outline" className="text-[9px] font-medium px-1.5 py-0">
+                      {item.type.toUpperCase()}
+                    </Badge>
                     <span className="text-[10px] text-muted-foreground tabular-nums flex-shrink-0">
                       {new Date(item.created_at).toLocaleDateString()}
                     </span>
@@ -273,26 +317,6 @@ export default function DashboardPage() {
           )}
         </CardContent>
       </Card>
-
-      {/* ══ ZONA D — Acções rápidas ═════════════════════════ */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <Button variant="outline" className="h-12 gap-2 text-sm font-medium" onClick={() => setNcOpen(true)}>
-          <Plus className="h-4 w-4" /> {t("dashboard.actions.openNc", { defaultValue: "Abrir NC" })}
-        </Button>
-        <Button variant="outline" className="h-12 gap-2 text-sm font-medium" onClick={() => navigate("/materials")}>
-          <Plus className="h-4 w-4" /> {t("dashboard.actions.reception", { defaultValue: "Receção Material" })}
-        </Button>
-        <Button variant="outline" className="h-12 gap-2 text-sm font-medium" onClick={() => navigate("/tests")}>
-          <Plus className="h-4 w-4" /> {t("dashboard.actions.test", { defaultValue: "Registar Ensaio" })}
-        </Button>
-        <Button variant="outline" className="h-12 gap-2 text-sm font-medium" onClick={() => setRfiOpen(true)}>
-          <Plus className="h-4 w-4" /> {t("dashboard.actions.rfi", { defaultValue: "Novo RFI" })}
-        </Button>
-      </div>
-
-      {/* ── Dialogs ───────────────────────────────────────── */}
-      <NCFormDialog open={ncOpen} onOpenChange={setNcOpen} onSuccess={refetch} />
-      <RfiFormDialog open={rfiOpen} onOpenChange={setRfiOpen} onSuccess={refetch} />
     </div>
   );
 }
