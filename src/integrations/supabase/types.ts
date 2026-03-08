@@ -962,8 +962,10 @@ export type Database = {
       non_conformities: {
         Row: {
           ac_efficacy_indicator: string | null
+          actual_completion_date: string | null
           approver: string | null
           assigned_to: string | null
+          audit_origin_type: string | null
           category: string
           category_outro: string | null
           classification: string | null
@@ -978,10 +980,12 @@ export type Database = {
           deleted_by: string | null
           description: string
           detected_at: string
+          deviation_justification: string | null
           discipline: string | null
           discipline_outro: string | null
           document_id: string | null
           due_date: string | null
+          efficacy_analysis: string | null
           fip_validated_at: string | null
           fip_validated_by: string | null
           fip_validation_required: boolean
@@ -1020,8 +1024,10 @@ export type Database = {
         }
         Insert: {
           ac_efficacy_indicator?: string | null
+          actual_completion_date?: string | null
           approver?: string | null
           assigned_to?: string | null
+          audit_origin_type?: string | null
           category?: string
           category_outro?: string | null
           classification?: string | null
@@ -1036,10 +1042,12 @@ export type Database = {
           deleted_by?: string | null
           description: string
           detected_at?: string
+          deviation_justification?: string | null
           discipline?: string | null
           discipline_outro?: string | null
           document_id?: string | null
           due_date?: string | null
+          efficacy_analysis?: string | null
           fip_validated_at?: string | null
           fip_validated_by?: string | null
           fip_validation_required?: boolean
@@ -1078,8 +1086,10 @@ export type Database = {
         }
         Update: {
           ac_efficacy_indicator?: string | null
+          actual_completion_date?: string | null
           approver?: string | null
           assigned_to?: string | null
+          audit_origin_type?: string | null
           category?: string
           category_outro?: string | null
           classification?: string | null
@@ -1094,10 +1104,12 @@ export type Database = {
           deleted_by?: string | null
           description?: string
           detected_at?: string
+          deviation_justification?: string | null
           discipline?: string | null
           discipline_outro?: string | null
           document_id?: string | null
           due_date?: string | null
+          efficacy_analysis?: string | null
           fip_validated_at?: string | null
           fip_validated_by?: string | null
           fip_validation_required?: boolean
@@ -4924,8 +4936,10 @@ export type Database = {
         }
         Returns: {
           ac_efficacy_indicator: string | null
+          actual_completion_date: string | null
           approver: string | null
           assigned_to: string | null
+          audit_origin_type: string | null
           category: string
           category_outro: string | null
           classification: string | null
@@ -4940,10 +4954,12 @@ export type Database = {
           deleted_by: string | null
           description: string
           detected_at: string
+          deviation_justification: string | null
           discipline: string | null
           discipline_outro: string | null
           document_id: string | null
           due_date: string | null
+          efficacy_analysis: string | null
           fip_validated_at: string | null
           fip_validated_by: string | null
           fip_validation_required: boolean
@@ -4996,8 +5012,10 @@ export type Database = {
         }
         Returns: {
           ac_efficacy_indicator: string | null
+          actual_completion_date: string | null
           approver: string | null
           assigned_to: string | null
+          audit_origin_type: string | null
           category: string
           category_outro: string | null
           classification: string | null
@@ -5012,10 +5030,12 @@ export type Database = {
           deleted_by: string | null
           description: string
           detected_at: string
+          deviation_justification: string | null
           discipline: string | null
           discipline_outro: string | null
           document_id: string | null
           due_date: string | null
+          efficacy_analysis: string | null
           fip_validated_at: string | null
           fip_validated_by: string | null
           fip_validation_required: boolean
@@ -5068,8 +5088,10 @@ export type Database = {
         }
         Returns: {
           ac_efficacy_indicator: string | null
+          actual_completion_date: string | null
           approver: string | null
           assigned_to: string | null
+          audit_origin_type: string | null
           category: string
           category_outro: string | null
           classification: string | null
@@ -5084,10 +5106,12 @@ export type Database = {
           deleted_by: string | null
           description: string
           detected_at: string
+          deviation_justification: string | null
           discipline: string | null
           discipline_outro: string | null
           document_id: string | null
           due_date: string | null
+          efficacy_analysis: string | null
           fip_validated_at: string | null
           fip_validated_by: string | null
           fip_validation_required: boolean
@@ -5462,8 +5486,10 @@ export type Database = {
         Args: { p_nc_id: string; p_to_status: string }
         Returns: {
           ac_efficacy_indicator: string | null
+          actual_completion_date: string | null
           approver: string | null
           assigned_to: string | null
+          audit_origin_type: string | null
           category: string
           category_outro: string | null
           classification: string | null
@@ -5478,10 +5504,12 @@ export type Database = {
           deleted_by: string | null
           description: string
           detected_at: string
+          deviation_justification: string | null
           discipline: string | null
           discipline_outro: string | null
           document_id: string | null
           due_date: string | null
+          efficacy_analysis: string | null
           fip_validated_at: string | null
           fip_validated_by: string | null
           fip_validation_required: boolean
