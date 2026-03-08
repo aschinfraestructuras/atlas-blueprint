@@ -14,21 +14,6 @@ const COLORS = {
   nonConform: "hsl(var(--chart-5))",
 };
 
-function CustomTooltip({ active, payload }: any) {
-  if (!active || !payload?.length) return null;
-  return (
-    <div className="rounded-lg border border-border bg-card px-3 py-2 shadow-lg">
-      {payload.map((p: any) => (
-        <div key={p.name} className="flex items-center gap-2 text-xs">
-          <span className="w-2 h-2 rounded-full" style={{ backgroundColor: p.payload?.fill }} />
-          <span className="text-muted-foreground">{p.name}:</span>
-          <span className="font-bold tabular-nums text-foreground">{p.value}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 export function TestsDonutChart({ data, loading }: TestsDonutChartProps) {
   const { t } = useTranslation();
 
@@ -43,50 +28,48 @@ export function TestsDonutChart({ data, loading }: TestsDonutChartProps) {
   ];
 
   return (
-    <Card className="border-0 bg-card shadow-card">
+    <Card className="border border-border bg-card shadow-card">
       <CardHeader className="pb-0 pt-4 px-5">
-        <CardTitle className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+        <CardTitle className="text-[11px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
           {t("dashboard.charts.testsDistribution", { defaultValue: "Distribuição de Ensaios" })}
         </CardTitle>
       </CardHeader>
-      <CardContent className="px-3 pb-3 pt-2">
+      <CardContent className="px-3 pb-3 pt-1">
         {loading ? (
-          <Skeleton className="h-[220px] w-full rounded-md" />
+          <Skeleton className="h-[200px] w-full rounded-md" />
         ) : total === 0 ? (
-          <div className="h-[220px] flex items-center justify-center text-sm text-muted-foreground">
+          <div className="h-[200px] flex items-center justify-center text-xs text-muted-foreground">
             {t("dashboard.noData")}
           </div>
         ) : (
           <div className="relative">
-            <ResponsiveContainer width="100%" height={220}>
+            <ResponsiveContainer width="100%" height={175}>
               <PieChart>
                 <Pie
                   data={donutData}
                   cx="50%"
                   cy="50%"
-                  innerRadius={60}
-                  outerRadius={85}
+                  innerRadius={50}
+                  outerRadius={70}
                   dataKey="value"
                   stroke="hsl(var(--card))"
-                  strokeWidth={3}
-                  animationDuration={1000}
+                  strokeWidth={2}
+                  animationDuration={900}
                 >
                   {donutData.map((entry, i) => (
                     <Cell key={i} fill={entry.fill} />
                   ))}
                 </Pie>
-                <Tooltip content={<CustomTooltip />} />
+                <Tooltip contentStyle={{ fontSize: 11, borderRadius: 8, border: "1px solid hsl(var(--border))", background: "hsl(var(--card))" }} />
               </PieChart>
             </ResponsiveContainer>
-            {/* Center label */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-              <span className="text-3xl font-black tabular-nums text-foreground leading-none">{pct}%</span>
-              <span className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground mt-0.5">
+            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none" style={{ marginBottom: 20 }}>
+              <span className="text-2xl font-black tabular-nums text-foreground leading-none">{pct}%</span>
+              <span className="text-[8px] font-semibold uppercase tracking-wider text-muted-foreground mt-0.5">
                 {t("dashboard.exec.conform")}
               </span>
             </div>
-            {/* Legend below */}
-            <div className="flex items-center justify-center gap-5 -mt-1">
+            <div className="flex items-center justify-center gap-4 -mt-2">
               {donutData.map((d) => (
                 <div key={d.name} className="flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full" style={{ backgroundColor: d.fill }} />
