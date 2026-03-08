@@ -41,6 +41,7 @@ import HealthCheckPage from "./pages/HealthCheckPage";
 import AcceptInvitePage from "./pages/AcceptInvitePage";
 import TopographyPage from "./pages/TopographyPage";
 import PlanningPage from "./pages/PlanningPage";
+import AuditsPage from "./pages/AuditsPage";
 import ActivityDetailPage from "./pages/ActivityDetailPage";
 import MapMasPage from "./pages/MapMasPage";
 import ExpirationsPage from "./pages/ExpirationsPage";
