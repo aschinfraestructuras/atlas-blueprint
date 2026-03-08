@@ -58,7 +58,7 @@ export default function RfiDetailPage() {
   useEffect(() => {
     if (!id || id === "undefined" || id.trim() === "") {
       toast({ title: t("common.recordNotFound", { defaultValue: "Registo não encontrado." }), variant: "destructive" });
-      navigate("/rfis", { replace: true });
+      navigate("/technical-office", { replace: true });
     }
   }, [id]);
 
