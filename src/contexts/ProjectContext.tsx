@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { type Project } from "@/lib/services/projectService";
 import { memberService } from "@/lib/services/memberService";
