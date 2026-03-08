@@ -3518,5 +3518,37 @@
         "desc": "Explore a sidebar para aceder a todos os módulos. Pode sempre consultar esta ajuda nas definições."
       }
     }
+  },
+  "share": {
+    "button": "Partilhar",
+    "tooltip": "Copiar link direto",
+    "linkCopied": "Link copiado para a área de transferência",
+    "copyError": "Não foi possível copiar o link",
+    "refCopied": "\"{{value}}\" copiado",
+    "clickToCopy": "Clicar para copiar"
+  },
+  "lastUpdated": {
+    "label": "Última atualização",
+    "by": "por",
+    "justNow": "agora mesmo",
+    "minutesAgo": "há {{count}} min",
+    "hoursAgo": "há {{count}}h",
+    "daysAgo": "há {{count}}d"
+  },
+  "dropZone": {
+    "dragOrClick": "Arraste ficheiros ou clique para selecionar",
+    "dropHere": "Largue o ficheiro aqui",
+    "hint": "Formatos aceites: PDF, imagens, documentos",
+    "upload": "Enviar {{count}} ficheiro(s)"
+  },
+  "savedFilters": {
+    "save": "Guardar filtro",
+    "name": "Nome do filtro",
+    "saved": "Filtros guardados",
+    "deleted": "Filtro removido",
+    "placeholder": "Ex: Meus pendentes"
+  },
+  "shortcuts": {
+    "newRecord": "Novo registo (N)"
   }
 }
