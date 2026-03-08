@@ -398,9 +398,17 @@ function WorkItemTestsTab({
               ))}
             </div>
           ) : tests.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-10 gap-2 text-muted-foreground">
+            <div className="flex flex-col items-center justify-center py-10 gap-3 text-muted-foreground">
               <FlaskConical className="h-6 w-6 opacity-40" />
               <p className="text-sm">{t("tests.workItemTab.empty")}</p>
+              {workItemDisciplina && suggestedCount > 0 && (
+                <p className="text-xs text-center max-w-sm">
+                  {t("workItems.detail.testsTab.suggestion", {
+                    discipline: t(`workItems.disciplines.${workItemDisciplina}`, { defaultValue: workItemDisciplina }),
+                    count: suggestedCount,
+                  })}
+                </p>
+              )}
               <Button
                 size="sm"
                 variant="outline"
