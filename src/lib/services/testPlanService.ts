@@ -99,7 +99,7 @@ export const testPlanService = {
   },
 
   async getById(id: string): Promise<TestPlan> {
-    const { data, error } = await untypedFrom("test_plans")
+    const { data, error } = await db.from("test_plans")
       .select("*")
       .eq("id", id)
       .single();
