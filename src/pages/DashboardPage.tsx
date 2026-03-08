@@ -23,6 +23,7 @@ import { NCTrendChart } from "@/components/dashboard/NCTrendChart";
 import { WorkProgressChart } from "@/components/dashboard/WorkProgressChart";
 import { PPIProgressChart } from "@/components/dashboard/PPIProgressChart";
 import { ModuleShortcuts } from "@/components/dashboard/ModuleShortcuts";
+import { ConformityByFrenteChart } from "@/components/dashboard/ConformityByFrenteChart";
 import { cn } from "@/lib/utils";
 
 // ── Semaphore logic ───────────────────────────────────────────────
