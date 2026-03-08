@@ -379,16 +379,36 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
               </FormItem>
             )} />
 
-            {/* Attachments — edit only */}
+            {/* Attachments & Photos — edit only */}
             {isEdit && activeProject && testResult && (
               <>
                 <Separator />
-                <AttachmentsPanel
-                  projectId={activeProject.id}
-                  entityType="tests"
-                  entityId={testResult.id}
-                />
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Camera className="h-4 w-4 text-primary" />
+                    <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                      {t("tests.results.form.photosAndAttachments", { defaultValue: "Fotos & Anexos" })}
+                    </span>
+                    <Badge variant="secondary" className="text-[10px] py-0">
+                      <ImageIcon className="h-3 w-3 mr-1" />
+                      {t("tests.results.form.photoHint", { defaultValue: "Anexe fotos do ensaio" })}
+                    </Badge>
+                  </div>
+                  <AttachmentsPanel
+                    projectId={activeProject.id}
+                    entityType="tests"
+                    entityId={testResult.id}
+                  />
+                </div>
               </>
+            )}
+            {!isEdit && (
+              <div className="flex items-center gap-2 rounded-lg border border-dashed border-border bg-muted/30 px-3 py-2">
+                <Camera className="h-4 w-4 text-muted-foreground" />
+                <p className="text-xs text-muted-foreground">
+                  {t("tests.results.form.photoAfterSave", { defaultValue: "Após criar o ensaio, poderá anexar fotos e documentos." })}
+                </p>
+              </div>
             )}
 
             <DialogFooter className="pt-2">
