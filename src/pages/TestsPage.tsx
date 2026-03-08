@@ -769,16 +769,8 @@ async function seedDemoData(projectId: string, t: (k: string) => string) {
 export default function TestsPage() {
   const { t }             = useTranslation();
   const { activeProject } = useProject();
-  const [seeding, setSeeding] = useState(false);
 
   if (!activeProject) return <NoProjectBanner />;
-
-  const handleSeedDemo = async () => {
-    setSeeding(true);
-    try {
-      await seedDemoData(activeProject.id, t);
-    } finally { setSeeding(false); }
-  };
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
@@ -791,14 +783,6 @@ export default function TestsPage() {
           </h1>
           <p className="text-sm text-muted-foreground">{t("pages.tests.subtitle")}</p>
         </div>
-        <Button
-          variant="outline" size="sm"
-          onClick={handleSeedDemo} disabled={seeding}
-          className="text-xs gap-1.5"
-        >
-          {seeding ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
-          {seeding ? t("common.loading") : t("tests.demo.button")}
-        </Button>
       </div>
 
       {/* Tabs — 4 PRO tabs */}

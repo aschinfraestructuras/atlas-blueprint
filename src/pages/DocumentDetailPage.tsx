@@ -5,6 +5,7 @@ import {
   ArrowLeft, FileText, CheckCircle2, Clock, RotateCcw,
   SendHorizontal, Loader2, Upload, ExternalLink, Download,
   Link2, Plus, Trash2, Pencil, Archive, FileDown, ClipboardList,
+  AlertTriangle,
 } from "lucide-react";
 import { documentService, isDocumentEditable, getDocumentTransitions } from "@/lib/services/documentService";
 import type { Document, DocumentVersion, DocumentLink, DocumentStatus } from "@/lib/services/documentService";
@@ -498,6 +499,20 @@ export default function DocumentDetailPage() {
           </Button>
         </div>
       </div>
+
+      {/* ── Edit warnings ──────────────────────────────────────────────── */}
+      {doc.status === "approved" && (
+        <div className="flex items-center gap-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-400">
+          <AlertTriangle className="h-3.5 w-3.5 flex-shrink-0" />
+          {t("documents.editWarningApproved")}
+        </div>
+      )}
+      {doc.status === "in_review" && (
+        <div className="flex items-center gap-2 rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-xs text-blue-700 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-400">
+          <AlertTriangle className="h-3.5 w-3.5 flex-shrink-0" />
+          {t("documents.editWarningUnderReview")}
+        </div>
+      )}
 
       {/* ── Info Card ─────────────────────────────────────────────────── */}
       <Card className="shadow-card">

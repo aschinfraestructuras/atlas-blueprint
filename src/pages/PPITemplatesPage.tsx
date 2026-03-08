@@ -1,11 +1,10 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Plus, Search, ClipboardList, Pencil, Copy, Power, PowerOff, Wand2, Loader2 } from "lucide-react";
+import { Plus, Search, ClipboardList, Pencil, Copy, Power, PowerOff, Loader2 } from "lucide-react";
 import { usePPITemplates } from "@/hooks/usePPI";
 import { useProject } from "@/contexts/ProjectContext";
 import { ppiService, PPI_DISCIPLINAS, type PpiTemplate } from "@/lib/services/ppiService";
-import { ppiDemoService } from "@/lib/services/ppiDemoService";
 import { PPITemplateFormDialog } from "@/components/ppi/PPITemplateFormDialog";
 import { PPITemplateBadge } from "@/components/ppi/PPIStatusBadge";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
@@ -50,8 +49,7 @@ export default function PPITemplatesPage() {
   const [dupCode,     setDupCode]     = useState("");
   const [duplicating, setDuplicating] = useState(false);
 
-  // Demo seed
-  const [seeding, setSeeding] = useState(false);
+
 
   // ── Filtering ──────────────────────────────────────────────────────────────
   const filtered = useMemo(() => {
@@ -146,26 +144,6 @@ export default function PPITemplatesPage() {
     }
   }
 
-  // ── Demo seed ──────────────────────────────────────────────────────────────
-  async function handleSeedDemos() {
-    if (!activeProject || !user) return;
-    setSeeding(true);
-    try {
-      const { created, skipped } = await ppiDemoService.seedDemoTemplates(activeProject.id, user.id);
-      if (created.length > 0) {
-        toast({ title: t("ppi.demo.templates.created", { codes: created.join(", ") }) });
-      } else {
-        toast({ title: t("ppi.demo.templates.allExist", { codes: skipped.join(", ") }) });
-      }
-      refetch();
-    } catch (err) {
-      const info = classifySupabaseError(err, t);
-      toast({ title: info.title, description: info.description ?? info.raw, variant: "destructive" });
-    } finally {
-      setSeeding(false);
-    }
-  }
-
   if (!activeProject) return <NoProjectBanner />;
 
   return (
@@ -190,19 +168,6 @@ export default function PPITemplatesPage() {
           </div>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleSeedDemos}
-            disabled={seeding}
-            className="gap-1.5 text-xs border-dashed"
-            title={t("ppi.demo.templates.tooltip")}
-          >
-            {seeding
-              ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              : <Wand2 className="h-3.5 w-3.5" />}
-            {t("ppi.demo.templates.button")}
-          </Button>
           <Button onClick={() => { setEditTemplate(null); setFormOpen(true); }} className="gap-2">
             <Plus className="h-4 w-4" /> {t("ppi.templates.new")}
           </Button>

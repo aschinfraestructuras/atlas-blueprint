@@ -536,6 +536,8 @@
     "archivedBanner": "Proyecto archivado — solo lectura. Reactive el proyecto para realizar cambios."
   },
   "documents": {
+    "editWarningApproved": "Este documento está aprobado. Cualquier edición debe registrarse con nueva revisión.",
+    "editWarningUnderReview": "Este documento está en revisión. Las ediciones se guardarán pero no cambian el estado.",
     "newDocument": "Nuevo Documento",
     "noFile": "Sin archivo",
     "allFiles": "documentos",

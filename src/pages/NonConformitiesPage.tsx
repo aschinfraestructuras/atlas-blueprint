@@ -6,7 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { usePermissions } from "@/hooks/usePermissions";
 import { useNonConformities } from "@/hooks/useNonConformities";
 import { ncService } from "@/lib/services/ncService";
-import { ncDemoService } from "@/lib/services/ncDemoService";
+
 import { exportNCBulkPdf, type NCExportLabels } from "@/lib/services/ncExportService";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import { exportToCSV, generateListPdf, buildReportFilename } from "@/lib/services/reportService";
@@ -134,8 +134,6 @@ export default function NonConformitiesPage() {
   // Bulk selection
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
-  // Demo seeding
-  const [seeding, setSeeding] = useState(false);
 
   // ─── Filtered list ──────────────────────────────────────────────────────────
 
@@ -256,22 +254,6 @@ export default function NonConformitiesPage() {
     }
   }, [filtered, selected, t, activeProject]);
 
-  // Demo seed
-  const handleSeedDemo = useCallback(async () => {
-    if (!activeProject || !user) return;
-    setSeeding(true);
-    try {
-      const { created, skipped } = await ncDemoService.seedDemoNCs(activeProject.id);
-      if (created > 0) toast({ title: t("nc.demo.created", { count: created }) });
-      else toast({ title: t("nc.demo.allExist", { count: skipped }) });
-      refetch();
-    } catch (err) {
-      const info = classifySupabaseError(err, t);
-      toast({ title: info.title, description: info.description ?? info.raw, variant: "destructive" });
-    } finally {
-      setSeeding(false);
-    }
-  }, [activeProject, user, refetch, t]);
 
   // ─── Guard ──────────────────────────────────────────────────────────────────
 
@@ -343,15 +325,6 @@ export default function NonConformitiesPage() {
                 }},
               ]}
             />
-            <Button
-              variant="outline" size="sm"
-              onClick={handleSeedDemo} disabled={seeding}
-              className="gap-1.5 text-xs"
-              title={t("nc.demo.tooltip")}
-            >
-              {seeding ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Database className="h-3.5 w-3.5" />}
-              {t("nc.demo.button")}
-            </Button>
             {canCreate && (
               <Button onClick={handleNew} size="sm" className="gap-1.5">
                 <Plus className="h-3.5 w-3.5" />

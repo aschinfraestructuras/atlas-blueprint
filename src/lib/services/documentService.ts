@@ -85,7 +85,7 @@ export interface DocumentInput {
 // ─── Workflow helpers ─────────────────────────────────────────────────────────
 
 export function isDocumentEditable(status: string): boolean {
-  return status === "draft";
+  return !["archived", "obsolete"].includes(status);
 }
 
 export function getDocumentTransitions(status: string): DocumentStatus[] {
@@ -93,7 +93,7 @@ export function getDocumentTransitions(status: string): DocumentStatus[] {
 }
 
 export function canDeleteDocument(status: string): boolean {
-  return status === "draft";
+  return ["draft", "archived"].includes(status);
 }
 
 // ─── Storage constants ────────────────────────────────────────────────────────
