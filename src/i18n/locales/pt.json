@@ -1622,13 +1622,32 @@
       "revision": "Rev."
     },
     "types": {
+      "MS": "Method Statement",
+      "PlanEsc": "Plano de Escavação / Terraplanagem",
+      "PlanBet": "Programa de Betonagens",
+      "PlanMont": "Plano de Montagem",
+      "PlanTraf": "Plano de Tráfego / Desvios",
+      "PlanSeg": "Plano de Segurança de Frente",
+      "Schedule": "Programa de Trabalhos",
+      "Drawing": "Planta / Plano de Obra",
+      "Other": "Outro",
       "PQO": "PQO",
       "PIE": "PIE",
       "PPI": "PPI",
       "ITP": "ITP",
       "MethodStatement": "Method Statement",
-      "TestPlan": "Plano de Ensaios",
-      "Schedule": "Cronograma"
+      "TestPlan": "Plano de Ensaios"
+    },
+    "disciplines": {
+      "geral": "Geral",
+      "terras": "Terraplenagem",
+      "betao": "Betão",
+      "ferrovia": "Ferrovia",
+      "catenaria": "Catenária",
+      "st": "Sinalização / Telecom",
+      "drenagem": "Drenagem",
+      "estruturas": "Estruturas",
+      "outros": "Outros"
     },
     "status": {
       "draft": "Rascunho",
@@ -1640,7 +1659,8 @@
     },
     "filters": {
       "allTypes": "Todos os tipos",
-      "allStatuses": "Todos os estados"
+      "allStatuses": "Todos os estados",
+      "allDisciplines": "Todas as disciplinas"
     },
     "form": {
       "titleCreate": "Novo Plano",
@@ -1650,7 +1670,14 @@
       "titlePlaceholder": "ex: Plano de Qualidade da Obra",
       "revision": "Revisão",
       "fileUrl": "URL do ficheiro",
-      "createBtn": "Criar plano"
+      "createBtn": "Criar plano",
+      "code": "Código do Documento",
+      "discipline": "Disciplina",
+      "responsible": "Responsável",
+      "approvalDate": "Data de Aprovação",
+      "docReference": "Referência Documental",
+      "notes": "Notas",
+      "notesPlaceholder": "Observações adicionais…"
     },
     "detail": {
       "breadcrumb": "Planos",
