@@ -1630,13 +1630,32 @@
       "revision": "Rev."
     },
     "types": {
+      "MS": "Method Statement",
+      "PlanEsc": "Plan de Excavación / Explanación",
+      "PlanBet": "Programa de Hormigonados",
+      "PlanMont": "Plan de Montaje",
+      "PlanTraf": "Plan de Tráfico / Desvíos",
+      "PlanSeg": "Plan de Seguridad de Frente",
+      "Schedule": "Programa de Trabajos",
+      "Drawing": "Plano / Planta de Obra",
+      "Other": "Otro",
       "PQO": "PQO",
       "PIE": "PIE",
       "PPI": "PPI",
       "ITP": "ITP",
       "MethodStatement": "Method Statement",
-      "TestPlan": "Plan de Ensayos",
-      "Schedule": "Cronograma"
+      "TestPlan": "Plan de Ensayos"
+    },
+    "disciplines": {
+      "geral": "General",
+      "terras": "Movimiento de tierras",
+      "betao": "Hormigón",
+      "ferrovia": "Ferroviario",
+      "catenaria": "Catenaria",
+      "st": "Señalización / Telecom",
+      "drenagem": "Drenaje",
+      "estruturas": "Estructuras",
+      "outros": "Otros"
     },
     "status": {
       "draft": "Borrador",
@@ -1648,7 +1667,8 @@
     },
     "filters": {
       "allTypes": "Todos los tipos",
-      "allStatuses": "Todos los estados"
+      "allStatuses": "Todos los estados",
+      "allDisciplines": "Todas las disciplinas"
     },
     "form": {
       "titleCreate": "Nuevo Plan",
@@ -1658,7 +1678,14 @@
       "titlePlaceholder": "ej: Plan de Calidad de Obra",
       "revision": "Revisión",
       "fileUrl": "URL del archivo",
-      "createBtn": "Crear plan"
+      "createBtn": "Crear plan",
+      "code": "Código del Documento",
+      "discipline": "Disciplina",
+      "responsible": "Responsable",
+      "approvalDate": "Fecha de Aprobación",
+      "docReference": "Referencia Documental",
+      "notes": "Notas",
+      "notesPlaceholder": "Observaciones adicionales…"
     },
     "detail": {
       "breadcrumb": "Planes",
