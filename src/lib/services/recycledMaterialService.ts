@@ -116,7 +116,7 @@ export const recycledMaterialService = {
   },
 
   async nextReference(projectId: string, type: string): Promise<string> {
-    const { data } = await untypedFrom("recycled_materials")
+    const { data } = await db.from("recycled_materials")
       .select("reference_number")
       .eq("project_id", projectId)
       .like("reference_number", `${type}-%`);
