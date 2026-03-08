@@ -968,6 +968,8 @@
         "locationPlaceholder": "ex: Km 12+500, Viga V1…",
         "pkInicio": "PK Início (m)",
         "pkFim": "PK Fim (m)",
+        "pkStart": "PK Início (m)",
+        "pkEnd": "PK Fim (m)",
         "material": "Material",
         "materialPlaceholder": "ex: Betão C30/37",
         "materialOutro": "Material (outro)",
