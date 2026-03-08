@@ -1,27 +1,25 @@
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
+import { useProjectRole } from "@/hooks/useProjectRole";
 import { supabase } from "@/integrations/supabase/client";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { EmptyState } from "@/components/EmptyState";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Progress } from "@/components/ui/progress";
-import { Textarea } from "@/components/ui/textarea";
-import { CalendarClock, ChevronDown, ChevronRight, CheckCircle2, Clock, FileText } from "lucide-react";
+import { RowActionMenu } from "@/components/ui/row-action-menu";
+import { AuditFormDialog, type AuditActivity } from "@/components/audits/AuditFormDialog";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { CalendarClock, ChevronDown, ChevronRight, CheckCircle2, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-interface AuditActivity {
-  id: string;
-  description: string;
-  planned_start: string | null;
-  planned_end: string | null;
-  status: string;
-  progress_pct: number;
-  constraints_text: string | null;
-}
+import { toast } from "sonner";
+import { PageHeader } from "@/components/ui/page-header";
 
 const AUDIT_CHECKLIST: Record<string, string[]> = {
   "AI-PF17A-01": ["PG-01 (Planos)", "PG-02 (Documentos)", "PAME", "Receção de materiais"],
@@ -39,11 +37,17 @@ const STATUS_BADGE: Record<string, string> = {
 export default function AuditsPage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
+  const { canCreate, canEdit, canDelete } = useProjectRole();
   const [audits, setAudits] = useState<AuditActivity[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState<string | null>(null);
 
-  const fetch = useCallback(async () => {
+  // CRUD state
+  const [formOpen, setFormOpen] = useState(false);
+  const [editAudit, setEditAudit] = useState<AuditActivity | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<AuditActivity | null>(null);
+
+  const fetchAudits = useCallback(async () => {
     if (!activeProject) { setAudits([]); setLoading(false); return; }
     setLoading(true);
     try {
@@ -58,7 +62,34 @@ export default function AuditsPage() {
     finally { setLoading(false); }
   }, [activeProject]);
 
-  useEffect(() => { fetch(); }, [fetch]);
+  useEffect(() => { fetchAudits(); }, [fetchAudits]);
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    try {
+      const { error } = await (supabase as any)
+        .from("planning_activities")
+        .delete()
+        .eq("id", deleteTarget.id);
+      if (error) throw error;
+      toast.success(t("common.deleted", { defaultValue: "Eliminado com sucesso" }));
+      fetchAudits();
+    } catch (err: any) {
+      toast.error(err.message ?? "Erro");
+    } finally {
+      setDeleteTarget(null);
+    }
+  };
+
+  const handleEdit = (audit: AuditActivity) => {
+    setEditAudit(audit);
+    setFormOpen(true);
+  };
+
+  const handleCreate = () => {
+    setEditAudit(null);
+    setFormOpen(true);
+  };
 
   if (!activeProject) return <NoProjectBanner />;
 
@@ -66,26 +97,35 @@ export default function AuditsPage() {
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
-      <div className="space-y-1">
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">
-          {t("audits.title", { defaultValue: "Programa de Auditorias" })}
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          {t("audits.subtitle", { defaultValue: "Auditorias internas do programa de qualidade" })}
-        </p>
-      </div>
+      <PageHeader
+        titleKey="audits.title"
+        defaultTitle="Programa de Auditorias"
+        subtitleKey="audits.subtitle"
+        defaultSubtitle="Auditorias internas do programa de qualidade"
+      >
+        {canCreate && (
+          <Button onClick={handleCreate} size="sm">
+            <Plus className="h-4 w-4 mr-1.5" />
+            {t("audits.create", { defaultValue: "Nova Auditoria" })}
+          </Button>
+        )}
+      </PageHeader>
 
       {loading ? (
         <div className="space-y-3">
           {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-24 w-full" />)}
         </div>
       ) : audits.length === 0 ? (
-        <EmptyState icon={CalendarClock} subtitleKey="audits.empty" />
+        <EmptyState
+          icon={CalendarClock}
+          subtitleKey="audits.empty"
+          action={canCreate ? { label: t("audits.create", { defaultValue: "Nova Auditoria" }), onClick: handleCreate } : undefined}
+        />
       ) : (
         <div className="space-y-4">
           {audits.map(audit => {
             const isExpanded = expanded === audit.id;
-            const code = audit.description.split(" ")[0]; // e.g. "AI-PF17A-01"
+            const code = audit.description.split(" ")[0];
             const checklist = AUDIT_CHECKLIST[code] ?? [];
             const daysUntil = audit.planned_start
               ? Math.ceil((new Date(audit.planned_start).getTime() - today.getTime()) / 86400000)
@@ -100,32 +140,49 @@ export default function AuditsPage() {
             return (
               <Card key={audit.id} className="border-0 bg-card shadow-card">
                 <CardContent className="p-5">
-                  <div
-                    className="flex items-center gap-3 cursor-pointer"
-                    onClick={() => setExpanded(isExpanded ? null : audit.id)}
-                  >
-                    {isExpanded ? <ChevronDown className="h-4 w-4 text-muted-foreground" /> : <ChevronRight className="h-4 w-4 text-muted-foreground" />}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono text-sm font-bold text-foreground">{code}</span>
-                        <Badge variant="secondary" className={cn("text-[10px]", STATUS_BADGE[audit.status] ?? "")}>
-                          {t(`audits.status.${audit.status}`, { defaultValue: audit.status })}
-                        </Badge>
+                  <div className="flex items-center gap-3">
+                    {/* Expand toggle */}
+                    <div
+                      className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer"
+                      onClick={() => setExpanded(isExpanded ? null : audit.id)}
+                    >
+                      {isExpanded
+                        ? <ChevronDown className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                        : <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                      }
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono text-sm font-bold text-foreground">{code}</span>
+                          <Badge variant="secondary" className={cn("text-[10px]", STATUS_BADGE[audit.status] ?? "")}>
+                            {t(`audits.status.${audit.status}`, { defaultValue: audit.status })}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-0.5 line-clamp-2">{audit.description}</p>
                       </div>
-                      <p className="text-sm text-muted-foreground mt-0.5">{audit.description}</p>
                     </div>
-                    <div className="text-right flex-shrink-0">
-                      {audit.planned_start && (
-                        <p className="text-xs text-muted-foreground">
-                          {new Date(audit.planned_start).toLocaleDateString()} — {audit.planned_end ? new Date(audit.planned_end).toLocaleDateString() : ""}
-                        </p>
-                      )}
-                      {daysUntil !== null && (
-                        <p className={cn("text-sm font-bold tabular-nums mt-0.5",
-                          daysUntil > 60 ? "text-emerald-600" : daysUntil >= 30 ? "text-amber-500" : daysUntil >= 0 ? "text-destructive" : "text-muted-foreground"
-                        )}>
-                          {daysUntil >= 0 ? `${daysUntil}d` : t("audits.past", { defaultValue: "Passado" })}
-                        </p>
+
+                    {/* Right side: dates + actions */}
+                    <div className="flex items-center gap-3 flex-shrink-0">
+                      <div className="text-right">
+                        {audit.planned_start && (
+                          <p className="text-xs text-muted-foreground">
+                            {new Date(audit.planned_start).toLocaleDateString()} — {audit.planned_end ? new Date(audit.planned_end).toLocaleDateString() : ""}
+                          </p>
+                        )}
+                        {daysUntil !== null && (
+                          <p className={cn("text-sm font-bold tabular-nums mt-0.5",
+                            daysUntil > 60 ? "text-emerald-600" : daysUntil >= 30 ? "text-amber-500" : daysUntil >= 0 ? "text-destructive" : "text-muted-foreground"
+                          )}>
+                            {daysUntil >= 0 ? `${daysUntil}d` : t("audits.past", { defaultValue: "Passado" })}
+                          </p>
+                        )}
+                      </div>
+
+                      {(canEdit || canDelete) && (
+                        <RowActionMenu
+                          onEdit={canEdit ? () => handleEdit(audit) : undefined}
+                          onDelete={canDelete ? () => setDeleteTarget(audit) : undefined}
+                        />
                       )}
                     </div>
                   </div>
@@ -140,7 +197,6 @@ export default function AuditsPage() {
                   {/* Expanded detail */}
                   {isExpanded && (
                     <div className="mt-4 border-t border-border pt-4 space-y-4">
-                      {/* Checklist */}
                       {checklist.length > 0 && (
                         <div>
                           <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground mb-2">
@@ -157,7 +213,6 @@ export default function AuditsPage() {
                         </div>
                       )}
 
-                      {/* Notes */}
                       {audit.constraints_text && (
                         <div>
                           <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground mb-1">
@@ -174,6 +229,32 @@ export default function AuditsPage() {
           })}
         </div>
       )}
+
+      {/* Create/Edit Dialog */}
+      <AuditFormDialog
+        open={formOpen}
+        onOpenChange={setFormOpen}
+        editAudit={editAudit}
+        onSuccess={fetchAudits}
+      />
+
+      {/* Delete Confirmation */}
+      <AlertDialog open={!!deleteTarget} onOpenChange={v => !v && setDeleteTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("common.confirm")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("audits.deleteConfirm", { defaultValue: "Tem a certeza que pretende eliminar esta auditoria?" })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              {t("common.delete")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
