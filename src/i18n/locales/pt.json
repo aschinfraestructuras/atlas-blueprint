@@ -2326,6 +2326,35 @@
       "supplierPlaceholder": "Selecionar fornecedor…",
       "approvalRequired": "Requer aprovação MAP/MAS"
     },
+    "pame": {
+      "title": "Plano de Materiais (PAME)",
+      "total": "Total PAME",
+      "pending": "Pendentes",
+      "submitted": "Submetidos",
+      "approved": "Aprovados",
+      "table": {
+        "pameCode": "Código PAME",
+        "material": "Material",
+        "discipline": "Disciplina",
+        "norm": "Norma",
+        "priority": "Prioridade",
+        "ppiRef": "PPI Ref",
+        "status": "Estado PAME"
+      },
+      "status": {
+        "pending": "Pendente",
+        "submitted": "Submetido F/IP",
+        "approved": "Aprovado",
+        "rejected": "Rejeitado"
+      },
+      "priority": {
+        "high": "Alta",
+        "medium": "Média",
+        "low": "Baixa"
+      },
+      "allPriorities": "Todas as prioridades",
+      "allDisciplines": "Todas as disciplinas"
+    },
     "pameCode": "Código PAME",
     "pameStatus": "Estado PAME",
     "pameStatuses": {
