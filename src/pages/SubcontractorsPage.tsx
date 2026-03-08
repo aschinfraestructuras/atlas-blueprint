@@ -41,6 +41,17 @@ const STATUS_COLORS: Record<string, string> = {
 
 const SUB_STATUSES = ["active", "suspended", "concluded"];
 
+// Railway specialty trades that require F/IP approval (PG-PF17A-05)
+const RAILWAY_TRADES = ["via_ferrea", "catenaria", "sinalizacao_st", "soldadura", "gsmr_telecom"];
+
+const TRADE_BADGES: Record<string, { label: string; className: string }> = {
+  via_ferrea: { label: "Via Férrea", className: "bg-blue-500/15 text-blue-700 dark:text-blue-400" },
+  catenaria: { label: "Catenária 25kV", className: "bg-orange-500/15 text-orange-700 dark:text-orange-400" },
+  sinalizacao_st: { label: "S&T", className: "bg-purple-500/15 text-purple-700 dark:text-purple-400" },
+  soldadura: { label: "Soldadura", className: "bg-red-500/15 text-red-700 dark:text-red-400" },
+  gsmr_telecom: { label: "GSM-R", className: "bg-green-500/15 text-green-700 dark:text-green-400" },
+};
+
 export default function SubcontractorsPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
