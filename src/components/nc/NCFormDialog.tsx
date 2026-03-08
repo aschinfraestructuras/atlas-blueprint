@@ -399,6 +399,12 @@ export function NCFormDialog({
                 {watchedClassification === "observacao" && (
                   <Badge variant="secondary" className="text-xs">{t("nc.form.classificationBannerObs")}</Badge>
                 )}
+                {watchedClassification === "C" && (
+                  <Badge variant="secondary" className="text-xs bg-blue-500/10 text-blue-700 dark:text-blue-400">{t("nc.form.classificationC")}</Badge>
+                )}
+                {watchedClassification === "AC" && (
+                  <Badge variant="secondary" className="text-xs bg-amber-500/10 text-amber-700 dark:text-amber-400">{t("nc.form.classificationAC")}</Badge>
+                )}
 
                 <FormField control={form.control} name="responsible" render={({ field }) => (
                   <FormItem>
