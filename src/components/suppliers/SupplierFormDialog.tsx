@@ -107,6 +107,7 @@ export function SupplierFormDialog({ open, onOpenChange, supplier, onSuccess }: 
         await supplierService.update(supplier.id, activeProject.id, {
           name: values.name,
           category: values.category || undefined,
+          category_outro: values.category === "other" ? (values.category_outro || undefined) : undefined,
           nif_cif: values.nif_cif || undefined,
           country: values.country || undefined,
           address: values.address || undefined,
