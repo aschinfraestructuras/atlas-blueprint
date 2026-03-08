@@ -146,6 +146,7 @@ function buildSinglePdfHtml(
   labels: ExportLabels,
   locale: string,
   projectName: string,
+  logoUrl?: string | null,
 ): string {
   const okCount      = inst.items.filter((i) => i.result === "pass").length;
   const nokCount     = inst.items.filter((i) => i.result === "fail").length;
