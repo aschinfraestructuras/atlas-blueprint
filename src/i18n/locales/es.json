@@ -3483,5 +3483,37 @@
         "desc": "Explore la barra lateral para acceder a todos los módulos. Siempre puede consultar esta ayuda en los ajustes."
       }
     }
+  },
+  "share": {
+    "button": "Compartir",
+    "tooltip": "Copiar enlace directo",
+    "linkCopied": "Enlace copiado al portapapeles",
+    "copyError": "No se pudo copiar el enlace",
+    "refCopied": "\"{{value}}\" copiado",
+    "clickToCopy": "Clic para copiar"
+  },
+  "lastUpdated": {
+    "label": "Última actualización",
+    "by": "por",
+    "justNow": "ahora mismo",
+    "minutesAgo": "hace {{count}} min",
+    "hoursAgo": "hace {{count}}h",
+    "daysAgo": "hace {{count}}d"
+  },
+  "dropZone": {
+    "dragOrClick": "Arrastre archivos o haga clic para seleccionar",
+    "dropHere": "Suelte el archivo aquí",
+    "hint": "Formatos aceptados: PDF, imágenes, documentos",
+    "upload": "Enviar {{count}} archivo(s)"
+  },
+  "savedFilters": {
+    "save": "Guardar filtro",
+    "name": "Nombre del filtro",
+    "saved": "Filtros guardados",
+    "deleted": "Filtro eliminado",
+    "placeholder": "Ej: Mis pendientes"
+  },
+  "shortcuts": {
+    "newRecord": "Nuevo registro (N)"
   }
 }

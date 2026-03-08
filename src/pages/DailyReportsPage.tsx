@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { ClipboardList, Plus, Search, FileText, Send, CheckCircle, Hash } from "lucide-react";
+import { ClipboardList, Plus, Search, FileText, Send, CheckCircle, Hash, Eye } from "lucide-react";
 import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,10 @@ import { ModuleKPICard } from "@/components/ModuleKPICard";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { EmptyState } from "@/components/EmptyState";
 import { ArchivedBanner } from "@/components/ArchivedBanner";
+import { ShareButton } from "@/components/ui/share-button";
+import { CopyableCode } from "@/components/ui/copyable-code";
+import { RowActionMenu } from "@/components/ui/row-action-menu";
+import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 import { useProject } from "@/contexts/ProjectContext";
 import { useArchivedProject } from "@/hooks/useArchivedProject";
 import { useDailyReports } from "@/hooks/useDailyReports";
@@ -56,6 +60,9 @@ export default function DailyReportsPage() {
     validated: data.filter(r => r.status === "validated").length,
   }), [data]);
 
+  // Keyboard shortcut: N → new report
+  useKeyboardShortcut("n", () => { if (!isArchived && activeProject) setDialogOpen(true); }, { enabled: !isArchived && !!activeProject });
+
   if (!activeProject) return <NoProjectBanner />;
 
   return (
@@ -67,9 +74,12 @@ export default function DailyReportsPage() {
         title={t("dailyReports.title")}
         subtitle={t("dailyReports.subtitle")}
         actions={!isArchived ? (
-          <Button onClick={() => setDialogOpen(true)} size="sm">
-            <Plus className="h-4 w-4 mr-1" /> {t("dailyReports.new")}
-          </Button>
+          <div className="flex items-center gap-2">
+            <ShareButton />
+            <Button onClick={() => setDialogOpen(true)} size="sm">
+              <Plus className="h-4 w-4 mr-1" /> {t("dailyReports.new")}
+            </Button>
+          </div>
         ) : undefined}
       />
 
@@ -115,13 +125,16 @@ export default function DailyReportsPage() {
                   <TableHead>{t("dailyReports.fields.reportDate")}</TableHead>
                   <TableHead>{t("dailyReports.fields.weather")}</TableHead>
                   <TableHead>{t("common.status")}</TableHead>
-                  <TableHead>{t("dailyReports.signatures.title")}</TableHead>
-                </TableRow>
+                   <TableHead>{t("dailyReports.signatures.title")}</TableHead>
+                   <TableHead className="w-[60px]" />
+                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filtered.map(r => (
                   <TableRow key={r.id} className="cursor-pointer hover:bg-muted/50" onClick={() => navigate(`/daily-reports/${r.id}`)}>
-                    <TableCell className="font-medium">{r.report_number}</TableCell>
+                    <TableCell onClick={(e) => e.stopPropagation()}>
+                      <CopyableCode value={r.report_number} />
+                    </TableCell>
                     <TableCell>{r.report_date}</TableCell>
                     <TableCell>{r.weather ?? "—"}</TableCell>
                     <TableCell>
@@ -135,6 +148,14 @@ export default function DailyReportsPage() {
                         {r.signed_supervisor && <Badge variant="outline" className="text-[10px]">F</Badge>}
                         {r.signed_ip && <Badge variant="outline" className="text-[10px]">IP</Badge>}
                       </div>
+                    </TableCell>
+                    <TableCell onClick={(e) => e.stopPropagation()}>
+                      <RowActionMenu
+                        shareUrl={`${window.location.origin}/daily-reports/${r.id}`}
+                        actions={[
+                          { key: "view", label: t("common.view"), icon: Eye, onClick: () => navigate(`/daily-reports/${r.id}`) },
+                        ]}
+                      />
                     </TableCell>
                   </TableRow>
                 ))}
