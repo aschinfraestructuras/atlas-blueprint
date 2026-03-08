@@ -42,6 +42,7 @@ const NAV_SECTIONS: SidebarSection[] = [
       { labelKey: "nav.laboratories",    url: "/laboratories",     icon: Building2 },
       { labelKey: "nav.suppliers",      url: "/suppliers",        icon: Truck },
       { labelKey: "nav.materials",      url: "/materials",        icon: Package },
+      { labelKey: "nav.survey",         url: "/survey",           icon: MapPin },
       { labelKey: "nav.nonConformities", url: "/non-conformities", icon: AlertTriangle },
     ],
   },
