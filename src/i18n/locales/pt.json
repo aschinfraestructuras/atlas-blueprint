@@ -132,7 +132,8 @@
     "qcReport": "Relatório QC",
     "audits": "Auditorias",
     "dailyReports": "Parte Diária",
-    "recycledMaterials": "Reciclados / PPGRCD"
+    "recycledMaterials": "Reciclados / PPGRCD",
+    "sgqMatrix": "Matriz SGQ"
   },
   "topbar": {
     "language": "Idioma",
