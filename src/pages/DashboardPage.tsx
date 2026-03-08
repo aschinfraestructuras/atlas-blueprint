@@ -9,10 +9,11 @@ import { useProjectHealth } from "@/hooks/useProjectHealth";
 import { useRealtimeProject } from "@/hooks/useRealtimeProject";
 import {
   AlertTriangle, Package, Crosshair, CalendarClock,
-  ClipboardCheck, FlaskConical, Clock, ArrowRight,
+  ClipboardCheck, FlaskConical, Clock, ArrowRight, Leaf,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { HealthGauge } from "@/components/dashboard/HealthGauge";
