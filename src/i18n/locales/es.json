@@ -1357,6 +1357,8 @@
       "detectedAt": "Fecha de Detección",
       "locationPk": "PK / Zona de obra",
       "discipline": "Disciplina",
+      "disciplineOtro": "Especificar disciplina",
+      "disciplineOtroPlaceholder": "ej: Estructuras especiales, Impermeabilización…",
       "classification": "Clasificación",
       "classificationMaior": "NC MAYOR",
       "classificationMenor": "NC MENOR",
