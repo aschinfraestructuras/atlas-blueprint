@@ -23,8 +23,8 @@ import { cn } from "@/lib/utils";
 // ── Semaphore colors ──────────────────────────────────────────────
 function ncSemaphore(v: number) { return v === 0 ? "text-emerald-600" : v <= 3 ? "text-amber-500" : "text-destructive"; }
 function ncBorder(v: number) { return v === 0 ? "border-l-emerald-500" : v <= 3 ? "border-l-amber-500" : "border-l-destructive"; }
-function pameSemaphore(v: number) { return v === 0 ? "text-emerald-600" : v <= 10 ? "text-amber-500" : "text-destructive"; }
-function pameBorder(v: number) { return v === 0 ? "border-l-emerald-500" : v <= 10 ? "border-l-amber-500" : "border-l-destructive"; }
+function pameSemaphore(v: number) { return v === 0 ? "text-emerald-600" : v <= 15 ? "text-amber-500" : "text-destructive"; }
+function pameBorder(v: number) { return v === 0 ? "border-l-emerald-500" : v <= 15 ? "border-l-amber-500" : "border-l-destructive"; }
 function emeSemaphore(v: number) { return v === 0 ? "text-emerald-600" : v <= 2 ? "text-amber-500" : "text-destructive"; }
 function emeBorder(v: number) { return v === 0 ? "border-l-emerald-500" : v <= 2 ? "border-l-amber-500" : "border-l-destructive"; }
 function auditSemaphore(daysUntil: number | null) {
