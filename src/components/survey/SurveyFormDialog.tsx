@@ -25,9 +25,12 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 
 const STATUSES = ["pending", "validated", "rejected"] as const;
+const SURVEY_TYPES = ["implantacao", "levantamento", "controlo_geometrico", "nivelamento", "as_built"] as const;
 
 const schema = z.object({
   area_or_pk: z.string().min(1),
+  survey_type: z.string().optional(),
+  responsible: z.string().optional(),
   description: z.string().optional(),
   date: z.string().min(1),
   status: z.enum(STATUSES).default("pending"),
