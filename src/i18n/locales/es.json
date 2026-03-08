@@ -3453,5 +3453,35 @@
     "dashboard": {
       "widget": "PPGRCD — Reciclados"
     }
+  },
+  "onboarding": {
+    "skip": "Saltar tour",
+    "finish": "Empezar a usar",
+    "steps": {
+      "welcome": {
+        "title": "Bienvenido a Atlas QMS",
+        "desc": "Vamos a hacer un recorrido rápido por las funcionalidades principales de la plataforma de calidad."
+      },
+      "projects": {
+        "title": "Gestión de Proyectos",
+        "desc": "Cree y gestione sus proyectos de obra. Cada proyecto tiene su propio entorno con documentos, ensayos y no conformidades."
+      },
+      "dashboard": {
+        "title": "Panel de Control",
+        "desc": "Acompañe KPIs en tiempo real, salud del proyecto y alertas críticas en una sola pantalla."
+      },
+      "documents": {
+        "title": "Documentos y Planos",
+        "desc": "Controle versiones, aprobaciones y distribución de documentos técnicos con trazabilidad completa."
+      },
+      "nc": {
+        "title": "No Conformidades",
+        "desc": "Registre, investigue y resuelva no conformidades con flujo de trabajo estructurado y plazos automáticos."
+      },
+      "ready": {
+        "title": "¡Todo listo!",
+        "desc": "Explore la barra lateral para acceder a todos los módulos. Siempre puede consultar esta ayuda en los ajustes."
+      }
+    }
   }
 }
