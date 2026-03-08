@@ -367,7 +367,7 @@ export const supplierService = {
 
   // ── Evaluations ─────────────────────────────────────────────────
   async getEvaluations(supplierId: string): Promise<SupplierEvaluation[]> {
-    const { data, error } = await untypedFrom("supplier_evaluations")
+    const { data, error } = await db.from("supplier_evaluations")
       .select("*")
       .eq("supplier_id", supplierId)
       .order("eval_date", { ascending: false });
