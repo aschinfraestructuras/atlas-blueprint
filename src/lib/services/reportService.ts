@@ -194,7 +194,60 @@ export interface ReportLabels {
 }
 
 /**
+ * Convert an image URL to a base64 data URI (for PDF/print rendering).
+ */
+async function urlToBase64(url: string): Promise<string | null> {
+  try {
+    const resp = await fetch(url, { mode: "cors" });
+    if (!resp.ok) return null;
+    const blob = await resp.blob();
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = () => resolve(null);
+      reader.readAsDataURL(blob);
+    });
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Build corporate header HTML with Atlas branding.
+ * If logoUrl is provided, converts it to base64 for reliable print rendering.
+ */
+export async function headerHtmlAsync(
+  title: string,
+  labels: ReportLabels,
+  meta: ReportMeta & { logoUrl?: string | null },
+): Promise<string> {
+  let logoBlock = `<div class="atlas-brand-logo">A</div>`;
+  if (meta.logoUrl) {
+    const b64 = await urlToBase64(meta.logoUrl);
+    if (b64) {
+      logoBlock = `<img src="${b64}" style="height:40px;width:40px;object-fit:contain;border-radius:6px;" />`;
+    }
+  }
+  return `
+<div class="atlas-header">
+  <div class="atlas-brand">
+    ${logoBlock}
+    <div>
+      <div class="atlas-brand-app">${labels.appName}</div>
+      <div class="atlas-brand-sub">${meta.locale === "es" ? "Sistema de Gestión de Calidad" : "Sistema de Gestão da Qualidade"}</div>
+    </div>
+  </div>
+  <div class="atlas-meta">
+    <div class="atlas-meta-title">${title}</div>
+    <div class="atlas-meta-gen">${labels.generatedOn}: ${fmtDate(new Date().toISOString(), meta.locale)}</div>
+    <div class="atlas-meta-gen">${meta.projectName} · ${meta.projectCode}</div>
+    ${meta.generatedBy ? `<div class="atlas-meta-user">${meta.generatedBy}</div>` : ""}
+  </div>
+</div>`;
+}
+
+/**
+ * Sync version (kept for backward compat — uses URL directly, may not render in print).
  */
 export function headerHtml(
   title: string,

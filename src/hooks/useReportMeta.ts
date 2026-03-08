@@ -12,7 +12,7 @@ export function useReportMeta(): ReportMeta | null {
   const { activeProject } = useProject();
   const { user } = useAuth();
   const { i18n } = useTranslation();
-  const { logoUrl } = useProjectLogo();
+  const { logoUrl, logoBase64 } = useProjectLogo();
 
   if (!activeProject) return null;
 
@@ -21,6 +21,6 @@ export function useReportMeta(): ReportMeta | null {
     projectCode: activeProject.code,
     locale: i18n.language?.startsWith("es") ? "es" : "pt",
     generatedBy: user?.email ?? undefined,
-    logoUrl,
+    logoUrl: logoBase64 || logoUrl,
   };
 }
