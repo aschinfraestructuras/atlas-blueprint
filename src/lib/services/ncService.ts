@@ -89,6 +89,8 @@ export interface NCUpdateInput {
   assigned_to?: string;
   due_date?: string;
   detected_at?: string;
+  discipline?: string;
+  discipline_outro?: string;
   // CAPA
   correction?: string;
   root_cause?: string;
