@@ -487,7 +487,7 @@ export default function QCReportPage() {
               <SelectContent>
                 <SelectItem value="all">{t("common.all", { defaultValue: "Todos" })} Work Items</SelectItem>
                 {workItems.map(wi => (
-                  <SelectItem key={wi.id} value={wi.id}>{(wi as any).code} — {((wi as any).description ?? (wi as any).name ?? "").slice(0, 40)}</SelectItem>
+                  <SelectItem key={wi.id} value={wi.id}>{wiLabel(wi)}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
