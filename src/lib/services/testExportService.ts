@@ -327,6 +327,7 @@ function buildSingleHtml(
   locale: string,
   projectName: string,
   workItemSector?: string,
+  logoUrl?: string | null,
 ): string {
   const tc = r.tests_catalog as Partial<TestCatalogEntry> | null;
   const pf = r.pass_fail ?? r.status;
