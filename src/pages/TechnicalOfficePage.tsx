@@ -107,10 +107,7 @@ export default function TechnicalOfficePage() {
   const [rfiFormOpen, setRfiFormOpen] = useState(false);
   const [editingRfi, setEditingRfi] = useState<Rfi | null>(null);
 
-  const [search, setSearch] = useState("");
-  const [filterStatus, setFilterStatus] = useState("__all__");
-  const [filterType, setFilterType] = useState("__all__");
-  const [filterPriority, setFilterPriority] = useState("__all__");
+  const [filterDiscipline, setFilterDiscipline] = useState("__all__");
 
   // Merge items + rfis into unified list
   const allItems = useMemo(() => {
