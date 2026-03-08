@@ -4,7 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   ArrowLeft, Construction, FlaskConical, AlertTriangle, Paperclip,
-  Pencil, Calendar, MapPin, ClipboardCheck, Plus, Eye, FileDown, FileText,
+  Pencil, Calendar, MapPin, ClipboardCheck, Plus, Eye, FileDown, FileText, Loader2,
   CheckCircle2, XCircle, Clock, Crosshair, Target, Map, ListTodo,
   ShieldCheck, ShieldAlert, Copy, Package, Trash2,
 } from "lucide-react";
@@ -17,6 +17,8 @@ import { ppiService, type PpiInstanceStatus } from "@/lib/services/ppiService";
 import { exportWorkItemConsolidatedPdf, type WorkItemForExport, type ConsolidatedExportData } from "@/lib/services/workItemExportService";
 import { testService, type TestResult } from "@/lib/services/testService";
 import { WorkItemFormDialog } from "@/components/work-items/WorkItemFormDialog";
+import { WorkItemReportPreview } from "@/components/work-items/WorkItemReportPreview";
+import type { WorkItemReportData } from "@/components/work-items/WorkItemReportPreview";
 import { PPIStatusBadge } from "@/components/ppi/PPIStatusBadge";
 import { LinkedDocumentsPanel } from "@/components/documents/LinkedDocumentsPanel";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
@@ -677,6 +679,9 @@ export default function WorkItemDetailPage() {
   const [editOpen,   setEditOpen]   = useState(false);
   const [ncs,        setNcs]        = useState<any[]>([]);
   const [subLoading, setSubLoading] = useState(true);
+  const [reportData, setReportData]       = useState<WorkItemReportData | null>(null);
+  const [reportOpen, setReportOpen]       = useState(false);
+  const [reportLoading, setReportLoading] = useState(false);
 
   // Materials linked to this work item
   const [workItemMaterials, setWorkItemMaterials] = useState<any[]>([]);
@@ -692,6 +697,23 @@ export default function WorkItemDetailPage() {
   const [activitiesList, setActivitiesList] = useState<any[]>([]);
   const [topoRequests, setTopoRequests] = useState<any[]>([]);
   const [topoControls, setTopoControls] = useState<any[]>([]);
+
+  async function handleExportFicha() {
+    if (!item) return;
+    setReportLoading(true);
+    try {
+      const { data, error } = await supabase.rpc("fn_work_item_report", {
+        p_work_item_id: item.id,
+      });
+      if (error) throw error;
+      setReportData(data as unknown as WorkItemReportData);
+      setReportOpen(true);
+    } catch {
+      toast({ title: t("workItems.report.errorLoading"), variant: "destructive" });
+    } finally {
+      setReportLoading(false);
+    }
+  }
 
   async function handleExportPdf() {
     if (!item || !activeProject) return;
@@ -919,6 +941,10 @@ export default function WorkItemDetailPage() {
           </div>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
+          <Button variant="outline" size="sm" onClick={handleExportFicha} disabled={reportLoading} className="gap-2">
+            {reportLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FileDown className="h-3.5 w-3.5" />}
+            {t("workItems.report.exportButton")}
+          </Button>
           <Button variant="outline" size="sm" onClick={handleExportPdf} className="gap-2">
             <FileDown className="h-3.5 w-3.5" /> {t("common.exportPdf", { defaultValue: "Exportar PDF" })}
           </Button>
@@ -1260,6 +1286,12 @@ export default function WorkItemDetailPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      {reportOpen && reportData && (
+        <WorkItemReportPreview
+          data={reportData}
+          onClose={() => { setReportOpen(false); setReportData(null); }}
+        />
+      )}
     </div>
   );
 }

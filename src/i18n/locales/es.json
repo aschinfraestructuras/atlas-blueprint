@@ -2183,6 +2183,17 @@
     },
     "emptyState": {
       "subtitle": "Este proyecto aún no tiene work items. Cree el primero."
+    },
+    "report": {
+      "exportButton": "Exportar Ficha",
+      "errorLoading": "Error al cargar datos del informe",
+      "title": "Ficha de Frente de Obra",
+      "printSave": "Imprimir / Guardar PDF",
+      "noTests": "Sin ensayos registrados.",
+      "noNCs": "Sin no conformidades registradas.",
+      "noMaterials": "Sin materiales asociados.",
+      "noPPI": "Sin inspecciones PPI asociadas.",
+      "footer": "Documento generado automáticamente por Atlas QMS"
     }
   },
   "ppi": {
