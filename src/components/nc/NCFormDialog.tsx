@@ -112,6 +112,8 @@ const defaultValues = (origin?: string): FormValues => ({
   assigned_to: "", ac_efficacy_indicator: "",
   verification_method: "", verification_result: "",
   verified_at: "", closure_date: "", fip_validated_by: "",
+  audit_origin_type: "", actual_completion_date: "",
+  deviation_justification: "", efficacy_analysis: "",
 });
 
 // ─── Componente ───────────────────────────────────────────────────────────────
