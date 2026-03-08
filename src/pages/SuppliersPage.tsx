@@ -266,7 +266,7 @@ export default function SuppliersPage() {
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("suppliers.table.code")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.name")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("suppliers.table.category")}</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("suppliers.form.nifCif")}</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("suppliers.table.pameMaterials")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("suppliers.form.qualificationStatus")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.status")}</TableHead>
                 <TableHead className="w-24" />
