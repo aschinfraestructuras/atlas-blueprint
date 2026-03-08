@@ -675,6 +675,14 @@ export default function WorkItemDetailPage() {
   const [ncs,        setNcs]        = useState<any[]>([]);
   const [subLoading, setSubLoading] = useState(true);
 
+  // Materials linked to this work item
+  const [workItemMaterials, setWorkItemMaterials] = useState<any[]>([]);
+  const [matLoading, setMatLoading] = useState(false);
+  const [addMaterialOpen, setAddMaterialOpen] = useState(false);
+  const [projectMaterials, setProjectMaterials] = useState<any[]>([]);
+  const [addMatForm, setAddMatForm] = useState({ material_id: "", quantity: "", unit: "", lot_ref: "" });
+  const [addMatSaving, setAddMatSaving] = useState(false);
+
   // State for consolidated export data
   const [ppiList, setPpiList] = useState<any[]>([]);
   const [testsList, setTestsList] = useState<any[]>([]);
