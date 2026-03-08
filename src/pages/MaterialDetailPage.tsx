@@ -267,6 +267,7 @@ export default function MaterialDetailPage() {
           <TabsTrigger value="tests">{t("materials.detail.tabs.tests")}</TabsTrigger>
           <TabsTrigger value="ncs">{t("materials.detail.tabs.ncs")}</TabsTrigger>
           <TabsTrigger value="workItems">{t("materials.detail.tabs.workItems")}</TabsTrigger>
+          <TabsTrigger value="recycled">{t("recycled.title", { defaultValue: "Reciclado" })}</TabsTrigger>
           <TabsTrigger value="audit">{t("materials.detail.tabs.audit")}</TabsTrigger>
         </TabsList>
 
@@ -645,6 +646,20 @@ export default function MaterialDetailPage() {
                   </TableBody>
                 </Table>
               )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="recycled">
+          <Card className="border-0 shadow-card">
+            <CardContent className="p-6">
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">{t("recycled.title", { defaultValue: "Materiais Reciclados" })}</p>
+              <p className="text-sm text-muted-foreground mb-2">
+                {t("recycled.subtitle", { defaultValue: "Registos PPGRCD associados a este material." })}
+              </p>
+              <Button variant="outline" size="sm" onClick={() => navigate("/recycled-materials")}>
+                {t("recycled.title")} →
+              </Button>
             </CardContent>
           </Card>
         </TabsContent>

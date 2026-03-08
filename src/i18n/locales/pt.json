@@ -131,7 +131,8 @@
     "deadlines": "Prazos",
     "qcReport": "Relatório QC",
     "audits": "Auditorias",
-    "dailyReports": "Parte Diária"
+    "dailyReports": "Parte Diária",
+    "recycledMaterials": "Reciclados / PPGRCD"
   },
   "topbar": {
     "language": "Idioma",
@@ -3426,6 +3427,58 @@
     },
     "export": {
       "title": "Parte Diária de Obra"
+    }
+  },
+  "recycled": {
+    "title": "Materiais Reciclados",
+    "subtitle": "Controlo PPGRCD · Infraestruturas de Portugal",
+    "new": "Novo Registo",
+    "kpi": {
+      "total": "Total Registos",
+      "avgPct": "% Médio Reciclado",
+      "approved": "Aprovados",
+      "pending": "Pendentes",
+      "target": "Meta PPGRCD"
+    },
+    "fields": {
+      "referenceType": "Tipo",
+      "referenceNumber": "Nº Referência",
+      "materialName": "Material",
+      "supplier": "Fornecedor",
+      "composition": "Composição / Origem",
+      "recycledPct": "% Reciclado",
+      "serialNumber": "Nº Série",
+      "quantityPlanned": "Qtd Planeada",
+      "quantityUsed": "Qtd Usada",
+      "unit": "Unidade",
+      "applicationLocation": "Local de Aplicação (PK)",
+      "applicationDate": "Data de Aplicação",
+      "certificateNumber": "Nº Certificado",
+      "documentRef": "Ref. Documento Comprovativo",
+      "observations": "Observações"
+    },
+    "status": {
+      "pending": "Pendente",
+      "submitted": "Submetido",
+      "approved": "Aprovado",
+      "rejected": "Rejeitado"
+    },
+    "types": {
+      "FAM": "FAM — Formulário de Acompanhamento de Materiais",
+      "PAP": "PAP — Plano de Aplicação de Produtos",
+      "BAM": "BAM — Boletim de Acompanhamento de Materiais",
+      "OUTRO": "Outro"
+    },
+    "documents": {
+      "title": "Documentos Comprovativos",
+      "upload": "Anexar Documento"
+    },
+    "toast": {
+      "created": "Registo criado.",
+      "updated": "Registo actualizado."
+    },
+    "dashboard": {
+      "widget": "PPGRCD — Reciclados"
     }
   }
 }

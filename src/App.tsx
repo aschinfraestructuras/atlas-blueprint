@@ -50,6 +50,7 @@ import QCReportPage from "./pages/QCReportPage";
 import LaboratoriesPage from "./pages/LaboratoriesPage";
 import DailyReportsPage from "./pages/DailyReportsPage";
 import DailyReportDetailPage from "./pages/DailyReportDetailPage";
+import RecycledMaterialsPage from "./pages/RecycledMaterialsPage";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 const queryClient = new QueryClient();
 
@@ -116,6 +117,7 @@ const App = () => (
               <Route path="/audits" element={<ProtectedLayout><AuditsPage /></ProtectedLayout>} />
               <Route path="/daily-reports" element={<ProtectedLayout><DailyReportsPage /></ProtectedLayout>} />
               <Route path="/daily-reports/:id" element={<ProtectedLayout><DailyReportDetailPage /></ProtectedLayout>} />
+              <Route path="/recycled-materials" element={<ProtectedLayout><RecycledMaterialsPage /></ProtectedLayout>} />
               <Route path="/admin/health" element={<ProtectedLayout><HealthCheckPage /></ProtectedLayout>} />
 
               {/* Catch-all */}
