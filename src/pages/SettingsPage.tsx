@@ -8,7 +8,7 @@ import {
   Settings, Users, ShieldCheck, Sliders, Globe, Bell, Lock,
   Building2, Mail, UserCheck, Key, Database, ChevronRight,
   Plus, Trash2, UserMinus, Loader2, Sun, Moon, Monitor,
-  ImageIcon, Upload, X, ClipboardList, HardDrive, Check, Eye, Pencil, ShieldAlert,
+  ImageIcon, Upload, X, ClipboardList, HardDrive, Check, Eye, Pencil, ShieldAlert, Rocket,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
