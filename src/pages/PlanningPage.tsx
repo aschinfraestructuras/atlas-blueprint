@@ -78,6 +78,7 @@ export default function PlanningPage() {
   const { user } = useAuth();
   const { wbs, activities, loading, error, refetch } = usePlanning();
   const { canCreate, isAdmin } = useProjectRole();
+  const reportMeta = useReportMeta();
   const [activeTab, setActiveTab] = useState("activities");
 
   const [wbsDialogOpen, setWbsDialogOpen] = useState(false);
