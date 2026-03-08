@@ -82,20 +82,16 @@
     --chart-4:           30 65% 45%;
     --chart-5:           0 55% 48%;
 
-    /* ── Sidebar — Deep institutional navy ────────────────────────── */
-    --sidebar-background:       218 42% 18%;
-    --sidebar-foreground:       210 15% 88%;
-    --sidebar-primary:          210 60% 70%;
+    /* ── Sidebar — Slate Azulado Médio ────────────────────────────── */
+    --sidebar-background:       215 25% 27%;
+    --sidebar-foreground:       210 15% 90%;
+    --sidebar-primary:          210 60% 72%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent:           218 35% 24%;
-    --sidebar-accent-foreground: 210 20% 92%;
-    --sidebar-border:           218 30% 26%;
-    --sidebar-ring:             210 55% 55%;
-
-    /* ── Elevation / Shadow tokens ───────────────────────────────── */
-    --shadow-card:       0 1px 3px 0 hsl(220 20% 12% / 0.04), 0 1px 2px -1px hsl(220 20% 12% / 0.04);
-    --shadow-card-hover: 0 4px 16px 0 hsl(220 20% 12% / 0.08), 0 2px 4px -1px hsl(220 20% 12% / 0.04);
-    --sidebar:           218 42% 18%;
+    --sidebar-accent:           215 22% 33%;
+    --sidebar-accent-foreground: 210 20% 93%;
+    --sidebar-border:           215 18% 36%;
+    --sidebar-ring:             210 55% 58%;
+    --sidebar:                  215 25% 27%;
   }
 
   .dark {
