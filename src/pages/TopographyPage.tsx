@@ -100,6 +100,7 @@ export default function TopographyPage() {
   const { activeProject } = useProject();
   const { user } = useAuth();
   const { isAdmin, canCreate, canDelete } = useProjectRole();
+  const reportMeta = useReportMeta();
   const [activeTab, setActiveTab] = useState("equipment");
 
   const { data: equipment, loading: eqLoading, refetch: refetchEq } = useTopographyEquipment();
