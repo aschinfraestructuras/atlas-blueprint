@@ -2529,6 +2529,14 @@
       },
       "error": "Error al crear datos demo. Verifique los permisos o si existe una plantilla activa."
     },
+    "seed": {
+      "button": "Popular PPI PF17A",
+      "tooltip": "Crea las 11 plantillas PPI contractuales del PF17A (~189 ítems). Omite las que ya existan.",
+      "running": "Creando plantillas…",
+      "success": "{{created}} plantillas creadas ({{items}} ítems). {{skipped}} ya existían.",
+      "allExist": "Las 11 plantillas PPI ya existen en este proyecto.",
+      "error": "Error al popular plantillas PPI."
+    },
     "export": {
       "button": "Exportar",
       "menuTitle": "Opciones de exportación",

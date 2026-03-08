@@ -1,10 +1,11 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Plus, Search, ClipboardList, Pencil, Copy, Power, PowerOff, Loader2 } from "lucide-react";
+import { Plus, Search, ClipboardList, Pencil, Copy, Power, PowerOff, Loader2, Database } from "lucide-react";
 import { usePPITemplates } from "@/hooks/usePPI";
 import { useProject } from "@/contexts/ProjectContext";
 import { ppiService, PPI_DISCIPLINAS, type PpiTemplate } from "@/lib/services/ppiService";
+import { ppiSeedService } from "@/lib/services/ppiSeedService";
 import { PPITemplateFormDialog } from "@/components/ppi/PPITemplateFormDialog";
 import { PPITemplateBadge } from "@/components/ppi/PPIStatusBadge";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
@@ -49,7 +50,33 @@ export default function PPITemplatesPage() {
   const [dupCode,     setDupCode]     = useState("");
   const [duplicating, setDuplicating] = useState(false);
 
+  // Seed PF17A
+  const [seeding, setSeeding] = useState(false);
 
+  async function handleSeedPF17A() {
+    if (!activeProject || !user) return;
+    setSeeding(true);
+    try {
+      const result = await ppiSeedService.seedAllTemplates(activeProject.id, user.id);
+      if (result.created.length === 0) {
+        toast({ title: t("ppi.seed.allExist") });
+      } else {
+        toast({
+          title: t("ppi.seed.success", {
+            created: result.created.length,
+            items: result.itemsCreated,
+            skipped: result.skipped.length,
+          }),
+        });
+      }
+      refetch();
+    } catch (err) {
+      const info = classifySupabaseError(err, t);
+      toast({ title: t("ppi.seed.error"), description: info.description ?? info.raw, variant: "destructive" });
+    } finally {
+      setSeeding(false);
+    }
+  }
 
   // ── Filtering ──────────────────────────────────────────────────────────────
   const filtered = useMemo(() => {
@@ -117,7 +144,7 @@ export default function PPITemplatesPage() {
 
       if (items.length > 0) {
         await ppiService.addTemplateItems(
-          items.map((it, idx) => ({
+          items.map((it) => ({
             template_id:         created.id,
             item_no:             it.item_no,
             check_code:          it.check_code,
@@ -125,6 +152,9 @@ export default function PPITemplatesPage() {
             method:              it.method,
             acceptance_criteria: it.acceptance_criteria,
             inspection_point_type: it.inspection_point_type,
+            ipt_e:               (it as any).ipt_e,
+            ipt_f:               (it as any).ipt_f,
+            ipt_ip:              (it as any).ipt_ip,
             required:            it.required,
             evidence_required:   it.evidence_required,
             sort_order:          it.sort_order,
@@ -168,6 +198,16 @@ export default function PPITemplatesPage() {
           </div>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
+          <Button
+            variant="outline"
+            onClick={handleSeedPF17A}
+            disabled={seeding}
+            className="gap-2"
+            title={t("ppi.seed.tooltip")}
+          >
+            {seeding ? <Loader2 className="h-4 w-4 animate-spin" /> : <Database className="h-4 w-4" />}
+            {seeding ? t("ppi.seed.running") : t("ppi.seed.button")}
+          </Button>
           <Button onClick={() => { setEditTemplate(null); setFormOpen(true); }} className="gap-2">
             <Plus className="h-4 w-4" /> {t("ppi.templates.new")}
           </Button>

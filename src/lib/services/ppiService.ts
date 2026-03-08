@@ -124,6 +124,13 @@ export interface PpiTemplateItemInput {
   method?: string | null;
   acceptance_criteria?: string | null;
   inspection_point_type?: string | null;
+  ipt_e?: string | null;
+  ipt_f?: string | null;
+  ipt_ip?: string | null;
+  phase_name?: string | null;
+  phase_no?: number | null;
+  doc_record?: string | null;
+  test_pe_code?: string | null;
   required?: boolean;
   evidence_required?: boolean;
   sort_order?: number;
@@ -260,6 +267,13 @@ export const ppiService = {
       method:              it.method              ?? null,
       acceptance_criteria: it.acceptance_criteria ?? null,
       inspection_point_type: it.inspection_point_type ?? "na",
+      ipt_e:               it.ipt_e               ?? null,
+      ipt_f:               it.ipt_f               ?? null,
+      ipt_ip:              it.ipt_ip              ?? null,
+      phase_name:          it.phase_name          ?? null,
+      phase_no:            it.phase_no            ?? null,
+      doc_record:          it.doc_record          ?? null,
+      test_pe_code:        it.test_pe_code        ?? null,
       required:            it.required            ?? true,
       evidence_required:   it.evidence_required   ?? false,
       sort_order:          it.sort_order          ?? it.item_no,

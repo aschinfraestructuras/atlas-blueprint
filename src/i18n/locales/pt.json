@@ -2521,6 +2521,14 @@
       },
       "error": "Erro ao criar dados demo. Verifique as permissões ou se existe um template ativo."
     },
+    "seed": {
+      "button": "Popular PPI PF17A",
+      "tooltip": "Cria os 11 templates PPI contratuais do PF17A (~189 itens). Ignora os que já existirem.",
+      "running": "A criar templates…",
+      "success": "{{created}} templates criados ({{items}} itens). {{skipped}} já existiam.",
+      "allExist": "Todos os 11 templates PPI já existem neste projeto.",
+      "error": "Erro ao popular templates PPI."
+    },
     "export": {
       "button": "Exportar",
       "menuTitle": "Opções de exportação",
