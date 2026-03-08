@@ -125,7 +125,7 @@ export const testPlanService = {
   },
 
   async update(id: string, projectId: string, updates: Partial<TestPlanInput>): Promise<TestPlan> {
-    const { data, error } = await untypedFrom("test_plans")
+    const { data, error } = await db.from("test_plans")
       .update(updates)
       .eq("id", id)
       .select()
