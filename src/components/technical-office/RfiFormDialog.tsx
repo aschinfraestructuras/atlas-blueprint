@@ -21,17 +21,29 @@ import { Button } from "@/components/ui/button";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 
-const PRIORITIES = ["low", "normal", "high", "urgent"] as const;
+const PRIORITIES = ["normal", "urgent", "critical"] as const;
 const STATUSES = ["open", "in_review", "answered", "closed"] as const;
+const DISCIPLINES = ["terras", "betao", "ferrovia", "catenaria", "st", "drenagem", "estruturas", "outros"] as const;
+
+function getDefaultDeadline() {
+  const d = new Date();
+  d.setDate(d.getDate() + 14);
+  return d.toISOString().split("T")[0];
+}
 
 const schema = z.object({
   subject: z.string().min(1, "Assunto obrigatório"),
   description: z.string().optional(),
   zone: z.string().optional(),
+  discipline: z.string().optional(),
+  ppi_ref: z.string().optional(),
+  doc_reference: z.string().optional(),
   priority: z.enum(PRIORITIES).default("normal"),
   status: z.enum(STATUSES).default("open"),
   deadline: z.string().optional(),
@@ -57,7 +69,12 @@ export function RfiFormDialog({ open, onOpenChange, rfi, onSuccess }: Props) {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { subject: "", description: "", zone: "", priority: "normal", status: "open", deadline: "", work_item_id: "" },
+    defaultValues: {
+      subject: "", description: "", zone: "", discipline: "",
+      ppi_ref: "", doc_reference: "",
+      priority: "normal", status: "open",
+      deadline: getDefaultDeadline(), work_item_id: "",
+    },
   });
 
   useEffect(() => {
@@ -66,41 +83,51 @@ export function RfiFormDialog({ open, onOpenChange, rfi, onSuccess }: Props) {
         subject: rfi.subject,
         description: rfi.description ?? "",
         zone: rfi.zone ?? "",
+        discipline: (rfi as any).discipline ?? "",
+        ppi_ref: (rfi as any).ppi_ref ?? "",
+        doc_reference: (rfi as any).doc_reference ?? "",
         priority: (rfi.priority as typeof PRIORITIES[number]) ?? "normal",
         status: (rfi.status as typeof STATUSES[number]) ?? "open",
         deadline: rfi.deadline ?? "",
         work_item_id: rfi.work_item_id ?? "",
       });
     } else {
-      form.reset({ subject: "", description: "", zone: "", priority: "normal", status: "open", deadline: "", work_item_id: "" });
+      form.reset({
+        subject: "", description: "", zone: "", discipline: "",
+        ppi_ref: "", doc_reference: "",
+        priority: "normal", status: "open",
+        deadline: getDefaultDeadline(), work_item_id: "",
+      });
     }
   }, [rfi, open, form]);
 
   const onSubmit = async (values: FormValues) => {
     if (!activeProject || !user) return;
     try {
+      const payload: Record<string, unknown> = {
+        subject: values.subject,
+        description: values.description ?? null,
+        zone: values.zone ?? null,
+        discipline: values.discipline ?? null,
+        ppi_ref: values.ppi_ref ?? null,
+        doc_reference: values.doc_reference ?? null,
+        priority: values.priority,
+        deadline: values.deadline || null,
+        work_item_id: values.work_item_id || null,
+      };
+
       if (rfi) {
         await rfiService.update(rfi.id, activeProject.id, {
-          subject: values.subject,
-          description: values.description ?? null,
-          zone: values.zone ?? null,
-          priority: values.priority,
+          ...payload,
           status: values.status,
-          deadline: values.deadline || null,
-          work_item_id: values.work_item_id || null,
         } as any);
         toast({ title: t("technicalOffice.toast.rfiUpdated", { defaultValue: "RFI atualizado" }) });
       } else {
         await rfiService.create({
           project_id: activeProject.id,
           created_by: user.id,
-          subject: values.subject,
-          description: values.description,
-          zone: values.zone,
-          priority: values.priority,
-          deadline: values.deadline || undefined,
-          work_item_id: values.work_item_id || null,
-        });
+          ...payload,
+        } as any);
         toast({ title: t("technicalOffice.toast.rfiCreated", { defaultValue: "RFI criado com sucesso" }) });
       }
       onSuccess();
@@ -123,8 +150,24 @@ export function RfiFormDialog({ open, onOpenChange, rfi, onSuccess }: Props) {
               <form id="rfi-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <FormField control={form.control} name="subject" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t("technicalOffice.table.subject", { defaultValue: "Assunto" })}</FormLabel>
+                    <FormLabel>{t("technicalOffice.table.subject", { defaultValue: "Assunto" })} *</FormLabel>
                     <FormControl><Input placeholder={t("technicalOffice.rfi.subjectPlaceholder", { defaultValue: "Assunto do RFI" })} {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+
+                <FormField control={form.control} name="discipline" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("nc.form.discipline", { defaultValue: "Disciplina" })}</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value || "__none__"}>
+                      <FormControl><SelectTrigger><SelectValue placeholder="—" /></SelectTrigger></FormControl>
+                      <SelectContent>
+                        <SelectItem value="__none__">—</SelectItem>
+                        {DISCIPLINES.map(d => (
+                          <SelectItem key={d} value={d}>{t(`nc.discipline.${d}`, { defaultValue: d })}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )} />
@@ -138,15 +181,54 @@ export function RfiFormDialog({ open, onOpenChange, rfi, onSuccess }: Props) {
                 )} />
 
                 <div className="grid grid-cols-2 gap-4">
-                  <FormField control={form.control} name="priority" render={({ field }) => (
+                  <FormField control={form.control} name="zone" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t("technicalOffice.table.priority", { defaultValue: "Prioridade" })}</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                        <SelectContent>
-                          {PRIORITIES.map(p => <SelectItem key={p} value={p}>{t(`technicalOffice.priority.${p}`, { defaultValue: p })}</SelectItem>)}
-                        </SelectContent>
-                      </Select>
+                      <FormLabel>{t("technicalOffice.rfi.zone", { defaultValue: "PK / Zona" })}</FormLabel>
+                      <FormControl><Input placeholder="Ex: PK 12+500" {...field} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="ppi_ref" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>PPI Referência</FormLabel>
+                      <FormControl><Input placeholder="Ex: PPI-01" {...field} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                </div>
+
+                <FormField control={form.control} name="priority" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("technicalOffice.table.priority", { defaultValue: "Prioridade" })}</FormLabel>
+                    <FormControl>
+                      <RadioGroup onValueChange={field.onChange} value={field.value} className="flex gap-4">
+                        {PRIORITIES.map(p => (
+                          <div key={p} className="flex items-center gap-2">
+                            <RadioGroupItem value={p} id={`rfi-p-${p}`} />
+                            <Label htmlFor={`rfi-p-${p}`} className="text-sm">
+                              {t(`technicalOffice.priority.${p}`, { defaultValue: p })}
+                            </Label>
+                          </div>
+                        ))}
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+
+                <FormField control={form.control} name="doc_reference" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Referência documental <span className="text-muted-foreground text-xs">({t("common.optional")})</span></FormLabel>
+                    <FormControl><Input placeholder="Ex: DES-EST-001 Rev.B" {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField control={form.control} name="deadline" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("technicalOffice.rfi.responseDeadline", { defaultValue: "Prazo de resposta" })}</FormLabel>
+                      <FormControl><Input type="date" {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )} />
@@ -165,24 +247,6 @@ export function RfiFormDialog({ open, onOpenChange, rfi, onSuccess }: Props) {
                       </FormItem>
                     )} />
                   )}
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField control={form.control} name="deadline" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t("technicalOffice.table.deadline", { defaultValue: "Prazo" })} <span className="text-muted-foreground text-xs">({t("common.optional")})</span></FormLabel>
-                      <FormControl><Input type="date" {...field} /></FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
-
-                  <FormField control={form.control} name="zone" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t("technicalOffice.rfi.zone", { defaultValue: "Zona" })} <span className="text-muted-foreground text-xs">({t("common.optional")})</span></FormLabel>
-                      <FormControl><Input placeholder="Ex: Zona A, PK 12+500" {...field} /></FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
                 </div>
 
                 <FormField control={form.control} name="work_item_id" render={({ field }) => (
