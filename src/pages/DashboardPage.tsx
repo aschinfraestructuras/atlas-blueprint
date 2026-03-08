@@ -288,7 +288,12 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-      {/* ══ ROW 5 — PPGRCD Widget ═══════════════════════════ */}
+      {/* ══ ROW 5 — Conformity by Frente ═══════════════════ */}
+      <div className="animate-fade-in" style={{ animationDelay: "200ms", animationFillMode: "both" }}>
+        <ConformityByFrenteChart />
+      </div>
+
+      {/* ══ ROW 6 — PPGRCD Widget ═══════════════════════════ */}
       <div className="animate-fade-in" style={{ animationDelay: "220ms", animationFillMode: "both" }}>
         <Card className="cursor-pointer hover:shadow-sm transition-shadow" onClick={() => navigate("/recycled-materials")}>
           <CardContent className="py-4">
