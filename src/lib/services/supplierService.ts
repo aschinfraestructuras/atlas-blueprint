@@ -270,7 +270,7 @@ export const supplierService = {
 
   // ── Supplier Documents ──────────────────────────────────────────
   async getDocuments(supplierId: string): Promise<SupplierDocument[]> {
-    const { data, error } = await untypedFrom("supplier_documents")
+    const { data, error } = await db.from("supplier_documents")
       .select("*")
       .eq("supplier_id", supplierId)
       .order("created_at", { ascending: false });
@@ -279,7 +279,7 @@ export const supplierService = {
   },
 
   async addDocument(input: { project_id: string; supplier_id: string; document_id: string; doc_type: string; valid_from?: string; valid_to?: string }): Promise<SupplierDocument> {
-    const { data, error } = await untypedFrom("supplier_documents")
+    const { data, error } = await db.from("supplier_documents")
       .insert(input)
       .select()
       .single();
@@ -288,7 +288,7 @@ export const supplierService = {
   },
 
   async removeDocument(id: string): Promise<void> {
-    const { error } = await untypedFrom("supplier_documents")
+    const { error } = await db.from("supplier_documents")
       .delete()
       .eq("id", id);
     if (error) throw error;
@@ -296,7 +296,7 @@ export const supplierService = {
 
   // ── Supplier Materials ──────────────────────────────────────────
   async getMaterials(supplierId: string): Promise<SupplierMaterial[]> {
-    const { data, error } = await untypedFrom("supplier_materials")
+    const { data, error } = await db.from("supplier_materials")
       .select("*")
       .eq("supplier_id", supplierId)
       .order("created_at", { ascending: false });
@@ -305,7 +305,7 @@ export const supplierService = {
   },
 
   async addMaterial(input: { project_id: string; supplier_id: string; material_name: string; is_primary?: boolean; lead_time_days?: number; unit_price?: number; currency?: string }): Promise<SupplierMaterial> {
-    const { data, error } = await untypedFrom("supplier_materials")
+    const { data, error } = await db.from("supplier_materials")
       .insert(input)
       .select()
       .single();
@@ -314,7 +314,7 @@ export const supplierService = {
   },
 
   async removeMaterial(id: string): Promise<void> {
-    const { error } = await untypedFrom("supplier_materials")
+    const { error } = await db.from("supplier_materials")
       .delete()
       .eq("id", id);
     if (error) throw error;
@@ -322,7 +322,7 @@ export const supplierService = {
 
   // ── KPIs ────────────────────────────────────────────────────────
   async getKPIs(projectId: string): Promise<SupplierKPI | null> {
-    const { data, error } = await untypedFrom("view_suppliers_kpi")
+    const { data, error } = await db.from("view_suppliers_kpi")
       .select("*")
       .eq("project_id", projectId)
       .maybeSingle();
@@ -367,7 +367,7 @@ export const supplierService = {
 
   // ── Evaluations ─────────────────────────────────────────────────
   async getEvaluations(supplierId: string): Promise<SupplierEvaluation[]> {
-    const { data, error } = await untypedFrom("supplier_evaluations")
+    const { data, error } = await db.from("supplier_evaluations")
       .select("*")
       .eq("supplier_id", supplierId)
       .order("eval_date", { ascending: false });
@@ -377,7 +377,7 @@ export const supplierService = {
 
   async createEvaluation(input: SupplierEvaluationInput): Promise<SupplierEvaluation> {
     const { data: { user } } = await supabase.auth.getUser();
-    const { data, error } = await untypedFrom("supplier_evaluations")
+    const { data, error } = await db.from("supplier_evaluations")
       .insert({ ...input, created_by: user?.id })
       .select()
       .single();

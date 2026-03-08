@@ -85,7 +85,7 @@ interface TestPlanWithRules extends Record<string, unknown> {
 
 export const testPlanService = {
   async getByProject(projectId: string): Promise<TestPlan[]> {
-    const { data, error } = await untypedFrom("test_plans")
+    const { data, error } = await db.from("test_plans")
       .select("*, test_plan_rules(id)")
       .eq("project_id", projectId)
       .eq("is_deleted", false)
@@ -99,7 +99,7 @@ export const testPlanService = {
   },
 
   async getById(id: string): Promise<TestPlan> {
-    const { data, error } = await untypedFrom("test_plans")
+    const { data, error } = await db.from("test_plans")
       .select("*")
       .eq("id", id)
       .single();
@@ -109,7 +109,7 @@ export const testPlanService = {
 
   async create(input: TestPlanInput): Promise<TestPlan> {
     const { data: { user } } = await supabase.auth.getUser();
-    const { data, error } = await untypedFrom("test_plans")
+    const { data, error } = await db.from("test_plans")
       .insert({ ...input, created_by: user?.id })
       .select()
       .single();
@@ -125,7 +125,7 @@ export const testPlanService = {
   },
 
   async update(id: string, projectId: string, updates: Partial<TestPlanInput>): Promise<TestPlan> {
-    const { data, error } = await untypedFrom("test_plans")
+    const { data, error } = await db.from("test_plans")
       .update(updates)
       .eq("id", id)
       .select()
@@ -141,7 +141,7 @@ export const testPlanService = {
 
   async softDelete(id: string, projectId: string): Promise<void> {
     const { data: { user } } = await supabase.auth.getUser();
-    const { error } = await untypedFrom("test_plans")
+    const { error } = await db.from("test_plans")
       .update({ is_deleted: true, deleted_at: new Date().toISOString(), deleted_by: user?.id })
       .eq("id", id);
     if (error) throw error;
@@ -154,7 +154,7 @@ export const testPlanService = {
   // ── Rules ──────────────────────────────────────────────────────────────────
 
   async getRules(planId: string): Promise<TestPlanRule[]> {
-    const { data, error } = await untypedFrom("test_plan_rules")
+    const { data, error } = await db.from("test_plan_rules")
       .select("*, tests_catalog(id, name, code, disciplina), suppliers(id, name)")
       .eq("plan_id", planId)
       .order("created_at");
@@ -164,7 +164,7 @@ export const testPlanService = {
 
   async createRule(input: TestPlanRuleInput): Promise<TestPlanRule> {
     const { data: { user } } = await supabase.auth.getUser();
-    const { data, error } = await untypedFrom("test_plan_rules")
+    const { data, error } = await db.from("test_plan_rules")
       .insert({ ...input, created_by: user?.id })
       .select("*, tests_catalog(id, name, code, disciplina), suppliers(id, name)")
       .single();
@@ -173,7 +173,7 @@ export const testPlanService = {
   },
 
   async updateRule(id: string, updates: Partial<TestPlanRuleInput>): Promise<TestPlanRule> {
-    const { data, error } = await untypedFrom("test_plan_rules")
+    const { data, error } = await db.from("test_plan_rules")
       .update(updates)
       .eq("id", id)
       .select("*, tests_catalog(id, name, code, disciplina), suppliers(id, name)")
@@ -183,7 +183,7 @@ export const testPlanService = {
   },
 
   async deleteRule(id: string): Promise<void> {
-    const { error } = await untypedFrom("test_plan_rules")
+    const { error } = await db.from("test_plan_rules")
       .delete()
       .eq("id", id);
     if (error) throw error;

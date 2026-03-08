@@ -93,7 +93,7 @@ const db = supabase as any;
 
 export const topographyEquipmentService = {
   async getByProject(projectId: string): Promise<TopographyEquipment[]> {
-    const { data, error } = await untypedFrom("topography_equipment")
+    const { data, error } = await db.from("topography_equipment")
       .select("*")
       .eq("project_id", projectId)
       .order("code", { ascending: true });
@@ -102,7 +102,7 @@ export const topographyEquipmentService = {
   },
 
   async getById(id: string): Promise<TopographyEquipment> {
-    const { data, error } = await untypedFrom("topography_equipment")
+    const { data, error } = await db.from("topography_equipment")
       .select("*")
       .eq("id", id)
       .single();
@@ -112,7 +112,7 @@ export const topographyEquipmentService = {
 
   async create(input: Partial<TopographyEquipment> & { project_id: string; code: string; equipment_type: string }): Promise<TopographyEquipment> {
     const { data: { user } } = await supabase.auth.getUser();
-    const { data, error } = await untypedFrom("topography_equipment")
+    const { data, error } = await db.from("topography_equipment")
       .insert({ ...input, created_by: user?.id })
       .select()
       .single();
@@ -130,7 +130,7 @@ export const topographyEquipmentService = {
   },
 
   async update(id: string, projectId: string, updates: Partial<TopographyEquipment>): Promise<TopographyEquipment> {
-    const { data, error } = await untypedFrom("topography_equipment")
+    const { data, error } = await db.from("topography_equipment")
       .update(updates)
       .eq("id", id)
       .select()
@@ -148,7 +148,7 @@ export const topographyEquipmentService = {
   },
 
   async delete(id: string, projectId: string): Promise<void> {
-    const { error } = await untypedFrom("topography_equipment").delete().eq("id", id);
+    const { error } = await db.from("topography_equipment").delete().eq("id", id);
     if (error) throw error;
     await auditService.log({ projectId, entity: "topography_equipment", entityId: id, action: "DELETE", module: "topography" });
   },
@@ -232,7 +232,7 @@ export const calibrationService = {
 
 export const topographyRequestService = {
   async getByProject(projectId: string): Promise<TopographyRequest[]> {
-    const { data, error } = await untypedFrom("topography_requests")
+    const { data, error } = await db.from("topography_requests")
       .select("*")
       .eq("project_id", projectId)
       .order("request_date", { ascending: false });
@@ -242,7 +242,7 @@ export const topographyRequestService = {
 
   async create(input: Partial<TopographyRequest> & { project_id: string; description: string }): Promise<TopographyRequest> {
     const { data: { user } } = await supabase.auth.getUser();
-    const { data, error } = await untypedFrom("topography_requests")
+    const { data, error } = await db.from("topography_requests")
       .insert({ ...input, created_by: user?.id })
       .select()
       .single();
@@ -260,7 +260,7 @@ export const topographyRequestService = {
   },
 
   async update(id: string, projectId: string, updates: Partial<TopographyRequest>): Promise<TopographyRequest> {
-    const { data, error } = await untypedFrom("topography_requests")
+    const { data, error } = await db.from("topography_requests")
       .update(updates)
       .eq("id", id)
       .select()
@@ -278,7 +278,7 @@ export const topographyRequestService = {
   },
 
   async delete(id: string, projectId: string): Promise<void> {
-    const { error } = await untypedFrom("topography_requests").delete().eq("id", id);
+    const { error } = await db.from("topography_requests").delete().eq("id", id);
     if (error) throw error;
     await auditService.log({ projectId, entity: "topography_requests", entityId: id, action: "DELETE", module: "topography" });
   },
@@ -288,7 +288,7 @@ export const topographyRequestService = {
 
 export const topographyControlService = {
   async getByProject(projectId: string): Promise<TopographyControl[]> {
-    const { data, error } = await untypedFrom("topography_controls")
+    const { data, error } = await db.from("topography_controls")
       .select("*")
       .eq("project_id", projectId)
       .order("execution_date", { ascending: false });
@@ -298,7 +298,7 @@ export const topographyControlService = {
 
   async create(input: Partial<TopographyControl> & { project_id: string; equipment_id: string; element: string }): Promise<TopographyControl> {
     const { data: { user } } = await supabase.auth.getUser();
-    const { data, error } = await untypedFrom("topography_controls")
+    const { data, error } = await db.from("topography_controls")
       .insert({ ...input, created_by: user?.id })
       .select()
       .single();
@@ -316,7 +316,7 @@ export const topographyControlService = {
   },
 
   async update(id: string, projectId: string, updates: Partial<TopographyControl>): Promise<TopographyControl> {
-    const { data, error } = await untypedFrom("topography_controls")
+    const { data, error } = await db.from("topography_controls")
       .update(updates)
       .eq("id", id)
       .select()
@@ -334,7 +334,7 @@ export const topographyControlService = {
   },
 
   async delete(id: string, projectId: string): Promise<void> {
-    const { error } = await untypedFrom("topography_controls").delete().eq("id", id);
+    const { error } = await db.from("topography_controls").delete().eq("id", id);
     if (error) throw error;
     await auditService.log({ projectId, entity: "topography_controls", entityId: id, action: "DELETE", module: "topography" });
   },
