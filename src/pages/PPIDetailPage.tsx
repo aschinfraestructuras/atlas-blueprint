@@ -4,8 +4,9 @@ import { useTranslation } from "react-i18next";
 import {
   ArrowLeft, ClipboardCheck, CheckCircle2, XCircle,
   Clock, Loader2, Construction, Calendar, CheckCheck,
-  Save, AlertTriangle, Link2, Archive, Trash2, Pencil, FileText,
+  Save, AlertTriangle, Link2, Archive, Trash2, Pencil, FileText, Info,
 } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { PPIExportMenu } from "@/components/ppi/PPIExportMenu";
 import type { PpiInstanceForExport } from "@/lib/services/ppiExportService";
 import {
