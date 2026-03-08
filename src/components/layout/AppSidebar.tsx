@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useProjectRole } from "@/hooks/useProjectRole";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import {
   LayoutDashboard, FolderKanban, FileText, Truck, Package,
   FlaskConical, AlertTriangle, ScrollText, Settings,
@@ -129,6 +130,7 @@ function SidebarContent({ collapsed, onClose }: { collapsed: boolean; onClose?: 
   const navigate = useNavigate();
   const location = useLocation();
   const { can, isAdmin } = useProjectRole();
+  const { logoUrl } = useProjectLogo();
 
   const isActive = (url: string, exact?: boolean) =>
     exact ? location.pathname === url : location.pathname.startsWith(url);
@@ -146,8 +148,12 @@ function SidebarContent({ collapsed, onClose }: { collapsed: boolean; onClose?: 
         role="button"
         aria-label="Go to Dashboard"
       >
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg flex-shrink-0 bg-sidebar-primary/15 border border-sidebar-primary/25">
-          <ShieldCheck className="h-4 w-4 text-sidebar-primary" />
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg flex-shrink-0 bg-sidebar-primary/15 border border-sidebar-primary/25 overflow-hidden">
+          {logoUrl ? (
+            <img src={logoUrl} alt="Logo" className="h-full w-full object-contain" />
+          ) : (
+            <ShieldCheck className="h-4 w-4 text-sidebar-primary" />
+          )}
         </div>
         {!collapsed && (
           <div className="flex flex-col min-w-0">

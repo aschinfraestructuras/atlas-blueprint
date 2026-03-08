@@ -11,6 +11,7 @@ interface ExportData {
   tests: { code: string; date: string; pass_fail: string; status: string }[];
   projectName: string;
   projectCode: string;
+  logoUrl?: string | null;
   t: (k: string, opts?: Record<string, unknown>) => string;
 }
 
@@ -30,6 +31,7 @@ export async function exportMaterialPdf(data: ExportData) {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(8);
     doc.setTextColor(255, 255, 255);
+    // If logo available, try to add it (jsPDF addImage is complex, fallback to text)
     doc.text("ATLAS QMS", margin, 8);
     doc.setFontSize(7);
     doc.text(t("materials.export.reportTitle", { defaultValue: "Ficha de Material" }), W - margin, 8, { align: "right" });

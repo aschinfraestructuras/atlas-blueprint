@@ -2094,6 +2094,7 @@ export type Database = {
           created_by: string | null
           id: string
           location: string | null
+          logo_url: string | null
           name: string
           start_date: string | null
           status: string
@@ -2107,6 +2108,7 @@ export type Database = {
           created_by?: string | null
           id?: string
           location?: string | null
+          logo_url?: string | null
           name: string
           start_date?: string | null
           status?: string
@@ -2120,6 +2122,7 @@ export type Database = {
           created_by?: string | null
           id?: string
           location?: string | null
+          logo_url?: string | null
           name?: string
           start_date?: string | null
           status?: string
@@ -5330,6 +5333,7 @@ export type Database = {
           created_by: string | null
           id: string
           location: string | null
+          logo_url: string | null
           name: string
           start_date: string | null
           status: string

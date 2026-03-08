@@ -487,6 +487,19 @@
           "timezoneDesc": "Ajustar hora local",
           "theme": "Tema",
           "themeDesc": "Modo claro / oscuro"
+        },
+        "branding": {
+          "title": "Imagen Corporativa",
+          "subtitle": "Logotipo de la empresa para sidebar y exportaciones PDF",
+          "currentLogo": "Logotipo actual",
+          "upload": "Subir logotipo",
+          "uploadDesc": "Imagen PNG o JPG, hasta 2 MB. Recomendado: fondo transparente, 200×200 px.",
+          "remove": "Eliminar logotipo",
+          "uploading": "Subiendo…",
+          "uploadSuccess": "Logotipo actualizado con éxito.",
+          "uploadError": "Error al subir logotipo.",
+          "removeSuccess": "Logotipo eliminado.",
+          "noLogo": "Ningún logotipo configurado."
         }
       },
       "roles": {

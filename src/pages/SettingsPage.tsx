@@ -1,11 +1,13 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { useTheme } from "@/components/theme/ThemeProvider";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import {
   Settings, Users, ShieldCheck, Sliders, Globe, Bell, Lock,
   Building2, Mail, UserCheck, Key, Database, ChevronRight,
   Plus, Trash2, UserMinus, Loader2, Sun, Moon, Monitor,
+  ImageIcon, Upload, X,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -89,6 +91,65 @@ function SettingsRow({ label, description, value, icon: Icon, comingSoon = false
         )}
       </div>
     </div>
+  );
+}
+
+// ── Branding Section ──────────────────────────────────────────────────────────
+function BrandingSection() {
+  const { t } = useTranslation();
+  const { logoUrl, uploading, uploadLogo, removeLogo } = useProjectLogo();
+  const { isAdmin } = useProjectRole();
+  const fileRef = useRef<HTMLInputElement>(null);
+  const sb = (key: string) => t(`pages.settings.sections.branding.${key}`);
+
+  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error(sb("uploadError"));
+      return;
+    }
+    const ok = await uploadLogo(file);
+    if (ok) toast.success(sb("uploadSuccess"));
+    else toast.error(sb("uploadError"));
+    if (fileRef.current) fileRef.current.value = "";
+  };
+
+  const handleRemove = async () => {
+    const ok = await removeLogo();
+    if (ok) toast.success(sb("removeSuccess"));
+  };
+
+  if (!isAdmin) return null;
+
+  return (
+    <SettingsSection icon={ImageIcon} title={sb("title")} subtitle={sb("subtitle")} color="hsl(252, 55%, 45%)">
+      <div className="flex items-start gap-4 py-3">
+        <div className="flex h-16 w-16 items-center justify-center rounded-xl border border-border bg-muted/30 overflow-hidden flex-shrink-0">
+          {logoUrl ? (
+            <img src={logoUrl} alt="Logo" className="h-full w-full object-contain p-1" />
+          ) : (
+            <ImageIcon className="h-6 w-6 text-muted-foreground/40" />
+          )}
+        </div>
+        <div className="flex-1 min-w-0 space-y-2">
+          <p className="text-[11px] text-muted-foreground leading-snug">{sb("uploadDesc")}</p>
+          <div className="flex items-center gap-2">
+            <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/svg+xml" className="hidden" onChange={handleFile} />
+            <Button size="sm" variant="outline" className="gap-1.5 h-7 text-xs" onClick={() => fileRef.current?.click()} disabled={uploading}>
+              {uploading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Upload className="h-3 w-3" />}
+              {uploading ? sb("uploading") : sb("upload")}
+            </Button>
+            {logoUrl && (
+              <Button size="sm" variant="ghost" className="gap-1 h-7 text-xs text-destructive hover:text-destructive" onClick={handleRemove}>
+                <X className="h-3 w-3" /> {sb("remove")}
+              </Button>
+            )}
+          </div>
+          {!logoUrl && <p className="text-[10px] text-muted-foreground/60">{sb("noLogo")}</p>}
+        </div>
+      </div>
+    </SettingsSection>
   );
 }
 
@@ -522,6 +583,9 @@ export default function SettingsPage() {
           </Select>
         </div>
       </SettingsSection>
+
+      {/* ── 6. Branding / Logo ───────────────────────────────────────── */}
+      <BrandingSection />
     </div>
   );
 }
