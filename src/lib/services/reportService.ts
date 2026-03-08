@@ -33,6 +33,7 @@ export interface ReportMeta {
   projectCode: string;
   locale: string;
   generatedBy?: string;
+  logoUrl?: string | null;
 }
 
 // ─── Shared helpers ───────────────────────────────────────────────────────────
