@@ -386,37 +386,14 @@ export default function DocumentsPage() {
                       </TableCell>
 
                       <TableCell onClick={(e) => e.stopPropagation()}>
-                        <div className="flex items-center gap-0.5 justify-end opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-primary"
-                                onClick={() => navigate(`/documents/${doc.id}`)}>
-                                <Eye className="h-3.5 w-3.5" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent side="top">{t("common.view")}</TooltipContent>
-                          </Tooltip>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground"
-                                onClick={() => { setEditDoc(doc); setFormOpen(true); }}>
-                                <Pencil className="h-3.5 w-3.5" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent side="top">{t("common.edit")}</TooltipContent>
-                          </Tooltip>
-                          {isAdmin && (
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive"
-                                  onClick={() => setDeleteDoc(doc)}>
-                                  <Trash2 className="h-3.5 w-3.5" />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent side="top">{t("common.delete")}</TooltipContent>
-                            </Tooltip>
-                          )}
-                        </div>
+                        <RowActionMenu
+                          shareUrl={`${window.location.origin}/documents/${doc.id}`}
+                          actions={[
+                            { key: "view", label: t("common.view"), icon: Eye, onClick: () => navigate(`/documents/${doc.id}`) },
+                            { key: "edit", label: t("common.edit"), icon: Pencil, onClick: () => { setEditDoc(doc); setFormOpen(true); }, hidden: !canEdit },
+                            { key: "delete", label: t("common.delete"), icon: Trash2, onClick: () => setDeleteDoc(doc), variant: "destructive", hidden: !isAdmin },
+                          ]}
+                        />
                       </TableCell>
                     </TableRow>
                   );
