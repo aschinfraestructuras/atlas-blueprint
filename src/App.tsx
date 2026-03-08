@@ -51,6 +51,7 @@ import LaboratoriesPage from "./pages/LaboratoriesPage";
 import DailyReportsPage from "./pages/DailyReportsPage";
 import DailyReportDetailPage from "./pages/DailyReportDetailPage";
 import RecycledMaterialsPage from "./pages/RecycledMaterialsPage";
+import SGQMatrixPage from "./pages/SGQMatrixPage";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 const queryClient = new QueryClient();
 
@@ -119,6 +120,7 @@ const App = () => (
               <Route path="/daily-reports/:id" element={<ProtectedLayout><DailyReportDetailPage /></ProtectedLayout>} />
               <Route path="/recycled-materials" element={<ProtectedLayout><RecycledMaterialsPage /></ProtectedLayout>} />
               <Route path="/admin/health" element={<ProtectedLayout><HealthCheckPage /></ProtectedLayout>} />
+              <Route path="/sgq-matrix" element={<ProtectedLayout><SGQMatrixPage /></ProtectedLayout>} />
 
               {/* Catch-all */}
               <Route path="*" element={<NotFound />} />

@@ -132,7 +132,8 @@
     "qcReport": "Relatório QC",
     "audits": "Auditorias",
     "dailyReports": "Parte Diária",
-    "recycledMaterials": "Reciclados / PPGRCD"
+    "recycledMaterials": "Reciclados / PPGRCD",
+    "sgqMatrix": "Matriz SGQ"
   },
   "topbar": {
     "language": "Idioma",
@@ -1718,6 +1719,11 @@
       "PlanMont": "Plano de Montagem",
       "PlanTraf": "Plano de Tráfego / Desvios",
       "PlanSeg": "Plano de Segurança de Frente",
+      "PlanTopo": "Plano de Topografia",
+      "PlanEns": "Plano de Ensaios",
+      "PlanInsp": "Plano de Inspeção e Ensaio (PIE)",
+      "PlanAmb": "Plano Ambiental / PPGRCD",
+      "PlanQual": "Plano de Qualidade (PQO)",
       "Schedule": "Programa de Trabalhos",
       "Drawing": "Planta / Plano de Obra",
       "Other": "Outro",
@@ -1737,6 +1743,11 @@
       "st": "Sinalização / Telecom",
       "drenagem": "Drenagem",
       "estruturas": "Estruturas",
+      "telecom": "Telecomunicações",
+      "edificacoes": "Edificações",
+      "ambiente": "Ambiente / Segurança",
+      "via": "Superestrutura de Via",
+      "geotecnia": "Geologia / Geotecnia",
       "outros": "Outros"
     },
     "status": {
