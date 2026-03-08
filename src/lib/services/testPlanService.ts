@@ -109,7 +109,7 @@ export const testPlanService = {
 
   async create(input: TestPlanInput): Promise<TestPlan> {
     const { data: { user } } = await supabase.auth.getUser();
-    const { data, error } = await untypedFrom("test_plans")
+    const { data, error } = await db.from("test_plans")
       .insert({ ...input, created_by: user?.id })
       .select()
       .single();
