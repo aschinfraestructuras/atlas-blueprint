@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { testService } from "@/lib/services/testService";
