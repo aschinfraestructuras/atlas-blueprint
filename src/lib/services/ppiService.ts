@@ -124,6 +124,13 @@ export interface PpiTemplateItemInput {
   method?: string | null;
   acceptance_criteria?: string | null;
   inspection_point_type?: string | null;
+  ipt_e?: string | null;
+  ipt_f?: string | null;
+  ipt_ip?: string | null;
+  phase_name?: string | null;
+  phase_no?: number | null;
+  doc_record?: string | null;
+  test_pe_code?: string | null;
   required?: boolean;
   evidence_required?: boolean;
   sort_order?: number;
