@@ -294,7 +294,7 @@ export function NCFormDialog({
                   )} />
                   <FormField control={form.control} name="location_pk" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t("nc.form.locationPk", { defaultValue: "PK / Zona de obra" })}</FormLabel>
+                      <FormLabel>{t("nc.form.locationPk")}</FormLabel>
                       <FormControl><Input placeholder="Ex: PK 12+500" {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
