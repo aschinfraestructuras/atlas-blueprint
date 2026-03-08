@@ -618,7 +618,16 @@
       "seguranca": "Seguridad",
       "eletrica": "Eléctrica",
       "mecanica": "Mecánica",
-      "outro": "Otro"
+      "outro": "Otro",
+      "catenaria": "Catenaria",
+      "drenagem": "Drenaje",
+      "ferrovia": "Ferrocarril / Vía Férrea",
+      "geologia_geotecnia": "Geología y Geotecnia",
+      "muros_suporte": "Muros de Contención",
+      "restabelecimentos": "Restituciones / Servidumbres",
+      "sinalizacao": "Señalización Ferroviaria",
+      "terraplenagem": "Explanación / Vía",
+      "topografia": "Cartografía / Topografía"
     },
     "actions": {
       "upload": "Subir archivo",
