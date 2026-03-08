@@ -2513,7 +2513,8 @@
         "tests": "Ensayos",
         "ncs": "No Conformidades",
         "workItems": "Aplicación en Obra",
-        "audit": "Auditoría"
+        "audit": "Auditoría",
+        "reception": "Recepción"
       },
       "noSuppliers": "Sin proveedores asociados.",
       "noTests": "Sin ensayos registrados.",
