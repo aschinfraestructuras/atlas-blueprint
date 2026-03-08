@@ -1231,11 +1231,18 @@
       "of": "de",
       "noData": "Nenhuma NC para exportar."
     },
+    "classification": {
+      "maior": "NC MAIOR",
+      "menor": "NC MENOR",
+      "observacao": "Observação"
+    },
     "filters": {
       "allStatuses": "Todos os estados",
       "allSeverities": "Todas as gravidades",
       "allOrigins": "Todas as origens",
       "allCategories": "Todas as categorias",
+      "allClassifications": "Todas as classificações",
+      "allDisciplines": "Todas as disciplinas",
       "from": "De",
       "to": "Até",
       "clear": "Limpar filtros",
