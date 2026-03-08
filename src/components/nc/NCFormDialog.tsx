@@ -210,6 +210,10 @@ export function NCFormDialog({
         verified_at:         values.verified_at || undefined,
         closure_date:        values.closure_date || undefined,
         fip_validated_by:    values.fip_validated_by || undefined,
+        audit_origin_type:       values.audit_origin_type || undefined,
+        actual_completion_date:  values.actual_completion_date || undefined,
+        deviation_justification: values.deviation_justification || undefined,
+        efficacy_analysis:       values.efficacy_analysis || undefined,
       };
 
       if (isEdit && nc) {
