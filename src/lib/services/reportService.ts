@@ -198,12 +198,15 @@ export interface ReportLabels {
 export function headerHtml(
   title: string,
   labels: ReportLabels,
-  meta: ReportMeta,
+  meta: ReportMeta & { logoUrl?: string | null },
 ): string {
+  const logoBlock = meta.logoUrl
+    ? `<img src="${meta.logoUrl}" style="height:40px;width:40px;object-fit:contain;border-radius:6px;" crossorigin="anonymous" />`
+    : `<div class="atlas-brand-logo">A</div>`;
   return `
 <div class="atlas-header">
   <div class="atlas-brand">
-    <div class="atlas-brand-logo">A</div>
+    ${logoBlock}
     <div>
       <div class="atlas-brand-app">${labels.appName}</div>
       <div class="atlas-brand-sub">${meta.locale === "es" ? "Sistema de Gestión de Calidad" : "Sistema de Gestão da Qualidade"}</div>
