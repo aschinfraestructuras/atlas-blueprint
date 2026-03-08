@@ -1348,7 +1348,8 @@
         "descriptionRequired": "A descrição é obrigatória.",
         "severityRequired": "A gravidade é obrigatória.",
         "correctiveActionRequired": "A ação corretiva é obrigatória para fechar a NC.",
-        "categoryOutroRequired": "Especifique a categoria quando seleciona «Outros»."
+        "categoryOutroRequired": "Especifique a categoria quando seleciona «Outros».",
+        "classificationRequired": "A classificação é obrigatória."
       }
     },
     "toast": {
