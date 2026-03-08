@@ -133,7 +133,7 @@ export default function RfiDetailPage() {
     ? Math.ceil((new Date(responseDeadline).getTime() - today.getTime()) / 86400000)
     : null;
 
-  const meta = useReportMeta() ?? {
+  const meta = reportMeta ?? {
     projectName: activeProject.name,
     projectCode: activeProject.code,
     locale: "pt",

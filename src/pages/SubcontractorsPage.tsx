@@ -104,7 +104,7 @@ export default function SubcontractorsPage() {
 
   if (!activeProject) return <NoProjectBanner />;
 
-  const meta: ReportMeta = useReportMeta() ?? {
+  const meta: ReportMeta = reportMeta ?? {
     projectName: activeProject.name,
     projectCode: activeProject.code,
     locale: "pt",

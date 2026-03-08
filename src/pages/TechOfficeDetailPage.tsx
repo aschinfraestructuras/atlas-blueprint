@@ -98,7 +98,7 @@ export default function TechOfficeDetailPage() {
   const isOpen = !["closed", "cancelled", "archived"].includes(item.status);
   const effectiveDeadline = item.deadline ?? item.due_date;
   const isOverdue = effectiveDeadline && new Date(effectiveDeadline) < new Date() && isOpen;
-  const meta = useReportMeta() ?? { projectName: activeProject.name, projectCode: activeProject.code, locale: "pt", generatedBy: user.email ?? undefined };
+  const meta = reportMeta ?? { projectName: activeProject.name, projectCode: activeProject.code, locale: "pt", generatedBy: user.email ?? undefined };
 
   const refreshItem = async () => {
     try { const r = await technicalOfficeService.getById(item.id); setItem(r); } catch {}
