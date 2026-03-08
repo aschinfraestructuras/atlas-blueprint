@@ -179,10 +179,10 @@ export function PlanFormDialog({ open, onOpenChange, plan, onSuccess }: Props) {
                   <FormField control={form.control} name="discipline" render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t("plans.form.discipline")}</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
+                      <Select onValueChange={(v) => field.onChange(v === "__none__" ? "" : v)} value={field.value || "__none__"}>
                         <FormControl><SelectTrigger><SelectValue placeholder={t("common.optional")} /></SelectTrigger></FormControl>
                         <SelectContent>
-                          <SelectItem value="">{t("common.optional")}</SelectItem>
+                          <SelectItem value="__none__">—</SelectItem>
                           {DISCIPLINES.map((d) => (
                             <SelectItem key={d} value={d}>{t(`plans.disciplines.${d}`, { defaultValue: d })}</SelectItem>
                           ))}
