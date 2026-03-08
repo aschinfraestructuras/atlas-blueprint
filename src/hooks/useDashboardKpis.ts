@@ -120,6 +120,8 @@ export function useDashboardKpis() {
         recent.push({ type: "lot", code: r.lot_code, label: "", created_at: r.created_at, id: r.id }));
       (recentPpiRes.data ?? []).forEach((r: any) =>
         recent.push({ type: "ppi", code: r.code, label: "", created_at: r.created_at, id: r.id }));
+      (recentTestRes.data ?? []).forEach((r: any) =>
+        recent.push({ type: "test", code: r.tests_catalog?.code ?? "Ensaio", label: r.status === "pass" ? "Conforme" : r.status === "fail" ? "Não conforme" : "", created_at: r.created_at, id: r.id }));
       recent.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
       setData({
