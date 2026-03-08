@@ -106,6 +106,11 @@ export function useDashboardKpis() {
           .select("id, code, created_at")
           .eq("project_id", pid).eq("is_deleted", false)
           .order("created_at", { ascending: false }).limit(4),
+        // Últimos ensaios
+        (supabase as any).from("test_results")
+          .select("id, test_id, status, created_at, tests_catalog(code)")
+          .eq("project_id", pid)
+          .order("created_at", { ascending: false }).limit(4),
       ]);
 
       const recent: RecentItem[] = [];
