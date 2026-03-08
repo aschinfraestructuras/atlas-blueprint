@@ -175,18 +175,17 @@ export function SupplierFormDialog({ open, onOpenChange, supplier, onSuccess }: 
                 {/* Row 2: Category + NIF */}
                 <div className="grid grid-cols-2 gap-3">
                   <FormField control={form.control} name="category" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t("suppliers.form.category")} <span className="text-xs text-muted-foreground font-normal">({t("common.optional")})</span></FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                        <FormControl><SelectTrigger><SelectValue placeholder={t("suppliers.form.categoryPlaceholder")} /></SelectTrigger></FormControl>
-                        <SelectContent>
-                          {CATEGORIES.map((cat) => (
-                            <SelectItem key={cat} value={cat}>{t(`suppliers.categories.${cat}`)}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
+                    <SelectWithOther
+                      label={t("suppliers.form.category")}
+                      options={CATEGORIES.map((cat) => ({ value: cat, label: t(`suppliers.categories.${cat}`) }))}
+                      value={field.value ?? ""}
+                      onChange={field.onChange}
+                      otherValue="other"
+                      otherFieldName="category_outro"
+                      control={form.control}
+                      otherLabel={t("suppliers.form.categoryOutro", { defaultValue: "Especificar categoria" })}
+                      otherPlaceholder={t("suppliers.form.categoryOutroPlaceholder", { defaultValue: "ex: Topografia, Transporte" })}
+                    />
                   )} />
 
                   <FormField control={form.control} name="nif_cif" render={({ field }) => (
