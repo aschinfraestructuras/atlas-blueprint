@@ -2112,11 +2112,11 @@
   },
   "ppi": {
     "title": "Planes de Puntos de Inspección (PPI)",
-    "subtitle": "Gestionar plantillas e instancias de inspección por work item",
+    "subtitle": "Gestionar plantillas e inspecciones por frente de obra",
     "nav": "PPI",
     "templates": {
-      "title": "Plantillas PPI",
-      "subtitle": "Plantillas reutilizables de puntos de inspección",
+      "title": "Planes de Inspección PPI",
+      "subtitle": "Biblioteca de planes de inspección reutilizables por disciplina",
       "new": "Nueva Plantilla",
       "edit": "Editar Plantilla",
       "archive": "Archivar",
