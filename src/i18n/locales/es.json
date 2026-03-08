@@ -2362,6 +2362,58 @@
     "newMaterial": "Nuevo Material",
     "searchPlaceholder": "Buscar código, nombre, especificación…",
     "table": { "code": "Código" },
+    "pameCode": "Código PAME",
+    "pameStatus": "Estado PAME",
+    "pameStatuses": {
+      "approved": "Aprobado",
+      "conditional": "Aprobación Condicional",
+      "pending": "Pendiente",
+      "rejected": "Rechazado",
+      "submitted": "Enviado"
+    },
+    "reception": {
+      "title": "Recepción",
+      "newReception": "Nueva Recepción",
+      "status": {
+        "approved": "Aprobado",
+        "pending": "Pendiente",
+        "quarantine": "Cuarentena",
+        "rejected": "Rechazado"
+      },
+      "form": {
+        "date": "Fecha de Recepción",
+        "supplier": "Proveedor",
+        "deliveryNote": "Nº Albarán",
+        "lotRef": "Nº Lote / Trazabilidad",
+        "quantity": "Cantidad Recibida",
+        "unit": "Unidad",
+        "physicalState": "Estado físico del material",
+        "storageLocation": "Lugar de almacenaje en obra",
+        "ceMarking": "¿Marcado CE presente y legible?",
+        "rejectionReason": "Motivo de rechazo / cuarentena",
+        "notes": "Observaciones",
+        "pameCode": "Código PAME"
+      },
+      "actions": {
+        "approveAndSave": "Guardar y Aprobar",
+        "saveQuarantine": "Guardar en Cuarentena",
+        "reject": "Rechazar",
+        "createNc": "Crear NC",
+        "createNcPrompt": "Recepción no conforme. ¿Crear NC?",
+        "ncCreated": "NC creada con éxito"
+      },
+      "table": {
+        "date": "Fecha",
+        "supplier": "Proveedor",
+        "deliveryNote": "Albarán",
+        "lotRef": "Nº Lote",
+        "lotCode": "Código Lote",
+        "status": "Estado",
+        "physicalState": "Estado Físico",
+        "ceMarking": "Marc. CE",
+        "nc": "NC"
+      }
+    },
     "filters": {
       "allStatuses": "Todos los estados",
       "allCategories": "Todas las categorías",
