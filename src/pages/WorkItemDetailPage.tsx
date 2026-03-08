@@ -1000,7 +1000,7 @@ export default function WorkItemDetailPage() {
       </Card>
 
       <Tabs defaultValue="ppi">
-        <TabsList>
+        <TabsList className="flex-wrap">
           <TabsTrigger value="ppi" className="gap-1.5">
             <ClipboardCheck className="h-3.5 w-3.5" />
             {t("workItems.detail.tabs.ppi")}
@@ -1016,6 +1016,15 @@ export default function WorkItemDetailPage() {
               <span className="ml-1 rounded-full bg-destructive/10 px-1.5 py-px text-[10px] font-bold text-destructive">
                 {ncs.length}
               </span>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="materials" className="gap-1.5">
+            <Package className="h-3.5 w-3.5" />
+            {t("workItems.tabs.materials")}
+            {workItemMaterials.length > 0 && (
+              <Badge variant="secondary" className="ml-1 text-[10px] h-4 px-1">
+                {workItemMaterials.length}
+              </Badge>
             )}
           </TabsTrigger>
           <TabsTrigger value="documents" className="gap-1.5">
