@@ -49,8 +49,25 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 const PRIORITY_COLORS: Record<string, string> = {
-  low: "secondary", normal: "default", high: "outline", urgent: "destructive",
+  low: "secondary", normal: "default", high: "outline", urgent: "destructive", critical: "destructive",
 };
+
+const RFI_STATUS_COLORS: Record<string, string> = {
+  open: "bg-primary/10 text-primary",
+  answered: "bg-emerald-500/15 text-emerald-600",
+  closed: "bg-muted text-muted-foreground",
+  cancelled: "bg-destructive/10 text-destructive",
+  overdue: "bg-destructive/15 text-destructive",
+};
+
+const RFI_PRIORITY_COLORS: Record<string, string> = {
+  normal: "bg-muted text-muted-foreground",
+  urgent: "bg-amber-500/15 text-amber-600",
+  critical: "bg-destructive/10 text-destructive",
+};
+
+const RFI_DISCIPLINES = ["terras", "betao", "ferrovia", "catenaria", "st", "drenagem", "estruturas", "outros"] as const;
+const RFI_PRIORITIES = ["normal", "urgent", "critical"] as const;
 
 const OVERDUE_FILTER = "__overdue__";
 
