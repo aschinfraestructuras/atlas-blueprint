@@ -391,8 +391,9 @@ export function exportSinglePdf(
   labels: ExportLabels,
   locale: string,
   projectName: string,
+  logoUrl?: string | null,
 ): void {
-  const html = buildSinglePdfHtml(inst, labels, locale, projectName);
+  const html = buildSinglePdfHtml(inst, labels, locale, projectName, logoUrl);
   printHtml(html, buildFilename(inst, projectName));
 }
 
