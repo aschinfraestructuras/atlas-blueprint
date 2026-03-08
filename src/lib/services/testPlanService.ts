@@ -141,7 +141,7 @@ export const testPlanService = {
 
   async softDelete(id: string, projectId: string): Promise<void> {
     const { data: { user } } = await supabase.auth.getUser();
-    const { error } = await untypedFrom("test_plans")
+    const { error } = await db.from("test_plans")
       .update({ is_deleted: true, deleted_at: new Date().toISOString(), deleted_by: user?.id })
       .eq("id", id);
     if (error) throw error;
