@@ -1246,6 +1246,22 @@
       "producao": "Produção",
       "outros": "Outros"
     },
+    "discipline": {
+      "terras": "Terras",
+      "betao": "Betão",
+      "ferrovia": "Ferrovia",
+      "catenaria": "Catenária",
+      "st": "Sinalização e Telecomunicações",
+      "drenagem": "Drenagem",
+      "estruturas": "Estruturas",
+      "outros": "Outros"
+    },
+    "correctionType": {
+      "accept": "Aceitar (derrogação F/IP)",
+      "repair": "Reparar",
+      "demolish": "Demolir e refazer",
+      "reject": "Rejeitar/devolver"
+    },
     "origin": {
       "manual": "Manual",
       "ppi": "PPI",
