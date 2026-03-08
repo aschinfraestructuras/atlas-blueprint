@@ -164,7 +164,7 @@ export const testPlanService = {
 
   async createRule(input: TestPlanRuleInput): Promise<TestPlanRule> {
     const { data: { user } } = await supabase.auth.getUser();
-    const { data, error } = await untypedFrom("test_plan_rules")
+    const { data, error } = await db.from("test_plan_rules")
       .insert({ ...input, created_by: user?.id })
       .select("*, tests_catalog(id, name, code, disciplina), suppliers(id, name)")
       .single();
