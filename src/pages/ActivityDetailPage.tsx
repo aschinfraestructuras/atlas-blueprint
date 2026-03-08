@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
+import { useReportMeta } from "@/hooks/useReportMeta";
 import { planningService, type Activity, type CompletionCheck } from "@/lib/services/planningService";
 import { supabase } from "@/integrations/supabase/client";
 import { auditService } from "@/lib/services/auditService";
