@@ -58,7 +58,7 @@ export default function RfiDetailPage() {
   useEffect(() => {
     if (!id || id === "undefined" || id.trim() === "") {
       toast({ title: t("common.recordNotFound", { defaultValue: "Registo não encontrado." }), variant: "destructive" });
-      navigate("/rfis", { replace: true });
+      navigate("/technical-office", { replace: true });
     }
   }, [id]);
 
@@ -92,7 +92,7 @@ export default function RfiDetailPage() {
       })
       .catch(() => {
         toast({ variant: "destructive", title: t("common.error", { defaultValue: "Erro" }) });
-        navigate("/rfis");
+        navigate("/technical-office");
       })
       .finally(() => setLoading(false));
   }, [id]);
@@ -208,7 +208,7 @@ export default function RfiDetailPage() {
     try {
       await rfiService.softDelete(rfi.id, activeProject.id);
       toast({ title: t("technicalOffice.toast.rfiDeleted", { defaultValue: "RFI eliminado" }) });
-      navigate("/rfis");
+      navigate("/technical-office");
     } catch (err) {
       const { title, description } = classifySupabaseError(err, t);
       toast({ variant: "destructive", title, description });
@@ -223,7 +223,7 @@ export default function RfiDetailPage() {
     <div className="space-y-6 max-w-5xl mx-auto">
       {/* Top bar */}
       <div className="flex items-center justify-between">
-        <Button variant="ghost" size="sm" onClick={() => navigate("/rfis")} className="gap-1.5">
+        <Button variant="ghost" size="sm" onClick={() => navigate("/technical-office")} className="gap-1.5">
           <ArrowLeft className="h-3.5 w-3.5" />
           {t("common.back")}
         </Button>

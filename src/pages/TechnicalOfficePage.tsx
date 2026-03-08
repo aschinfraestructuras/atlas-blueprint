@@ -10,7 +10,7 @@ import { rfiService } from "@/lib/services/rfiService";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import { exportRfisCsv, exportRfisPdf } from "@/lib/services/rfiExportService";
 import { exportTechOfficeCsv, exportTechOfficePdf } from "@/lib/services/techOfficeExportService";
-import { Inbox, Plus, Pencil, Trash2, MessageSquareText, Search, Eye, AlertTriangle, Clock, CheckCircle, FileText } from "lucide-react";
+import { Inbox, Plus, Trash2, MessageSquareText, Search, Eye, AlertTriangle, Clock, CheckCircle, FileText } from "lucide-react";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
@@ -44,13 +44,22 @@ const STATUS_COLORS: Record<string, string> = {
   closed: "bg-muted text-muted-foreground",
   cancelled: "bg-destructive/10 text-destructive",
   archived: "bg-muted text-muted-foreground",
-  answered: "bg-primary/20 text-primary",
+  answered: "bg-emerald-500/15 text-emerald-600",
   awaiting_response: "bg-secondary text-secondary-foreground",
 };
 
 const PRIORITY_COLORS: Record<string, string> = {
-  low: "secondary", normal: "default", high: "outline", urgent: "destructive",
+  low: "secondary", normal: "default", high: "outline", urgent: "destructive", critical: "destructive",
 };
+
+const RFI_PRIORITY_COLORS: Record<string, string> = {
+  normal: "bg-muted text-muted-foreground",
+  urgent: "bg-amber-500/15 text-amber-600",
+  critical: "bg-destructive/10 text-destructive",
+};
+
+const RFI_DISCIPLINES = ["terras", "betao", "ferrovia", "catenaria", "st", "drenagem", "estruturas", "outros"] as const;
+const RFI_PRIORITIES_LIST = ["normal", "urgent", "critical"] as const;
 
 const OVERDUE_FILTER = "__overdue__";
 
@@ -94,11 +103,15 @@ export default function TechnicalOfficePage() {
   const [filterStatus, setFilterStatus] = useState("__all__");
   const [filterType, setFilterType] = useState("__all__");
   const [filterPriority, setFilterPriority] = useState("__all__");
+  const [filterDiscipline, setFilterDiscipline] = useState("__all__");
+
+  const isRfiTab = activeTab === "rfis";
+  const todayDate = new Date();
+  const todayStr = todayDate.toISOString().slice(0, 10);
 
   // Merge items + rfis into unified list
   const allItems = useMemo(() => {
-    const today = new Date().toISOString().slice(0, 10);
-    const toItems = items.map(i => ({ ...i, _source: "item" as const, _deadline: i.deadline ?? i.due_date }));
+    const toItems = items.map(i => ({ ...i, _source: "item" as const, _deadline: i.deadline ?? i.due_date, _responseDeadline: null as string | null, _discipline: null as string | null, _ptCode: null as string | null }));
     const rfiItems = rfis.map(r => ({
       id: r.id,
       code: r.code,
@@ -108,14 +121,15 @@ export default function TechnicalOfficePage() {
       status: r.status,
       priority: r.priority,
       deadline: r.deadline,
-      _deadline: r.deadline,
+      _deadline: r.response_deadline ?? r.deadline,
+      _responseDeadline: r.response_deadline ?? null,
+      _discipline: r.discipline ?? null,
+      _ptCode: r.pt_code ?? null,
       created_at: r.created_at,
       work_item_id: r.work_item_id,
       nc_id: r.nc_id,
-      discipline: (r as any).discipline,
       _source: "rfi" as const,
     }));
-    // Sort by deadline ASC (most urgent first), nulls last
     return [...toItems, ...rfiItems].sort((a, b) => {
       if (a._deadline && b._deadline) return a._deadline.localeCompare(b._deadline);
       if (a._deadline) return -1;
@@ -126,7 +140,6 @@ export default function TechnicalOfficePage() {
 
   const filtered = useMemo(() => {
     let list = allItems;
-    // Tab filter
     if (activeTab === "rfis") list = list.filter(i => i._source === "rfi" || i.type === "RFI");
     else if (activeTab === "submittals") list = list.filter(i => i.type === "SUBMITTAL");
     else if (activeTab === "transmittals") list = list.filter(i => i.type === "TRANSMITTAL");
@@ -136,37 +149,49 @@ export default function TechnicalOfficePage() {
       const q = search.toLowerCase();
       list = list.filter(r => (r.code ?? "").toLowerCase().includes(q) || r.title.toLowerCase().includes(q));
     }
-    const today = new Date().toISOString().slice(0, 10);
     if (filterStatus === OVERDUE_FILTER) {
-      list = list.filter(r => r._deadline && r._deadline < today && !["closed", "cancelled", "archived"].includes(r.status));
+      list = list.filter(r => {
+        const dl = r._responseDeadline ?? r._deadline;
+        return dl && dl < todayStr && !["closed", "cancelled", "archived"].includes(r.status);
+      });
     } else if (filterStatus !== "__all__") {
       list = list.filter(r => r.status === filterStatus);
     }
     if (filterType !== "__all__") list = list.filter(r => r.type === filterType);
     if (filterPriority !== "__all__") list = list.filter(r => r.priority === filterPriority);
+    if (filterDiscipline !== "__all__") list = list.filter(r => r._discipline === filterDiscipline);
     return list;
-  }, [allItems, activeTab, search, filterStatus, filterType, filterPriority]);
+  }, [allItems, activeTab, search, filterStatus, filterType, filterPriority, filterDiscipline, todayStr]);
 
-  // KPIs
+  // General KPIs
   const kpis = useMemo(() => {
-    const today = new Date();
     const openList = allItems.filter(i => !["closed", "cancelled", "archived"].includes(i.status));
-    const overdue = openList.filter(i => i._deadline && new Date(i._deadline) < today);
+    const overdue = openList.filter(i => {
+      const dl = i._responseDeadline ?? i._deadline;
+      return dl && new Date(dl) < todayDate;
+    });
     const inReview = allItems.filter(i => i.status === "in_review");
     const closedLast30 = allItems.filter(i => {
       if (i.status !== "closed") return false;
-      const d = new Date(i.created_at);
-      return (today.getTime() - d.getTime()) < 30 * 86400000;
+      return (todayDate.getTime() - new Date(i.created_at).getTime()) < 30 * 86400000;
     });
     return { open: openList.length, inReview: inReview.length, overdue: overdue.length, closed30: closedLast30.length };
-  }, [allItems]);
+  }, [allItems, todayDate]);
+
+  // RFI-specific KPIs
+  const rfiKpis = useMemo(() => {
+    const openCount = rfis.filter(r => r.status === "open").length;
+    const answeredCount = rfis.filter(r => r.status === "answered").length;
+    const closedCount = rfis.filter(r => r.status === "closed").length;
+    const overdueCount = rfis.filter(r => r.status === "open" && r.response_deadline && r.response_deadline < todayStr).length;
+    return { open: openCount, answered: answeredCount, overdue: overdueCount, closed: closedCount };
+  }, [rfis, todayStr]);
 
   if (!activeProject) return <NoProjectBanner />;
 
   const meta = { projectName: activeProject.name, projectCode: activeProject.code, locale: "pt" };
 
   const handleNew = () => { setEditingItem(null); setDialogOpen(true); };
-  const handleEdit = (item: TechnicalOfficeItem) => { setEditingItem(item); setDialogOpen(true); };
 
   const handleSoftDeleteItem = async (id: string) => {
     try { await technicalOfficeService.softDelete(id, activeProject.id); toast.success(t("technicalOffice.toast.deleted", { defaultValue: "Eliminado" })); refetch(); }
@@ -186,9 +211,46 @@ export default function TechnicalOfficePage() {
   };
 
   const handleExport = (fmt: "csv" | "pdf") => {
-    if (fmt === "csv") exportTechOfficeCsv(items, meta);
-    else exportTechOfficePdf(items, meta);
+    if (isRfiTab) {
+      if (fmt === "csv") exportRfisCsv(rfis, meta);
+      else exportRfisPdf(rfis, meta);
+    } else {
+      if (fmt === "csv") exportTechOfficeCsv(items, meta);
+      else exportTechOfficePdf(items, meta);
+    }
   };
+
+  const getDaysOpen = (createdAt: string) => Math.max(0, Math.floor((todayDate.getTime() - new Date(createdAt).getTime()) / 86400000));
+
+  // KPI cards to display
+  const kpiCards = isRfiTab
+    ? [
+        { label: t("rfi.kpi.open", { defaultValue: "Em Aberto" }), value: rfiKpis.open, icon: FileText, color: "text-primary" },
+        { label: t("rfi.kpi.answered", { defaultValue: "Respondidos" }), value: rfiKpis.answered, icon: CheckCircle, color: "text-emerald-600" },
+        { label: t("rfi.kpi.overdue", { defaultValue: "Em Atraso" }), value: rfiKpis.overdue, icon: AlertTriangle, color: "text-destructive" },
+        { label: t("rfi.kpi.closed", { defaultValue: "Fechados" }), value: rfiKpis.closed, icon: Clock, color: "text-muted-foreground" },
+      ]
+    : [
+        { label: t("technicalOffice.kpi.open", { defaultValue: "Abertos" }), value: kpis.open, icon: FileText, color: "text-primary" },
+        { label: t("technicalOffice.kpi.inReview", { defaultValue: "Em Análise" }), value: kpis.inReview, icon: Clock, color: "text-secondary-foreground" },
+        { label: t("technicalOffice.kpi.overdue", { defaultValue: "Atrasados" }), value: kpis.overdue, icon: AlertTriangle, color: "text-destructive" },
+        { label: t("technicalOffice.kpi.closed30", { defaultValue: "Fechados (30d)" }), value: kpis.closed30, icon: CheckCircle, color: "text-muted-foreground" },
+      ];
+
+  // Status options for filter
+  const statusOptions = isRfiTab
+    ? [
+        { value: "__all__", label: t("rfi.filters.allStatuses", { defaultValue: "Todos os estados" }) },
+        { value: OVERDUE_FILTER, label: t("rfi.filters.overdue", { defaultValue: "⚠ Em atraso" }) },
+        { value: "open", label: t("technicalOffice.status.open") },
+        { value: "answered", label: t("technicalOffice.status.answered") },
+        { value: "closed", label: t("technicalOffice.status.closed") },
+      ]
+    : [
+        { value: "__all__", label: t("technicalOffice.filters.allStatuses") },
+        { value: OVERDUE_FILTER, label: t("technicalOffice.filters.overdue") },
+        ...[...TECH_OFFICE_STATUSES, "answered", "awaiting_response"].map(s => ({ value: s, label: t(`technicalOffice.status.${s}`, { defaultValue: s }) })),
+      ];
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
@@ -211,14 +273,9 @@ export default function TechnicalOfficePage() {
         </div>
       </div>
 
-      {/* KPIs */}
+      {/* KPIs — context-aware */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {[
-          { label: t("technicalOffice.kpi.open", { defaultValue: "Abertos" }), value: kpis.open, icon: FileText, color: "text-primary" },
-          { label: t("technicalOffice.kpi.inReview", { defaultValue: "Em Análise" }), value: kpis.inReview, icon: Clock, color: "text-secondary-foreground" },
-          { label: t("technicalOffice.kpi.overdue", { defaultValue: "Atrasados" }), value: kpis.overdue, icon: AlertTriangle, color: "text-destructive" },
-          { label: t("technicalOffice.kpi.closed30", { defaultValue: "Fechados (30d)" }), value: kpis.closed30, icon: CheckCircle, color: "text-muted-foreground" },
-        ].map((kpi, idx) => (
+        {kpiCards.map((kpi, idx) => (
           <Card key={idx}>
             <CardContent className="pt-4 pb-3 flex items-center gap-3">
               <kpi.icon className={cn("h-5 w-5", kpi.color)} />
@@ -233,7 +290,7 @@ export default function TechnicalOfficePage() {
 
       {error && <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">{error}</div>}
 
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
+      <Tabs value={activeTab} onValueChange={(v) => { setActiveTab(v); setFilterStatus("__all__"); setFilterDiscipline("__all__"); }}>
         <TabsList>
           <TabsTrigger value="all">{t("technicalOffice.tabs.all", { defaultValue: "Todos" })}</TabsTrigger>
           <TabsTrigger value="rfis">RFIs</TabsTrigger>
@@ -253,37 +310,45 @@ export default function TechnicalOfficePage() {
               />
             </div>
             <Select value={filterStatus} onValueChange={setFilterStatus}>
-              <SelectTrigger className="w-[160px] h-8 text-sm"><SelectValue placeholder={t("technicalOffice.filters.allStatuses")} /></SelectTrigger>
+              <SelectTrigger className="w-[160px] h-8 text-sm"><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="__all__">{t("technicalOffice.filters.allStatuses")}</SelectItem>
-                <SelectItem value={OVERDUE_FILTER}>{t("technicalOffice.filters.overdue")}</SelectItem>
-                {[...TECH_OFFICE_STATUSES, "answered", "awaiting_response"].map(s => (
-                  <SelectItem key={s} value={s}>{t(`technicalOffice.status.${s}`, { defaultValue: s })}</SelectItem>
-                ))}
+                {statusOptions.map(o => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
               </SelectContent>
             </Select>
-            <Select value={filterType} onValueChange={setFilterType}>
-              <SelectTrigger className="w-[150px] h-8 text-sm"><SelectValue placeholder={t("technicalOffice.filters.allTypes", { defaultValue: "Todos os tipos" })} /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="__all__">{t("technicalOffice.filters.allTypes", { defaultValue: "Todos os tipos" })}</SelectItem>
-                {TECH_OFFICE_TYPES.map(tp => (
-                  <SelectItem key={tp} value={tp}>{t(`technicalOffice.types.${tp}`, { defaultValue: tp })}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {/* Discipline filter — shown on RFI tab or All tab */}
+            {(isRfiTab || activeTab === "all") && (
+              <Select value={filterDiscipline} onValueChange={setFilterDiscipline}>
+                <SelectTrigger className="w-[150px] h-8 text-sm"><SelectValue placeholder={t("rfi.filters.allDisciplines", { defaultValue: "Todas disciplinas" })} /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__all__">{t("rfi.filters.allDisciplines", { defaultValue: "Todas disciplinas" })}</SelectItem>
+                  {RFI_DISCIPLINES.map(d => <SelectItem key={d} value={d}>{t(`nc.discipline.${d}`, { defaultValue: d })}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            )}
+            {/* Type filter — hidden when on specific tab */}
+            {!isRfiTab && activeTab === "all" && (
+              <Select value={filterType} onValueChange={setFilterType}>
+                <SelectTrigger className="w-[150px] h-8 text-sm"><SelectValue placeholder={t("technicalOffice.filters.allTypes", { defaultValue: "Todos os tipos" })} /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__all__">{t("technicalOffice.filters.allTypes", { defaultValue: "Todos os tipos" })}</SelectItem>
+                  {TECH_OFFICE_TYPES.map(tp => <SelectItem key={tp} value={tp}>{t(`technicalOffice.types.${tp}`, { defaultValue: tp })}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            )}
+            {/* Priority filter — RFI tab uses its own list */}
             <Select value={filterPriority} onValueChange={setFilterPriority}>
               <SelectTrigger className="w-[140px] h-8 text-sm"><SelectValue placeholder={t("technicalOffice.filters.allPriorities")} /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="__all__">{t("technicalOffice.filters.allPriorities")}</SelectItem>
-                {PRIORITIES.map(p => (
-                  <SelectItem key={p} value={p}>{t(`technicalOffice.priority.${p}`, { defaultValue: p })}</SelectItem>
+                {(isRfiTab ? [...RFI_PRIORITIES_LIST] : PRIORITIES).map(p => (
+                  <SelectItem key={p} value={p}>{t(`rfi.priority.${p}`, { defaultValue: t(`technicalOffice.priority.${p}`, { defaultValue: p }) })}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </FilterBar>
         </div>
 
-        {/* Unified table for all tabs */}
+        {/* Table */}
         <div className="mt-4">
           {(loading || rfisLoading) ? (
             <div className="rounded-xl border border-border overflow-hidden divide-y divide-border">
@@ -297,43 +362,68 @@ export default function TechnicalOfficePage() {
                 <TableHeader>
                   <TableRow className="bg-muted/40">
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("technicalOffice.table.code")}</TableHead>
-                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("technicalOffice.table.type")}</TableHead>
+                    {!isRfiTab && <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("technicalOffice.table.type")}</TableHead>}
+                    {isRfiTab && <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">PT</TableHead>}
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("technicalOffice.table.subject", { defaultValue: "Assunto" })}</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("nc.form.discipline", { defaultValue: "Disciplina" })}</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("technicalOffice.table.priority")}</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.status")}</TableHead>
-                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("technicalOffice.table.deadline")}</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      {isRfiTab ? t("rfi.table.responseDeadline", { defaultValue: "Prazo Resposta" }) : t("technicalOffice.table.deadline")}
+                    </TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("technicalOffice.table.daysOpen", { defaultValue: "Dias" })}</TableHead>
                     <TableHead className="w-20">{t("common.actions")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filtered.map((row) => {
-                    const today = new Date();
-                    const todayStr = today.toISOString().slice(0, 10);
-                    const isOverdue = row._deadline && row._deadline < todayStr && !["closed", "cancelled", "archived"].includes(row.status);
-                    const daysOpen = Math.max(0, Math.floor((today.getTime() - new Date(row.created_at).getTime()) / 86400000));
+                    const isRfi = row._source === "rfi";
+                    const responseDeadline = row._responseDeadline;
+                    const deadlineToShow = isRfiTab ? responseDeadline : row._deadline;
+                    const isOverdue = isRfi
+                      ? row.status === "open" && responseDeadline && responseDeadline < todayStr
+                      : row._deadline && row._deadline < todayStr && !["closed", "cancelled", "archived"].includes(row.status);
+                    const daysOpen = getDaysOpen(row.created_at);
                     return (
                       <TableRow key={`${row._source}-${row.id}`} className="hover:bg-muted/20 transition-colors cursor-pointer" onClick={() => handleRowClick(row)}>
                         <TableCell className="font-mono text-xs font-medium">{row.code ?? "—"}</TableCell>
-                        <TableCell><Badge variant="secondary" className="text-xs">{t(`technicalOffice.types.${row.type}`, { defaultValue: row.type })}</Badge></TableCell>
+                        {!isRfiTab && (
+                          <TableCell><Badge variant="secondary" className="text-xs">{t(`technicalOffice.types.${row.type}`, { defaultValue: row.type })}</Badge></TableCell>
+                        )}
+                        {isRfiTab && (
+                          <TableCell className="font-mono text-xs text-muted-foreground">{row._ptCode ?? "—"}</TableCell>
+                        )}
                         <TableCell className="font-medium text-sm text-foreground max-w-[250px] truncate">{row.title}</TableCell>
-                        <TableCell className="text-xs text-muted-foreground">{(row as any).discipline ? t(`nc.discipline.${(row as any).discipline}`, { defaultValue: (row as any).discipline }) : "—"}</TableCell>
-                        <TableCell>
-                          <Badge variant={(PRIORITY_COLORS[row.priority] || "secondary") as any} className="text-xs">
-                            {t(`technicalOffice.priority.${row.priority}`, { defaultValue: row.priority })}
-                          </Badge>
+                        <TableCell className="text-xs text-muted-foreground">
+                          {row._discipline ? t(`nc.discipline.${row._discipline}`, { defaultValue: row._discipline }) : "—"}
                         </TableCell>
                         <TableCell>
-                          <Badge variant="secondary" className={cn("text-xs", STATUS_COLORS[row.status] ?? "")}>
-                            {t(`technicalOffice.status.${row.status}`, { defaultValue: row.status })}
+                          {isRfi ? (
+                            <Badge variant="secondary" className={cn("text-xs", RFI_PRIORITY_COLORS[row.priority] ?? "")}>
+                              {t(`rfi.priority.${row.priority}`, { defaultValue: row.priority })}
+                            </Badge>
+                          ) : (
+                            <Badge variant={(PRIORITY_COLORS[row.priority] || "secondary") as any} className="text-xs">
+                              {t(`technicalOffice.priority.${row.priority}`, { defaultValue: row.priority })}
+                            </Badge>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="secondary" className={cn("text-xs",
+                            isOverdue ? "bg-destructive/15 text-destructive" : STATUS_COLORS[row.status] ?? ""
+                          )}>
+                            {isOverdue
+                              ? t("rfi.status.overdue", { defaultValue: "Atrasado" })
+                              : t(`technicalOffice.status.${row.status}`, { defaultValue: row.status })}
                           </Badge>
                         </TableCell>
-                        <TableCell className={cn("text-sm", isOverdue ? "text-destructive font-medium" : "text-muted-foreground")}>
+                        <TableCell className={cn("text-xs", isOverdue && "text-destructive font-medium")}>
                           {isOverdue && <AlertTriangle className="h-3 w-3 inline mr-1" />}
-                          {row._deadline ? new Date(row._deadline).toLocaleDateString() : "—"}
+                          {deadlineToShow ? new Date(deadlineToShow).toLocaleDateString() : "—"}
                         </TableCell>
-                        <TableCell className="text-xs text-muted-foreground tabular-nums">{daysOpen}d</TableCell>
+                        <TableCell className={cn("text-xs font-medium tabular-nums", daysOpen > 14 && "text-destructive")}>
+                          {daysOpen}d
+                        </TableCell>
                         <TableCell onClick={(e) => e.stopPropagation()}>
                           <div className="flex gap-1">
                             <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={() => handleRowClick(row)}>
