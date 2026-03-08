@@ -50,6 +50,7 @@ import QCReportPage from "./pages/QCReportPage";
 import LaboratoriesPage from "./pages/LaboratoriesPage";
 import DailyReportsPage from "./pages/DailyReportsPage";
 import DailyReportDetailPage from "./pages/DailyReportDetailPage";
+import RecycledMaterialsPage from "./pages/RecycledMaterialsPage";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 const queryClient = new QueryClient();
 
