@@ -679,6 +679,9 @@ export default function WorkItemDetailPage() {
   const [editOpen,   setEditOpen]   = useState(false);
   const [ncs,        setNcs]        = useState<any[]>([]);
   const [subLoading, setSubLoading] = useState(true);
+  const [reportData, setReportData]       = useState<WorkItemReportData | null>(null);
+  const [reportOpen, setReportOpen]       = useState(false);
+  const [reportLoading, setReportLoading] = useState(false);
 
   // Materials linked to this work item
   const [workItemMaterials, setWorkItemMaterials] = useState<any[]>([]);
