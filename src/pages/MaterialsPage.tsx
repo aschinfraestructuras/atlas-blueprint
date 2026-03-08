@@ -179,7 +179,7 @@ export default function MaterialsPage() {
                   <Card className="border shadow-none">
                     <CardContent className="pt-4 pb-4 px-4">
                       <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground flex items-center gap-1.5 mb-3">
-                        <Package className="h-3.5 w-3.5" />{t("materials.approval.mapMas")}
+                        <Package className="h-3.5 w-3.5" />{t("materials.approval.title", { defaultValue: "Aprovação" })}
                       </p>
                       <ul className="space-y-1.5">
                         {(() => {
