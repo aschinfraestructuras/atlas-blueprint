@@ -63,7 +63,7 @@ export default function PlanDetailPage() {
       toast({ title: t("common.recordNotFound", { defaultValue: "Registo não encontrado." }), variant: "destructive" });
       navigate("/plans", { replace: true });
     }
-  }, [id]);
+  }, [id, navigate, t]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [plan, setPlan] = useState<Plan | null>(null);

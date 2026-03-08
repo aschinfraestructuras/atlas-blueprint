@@ -58,7 +58,7 @@ export function PPIProgressChart() {
         }
         setLoading(false);
       });
-  }, [activeProject?.id]);
+  }, [activeProject]);
 
   const pct = kpis.total > 0 ? (kpis.approved_count / kpis.total) * 100 : 0;
 

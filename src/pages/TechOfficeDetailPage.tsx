@@ -81,7 +81,7 @@ export default function TechOfficeDetailPage() {
       toast({ variant: "destructive", title: t("common.error", { defaultValue: "Erro" }) });
       navigate("/technical-office");
     }).finally(() => setLoading(false));
-  }, [id]);
+  }, [id, navigate, t, toast]);
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;

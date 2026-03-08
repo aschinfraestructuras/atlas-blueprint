@@ -295,7 +295,7 @@ export default function DocumentDetailPage() {
       toast({ title: t("common.recordNotFound", { defaultValue: "Registo não encontrado." }), variant: "destructive" });
       navigate("/documents", { replace: true });
     }
-  }, [id]);
+  }, [id, navigate, t]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [doc, setDoc] = useState<Document | null>(null);

@@ -126,7 +126,7 @@ export default function NCDetailPage() {
       toast({ title: t("common.recordNotFound", { defaultValue: "Registo não encontrado." }), variant: "destructive" });
       navigate("/non-conformities", { replace: true });
     }
-  }, [id]);
+  }, [id, navigate, t]);
 
   const [nc, setNc] = useState<NonConformity | null>(null);
   const [loading, setLoading] = useState(true);

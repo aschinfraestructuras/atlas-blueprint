@@ -96,7 +96,7 @@ export function DynamicTestFormRenderer({ schema, values, onChange, readOnly }: 
       }
     }
     if (changed) onChange(next);
-  }, [values, schema.fields]);
+  }, [values, schema.fields, onChange]);
 
   // Criteria evaluation
   const criteriaResult = useMemo(() => evaluateCriteria(schema.criteria, computedValues), [schema.criteria, computedValues]);

@@ -97,7 +97,7 @@ export default function RfiDetailPage() {
         navigate("/technical-office");
       })
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [id, navigate, t, toast]);
 
   // Auto-scroll messages
   useEffect(() => {

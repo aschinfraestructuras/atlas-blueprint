@@ -54,7 +54,7 @@ export default function ActivityDetailPage() {
       toast({ title: t("common.recordNotFound", { defaultValue: "Registo não encontrado." }), variant: "destructive" });
       navigate("/planning/activities", { replace: true });
     }
-  }, [id]);
+  }, [id, navigate, t]);
 
   const [activity, setActivity] = useState<Activity | null>(null);
   const [loading, setLoading] = useState(true);

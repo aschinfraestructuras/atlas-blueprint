@@ -44,7 +44,7 @@ export function WorkProgressChart() {
         setData(byDisc);
         setLoading(false);
       });
-  }, [activeProject?.id]);
+  }, [activeProject]);
 
   return (
     <Card
