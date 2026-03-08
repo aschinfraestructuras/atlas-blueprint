@@ -131,7 +131,8 @@
     "deadlines": "Plazos",
     "qcReport": "Informe QC",
     "audits": "Auditorías",
-    "dailyReports": "Parte Diario"
+    "dailyReports": "Parte Diario",
+    "recycledMaterials": "Reciclados / PPGRCD"
   },
   "topbar": {
     "language": "Idioma",
