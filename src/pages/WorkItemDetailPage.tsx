@@ -351,7 +351,20 @@ function WorkItemTestsTab({
   };
 
   return (
-    <>
+    <div className="space-y-4">
+      {/* Tests Timeline */}
+      {tests.length > 0 && (
+        <TestsTimelineChart
+          tests={tests.map(tr => ({
+            id: tr.id,
+            date: tr.date,
+            pass_fail: tr.pass_fail ?? null,
+            status: tr.status,
+            code: tr.code,
+            test_name: (tr.tests_catalog as any)?.name,
+          }))}
+        />
+      )}
       <Card className="shadow-card">
         <CardHeader className="pb-3 pt-4 px-5 flex flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2 flex-wrap">
