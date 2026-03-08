@@ -1667,6 +1667,11 @@
       "responseRegistered": "Respuesta registrada con éxito."
     }
   },
+  "rfis": {
+    "form": {
+      "ncNone": "Sin NC asociada"
+    }
+  },
   "plans": {
     "newPlan": "Nuevo Plan",
     "searchPlaceholder": "Buscar título, revisión…",
