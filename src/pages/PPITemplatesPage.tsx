@@ -1,10 +1,11 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Plus, Search, ClipboardList, Pencil, Copy, Power, PowerOff, Loader2 } from "lucide-react";
+import { Plus, Search, ClipboardList, Pencil, Copy, Power, PowerOff, Loader2, Database } from "lucide-react";
 import { usePPITemplates } from "@/hooks/usePPI";
 import { useProject } from "@/contexts/ProjectContext";
 import { ppiService, PPI_DISCIPLINAS, type PpiTemplate } from "@/lib/services/ppiService";
+import { ppiSeedService } from "@/lib/services/ppiSeedService";
 import { PPITemplateFormDialog } from "@/components/ppi/PPITemplateFormDialog";
 import { PPITemplateBadge } from "@/components/ppi/PPIStatusBadge";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
