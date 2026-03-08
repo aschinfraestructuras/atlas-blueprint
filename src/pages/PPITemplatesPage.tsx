@@ -144,7 +144,7 @@ export default function PPITemplatesPage() {
 
       if (items.length > 0) {
         await ppiService.addTemplateItems(
-          items.map((it, idx) => ({
+          items.map((it) => ({
             template_id:         created.id,
             item_no:             it.item_no,
             check_code:          it.check_code,
@@ -152,6 +152,9 @@ export default function PPITemplatesPage() {
             method:              it.method,
             acceptance_criteria: it.acceptance_criteria,
             inspection_point_type: it.inspection_point_type,
+            ipt_e:               (it as any).ipt_e,
+            ipt_f:               (it as any).ipt_f,
+            ipt_ip:              (it as any).ipt_ip,
             required:            it.required,
             evidence_required:   it.evidence_required,
             sort_order:          it.sort_order,
