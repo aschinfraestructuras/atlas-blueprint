@@ -4690,6 +4690,44 @@ export type Database = {
         }
         Relationships: []
       }
+      vw_work_items_summary: {
+        Row: {
+          com_nc_aberta: number | null
+          com_ppi_pendente: number | null
+          concluidas: number | null
+          disciplina: string | null
+          em_execucao: number | null
+          obra: string | null
+          previstas: number | null
+          project_id: string | null
+          prontas: number | null
+          sector: string | null
+          total: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "work_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
     }
     Functions: {
       fn_accept_project_invite: { Args: { p_token: string }; Returns: Json }

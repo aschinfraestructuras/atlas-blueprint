@@ -3,17 +3,15 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   Plus, Search, Construction, Pencil, Trash2, Eye, ClipboardCheck, Loader2,
-  ShieldCheck, ShieldAlert, AlertTriangle, FlaskConical,
+  ShieldCheck, ShieldAlert, AlertTriangle, FlaskConical, Copy, ChevronDown, ChevronRight,
 } from "lucide-react";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import {
   exportToCSV,
   generateListPdf,
   buildReportFilename,
-  type ReportLabels,
 } from "@/lib/services/reportService";
-import { ppiDemoService } from "@/lib/services/ppiDemoService";
-import { exportWorkItemsCsv, type WorkItemForExport } from "@/lib/services/workItemExportService";
+import { exportWorkItemsCsv } from "@/lib/services/workItemExportService";
 import { useWorkItems } from "@/hooks/useWorkItems";
 import { useProject } from "@/contexts/ProjectContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -23,6 +21,7 @@ import {
   workItemService, formatPk, WORK_ITEM_STATUS_OPTIONS, type WorkItem,
 } from "@/lib/services/workItemService";
 import { WorkItemFormDialog } from "@/components/work-items/WorkItemFormDialog";
+import { PPIInstanceFormDialog } from "@/components/ppi/PPIInstanceFormDialog";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { EmptyState } from "@/components/EmptyState";
 import { Button } from "@/components/ui/button";
@@ -30,6 +29,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/ui/page-header";
 import { FilterBar } from "@/components/ui/filter-bar";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
@@ -99,6 +99,64 @@ function ReadinessBadge({ item }: { item: WorkItem }) {
   );
 }
 
+// ─── Grouping helpers ─────────────────────────────────────────────────────────
+
+interface ObraGroup {
+  obra: string;
+  items: WorkItem[];
+  statusCounts: Record<string, number>;
+}
+
+interface SectorGroup {
+  sector: string;
+  obraGroups: ObraGroup[];
+  hasInProgress: boolean;
+}
+
+function buildGroups(items: WorkItem[]): SectorGroup[] {
+  const sectorMap = new Map<string, Map<string, WorkItem[]>>();
+  for (const wi of items) {
+    const s = wi.sector || "—";
+    const o = wi.obra || "—";
+    if (!sectorMap.has(s)) sectorMap.set(s, new Map());
+    const obraMap = sectorMap.get(s)!;
+    if (!obraMap.has(o)) obraMap.set(o, []);
+    obraMap.get(o)!.push(wi);
+  }
+
+  const result: SectorGroup[] = [];
+  for (const [sector, obraMap] of sectorMap) {
+    let hasInProgress = false;
+    const obraGroups: ObraGroup[] = [];
+    for (const [obra, items] of obraMap) {
+      const statusCounts: Record<string, number> = {};
+      for (const wi of items) {
+        statusCounts[wi.status] = (statusCounts[wi.status] || 0) + 1;
+        if (wi.status === "in_progress") hasInProgress = true;
+      }
+      obraGroups.push({ obra, items, statusCounts });
+    }
+    obraGroups.sort((a, b) => a.obra.localeCompare(b.obra));
+    result.push({ sector, obraGroups, hasInProgress });
+  }
+  result.sort((a, b) => a.sector.localeCompare(b.sector));
+  return result;
+}
+
+function StatusCountBadges({ counts, t }: { counts: Record<string, number>; t: (k: string, o?: any) => string }) {
+  const entries = Object.entries(counts);
+  return (
+    <span className="inline-flex items-center gap-1.5 ml-2">
+      {entries.map(([status, count]) => (
+        <span key={status} className="inline-flex items-center gap-1 text-[10px] text-muted-foreground">
+          <span className="h-1.5 w-1.5 rounded-full flex-shrink-0" style={{ background: STATUS_DOT[status] ?? "hsl(215 15% 55%)" }} />
+          {count} {t(`workItems.status.${status}`, { defaultValue: status })}
+        </span>
+      ))}
+    </span>
+  );
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function WorkItemsPage() {
   const { t, i18n }                = useTranslation();
@@ -110,12 +168,20 @@ export default function WorkItemsPage() {
 
   const [dialogOpen, setDialogOpen]   = useState(false);
   const [editItem,   setEditItem]     = useState<WorkItem | null>(null);
+  const [duplicateItem, setDuplicateItem] = useState<WorkItem | null>(null);
   const [deleteItem, setDeleteItem]   = useState<WorkItem | null>(null);
   const [deleting,   setDeleting]     = useState(false);
   const [search,     setSearch]       = useState("");
   const [filterDiscipline, setFilterDiscipline] = useState("all");
   const [filterStatus,     setFilterStatus]     = useState("all");
-  const [demoCreatingId, setDemoCreatingId]     = useState<string | null>(null);
+
+  // PPI creation
+  const [ppiDialogOpen, setPpiDialogOpen] = useState(false);
+  const [ppiWorkItemId, setPpiWorkItemId] = useState<string | undefined>();
+
+  // Collapsible state
+  const [expandedSectors, setExpandedSectors] = useState<Set<string>>(new Set());
+  const [expandedObras, setExpandedObras]     = useState<Set<string>>(new Set());
 
   // ── Filtering ────────────────────────────────────────────────────────────────
   const filtered = useMemo(() => {
@@ -127,7 +193,8 @@ export default function WorkItemsPage() {
           r.sector.toLowerCase().includes(q)     ||
           r.disciplina.toLowerCase().includes(q) ||
           (r.obra ?? "").toLowerCase().includes(q) ||
-          (r.lote ?? "").toLowerCase().includes(q),
+          (r.lote ?? "").toLowerCase().includes(q) ||
+          (r.elemento ?? "").toLowerCase().includes(q),
       );
     }
     if (filterDiscipline !== "all") rows = rows.filter((r) => r.disciplina === filterDiscipline);
@@ -135,8 +202,65 @@ export default function WorkItemsPage() {
     return rows;
   }, [data, search, filterDiscipline, filterStatus]);
 
-  function openCreate() { setEditItem(null); setDialogOpen(true); }
-  function openEdit(item: WorkItem) { setEditItem(item); setDialogOpen(true); }
+  // ── Groups ──────────────────────────────────────────────────────────────────
+  const groups = useMemo(() => buildGroups(filtered), [filtered]);
+
+  // Auto-expand logic
+  const effectiveExpandedSectors = useMemo(() => {
+    if (expandedSectors.size > 0) return expandedSectors;
+    const auto = new Set<string>();
+    if (groups.length <= 3) {
+      groups.forEach(g => auto.add(g.sector));
+    } else {
+      groups.forEach(g => { if (g.hasInProgress) auto.add(g.sector); });
+    }
+    return auto;
+  }, [groups, expandedSectors]);
+
+  const effectiveExpandedObras = useMemo(() => {
+    if (expandedObras.size > 0) return expandedObras;
+    const auto = new Set<string>();
+    groups.forEach(g => {
+      g.obraGroups.forEach(og => {
+        if (og.statusCounts["in_progress"] || groups.length <= 3) {
+          auto.add(`${g.sector}::${og.obra}`);
+        }
+      });
+    });
+    return auto;
+  }, [groups, expandedObras]);
+
+  function toggleSector(sector: string) {
+    setExpandedSectors(prev => {
+      const base = prev.size > 0 ? new Set(prev) : new Set(effectiveExpandedSectors);
+      if (base.has(sector)) base.delete(sector); else base.add(sector);
+      return base;
+    });
+  }
+
+  function toggleObra(key: string) {
+    setExpandedObras(prev => {
+      const base = prev.size > 0 ? new Set(prev) : new Set(effectiveExpandedObras);
+      if (base.has(key)) base.delete(key); else base.add(key);
+      return base;
+    });
+  }
+
+  function openCreate() { setEditItem(null); setDuplicateItem(null); setDialogOpen(true); }
+  function openEdit(item: WorkItem) { setEditItem(item); setDuplicateItem(null); setDialogOpen(true); }
+
+  function openDuplicate(item: WorkItem) {
+    // Clone with cleared elemento/pk
+    const clone = { ...item, id: "", elemento: null, parte: null, pk_inicio: null, pk_fim: null, status: "planned" as const };
+    setEditItem(null);
+    setDuplicateItem(clone);
+    setDialogOpen(true);
+  }
+
+  function openCreatePPI(workItemId: string) {
+    setPpiWorkItemId(workItemId);
+    setPpiDialogOpen(true);
+  }
 
   async function handleDelete() {
     if (!deleteItem || !activeProject) return;
@@ -157,30 +281,8 @@ export default function WorkItemsPage() {
     }
   }
 
-  async function handleCreateDemoPPI(item: WorkItem) {
-    if (!activeProject || !user) return;
-    setDemoCreatingId(item.id);
-    try {
-      const { instanceId, code } = await ppiDemoService.seedDemoInstance(
-        activeProject.id, item.id, user.id,
-      );
-      toast({ title: t("ppi.demo.instance.created", { code }) });
-      navigate(`/ppi/${instanceId}`);
-    } catch (err) {
-      const info = classifySupabaseError(err, t);
-      toast({
-        title: t("ppi.demo.error"),
-        description: info.raw || (err instanceof Error ? err.message : String(err)),
-        variant: "destructive",
-      });
-    } finally {
-      setDemoCreatingId(null);
-    }
-  }
-
   function handleExportCsv() {
     if (!activeProject) return;
-    const locale = i18n.language ?? "pt";
     const headers = [
       t("workItems.export.fields.sector"),
       t("workItems.export.fields.discipline"),
@@ -232,6 +334,81 @@ export default function WorkItemsPage() {
   }
 
   if (!activeProject) return <NoProjectBanner />;
+
+  // Helper: render item row actions
+  function renderActions(item: WorkItem) {
+    return (
+      <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => navigate(`/work-items/${item.id}`)} title={t("common.view")}>
+          <Eye className="h-3.5 w-3.5" />
+        </Button>
+        {canEdit && (
+          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(item)} title={t("common.edit")}>
+            <Pencil className="h-3.5 w-3.5" />
+          </Button>
+        )}
+        {canCreate && (
+          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openDuplicate(item)} title={t("workItems.actions.duplicate")}>
+            <Copy className="h-3.5 w-3.5" />
+          </Button>
+        )}
+        {canCreate && (
+          <Button
+            variant="ghost" size="icon"
+            className="h-7 w-7 hover:text-primary hover:bg-primary/10"
+            onClick={() => openCreatePPI(item.id)}
+            title={t("workItems.actions.createPPI")}
+          >
+            <ClipboardCheck className="h-3.5 w-3.5" />
+          </Button>
+        )}
+        {canDelete && (
+          <Button
+            variant="ghost" size="icon"
+            className="h-7 w-7 hover:text-destructive hover:bg-destructive/10"
+            onClick={() => setDeleteItem(item)}
+            title={t("common.delete")}
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </Button>
+        )}
+      </div>
+    );
+  }
+
+  // Helper: render a single work item row
+  function renderItemRow(item: WorkItem, idx: number) {
+    return (
+      <TableRow
+        key={item.id}
+        className={cn(
+          "cursor-pointer group transition-colors duration-100",
+          "hover:bg-primary/[0.028]",
+          idx % 2 === 1 && "bg-muted/[0.018]",
+        )}
+        onClick={() => navigate(`/work-items/${item.id}`)}
+      >
+        <TableCell className="text-sm text-muted-foreground">
+          {t(`workItems.disciplines.${item.disciplina}`, { defaultValue: item.disciplina })}
+        </TableCell>
+        <TableCell className="text-sm text-muted-foreground">
+          {[item.elemento, item.parte].filter(Boolean).join(" · ") || "—"}
+        </TableCell>
+        <TableCell className="font-mono text-xs text-muted-foreground">
+          {formatPk(item.pk_inicio, item.pk_fim)}
+        </TableCell>
+        <TableCell>
+          <StatusBadge status={item.status} />
+        </TableCell>
+        <TableCell>
+          <ReadinessBadge item={item} />
+        </TableCell>
+        <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
+          {renderActions(item)}
+        </TableCell>
+      </TableRow>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -307,7 +484,7 @@ export default function WorkItemsPage() {
         </span>
       </FilterBar>
 
-      {/* ── Table ───────────────────────────────────────────────────── */}
+      {/* ── Grouped content ─────────────────────────────────────────── */}
       {loading ? (
         <div className="space-y-2">
           {Array.from({ length: 6 }).map((_, i) => (
@@ -328,125 +505,89 @@ export default function WorkItemsPage() {
             : {})}
         />
       ) : (
-        <div className="rounded-xl border border-border overflow-hidden bg-card shadow-card">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-muted/30 hover:bg-muted/30">
-                <TableHead className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                  {t("workItems.table.sector")}
-                </TableHead>
-                <TableHead className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                  {t("workItems.table.discipline")}
-                </TableHead>
-                <TableHead className="hidden md:table-cell text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                  {t("workItems.table.obraLote")}
-                </TableHead>
-                <TableHead className="hidden lg:table-cell text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                  {t("workItems.table.element")}
-                </TableHead>
-                <TableHead className="hidden xl:table-cell text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                  {t("workItems.table.pk")}
-                </TableHead>
-                <TableHead className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                  {t("workItems.table.status")}
-                </TableHead>
-                <TableHead className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                  {t("workItems.table.readiness")}
-                </TableHead>
-                <TableHead className="text-right text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                  {t("workItems.table.actions")}
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filtered.map((item, idx) => (
-                <TableRow
-                  key={item.id}
-                  className={cn(
-                    "cursor-pointer group transition-colors duration-100",
-                    "hover:bg-primary/[0.028]",
-                    idx % 2 === 1 && "bg-muted/[0.018]",
-                  )}
-                  onClick={() => navigate(`/work-items/${item.id}`)}
-                >
-                  <TableCell className="font-semibold text-sm">{item.sector}</TableCell>
-                  <TableCell>
-                    <span className="text-xs text-muted-foreground">
-                      {t(`workItems.disciplines.${item.disciplina}`, { defaultValue: item.disciplina })}
-                    </span>
-                  </TableCell>
-                  <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
-                    {[item.obra, item.lote].filter(Boolean).join(" / ") || "—"}
-                  </TableCell>
-                  <TableCell className="hidden lg:table-cell text-sm text-muted-foreground">
-                    {[item.elemento, item.parte].filter(Boolean).join(" · ") || "—"}
-                  </TableCell>
-                  <TableCell className="hidden xl:table-cell font-mono text-xs text-muted-foreground">
-                    {formatPk(item.pk_inicio, item.pk_fim)}
-                  </TableCell>
-                  <TableCell>
-                    <StatusBadge status={item.status} />
-                  </TableCell>
-                  <TableCell>
-                    <ReadinessBadge item={item} />
-                  </TableCell>
-                  <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
-                    {/* Actions: visible only on row hover */}
-                    <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
-                      <Button
-                        variant="ghost" size="icon" className="h-7 w-7"
-                        onClick={() => navigate(`/work-items/${item.id}`)}
-                        title={t("common.view")}
-                      >
-                        <Eye className="h-3.5 w-3.5" />
-                      </Button>
-                      {canEdit && (
-                        <Button
-                          variant="ghost" size="icon" className="h-7 w-7"
-                          onClick={() => openEdit(item)}
-                          title={t("common.edit")}
-                        >
-                          <Pencil className="h-3.5 w-3.5" />
-                        </Button>
-                      )}
-                      {canCreate && (
-                        <Button
-                          variant="ghost" size="icon"
-                          className="h-7 w-7 hover:text-primary hover:bg-primary/10"
-                          onClick={() => handleCreateDemoPPI(item)}
-                          disabled={demoCreatingId === item.id}
-                          title={t("ppi.demo.instance.button")}
-                        >
-                          {demoCreatingId === item.id
-                            ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                            : <ClipboardCheck className="h-3.5 w-3.5" />}
-                        </Button>
-                      )}
-                      {canDelete && (
-                        <Button
-                          variant="ghost" size="icon"
-                          className="h-7 w-7 hover:text-destructive hover:bg-destructive/10"
-                          onClick={() => setDeleteItem(item)}
-                          title={t("common.delete")}
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
-                      )}
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+        <div className="space-y-3">
+          {groups.map((sectorGroup) => {
+            const sectorOpen = effectiveExpandedSectors.has(sectorGroup.sector);
+            const totalItems = sectorGroup.obraGroups.reduce((sum, og) => sum + og.items.length, 0);
+
+            return (
+              <Collapsible key={sectorGroup.sector} open={sectorOpen} onOpenChange={() => toggleSector(sectorGroup.sector)}>
+                <CollapsibleTrigger className="w-full">
+                  <div className="flex items-center gap-2 px-4 py-3 rounded-xl border border-border bg-card shadow-card hover:bg-muted/30 transition-colors cursor-pointer">
+                    {sectorOpen ? <ChevronDown className="h-4 w-4 text-muted-foreground" /> : <ChevronRight className="h-4 w-4 text-muted-foreground" />}
+                    <span className="font-semibold text-sm text-foreground">{sectorGroup.sector}</span>
+                    <Badge variant="secondary" className="text-[10px] ml-1">{totalItems}</Badge>
+                    <span className="flex-1" />
+                    {sectorGroup.obraGroups.length > 1 && (
+                      <span className="text-[10px] text-muted-foreground">{sectorGroup.obraGroups.length} {t("workItems.groups.obras")}</span>
+                    )}
+                  </div>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <div className="ml-4 mt-2 space-y-2">
+                    {sectorGroup.obraGroups.map((obraGroup) => {
+                      const obraKey = `${sectorGroup.sector}::${obraGroup.obra}`;
+                      const obraOpen = effectiveExpandedObras.has(obraKey);
+
+                      return (
+                        <Collapsible key={obraKey} open={obraOpen} onOpenChange={() => toggleObra(obraKey)}>
+                          <CollapsibleTrigger className="w-full">
+                            <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border/60 bg-muted/20 hover:bg-muted/40 transition-colors cursor-pointer">
+                              {obraOpen ? <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />}
+                              <span className="text-sm font-medium text-foreground">{obraGroup.obra}</span>
+                              <StatusCountBadges counts={obraGroup.statusCounts} t={t} />
+                            </div>
+                          </CollapsibleTrigger>
+                          <CollapsibleContent>
+                            <div className="rounded-lg border border-border/40 overflow-hidden mt-1.5 ml-2 bg-card">
+                              <Table>
+                                <TableHeader>
+                                  <TableRow className="bg-muted/30 hover:bg-muted/30">
+                                    <TableHead className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">{t("workItems.table.discipline")}</TableHead>
+                                    <TableHead className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">{t("workItems.table.element")}</TableHead>
+                                    <TableHead className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">{t("workItems.table.pk")}</TableHead>
+                                    <TableHead className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">{t("workItems.table.status")}</TableHead>
+                                    <TableHead className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">{t("workItems.table.readiness")}</TableHead>
+                                    <TableHead className="text-right text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">{t("workItems.table.actions")}</TableHead>
+                                  </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                  {obraGroup.items.map((item, idx) => renderItemRow(item, idx))}
+                                </TableBody>
+                              </Table>
+                            </div>
+                          </CollapsibleContent>
+                        </Collapsible>
+                      );
+                    })}
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+            );
+          })}
         </div>
       )}
 
-      {/* ── Form dialog ──────────────────────────────────────────────── */}
+      {/* ── Form dialog (create / edit / duplicate) ──────────────────── */}
       <WorkItemFormDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         item={editItem}
-        onSuccess={refetch}
+        duplicateFrom={duplicateItem}
+        onSuccess={() => {
+          refetch();
+          if (duplicateItem) {
+            toast({ title: t("workItems.toast.duplicated") });
+          }
+        }}
+      />
+
+      {/* ── PPI creation dialog ──────────────────────────────────────── */}
+      <PPIInstanceFormDialog
+        open={ppiDialogOpen}
+        onOpenChange={setPpiDialogOpen}
+        preselectedWorkItemId={ppiWorkItemId}
+        onSuccess={(instanceId) => navigate(`/ppi/${instanceId}`)}
       />
 
       {/* ── Delete confirm ───────────────────────────────────────────── */}

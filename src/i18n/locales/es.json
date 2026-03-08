@@ -128,7 +128,8 @@
     "mapMas": "Aprobación MAP/MAS",
     "expirations": "Expiraciones",
     "deadlines": "Plazos",
-    "qcReport": "Informe QC"
+    "qcReport": "Informe QC",
+    "audits": "Auditorías"
   },
   "topbar": {
     "language": "Idioma",
@@ -1937,6 +1938,8 @@
     "form": {
       "titleCreate": "Nuevo Work Item",
       "titleEdit": "Editar Work Item",
+      "titleDuplicate": "Duplicar Actividad",
+      "duplicateBtn": "Duplicar",
       "sector": "Sector",
       "sectorPlaceholder": "ej: Lote 1, Tramo A",
       "discipline": "Disciplina",
@@ -1970,7 +1973,15 @@
       "created": "Work Item creado con éxito.",
       "updated": "Work Item actualizado con éxito.",
       "deleted": "Work Item eliminado.",
+      "duplicated": "Actividad duplicada — rellene el elemento y PK.",
       "error": "Ocurrió un error. Inténtelo de nuevo."
+    },
+    "actions": {
+      "duplicate": "Duplicar actividad",
+      "createPPI": "Crear PPI"
+    },
+    "groups": {
+      "obras": "obras"
     },
     "deleteConfirm": {
       "title": "¿Eliminar Work Item?",
@@ -2177,7 +2188,9 @@
         "saving": "Guardando…",
         "createBtn": "Crear Inspección",
         "cancel": "Cancelar",
-        "disciplineMismatch": "Atención: la disciplina del work item ({{workItem}}) es diferente a la disciplina de la plantilla ({{template}}). Puede continuar, pero verifique que la selección sea correcta."
+        "disciplineMismatchInline": "Esta plantilla es de disciplina '{{templateDisciplina}}' — el work item es '{{wiDisciplina}}'",
+        "matchingDiscipline": "Misma disciplina",
+        "otherDisciplines": "Otras disciplinas"
       },
       "items": {
         "itemNo": "Nº",

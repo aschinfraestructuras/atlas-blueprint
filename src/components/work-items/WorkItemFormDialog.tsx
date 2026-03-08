@@ -67,12 +67,14 @@ interface Props {
   open: boolean;
   onOpenChange: (v: boolean) => void;
   item?: WorkItem | null;
+  /** Pre-filled clone for duplication (no id) */
+  duplicateFrom?: WorkItem | null;
   onSuccess: () => void;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export function WorkItemFormDialog({ open, onOpenChange, item, onSuccess }: Props) {
+export function WorkItemFormDialog({ open, onOpenChange, item, duplicateFrom, onSuccess }: Props) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { activeProject } = useProject();
@@ -87,32 +89,32 @@ export function WorkItemFormDialog({ open, onOpenChange, item, onSuccess }: Prop
     },
   });
 
-  
-
   useEffect(() => {
     if (!open) return;
+    const source = item || duplicateFrom;
     form.reset(
-      item
+      source
         ? {
-            sector:          item.sector ?? "",
-            disciplina:      (item.disciplina as string) ?? "geral",
-            disciplina_outro:(item as any).disciplina_outro ?? "",
-            obra:            item.obra      ?? "",
-            lote:            item.lote      ?? "",
-            elemento:        item.elemento  ?? "",
-            parte:           item.parte     ?? "",
-            pk_inicio:       item.pk_inicio ?? undefined,
-            pk_fim:          item.pk_fim    ?? undefined,
-            status:          item.status    ?? "planned",
+            sector:          source.sector ?? "",
+            disciplina:      (source.disciplina as string) ?? "geral",
+            disciplina_outro:(source as any).disciplina_outro ?? "",
+            obra:            source.obra      ?? "",
+            lote:            source.lote      ?? "",
+            elemento:        duplicateFrom ? "" : (source.elemento ?? ""),
+            parte:           duplicateFrom ? "" : (source.parte ?? ""),
+            pk_inicio:       duplicateFrom ? undefined : (source.pk_inicio ?? undefined),
+            pk_fim:          duplicateFrom ? undefined : (source.pk_fim ?? undefined),
+            status:          duplicateFrom ? "planned" : (source.status ?? "planned"),
           }
         : {
             sector: "", disciplina: "geral", disciplina_outro: "", obra: "", lote: "",
             elemento: "", parte: "", pk_inicio: undefined, pk_fim: undefined, status: "planned",
           },
     );
-  }, [open, item, form]);
+  }, [open, item, duplicateFrom, form]);
 
-  const isEdit = !!item;
+  const isEdit = !!item && !duplicateFrom;
+  const isDuplicate = !!duplicateFrom;
 
   async function onSubmit(values: FormValues) {
     if (!activeProject || !user) return;
@@ -135,7 +137,9 @@ export function WorkItemFormDialog({ open, onOpenChange, item, onSuccess }: Prop
         toast({ title: t("workItems.toast.updated") });
       } else {
         await workItemService.create({ project_id: activeProject.id, ...payload, created_by: user.id });
-        toast({ title: t("workItems.toast.created") });
+        if (!isDuplicate) {
+          toast({ title: t("workItems.toast.created") });
+        }
       }
 
       onSuccess();
@@ -158,7 +162,11 @@ export function WorkItemFormDialog({ open, onOpenChange, item, onSuccess }: Prop
       <DialogContent className="sm:max-w-[580px]">
         <DialogHeader>
           <DialogTitle>
-            {isEdit ? t("workItems.form.titleEdit") : t("workItems.form.titleCreate")}
+            {isDuplicate
+              ? t("workItems.form.titleDuplicate")
+              : isEdit
+                ? t("workItems.form.titleEdit")
+                : t("workItems.form.titleCreate")}
           </DialogTitle>
         </DialogHeader>
 
@@ -305,9 +313,11 @@ export function WorkItemFormDialog({ open, onOpenChange, item, onSuccess }: Prop
                 {isSubmitting && <Loader2 className="h-3.5 w-3.5 animate-spin mr-2" />}
                 {isSubmitting
                   ? t("workItems.form.saving")
-                  : isEdit
-                    ? t("workItems.form.saveBtn")
-                    : t("workItems.form.createBtn")}
+                  : isDuplicate
+                    ? t("workItems.form.duplicateBtn")
+                    : isEdit
+                      ? t("workItems.form.saveBtn")
+                      : t("workItems.form.createBtn")}
               </Button>
             </DialogFooter>
           </form>
