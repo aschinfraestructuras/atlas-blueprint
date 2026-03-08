@@ -259,9 +259,12 @@
       "tests": "Ensaios",
       "suppliers": "Fornecedores",
       "ncTrend": "NC Abertas vs Fechadas — 6 Meses",
+      "ncMonthly": "NCs por Mês",
+      "testsDistribution": "Distribuição de Ensaios",
       "docsByType": "Documentos por Tipo",
       "testsTrend": "Ensaios Conformes vs Não Conformes — 6 Meses"
     },
+    "healthBreakdown": "Indicadores de Saúde",
     "recentActivity": "Atividade Recente",
     "nextActions": "Próximas Ações",
     "allClear": "Sem ações pendentes 🎉",
