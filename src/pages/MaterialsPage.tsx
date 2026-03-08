@@ -324,9 +324,6 @@ export default function MaterialsPage() {
           <PameTab materials={materials} />
         </TabsContent>
 
-        <TabsContent value="mapmas" className="mt-4">
-          <MapMasPage />
-        </TabsContent>
       </Tabs>
     </div>
   );
