@@ -44,7 +44,7 @@ const STATUS_COLORS: Record<DocumentStatus, string> = {
 
 const DOC_TYPES = [
   "procedure", "instruction", "plan", "report", "certificate",
-  "drawing", "specification", "form", "record",
+  "drawing", "specification", "form", "record", "index",
   "mdj", "med", "dpu", "cte", "egt", "interoperability_report",
   "other",
 ];
