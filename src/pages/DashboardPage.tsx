@@ -66,7 +66,6 @@ export default function DashboardPage() {
 
   // Quick action dialogs
   const [ncOpen, setNcOpen] = useState(false);
-  const [receptionOpen, setReceptionOpen] = useState(false);
   const [rfiOpen, setRfiOpen] = useState(false);
 
   const displayName = user?.email?.split("@")[0] ?? "—";
