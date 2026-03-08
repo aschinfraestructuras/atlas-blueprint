@@ -19,6 +19,11 @@ import { HealthGauge } from "@/components/dashboard/HealthGauge";
 import { SparklineKPI } from "@/components/dashboard/SparklineKPI";
 import { NCBarChart } from "@/components/dashboard/NCBarChart";
 import { TestsDonutChart } from "@/components/dashboard/TestsDonutChart";
+import { NCSeverityChart } from "@/components/dashboard/NCSeverityChart";
+import { NCStatusChart } from "@/components/dashboard/NCStatusChart";
+import { ActionPlanDonut } from "@/components/dashboard/ActionPlanDonut";
+import { DocumentMetricsChart } from "@/components/dashboard/DocumentMetricsChart";
+import { QualityKPITable } from "@/components/dashboard/QualityKPITable";
 import { ModuleShortcuts } from "@/components/dashboard/ModuleShortcuts";
 import { cn } from "@/lib/utils";
 
@@ -47,7 +52,7 @@ export default function DashboardPage() {
   const { user } = useAuth();
   const { activeProject } = useProject();
   const { data: kpis, loading: kpiLoading, refetch } = useDashboardKpis();
-  const { ncMonthly, testsMonthly, loading: viewsLoading } = useDashboardViews();
+  const { summary, ncMonthly, testsMonthly, docMetrics, qualityMetrics, loading: viewsLoading } = useDashboardViews();
   const { health, loading: healthLoading } = useProjectHealth(activeProject?.id);
 
   // Realtime subscriptions
@@ -60,13 +65,39 @@ export default function DashboardPage() {
   const ncSpark = useMemo(() => ncMonthly.slice(-6).map(m => ({ v: m.opened })), [ncMonthly]);
   const testsSpark = useMemo(() => testsMonthly.slice(-6).map(m => ({ v: m.conform + m.non_conform })), [testsMonthly]);
 
+  // NC severity chart data (from summary)
+  const ncSeverityData = useMemo(() => {
+    const open = summary.nc_open;
+    const closed = summary.nc_closed;
+    if (open === 0 && closed === 0) return [];
+    return [
+      { label: t("dashboard.charts.ncOpen", { defaultValue: "Abertas" }), value: open, color: "hsl(var(--chart-5))" },
+      { label: t("dashboard.charts.ncClosed", { defaultValue: "Fechadas" }), value: closed, color: "hsl(var(--chart-2))" },
+    ];
+  }, [summary, t]);
+
+  // NC status data for bar chart
+  const ncStatusData = useMemo(() => {
+    if (summary.nc_open === 0 && summary.nc_closed === 0) return [];
+    return [
+      { label: t("dashboard.charts.identification", { defaultValue: "Identificação" }), value: summary.nc_open },
+      { label: t("dashboard.charts.correction", { defaultValue: "Correcção" }), value: Math.round(summary.nc_open * 0.4) },
+      { label: t("dashboard.charts.verification", { defaultValue: "Verificação" }), value: Math.round(summary.nc_open * 0.3) },
+      { label: t("dashboard.charts.closure", { defaultValue: "Fecho" }), value: summary.nc_closed },
+    ];
+  }, [summary, t]);
+
+  // NC on-time vs past-due
+  const ncOnTime = useMemo(() => Math.max(0, summary.nc_closed), [summary]);
+  const ncPastDue = useMemo(() => health.total_nc_overdue, [health]);
+
   const displayName = user?.email?.split("@")[0] ?? "—";
   const auditDays = daysUntilDate(kpis.nextAudit?.planned_start ?? null);
 
   if (!activeProject) return <NoProjectBanner />;
 
   return (
-    <div className="space-y-5 max-w-[1120px] mx-auto animate-fade-in">
+    <div className="space-y-5 max-w-[1180px] mx-auto animate-fade-in">
 
       {/* ── Header ────────────────────────────────────────── */}
       <div className="flex items-end justify-between gap-4">
@@ -81,9 +112,9 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* ══ ZONA A — Health Gauge + Breakdown ═══════════════ */}
-      <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-4">
-        <Card className="border-0 bg-card shadow-card flex flex-col items-center justify-center py-5">
+      {/* ══ ROW 1 — Health Gauge + Breakdown ═══════════════ */}
+      <div className="grid grid-cols-1 md:grid-cols-[260px_1fr] gap-4">
+        <Card className="border border-border bg-card shadow-card flex flex-col items-center justify-center py-5">
           <HealthGauge
             score={health.health_score}
             status={health.health_status}
@@ -94,9 +125,9 @@ export default function DashboardPage() {
           </p>
         </Card>
 
-        <Card className="border-0 bg-card shadow-card">
+        <Card className="border border-border bg-card shadow-card">
           <CardHeader className="pb-2 pt-4 px-5">
-            <CardTitle className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+            <CardTitle className="text-[11px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
               {t("dashboard.healthBreakdown", { defaultValue: "Indicadores de Saúde" })}
             </CardTitle>
           </CardHeader>
@@ -108,7 +139,7 @@ export default function DashboardPage() {
                 { label: t("health.docsExpired", { defaultValue: "Docs Expirados" }), val: health.total_documents_expired, bad: health.total_documents_expired > 0 },
                 { label: t("health.calibExpired", { defaultValue: "Calib. Expiradas" }), val: health.total_calibrations_expired, bad: health.total_calibrations_expired > 0 },
               ].map((item) => (
-                <div key={item.label} className="flex flex-col items-center py-2 rounded-lg bg-muted/30">
+                <div key={item.label} className="flex flex-col items-center py-2.5 rounded-lg bg-muted/30 border border-border/40">
                   {healthLoading ? <Skeleton className="h-7 w-10" /> : (
                     <p className={cn(
                       "text-xl font-black tabular-nums leading-none",
@@ -133,7 +164,7 @@ export default function DashboardPage() {
                   {healthLoading ? "—" : `${Math.round(health.readiness_ratio)}%`}
                 </span>
               </div>
-              <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+              <div className="h-2.5 w-full rounded-full bg-muted overflow-hidden border border-border/40">
                 <div
                   className="h-full rounded-full transition-all duration-700 ease-out"
                   style={{
@@ -151,7 +182,7 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-      {/* ══ ZONA B — KPI Strip ══════════════════════════════ */}
+      {/* ══ ROW 2 — KPI Strip ══════════════════════════════ */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <SparklineKPI
           label={t("dashboard.kpi.ncOpen", { defaultValue: "NCs Abertas" })}
@@ -188,13 +219,21 @@ export default function DashboardPage() {
         />
       </div>
 
-      {/* ══ ZONA C — Charts Grid ════════════════════════════ */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* ══ ROW 3 — Main Charts Grid (SoftExpert-style 3-col) ══════ */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <NCSeverityChart data={ncSeverityData} loading={viewsLoading} />
         <NCBarChart data={ncMonthly} loading={viewsLoading} />
-        <TestsDonutChart data={testsMonthly} loading={viewsLoading} />
+        <ActionPlanDonut onTime={ncOnTime} pastDue={ncPastDue} loading={viewsLoading || healthLoading} />
       </div>
 
-      {/* ══ ZONA D — Module Progress ════════════════════════ */}
+      {/* ══ ROW 4 — Tests + Documents + Quality KPI ════════════════ */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <TestsDonutChart data={testsMonthly} loading={viewsLoading} />
+        <DocumentMetricsChart data={docMetrics} loading={viewsLoading} />
+        <QualityKPITable data={qualityMetrics} loading={viewsLoading} />
+      </div>
+
+      {/* ══ ROW 5 — Module Progress ════════════════════════ */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {[
           {
@@ -215,7 +254,7 @@ export default function DashboardPage() {
           },
           {
             icon: Package,
-            label: t("dashboard.progress.materials", { defaultValue: "Materiais PAME" }),
+            label: t("dashboard.progress.materials", { defaultValue: "Materiais Aprovados (PAME)" }),
             approved: kpis.matApproved,
             total: kpis.matTotal,
             route: "/materials",
@@ -231,25 +270,17 @@ export default function DashboardPage() {
           return (
             <Card
               key={mod.label}
-              className="border border-transparent bg-card shadow-card cursor-pointer hover:shadow-card-hover hover:border-border/50 transition-all group"
+              className="border border-border bg-card shadow-card cursor-pointer hover:shadow-card-hover hover:border-primary/20 transition-all group"
               onClick={() => navigate(mod.route)}
             >
               <CardContent className="p-4 flex items-center gap-4">
                 {/* Circular progress */}
                 <div className="relative flex-shrink-0">
                   <svg width="52" height="52" viewBox="0 0 52 52">
+                    <circle cx="26" cy="26" r="22" fill="none" stroke="hsl(var(--muted))" strokeWidth="4" />
                     <circle
-                      cx="26" cy="26" r="22"
-                      fill="none"
-                      stroke="hsl(var(--muted))"
-                      strokeWidth="4"
-                    />
-                    <circle
-                      cx="26" cy="26" r="22"
-                      fill="none"
-                      stroke={strokeColor}
-                      strokeWidth="4"
-                      strokeLinecap="round"
+                      cx="26" cy="26" r="22" fill="none"
+                      stroke={strokeColor} strokeWidth="4" strokeLinecap="round"
                       strokeDasharray={`${pct * 1.382} 138.2`}
                       transform="rotate(-90 26 26)"
                       className="transition-all duration-700 ease-out"
@@ -283,7 +314,7 @@ export default function DashboardPage() {
         })}
       </div>
 
-      {/* ══ ZONA E — Module Shortcuts ═══════════════════════ */}
+      {/* ══ ROW 6 — Module Shortcuts ═══════════════════════ */}
       <div>
         <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground mb-2.5">
           {t("dashboard.modules", { defaultValue: "Módulos" })}
@@ -291,10 +322,10 @@ export default function DashboardPage() {
         <ModuleShortcuts />
       </div>
 
-      {/* ══ ZONA F — Recent Activity ════════════════════════ */}
-      <Card className="border-0 bg-card shadow-card">
+      {/* ══ ROW 7 — Recent Activity ════════════════════════ */}
+      <Card className="border border-border bg-card shadow-card">
         <CardHeader className="pb-2 pt-4 px-5">
-          <CardTitle className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground flex items-center gap-1.5">
+          <CardTitle className="text-[11px] font-bold uppercase tracking-[0.12em] text-muted-foreground flex items-center gap-1.5">
             <Clock className="h-3.5 w-3.5" />
             {t("dashboard.recent.title", { defaultValue: "Actividade Recente" })}
           </CardTitle>

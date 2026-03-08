@@ -31,21 +31,21 @@ export function NCBarChart({ data, loading }: NCBarChartProps) {
   const { t } = useTranslation();
 
   return (
-    <Card className="border-0 bg-card shadow-card">
+    <Card className="border border-border bg-card shadow-card">
       <CardHeader className="pb-0 pt-4 px-5">
-        <CardTitle className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+        <CardTitle className="text-[11px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
           {t("dashboard.charts.ncMonthly", { defaultValue: "NCs por Mês" })}
         </CardTitle>
       </CardHeader>
       <CardContent className="px-2 pb-3 pt-2">
         {loading ? (
-          <Skeleton className="h-[220px] w-full rounded-md" />
+          <Skeleton className="h-[200px] w-full rounded-md" />
         ) : data.length === 0 ? (
-          <div className="h-[220px] flex items-center justify-center text-sm text-muted-foreground">
+          <div className="h-[200px] flex items-center justify-center text-xs text-muted-foreground">
             {t("dashboard.noData")}
           </div>
         ) : (
-          <ResponsiveContainer width="100%" height={220}>
+          <ResponsiveContainer width="100%" height={200}>
             <BarChart data={data} margin={{ top: 12, right: 12, left: -16, bottom: 0 }} barGap={2}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
               <XAxis
@@ -72,14 +72,14 @@ export function NCBarChart({ data, loading }: NCBarChartProps) {
                 name={t("dashboard.kpi.ncOpened", { defaultValue: "Abertas" })}
                 fill="hsl(var(--chart-5))"
                 radius={[4, 4, 0, 0]}
-                maxBarSize={24}
+                maxBarSize={22}
               />
               <Bar
                 dataKey="closed"
                 name={t("dashboard.kpi.ncClosed", { defaultValue: "Fechadas" })}
                 fill="hsl(var(--chart-2))"
                 radius={[4, 4, 0, 0]}
-                maxBarSize={24}
+                maxBarSize={22}
               />
             </BarChart>
           </ResponsiveContainer>
