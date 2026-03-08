@@ -79,6 +79,7 @@ export function SupplierFormDialog({ open, onOpenChange, supplier, onSuccess }: 
           ? {
               name: supplier.name,
               category: supplier.category ?? "",
+              category_outro: (supplier as any).category_outro ?? "",
               nif_cif: supplier.nif_cif ?? "",
               country: supplier.country ?? "",
               address: supplier.address ?? "",
