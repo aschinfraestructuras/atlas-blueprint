@@ -336,20 +336,20 @@ export function NCFormDialog({
                 {/* Classification - REQUIRED */}
                 <FormField control={form.control} name="classification" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t("nc.form.classification", { defaultValue: "Classificação" })} *</FormLabel>
+                    <FormLabel>{t("nc.form.classification")} *</FormLabel>
                     <FormControl>
                       <RadioGroup onValueChange={field.onChange} value={field.value} className="flex gap-4">
                         <div className="flex items-center gap-2">
                           <RadioGroupItem value="maior" id="cls-maior" />
-                          <Label htmlFor="cls-maior" className="text-sm font-medium text-destructive">NC MAIOR</Label>
+                          <Label htmlFor="cls-maior" className="text-sm font-medium text-destructive">{t("nc.form.classificationMaior")}</Label>
                         </div>
                         <div className="flex items-center gap-2">
                           <RadioGroupItem value="menor" id="cls-menor" />
-                          <Label htmlFor="cls-menor" className="text-sm font-medium">NC MENOR</Label>
+                          <Label htmlFor="cls-menor" className="text-sm font-medium">{t("nc.form.classificationMenor")}</Label>
                         </div>
                         <div className="flex items-center gap-2">
                           <RadioGroupItem value="observacao" id="cls-obs" />
-                          <Label htmlFor="cls-obs" className="text-sm font-medium text-muted-foreground">OBSERVAÇÃO</Label>
+                          <Label htmlFor="cls-obs" className="text-sm font-medium text-muted-foreground">{t("nc.form.classificationObs")}</Label>
                         </div>
                       </RadioGroup>
                     </FormControl>
