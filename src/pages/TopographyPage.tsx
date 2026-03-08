@@ -317,23 +317,40 @@ export default function TopographyPage() {
                 <TableHead>{t("common.actions")}</TableHead>
               </TableRow></TableHeader>
               <TableBody>
-                {filteredEquipment.map((eq) => (
-                  <TableRow key={eq.id} className="cursor-pointer hover:bg-muted/20" onClick={() => handleViewEquipment(eq)}>
-                    <TableCell className="font-medium font-mono">{eq.code}</TableCell>
-                    <TableCell>{t(`topography.equipmentType.${eq.equipment_type}`, { defaultValue: eq.equipment_type })}</TableCell>
-                    <TableCell>{[eq.brand, eq.model].filter(Boolean).join(" ") || "—"}</TableCell>
-                    <TableCell className="font-mono text-xs">{eq.serial_number || "—"}</TableCell>
-                    <TableCell>{eq.responsible || "—"}</TableCell>
-                    <TableCell><CalibrationBadge status={eq.calibration_status} /></TableCell>
-                    <TableCell>{eq.calibration_valid_until || "—"}</TableCell>
-                    <TableCell onClick={e => e.stopPropagation()}>
-                      <div className="flex gap-1">
-                        <Button size="sm" variant="outline" onClick={() => handleAddCalibration(eq.id)}><Plus className="h-3 w-3 mr-1" />{t("topography.calibrations")}</Button>
-                        {isAdmin && <DeleteButton onConfirm={() => handleDeleteEquipment(eq.id)} />}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {filteredEquipment.map((eq) => {
+                  const days = getCalibrationDaysInfo(eq.calibration_valid_until);
+                  let validityText = "—";
+                  let validityClass = "text-muted-foreground";
+                  if (days !== null) {
+                    if (days < 0) {
+                      validityText = t("topography.expiredAgo", { days: Math.abs(days) });
+                      validityClass = "text-destructive font-medium";
+                    } else if (days <= 30) {
+                      validityText = t("topography.expiresIn", { days });
+                      validityClass = "text-yellow-600 font-medium";
+                    } else {
+                      validityText = t("topography.expiresIn", { days });
+                      validityClass = "text-primary";
+                    }
+                  }
+                  return (
+                    <TableRow key={eq.id} className="cursor-pointer hover:bg-muted/20" onClick={() => handleViewEquipment(eq)}>
+                      <TableCell className="font-medium font-mono">{eq.code}</TableCell>
+                      <TableCell>{t(`topography.equipmentType.${eq.equipment_type}`, { defaultValue: eq.equipment_type })}</TableCell>
+                      <TableCell>{[eq.brand, eq.model].filter(Boolean).join(" ") || "—"}</TableCell>
+                      <TableCell className="font-mono text-xs">{eq.serial_number || "—"}</TableCell>
+                      <TableCell>{eq.responsible || "—"}</TableCell>
+                      <TableCell><CalibrationBadge status={eq.calibration_status} /></TableCell>
+                      <TableCell className={cn("text-sm", validityClass)}>{validityText}</TableCell>
+                      <TableCell onClick={e => e.stopPropagation()}>
+                        <div className="flex gap-1">
+                          <Button size="sm" variant="outline" onClick={() => handleAddCalibration(eq.id)}><Plus className="h-3 w-3 mr-1" />{t("topography.calibrations")}</Button>
+                          {isAdmin && <DeleteButton onConfirm={() => handleDeleteEquipment(eq.id)} />}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
                 {filteredEquipment.length === 0 && <TableRow><TableCell colSpan={8} className="text-center text-muted-foreground py-8">{t("common.noData")}</TableCell></TableRow>}
               </TableBody>
             </Table>

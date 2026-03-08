@@ -282,10 +282,20 @@ export default function SuppliersPage() {
                       {supplier.name}
                     </div>
                   </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {supplier.category ? t(`suppliers.categories.${supplier.category}`, { defaultValue: supplier.category }) : "—"}
+                  <TableCell>
+                    {supplier.category && CATEGORY_BADGES[supplier.category] ? (
+                      <Badge variant="secondary" className={cn("text-xs", CATEGORY_BADGES[supplier.category].className)}>
+                        {CATEGORY_BADGES[supplier.category].label}
+                      </Badge>
+                    ) : (
+                      <span className="text-sm text-muted-foreground">
+                        {supplier.category ? t(`suppliers.categories.${supplier.category}`, { defaultValue: supplier.category }) : "—"}
+                      </span>
+                    )}
                   </TableCell>
-                  <TableCell className="text-sm text-muted-foreground font-mono text-xs">{supplier.nif_cif ?? "—"}</TableCell>
+                  <TableCell className="text-center">
+                    <Badge variant="outline" className="text-xs font-mono">—</Badge>
+                  </TableCell>
                   <TableCell>
                     <Badge variant="secondary" className={cn("text-xs", QUAL_COLORS[supplier.qualification_status ?? supplier.approval_status] ?? "")}>
                       {t(`suppliers.qualificationStatus.${supplier.qualification_status ?? supplier.approval_status}`)}

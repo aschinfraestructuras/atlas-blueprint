@@ -262,11 +262,28 @@ export default function SubcontractorsPage() {
                       {sub.name}
                     </div>
                   </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">{sub.trade ?? "—"}</TableCell>
+                  <TableCell>
+                    {sub.trade && TRADE_BADGES[sub.trade] ? (
+                      <Badge variant="secondary" className={cn("text-xs", TRADE_BADGES[sub.trade].className)}>
+                        {TRADE_BADGES[sub.trade].label}
+                      </Badge>
+                    ) : (
+                      <span className="text-sm text-muted-foreground">{sub.trade ?? "—"}</span>
+                    )}
+                  </TableCell>
                   <TableCell>
                     <Badge variant="secondary" className={cn("text-xs", STATUS_COLORS[sub.status] ?? "")}>
                       {t(`subcontractors.status.${sub.status}`, { defaultValue: sub.status })}
                     </Badge>
+                  </TableCell>
+                  <TableCell>
+                    {sub.trade && RAILWAY_TRADES.includes(sub.trade) ? (
+                      <Badge variant="secondary" className="text-xs bg-yellow-500/15 text-yellow-700 dark:text-yellow-400">
+                        {t("subcontractors.fipPending")}
+                      </Badge>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">—</span>
+                    )}
                   </TableCell>
                   <TableCell>
                     <Badge variant="secondary" className={cn("text-xs", sub.documentation_status === "valid" ? "bg-primary/20 text-primary" : sub.documentation_status === "expired" ? "bg-destructive/10 text-destructive" : "bg-muted text-muted-foreground")}>
@@ -274,7 +291,6 @@ export default function SubcontractorsPage() {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">{sub.performance_score != null ? `${sub.performance_score}` : "—"}</TableCell>
-                  <TableCell className="text-sm text-muted-foreground">{sub.contact_email ?? "—"}</TableCell>
                   <TableCell className="text-sm text-muted-foreground">
                     {new Date(sub.updated_at).toLocaleDateString()}
                   </TableCell>
