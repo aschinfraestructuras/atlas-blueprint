@@ -27,6 +27,7 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, Camera, Image as ImageIcon } from "lucide-react";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { supabase } from "@/integrations/supabase/client";
+import { TraceabilityChain } from "@/components/tests/TraceabilityChain";
 
 const schema = (t: (k: string) => string) =>
   z.object({
