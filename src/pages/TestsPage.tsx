@@ -374,7 +374,7 @@ function ResultsTab() {
 
   const handleExportSingle = (r: TestResult) => {
     const wi = (r.work_items as any)?.sector as string | undefined;
-    exportTestResultPdf(r, exportLabels, i18n.language, activeProject?.name ?? "Atlas", wi);
+    exportTestResultPdf(r, exportLabels, i18n.language, activeProject?.name ?? "Atlas", wi, logoBase64 || logoUrl);
   };
 
   const handleExportBulk = () => {
