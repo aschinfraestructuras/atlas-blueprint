@@ -145,6 +145,7 @@ export function NCFormDialog({
       detected_at:         nc.detected_at ?? "",
       location_pk:         (nc as any).location_pk ?? "",
       discipline:          (nc as any).discipline ?? "",
+      discipline_outro:    (nc as any).discipline_outro ?? "",
       classification:      (nc as any).classification ?? "",
       ppi_instance_id:     nc.ppi_instance_id ?? "",
       violated_requirement: (nc as any).violated_requirement ?? "",
