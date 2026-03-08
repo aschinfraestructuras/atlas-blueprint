@@ -692,6 +692,27 @@ export default function SettingsPage() {
             </SelectContent>
           </Select>
         </div>
+        {/* Restart Onboarding Tour */}
+        <div className="flex items-center gap-3 py-3 border-b border-border/50 hover:bg-muted/30 -mx-2 px-2 rounded-lg transition-colors duration-150">
+          <Rocket className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+          <div className="flex-1 min-w-0">
+            <p className="text-[12.5px] font-medium text-foreground leading-none">{t("pages.settings.sections.preferences.tour", { defaultValue: "Tour de boas-vindas" })}</p>
+            <p className="text-[11px] text-muted-foreground mt-0.5 leading-snug">{t("pages.settings.sections.preferences.tourDesc", { defaultValue: "Rever o guia introdutório da plataforma" })}</p>
+          </div>
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-7 text-xs gap-1.5"
+            onClick={() => {
+              localStorage.removeItem("atlas_onboarding_completed");
+              navigate("/");
+              window.location.reload();
+            }}
+          >
+            <Rocket className="h-3 w-3" />
+            {t("pages.settings.sections.preferences.restartTour", { defaultValue: "Repetir tour" })}
+          </Button>
+        </div>
       </SettingsSection>
 
       {/* ── 6. Notification Preferences ──────────────────────────────── */}
