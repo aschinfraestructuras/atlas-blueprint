@@ -1875,7 +1875,11 @@
       "INVITE_ACCEPTED": "Convite aceite",
       "ROLE_CHANGED": "Função alterada",
       "MEMBER_REMOVED": "Membro removido",
-      "NEW_VERSION": "Nova versão"
+      "NEW_VERSION": "Nova versão",
+      "attachment_add": "Anexo adicionado",
+      "attachment_delete": "Anexo eliminado",
+      "attachment_download": "Anexo descarregado",
+      "upload_file": "Ficheiro carregado"
     }
   },
   "errors": {
@@ -2032,6 +2036,27 @@
       "frentes": "frentes",
       "inExecution": "em execução",
       "baseActivity": "Actividade base"
+    },
+    "export": {
+      "button": "Exportar",
+      "csvList": "CSV — Lista de Work Items",
+      "pdfSingle": "PDF — Este Work Item",
+      "reportTitle": "Ficha de Work Item",
+      "generatedOn": "Gerado em",
+      "fields": {
+        "sector": "Sector",
+        "discipline": "Disciplina",
+        "obra": "Obra",
+        "parte": "Parte",
+        "elemento": "Elemento",
+        "lote": "Lote",
+        "pk": "PK",
+        "status": "Estado",
+        "ncs": "NCs",
+        "ppis": "PPIs",
+        "tests": "Ensaios",
+        "createdAt": "Data de criação"
+      }
     },
     "deleteConfirm": {
       "title": "Eliminar Work Item?",
@@ -2809,9 +2834,11 @@
   "planning": {
     "title": "Planeamento Estruturado",
     "subtitle": "WBS hierárquica, atividades planeadas e bloqueios inteligentes",
+    "searchPlaceholder": "Pesquisar código, descrição, zona…",
     "tabs": {
       "activities": "Atividades"
     },
+    "filters": { "allStatuses": "Todos os estados" },
     "wbs": {
       "add": "Nova WBS",
       "addChild": "Criar filho",
@@ -3107,6 +3134,14 @@
       "rls": "RLS / Permissões",
       "functions": "Funções RPC",
       "storage": "Armazenamento"
+    },
+    "checks": {
+      "accessible": "Acessível",
+      "failures": "Falhas",
+      "memberConfirmed": "Membro confirmado",
+      "noRole": "Sem papel atribuído",
+      "notMember": "Não é membro do projecto activo",
+      "warnings": "Avisos"
     }
   },
   "moduleKpi": {

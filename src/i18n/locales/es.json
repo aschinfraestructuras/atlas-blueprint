@@ -1265,7 +1265,8 @@
       "reference": "Referencia",
       "severity": "Gravedad",
       "responsible": "Responsable",
-      "dueDate": "Plazo"
+      "dueDate": "Plazo",
+      "origin": "Origen"
     },
     "severity": {
       "minor": "Menor",
@@ -1300,6 +1301,7 @@
     },
     "transitions": {
       "label": "Cambiar estado",
+      "changeTo": "Transitar a",
       "open": "Abrir",
       "in_progress": "Iniciar",
       "pending_verification": "Enviar a Verificación",
@@ -1398,7 +1400,60 @@
       "created": "No conformidad registrada con éxito.",
       "updated": "No conformidad actualizada con éxito.",
       "statusChanged": "Estado cambiado a {{status}}.",
+      "bulkStatusChanged": "{{count}} NC(s) actualizadas.",
       "error": "Ocurrió un error. Inténtelo de nuevo."
+    },
+    "bulk": {
+      "selected": "{{count}} seleccionada(s)",
+      "changeStatus": "Cambiar estado",
+      "clear": "Limpiar selección"
+    },
+    "demo": {
+      "button": "Datos Demo",
+      "tooltip": "Crea 10 NCs de ejemplo con diferentes orígenes y estados.",
+      "created": "{{count}} NC(s) demo creadas.",
+      "allExist": "Datos demo ya existen ({{count}} registros).",
+      "error": "Error al crear datos demo."
+    },
+    "export": {
+      "button": "Exportar PDF",
+      "exportSingle": "Exportar NC (PDF)",
+      "exportBulk": "Exportar seleccionadas (PDF)",
+      "exportWiSummary": "Resumen por Work Item (PDF)",
+      "reportTitle": "Informe de No Conformidad",
+      "bulkTitle": "Informe de NCs (Consolidado)",
+      "wiSummaryTitle": "Resumen de NCs por Work Item",
+      "generatedOn": "Generado el",
+      "page": "Página",
+      "of": "de",
+      "noData": "Ninguna NC para exportar."
+    },
+    "detail": {
+      "notFound": "No conformidad no encontrada.",
+      "identification": "Identificación",
+      "responsibility": "Responsables",
+      "assignedTo": "Asignado a",
+      "owner": "Propietario",
+      "approver": "Aprobador",
+      "linkedTo": "Vínculos",
+      "workItem": "Work Item",
+      "viewWorkItem": "Ver Work Item →",
+      "ppiInstance": "Inspección PPI",
+      "viewPpi": "Ver Inspección PPI →",
+      "dueDate": "Plazo",
+      "closureDate": "Fecha de cierre",
+      "verifiedBy": "Verificado por",
+      "verifiedAt": "Verificado el",
+      "fillCapa": "Rellenar CAPA",
+      "capaEmpty": "CAPA aún no rellenada.",
+      "historyEmpty": "Sin registros de auditoría para esta NC.",
+      "tabs": {
+        "description": "Descripción",
+        "capa": "CAPA",
+        "attachments": "Evidencias",
+        "history": "Historial"
+      },
+      "verification": "Verificación y Cierre"
     }
   },
   "technicalOffice": {
@@ -2177,7 +2232,8 @@
         "createNcSkip": "Omitir",
         "deleteDraft": "Eliminar borrador",
         "deleteDraftDescription": "Esta acción es irreversible. El borrador {{code}} y todos sus elementos serán eliminados permanentemente.",
-        "deleteDraftConfirm": "Eliminar permanentemente"
+        "deleteDraftConfirm": "Eliminar permanentemente",
+        "holdPointWarning": "Existen Hold-Points sin completar. ¿Confirmar de todas formas?"
       },
       "form": {
         "titleCreate": "Nueva Inspección PPI",
@@ -2362,6 +2418,58 @@
     "newMaterial": "Nuevo Material",
     "searchPlaceholder": "Buscar código, nombre, especificación…",
     "table": { "code": "Código" },
+    "pameCode": "Código PAME",
+    "pameStatus": "Estado PAME",
+    "pameStatuses": {
+      "approved": "Aprobado",
+      "conditional": "Aprobación Condicional",
+      "pending": "Pendiente",
+      "rejected": "Rechazado",
+      "submitted": "Enviado"
+    },
+    "reception": {
+      "title": "Recepción",
+      "newReception": "Nueva Recepción",
+      "status": {
+        "approved": "Aprobado",
+        "pending": "Pendiente",
+        "quarantine": "Cuarentena",
+        "rejected": "Rechazado"
+      },
+      "form": {
+        "date": "Fecha de Recepción",
+        "supplier": "Proveedor",
+        "deliveryNote": "Nº Albarán",
+        "lotRef": "Nº Lote / Trazabilidad",
+        "quantity": "Cantidad Recibida",
+        "unit": "Unidad",
+        "physicalState": "Estado físico del material",
+        "storageLocation": "Lugar de almacenaje en obra",
+        "ceMarking": "¿Marcado CE presente y legible?",
+        "rejectionReason": "Motivo de rechazo / cuarentena",
+        "notes": "Observaciones",
+        "pameCode": "Código PAME"
+      },
+      "actions": {
+        "approveAndSave": "Guardar y Aprobar",
+        "saveQuarantine": "Guardar en Cuarentena",
+        "reject": "Rechazar",
+        "createNc": "Crear NC",
+        "createNcPrompt": "Recepción no conforme. ¿Crear NC?",
+        "ncCreated": "NC creada con éxito"
+      },
+      "table": {
+        "date": "Fecha",
+        "supplier": "Proveedor",
+        "deliveryNote": "Albarán",
+        "lotRef": "Nº Lote",
+        "lotCode": "Código Lote",
+        "status": "Estado",
+        "physicalState": "Estado Físico",
+        "ceMarking": "Marc. CE",
+        "nc": "NC"
+      }
+    },
     "filters": {
       "allStatuses": "Todos los estados",
       "allCategories": "Todas las categorías",
@@ -2513,7 +2621,8 @@
         "tests": "Ensayos",
         "ncs": "No Conformidades",
         "workItems": "Aplicación en Obra",
-        "audit": "Auditoría"
+        "audit": "Auditoría",
+        "reception": "Recepción"
       },
       "noSuppliers": "Sin proveedores asociados.",
       "noTests": "Sin ensayos registrados.",
@@ -2796,6 +2905,8 @@
     },
     "detail": {
       "tabs": { "overview": "Resumen", "requirements": "Requisitos", "evidence": "Evidencias", "links": "Enlaces" },
+      "reqMet": "{{count}} solicitud(es) en progreso/completadas",
+      "reqNotMet": "Ninguna solicitud topográfica registrada o todas pendientes",
       "met": "Cumplido",
       "notMet": "Pendiente",
       "noRequirements": "Esta actividad no tiene requisitos obligatorios.",
