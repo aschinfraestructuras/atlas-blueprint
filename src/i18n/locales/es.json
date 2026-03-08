@@ -130,7 +130,8 @@
     "expirations": "Expiraciones",
     "deadlines": "Plazos",
     "qcReport": "Informe QC",
-    "audits": "Auditorías"
+    "audits": "Auditorías",
+    "dailyReports": "Parte Diario"
   },
   "topbar": {
     "language": "Idioma",
