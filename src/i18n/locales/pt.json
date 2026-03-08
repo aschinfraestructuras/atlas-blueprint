@@ -3111,6 +3111,14 @@
       "rls": "RLS / Permissões",
       "functions": "Funções RPC",
       "storage": "Armazenamento"
+    },
+    "checks": {
+      "accessible": "Acessível",
+      "failures": "Falhas",
+      "memberConfirmed": "Membro confirmado",
+      "noRole": "Sem papel atribuído",
+      "notMember": "Não é membro do projecto activo",
+      "warnings": "Avisos"
     }
   },
   "moduleKpi": {
