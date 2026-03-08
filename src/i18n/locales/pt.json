@@ -1860,13 +1860,14 @@
       "specialty": "Especialidade",
       "contactEmail": "E-mail",
       "linkedSupplier": "Fornecedor",
-      "docStatus": "Doc. Status",
-      "score": "Score",
+      "docStatus": "Estado Documental",
+      "score": "Pontuação",
       "fipApproval": "Aprovação F/IP"
     },
     "filters": {
       "allStatuses": "Todos os estados",
-      "allDocStatuses": "Todos doc. status"
+      "allDocStatuses": "Todos os estados doc.",
+      "allTrades": "Todas as especialidades"
     },
     "status": {
       "active": "Ativo",
@@ -1895,7 +1896,7 @@
       "contract": "Contrato",
       "contractPlaceholder": "Referência do contrato",
       "docStatus": "Estado Documentação",
-      "score": "Score Desempenho",
+      "score": "Pontuação Desempenho",
       "contactName": "Nome do responsável",
       "contactNamePlaceholder": "Nome do responsável",
       "contactPhone": "Telefone de contacto",
@@ -1915,7 +1916,7 @@
       "generalInfo": "Informação Geral",
       "contract": "Contrato",
       "docStatus": "Estado Documentação",
-      "score": "Score Desempenho",
+      "score": "Pontuação Desempenho",
       "attachments": "Anexos",
       "mandatoryDocs": "Documentação Obrigatória",
       "docType": "Tipo",
@@ -3291,7 +3292,7 @@
     "healthy": "Saudável",
     "attention": "Atenção",
     "critical": "Crítico",
-    "score": "Health Score",
+    "score": "Índice de Saúde",
     "ncOpen": "NC Abertas",
     "ncOverdue": "NC em Atraso",
     "testsPending": "Ensaios Pendentes",
