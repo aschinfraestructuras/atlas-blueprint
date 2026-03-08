@@ -53,7 +53,19 @@ import DailyReportDetailPage from "./pages/DailyReportDetailPage";
 import RecycledMaterialsPage from "./pages/RecycledMaterialsPage";
 import SGQMatrixPage from "./pages/SGQMatrixPage";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 2,
+      gcTime: 1000 * 60 * 10,
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+    mutations: {
+      retry: 0,
+    },
+  },
+});
 
 function ProtectedLayout({ children }: { children: React.ReactNode }) {
   return (
