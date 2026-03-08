@@ -1114,6 +1114,66 @@ export default function WorkItemDetailPage() {
           </Card>
         </TabsContent>
 
+        {/* Materials tab */}
+        <TabsContent value="materials" className="mt-4">
+          <Card className="shadow-card">
+            <CardHeader className="pb-2 pt-4 px-5 flex flex-row items-center justify-between">
+              <CardTitle className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                {t("workItems.tabs.materials")}
+              </CardTitle>
+              <Button size="sm" variant="outline" className="gap-1.5 h-7 text-xs" onClick={() => setAddMaterialOpen(true)}>
+                <Plus className="h-3 w-3" /> {t("workItems.materials.add")}
+              </Button>
+            </CardHeader>
+            <CardContent className="px-5 pb-4">
+              {matLoading ? (
+                <Skeleton className="h-20 w-full" />
+              ) : workItemMaterials.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-4 text-center">
+                  {t("workItems.materials.empty")}
+                </p>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>{t("materials.form.code")}</TableHead>
+                      <TableHead>{t("materials.form.name")}</TableHead>
+                      <TableHead>{t("materials.form.category")}</TableHead>
+                      <TableHead>{t("workItems.materials.form.quantity")}</TableHead>
+                      <TableHead>{t("workItems.materials.form.unit")}</TableHead>
+                      <TableHead>{t("workItems.materials.form.lotRef")}</TableHead>
+                      <TableHead>{t("common.status")}</TableHead>
+                      <TableHead className="w-[40px]" />
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {workItemMaterials.map((wm: any) => (
+                      <TableRow key={wm.id}>
+                        <TableCell className="font-mono text-xs">{wm.materials?.code ?? "—"}</TableCell>
+                        <TableCell className="text-sm">{wm.materials?.name ?? "—"}</TableCell>
+                        <TableCell className="text-xs text-muted-foreground">{wm.materials?.category ?? "—"}</TableCell>
+                        <TableCell className="text-xs tabular-nums">{wm.quantity ?? "—"}</TableCell>
+                        <TableCell className="text-xs">{wm.unit ?? "—"}</TableCell>
+                        <TableCell className="text-xs font-mono">{wm.lot_ref ?? "—"}</TableCell>
+                        <TableCell>
+                          <Badge variant={wm.materials?.approval_status === "approved" ? "default" : "outline"} className="text-[10px]">
+                            {wm.materials?.approval_status ?? "—"}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleRemoveWorkItemMaterial(wm.id)}>
+                            <Trash2 className="h-3 w-3 text-muted-foreground" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         {/* Documents tab */}
         <TabsContent value="documents" className="mt-4">
           <LinkedDocumentsPanel entityType="work_item" entityId={item.id} projectId={activeProject?.id ?? ""} />
