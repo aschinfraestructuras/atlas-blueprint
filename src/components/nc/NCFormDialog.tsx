@@ -469,7 +469,24 @@ export function NCFormDialog({
                     </FormItem>
                   )} />
                 </div>
-              </TabsContent>
+
+                {/* Audit origin type - only when origin === 'audit' */}
+                {watchedOrigin === "audit" && (
+                  <FormField control={form.control} name="audit_origin_type" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("nc.form.auditOriginType", { defaultValue: "Tipo de Auditoria" })}</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value || ""}>
+                        <FormControl><SelectTrigger><SelectValue placeholder="—" /></SelectTrigger></FormControl>
+                        <SelectContent>
+                          <SelectItem value="auditoria_interna">{t("nc.auditOrigin.auditoria_interna", { defaultValue: "Auditoria Interna" })}</SelectItem>
+                          <SelectItem value="auditoria_ip">{t("nc.auditOrigin.auditoria_ip", { defaultValue: "Auditoria IP/Fiscalização" })}</SelectItem>
+                          <SelectItem value="extra_auditoria">{t("nc.auditOrigin.extra_auditoria", { defaultValue: "Extra-Auditoria" })}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                )}
 
               {/* ── SECÇÃO 2: DESCRIÇÃO ─────────────────────────────────── */}
               <TabsContent value="description" className="space-y-4 mt-0">
