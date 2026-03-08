@@ -130,7 +130,8 @@
     "expirations": "Expirações",
     "deadlines": "Prazos",
     "qcReport": "Relatório QC",
-    "audits": "Auditorias"
+    "audits": "Auditorias",
+    "dailyReports": "Parte Diária"
   },
   "topbar": {
     "language": "Idioma",
@@ -3347,5 +3348,84 @@
     "next": "Seguinte",
     "previous": "Anterior",
     "rowsPerPage": "Linhas por página"
+  },
+  "dailyReports": {
+    "title": "Parte Diária de Obra",
+    "subtitle": "Registo diário IP.MOD.102",
+    "new": "Nova Parte Diária",
+    "status": {
+      "draft": "Rascunho",
+      "submitted": "Submetida",
+      "validated": "Validada"
+    },
+    "sections": {
+      "identification": "1. Identificação",
+      "works": "2. Trabalhos Executados",
+      "labour": "3. Mão-de-Obra",
+      "equipment": "4. Equipamento",
+      "materials": "5. Materiais",
+      "rmm": "6. RMM — Recursos de Monitorização e Medição",
+      "waste": "7. Sobrantes / Materiais Usados / Resíduos",
+      "observations": "8. Observações e Assinaturas"
+    },
+    "fields": {
+      "reportDate": "Data",
+      "reportNumber": "Nº Parte Diária",
+      "weather": "Condições Meteorológicas",
+      "tempMin": "Temp. Mín (°C)",
+      "tempMax": "Temp. Máx (°C)",
+      "foremanName": "Encarregado",
+      "contractorRep": "Representante Empreiteiro",
+      "supervisorRep": "Representante Fiscalização",
+      "ipRep": "Representante IP"
+    },
+    "labour": {
+      "category": "Categoria",
+      "name": "Nome",
+      "timeStart": "Início",
+      "timeEnd": "Fim",
+      "hours": "Horas"
+    },
+    "equipment": {
+      "designation": "Designação",
+      "type": "Tipo",
+      "serial": "Nº Série / Nº UIC",
+      "soundPower": "Pot. Sonora (dB)",
+      "hours": "Horas"
+    },
+    "materials": {
+      "nomenclature": "Nomenclatura",
+      "quantity": "Quantidade",
+      "unit": "Unidade",
+      "lot": "Lote / Nº Série"
+    },
+    "rmm": {
+      "code": "Código Interno",
+      "designation": "Designação"
+    },
+    "waste": {
+      "type": "Tipo",
+      "packaging": "Tipo de Acondicionamento",
+      "quantity": "Quantidade",
+      "unit": "Unidade",
+      "storage": "Armazenamento Preliminar",
+      "destination": "Destino Final"
+    },
+    "signatures": {
+      "title": "Assinaturas",
+      "foreman": "Encarregado (Frente de Trabalhos)",
+      "contractor": "Representante Empreiteiro",
+      "supervisor": "Representante Fiscalização (Externa)",
+      "ip": "Representante IP"
+    },
+    "toast": {
+      "created": "Parte diária criada.",
+      "updated": "Parte diária actualizada.",
+      "submitted": "Parte diária submetida.",
+      "validated": "Parte diária validada."
+    },
+    "export": {
+      "title": "Parte Diária de Obra"
+    }
   }
 }
