@@ -265,6 +265,18 @@ function RuleEditor({ plan }: { plan: TestPlan }) {
   );
 }
 
+// ─── Discipline chips for KPIs ───────────────────────────────────────────────
+const DISCIPLINE_CHIPS = [
+  { code: "D1", key: "terras", label: "Topografia" },
+  { code: "D2", key: "betao", label: "Betão" },
+  { code: "D3", key: "ferrovia", label: "Via Férrea" },
+  { code: "D4", key: "instalacoes", label: "Soldadura" },
+  { code: "D5", key: "firmes", label: "Geotecnia" },
+  { code: "D6", key: "geral", label: "Catenária" },
+  { code: "D7", key: "estruturas", label: "Elétrico" },
+  { code: "D8", key: "outros", label: "Auditorias" },
+];
+
 // ─── Main PlanTab ────────────────────────────────────────────────────────────
 export function PlanTab() {
   const { t } = useTranslation();
@@ -273,6 +285,40 @@ export function PlanTab() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<TestPlan | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [filterDiscipline, setFilterDiscipline] = useState<string | null>(null);
+  const [allRules, setAllRules] = useState<TestPlanRule[]>([]);
+  const [loadingRules, setLoadingRules] = useState(false);
+
+  // Load all rules for the active plan (PE-PF17A-001 or first active plan)
+  const activePlan = plans.find(p => p.status === "active") ?? plans[0];
+  
+  const loadAllRules = useCallback(async () => {
+    if (!activePlan) return;
+    setLoadingRules(true);
+    try {
+      const data = await testPlanService.getRules(activePlan.id);
+      setAllRules(data);
+    } catch (err) { console.error(err); }
+    finally { setLoadingRules(false); }
+  }, [activePlan?.id]);
+
+  useEffect(() => { loadAllRules(); }, [loadAllRules]);
+
+  // Discipline counts for KPI chips
+  const disciplineCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    allRules.forEach(r => {
+      const disc = r.tests_catalog?.disciplina ?? "outros";
+      counts[disc] = (counts[disc] || 0) + 1;
+    });
+    return counts;
+  }, [allRules]);
+
+  // Filter rules by discipline
+  const filteredRules = useMemo(() => {
+    if (!filterDiscipline) return allRules;
+    return allRules.filter(r => (r.tests_catalog?.disciplina ?? "outros") === filterDiscipline);
+  }, [allRules, filterDiscipline]);
 
   const handleDelete = async (plan: TestPlan) => {
     if (!activeProject) return;
@@ -305,47 +351,152 @@ export function PlanTab() {
       ) : plans.length === 0 ? (
         <EmptyState icon={BookOpen} subtitleKey="tests.plans.empty" />
       ) : (
-        <div className="space-y-2">
-          {plans.map((plan) => (
-            <div key={plan.id}>
-              <div
-                className={cn(
-                  "flex items-center gap-3 p-3 rounded-xl border border-border hover:bg-muted/30 transition-colors cursor-pointer",
-                  expandedId === plan.id && "bg-muted/30 border-primary/30"
-                )}
-                onClick={() => setExpandedId(expandedId === plan.id ? null : plan.id)}
-              >
-                <ChevronRight className={cn("h-4 w-4 text-muted-foreground transition-transform", expandedId === plan.id && "rotate-90")} />
-                <div className="flex-1 min-w-0">
+        <>
+          {/* Active plan detail with discipline KPIs */}
+          {activePlan && (
+            <div className="p-4 rounded-xl border border-primary/30 bg-primary/5 space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs font-semibold text-foreground">{plan.code}</span>
-                    <span className="text-sm font-medium text-foreground truncate">{plan.title}</span>
+                    <span className="font-mono text-sm font-bold text-foreground">{activePlan.code}</span>
+                    <Badge variant="secondary" className={cn("text-xs", PLAN_STATUS_COLORS[activePlan.status] ?? "")}>
+                      {t(`tests.plans.status.${activePlan.status}`)}
+                    </Badge>
                   </div>
-                  {plan.scope_disciplina && (
-                    <span className="text-xs text-muted-foreground">
-                      {t(`ppi.disciplinas.${plan.scope_disciplina}`, { defaultValue: plan.scope_disciplina })}
-                    </span>
+                  <p className="text-sm text-muted-foreground mt-0.5">{activePlan.title}</p>
+                  {activePlan.scope_notes && (
+                    <p className="text-xs text-muted-foreground mt-1 italic">{activePlan.scope_notes}</p>
                   )}
                 </div>
-                <Badge variant="secondary" className={cn("text-xs", PLAN_STATUS_COLORS[plan.status] ?? "")}>
-                  {t(`tests.plans.status.${plan.status}`)}
-                </Badge>
-                <span className="text-xs text-muted-foreground">{plan.rules_count ?? 0} {t("tests.plans.rules.title").toLowerCase()}</span>
-                <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
-                  <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground"
-                    onClick={() => { setEditing(plan); setDialogOpen(true); }}>
-                    <Pencil className="h-3.5 w-3.5" />
-                  </Button>
-                  <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive"
-                    onClick={() => handleDelete(plan)}>
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
-                </div>
+                <span className="text-sm font-medium text-foreground">{allRules.length} {t("tests.plans.rules.title", { defaultValue: "regras" })}</span>
               </div>
-              {expandedId === plan.id && <RuleEditor plan={plan} />}
+              
+              {/* Discipline KPI chips */}
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  variant={filterDiscipline === null ? "default" : "outline"}
+                  size="sm"
+                  className="h-7 text-xs"
+                  onClick={() => setFilterDiscipline(null)}
+                >
+                  {t("common.all", { defaultValue: "Todos" })} ({allRules.length})
+                </Button>
+                {DISCIPLINE_CHIPS.map(chip => {
+                  const count = disciplineCounts[chip.key] ?? 0;
+                  if (count === 0) return null;
+                  return (
+                    <Button
+                      key={chip.code}
+                      variant={filterDiscipline === chip.key ? "default" : "outline"}
+                      size="sm"
+                      className="h-7 text-xs"
+                      onClick={() => setFilterDiscipline(filterDiscipline === chip.key ? null : chip.key)}
+                    >
+                      {chip.code} {t(`ppi.disciplinas.${chip.key}`, { defaultValue: chip.label })} ({count})
+                    </Button>
+                  );
+                })}
+              </div>
+
+              {/* Rules table */}
+              {loadingRules ? (
+                <Skeleton className="h-32 w-full" />
+              ) : filteredRules.length === 0 ? (
+                <p className="text-xs text-muted-foreground text-center py-4">{t("tests.plans.rules.empty")}</p>
+              ) : (
+                <div className="rounded-lg border border-border overflow-hidden">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="bg-muted/40">
+                        <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("tests.catalog.table.code")}</TableHead>
+                        <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("tests.catalog.table.name")}</TableHead>
+                        <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("tests.catalog.table.disciplina")}</TableHead>
+                        <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("tests.plans.rules.frequency", { defaultValue: "Frequência" })}</TableHead>
+                        <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("tests.plans.rules.labRequired", { defaultValue: "Lab Obrigatório" })}</TableHead>
+                        <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("tests.plans.rules.witness", { defaultValue: "Testemunha" })}</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredRules.map((rule) => {
+                        const cat = rule.tests_catalog;
+                        return (
+                          <TableRow key={rule.id} className="hover:bg-muted/10">
+                            <TableCell className="font-mono text-xs font-semibold">{cat?.code ?? "—"}</TableCell>
+                            <TableCell className="text-sm">{cat?.name ?? "—"}</TableCell>
+                            <TableCell className="text-xs text-muted-foreground">
+                              {t(`ppi.disciplinas.${cat?.disciplina ?? "outros"}`, { defaultValue: cat?.disciplina })}
+                            </TableCell>
+                            <TableCell className="text-xs">
+                              {t(`tests.plans.rules.frequencyOptions.${rule.frequency_type}`, { defaultValue: rule.frequency_type })}
+                            </TableCell>
+                            <TableCell>
+                              {rule.requires_report ? (
+                                <Badge variant="secondary" className="text-xs bg-primary/10 text-primary">{t("common.yes")}</Badge>
+                              ) : (
+                                <span className="text-xs text-muted-foreground">{t("common.no")}</span>
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              {rule.requires_photos ? (
+                                <Badge variant="secondary" className="text-xs bg-primary/10 text-primary">{t("common.yes")}</Badge>
+                              ) : (
+                                <span className="text-xs text-muted-foreground">{t("common.no")}</span>
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
             </div>
-          ))}
-        </div>
+          )}
+
+          {/* All plans list */}
+          <div className="space-y-2">
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t("tests.plans.allPlans", { defaultValue: "Todos os Planos" })}</p>
+            {plans.map((plan) => (
+              <div key={plan.id}>
+                <div
+                  className={cn(
+                    "flex items-center gap-3 p-3 rounded-xl border border-border hover:bg-muted/30 transition-colors cursor-pointer",
+                    expandedId === plan.id && "bg-muted/30 border-primary/30"
+                  )}
+                  onClick={() => setExpandedId(expandedId === plan.id ? null : plan.id)}
+                >
+                  <ChevronRight className={cn("h-4 w-4 text-muted-foreground transition-transform", expandedId === plan.id && "rotate-90")} />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-xs font-semibold text-foreground">{plan.code}</span>
+                      <span className="text-sm font-medium text-foreground truncate">{plan.title}</span>
+                    </div>
+                    {plan.scope_disciplina && (
+                      <span className="text-xs text-muted-foreground">
+                        {t(`ppi.disciplinas.${plan.scope_disciplina}`, { defaultValue: plan.scope_disciplina })}
+                      </span>
+                    )}
+                  </div>
+                  <Badge variant="secondary" className={cn("text-xs", PLAN_STATUS_COLORS[plan.status] ?? "")}>
+                    {t(`tests.plans.status.${plan.status}`)}
+                  </Badge>
+                  <span className="text-xs text-muted-foreground">{plan.rules_count ?? 0} {t("tests.plans.rules.title").toLowerCase()}</span>
+                  <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                    <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                      onClick={() => { setEditing(plan); setDialogOpen(true); }}>
+                      <Pencil className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                      onClick={() => handleDelete(plan)}>
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                </div>
+                {expandedId === plan.id && <RuleEditor plan={plan} />}
+              </div>
+            ))}
+          </div>
+        </>
       )}
 
       <PlanFormDialog open={dialogOpen} onOpenChange={setDialogOpen} plan={editing} onSuccess={refetch} />
