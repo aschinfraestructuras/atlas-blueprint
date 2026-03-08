@@ -38,6 +38,15 @@ const STATUS_COLORS: Record<string, string> = {
   archived: "bg-muted text-muted-foreground",
 };
 
+const CATEGORY_BADGES: Record<string, { label: string; className: string }> = {
+  ferrovia: { label: "Ferrovia", className: "bg-blue-500/15 text-blue-700 dark:text-blue-400" },
+  betao: { label: "Betão", className: "bg-slate-500/15 text-slate-700 dark:text-slate-400" },
+  catenaria: { label: "Catenária", className: "bg-orange-500/15 text-orange-700 dark:text-orange-400" },
+  st_sinalizacao: { label: "S&T", className: "bg-purple-500/15 text-purple-700 dark:text-purple-400" },
+  gsmr_telecom: { label: "GSM-R", className: "bg-green-500/15 text-green-700 dark:text-green-400" },
+  laboratorio: { label: "Laboratório", className: "bg-emerald-600/15 text-emerald-700 dark:text-emerald-400" },
+};
+
 export default function SuppliersPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
