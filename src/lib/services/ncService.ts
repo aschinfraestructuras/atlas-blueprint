@@ -66,6 +66,8 @@ export interface NCCreateInput {
   assigned_to?: string;
   due_date?: string;
   detected_at?: string;
+  discipline?: string;
+  discipline_outro?: string;
   work_item_id?: string;
   ppi_instance_id?: string;
   ppi_instance_item_id?: string;
