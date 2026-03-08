@@ -1444,7 +1444,8 @@
         "severityRequired": "A gravidade é obrigatória.",
         "correctiveActionRequired": "A ação corretiva é obrigatória para fechar a NC.",
         "categoryOutroRequired": "Especifique a categoria quando seleciona «Outros».",
-        "classificationRequired": "A classificação é obrigatória."
+        "classificationRequired": "A classificação é obrigatória.",
+        "disciplineOutroRequired": "Especifique a disciplina quando seleciona «Outros»."
       }
     },
     "toast": {
