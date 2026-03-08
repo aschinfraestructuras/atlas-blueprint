@@ -137,7 +137,7 @@ export function ActivityFormDialog({ open, onOpenChange, wbsNodes, editActivity,
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="__none__">—</SelectItem>
-                    {workItems.map(wi => <SelectItem key={wi.id} value={wi.id}>{wi.sector}</SelectItem>)}
+                    {workItems.map(wi => <SelectItem key={wi.id} value={wi.id}>{wi.sector}{wi.elemento ? ` — ${wi.elemento}` : ""}{wi.parte ? ` (${wi.parte})` : ""}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>

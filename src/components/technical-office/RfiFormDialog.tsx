@@ -275,7 +275,9 @@ export function RfiFormDialog({ open, onOpenChange, rfi, onSuccess }: Props) {
                       <SelectContent>
                         <SelectItem value="__none__">—</SelectItem>
                         {workItems.map(wi => (
-                          <SelectItem key={wi.id} value={wi.id}>{wi.sector} — {wi.disciplina}</SelectItem>
+                          <SelectItem key={wi.id} value={wi.id}>
+                            {wi.sector} — {wi.disciplina}{wi.elemento ? ` — ${wi.elemento}` : ""}{wi.parte ? ` (${wi.parte})` : ""}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>

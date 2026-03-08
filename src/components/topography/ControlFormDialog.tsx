@@ -203,7 +203,7 @@ export function ControlFormDialog({ open, onOpenChange, projectId, equipment, ed
                   <SelectTrigger><SelectValue placeholder={t("topography.form.none")} /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="__none__">{t("topography.form.none")}</SelectItem>
-                    {workItems.map(wi => <SelectItem key={wi.id} value={wi.id}>{wi.sector}</SelectItem>)}
+                    {workItems.map(wi => <SelectItem key={wi.id} value={wi.id}>{wi.sector} — {wi.disciplina}{wi.elemento ? ` — ${wi.elemento}` : ""}{wi.parte ? ` (${wi.parte})` : ""}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
