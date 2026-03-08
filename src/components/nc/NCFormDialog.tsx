@@ -487,6 +487,7 @@ export function NCFormDialog({
                     </FormItem>
                   )} />
                 )}
+              </TabsContent>
 
               {/* ── SECÇÃO 2: DESCRIÇÃO ─────────────────────────────────── */}
               <TabsContent value="description" className="space-y-4 mt-0">
