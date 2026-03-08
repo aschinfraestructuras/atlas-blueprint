@@ -11,6 +11,7 @@ interface ExportData {
   tests: { code: string; date: string; pass_fail: string; status: string }[];
   projectName: string;
   projectCode: string;
+  logoUrl?: string | null;
   t: (k: string, opts?: Record<string, unknown>) => string;
 }
 
