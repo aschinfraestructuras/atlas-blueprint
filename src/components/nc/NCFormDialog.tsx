@@ -34,7 +34,8 @@ import { cn } from "@/lib/utils";
 
 // ─── Schema ───────────────────────────────────────────────────────────────────
 
-const DISCIPLINES = ["terras", "betao", "ferrovia", "catenaria", "st", "drenagem", "estruturas", "outros"] as const;
+const DISCIPLINES = ["terras", "betao", "ferrovia", "catenaria", "st", "drenagem", "estruturas", "via", "geotecnia", "eletrica", "sinalizacao", "passagens_nivel", "edificios", "outros"] as const;
+const CE_DISCIPLINES = ["via", "catenaria", "drenagem", "estruturas", "geotecnia", "eletrica", "sinalizacao", "passagens_nivel", "edificios", "outros"] as const;
 const CORRECTION_TYPES = ["accept", "repair", "demolish", "reject"] as const;
 const ROOT_CAUSE_METHODS = ["5whys", "ishikawa", "other"] as const;
 
