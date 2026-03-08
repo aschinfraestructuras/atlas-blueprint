@@ -5,6 +5,7 @@ import {
   ArrowLeft, FileText, CheckCircle2, Clock, RotateCcw,
   SendHorizontal, Loader2, Upload, ExternalLink, Download,
   Link2, Plus, Trash2, Pencil, Archive, FileDown, ClipboardList,
+  AlertTriangle,
 } from "lucide-react";
 import { documentService, isDocumentEditable, getDocumentTransitions } from "@/lib/services/documentService";
 import type { Document, DocumentVersion, DocumentLink, DocumentStatus } from "@/lib/services/documentService";
