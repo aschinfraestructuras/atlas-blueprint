@@ -154,6 +154,57 @@ function BrandingSection() {
   );
 }
 
+// ── Notification Preferences Section ──────────────────────────────────────────
+const NOTIF_PREFS_KEY = "atlas_notif_prefs";
+const DEFAULT_NOTIF_PREFS = { nc_new: true, doc_approval: true, deadline_overdue: true, test_new: true, ppi_submitted: false, member_joined: false };
+
+function NotificationPreferencesSection() {
+  const { t } = useTranslation();
+  const [prefs, setPrefs] = useState(() => {
+    try { return { ...DEFAULT_NOTIF_PREFS, ...JSON.parse(localStorage.getItem(NOTIF_PREFS_KEY) || "{}") }; }
+    catch { return DEFAULT_NOTIF_PREFS; }
+  });
+
+  const toggle = (key: string) => {
+    const next = { ...prefs, [key]: !prefs[key as keyof typeof prefs] };
+    setPrefs(next);
+    localStorage.setItem(NOTIF_PREFS_KEY, JSON.stringify(next));
+  };
+
+  const items: { key: string; label: string; desc: string }[] = [
+    { key: "nc_new", label: t("pages.settings.sections.notifications.ncNew", { defaultValue: "Nova Não Conformidade" }), desc: t("pages.settings.sections.notifications.ncNewDesc", { defaultValue: "Quando uma NC é criada no projeto" }) },
+    { key: "doc_approval", label: t("pages.settings.sections.notifications.docApproval", { defaultValue: "Documento para Aprovação" }), desc: t("pages.settings.sections.notifications.docApprovalDesc", { defaultValue: "Quando um documento necessita de aprovação" }) },
+    { key: "deadline_overdue", label: t("pages.settings.sections.notifications.deadlineOverdue", { defaultValue: "Prazo de Ação Vencido" }), desc: t("pages.settings.sections.notifications.deadlineOverdueDesc", { defaultValue: "Quando uma ação ultrapassa o prazo" }) },
+    { key: "test_new", label: t("pages.settings.sections.notifications.testNew", { defaultValue: "Novo Ensaio Registado" }), desc: t("pages.settings.sections.notifications.testNewDesc", { defaultValue: "Quando é registado um resultado de ensaio" }) },
+    { key: "ppi_submitted", label: t("pages.settings.sections.notifications.ppiSubmitted", { defaultValue: "PPI Submetido" }), desc: t("pages.settings.sections.notifications.ppiSubmittedDesc", { defaultValue: "Quando um PPI é submetido para aprovação" }) },
+    { key: "member_joined", label: t("pages.settings.sections.notifications.memberJoined", { defaultValue: "Novo Membro" }), desc: t("pages.settings.sections.notifications.memberJoinedDesc", { defaultValue: "Quando alguém aceita um convite" }) },
+  ];
+
+  return (
+    <SettingsSection icon={Bell} title={t("pages.settings.sections.notifications.title", { defaultValue: "Preferências de Notificação" })} subtitle={t("pages.settings.sections.notifications.subtitle", { defaultValue: "Escolha quais eventos geram alertas" })} color="hsl(36, 70%, 50%)">
+      <div className="space-y-0.5">
+        {items.map(item => (
+          <label key={item.key} className="flex items-center gap-3 py-2.5 border-b border-border/40 last:border-0 hover:bg-muted/30 -mx-2 px-2 rounded-lg transition-colors cursor-pointer">
+            <input
+              type="checkbox"
+              checked={prefs[item.key as keyof typeof prefs] ?? false}
+              onChange={() => toggle(item.key)}
+              className="h-4 w-4 rounded border-border text-primary focus:ring-primary/30"
+            />
+            <div className="flex-1 min-w-0">
+              <p className="text-[12px] font-medium text-foreground leading-none">{item.label}</p>
+              <p className="text-[10.5px] text-muted-foreground mt-0.5">{item.desc}</p>
+            </div>
+          </label>
+        ))}
+      </div>
+      <p className="text-[10px] text-muted-foreground mt-3 italic">
+        {t("pages.settings.sections.notifications.emailNote", { defaultValue: "Notificações por email — em breve. As preferências ficam guardadas para quando a funcionalidade for ativada." })}
+      </p>
+    </SettingsSection>
+  );
+}
+
 // ═══════════════════════════════════════════════════════════════
 // MAIN
 // ═══════════════════════════════════════════════════════════════
