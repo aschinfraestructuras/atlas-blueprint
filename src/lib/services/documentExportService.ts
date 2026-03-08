@@ -296,6 +296,7 @@ function buildListHtml(
   labels: DocExportLabels,
   locale: string,
   projectName: string,
+  logoUrl?: string | null,
 ): string {
   const rows = docs.map((d) => `
     <tr>
