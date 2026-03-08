@@ -332,6 +332,9 @@ export default function PPIPage() {
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground hidden lg:table-cell">
                   {t("ppi.instances.table.openedAt")}
                 </TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground hidden md:table-cell w-20">
+                  {t("ppi.instances.table.hpPending", { defaultValue: "HP Pend." })}
+                </TableHead>
                 <TableHead className="w-[80px]" />
               </TableRow>
             </TableHeader>
@@ -388,6 +391,15 @@ export default function PPIPage() {
                     </TableCell>
                     <TableCell className="hidden lg:table-cell text-xs text-muted-foreground">
                       {new Date(inst.opened_at).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell">
+                      {(inst as any).hp_pending_count > 0 ? (
+                        <Badge variant="secondary" className="bg-destructive/10 text-destructive text-xs font-bold">
+                          {(inst as any).hp_pending_count}
+                        </Badge>
+                      ) : (
+                        <span className="text-muted-foreground text-xs">—</span>
+                      )}
                     </TableCell>
                     <TableCell onClick={(e) => e.stopPropagation()}>
                       <div className="flex items-center justify-end gap-1">

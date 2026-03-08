@@ -329,7 +329,7 @@ export const ppiService = {
   async listInstances(
     projectId: string,
     filters?: PpiInstanceFilters
-  ): Promise<(PpiInstance & { template_disciplina: string | null; template_code: string | null })[]> {
+  ): Promise<(PpiInstance & { template_disciplina: string | null; template_code: string | null; hp_pending_count: number })[]> {
     let q = supabase
       .from("ppi_instances")
       .select(`
@@ -349,10 +349,31 @@ export const ppiService = {
     const { data, error } = await q;
     if (error) throw error;
 
+    // Fetch HP pending counts for all instances
+    const instanceIds = (data ?? []).map((r: any) => r.id);
+    let hpCounts: Record<string, number> = {};
+    
+    if (instanceIds.length > 0) {
+      const { data: itemsData } = await supabase
+        .from("ppi_instance_items")
+        .select("instance_id, ipt_e, ipt_f, ipt_ip, result")
+        .in("instance_id", instanceIds);
+      
+      // Count items where any ipt field is 'hp' and result is 'pending'
+      (itemsData ?? []).forEach((item: any) => {
+        const hasHp = item.ipt_e === "hp" || item.ipt_f === "hp" || item.ipt_ip === "hp";
+        const isPending = item.result === "pending";
+        if (hasHp && isPending) {
+          hpCounts[item.instance_id] = (hpCounts[item.instance_id] || 0) + 1;
+        }
+      });
+    }
+
     return ((data ?? []) as any[]).map((row) => ({
       ...row,
       template_disciplina: row.ppi_templates?.disciplina ?? null,
       template_code:       row.ppi_templates?.code       ?? null,
+      hp_pending_count:    hpCounts[row.id] ?? 0,
       ppi_templates: undefined,
     }));
   },

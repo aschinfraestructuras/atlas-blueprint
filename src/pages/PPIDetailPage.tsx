@@ -4,8 +4,9 @@ import { useTranslation } from "react-i18next";
 import {
   ArrowLeft, ClipboardCheck, CheckCircle2, XCircle,
   Clock, Loader2, Construction, Calendar, CheckCheck,
-  Save, AlertTriangle, Link2, Archive, Trash2, Pencil, FileText,
+  Save, AlertTriangle, Link2, Archive, Trash2, Pencil, FileText, Info,
 } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { PPIExportMenu } from "@/components/ppi/PPIExportMenu";
 import type { PpiInstanceForExport } from "@/lib/services/ppiExportService";
 import {
@@ -681,6 +682,15 @@ export default function PPIDetailPage() {
                 </div>
               ) : (
                 <div className="overflow-x-auto">
+                  {/* IPT Legend */}
+                  <div className="flex flex-wrap items-center gap-3 px-4 py-2.5 bg-muted/20 border-b border-border text-xs">
+                    <span className="flex items-center gap-1 text-muted-foreground font-medium">
+                      <Info className="h-3 w-3" /> {t("ppi.ipt.legend", { defaultValue: "Pontos de Inspeção:" })}
+                    </span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-destructive" /> <span className="text-destructive font-semibold">HP</span> <span className="text-muted-foreground">{t("ppi.ipt.hp.short", { defaultValue: "Paragem obrigatória" })}</span></span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-500" /> <span className="text-amber-600 font-semibold">WP</span> <span className="text-muted-foreground">{t("ppi.ipt.wp.short", { defaultValue: "Presença prevista" })}</span></span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-primary" /> <span className="text-primary font-semibold">RP</span> <span className="text-muted-foreground">{t("ppi.ipt.rp.short", { defaultValue: "Revisão documental" })}</span></span>
+                  </div>
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-border bg-muted/40">
@@ -732,34 +742,38 @@ export default function PPIDetailPage() {
                                 )}
                                 <p className="font-medium text-foreground text-sm">{item.label}</p>
                               </div>
-                              {/* IPT badges: E / F / IP */}
-                              <div className="flex gap-1 mt-1">
-                                {(item as any).ipt_e && (
-                                  <Badge variant="outline" className={cn("text-[9px] font-bold",
-                                    (item as any).ipt_e === "hp" ? "border-destructive/40 bg-destructive/10 text-destructive" :
-                                    (item as any).ipt_e === "wp" ? "border-amber-400/40 bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400" :
-                                    (item as any).ipt_e === "rp" ? "border-primary/40 bg-primary/10 text-primary" :
-                                    "border-border text-muted-foreground"
-                                  )}>E: {((item as any).ipt_e ?? "N/A").toUpperCase()}</Badge>
-                                )}
-                                {(item as any).ipt_f && (
-                                  <Badge variant="outline" className={cn("text-[9px] font-bold",
-                                    (item as any).ipt_f === "hp" ? "border-destructive/40 bg-destructive/10 text-destructive" :
-                                    (item as any).ipt_f === "wp" ? "border-amber-400/40 bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400" :
-                                    (item as any).ipt_f === "rp" ? "border-primary/40 bg-primary/10 text-primary" :
-                                    "border-border text-muted-foreground"
-                                  )}>F: {((item as any).ipt_f ?? "N/A").toUpperCase()}</Badge>
-                                )}
-                                {(item as any).ipt_ip && (
-                                  <Badge variant="outline" className={cn("text-[9px] font-bold",
-                                    (item as any).ipt_ip === "hp" ? "border-destructive/40 bg-destructive/10 text-destructive" :
-                                    (item as any).ipt_ip === "wp" ? "border-amber-400/40 bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400" :
-                                    (item as any).ipt_ip === "rp" ? "border-primary/40 bg-primary/10 text-primary" :
-                                    "border-border text-muted-foreground"
-                                  )}>IP: {((item as any).ipt_ip ?? "N/A").toUpperCase()}</Badge>
-                                )}
-                                {!(item as any).ipt_e && !(item as any).ipt_f && !(item as any).ipt_ip && null}
-                              </div>
+                              {/* IPT badges: E / F / IP with tooltips */}
+                              <TooltipProvider delayDuration={200}>
+                                <div className="flex gap-1 mt-1">
+                                  {["ipt_e", "ipt_f", "ipt_ip"].map((field) => {
+                                    const val = (item as any)[field] as string | null;
+                                    const label = field === "ipt_e" ? "E" : field === "ipt_f" ? "F" : "IP";
+                                    const displayVal = val ? val.toUpperCase() : "N/A";
+                                    const colorClass =
+                                      val === "hp" ? "border-destructive/40 bg-destructive/10 text-destructive" :
+                                      val === "wp" ? "border-amber-400/40 bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400" :
+                                      val === "rp" ? "border-primary/40 bg-primary/10 text-primary" :
+                                      "border-border text-muted-foreground bg-muted/30";
+                                    const tooltipKey =
+                                      val === "hp" ? "ppi.ipt.hp.tooltip" :
+                                      val === "wp" ? "ppi.ipt.wp.tooltip" :
+                                      val === "rp" ? "ppi.ipt.rp.tooltip" :
+                                      "ppi.ipt.na.tooltip";
+                                    return (
+                                      <Tooltip key={field}>
+                                        <TooltipTrigger asChild>
+                                          <Badge variant="outline" className={cn("text-[9px] font-bold cursor-help", colorClass)}>
+                                            {label}: {displayVal}
+                                          </Badge>
+                                        </TooltipTrigger>
+                                        <TooltipContent side="top" className="max-w-[200px] text-xs">
+                                          {t(tooltipKey)}
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    );
+                                  })}
+                                </div>
+                              </TooltipProvider>
                               {isNok && (
                                 <div className="mt-1.5 flex items-center gap-1">
                                   {hasNc ? (

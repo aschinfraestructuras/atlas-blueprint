@@ -15,6 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { FilterBar } from "@/components/ui/filter-bar";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 import { Clock, AlertTriangle, Truck, HardHat, Crosshair, Package, Eye, Users } from "lucide-react";
 
 const STATUS_COLORS: Record<string, string> = {
@@ -88,16 +89,18 @@ export default function ExpirationsPage() {
 
   const expiredCount = items.filter(i => i.status === "expired").length;
   const expiringCount = items.filter(i => i.status !== "expired").length;
+  const { toast } = useToast();
 
   if (!activeProject) return <NoProjectBanner />;
-
+  
   const handleNavigate = (item: ExpiringItem) => {
     const base = DOMAIN_ROUTES[item.domain] ?? "/";
     const id = item.entity_id;
-    const isValid = id && id !== "undefined" && id !== "null" && /^[0-9a-f-]{36}$/i.test(id);
+    const isValid = id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
     if (isValid) {
       navigate(`${base}/${id}`);
     } else {
+      toast({ title: t("common.idInvalid", { defaultValue: "ID inválido" }), description: t("common.idInvalidDesc", { defaultValue: "Este registo não pode ser aberto." }), variant: "destructive" });
       navigate(base);
     }
   };

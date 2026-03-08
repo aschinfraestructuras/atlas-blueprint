@@ -2092,6 +2092,24 @@
       "rp": "RP — Review Point",
       "na": "N/A"
     },
+    "ipt": {
+      "legend": "Pontos de Inspeção:",
+      "hp": {
+        "short": "Paragem obrigatória",
+        "tooltip": "Hold Point — paragem obrigatória, aprovação necessária"
+      },
+      "wp": {
+        "short": "Presença prevista",
+        "tooltip": "Witness Point — presença prevista, avisada com 48h"
+      },
+      "rp": {
+        "short": "Revisão documental",
+        "tooltip": "Review Point — revisão documental"
+      },
+      "na": {
+        "tooltip": "Não aplicável para esta entidade"
+      }
+    },
     "instances": {
       "title": "Instâncias PPI",
       "subtitle": "Registos de inspeção ativos",
@@ -2114,7 +2132,8 @@
         "closedAt": "Fechado em",
         "inspector": "Inspetor",
         "actions": "Ações",
-        "progress": "Progresso"
+        "progress": "Progresso",
+        "hpPending": "HP Pend."
       },
       "detail": {
         "back": "Voltar",
