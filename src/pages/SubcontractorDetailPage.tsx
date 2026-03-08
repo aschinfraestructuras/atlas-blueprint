@@ -334,6 +334,7 @@ export default function SubcontractorDetailPage() {
             {t("subcontractors.detail.tabs.docs")}
             {docs.length > 0 && <Badge variant="secondary" className="ml-1.5 text-[10px] px-1.5 py-0">{docs.length}</Badge>}
           </TabsTrigger>
+          <TabsTrigger value="materials">{t("subcontractors.materialsSection")}</TabsTrigger>
           <TabsTrigger value="activities">
             {t("subcontractors.detail.tabs.activities")}
             {activities.length > 0 && <Badge variant="secondary" className="ml-1.5 text-[10px] px-1.5 py-0">{activities.length}</Badge>}
