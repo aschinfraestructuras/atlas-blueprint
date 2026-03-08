@@ -5576,6 +5576,7 @@ export type Database = {
         Args: { p_due_id: string; p_reason: string }
         Returns: undefined
       }
+      fn_work_item_report: { Args: { p_work_item_id: string }; Returns: Json }
       get_project_role: {
         Args: { _project_id: string; _user_id: string }
         Returns: string
