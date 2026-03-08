@@ -148,8 +148,12 @@ function SidebarContent({ collapsed, onClose }: { collapsed: boolean; onClose?: 
         role="button"
         aria-label="Go to Dashboard"
       >
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg flex-shrink-0 bg-sidebar-primary/15 border border-sidebar-primary/25">
-          <ShieldCheck className="h-4 w-4 text-sidebar-primary" />
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg flex-shrink-0 bg-sidebar-primary/15 border border-sidebar-primary/25 overflow-hidden">
+          {logoUrl ? (
+            <img src={logoUrl} alt="Logo" className="h-full w-full object-contain" />
+          ) : (
+            <ShieldCheck className="h-4 w-4 text-sidebar-primary" />
+          )}
         </div>
         {!collapsed && (
           <div className="flex flex-col min-w-0">
