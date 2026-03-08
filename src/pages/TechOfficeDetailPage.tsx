@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProject } from "@/contexts/ProjectContext";
 import { useProjectRole } from "@/hooks/useProjectRole";
+import { useReportMeta } from "@/hooks/useReportMeta";
 import { useWorkItems } from "@/hooks/useWorkItems";
 import { technicalOfficeService, type TechnicalOfficeItem, type TechOfficeMessage, TECH_OFFICE_STATUSES } from "@/lib/services/technicalOfficeService";
 import { useTechOfficeMessages } from "@/hooks/useTechnicalOffice";
