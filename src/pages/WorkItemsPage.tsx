@@ -544,7 +544,7 @@ export default function WorkItemsPage() {
                             <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border/60 bg-muted/20 hover:bg-muted/40 transition-colors cursor-pointer">
                               {obraOpen ? <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />}
                               <span className="text-sm font-medium text-foreground">{obraGroup.obra}</span>
-                              <StatusCountBadges counts={obraGroup.statusCounts} t={t} />
+                              <GroupSummary items={obraGroup.items} t={t} />
                             </div>
                           </CollapsibleTrigger>
                           <CollapsibleContent>
