@@ -524,9 +524,10 @@ export default function SettingsPage() {
         )}
       </SettingsSection>
 
-      {/* ── 4. Profiles & Permissions ────────────────────────────────── */}
+      {/* ── 4. Permissions Matrix ────────────────────────────────── */}
       <SettingsSection icon={ShieldCheck} title={s("permissions.title")} subtitle={s("permissions.subtitle")} color={MOD.suppliers}>
-        <div className="space-y-1.5 pt-1">
+        {/* Role legend */}
+        <div className="space-y-1.5 pt-1 mb-4">
           {PROJECT_ROLES.map(key => {
             const color = ROLE_COLOR[key] ?? MOD.muted;
             return (
@@ -540,6 +541,62 @@ export default function SettingsPage() {
               </div>
             );
           })}
+        </div>
+
+        {/* Module permissions matrix */}
+        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">
+          {t("pages.settings.sections.permissions.matrixTitle", { defaultValue: "Permissões por módulo" })}
+        </p>
+        <div className="overflow-x-auto rounded-lg border border-border/60">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-muted/40">
+                <TableHead className="text-[10px] font-bold uppercase tracking-wider w-[120px]">
+                  {t("pages.settings.sections.permissions.module", { defaultValue: "Módulo" })}
+                </TableHead>
+                {PROJECT_ROLES.map(r => (
+                  <TableHead key={r} className="text-center text-[9px] font-bold uppercase tracking-wider px-1">
+                    <span style={{ color: ROLE_COLOR[r] ?? MOD.muted }}>{t(`settings.roles.${r}`)}</span>
+                  </TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {(["documents", "tests", "nc", "ppi", "materials", "suppliers", "subcontractors", "plans", "planning", "daily_reports", "topography", "recycled"] as const).map(mod => {
+                const modPerms: Record<string, { view: boolean; edit: boolean; approve: boolean }> = {
+                  admin:           { view: true, edit: true, approve: true },
+                  project_manager: { view: true, edit: true, approve: true },
+                  quality_manager: { view: true, edit: true, approve: true },
+                  technician:      { view: true, edit: true, approve: false },
+                  viewer:          { view: true, edit: false, approve: false },
+                };
+                return (
+                  <TableRow key={mod} className="hover:bg-muted/20">
+                    <TableCell className="text-[11px] font-medium capitalize py-2">
+                      {t(`pages.settings.sections.permissions.modules.${mod}`, { defaultValue: mod.replace("_", " ") })}
+                    </TableCell>
+                    {PROJECT_ROLES.map(role => {
+                      const p = modPerms[role];
+                      return (
+                        <TableCell key={role} className="text-center py-2">
+                          <div className="flex items-center justify-center gap-0.5">
+                            {p?.view && <Eye className="h-3 w-3 text-muted-foreground" />}
+                            {p?.edit && <Pencil className="h-3 w-3 text-blue-500" />}
+                            {p?.approve && <ShieldAlert className="h-3 w-3 text-green-600" />}
+                          </div>
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
+        <div className="flex items-center gap-4 mt-2 text-[10px] text-muted-foreground">
+          <span className="flex items-center gap-1"><Eye className="h-3 w-3" /> {t("pages.settings.sections.permissions.view", { defaultValue: "Ver" })}</span>
+          <span className="flex items-center gap-1"><Pencil className="h-3 w-3 text-blue-500" /> {t("pages.settings.sections.permissions.edit", { defaultValue: "Editar" })}</span>
+          <span className="flex items-center gap-1"><ShieldAlert className="h-3 w-3 text-green-600" /> {t("pages.settings.sections.permissions.approve", { defaultValue: "Aprovar" })}</span>
         </div>
       </SettingsSection>
 
@@ -585,8 +642,72 @@ export default function SettingsPage() {
         </div>
       </SettingsSection>
 
-      {/* ── 6. Branding / Logo ───────────────────────────────────────── */}
+      {/* ── 6. Notification Preferences ──────────────────────────────── */}
+      <NotificationPreferencesSection />
+
+      {/* ── 7. Branding / Logo ───────────────────────────────────────── */}
       <BrandingSection />
+
+      {/* ── 8. System Audit ──────────────────────────────────────────── */}
+      {(isAdmin || myRole === "project_manager" || myRole === "quality_manager") && (
+        <SettingsSection icon={ClipboardList} title={t("pages.settings.sections.audit.title", { defaultValue: "Auditoria do Sistema" })} subtitle={t("pages.settings.sections.audit.subtitle", { defaultValue: "Logs de ações, alterações e aprovações — ISO 9001" })} color={MOD.nc}>
+          <div className="space-y-2">
+            <p className="text-[11.5px] text-muted-foreground leading-relaxed">
+              {t("pages.settings.sections.audit.desc", { defaultValue: "O sistema regista automaticamente todas as ações críticas: criação, edição, aprovação, eliminação e mudanças de estado em todos os módulos." })}
+            </p>
+            <div className="flex flex-wrap gap-1.5 py-2">
+              {["LOGIN", "INSERT", "UPDATE", "DELETE", "STATUS_CHANGE", "EXPORT", "APPROVE", "ROLE_CHANGED"].map(action => (
+                <Badge key={action} variant="secondary" className="text-[9px] font-mono">{action}</Badge>
+              ))}
+            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              className="gap-1.5 mt-2"
+              onClick={() => navigate("/audit-log")}
+            >
+              <ClipboardList className="h-3.5 w-3.5" />
+              {t("pages.settings.sections.audit.viewLogs", { defaultValue: "Ver Logs do Sistema" })}
+            </Button>
+          </div>
+        </SettingsSection>
+      )}
+
+      {/* ── 9. Backup & Security ─────────────────────────────────────── */}
+      {isAdmin && (
+        <SettingsSection icon={HardDrive} title={t("pages.settings.sections.backup.title", { defaultValue: "Backup e Segurança" })} subtitle={t("pages.settings.sections.backup.subtitle", { defaultValue: "Proteção de dados e continuidade operacional" })} color={MOD.plans}>
+          <div className="space-y-3">
+            <div className="flex items-start gap-3 py-2 border-b border-border/40">
+              <Check className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-[12px] font-medium text-foreground">{t("pages.settings.sections.backup.autoBackup", { defaultValue: "Backup Automático Diário" })}</p>
+                <p className="text-[11px] text-muted-foreground">{t("pages.settings.sections.backup.autoBackupDesc", { defaultValue: "Supabase realiza backups automáticos diários com retenção de 7 dias (Pro) ou 30 dias (Enterprise)." })}</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 py-2 border-b border-border/40">
+              <Check className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-[12px] font-medium text-foreground">{t("pages.settings.sections.backup.rls", { defaultValue: "Row-Level Security (RLS)" })}</p>
+                <p className="text-[11px] text-muted-foreground">{t("pages.settings.sections.backup.rlsDesc", { defaultValue: "Todas as tabelas possuem políticas RLS ativas — isolamento total entre projetos e utilizadores." })}</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 py-2 border-b border-border/40">
+              <Check className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-[12px] font-medium text-foreground">{t("pages.settings.sections.backup.encryption", { defaultValue: "Encriptação em Trânsito e Repouso" })}</p>
+                <p className="text-[11px] text-muted-foreground">{t("pages.settings.sections.backup.encryptionDesc", { defaultValue: "TLS 1.3 para comunicação, AES-256 para dados em repouso." })}</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 py-2">
+              <Check className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-[12px] font-medium text-foreground">{t("pages.settings.sections.backup.session", { defaultValue: "Auto-Logout por Inatividade" })}</p>
+                <p className="text-[11px] text-muted-foreground">{t("pages.settings.sections.backup.sessionDesc", { defaultValue: "Sessão termina automaticamente após 30 minutos de inatividade, com aviso aos 25 minutos." })}</p>
+              </div>
+            </div>
+          </div>
+        </SettingsSection>
+      )}
     </div>
   );
 }
