@@ -74,9 +74,12 @@ export default function DailyReportsPage() {
         title={t("dailyReports.title")}
         subtitle={t("dailyReports.subtitle")}
         actions={!isArchived ? (
-          <Button onClick={() => setDialogOpen(true)} size="sm">
-            <Plus className="h-4 w-4 mr-1" /> {t("dailyReports.new")}
-          </Button>
+          <div className="flex items-center gap-2">
+            <ShareButton />
+            <Button onClick={() => setDialogOpen(true)} size="sm">
+              <Plus className="h-4 w-4 mr-1" /> {t("dailyReports.new")}
+            </Button>
+          </div>
         ) : undefined}
       />
 
