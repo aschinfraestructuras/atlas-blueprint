@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProject } from "@/contexts/ProjectContext";
+import { useReportMeta } from "@/hooks/useReportMeta";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import { useWorkItems } from "@/hooks/useWorkItems";
 import { rfiService, type Rfi, type RfiMessage } from "@/lib/services/rfiService";
