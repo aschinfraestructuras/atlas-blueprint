@@ -107,6 +107,7 @@ export function MainLayout({ children }: MainLayoutProps) {
         </main>
       </div>
       <SessionTimeoutWarning open={showWarning} onExtend={extendSession} />
+      <OnboardingTour />
     </div>
   );
 }
