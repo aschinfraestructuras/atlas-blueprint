@@ -142,7 +142,7 @@ export const expirationService = {
 
     if (cals) {
       const eqIds = [...new Set(cals.map(c => c.equipment_id))];
-      const { data: eqs } = await untypedFrom("topography_equipment")
+      const { data: eqs } = await db.from("topography_equipment")
         .select("id, code, model")
         .in("id", eqIds);
       const eqMap = Object.fromEntries(((eqs ?? []) as unknown as EquipmentResult[]).map(e => [e.id, `${e.code} — ${e.model}`]));
