@@ -307,18 +307,17 @@ export function NCFormDialog({
 
                 <div className="grid grid-cols-2 gap-3">
                   <FormField control={form.control} name="discipline" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t("nc.form.discipline")}</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value || ""}>
-                        <FormControl><SelectTrigger><SelectValue placeholder="—" /></SelectTrigger></FormControl>
-                        <SelectContent>
-                          {DISCIPLINES.map(d => (
-                            <SelectItem key={d} value={d}>{t(`nc.discipline.${d}`, { defaultValue: d })}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
+                    <SelectWithOther
+                      label={t("nc.form.discipline")}
+                      options={DISCIPLINES.map(d => ({ value: d, label: t(`nc.discipline.${d}`, { defaultValue: d }) }))}
+                      value={field.value || ""}
+                      onChange={field.onChange}
+                      otherValue="outros"
+                      otherFieldName="discipline_outro"
+                      control={form.control}
+                      otherLabel={t("nc.form.disciplineOtro")}
+                      otherPlaceholder={t("nc.form.disciplineOtroPlaceholder")}
+                    />
                   )} />
                   <FormField control={form.control} name="ppi_instance_id" render={({ field }) => (
                     <FormItem>
