@@ -130,6 +130,7 @@ function SidebarContent({ collapsed, onClose }: { collapsed: boolean; onClose?: 
   const navigate = useNavigate();
   const location = useLocation();
   const { can, isAdmin } = useProjectRole();
+  const { logoUrl } = useProjectLogo();
 
   const isActive = (url: string, exact?: boolean) =>
     exact ? location.pathname === url : location.pathname.startsWith(url);
