@@ -125,8 +125,8 @@ export default function DailyReportsPage() {
                   <TableHead>{t("dailyReports.fields.reportDate")}</TableHead>
                   <TableHead>{t("dailyReports.fields.weather")}</TableHead>
                   <TableHead>{t("common.status")}</TableHead>
-                  <TableHead>{t("dailyReports.signatures.title")}</TableHead>
-                </TableRow>
+                   <TableHead>{t("dailyReports.signatures.title")}</TableHead>
+                   <TableHead className="w-[60px]" />
               </TableHeader>
               <TableBody>
                 {filtered.map(r => (
