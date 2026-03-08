@@ -1687,7 +1687,11 @@
   },
   "rfis": {
     "form": {
-      "ncNone": "Sem NC associada"
+      "ncNone": "Sem NC associada",
+      "ncRelated": "NC Associada",
+      "recipient": "Destinatário",
+      "recipientPlaceholder": "Nome / entidade a quem se dirige",
+      "docReference": "Referência documental"
     }
   },
   "plans": {
