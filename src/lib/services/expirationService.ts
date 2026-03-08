@@ -81,7 +81,7 @@ export const expirationService = {
     const results: ExpiringItem[] = [];
 
     // 1. Supplier documents
-    const { data: supDocs } = await untypedFrom("supplier_documents")
+    const { data: supDocs } = await db.from("supplier_documents")
       .select("id, doc_type, valid_to, supplier_id, suppliers:supplier_id(name)")
       .eq("project_id", projectId)
       .not("valid_to", "is", null)
