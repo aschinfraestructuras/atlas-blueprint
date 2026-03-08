@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 export interface DeadlineItem {
   id: string;
   project_id: string;
-  source: "supplier_doc" | "material_doc" | "calibration" | "nc_due" | "rfi_due" | "tech_office_due" | "planning_due";
+  source: "supplier_doc" | "material_doc" | "calibration" | "nc_due" | "rfi_due" | "tech_office_due" | "planning_due" | "ppi_pending" | "ppi_approval" | "quarantine_lot" | "subcontractor_doc";
   entity_id: string;
   entity_label: string;
   document_id: string | null;
