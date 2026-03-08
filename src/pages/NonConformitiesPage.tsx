@@ -6,7 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { usePermissions } from "@/hooks/usePermissions";
 import { useNonConformities } from "@/hooks/useNonConformities";
 import { ncService } from "@/lib/services/ncService";
-import { ncDemoService } from "@/lib/services/ncDemoService";
+
 import { exportNCBulkPdf, type NCExportLabels } from "@/lib/services/ncExportService";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import { exportToCSV, generateListPdf, buildReportFilename } from "@/lib/services/reportService";
