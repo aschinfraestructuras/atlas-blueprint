@@ -17,6 +17,8 @@ import { ppiService, type PpiInstanceStatus } from "@/lib/services/ppiService";
 import { exportWorkItemConsolidatedPdf, type WorkItemForExport, type ConsolidatedExportData } from "@/lib/services/workItemExportService";
 import { testService, type TestResult } from "@/lib/services/testService";
 import { WorkItemFormDialog } from "@/components/work-items/WorkItemFormDialog";
+import { WorkItemReportPreview } from "@/components/work-items/WorkItemReportPreview";
+import type { WorkItemReportData } from "@/components/work-items/WorkItemReportPreview";
 import { PPIStatusBadge } from "@/components/ppi/PPIStatusBadge";
 import { LinkedDocumentsPanel } from "@/components/documents/LinkedDocumentsPanel";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
