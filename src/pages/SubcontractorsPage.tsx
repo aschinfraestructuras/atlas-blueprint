@@ -90,6 +90,16 @@ export default function SubcontractorsPage() {
     return list;
   }, [subcontractors, search, filterStatus, filterDocStatus, filterTrade]);
 
+  const kpis = useMemo(() => {
+    const total = subcontractors.length;
+    const active = subcontractors.filter(s => s.status === "active").length;
+    const docsExpired = subcontractors.filter(s => s.documentation_status === "expired").length;
+    const docsPending = subcontractors.filter(s => s.documentation_status === "pending").length;
+    const scores = subcontractors.map(s => s.performance_score).filter((v): v is number => v != null);
+    const avgScore = scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : null;
+    return { total, active, docsExpired, docsPending, avgScore };
+  }, [subcontractors]);
+
   if (!activeProject) return <NoProjectBanner />;
 
   const meta: ReportMeta = {
