@@ -2207,7 +2207,7 @@
       }
     },
     "instances": {
-      "title": "Instâncias PPI",
+      "title": "Inspecções PPI",
       "subtitle": "Registos de inspeção ativos",
       "new": "Nova Inspeção",
       "newFromTemplate": "Nova Inspeção (de Template)",
