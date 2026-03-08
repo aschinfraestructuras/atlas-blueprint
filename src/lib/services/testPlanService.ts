@@ -85,7 +85,7 @@ interface TestPlanWithRules extends Record<string, unknown> {
 
 export const testPlanService = {
   async getByProject(projectId: string): Promise<TestPlan[]> {
-    const { data, error } = await untypedFrom("test_plans")
+    const { data, error } = await db.from("test_plans")
       .select("*, test_plan_rules(id)")
       .eq("project_id", projectId)
       .eq("is_deleted", false)
