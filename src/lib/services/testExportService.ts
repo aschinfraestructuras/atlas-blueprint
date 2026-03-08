@@ -161,6 +161,7 @@ html, body {
 }
 .brand { display: flex; align-items: center; gap: 10px; }
 .brand-bar { width: 6px; height: 40px; background: ${BRAND.primary}; border-radius: 3px; }
+.brand-logo { height: 40px; width: 40px; object-fit: contain; border-radius: 6px; }
 .brand-app  { font-size: 19px; font-weight: 800; color: ${BRAND.primary}; letter-spacing: -.5px; line-height: 1; }
 .brand-sub  { font-size: 8.5px; font-weight: 600; color: ${BRAND.muted}; text-transform: uppercase; letter-spacing: .12em; margin-top: 2px; }
 .hdr-meta { text-align: right; }
