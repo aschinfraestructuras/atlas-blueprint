@@ -20,12 +20,109 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
+import { Textarea } from "@/components/ui/textarea";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { SupplierFormDialog } from "@/components/suppliers/SupplierFormDialog";
 import { AddMaterialDialog } from "@/components/suppliers/AddMaterialDialog";
 import { LinkedDocumentsPanel } from "@/components/documents/LinkedDocumentsPanel";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import { toast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
+
+// Evaluation dialog component
+interface EvalDialogProps {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  evalForm: { quality: number; delivery: number; ncManagement: number; cooperation: number; notes: string };
+  setEvalForm: React.Dispatch<React.SetStateAction<{ quality: number; delivery: number; ncManagement: number; cooperation: number; notes: string }>>;
+  evalLoading: boolean;
+  onSubmit: () => void;
+  t: (k: string, opts?: any) => string;
+}
+
+function EvaluationDialog({ open, onOpenChange, evalForm, setEvalForm, evalLoading, onSubmit, t }: EvalDialogProps) {
+  const score = Math.round(
+    evalForm.quality * 0.35 +
+    evalForm.delivery * 0.25 +
+    evalForm.ncManagement * 0.25 +
+    evalForm.cooperation * 0.15
+  );
+  const result = score < 60 ? "rejected" : score < 75 ? "conditional" : "approved";
+  
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle>{t("suppliers.evaluations.new")}</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-5 py-2">
+          {/* Quality 35% */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label className="text-sm">{t("suppliers.evaluations.criteria.quality")} <span className="text-muted-foreground">(35%)</span></Label>
+              <span className="text-sm font-medium tabular-nums">{evalForm.quality}</span>
+            </div>
+            <Slider value={[evalForm.quality]} onValueChange={([v]) => setEvalForm(f => ({ ...f, quality: v }))} min={0} max={100} step={1} />
+          </div>
+          {/* Delivery 25% */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label className="text-sm">{t("suppliers.evaluations.criteria.delivery")} <span className="text-muted-foreground">(25%)</span></Label>
+              <span className="text-sm font-medium tabular-nums">{evalForm.delivery}</span>
+            </div>
+            <Slider value={[evalForm.delivery]} onValueChange={([v]) => setEvalForm(f => ({ ...f, delivery: v }))} min={0} max={100} step={1} />
+          </div>
+          {/* NC Management 25% */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label className="text-sm">{t("suppliers.evaluations.criteria.ncManagement")} <span className="text-muted-foreground">(25%)</span></Label>
+              <span className="text-sm font-medium tabular-nums">{evalForm.ncManagement}</span>
+            </div>
+            <Slider value={[evalForm.ncManagement]} onValueChange={([v]) => setEvalForm(f => ({ ...f, ncManagement: v }))} min={0} max={100} step={1} />
+          </div>
+          {/* Cooperation 15% */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label className="text-sm">{t("suppliers.evaluations.criteria.cooperation")} <span className="text-muted-foreground">(15%)</span></Label>
+              <span className="text-sm font-medium tabular-nums">{evalForm.cooperation}</span>
+            </div>
+            <Slider value={[evalForm.cooperation]} onValueChange={([v]) => setEvalForm(f => ({ ...f, cooperation: v }))} min={0} max={100} step={1} />
+          </div>
+          {/* Notes */}
+          <div className="space-y-2">
+            <Label className="text-sm">{t("suppliers.evaluations.notes")}</Label>
+            <Textarea value={evalForm.notes} onChange={e => setEvalForm(f => ({ ...f, notes: e.target.value }))} rows={2} placeholder={t("common.optional")} />
+          </div>
+          {/* Preview */}
+          <div className="rounded-lg border border-border/50 p-4 bg-muted/30">
+            <p className="text-sm text-muted-foreground mb-2">{t("suppliers.evaluations.preview")}</p>
+            <div className="flex items-center gap-3">
+              <span className="text-2xl font-bold tabular-nums">{score}/100</span>
+              <Badge variant="secondary" className={cn(
+                "text-xs",
+                result === "approved" ? "bg-primary/15 text-primary" :
+                result === "conditional" ? "bg-yellow-500/15 text-yellow-700 dark:text-yellow-400" :
+                "bg-destructive/10 text-destructive"
+              )}>
+                {t(`suppliers.evaluations.results.${result}`)}
+              </Badge>
+            </div>
+            {result === "rejected" && (
+              <p className="text-xs text-destructive mt-2">{t("suppliers.evaluations.ncWarning")}</p>
+            )}
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>{t("common.cancel")}</Button>
+          <Button onClick={onSubmit} disabled={evalLoading}>{evalLoading ? t("common.loading") : t("common.save")}</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
 import { cn } from "@/lib/utils";
 
 const QUAL_COLORS: Record<string, string> = {
