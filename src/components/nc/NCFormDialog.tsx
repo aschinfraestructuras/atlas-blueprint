@@ -133,7 +133,7 @@ export function NCFormDialog({
     defaultValues: defaultValues(originOverride),
   });
 
-  const watchedCategory = form.watch("category");
+  const watchedOrigin = form.watch("origin");
   const watchedClassification = form.watch("classification");
   const isMaior = watchedClassification === "maior";
   const showClosure = isEdit && nc && ["in_review", "closed"].includes(nc.status);
