@@ -1866,7 +1866,8 @@
     },
     "filters": {
       "allStatuses": "Todos os estados",
-      "allDocStatuses": "Todos doc. status"
+      "allDocStatuses": "Todos os estados doc.",
+      "allTrades": "Todas as especialidades"
     },
     "status": {
       "active": "Ativo",
