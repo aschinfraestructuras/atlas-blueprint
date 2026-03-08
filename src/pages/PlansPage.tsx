@@ -67,6 +67,7 @@ export default function PlansPage() {
   const [search, setSearch] = useState("");
   const [filterType, setFilterType] = useState("__all__");
   const [filterStatus, setFilterStatus] = useState("__all__");
+  const [filterDiscipline, setFilterDiscipline] = useState("__all__");
 
   const filtered = useMemo(() => {
     let list = plans;
