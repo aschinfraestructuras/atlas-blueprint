@@ -69,16 +69,13 @@ export default function SubcontractorsPage() {
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("__all__");
   const [filterDocStatus, setFilterDocStatus] = useState("__all__");
+  const [filterTrade, setFilterTrade] = useState("__all__");
 
-  // KPIs
-  const kpis = useMemo(() => {
-    const total = subcontractors.length;
-    const active = subcontractors.filter(s => s.status === "active").length;
-    const docsExpired = subcontractors.filter(s => s.documentation_status === "expired").length;
-    const docsPending = subcontractors.filter(s => s.documentation_status === "pending").length;
-    const avgScore = subcontractors.filter(s => s.performance_score != null);
-    const avg = avgScore.length > 0 ? Math.round(avgScore.reduce((a, b) => a + (b.performance_score ?? 0), 0) / avgScore.length) : null;
-    return { total, active, docsExpired, docsPending, avgScore: avg };
+  // Dynamic unique trades
+  const uniqueTrades = useMemo(() => {
+    const trades = new Set<string>();
+    subcontractors.forEach(s => { if (s.trade) trades.add(s.trade); });
+    return Array.from(trades).sort();
   }, [subcontractors]);
 
   const filtered = useMemo(() => {
@@ -89,8 +86,9 @@ export default function SubcontractorsPage() {
     }
     if (filterStatus !== "__all__") list = list.filter(s => s.status === filterStatus);
     if (filterDocStatus !== "__all__") list = list.filter(s => s.documentation_status === filterDocStatus);
+    if (filterTrade !== "__all__") list = list.filter(s => s.trade === filterTrade);
     return list;
-  }, [subcontractors, search, filterStatus, filterDocStatus]);
+  }, [subcontractors, search, filterStatus, filterDocStatus, filterTrade]);
 
   if (!activeProject) return <NoProjectBanner />;
 
