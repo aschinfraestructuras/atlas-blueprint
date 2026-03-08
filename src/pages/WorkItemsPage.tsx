@@ -335,7 +335,7 @@ export default function WorkItemsPage() {
     generateListPdf({
       reportTitle: t("workItems.export.reportTitle"),
       labels: { appName: "Atlas QMS", reportTitle: t("workItems.export.reportTitle"), generatedOn: t("workItems.export.generatedOn") },
-      meta: { projectName: activeProject.name, projectCode: activeProject.code, locale },
+      meta: reportMeta ?? { projectName: activeProject.name, projectCode: activeProject.code, locale },
       columns,
       rows,
       footerRef: `${filtered.length} work items`,
