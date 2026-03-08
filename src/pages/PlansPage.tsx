@@ -46,9 +46,17 @@ const STATUS_COLORS: Record<string, string> = {
   superseded: "bg-destructive/10 text-destructive",
 };
 
-const PLAN_TYPES = ["MS", "PlanEsc", "PlanBet", "PlanMont", "PlanTraf", "PlanSeg", "Schedule", "Drawing", "Other"];
+const PLAN_TYPES = [
+  "MS", "PlanEsc", "PlanBet", "PlanMont", "PlanTraf", "PlanSeg",
+  "PlanTopo", "PlanEns", "PlanInsp", "PlanAmb", "PlanQual",
+  "Schedule", "Drawing", "Other",
+];
 const PLAN_STATUSES = ["draft", "under_review", "approved", "obsolete", "archived", "superseded"];
-const DISCIPLINES = ["geral", "terras", "betao", "ferrovia", "catenaria", "st", "drenagem", "estruturas", "outros"];
+const DISCIPLINES = [
+  "geral", "terras", "betao", "ferrovia", "catenaria", "st",
+  "drenagem", "estruturas", "telecom", "edificacoes", "ambiente",
+  "via", "geotecnia", "outros",
+];
 
 export default function PlansPage() {
   const { t, i18n } = useTranslation();

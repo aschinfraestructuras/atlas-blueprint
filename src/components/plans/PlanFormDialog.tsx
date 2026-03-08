@@ -24,9 +24,17 @@ import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 
-const PLAN_TYPES = ["MS", "PlanEsc", "PlanBet", "PlanMont", "PlanTraf", "PlanSeg", "Schedule", "Drawing", "Other"] as const;
+const PLAN_TYPES = [
+  "MS", "PlanEsc", "PlanBet", "PlanMont", "PlanTraf", "PlanSeg",
+  "PlanTopo", "PlanEns", "PlanInsp", "PlanAmb", "PlanQual",
+  "Schedule", "Drawing", "Other",
+] as const;
 const STATUSES = ["draft", "under_review", "approved", "obsolete", "archived"] as const;
-const DISCIPLINES = ["geral", "terras", "betao", "ferrovia", "catenaria", "st", "drenagem", "estruturas", "outros"] as const;
+const DISCIPLINES = [
+  "geral", "terras", "betao", "ferrovia", "catenaria", "st",
+  "drenagem", "estruturas", "telecom", "edificacoes", "ambiente",
+  "via", "geotecnia", "outros",
+] as const;
 
 const schema = z.object({
   plan_type: z.enum(PLAN_TYPES),
