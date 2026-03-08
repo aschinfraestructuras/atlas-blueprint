@@ -602,6 +602,10 @@
       "template": "Modelo de formulário",
       "templatePlaceholder": "Selecionar modelo…",
       "noTemplate": "Sem modelo (documento em branco)",
+      "code": "Código do documento",
+      "issuedAt": "Data de emissão",
+      "tags": "Etiquetas",
+      "tagsPlaceholder": "ex: qualidade, betão, segurança",
       "validation": {
         "titleRequired": "O título é obrigatório.",
         "typeRequired": "O tipo é obrigatório.",
@@ -964,6 +968,8 @@
         "locationPlaceholder": "ex: Km 12+500, Viga V1…",
         "pkInicio": "PK Início (m)",
         "pkFim": "PK Fim (m)",
+        "pkStart": "PK Início (m)",
+        "pkEnd": "PK Fim (m)",
         "material": "Material",
         "materialPlaceholder": "ex: Betão C30/37",
         "materialOutro": "Material (outro)",
@@ -1586,7 +1592,10 @@
       "titlePlaceholder": "ex: Submittal sobre betão armado",
       "descriptionPlaceholder": "Descreva o pedido ou clarificação…",
       "dueDate": "Prazo de resposta",
-      "createBtn": "Criar item"
+      "createBtn": "Criar item",
+      "assignedTo": "Responsável",
+      "assignedToPlaceholder": "Nome do responsável",
+      "ncRelated": "NC Associada"
     },
     "toast": {
       "created": "Item criado com sucesso.",
@@ -1648,6 +1657,11 @@
       "links": "Ligações",
       "responseRequired": "Resposta obrigatória.",
       "responseRegistered": "Resposta registada com sucesso."
+    }
+  },
+  "rfis": {
+    "form": {
+      "ncNone": "Sem NC associada"
     }
   },
   "plans": {
@@ -1832,7 +1846,18 @@
       "linkedSupplier": "Fornecedor associado",
       "linkedSupplierPlaceholder": "Selecionar fornecedor…",
       "noSupplier": "Sem fornecedor",
-      "createBtn": "Criar subempreiteiro"
+      "createBtn": "Criar subempreiteiro",
+      "sectionGeneral": "Dados Gerais",
+      "sectionContact": "Contacto",
+      "contract": "Contrato",
+      "contractPlaceholder": "Referência do contrato",
+      "docStatus": "Estado Documentação",
+      "score": "Score Desempenho",
+      "contactName": "Nome do responsável",
+      "contactNamePlaceholder": "Nome do responsável",
+      "contactPhone": "Telefone de contacto",
+      "notes": "Observações",
+      "notesPlaceholder": "Observações gerais…"
     },
     "detail": {
       "tabs": {
@@ -2544,7 +2569,13 @@
       "createBtn": "Criar material",
       "supplierLabel": "Fornecedor principal",
       "supplierPlaceholder": "Selecionar fornecedor…",
-      "approvalRequired": "Requer aprovação MAP/MAS"
+      "approvalRequired": "Requer aprovação MAP/MAS",
+      "pameDisciplina": "Disciplina PAME",
+      "pamePrioridade": "Prioridade PAME",
+      "pameNorma": "Norma Aplicável",
+      "pameDocsReq": "Documentos Requeridos",
+      "pameDocsReqPlaceholder": "ex: FT, CE, DA, Relatório de ensaio",
+      "pamePpiRef": "Referência PPI"
     },
     "pame": {
       "title": "Plano de Materiais (PAME)",
