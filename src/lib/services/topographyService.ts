@@ -102,7 +102,7 @@ export const topographyEquipmentService = {
   },
 
   async getById(id: string): Promise<TopographyEquipment> {
-    const { data, error } = await untypedFrom("topography_equipment")
+    const { data, error } = await db.from("topography_equipment")
       .select("*")
       .eq("id", id)
       .single();
