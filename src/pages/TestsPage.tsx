@@ -309,6 +309,7 @@ function ResultsTab() {
   const { t, i18n }       = useTranslation();
   const { activeProject } = useProject();
   const exportLabels      = useExportLabels();
+  const { logoUrl, logoBase64 } = useProjectLogo();
 
   const [results, setResults]           = useState<TestResult[]>([]);
   const [loading, setLoading]           = useState(false);

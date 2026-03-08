@@ -288,6 +288,7 @@ export default function DocumentDetailPage() {
   const navigate = useNavigate();
   const { activeProject } = useProject();
   const { user } = useAuth();
+  const { logoUrl, logoBase64 } = useProjectLogo();
 
   useEffect(() => {
     if (!id || id === "undefined" || id.trim() === "") {

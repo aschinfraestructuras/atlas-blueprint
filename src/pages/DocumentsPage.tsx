@@ -70,6 +70,7 @@ export default function DocumentsPage() {
   const navigate = useNavigate();
   const { activeProject } = useProject();
   const { user } = useAuth();
+  const { logoUrl, logoBase64 } = useProjectLogo();
 
   const { data: documents, loading, error, refetch } = useDocuments();
 
