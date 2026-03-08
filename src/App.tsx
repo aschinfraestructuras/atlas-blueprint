@@ -144,6 +144,7 @@ const App = () => (
       </BrowserRouter>
     </TooltipProvider>
     </ThemeProvider>
+    </ErrorBoundary>
   </QueryClientProvider>
 );
 
