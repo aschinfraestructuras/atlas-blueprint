@@ -242,11 +242,11 @@ tbody td { padding: 6px 8px; vertical-align: top; line-height: 1.4; }
 
 // ─── Shared header HTML ───────────────────────────────────────────────────────
 
-function headerHtml(title: string, labels: TestExportLabels, locale: string): string {
+function headerHtml(title: string, labels: TestExportLabels, locale: string, logoUrl?: string | null): string {
   return `
 <div class="hdr">
   <div class="brand">
-    <div class="brand-bar"></div>
+    ${logoUrl ? `<img src="${logoUrl}" class="brand-logo" />` : `<div class="brand-bar"></div>`}
     <div>
       <div class="brand-app">${labels.appName}</div>
       <div class="brand-sub">Quality Management System</div>
