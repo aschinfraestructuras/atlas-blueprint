@@ -2,17 +2,9 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProject } from "@/contexts/ProjectContext";
+import { type PermissionSet, PERMISSIONS_BY_ROLE } from "./usePermissions";
 
 export type ProjectRole = "admin" | "project_manager" | "quality_manager" | "technician" | "viewer" | null;
-
-/** Permission matrix — what each role can do */
-const ROLE_CAN: Record<string, Record<string, boolean>> = {
-  admin:           { create: true, edit: true, delete: true, validate: true, viewAudit: true, manageMembers: true },
-  project_manager: { create: true, edit: true, delete: false, validate: true, viewAudit: true, manageMembers: false },
-  quality_manager: { create: true, edit: true, delete: false, validate: true, viewAudit: true, manageMembers: false },
-  technician:      { create: true, edit: true, delete: false, validate: false, viewAudit: false, manageMembers: false },
-  viewer:          { create: false, edit: false, delete: false, validate: false, viewAudit: false, manageMembers: false },
-};
 
 export function useProjectRole() {
   const { user } = useAuth();
@@ -55,7 +47,7 @@ export function useProjectRole() {
 
   const can = (action: string): boolean => {
     if (!role) return false;
-    return ROLE_CAN[role]?.[action] ?? false;
+    return PERMISSIONS_BY_ROLE[role]?.[action as keyof PermissionSet] ?? false;
   };
 
   const isAdmin = role === "admin";
