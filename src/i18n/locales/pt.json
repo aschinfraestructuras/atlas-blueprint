@@ -2104,11 +2104,11 @@
   },
   "ppi": {
     "title": "Planos de Pontos de Inspeção (PPI)",
-    "subtitle": "Gerir templates e instâncias de inspeção por work item",
+    "subtitle": "Gerir templates e inspeções por frente de obra",
     "nav": "PPI",
     "templates": {
-      "title": "Templates PPI",
-      "subtitle": "Templates reutilizáveis de pontos de inspeção",
+      "title": "Planos de Inspeção PPI",
+      "subtitle": "Biblioteca de planos de inspeção reutilizáveis por disciplina",
       "new": "Novo Template",
       "edit": "Editar Template",
       "archive": "Arquivar",
