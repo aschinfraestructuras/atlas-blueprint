@@ -9,9 +9,15 @@ export interface Plan {
   plan_type: string;
   title: string;
   revision: string | null;
-  status: string;      // draft | under_review | approved | obsolete | archived
+  status: string;
   file_url: string | null;
   document_id: string | null;
+  code: string | null;
+  discipline: string | null;
+  responsible: string | null;
+  approval_date: string | null;
+  doc_reference: string | null;
+  notes: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -24,6 +30,12 @@ export interface PlanInput {
   revision?: string;
   status?: string;
   file_url?: string;
+  code?: string;
+  discipline?: string;
+  responsible?: string;
+  approval_date?: string;
+  doc_reference?: string;
+  notes?: string;
 }
 
 export const PLAN_STATUSES = ["draft", "under_review", "approved", "obsolete", "archived"] as const;
