@@ -20,6 +20,10 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
+import { Textarea } from "@/components/ui/textarea";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { SupplierFormDialog } from "@/components/suppliers/SupplierFormDialog";
 import { AddMaterialDialog } from "@/components/suppliers/AddMaterialDialog";
@@ -27,6 +31,98 @@ import { LinkedDocumentsPanel } from "@/components/documents/LinkedDocumentsPane
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+
+// Evaluation dialog component
+interface EvalDialogProps {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  evalForm: { quality: number; delivery: number; ncManagement: number; cooperation: number; notes: string };
+  setEvalForm: React.Dispatch<React.SetStateAction<{ quality: number; delivery: number; ncManagement: number; cooperation: number; notes: string }>>;
+  evalLoading: boolean;
+  onSubmit: () => void;
+  t: (k: string, opts?: any) => string;
+}
+
+function EvaluationDialog({ open, onOpenChange, evalForm, setEvalForm, evalLoading, onSubmit, t }: EvalDialogProps) {
+  const score = Math.round(
+    evalForm.quality * 0.35 +
+    evalForm.delivery * 0.25 +
+    evalForm.ncManagement * 0.25 +
+    evalForm.cooperation * 0.15
+  );
+  const result = score < 60 ? "rejected" : score < 75 ? "conditional" : "approved";
+  
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle>{t("suppliers.evaluations.new")}</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-5 py-2">
+          {/* Quality 35% */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label className="text-sm">{t("suppliers.evaluations.criteria.quality")} <span className="text-muted-foreground">(35%)</span></Label>
+              <span className="text-sm font-medium tabular-nums">{evalForm.quality}</span>
+            </div>
+            <Slider value={[evalForm.quality]} onValueChange={([v]) => setEvalForm(f => ({ ...f, quality: v }))} min={0} max={100} step={1} />
+          </div>
+          {/* Delivery 25% */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label className="text-sm">{t("suppliers.evaluations.criteria.delivery")} <span className="text-muted-foreground">(25%)</span></Label>
+              <span className="text-sm font-medium tabular-nums">{evalForm.delivery}</span>
+            </div>
+            <Slider value={[evalForm.delivery]} onValueChange={([v]) => setEvalForm(f => ({ ...f, delivery: v }))} min={0} max={100} step={1} />
+          </div>
+          {/* NC Management 25% */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label className="text-sm">{t("suppliers.evaluations.criteria.ncManagement")} <span className="text-muted-foreground">(25%)</span></Label>
+              <span className="text-sm font-medium tabular-nums">{evalForm.ncManagement}</span>
+            </div>
+            <Slider value={[evalForm.ncManagement]} onValueChange={([v]) => setEvalForm(f => ({ ...f, ncManagement: v }))} min={0} max={100} step={1} />
+          </div>
+          {/* Cooperation 15% */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label className="text-sm">{t("suppliers.evaluations.criteria.cooperation")} <span className="text-muted-foreground">(15%)</span></Label>
+              <span className="text-sm font-medium tabular-nums">{evalForm.cooperation}</span>
+            </div>
+            <Slider value={[evalForm.cooperation]} onValueChange={([v]) => setEvalForm(f => ({ ...f, cooperation: v }))} min={0} max={100} step={1} />
+          </div>
+          {/* Notes */}
+          <div className="space-y-2">
+            <Label className="text-sm">{t("suppliers.evaluations.notes")}</Label>
+            <Textarea value={evalForm.notes} onChange={e => setEvalForm(f => ({ ...f, notes: e.target.value }))} rows={2} placeholder={t("common.optional")} />
+          </div>
+          {/* Preview */}
+          <div className="rounded-lg border border-border/50 p-4 bg-muted/30">
+            <p className="text-sm text-muted-foreground mb-2">{t("suppliers.evaluations.preview")}</p>
+            <div className="flex items-center gap-3">
+              <span className="text-2xl font-bold tabular-nums">{score}/100</span>
+              <Badge variant="secondary" className={cn(
+                "text-xs",
+                result === "approved" ? "bg-primary/15 text-primary" :
+                result === "conditional" ? "bg-yellow-500/15 text-yellow-700 dark:text-yellow-400" :
+                "bg-destructive/10 text-destructive"
+              )}>
+                {t(`suppliers.evaluations.results.${result}`)}
+              </Badge>
+            </div>
+            {result === "rejected" && (
+              <p className="text-xs text-destructive mt-2">{t("suppliers.evaluations.ncWarning")}</p>
+            )}
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>{t("common.cancel")}</Button>
+          <Button onClick={onSubmit} disabled={evalLoading}>{evalLoading ? t("common.loading") : t("common.save")}</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 const QUAL_COLORS: Record<string, string> = {
   pending: "bg-muted text-muted-foreground",
@@ -66,6 +162,15 @@ export default function SupplierDetailPage() {
   const [loading, setLoading] = useState(true);
   const [editOpen, setEditOpen] = useState(false);
   const [addMaterialOpen, setAddMaterialOpen] = useState(false);
+  const [evalDialogOpen, setEvalDialogOpen] = useState(false);
+  const [evalLoading, setEvalLoading] = useState(false);
+  const [evalForm, setEvalForm] = useState({
+    quality: 75,
+    delivery: 75,
+    ncManagement: 75,
+    cooperation: 75,
+    notes: "",
+  });
 
   const fetchAll = useCallback(async () => {
     if (!id || !activeProject) return;
@@ -386,7 +491,16 @@ export default function SupplierDetailPage() {
         {/* Evaluations */}
         <TabsContent value="evaluations">
           <Card className="border-0 shadow-card">
-            <CardContent className="p-6">
+            <CardHeader className="pb-2 flex flex-row items-center justify-between">
+              <CardTitle className="text-sm">{t("suppliers.evaluations.title")}</CardTitle>
+              {canCreate && (
+                <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setEvalDialogOpen(true)}>
+                  <Plus className="h-3.5 w-3.5" />
+                  {t("suppliers.evaluations.new")}
+                </Button>
+              )}
+            </CardHeader>
+            <CardContent className="p-6 pt-2">
               {evals.length === 0 ? (
                 <p className="text-sm text-muted-foreground text-center py-6">{t("common.noData")}</p>
               ) : (
@@ -394,9 +508,9 @@ export default function SupplierDetailPage() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>{t("common.date")}</TableHead>
-                      <TableHead>{t("suppliers.evaluations.score", { defaultValue: "Pontuação" })}</TableHead>
-                      <TableHead>{t("suppliers.evaluations.result", { defaultValue: "Resultado" })}</TableHead>
-                      <TableHead>{t("suppliers.evaluations.notes", { defaultValue: "Observações" })}</TableHead>
+                      <TableHead>{t("suppliers.evaluations.score")}</TableHead>
+                      <TableHead>{t("suppliers.evaluations.result")}</TableHead>
+                      <TableHead>{t("suppliers.evaluations.notes")}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -405,7 +519,13 @@ export default function SupplierDetailPage() {
                         <TableCell className="text-sm">{new Date(ev.eval_date).toLocaleDateString()}</TableCell>
                         <TableCell className="text-sm font-medium">{ev.score != null ? `${ev.score}/100` : "—"}</TableCell>
                         <TableCell>
-                          <Badge variant="secondary" className={cn("text-xs", ev.result === "approved" ? "bg-primary/15 text-primary" : ev.result === "rejected" ? "bg-destructive/10 text-destructive" : "")}>
+                          <Badge variant="secondary" className={cn(
+                            "text-xs",
+                            ev.result === "approved" ? "bg-primary/15 text-primary" :
+                            ev.result === "conditional" ? "bg-yellow-500/15 text-yellow-700 dark:text-yellow-400" :
+                            ev.result === "rejected" ? "bg-destructive/10 text-destructive" :
+                            "bg-muted text-muted-foreground"
+                          )}>
                             {t(`suppliers.evaluations.results.${ev.result}`, { defaultValue: ev.result })}
                           </Badge>
                         </TableCell>
@@ -417,6 +537,68 @@ export default function SupplierDetailPage() {
               )}
             </CardContent>
           </Card>
+          
+          {/* Evaluation Dialog */}
+          {evalDialogOpen && (
+            <EvaluationDialog
+              open={evalDialogOpen}
+              onOpenChange={setEvalDialogOpen}
+              evalForm={evalForm}
+              setEvalForm={setEvalForm}
+              evalLoading={evalLoading}
+              onSubmit={async () => {
+                if (!activeProject || !supplier) return;
+                setEvalLoading(true);
+                // Calculate weighted score: Quality 35%, Delivery 25%, NC 25%, Cooperation 15%
+                const score = Math.round(
+                  evalForm.quality * 0.35 +
+                  evalForm.delivery * 0.25 +
+                  evalForm.ncManagement * 0.25 +
+                  evalForm.cooperation * 0.15
+                );
+                let result = "approved";
+                if (score < 60) result = "rejected";
+                else if (score < 75) result = "conditional";
+                
+                try {
+                  await supplierService.createEvaluation({
+                    project_id: activeProject.id,
+                    supplier_id: supplier.id,
+                    eval_date: new Date().toISOString().split("T")[0],
+                    criteria: {
+                      quality: evalForm.quality,
+                      delivery: evalForm.delivery,
+                      ncManagement: evalForm.ncManagement,
+                      cooperation: evalForm.cooperation,
+                    },
+                    score,
+                    result,
+                    notes: evalForm.notes || undefined,
+                  });
+                  
+                  if (result === "rejected") {
+                    toast({
+                      title: t("suppliers.evaluations.ncWarningTitle"),
+                      description: t("suppliers.evaluations.ncWarningDesc"),
+                      variant: "destructive",
+                    });
+                  } else {
+                    toast({ title: t("suppliers.evaluations.created") });
+                  }
+                  
+                  setEvalDialogOpen(false);
+                  setEvalForm({ quality: 75, delivery: 75, ncManagement: 75, cooperation: 75, notes: "" });
+                  fetchAll();
+                } catch (err) {
+                  console.error(err);
+                  toast({ title: t("suppliers.toast.error"), variant: "destructive" });
+                } finally {
+                  setEvalLoading(false);
+                }
+              }}
+              t={t}
+            />
+          )}
         </TabsContent>
 
         {/* Audit */}

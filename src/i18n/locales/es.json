@@ -1092,7 +1092,8 @@
       "code": "Código",
       "category": "Categoría",
       "nifCif": "NIF/CIF",
-      "approvalStatus": "Calificación"
+      "approvalStatus": "Calificación",
+      "pameMaterials": "Mat. PAME"
     },
     "status": {
       "active": "Activo",
@@ -1164,9 +1165,22 @@
         "audit": "Auditoría"
       },
       "evaluations": {
+        "title": "Evaluaciones",
+        "new": "Nueva Evaluación",
         "score": "Puntuación",
         "result": "Resultado",
         "notes": "Observaciones",
+        "preview": "Resultado previsto",
+        "created": "Evaluación registrada con éxito.",
+        "ncWarning": "Score < 60 — NC Mayor generada automáticamente (PG-05)",
+        "ncWarningTitle": "Evaluación con score inferior a 60",
+        "ncWarningDesc": "NC Mayor generada automáticamente conforme PG-05.",
+        "criteria": {
+          "quality": "Calidad del trabajo/producto",
+          "delivery": "Cumplimiento de plazos",
+          "ncManagement": "Gestión de No Conformidades",
+          "cooperation": "Cooperación con el SGC"
+        },
         "results": {
           "approved": "Aprobado",
           "pending": "Pendiente",
@@ -1665,10 +1679,12 @@
     },
     "table": {
       "trade": "Especialidad",
+      "specialty": "Especialidad",
       "contactEmail": "Correo",
       "linkedSupplier": "Proveedor",
       "docStatus": "Doc. Status",
-      "score": "Score"
+      "score": "Score",
+      "fipApproval": "Aprobación F/IP"
     },
     "filters": {
       "allStatuses": "Todos los estados",
@@ -1753,7 +1769,8 @@
       "updated": "Subcontratista actualizado con éxito.",
       "deleted": "Subcontratista eliminado.",
       "error": "Ocurrió un error. Inténtelo de nuevo."
-    }
+    },
+    "fipPending": "Aprobación F/IP pendiente"
   },
   "audit": {
     "table": {
@@ -2574,12 +2591,19 @@
       "expired": "Expirado"
     },
     "kpi": {
+      "totalEmes": "Total EMEs",
       "calibrated": "Calibrados",
       "expiring30d": "Expira en 30d",
       "expired": "Expirados",
       "pendingRequests": "Solicitudes Pendientes",
       "ncControls": "Controles NC"
     },
+    "alert": {
+      "expiringTitle": "{{count}} equipo(s) con calibración por expirar en los próximos 30 días",
+      "expiringDesc": "verificar antes de usar en campo"
+    },
+    "expiredAgo": "Expirado hace {{days}} días",
+    "expiresIn": "{{days}} días",
     "requestStatus": {
       "pending": "Pendiente",
       "assigned": "Asignado",

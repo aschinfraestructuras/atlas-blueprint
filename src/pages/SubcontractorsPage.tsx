@@ -41,6 +41,17 @@ const STATUS_COLORS: Record<string, string> = {
 
 const SUB_STATUSES = ["active", "suspended", "concluded"];
 
+// Railway specialty trades that require F/IP approval (PG-PF17A-05)
+const RAILWAY_TRADES = ["via_ferrea", "catenaria", "sinalizacao_st", "soldadura", "gsmr_telecom"];
+
+const TRADE_BADGES: Record<string, { label: string; className: string }> = {
+  via_ferrea: { label: "Via Férrea", className: "bg-blue-500/15 text-blue-700 dark:text-blue-400" },
+  catenaria: { label: "Catenária 25kV", className: "bg-orange-500/15 text-orange-700 dark:text-orange-400" },
+  sinalizacao_st: { label: "S&T", className: "bg-purple-500/15 text-purple-700 dark:text-purple-400" },
+  soldadura: { label: "Soldadura", className: "bg-red-500/15 text-red-700 dark:text-red-400" },
+  gsmr_telecom: { label: "GSM-R", className: "bg-green-500/15 text-green-700 dark:text-green-400" },
+};
+
 export default function SubcontractorsPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -233,11 +244,11 @@ export default function SubcontractorsPage() {
             <TableHeader>
               <TableRow className="bg-muted/40">
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.name")}</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("subcontractors.table.trade")}</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("subcontractors.table.specialty")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.status")}</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("subcontractors.table.fipApproval")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("subcontractors.table.docStatus")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("subcontractors.table.score")}</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("subcontractors.table.contactEmail")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.date")}</TableHead>
                 <TableHead className="w-28">{t("common.actions")}</TableHead>
               </TableRow>
@@ -251,11 +262,28 @@ export default function SubcontractorsPage() {
                       {sub.name}
                     </div>
                   </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">{sub.trade ?? "—"}</TableCell>
+                  <TableCell>
+                    {sub.trade && TRADE_BADGES[sub.trade] ? (
+                      <Badge variant="secondary" className={cn("text-xs", TRADE_BADGES[sub.trade].className)}>
+                        {TRADE_BADGES[sub.trade].label}
+                      </Badge>
+                    ) : (
+                      <span className="text-sm text-muted-foreground">{sub.trade ?? "—"}</span>
+                    )}
+                  </TableCell>
                   <TableCell>
                     <Badge variant="secondary" className={cn("text-xs", STATUS_COLORS[sub.status] ?? "")}>
                       {t(`subcontractors.status.${sub.status}`, { defaultValue: sub.status })}
                     </Badge>
+                  </TableCell>
+                  <TableCell>
+                    {sub.trade && RAILWAY_TRADES.includes(sub.trade) ? (
+                      <Badge variant="secondary" className="text-xs bg-yellow-500/15 text-yellow-700 dark:text-yellow-400">
+                        {t("subcontractors.fipPending")}
+                      </Badge>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">—</span>
+                    )}
                   </TableCell>
                   <TableCell>
                     <Badge variant="secondary" className={cn("text-xs", sub.documentation_status === "valid" ? "bg-primary/20 text-primary" : sub.documentation_status === "expired" ? "bg-destructive/10 text-destructive" : "bg-muted text-muted-foreground")}>
@@ -263,7 +291,6 @@ export default function SubcontractorsPage() {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">{sub.performance_score != null ? `${sub.performance_score}` : "—"}</TableCell>
-                  <TableCell className="text-sm text-muted-foreground">{sub.contact_email ?? "—"}</TableCell>
                   <TableCell className="text-sm text-muted-foreground">
                     {new Date(sub.updated_at).toLocaleDateString()}
                   </TableCell>

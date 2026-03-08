@@ -38,6 +38,15 @@ const STATUS_COLORS: Record<string, string> = {
   archived: "bg-muted text-muted-foreground",
 };
 
+const CATEGORY_BADGES: Record<string, { label: string; className: string }> = {
+  ferrovia: { label: "Ferrovia", className: "bg-blue-500/15 text-blue-700 dark:text-blue-400" },
+  betao: { label: "Betão", className: "bg-slate-500/15 text-slate-700 dark:text-slate-400" },
+  catenaria: { label: "Catenária", className: "bg-orange-500/15 text-orange-700 dark:text-orange-400" },
+  st_sinalizacao: { label: "S&T", className: "bg-purple-500/15 text-purple-700 dark:text-purple-400" },
+  gsmr_telecom: { label: "GSM-R", className: "bg-green-500/15 text-green-700 dark:text-green-400" },
+  laboratorio: { label: "Laboratório", className: "bg-emerald-600/15 text-emerald-700 dark:text-emerald-400" },
+};
+
 export default function SuppliersPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -257,7 +266,7 @@ export default function SuppliersPage() {
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("suppliers.table.code")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.name")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("suppliers.table.category")}</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("suppliers.form.nifCif")}</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("suppliers.table.pameMaterials")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("suppliers.form.qualificationStatus")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.status")}</TableHead>
                 <TableHead className="w-24" />
@@ -273,10 +282,20 @@ export default function SuppliersPage() {
                       {supplier.name}
                     </div>
                   </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {supplier.category ? t(`suppliers.categories.${supplier.category}`, { defaultValue: supplier.category }) : "—"}
+                  <TableCell>
+                    {supplier.category && CATEGORY_BADGES[supplier.category] ? (
+                      <Badge variant="secondary" className={cn("text-xs", CATEGORY_BADGES[supplier.category].className)}>
+                        {CATEGORY_BADGES[supplier.category].label}
+                      </Badge>
+                    ) : (
+                      <span className="text-sm text-muted-foreground">
+                        {supplier.category ? t(`suppliers.categories.${supplier.category}`, { defaultValue: supplier.category }) : "—"}
+                      </span>
+                    )}
                   </TableCell>
-                  <TableCell className="text-sm text-muted-foreground font-mono text-xs">{supplier.nif_cif ?? "—"}</TableCell>
+                  <TableCell className="text-center">
+                    <Badge variant="outline" className="text-xs font-mono">—</Badge>
+                  </TableCell>
                   <TableCell>
                     <Badge variant="secondary" className={cn("text-xs", QUAL_COLORS[supplier.qualification_status ?? supplier.approval_status] ?? "")}>
                       {t(`suppliers.qualificationStatus.${supplier.qualification_status ?? supplier.approval_status}`)}
