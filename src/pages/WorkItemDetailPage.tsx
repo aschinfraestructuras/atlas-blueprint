@@ -41,6 +41,7 @@ import { toast } from "@/hooks/use-toast";
 import { topographyRequestService, topographyControlService, type TopographyRequest, type TopographyControl } from "@/lib/services/topographyService";
 import { surveyService, type SurveyRecord } from "@/lib/services/surveyService";
 import { planningService, type Activity } from "@/lib/services/planningService";
+import { TestsTimelineChart } from "@/components/dashboard/TestsTimelineChart";
 
 // ─── Status badge ─────────────────────────────────────────────────────────────
 
