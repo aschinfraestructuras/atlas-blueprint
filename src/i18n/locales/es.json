@@ -295,8 +295,33 @@
       "closedNcCount": "{{count}} NC cerradas",
       "noClosedNcs": "Sin NCs cerradas",
       "ncOpened": "Abiertas",
-      "ncClosed": "Cerradas"
+      "ncClosed": "Cerradas",
+      "ncOpen": "NCs Abiertas",
+      "pamePending": "PAME Pendientes",
+      "emesExpiring": "EMEs ≤30d",
+      "nextAudit": "Próxima Auditoría"
     },
+    "progress": {
+      "title": "Progreso del SGC",
+      "ppi": "PPIs Aprobados",
+      "tests": "Ensayos Realizados",
+      "materials": "Materiales Aprobados (PAME)"
+    },
+    "recent": {
+      "title": "Actividad Reciente",
+      "empty": "Sin actividad reciente"
+    },
+    "actions": {
+      "newProject": "Nuevo Proyecto",
+      "newDocument": "Nuevo Documento",
+      "newTest": "Nuevo Ensayo",
+      "newNC": "Nueva NC",
+      "openNc": "Abrir NC",
+      "reception": "Recepción Material",
+      "test": "Registrar Ensayo",
+      "rfi": "Nuevo RFI"
+    },
+    "noAudit": "Sin auditorías planificadas",
     "charts": {
       "tests": "Ensayos",
       "suppliers": "Proveedores",
@@ -308,12 +333,6 @@
     "nextActions": "Próximas Acciones",
     "allClear": "Sin acciones pendientes 🎉",
     "quickActions": "Acciones Rápidas",
-    "actions": {
-      "newProject": "Nuevo Proyecto",
-      "newDocument": "Nuevo Documento",
-      "newTest": "Nuevo Ensayo",
-      "newNC": "Nueva NC"
-    },
     "activity": {
       "documentApproved": "Documento aprobado",
       "testCompleted": "Ensayo completado",
