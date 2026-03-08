@@ -433,8 +433,7 @@ export const materialService = {
 
   // ── KPIs ────────────────────────────────────────────────────────
   async getKPIs(projectId: string): Promise<MaterialKPI | null> {
-    const { data, error } = await (supabase as unknown as { from: (table: string) => ReturnType<typeof supabase.from> })
-      .from("view_materials_kpi")
+    const { data, error } = await db.from("view_materials_kpi")
       .select("*")
       .eq("project_id", projectId)
       .maybeSingle();
