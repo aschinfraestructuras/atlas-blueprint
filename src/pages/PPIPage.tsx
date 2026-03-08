@@ -332,6 +332,9 @@ export default function PPIPage() {
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground hidden lg:table-cell">
                   {t("ppi.instances.table.openedAt")}
                 </TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground hidden md:table-cell w-20">
+                  {t("ppi.instances.table.hpPending", { defaultValue: "HP Pend." })}
+                </TableHead>
                 <TableHead className="w-[80px]" />
               </TableRow>
             </TableHeader>
