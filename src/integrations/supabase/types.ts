@@ -979,6 +979,7 @@ export type Database = {
           description: string
           detected_at: string
           discipline: string | null
+          discipline_outro: string | null
           document_id: string | null
           due_date: string | null
           fip_validated_at: string | null
@@ -1036,6 +1037,7 @@ export type Database = {
           description: string
           detected_at?: string
           discipline?: string | null
+          discipline_outro?: string | null
           document_id?: string | null
           due_date?: string | null
           fip_validated_at?: string | null
@@ -1093,6 +1095,7 @@ export type Database = {
           description?: string
           detected_at?: string
           discipline?: string | null
+          discipline_outro?: string | null
           document_id?: string | null
           due_date?: string | null
           fip_validated_at?: string | null
@@ -2737,6 +2740,7 @@ export type Database = {
           address: string | null
           approval_status: string
           category: string | null
+          category_outro: string | null
           code: string | null
           contact_email: string | null
           contact_name: string | null
@@ -2762,6 +2766,7 @@ export type Database = {
           address?: string | null
           approval_status?: string
           category?: string | null
+          category_outro?: string | null
           code?: string | null
           contact_email?: string | null
           contact_name?: string | null
@@ -2787,6 +2792,7 @@ export type Database = {
           address?: string | null
           approval_status?: string
           category?: string | null
+          category_outro?: string | null
           code?: string | null
           contact_email?: string | null
           contact_name?: string | null
@@ -4932,6 +4938,7 @@ export type Database = {
           description: string
           detected_at: string
           discipline: string | null
+          discipline_outro: string | null
           document_id: string | null
           due_date: string | null
           fip_validated_at: string | null
@@ -5003,6 +5010,7 @@ export type Database = {
           description: string
           detected_at: string
           discipline: string | null
+          discipline_outro: string | null
           document_id: string | null
           due_date: string | null
           fip_validated_at: string | null
@@ -5074,6 +5082,7 @@ export type Database = {
           description: string
           detected_at: string
           discipline: string | null
+          discipline_outro: string | null
           document_id: string | null
           due_date: string | null
           fip_validated_at: string | null
@@ -5201,6 +5210,7 @@ export type Database = {
           address: string | null
           approval_status: string
           category: string | null
+          category_outro: string | null
           code: string | null
           contact_email: string | null
           contact_name: string | null
@@ -5465,6 +5475,7 @@ export type Database = {
           description: string
           detected_at: string
           discipline: string | null
+          discipline_outro: string | null
           document_id: string | null
           due_date: string | null
           fip_validated_at: string | null
