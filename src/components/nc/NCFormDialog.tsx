@@ -98,7 +98,7 @@ const defaultValues = (origin?: string): FormValues => ({
   severity: "major", category: "qualidade", category_outro: "",
   origin: origin ?? "manual", reference: "", responsible: "",
   due_date: "", detected_at: new Date().toISOString().split("T")[0],
-  location_pk: "", discipline: "", classification: "",
+  location_pk: "", discipline: "", discipline_outro: "", classification: "",
   ppi_instance_id: "", violated_requirement: "",
   correction_type: "", correction: "",
   root_cause_method: "", root_cause: "",
