@@ -1206,6 +1206,57 @@ export default function WorkItemDetailPage() {
         item={item}
         onSuccess={() => { loadItem(); }}
       />
+
+      {/* ── Add Material dialog ──────────────────────────────────────── */}
+      <Dialog open={addMaterialOpen} onOpenChange={setAddMaterialOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{t("workItems.materials.add")}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div>
+              <Label>{t("workItems.materials.form.material")}</Label>
+              <Select value={addMatForm.material_id} onValueChange={(v) => setAddMatForm(p => ({ ...p, material_id: v }))}>
+                <SelectTrigger><SelectValue placeholder={t("workItems.materials.form.material")} /></SelectTrigger>
+                <SelectContent>
+                  {projectMaterials.map((m: any) => (
+                    <SelectItem key={m.id} value={m.id}>
+                      <span className="font-mono text-xs">{m.code}</span> — {m.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>{t("workItems.materials.form.quantity")}</Label>
+                <Input type="number" value={addMatForm.quantity} onChange={(e) => setAddMatForm(p => ({ ...p, quantity: e.target.value }))} />
+              </div>
+              <div>
+                <Label>{t("workItems.materials.form.unit")}</Label>
+                <Select value={addMatForm.unit} onValueChange={(v) => setAddMatForm(p => ({ ...p, unit: v }))}>
+                  <SelectTrigger><SelectValue placeholder="—" /></SelectTrigger>
+                  <SelectContent>
+                    {["m³", "m²", "m", "kg", "t", "un", "l"].map(u => (
+                      <SelectItem key={u} value={u}>{u}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div>
+              <Label>{t("workItems.materials.form.lotRef")}</Label>
+              <Input value={addMatForm.lot_ref} onChange={(e) => setAddMatForm(p => ({ ...p, lot_ref: e.target.value }))} />
+            </div>
+          </div>
+          <DialogFooter>
+            <DialogClose asChild><Button variant="outline">{t("common.cancel")}</Button></DialogClose>
+            <Button onClick={handleAddMaterial} disabled={addMatSaving || !addMatForm.material_id}>
+              {t("common.save")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
