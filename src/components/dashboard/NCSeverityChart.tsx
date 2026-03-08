@@ -1,23 +1,13 @@
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
 } from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface NCSeverityChartProps {
   data: { label: string; value: number; color: string }[];
   loading?: boolean;
-}
-
-function CustomTooltip({ active, payload, label }: any) {
-  if (!active || !payload?.length) return null;
-  return (
-    <div className="rounded-lg border border-border bg-card px-3 py-2 shadow-lg">
-      <p className="text-[10px] font-bold text-muted-foreground mb-1">{label}</p>
-      <span className="text-xs font-bold tabular-nums text-foreground">{payload[0].value}</span>
-    </div>
-  );
 }
 
 export function NCSeverityChart({ data, loading }: NCSeverityChartProps) {
@@ -42,11 +32,14 @@ export function NCSeverityChart({ data, loading }: NCSeverityChartProps) {
             <BarChart data={data} layout="vertical" margin={{ top: 4, right: 20, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
               <XAxis type="number" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} allowDecimals={false} />
-              <YAxis type="category" dataKey="label" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} width={90} />
-              <Tooltip content={<CustomTooltip />} cursor={{ fill: "hsl(var(--muted) / 0.4)" }} />
+              <YAxis type="category" dataKey="label" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} width={80} />
+              <Tooltip
+                contentStyle={{ fontSize: 11, borderRadius: 8, border: "1px solid hsl(var(--border))", background: "hsl(var(--card))" }}
+                cursor={{ fill: "hsl(var(--muted) / 0.4)" }}
+              />
               <Bar dataKey="value" radius={[0, 4, 4, 0]} maxBarSize={18}>
                 {data.map((entry, i) => (
-                  <rect key={i} fill={entry.color} />
+                  <Cell key={i} fill={entry.color} />
                 ))}
               </Bar>
             </BarChart>
