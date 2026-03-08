@@ -240,7 +240,7 @@ function buildSingleHtml(
 <body>
   <div class="header">
     <div class="brand">
-      <div class="brand-bar"></div>
+      ${logoUrl ? `<img src="${logoUrl}" class="brand-logo" />` : `<div class="brand-bar"></div>`}
       <div class="brand-text">
         <div class="app">${escHtml(labels.appName)}</div>
         <div class="sub">Quality Management System</div>
