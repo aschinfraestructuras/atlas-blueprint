@@ -117,7 +117,8 @@ export default function AuditsPage() {
         <EmptyState
           icon={CalendarClock}
           subtitleKey="audits.empty"
-          action={canCreate ? { label: t("audits.create", { defaultValue: "Nova Auditoria" }), onClick: handleCreate } : undefined}
+          ctaKey="audits.create"
+          onCta={canCreate ? handleCreate : undefined}
         />
       ) : (
         <div className="space-y-4">
