@@ -127,6 +127,7 @@ export default function DailyReportsPage() {
                   <TableHead>{t("common.status")}</TableHead>
                    <TableHead>{t("dailyReports.signatures.title")}</TableHead>
                    <TableHead className="w-[60px]" />
+                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filtered.map(r => (
