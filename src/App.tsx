@@ -26,7 +26,7 @@ import RfiDetailPage from "./pages/RfiDetailPage";
 import TechOfficeDetailPage from "./pages/TechOfficeDetailPage";
 import PlansPage from "./pages/PlansPage";
 import PlanDetailPage from "./pages/PlanDetailPage";
-import SurveyPage from "./pages/SurveyPage";
+
 import SubcontractorsPage from "./pages/SubcontractorsPage";
 import SubcontractorDetailPage from "./pages/SubcontractorDetailPage";
 import WorkItemsPage from "./pages/WorkItemsPage";
