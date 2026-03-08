@@ -153,12 +153,14 @@ export default function NonConformitiesPage() {
       const matchesSeverity = filterSeverity === "all" || nc.severity === filterSeverity;
       const matchesOrigin   = filterOrigin === "all"   || nc.origin === filterOrigin;
       const matchesCategory = filterCategory === "all" || nc.category === filterCategory;
+      const matchesClassification = filterClassification === "all" || (nc as any).classification === filterClassification;
+      const matchesDiscipline = filterDiscipline === "all" || (nc as any).discipline === filterDiscipline;
       const detectedAt = nc.detected_at ?? nc.created_at;
       const matchesFrom = !dateFrom || detectedAt >= dateFrom;
       const matchesTo   = !dateTo   || detectedAt <= dateTo;
-      return matchesSearch && matchesStatus && matchesSeverity && matchesOrigin && matchesCategory && matchesFrom && matchesTo;
+      return matchesSearch && matchesStatus && matchesSeverity && matchesOrigin && matchesCategory && matchesClassification && matchesDiscipline && matchesFrom && matchesTo;
     });
-  }, [ncs, search, filterStatus, filterSeverity, filterOrigin, filterCategory, dateFrom, dateTo, activeProject]);
+  }, [ncs, search, filterStatus, filterSeverity, filterOrigin, filterCategory, filterClassification, filterDiscipline, dateFrom, dateTo, activeProject]);
 
   const hasFilters = search || filterStatus !== "all" || filterSeverity !== "all" ||
     filterOrigin !== "all" || filterCategory !== "all" || dateFrom || dateTo;
