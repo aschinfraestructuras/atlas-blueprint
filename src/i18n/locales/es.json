@@ -672,6 +672,10 @@
       "template": "Modelo de formulario",
       "templatePlaceholder": "Seleccionar modelo…",
       "noTemplate": "Sin modelo (documento en blanco)",
+      "code": "Código del documento",
+      "issuedAt": "Fecha de emisión",
+      "tags": "Etiquetas",
+      "tagsPlaceholder": "ej: calidad, hormigón, seguridad",
       "validation": {
         "titleRequired": "El título es obligatorio.",
         "typeRequired": "El tipo es obligatorio.",
