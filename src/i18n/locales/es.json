@@ -325,6 +325,7 @@
       "rfi": "Nuevo RFI"
     },
     "noAudit": "Sin auditorías planificadas",
+    "modules": "Módulos",
     "charts": {
       "tests": "Ensayos",
       "suppliers": "Proveedores",
