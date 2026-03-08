@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { testService } from "@/lib/services/testService";
@@ -308,6 +309,7 @@ function ResultsTab() {
   const { t, i18n }       = useTranslation();
   const { activeProject } = useProject();
   const exportLabels      = useExportLabels();
+  const { logoUrl, logoBase64 } = useProjectLogo();
 
   const [results, setResults]           = useState<TestResult[]>([]);
   const [loading, setLoading]           = useState(false);
@@ -373,7 +375,7 @@ function ResultsTab() {
 
   const handleExportSingle = (r: TestResult) => {
     const wi = (r.work_items as any)?.sector as string | undefined;
-    exportTestResultPdf(r, exportLabels, i18n.language, activeProject?.name ?? "Atlas", wi);
+    exportTestResultPdf(r, exportLabels, i18n.language, activeProject?.name ?? "Atlas", wi, logoBase64 || logoUrl);
   };
 
   const handleExportBulk = () => {
@@ -382,7 +384,7 @@ function ResultsTab() {
       toast({ title: t("tests.export.noSelection"), variant: "destructive" });
       return;
     }
-    exportTestResultsBulkPdf(toExport, exportLabels, i18n.language, activeProject?.name ?? "Atlas");
+    exportTestResultsBulkPdf(toExport, exportLabels, i18n.language, activeProject?.name ?? "Atlas", logoBase64 || logoUrl);
   };
 
   const WORKFLOW_STATUSES = ["draft", "in_progress", "submitted", "reviewed", "approved", "archived"];

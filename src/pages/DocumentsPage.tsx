@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
@@ -69,6 +70,7 @@ export default function DocumentsPage() {
   const navigate = useNavigate();
   const { activeProject } = useProject();
   const { user } = useAuth();
+  const { logoUrl, logoBase64 } = useProjectLogo();
 
   const { data: documents, loading, error, refetch } = useDocuments();
 
@@ -264,7 +266,7 @@ export default function DocumentsPage() {
                   changeDescription: t("documents.form.changeDescription"),
                   uploadedAt: t("documents.export.uploadedAt"),
                 };
-                exportDocumentListPdf(toExport, labels, i18n.language, activeProject?.name ?? "Atlas", activeProject?.id);
+                exportDocumentListPdf(toExport, labels, i18n.language, activeProject?.name ?? "Atlas", activeProject?.id, logoBase64 || logoUrl);
               }}>
               <FileDown className="h-3 w-3" />
               {t("documents.bulk.exportSelected")}

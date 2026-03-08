@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
@@ -236,6 +237,7 @@ function WorkItemTestsTab({
   workItemDisciplina?: string;
 }) {
   const { t, i18n } = useTranslation();
+  const { logoUrl, logoBase64 } = useProjectLogo();
   const [tests,     setTests]     = useState<TestResult[]>([]);
   const [loading,   setLoading]   = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -341,6 +343,7 @@ function WorkItemTestsTab({
       tests, labels, i18n.language,
       projectName ?? "Atlas",
       workItemSector ?? workItemId,
+      logoBase64 || logoUrl,
     );
   };
 

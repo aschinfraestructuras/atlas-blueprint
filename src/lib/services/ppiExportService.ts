@@ -146,6 +146,7 @@ function buildSinglePdfHtml(
   labels: ExportLabels,
   locale: string,
   projectName: string,
+  logoUrl?: string | null,
 ): string {
   const okCount      = inst.items.filter((i) => i.result === "pass").length;
   const nokCount     = inst.items.filter((i) => i.result === "fail").length;
@@ -195,6 +196,7 @@ function buildSinglePdfHtml(
             padding-bottom:10px; border-bottom:3px solid ${BRAND.primary}; margin-bottom:16px; }
   .brand  { display:flex; align-items:center; gap:10px; }
   .brand-bar { width:6px; height:40px; background:${BRAND.primary}; border-radius:3px; }
+  .brand-logo { height:40px; width:40px; object-fit:contain; border-radius:6px; }
   .brand-text .app  { font-size:18px; font-weight:800; color:${BRAND.primary}; letter-spacing:-.5px; }
   .brand-text .sub  { font-size:9px; font-weight:600; color:${BRAND.muted}; text-transform:uppercase; letter-spacing:.1em; }
   .meta { text-align:right; }
@@ -234,7 +236,7 @@ function buildSinglePdfHtml(
   <!-- Header -->
   <div class="header">
     <div class="brand">
-      <div class="brand-bar"></div>
+      ${logoUrl ? `<img src="${logoUrl}" class="brand-logo" />` : `<div class="brand-bar"></div>`}
       <div class="brand-text">
         <div class="app">${labels.appName}</div>
         <div class="sub">Quality Management System</div>
@@ -389,8 +391,9 @@ export function exportSinglePdf(
   labels: ExportLabels,
   locale: string,
   projectName: string,
+  logoUrl?: string | null,
 ): void {
-  const html = buildSinglePdfHtml(inst, labels, locale, projectName);
+  const html = buildSinglePdfHtml(inst, labels, locale, projectName, logoUrl);
   printHtml(html, buildFilename(inst, projectName));
 }
 
@@ -403,12 +406,13 @@ export function exportBulkPdf(
   labels: ExportLabels,
   locale: string,
   projectName: string,
+  logoUrl?: string | null,
 ): void {
   if (instances.length === 0) return;
 
   // Build pages concatenated — CSS page-break between them
   const pages = instances.map((inst) =>
-    buildSinglePdfHtml(inst, labels, locale, projectName)
+    buildSinglePdfHtml(inst, labels, locale, projectName, logoUrl)
       .replace("<!DOCTYPE html>", "")
       .replace(/<html[^>]*>/, "")
       .replace("</html>", "")
@@ -418,7 +422,7 @@ export function exportBulkPdf(
   );
 
   // Shared CSS wrapper
-  const firstHtml = buildSinglePdfHtml(instances[0], labels, locale, projectName);
+  const firstHtml = buildSinglePdfHtml(instances[0], labels, locale, projectName, logoUrl);
   const styleMatch = firstHtml.match(/<style>([\s\S]*?)<\/style>/);
   const css = styleMatch ? styleMatch[1] : "";
 

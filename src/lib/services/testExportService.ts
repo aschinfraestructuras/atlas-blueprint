@@ -161,6 +161,7 @@ html, body {
 }
 .brand { display: flex; align-items: center; gap: 10px; }
 .brand-bar { width: 6px; height: 40px; background: ${BRAND.primary}; border-radius: 3px; }
+.brand-logo { height: 40px; width: 40px; object-fit: contain; border-radius: 6px; }
 .brand-app  { font-size: 19px; font-weight: 800; color: ${BRAND.primary}; letter-spacing: -.5px; line-height: 1; }
 .brand-sub  { font-size: 8.5px; font-weight: 600; color: ${BRAND.muted}; text-transform: uppercase; letter-spacing: .12em; margin-top: 2px; }
 .hdr-meta { text-align: right; }
@@ -241,11 +242,11 @@ tbody td { padding: 6px 8px; vertical-align: top; line-height: 1.4; }
 
 // ─── Shared header HTML ───────────────────────────────────────────────────────
 
-function headerHtml(title: string, labels: TestExportLabels, locale: string): string {
+function headerHtml(title: string, labels: TestExportLabels, locale: string, logoUrl?: string | null): string {
   return `
 <div class="hdr">
   <div class="brand">
-    <div class="brand-bar"></div>
+    ${logoUrl ? `<img src="${logoUrl}" class="brand-logo" />` : `<div class="brand-bar"></div>`}
     <div>
       <div class="brand-app">${labels.appName}</div>
       <div class="brand-sub">Quality Management System</div>
@@ -326,6 +327,7 @@ function buildSingleHtml(
   locale: string,
   projectName: string,
   workItemSector?: string,
+  logoUrl?: string | null,
 ): string {
   const tc = r.tests_catalog as Partial<TestCatalogEntry> | null;
   const pf = r.pass_fail ?? r.status;
@@ -376,7 +378,7 @@ function buildSingleHtml(
 </head>
 <body>
 
-${headerHtml(labels.reportTitle, labels, locale)}
+${headerHtml(labels.reportTitle, labels, locale, logoUrl)}
 
 <!-- Verdict -->
 <div class="verdict" style="border-color:${pfColor};background:${pfColor}14">
@@ -413,6 +415,7 @@ function buildBulkHtml(
   labels: TestExportLabels,
   locale: string,
   projectName: string,
+  logoUrl?: string | null,
 ): string {
   const tableRows = results.map((r) => {
     const tc      = r.tests_catalog as Partial<TestCatalogEntry> | null;
@@ -457,7 +460,7 @@ thead th { font-size: 8.5px; }
 </head>
 <body>
 
-${headerHtml(labels.bulkReportTitle, labels, locale)}
+${headerHtml(labels.bulkReportTitle, labels, locale, logoUrl)}
 
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:6px">
   <div>
@@ -501,6 +504,7 @@ function buildWorkItemSummaryHtml(
   locale: string,
   projectName: string,
   workItemSector: string,
+  logoUrl?: string | null,
 ): string {
   const total    = results.length;
   const approved = results.filter((r) => r.status === "approved" || r.pass_fail === "pass").length;
@@ -568,7 +572,7 @@ thead th { font-size: 8.5px; }
 </head>
 <body>
 
-${headerHtml(labels.wiSummaryTitle, labels, locale)}
+${headerHtml(labels.wiSummaryTitle, labels, locale, logoUrl)}
 
 <div style="margin-bottom:4px">
   <div style="font-size:18px;font-weight:800;color:${BRAND.primary}">${workItemSector}</div>
@@ -634,8 +638,9 @@ export function exportTestResultPdf(
   locale: string,
   projectName: string,
   workItemSector?: string,
+  logoUrl?: string | null,
 ): void {
-  const html     = buildSingleHtml(result, labels, locale, projectName, workItemSector);
+  const html     = buildSingleHtml(result, labels, locale, projectName, workItemSector, logoUrl);
   const filename = buildTestFilename(result, projectName, workItemSector);
   printHtml(html, filename);
 }
@@ -645,9 +650,10 @@ export function exportTestResultsBulkPdf(
   labels: TestExportLabels,
   locale: string,
   projectName: string,
+  logoUrl?: string | null,
 ): void {
   if (!results.length) return;
-  const html     = buildBulkHtml(results, labels, locale, projectName);
+  const html     = buildBulkHtml(results, labels, locale, projectName, logoUrl);
   const filename = buildBulkFilename(projectName);
   printHtml(html, filename);
 }
@@ -658,9 +664,10 @@ export function exportWorkItemTestsPdf(
   locale: string,
   projectName: string,
   workItemSector: string,
+  logoUrl?: string | null,
 ): void {
   if (!results.length) return;
-  const html     = buildWorkItemSummaryHtml(results, labels, locale, projectName, workItemSector);
+  const html     = buildWorkItemSummaryHtml(results, labels, locale, projectName, workItemSector, logoUrl);
   const filename = buildWorkItemSummaryFilename(projectName, workItemSector);
   printHtml(html, filename);
 }

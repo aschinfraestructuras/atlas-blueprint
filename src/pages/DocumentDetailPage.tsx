@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { useTranslation } from "react-i18next";
 import {
   ArrowLeft, FileText, CheckCircle2, Clock, RotateCcw,
@@ -287,6 +288,7 @@ export default function DocumentDetailPage() {
   const navigate = useNavigate();
   const { activeProject } = useProject();
   const { user } = useAuth();
+  const { logoUrl, logoBase64 } = useProjectLogo();
 
   useEffect(() => {
     if (!id || id === "undefined" || id.trim() === "") {
@@ -368,7 +370,7 @@ export default function DocumentDetailPage() {
         changeDescription: t("documents.form.changeDescription"),
         uploadedAt: t("documents.export.uploadedAt"),
       };
-      await exportDocumentPdf(doc, versions, labels, i18n.language, activeProject.name, activeProject.code);
+      await exportDocumentPdf(doc, versions, labels, i18n.language, activeProject.name, activeProject.code, logoBase64 || logoUrl);
     } catch {
       toast({ title: t("documents.toast.error"), variant: "destructive" });
     } finally { setExporting(false); }

@@ -112,6 +112,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-s
           padding-bottom:10px; border-bottom:3px solid ${B.primary}; margin-bottom:16px; }
 .brand  { display:flex; align-items:center; gap:10px; }
 .brand-bar { width:6px; height:40px; background:${B.primary}; border-radius:3px; }
+.brand-logo { height:40px; width:40px; object-fit:contain; border-radius:6px; }
 .brand-text .app { font-size:18px; font-weight:800; color:${B.primary}; letter-spacing:-.5px; }
 .brand-text .sub { font-size:9px; font-weight:600; color:${B.muted}; text-transform:uppercase; letter-spacing:.1em; }
 .meta { text-align:right; }
@@ -209,6 +210,7 @@ function buildSingleHtml(
   labels: DocExportLabels,
   locale: string,
   projectName: string,
+  logoUrl?: string | null,
 ): string {
   const statusLabel = labels.statuses[doc.status] ?? doc.status;
   const typeLabel = labels.docTypes[doc.doc_type] ?? doc.doc_type;
@@ -238,7 +240,7 @@ function buildSingleHtml(
 <body>
   <div class="header">
     <div class="brand">
-      <div class="brand-bar"></div>
+      ${logoUrl ? `<img src="${logoUrl}" class="brand-logo" />` : `<div class="brand-bar"></div>`}
       <div class="brand-text">
         <div class="app">${escHtml(labels.appName)}</div>
         <div class="sub">Quality Management System</div>
@@ -294,6 +296,7 @@ function buildListHtml(
   labels: DocExportLabels,
   locale: string,
   projectName: string,
+  logoUrl?: string | null,
 ): string {
   const rows = docs.map((d) => `
     <tr>
@@ -314,7 +317,7 @@ function buildListHtml(
 <body>
   <div class="header">
     <div class="brand">
-      <div class="brand-bar"></div>
+      ${logoUrl ? `<img src="${logoUrl}" class="brand-logo" />` : `<div class="brand-bar"></div>`}
       <div class="brand-text">
         <div class="app">${escHtml(labels.appName)}</div>
         <div class="sub">Quality Management System</div>
@@ -379,8 +382,9 @@ export async function exportDocumentPdf(
   locale: string,
   projectName: string,
   projectCode?: string,
+  logoUrl?: string | null,
 ): Promise<void> {
-  const html = buildSingleHtml(doc, versions, labels, locale, projectName);
+  const html = buildSingleHtml(doc, versions, labels, locale, projectName, logoUrl);
   printHtml(html, buildDocFilename(doc, projectName, projectCode));
 
   // Audit log
@@ -403,9 +407,10 @@ export async function exportDocumentListPdf(
   locale: string,
   projectName: string,
   projectId?: string,
+  logoUrl?: string | null,
 ): Promise<void> {
   if (docs.length === 0) return;
-  const html = buildListHtml(docs, labels, locale, projectName);
+  const html = buildListHtml(docs, labels, locale, projectName, logoUrl);
   const filename = `${sanitize(projectName)}_Documentos_${docs.length}_${new Date().toISOString().slice(0, 10)}.pdf`;
   printHtml(html, filename);
 

@@ -12,6 +12,7 @@
 
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { FileDown, FileText, Table2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -99,8 +100,10 @@ function buildLabels(t: (k: string, opts?: Record<string, unknown>) => string): 
 export function PPIExportMenu({ instances, loading, projectName, variant = "bulk" }: Props) {
   const { t } = useTranslation();
   const [busy, setBusy] = useState(false);
+  const { logoUrl, logoBase64 } = useProjectLogo();
 
   const locale = i18n.language?.slice(0, 2) ?? "pt";
+  const logo = logoBase64 || logoUrl;
 
   async function run(fn: () => void | Promise<void>) {
     if (instances.length === 0) {
@@ -144,7 +147,7 @@ export function PPIExportMenu({ instances, loading, projectName, variant = "bulk
         {variant === "single" && (
           <DropdownMenuItem
             className="gap-2 text-sm"
-            onClick={() => run(() => exportSinglePdf(instances[0], labels, locale, projectName))}
+            onClick={() => run(() => exportSinglePdf(instances[0], labels, locale, projectName, logo))}
           >
             <FileText className="h-3.5 w-3.5 text-primary" />
             {t("ppi.export.pdfSingle")}
@@ -154,7 +157,7 @@ export function PPIExportMenu({ instances, loading, projectName, variant = "bulk
         {variant === "bulk" && (
           <DropdownMenuItem
             className="gap-2 text-sm"
-            onClick={() => run(() => exportBulkPdf(instances, labels, locale, projectName))}
+            onClick={() => run(() => exportBulkPdf(instances, labels, locale, projectName, logo))}
           >
             <FileText className="h-3.5 w-3.5 text-primary" />
             {t("ppi.export.pdfBulk")}
