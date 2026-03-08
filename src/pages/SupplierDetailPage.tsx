@@ -395,7 +395,16 @@ export default function SupplierDetailPage() {
         {/* Evaluations */}
         <TabsContent value="evaluations">
           <Card className="border-0 shadow-card">
-            <CardContent className="p-6">
+            <CardHeader className="pb-2 flex flex-row items-center justify-between">
+              <CardTitle className="text-sm">{t("suppliers.evaluations.title")}</CardTitle>
+              {canCreate && (
+                <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setEvalDialogOpen(true)}>
+                  <Plus className="h-3.5 w-3.5" />
+                  {t("suppliers.evaluations.new")}
+                </Button>
+              )}
+            </CardHeader>
+            <CardContent className="p-6 pt-2">
               {evals.length === 0 ? (
                 <p className="text-sm text-muted-foreground text-center py-6">{t("common.noData")}</p>
               ) : (
@@ -403,9 +412,9 @@ export default function SupplierDetailPage() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>{t("common.date")}</TableHead>
-                      <TableHead>{t("suppliers.evaluations.score", { defaultValue: "Pontuação" })}</TableHead>
-                      <TableHead>{t("suppliers.evaluations.result", { defaultValue: "Resultado" })}</TableHead>
-                      <TableHead>{t("suppliers.evaluations.notes", { defaultValue: "Observações" })}</TableHead>
+                      <TableHead>{t("suppliers.evaluations.score")}</TableHead>
+                      <TableHead>{t("suppliers.evaluations.result")}</TableHead>
+                      <TableHead>{t("suppliers.evaluations.notes")}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -414,7 +423,13 @@ export default function SupplierDetailPage() {
                         <TableCell className="text-sm">{new Date(ev.eval_date).toLocaleDateString()}</TableCell>
                         <TableCell className="text-sm font-medium">{ev.score != null ? `${ev.score}/100` : "—"}</TableCell>
                         <TableCell>
-                          <Badge variant="secondary" className={cn("text-xs", ev.result === "approved" ? "bg-primary/15 text-primary" : ev.result === "rejected" ? "bg-destructive/10 text-destructive" : "")}>
+                          <Badge variant="secondary" className={cn(
+                            "text-xs",
+                            ev.result === "approved" ? "bg-primary/15 text-primary" :
+                            ev.result === "conditional" ? "bg-yellow-500/15 text-yellow-700 dark:text-yellow-400" :
+                            ev.result === "rejected" ? "bg-destructive/10 text-destructive" :
+                            "bg-muted text-muted-foreground"
+                          )}>
                             {t(`suppliers.evaluations.results.${ev.result}`, { defaultValue: ev.result })}
                           </Badge>
                         </TableCell>
@@ -426,6 +441,68 @@ export default function SupplierDetailPage() {
               )}
             </CardContent>
           </Card>
+          
+          {/* Evaluation Dialog */}
+          {evalDialogOpen && (
+            <EvaluationDialog
+              open={evalDialogOpen}
+              onOpenChange={setEvalDialogOpen}
+              evalForm={evalForm}
+              setEvalForm={setEvalForm}
+              evalLoading={evalLoading}
+              onSubmit={async () => {
+                if (!activeProject || !supplier) return;
+                setEvalLoading(true);
+                // Calculate weighted score: Quality 35%, Delivery 25%, NC 25%, Cooperation 15%
+                const score = Math.round(
+                  evalForm.quality * 0.35 +
+                  evalForm.delivery * 0.25 +
+                  evalForm.ncManagement * 0.25 +
+                  evalForm.cooperation * 0.15
+                );
+                let result = "approved";
+                if (score < 60) result = "rejected";
+                else if (score < 75) result = "conditional";
+                
+                try {
+                  await supplierService.createEvaluation({
+                    project_id: activeProject.id,
+                    supplier_id: supplier.id,
+                    eval_date: new Date().toISOString().split("T")[0],
+                    criteria: {
+                      quality: evalForm.quality,
+                      delivery: evalForm.delivery,
+                      ncManagement: evalForm.ncManagement,
+                      cooperation: evalForm.cooperation,
+                    },
+                    score,
+                    result,
+                    notes: evalForm.notes || undefined,
+                  });
+                  
+                  if (result === "rejected") {
+                    toast({
+                      title: t("suppliers.evaluations.ncWarningTitle"),
+                      description: t("suppliers.evaluations.ncWarningDesc"),
+                      variant: "destructive",
+                    });
+                  } else {
+                    toast({ title: t("suppliers.evaluations.created") });
+                  }
+                  
+                  setEvalDialogOpen(false);
+                  setEvalForm({ quality: 75, delivery: 75, ncManagement: 75, cooperation: 75, notes: "" });
+                  fetchAll();
+                } catch (err) {
+                  console.error(err);
+                  toast({ title: t("suppliers.toast.error"), variant: "destructive" });
+                } finally {
+                  setEvalLoading(false);
+                }
+              }}
+              t={t}
+            />
+          )}
         </TabsContent>
 
         {/* Audit */}
