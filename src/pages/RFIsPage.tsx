@@ -161,7 +161,7 @@ export default function RFIsPage() {
       <div className="flex items-center justify-between">
         <PageHeader
           title={t("rfi.page.title", { defaultValue: "RFIs" })}
-          description={t("rfi.page.subtitle", { defaultValue: "Pedidos de Informação e Esclarecimento" })}
+          subtitle={t("rfi.page.subtitle", { defaultValue: "Pedidos de Informação e Esclarecimento" })}
         />
         <div className="flex items-center gap-2">
           {canCreate && (
