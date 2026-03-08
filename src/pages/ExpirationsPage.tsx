@@ -15,6 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { FilterBar } from "@/components/ui/filter-bar";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 import { Clock, AlertTriangle, Truck, HardHat, Crosshair, Package, Eye, Users } from "lucide-react";
 
 const STATUS_COLORS: Record<string, string> = {
