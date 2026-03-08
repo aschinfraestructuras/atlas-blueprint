@@ -51,6 +51,7 @@ import LaboratoriesPage from "./pages/LaboratoriesPage";
 import DailyReportsPage from "./pages/DailyReportsPage";
 import DailyReportDetailPage from "./pages/DailyReportDetailPage";
 import RecycledMaterialsPage from "./pages/RecycledMaterialsPage";
+import SGQMatrixPage from "./pages/SGQMatrixPage";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 const queryClient = new QueryClient();
 
