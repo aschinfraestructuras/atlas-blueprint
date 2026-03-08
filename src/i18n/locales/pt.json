@@ -1875,7 +1875,11 @@
       "INVITE_ACCEPTED": "Convite aceite",
       "ROLE_CHANGED": "Função alterada",
       "MEMBER_REMOVED": "Membro removido",
-      "NEW_VERSION": "Nova versão"
+      "NEW_VERSION": "Nova versão",
+      "attachment_add": "Anexo adicionado",
+      "attachment_delete": "Anexo eliminado",
+      "attachment_download": "Anexo descarregado",
+      "upload_file": "Ficheiro carregado"
     }
   },
   "errors": {
