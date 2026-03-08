@@ -194,7 +194,7 @@ export default function QCReportPage() {
       const wiPpi = ppi.filter(p => p.work_item_id === wi.id);
       if (wiNcs.length || wiTests.length || wiPpi.length) {
         wiMap[wi.id] = {
-          name: `${(wi as any).code ?? ""} — ${(wi as any).description ?? (wi as any).name ?? ""}`.slice(0, 60),
+          name: wiLabel(wi),
           ncs: wiNcs.length,
           tests: wiTests.length,
           ppi: wiPpi.length,
