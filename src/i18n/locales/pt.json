@@ -1725,10 +1725,12 @@
     },
     "table": {
       "trade": "Especialidade",
+      "specialty": "Especialidade",
       "contactEmail": "E-mail",
       "linkedSupplier": "Fornecedor",
       "docStatus": "Doc. Status",
-      "score": "Score"
+      "score": "Score",
+      "fipApproval": "Aprovação F/IP"
     },
     "filters": {
       "allStatuses": "Todos os estados",
