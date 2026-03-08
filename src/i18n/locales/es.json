@@ -1837,6 +1837,9 @@
     }
   },
   "subcontractors": {
+    "materialsSection": "Materiales Asociados (PAME)",
+    "recycledCard": "Reciclados PPGRCD",
+    "viewInPame": "Ver en PAME",
     "newSubcontractor": "Nuevo Subcontratista",
     "searchPlaceholder": "Buscar nombre, especialidad, correo…",
     "kpi": {
@@ -3363,7 +3366,12 @@
       "nomenclature": "Nomenclatura",
       "quantity": "Cantidad",
       "unit": "Unidad",
-      "lot": "Lote / Nº Serie"
+      "lot": "Lote / Nº Serie",
+      "pameRef": "Ref. PAME",
+      "selectMaterial": "Seleccionar material aprobado (PAME)",
+      "noApproved": "Ningún material aprobado disponible.",
+      "goToPame": "Enviar Ficha PAME",
+      "warningNoPame": "material(es) sin referencia PAME"
     },
     "rmm": {
       "code": "Código Interno",

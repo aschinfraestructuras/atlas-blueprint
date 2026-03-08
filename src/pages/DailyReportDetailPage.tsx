@@ -1,15 +1,18 @@
 import { useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, FileText, Send, CheckCircle, Plus, Trash2 } from "lucide-react";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import { ArrowLeft, FileText, Send, CheckCircle, Plus, Trash2, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useReportMeta } from "@/hooks/useReportMeta";
+import { useProject } from "@/contexts/ProjectContext";
+import { supabase } from "@/integrations/supabase/client";
 import {
   dailyReportService,
   type DailyReport, type LabourRow, type EquipmentRow, type MaterialRow, type RmmRow, type WasteRow,
@@ -25,12 +28,21 @@ const STATUS_COLORS: Record<string, string> = {
   validated: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300",
 };
 
+interface ApprovedMaterial {
+  id: string;
+  code: string;
+  name: string;
+  unit: string | null;
+  pame_code: string | null;
+}
+
 export default function DailyReportDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { t } = useTranslation();
   const { toast } = useToast();
   const navigate = useNavigate();
   const meta = useReportMeta();
+  const { activeProject } = useProject();
 
   const [report, setReport] = useState<DailyReport | null>(null);
   const [labour, setLabour] = useState<LabourRow[]>([]);
@@ -39,6 +51,7 @@ export default function DailyReportDetailPage() {
   const [rmm, setRmm] = useState<RmmRow[]>([]);
   const [waste, setWaste] = useState<WasteRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [approvedMaterials, setApprovedMaterials] = useState<ApprovedMaterial[]>([]);
 
   const reload = useCallback(async () => {
     if (!id) return;
@@ -57,6 +70,21 @@ export default function DailyReportDetailPage() {
     setLoading(false);
   }, [id]);
 
+  // Load approved PAME materials
+  useEffect(() => {
+    if (!activeProject) return;
+    (async () => {
+      const { data } = await supabase
+        .from("materials")
+        .select("id, code, name, unit, pame_code")
+        .eq("project_id", activeProject.id)
+        .eq("approval_status", "approved")
+        .eq("is_deleted", false)
+        .order("code");
+      setApprovedMaterials((data ?? []) as ApprovedMaterial[]);
+    })();
+  }, [activeProject]);
+
   useEffect(() => { reload(); }, [reload]);
 
   // ── Quick add helpers ───────────────────────────────────────────────────
@@ -70,9 +98,18 @@ export default function DailyReportDetailPage() {
     await dailyReportService.addEquipment({ daily_report_id: id, designation: "Equipamento", type: null, serial_number: null, sound_power_db: null, hours_worked: null });
     setEquipment(await dailyReportService.getEquipment(id));
   };
-  const addMaterialRow = async () => {
+  const addMaterialRow = async (materialId?: string) => {
     if (!id) return;
-    await dailyReportService.addMaterial({ daily_report_id: id, nomenclature: "Material", quantity: null, unit: null, lot_number: null });
+    const mat = materialId ? approvedMaterials.find(m => m.id === materialId) : undefined;
+    await dailyReportService.addMaterial({
+      daily_report_id: id,
+      nomenclature: mat?.name ?? "Material",
+      quantity: null,
+      unit: mat?.unit ?? null,
+      lot_number: null,
+      material_id: mat?.id ?? null,
+      pame_reference: mat?.pame_code ?? null,
+    });
     setMaterials(await dailyReportService.getMaterials(id));
   };
   const addRmmRow = async () => {
@@ -100,6 +137,14 @@ export default function DailyReportDetailPage() {
   // ── Actions ─────────────────────────────────────────────────────────────
   const handleSubmit = async () => {
     if (!id) return;
+    // Non-blocking warning for materials without PAME
+    const noPame = materials.filter(m => !m.material_id);
+    if (noPame.length > 0) {
+      toast({
+        title: `⚠ ${noPame.length} ${t("dailyReports.materials.warningNoPame")}`,
+        variant: "default",
+      });
+    }
     await dailyReportService.submit(id);
     toast({ title: t("dailyReports.toast.submitted") });
     reload();
@@ -141,8 +186,8 @@ export default function DailyReportDetailPage() {
         equipment.map(r => [r.designation, r.type ?? "", r.serial_number ?? "", String(r.sound_power_db ?? ""), String(r.hours_worked ?? "")])
       )),
       sectionHtml(t("dailyReports.sections.materials"), tableHtml(
-        [t("dailyReports.materials.nomenclature"), t("dailyReports.materials.quantity"), t("dailyReports.materials.unit"), t("dailyReports.materials.lot")],
-        materials.map(r => [r.nomenclature, String(r.quantity ?? ""), r.unit ?? "", r.lot_number ?? ""])
+        [t("dailyReports.materials.nomenclature"), t("dailyReports.materials.pameRef"), t("dailyReports.materials.quantity"), t("dailyReports.materials.unit"), t("dailyReports.materials.lot")],
+        materials.map(r => [r.nomenclature, r.pame_reference ?? "—", String(r.quantity ?? ""), r.unit ?? "", r.lot_number ?? ""])
       )),
       sectionHtml(t("dailyReports.sections.rmm"), tableHtml(
         [t("dailyReports.rmm.code"), t("dailyReports.rmm.designation")],
@@ -264,15 +309,73 @@ export default function DailyReportDetailPage() {
         onAdd={isDraft ? addEquipmentRow : undefined}
       />
 
-      {/* Section 5: Materials */}
-      <SectionTable
-        title={t("dailyReports.sections.materials")}
-        headers={[t("dailyReports.materials.nomenclature"), t("dailyReports.materials.quantity"), t("dailyReports.materials.unit"), t("dailyReports.materials.lot"), ""]}
-        rows={materials.map(r => [r.nomenclature, r.quantity != null ? String(r.quantity) : "—", r.unit ?? "—", r.lot_number ?? "—",
-          isDraft ? <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => deleteRow("materials", r.id)}><Trash2 className="h-3.5 w-3.5" /></Button> : null
-        ])}
-        onAdd={isDraft ? addMaterialRow : undefined}
-      />
+      {/* Section 5: Materials — PAME-linked */}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between py-3">
+          <CardTitle className="text-sm">{t("dailyReports.sections.materials")}</CardTitle>
+          {isDraft && (
+            <div className="flex items-center gap-2">
+              {approvedMaterials.length > 0 ? (
+                <Select onValueChange={(val) => addMaterialRow(val)}>
+                  <SelectTrigger className="w-[280px] h-8 text-xs">
+                    <SelectValue placeholder={t("dailyReports.materials.selectMaterial")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {approvedMaterials.map(m => (
+                      <SelectItem key={m.id} value={m.id}>
+                        [{m.code}] — {m.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : (
+                <div className="flex items-center gap-2 text-xs text-amber-600 dark:text-amber-400">
+                  <AlertTriangle className="h-3.5 w-3.5" />
+                  <span>{t("dailyReports.materials.noApproved")}</span>
+                  <Link to="/materials" className="underline underline-offset-2">{t("dailyReports.materials.goToPame")}</Link>
+                </div>
+              )}
+              <Button variant="outline" size="sm" onClick={() => addMaterialRow()}>
+                <Plus className="h-3.5 w-3.5 mr-1" /> {t("common.create")}
+              </Button>
+            </div>
+          )}
+        </CardHeader>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>{t("dailyReports.materials.nomenclature")}</TableHead>
+                <TableHead>{t("dailyReports.materials.pameRef")}</TableHead>
+                <TableHead>{t("dailyReports.materials.quantity")}</TableHead>
+                <TableHead>{t("dailyReports.materials.unit")}</TableHead>
+                <TableHead>{t("dailyReports.materials.lot")}</TableHead>
+                <TableHead />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {materials.length === 0 ? (
+                <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-4">{t("common.noData")}</TableCell></TableRow>
+              ) : materials.map(r => (
+                <TableRow key={r.id}>
+                  <TableCell className="text-sm">{r.nomenclature}</TableCell>
+                  <TableCell className="text-xs font-mono text-muted-foreground">{r.pame_reference ?? "—"}</TableCell>
+                  <TableCell className="text-sm tabular-nums">{r.quantity != null ? String(r.quantity) : "—"}</TableCell>
+                  <TableCell className="text-sm">{r.unit ?? "—"}</TableCell>
+                  <TableCell className="text-sm">{r.lot_number ?? "—"}</TableCell>
+                  <TableCell>
+                    {isDraft && (
+                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => deleteRow("materials", r.id)}>
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
 
       {/* Section 6: RMM */}
       <SectionTable
@@ -300,10 +403,10 @@ export default function DailyReportDetailPage() {
         <CardContent>
           <div className="grid grid-cols-2 gap-4">
             {[
-              { label: t("dailyReports.signatures.foreman"), value: report.foreman_name, field: "signed_contractor" },
-              { label: t("dailyReports.signatures.contractor"), value: report.contractor_rep, field: "signed_contractor" },
-              { label: t("dailyReports.signatures.supervisor"), value: report.supervisor_rep, field: "signed_supervisor" },
-              { label: t("dailyReports.signatures.ip"), value: report.ip_rep, field: "signed_ip" },
+              { label: t("dailyReports.signatures.foreman"), value: report.foreman_name },
+              { label: t("dailyReports.signatures.contractor"), value: report.contractor_rep },
+              { label: t("dailyReports.signatures.supervisor"), value: report.supervisor_rep },
+              { label: t("dailyReports.signatures.ip"), value: report.ip_rep },
             ].map(({ label, value }) => (
               <div key={label} className="border rounded-lg p-3">
                 <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</p>

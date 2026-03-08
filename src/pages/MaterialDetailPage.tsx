@@ -267,6 +267,7 @@ export default function MaterialDetailPage() {
           <TabsTrigger value="tests">{t("materials.detail.tabs.tests")}</TabsTrigger>
           <TabsTrigger value="ncs">{t("materials.detail.tabs.ncs")}</TabsTrigger>
           <TabsTrigger value="workItems">{t("materials.detail.tabs.workItems")}</TabsTrigger>
+          <TabsTrigger value="usage">{t("materials.usageTab")}</TabsTrigger>
           <TabsTrigger value="recycled">{t("recycled.title", { defaultValue: "Reciclado" })}</TabsTrigger>
           <TabsTrigger value="audit">{t("materials.detail.tabs.audit")}</TabsTrigger>
         </TabsList>
@@ -650,6 +651,10 @@ export default function MaterialDetailPage() {
           </Card>
         </TabsContent>
 
+        <TabsContent value="usage">
+          <MaterialUsageTab materialId={material.id} projectId={activeProject.id} />
+        </TabsContent>
+
         <TabsContent value="recycled">
           <Card className="border-0 shadow-card">
             <CardContent className="p-6">
@@ -691,5 +696,82 @@ export default function MaterialDetailPage() {
       <MaterialFormDialog open={editOpen} onOpenChange={setEditOpen} material={material} onSuccess={fetchAll} />
       <MaterialReceptionDialog open={receptionOpen} onOpenChange={setReceptionOpen} projectId={activeProject.id} material={material} onSuccess={fetchAll} />
     </div>
+  );
+}
+
+function MaterialUsageTab({ materialId, projectId }: { materialId: string; projectId: string }) {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const [usageRows, setUsageRows] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      setLoading(true);
+      const { data } = await supabase
+        .from("daily_report_materials" as any)
+        .select("id, nomenclature, quantity, unit, lot_number, daily_report_id")
+        .eq("material_id", materialId);
+      const rows = (data ?? []) as any[];
+
+      // Fetch report info for each
+      if (rows.length > 0) {
+        const reportIds = [...new Set(rows.map(r => r.daily_report_id))];
+        const { data: reports } = await supabase
+          .from("daily_reports" as any)
+          .select("id, report_number, report_date, work_item_id")
+          .in("id", reportIds);
+        const reportMap = new Map((reports ?? []).map((r: any) => [r.id, r]));
+        rows.forEach(r => { r._report = reportMap.get(r.daily_report_id); });
+      }
+
+      setUsageRows(rows);
+      setLoading(false);
+    })();
+  }, [materialId]);
+
+  const totalQty = usageRows.reduce((s, r) => s + (r.quantity ?? 0), 0);
+
+  if (loading) return <div className="p-4 text-sm text-muted-foreground">{t("common.loading")}</div>;
+
+  return (
+    <Card className="border-0 shadow-card">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm">{t("materials.usageTab")}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        {usageRows.length === 0 ? (
+          <p className="text-sm text-muted-foreground text-center py-6">{t("common.noData")}</p>
+        ) : (
+          <>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{t("materials.usageTable.date")}</TableHead>
+                  <TableHead>{t("materials.usageTable.report")}</TableHead>
+                  <TableHead>{t("materials.usageTable.quantity")}</TableHead>
+                  <TableHead>{t("materials.usageTable.lot")}</TableHead>
+                  <TableHead>{t("materials.usageTable.workItem")}</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {usageRows.map((r: any) => (
+                  <TableRow key={r.id} className="cursor-pointer hover:bg-muted/30" onClick={() => r._report && navigate(`/daily-reports/${r.daily_report_id}`)}>
+                    <TableCell className="text-sm">{r._report?.report_date ?? "—"}</TableCell>
+                    <TableCell className="text-sm font-medium">{r._report?.report_number ?? "—"}</TableCell>
+                    <TableCell className="text-sm tabular-nums">{r.quantity != null ? `${r.quantity} ${r.unit ?? ""}` : "—"}</TableCell>
+                    <TableCell className="text-sm">{r.lot_number ?? "—"}</TableCell>
+                    <TableCell className="text-xs text-muted-foreground">{r._report?.work_item_id ? r._report.work_item_id.substring(0, 8) + "…" : "—"}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            <div className="flex justify-end mt-3 text-sm font-semibold">
+              {t("materials.usageTable.total")}: <span className="ml-2 tabular-nums">{totalQty}</span>
+            </div>
+          </>
+        )}
+      </CardContent>
+    </Card>
   );
 }

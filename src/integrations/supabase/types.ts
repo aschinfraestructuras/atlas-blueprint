@@ -230,7 +230,9 @@ export type Database = {
           daily_report_id: string
           id: string
           lot_number: string | null
+          material_id: string | null
           nomenclature: string
+          pame_reference: string | null
           quantity: number | null
           unit: string | null
         }
@@ -239,7 +241,9 @@ export type Database = {
           daily_report_id: string
           id?: string
           lot_number?: string | null
+          material_id?: string | null
           nomenclature: string
+          pame_reference?: string | null
           quantity?: number | null
           unit?: string | null
         }
@@ -248,7 +252,9 @@ export type Database = {
           daily_report_id?: string
           id?: string
           lot_number?: string | null
+          material_id?: string | null
           nomenclature?: string
+          pame_reference?: string | null
           quantity?: number | null
           unit?: string | null
         }
@@ -259,6 +265,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "daily_reports"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "daily_report_materials_material_id_fkey"
+            columns: ["material_id"]
+            isOneToOne: false
+            referencedRelation: "materials"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "daily_report_materials_material_id_fkey"
+            columns: ["material_id"]
+            isOneToOne: false
+            referencedRelation: "view_material_detail_metrics"
+            referencedColumns: ["material_id"]
           },
         ]
       }
