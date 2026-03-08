@@ -136,15 +136,15 @@
     --chart-4:           30 55% 50%;
     --chart-5:           0 50% 55%;
 
-    --sidebar-background:  222 30% 8%;
+    --sidebar-background:  215 20% 16%;
     --sidebar-foreground:  210 15% 85%;
     --sidebar-primary:     210 55% 60%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent:      222 25% 14%;
+    --sidebar-accent:      215 18% 22%;
     --sidebar-accent-foreground: 210 15% 88%;
-    --sidebar-border:      222 20% 16%;
-    --sidebar-ring:        210 45% 50%;
-    --sidebar:             222 30% 8%;
+    --sidebar-border:      215 15% 24%;
+    --sidebar-ring:        210 45% 52%;
+    --sidebar:             215 20% 16%;
 
     --shadow-card:       0 1px 3px 0 hsl(0 0% 0% / 0.15), 0 1px 2px -1px hsl(0 0% 0% / 0.10);
     --shadow-card-hover: 0 4px 16px 0 hsl(0 0% 0% / 0.20), 0 2px 4px -1px hsl(0 0% 0% / 0.10);
