@@ -576,10 +576,16 @@
       "plan": "Plano",
       "report": "Relatório",
       "certificate": "Certificado",
-      "drawing": "Desenho",
+      "drawing": "Desenho / Peça Desenhada",
       "specification": "Especificação",
       "form": "Impresso",
       "record": "Registo",
+      "mdj": "Memória Descritiva e Justificativa (MDJ)",
+      "med": "Medições Detalhadas (MED)",
+      "dpu": "Definição de Preços Unitários (DPU)",
+      "cte": "Condições Técnicas Especiais (CTE)",
+      "egt": "Estudo Geológico e Geotécnico (EGT)",
+      "interoperability_report": "Relatório de Interoperabilidade",
       "other": "Outro"
     },
     "form": {
