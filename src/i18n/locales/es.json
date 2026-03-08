@@ -116,6 +116,7 @@
     "auditLog": "Registro de Auditoría",
     "settings": "Configuración",
     "technicalOffice": "Oficina Técnica",
+    "rfis": "RFIs",
     "plans": "Planes",
     "planning": "Planificación",
     "survey": "Levantamientos",
@@ -1489,6 +1490,58 @@
       "rfiUpdated": "RFI actualizado.",
       "rfiDeleted": "RFI eliminado.",
       "error": "Ocurrió un error. Inténtelo de nuevo."
+    }
+  },
+  "rfi": {
+    "page": {
+      "title": "RFIs",
+      "subtitle": "Solicitudes de Información y Aclaraciones"
+    },
+    "searchPlaceholder": "Buscar código, asunto…",
+    "kpi": {
+      "open": "Abiertos",
+      "answered": "Respondidos",
+      "overdue": "Atrasados",
+      "closed": "Cerrados"
+    },
+    "table": {
+      "code": "Código",
+      "subject": "Asunto",
+      "discipline": "Disciplina",
+      "priority": "Prioridad",
+      "responseDeadline": "Plazo Respuesta",
+      "daysOpen": "Días"
+    },
+    "filters": {
+      "allStatuses": "Todos los estados",
+      "overdue": "⚠ Atrasados",
+      "allDisciplines": "Todas disciplinas",
+      "allPriorities": "Todas prioridades"
+    },
+    "priority": {
+      "normal": "Normal",
+      "urgent": "Urgente",
+      "critical": "Crítico"
+    },
+    "status": {
+      "overdue": "Atrasado"
+    },
+    "detail": {
+      "responseDeadline": "Plazo de respuesta:",
+      "daysRemaining": "días restantes",
+      "details": "Detalles",
+      "zone": "Zona/PK",
+      "docRef": "Ref. Doc.",
+      "ppiRef": "PPI Ref.",
+      "response": "Respuesta",
+      "responseTextPlaceholder": "Texto de la respuesta…",
+      "respondedByPlaceholder": "Respondido por (nombre/cargo)",
+      "registerResponse": "Registrar Respuesta",
+      "noResponseYet": "Sin respuesta registrada.",
+      "closeRfi": "Cerrar RFI",
+      "links": "Enlaces",
+      "responseRequired": "Respuesta obligatoria.",
+      "responseRegistered": "Respuesta registrada con éxito."
     }
   },
   "plans": {

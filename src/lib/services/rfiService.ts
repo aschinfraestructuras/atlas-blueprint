@@ -20,6 +20,16 @@ export interface Rfi {
   nc_id: string | null;
   created_at: string;
   updated_at: string;
+  // Extended fields
+  discipline?: string | null;
+  pt_code?: string | null;
+  doc_reference?: string | null;
+  rfi_sequence?: number | null;
+  response_deadline?: string | null;
+  responded_at?: string | null;
+  response_text?: string | null;
+  responded_by?: string | null;
+  ppi_ref?: string | null;
 }
 
 export interface RfiMessage {
@@ -43,6 +53,10 @@ export interface RfiInput {
   recipient?: string | null;
   priority?: string;
   deadline?: string;
+  response_deadline?: string;
+  discipline?: string;
+  ppi_ref?: string;
+  doc_reference?: string;
   created_by: string;
 }
 
