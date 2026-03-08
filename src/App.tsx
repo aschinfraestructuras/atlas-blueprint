@@ -78,6 +78,7 @@ function ProtectedLayout({ children }: { children: React.ReactNode }) {
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
+    <ErrorBoundary>
     <ThemeProvider>
     <TooltipProvider>
       <Toaster />
