@@ -131,7 +131,9 @@ export default function DailyReportsPage() {
               <TableBody>
                 {filtered.map(r => (
                   <TableRow key={r.id} className="cursor-pointer hover:bg-muted/50" onClick={() => navigate(`/daily-reports/${r.id}`)}>
-                    <TableCell className="font-medium">{r.report_number}</TableCell>
+                    <TableCell onClick={(e) => e.stopPropagation()}>
+                      <CopyableCode value={r.report_number} />
+                    </TableCell>
                     <TableCell>{r.report_date}</TableCell>
                     <TableCell>{r.weather ?? "—"}</TableCell>
                     <TableCell>
@@ -145,6 +147,14 @@ export default function DailyReportsPage() {
                         {r.signed_supervisor && <Badge variant="outline" className="text-[10px]">F</Badge>}
                         {r.signed_ip && <Badge variant="outline" className="text-[10px]">IP</Badge>}
                       </div>
+                    </TableCell>
+                    <TableCell onClick={(e) => e.stopPropagation()}>
+                      <RowActionMenu
+                        shareUrl={`${window.location.origin}/daily-reports/${r.id}`}
+                        actions={[
+                          { key: "view", label: t("common.view"), icon: Eye, onClick: () => navigate(`/daily-reports/${r.id}`) },
+                        ]}
+                      />
                     </TableCell>
                   </TableRow>
                 ))}
