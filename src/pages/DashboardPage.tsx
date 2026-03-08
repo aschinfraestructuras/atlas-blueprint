@@ -17,7 +17,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Progress } from "@/components/ui/progress";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { NCFormDialog } from "@/components/nc/NCFormDialog";
-import { MaterialReceptionDialog } from "@/components/materials/MaterialReceptionDialog";
 import { RfiFormDialog } from "@/components/technical-office/RfiFormDialog";
 import { cn } from "@/lib/utils";
 
