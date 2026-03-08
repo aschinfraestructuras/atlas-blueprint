@@ -142,6 +142,303 @@ export type Database = {
           },
         ]
       }
+      daily_report_equipment: {
+        Row: {
+          created_at: string | null
+          daily_report_id: string
+          designation: string
+          hours_worked: number | null
+          id: string
+          serial_number: string | null
+          sound_power_db: number | null
+          type: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          daily_report_id: string
+          designation: string
+          hours_worked?: number | null
+          id?: string
+          serial_number?: string | null
+          sound_power_db?: number | null
+          type?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          daily_report_id?: string
+          designation?: string
+          hours_worked?: number | null
+          id?: string
+          serial_number?: string | null
+          sound_power_db?: number | null
+          type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "daily_report_equipment_daily_report_id_fkey"
+            columns: ["daily_report_id"]
+            isOneToOne: false
+            referencedRelation: "daily_reports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      daily_report_labour: {
+        Row: {
+          category: string
+          created_at: string | null
+          daily_report_id: string
+          hours_worked: number | null
+          id: string
+          name: string | null
+          time_end: string | null
+          time_start: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          daily_report_id: string
+          hours_worked?: number | null
+          id?: string
+          name?: string | null
+          time_end?: string | null
+          time_start?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          daily_report_id?: string
+          hours_worked?: number | null
+          id?: string
+          name?: string | null
+          time_end?: string | null
+          time_start?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "daily_report_labour_daily_report_id_fkey"
+            columns: ["daily_report_id"]
+            isOneToOne: false
+            referencedRelation: "daily_reports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      daily_report_materials: {
+        Row: {
+          created_at: string | null
+          daily_report_id: string
+          id: string
+          lot_number: string | null
+          nomenclature: string
+          quantity: number | null
+          unit: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          daily_report_id: string
+          id?: string
+          lot_number?: string | null
+          nomenclature: string
+          quantity?: number | null
+          unit?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          daily_report_id?: string
+          id?: string
+          lot_number?: string | null
+          nomenclature?: string
+          quantity?: number | null
+          unit?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "daily_report_materials_daily_report_id_fkey"
+            columns: ["daily_report_id"]
+            isOneToOne: false
+            referencedRelation: "daily_reports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      daily_report_rmm: {
+        Row: {
+          created_at: string | null
+          daily_report_id: string
+          designation: string
+          id: string
+          internal_code: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          daily_report_id: string
+          designation: string
+          id?: string
+          internal_code?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          daily_report_id?: string
+          designation?: string
+          id?: string
+          internal_code?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "daily_report_rmm_daily_report_id_fkey"
+            columns: ["daily_report_id"]
+            isOneToOne: false
+            referencedRelation: "daily_reports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      daily_report_waste: {
+        Row: {
+          created_at: string | null
+          daily_report_id: string
+          final_destination: string | null
+          id: string
+          packaging_type: string | null
+          preliminary_storage: string | null
+          quantity: number | null
+          type: string
+          unit: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          daily_report_id: string
+          final_destination?: string | null
+          id?: string
+          packaging_type?: string | null
+          preliminary_storage?: string | null
+          quantity?: number | null
+          type: string
+          unit?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          daily_report_id?: string
+          final_destination?: string | null
+          id?: string
+          packaging_type?: string | null
+          preliminary_storage?: string | null
+          quantity?: number | null
+          type?: string
+          unit?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "daily_report_waste_daily_report_id_fkey"
+            columns: ["daily_report_id"]
+            isOneToOne: false
+            referencedRelation: "daily_reports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      daily_reports: {
+        Row: {
+          contractor_rep: string | null
+          created_at: string | null
+          created_by: string | null
+          foreman_name: string | null
+          id: string
+          ip_rep: string | null
+          is_deleted: boolean | null
+          observations: string | null
+          project_id: string
+          report_date: string
+          report_number: string
+          signed_contractor: boolean | null
+          signed_ip: boolean | null
+          signed_supervisor: boolean | null
+          status: string
+          supervisor_rep: string | null
+          temperature_max: number | null
+          temperature_min: number | null
+          updated_at: string | null
+          weather: string | null
+          work_item_id: string | null
+        }
+        Insert: {
+          contractor_rep?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          foreman_name?: string | null
+          id?: string
+          ip_rep?: string | null
+          is_deleted?: boolean | null
+          observations?: string | null
+          project_id: string
+          report_date: string
+          report_number: string
+          signed_contractor?: boolean | null
+          signed_ip?: boolean | null
+          signed_supervisor?: boolean | null
+          status?: string
+          supervisor_rep?: string | null
+          temperature_max?: number | null
+          temperature_min?: number | null
+          updated_at?: string | null
+          weather?: string | null
+          work_item_id?: string | null
+        }
+        Update: {
+          contractor_rep?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          foreman_name?: string | null
+          id?: string
+          ip_rep?: string | null
+          is_deleted?: boolean | null
+          observations?: string | null
+          project_id?: string
+          report_date?: string
+          report_number?: string
+          signed_contractor?: boolean | null
+          signed_ip?: boolean | null
+          signed_supervisor?: boolean | null
+          status?: string
+          supervisor_rep?: string | null
+          temperature_max?: number | null
+          temperature_min?: number | null
+          updated_at?: string | null
+          weather?: string | null
+          work_item_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "daily_reports_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "daily_reports_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "daily_reports_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "daily_reports_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       document_files: {
         Row: {
           created_at: string
