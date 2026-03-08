@@ -67,6 +67,7 @@ export default function ActivityDetailPage() {
   const [testResults, setTestResults] = useState<any[]>([]);
   const [subcontractor, setSubcontractor] = useState<any>(null);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!id || !activeProject) return;
     loadActivity();

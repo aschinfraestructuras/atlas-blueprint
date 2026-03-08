@@ -841,7 +841,6 @@ export default function WorkItemDetailPage() {
   useEffect(() => {
     loadItem();
     loadRelated();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   // Load work item materials
