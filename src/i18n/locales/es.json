@@ -1854,7 +1854,18 @@
       "linkedSupplier": "Proveedor asociado",
       "linkedSupplierPlaceholder": "Seleccionar proveedor…",
       "noSupplier": "Sin proveedor",
-      "createBtn": "Crear subcontratista"
+      "createBtn": "Crear subcontratista",
+      "sectionGeneral": "Datos Generales",
+      "sectionContact": "Contacto",
+      "contract": "Contrato",
+      "contractPlaceholder": "Referencia del contrato",
+      "docStatus": "Estado Documentación",
+      "score": "Score Desempeño",
+      "contactName": "Nombre del responsable",
+      "contactNamePlaceholder": "Nombre del responsable",
+      "contactPhone": "Teléfono de contacto",
+      "notes": "Observaciones",
+      "notesPlaceholder": "Observaciones generales…"
     },
     "detail": {
       "tabs": {
