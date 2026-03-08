@@ -838,8 +838,16 @@ export type Database = {
           is_deleted: boolean
           name: string
           normative_refs: string | null
+          pame_approved_at: string | null
+          pame_approved_by: string | null
           pame_code: string | null
+          pame_disciplina: string | null
+          pame_docs_req: string | null
+          pame_norma: string | null
+          pame_ppi_ref: string | null
+          pame_prioridade: string | null
           pame_status: string | null
+          pame_submitted_at: string | null
           project_id: string
           rejection_reason: string | null
           specification: string | null
@@ -868,8 +876,16 @@ export type Database = {
           is_deleted?: boolean
           name: string
           normative_refs?: string | null
+          pame_approved_at?: string | null
+          pame_approved_by?: string | null
           pame_code?: string | null
+          pame_disciplina?: string | null
+          pame_docs_req?: string | null
+          pame_norma?: string | null
+          pame_ppi_ref?: string | null
+          pame_prioridade?: string | null
           pame_status?: string | null
+          pame_submitted_at?: string | null
           project_id: string
           rejection_reason?: string | null
           specification?: string | null
@@ -898,8 +914,16 @@ export type Database = {
           is_deleted?: boolean
           name?: string
           normative_refs?: string | null
+          pame_approved_at?: string | null
+          pame_approved_by?: string | null
           pame_code?: string | null
+          pame_disciplina?: string | null
+          pame_docs_req?: string | null
+          pame_norma?: string | null
+          pame_ppi_ref?: string | null
+          pame_prioridade?: string | null
           pame_status?: string | null
+          pame_submitted_at?: string | null
           project_id?: string
           rejection_reason?: string | null
           specification?: string | null
@@ -937,13 +961,16 @@ export type Database = {
       }
       non_conformities: {
         Row: {
+          ac_efficacy_indicator: string | null
           approver: string | null
           assigned_to: string | null
           category: string
           category_outro: string | null
+          classification: string | null
           closure_date: string | null
           code: string | null
           correction: string | null
+          correction_type: string | null
           corrective_action: string | null
           created_at: string
           created_by: string | null
@@ -951,11 +978,17 @@ export type Database = {
           deleted_by: string | null
           description: string
           detected_at: string
+          discipline: string | null
           document_id: string | null
           due_date: string | null
+          fip_validated_at: string | null
+          fip_validated_by: string | null
+          fip_validation_required: boolean
           id: string
           is_deleted: boolean
+          location_pk: string | null
           material_id: string | null
+          nc_sequence: number | null
           origin: string
           origin_entity_id: string | null
           origin_entity_type: string | null
@@ -967,6 +1000,7 @@ export type Database = {
           reference: string | null
           responsible: string | null
           root_cause: string | null
+          root_cause_method: string | null
           severity: string
           status: string
           subcontractor_id: string | null
@@ -975,20 +1009,25 @@ export type Database = {
           title: string | null
           updated_at: string
           updated_by: string | null
+          validation_deadline: string | null
           verification_method: string | null
           verification_result: string | null
           verified_at: string | null
           verified_by: string | null
+          violated_requirement: string | null
           work_item_id: string | null
         }
         Insert: {
+          ac_efficacy_indicator?: string | null
           approver?: string | null
           assigned_to?: string | null
           category?: string
           category_outro?: string | null
+          classification?: string | null
           closure_date?: string | null
           code?: string | null
           correction?: string | null
+          correction_type?: string | null
           corrective_action?: string | null
           created_at?: string
           created_by?: string | null
@@ -996,11 +1035,17 @@ export type Database = {
           deleted_by?: string | null
           description: string
           detected_at?: string
+          discipline?: string | null
           document_id?: string | null
           due_date?: string | null
+          fip_validated_at?: string | null
+          fip_validated_by?: string | null
+          fip_validation_required?: boolean
           id?: string
           is_deleted?: boolean
+          location_pk?: string | null
           material_id?: string | null
+          nc_sequence?: number | null
           origin?: string
           origin_entity_id?: string | null
           origin_entity_type?: string | null
@@ -1012,6 +1057,7 @@ export type Database = {
           reference?: string | null
           responsible?: string | null
           root_cause?: string | null
+          root_cause_method?: string | null
           severity?: string
           status?: string
           subcontractor_id?: string | null
@@ -1020,20 +1066,25 @@ export type Database = {
           title?: string | null
           updated_at?: string
           updated_by?: string | null
+          validation_deadline?: string | null
           verification_method?: string | null
           verification_result?: string | null
           verified_at?: string | null
           verified_by?: string | null
+          violated_requirement?: string | null
           work_item_id?: string | null
         }
         Update: {
+          ac_efficacy_indicator?: string | null
           approver?: string | null
           assigned_to?: string | null
           category?: string
           category_outro?: string | null
+          classification?: string | null
           closure_date?: string | null
           code?: string | null
           correction?: string | null
+          correction_type?: string | null
           corrective_action?: string | null
           created_at?: string
           created_by?: string | null
@@ -1041,11 +1092,17 @@ export type Database = {
           deleted_by?: string | null
           description?: string
           detected_at?: string
+          discipline?: string | null
           document_id?: string | null
           due_date?: string | null
+          fip_validated_at?: string | null
+          fip_validated_by?: string | null
+          fip_validation_required?: boolean
           id?: string
           is_deleted?: boolean
+          location_pk?: string | null
           material_id?: string | null
+          nc_sequence?: number | null
           origin?: string
           origin_entity_id?: string | null
           origin_entity_type?: string | null
@@ -1057,6 +1114,7 @@ export type Database = {
           reference?: string | null
           responsible?: string | null
           root_cause?: string | null
+          root_cause_method?: string | null
           severity?: string
           status?: string
           subcontractor_id?: string | null
@@ -1065,10 +1123,12 @@ export type Database = {
           title?: string | null
           updated_at?: string
           updated_by?: string | null
+          validation_deadline?: string | null
           verification_method?: string | null
           verification_result?: string | null
           verified_at?: string | null
           verified_by?: string | null
+          violated_requirement?: string | null
           work_item_id?: string | null
         }
         Relationships: [
@@ -1494,6 +1554,9 @@ export type Database = {
           id: string
           inspection_point_type: string | null
           instance_id: string
+          ipt_e: string | null
+          ipt_f: string | null
+          ipt_ip: string | null
           item_no: number
           label: string
           method: string | null
@@ -1513,6 +1576,9 @@ export type Database = {
           id?: string
           inspection_point_type?: string | null
           instance_id: string
+          ipt_e?: string | null
+          ipt_f?: string | null
+          ipt_ip?: string | null
           item_no: number
           label: string
           method?: string | null
@@ -1532,6 +1598,9 @@ export type Database = {
           id?: string
           inspection_point_type?: string | null
           instance_id?: string
+          ipt_e?: string | null
+          ipt_f?: string | null
+          ipt_ip?: string | null
           item_no?: number
           label?: string
           method?: string | null
@@ -1692,41 +1761,62 @@ export type Database = {
         Row: {
           acceptance_criteria: string | null
           check_code: string
+          doc_record: string | null
           evidence_required: boolean
           id: string
           inspection_point_type: string | null
+          ipt_e: string | null
+          ipt_f: string | null
+          ipt_ip: string | null
           item_no: number
           label: string
           method: string | null
+          phase_name: string | null
+          phase_no: number | null
           required: boolean
           sort_order: number
           template_id: string
+          test_pe_code: string | null
         }
         Insert: {
           acceptance_criteria?: string | null
           check_code: string
+          doc_record?: string | null
           evidence_required?: boolean
           id?: string
           inspection_point_type?: string | null
+          ipt_e?: string | null
+          ipt_f?: string | null
+          ipt_ip?: string | null
           item_no: number
           label: string
           method?: string | null
+          phase_name?: string | null
+          phase_no?: number | null
           required?: boolean
           sort_order?: number
           template_id: string
+          test_pe_code?: string | null
         }
         Update: {
           acceptance_criteria?: string | null
           check_code?: string
+          doc_record?: string | null
           evidence_required?: boolean
           id?: string
           inspection_point_type?: string | null
+          ipt_e?: string | null
+          ipt_f?: string | null
+          ipt_ip?: string | null
           item_no?: number
           label?: string
           method?: string | null
+          phase_name?: string | null
+          phase_no?: number | null
           required?: boolean
           sort_order?: number
           template_id?: string
+          test_pe_code?: string | null
         }
         Relationships: [
           {
@@ -1740,43 +1830,58 @@ export type Database = {
       }
       ppi_templates: {
         Row: {
+          approval_entity: string | null
           code: string
           created_at: string
           created_by: string | null
           description: string | null
           disciplina: string
           disciplina_outro: string | null
+          doc_reference: string | null
           id: string
           is_active: boolean
+          norms: string | null
           project_id: string
+          project_volume: string | null
+          revision: string | null
           title: string
           updated_at: string
           version: number
         }
         Insert: {
+          approval_entity?: string | null
           code: string
           created_at?: string
           created_by?: string | null
           description?: string | null
           disciplina: string
           disciplina_outro?: string | null
+          doc_reference?: string | null
           id?: string
           is_active?: boolean
+          norms?: string | null
           project_id: string
+          project_volume?: string | null
+          revision?: string | null
           title: string
           updated_at?: string
           version?: number
         }
         Update: {
+          approval_entity?: string | null
           code?: string
           created_at?: string
           created_by?: string | null
           description?: string | null
           disciplina?: string
           disciplina_outro?: string | null
+          doc_reference?: string | null
           id?: string
           is_active?: boolean
+          norms?: string | null
           project_id?: string
+          project_volume?: string | null
+          revision?: string | null
           title?: string
           updated_at?: string
           version?: number
@@ -2054,12 +2159,21 @@ export type Database = {
           deleted_at: string | null
           deleted_by: string | null
           description: string | null
+          discipline: string | null
+          doc_reference: string | null
           id: string
           is_deleted: boolean
           nc_id: string | null
+          ppi_ref: string | null
           priority: string
           project_id: string
+          pt_code: string | null
           recipient: string | null
+          responded_at: string | null
+          responded_by: string | null
+          response_deadline: string | null
+          response_text: string | null
+          rfi_sequence: number | null
           status: string
           subject: string
           updated_at: string
@@ -2074,12 +2188,21 @@ export type Database = {
           deleted_at?: string | null
           deleted_by?: string | null
           description?: string | null
+          discipline?: string | null
+          doc_reference?: string | null
           id?: string
           is_deleted?: boolean
           nc_id?: string | null
+          ppi_ref?: string | null
           priority?: string
           project_id: string
+          pt_code?: string | null
           recipient?: string | null
+          responded_at?: string | null
+          responded_by?: string | null
+          response_deadline?: string | null
+          response_text?: string | null
+          rfi_sequence?: number | null
           status?: string
           subject: string
           updated_at?: string
@@ -2094,12 +2217,21 @@ export type Database = {
           deleted_at?: string | null
           deleted_by?: string | null
           description?: string | null
+          discipline?: string | null
+          doc_reference?: string | null
           id?: string
           is_deleted?: boolean
           nc_id?: string | null
+          ppi_ref?: string | null
           priority?: string
           project_id?: string
+          pt_code?: string | null
           recipient?: string | null
+          responded_at?: string | null
+          responded_by?: string | null
+          response_deadline?: string | null
+          response_text?: string | null
+          rfi_sequence?: number | null
           status?: string
           subject?: string
           updated_at?: string
@@ -3517,12 +3649,17 @@ export type Database = {
           frequency_unit: string | null
           frequency_value: number | null
           id: string
+          lab_required: boolean
           laboratorio: string | null
           laboratorio_outro: string | null
           material: string | null
           material_outro: string | null
           name: string
+          pe_code: string | null
+          phase_code: string | null
+          phase_label: string | null
           project_id: string
+          responsible_code: string | null
           standard: string | null
           standards: string[] | null
           unit: string | null
@@ -3542,12 +3679,17 @@ export type Database = {
           frequency_unit?: string | null
           frequency_value?: number | null
           id?: string
+          lab_required?: boolean
           laboratorio?: string | null
           laboratorio_outro?: string | null
           material?: string | null
           material_outro?: string | null
           name: string
+          pe_code?: string | null
+          phase_code?: string | null
+          phase_label?: string | null
           project_id: string
+          responsible_code?: string | null
           standard?: string | null
           standards?: string[] | null
           unit?: string | null
@@ -3567,12 +3709,17 @@ export type Database = {
           frequency_unit?: string | null
           frequency_value?: number | null
           id?: string
+          lab_required?: boolean
           laboratorio?: string | null
           laboratorio_outro?: string | null
           material?: string | null
           material_outro?: string | null
           name?: string
+          pe_code?: string | null
+          phase_code?: string | null
+          phase_label?: string | null
           project_id?: string
+          responsible_code?: string | null
           standard?: string | null
           standards?: string[] | null
           unit?: string | null
@@ -4651,8 +4798,16 @@ export type Database = {
           is_deleted: boolean
           name: string
           normative_refs: string | null
+          pame_approved_at: string | null
+          pame_approved_by: string | null
           pame_code: string | null
+          pame_disciplina: string | null
+          pame_docs_req: string | null
+          pame_norma: string | null
+          pame_ppi_ref: string | null
+          pame_prioridade: string | null
           pame_status: string | null
+          pame_submitted_at: string | null
           project_id: string
           rejection_reason: string | null
           specification: string | null
@@ -4694,13 +4849,16 @@ export type Database = {
           p_work_item_id?: string
         }
         Returns: {
+          ac_efficacy_indicator: string | null
           approver: string | null
           assigned_to: string | null
           category: string
           category_outro: string | null
+          classification: string | null
           closure_date: string | null
           code: string | null
           correction: string | null
+          correction_type: string | null
           corrective_action: string | null
           created_at: string
           created_by: string | null
@@ -4708,11 +4866,17 @@ export type Database = {
           deleted_by: string | null
           description: string
           detected_at: string
+          discipline: string | null
           document_id: string | null
           due_date: string | null
+          fip_validated_at: string | null
+          fip_validated_by: string | null
+          fip_validation_required: boolean
           id: string
           is_deleted: boolean
+          location_pk: string | null
           material_id: string | null
+          nc_sequence: number | null
           origin: string
           origin_entity_id: string | null
           origin_entity_type: string | null
@@ -4724,6 +4888,7 @@ export type Database = {
           reference: string | null
           responsible: string | null
           root_cause: string | null
+          root_cause_method: string | null
           severity: string
           status: string
           subcontractor_id: string | null
@@ -4732,10 +4897,12 @@ export type Database = {
           title: string | null
           updated_at: string
           updated_by: string | null
+          validation_deadline: string | null
           verification_method: string | null
           verification_result: string | null
           verified_at: string | null
           verified_by: string | null
+          violated_requirement: string | null
           work_item_id: string | null
         }
         SetofOptions: {
@@ -4753,13 +4920,16 @@ export type Database = {
           p_severity?: string
         }
         Returns: {
+          ac_efficacy_indicator: string | null
           approver: string | null
           assigned_to: string | null
           category: string
           category_outro: string | null
+          classification: string | null
           closure_date: string | null
           code: string | null
           correction: string | null
+          correction_type: string | null
           corrective_action: string | null
           created_at: string
           created_by: string | null
@@ -4767,11 +4937,17 @@ export type Database = {
           deleted_by: string | null
           description: string
           detected_at: string
+          discipline: string | null
           document_id: string | null
           due_date: string | null
+          fip_validated_at: string | null
+          fip_validated_by: string | null
+          fip_validation_required: boolean
           id: string
           is_deleted: boolean
+          location_pk: string | null
           material_id: string | null
+          nc_sequence: number | null
           origin: string
           origin_entity_id: string | null
           origin_entity_type: string | null
@@ -4783,6 +4959,7 @@ export type Database = {
           reference: string | null
           responsible: string | null
           root_cause: string | null
+          root_cause_method: string | null
           severity: string
           status: string
           subcontractor_id: string | null
@@ -4791,10 +4968,12 @@ export type Database = {
           title: string | null
           updated_at: string
           updated_by: string | null
+          validation_deadline: string | null
           verification_method: string | null
           verification_result: string | null
           verified_at: string | null
           verified_by: string | null
+          violated_requirement: string | null
           work_item_id: string | null
         }
         SetofOptions: {
@@ -4812,13 +4991,16 @@ export type Database = {
           p_test_result_id: string
         }
         Returns: {
+          ac_efficacy_indicator: string | null
           approver: string | null
           assigned_to: string | null
           category: string
           category_outro: string | null
+          classification: string | null
           closure_date: string | null
           code: string | null
           correction: string | null
+          correction_type: string | null
           corrective_action: string | null
           created_at: string
           created_by: string | null
@@ -4826,11 +5008,17 @@ export type Database = {
           deleted_by: string | null
           description: string
           detected_at: string
+          discipline: string | null
           document_id: string | null
           due_date: string | null
+          fip_validated_at: string | null
+          fip_validated_by: string | null
+          fip_validation_required: boolean
           id: string
           is_deleted: boolean
+          location_pk: string | null
           material_id: string | null
+          nc_sequence: number | null
           origin: string
           origin_entity_id: string | null
           origin_entity_type: string | null
@@ -4842,6 +5030,7 @@ export type Database = {
           reference: string | null
           responsible: string | null
           root_cause: string | null
+          root_cause_method: string | null
           severity: string
           status: string
           subcontractor_id: string | null
@@ -4850,10 +5039,12 @@ export type Database = {
           title: string | null
           updated_at: string
           updated_by: string | null
+          validation_deadline: string | null
           verification_method: string | null
           verification_result: string | null
           verified_at: string | null
           verified_by: string | null
+          violated_requirement: string | null
           work_item_id: string | null
         }
         SetofOptions: {
@@ -5183,6 +5374,7 @@ export type Database = {
         Args: { p_project_id: string; p_user_id: string }
         Returns: undefined
       }
+      fn_supplier_eval_template: { Args: never; Returns: Json }
       fn_update_member_role: {
         Args: { p_new_role: string; p_project_id: string; p_user_id: string }
         Returns: undefined
@@ -5190,13 +5382,16 @@ export type Database = {
       fn_update_nc_status: {
         Args: { p_nc_id: string; p_to_status: string }
         Returns: {
+          ac_efficacy_indicator: string | null
           approver: string | null
           assigned_to: string | null
           category: string
           category_outro: string | null
+          classification: string | null
           closure_date: string | null
           code: string | null
           correction: string | null
+          correction_type: string | null
           corrective_action: string | null
           created_at: string
           created_by: string | null
@@ -5204,11 +5399,17 @@ export type Database = {
           deleted_by: string | null
           description: string
           detected_at: string
+          discipline: string | null
           document_id: string | null
           due_date: string | null
+          fip_validated_at: string | null
+          fip_validated_by: string | null
+          fip_validation_required: boolean
           id: string
           is_deleted: boolean
+          location_pk: string | null
           material_id: string | null
+          nc_sequence: number | null
           origin: string
           origin_entity_id: string | null
           origin_entity_type: string | null
@@ -5220,6 +5421,7 @@ export type Database = {
           reference: string | null
           responsible: string | null
           root_cause: string | null
+          root_cause_method: string | null
           severity: string
           status: string
           subcontractor_id: string | null
@@ -5228,10 +5430,12 @@ export type Database = {
           title: string | null
           updated_at: string
           updated_by: string | null
+          validation_deadline: string | null
           verification_method: string | null
           verification_result: string | null
           verified_at: string | null
           verified_by: string | null
+          violated_requirement: string | null
           work_item_id: string | null
         }
         SetofOptions: {

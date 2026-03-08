@@ -93,7 +93,13 @@ export default function ExpirationsPage() {
 
   const handleNavigate = (item: ExpiringItem) => {
     const base = DOMAIN_ROUTES[item.domain] ?? "/";
-    navigate(`${base}/${item.entity_id}`);
+    const id = item.entity_id;
+    const isValid = id && id !== "undefined" && id !== "null" && /^[0-9a-f-]{36}$/i.test(id);
+    if (isValid) {
+      navigate(`${base}/${id}`);
+    } else {
+      navigate(base);
+    }
   };
 
   const handleExportCsv = () => {
