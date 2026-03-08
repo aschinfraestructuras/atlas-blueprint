@@ -6,9 +6,8 @@ import type { Database } from "@/integrations/supabase/types";
 type SupplierRow = Database["public"]["Tables"]["suppliers"]["Row"];
 type SupplierUpdate = Database["public"]["Tables"]["suppliers"]["Update"];
 
-// Helper to access tables not in generated types
-const untypedFrom = (table: string) =>
-  (supabase as unknown as { from: (t: string) => ReturnType<typeof supabase.from> }).from(table);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- tables not in generated types
+const db = supabase as any;
 
 export interface Supplier {
   id: string;

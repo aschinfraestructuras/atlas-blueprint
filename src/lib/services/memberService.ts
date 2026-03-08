@@ -1,9 +1,8 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 
-// Helper to access tables not in generated types
-const untypedFrom = (table: string) =>
-  (supabase as unknown as { from: (t: string) => ReturnType<typeof supabase.from> }).from(table);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- tables not in generated types
+const db = supabase as any;
 
 const untypedRpc = (fn: string, params: Record<string, unknown>) =>
   (supabase.rpc as unknown as (fn: string, params: Record<string, unknown>) => ReturnType<typeof supabase.rpc>)(fn, params);

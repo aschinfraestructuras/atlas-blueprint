@@ -86,9 +86,8 @@ export interface TopographyControl {
   updated_at: string;
 }
 
-// Helper to access tables not in generated types
-const untypedFrom = (table: string) =>
-  (supabase as unknown as { from: (t: string) => ReturnType<typeof supabase.from> }).from(table);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- tables not in generated types
+const db = supabase as any;
 
 // ─── Equipment Service ────────────────────────────────────────────────────────
 
