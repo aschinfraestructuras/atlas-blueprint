@@ -32,7 +32,7 @@ export function MainLayout({ children }: MainLayoutProps) {
         "/tests": t("nav.tests"),
         "/suppliers": t("nav.suppliers"),
         "/materials": t("nav.materials"),
-        "/materials/map-mas": t("nav.mapMas"),
+        
         "/non-conformities": t("nav.nonConformities"),
         "/technical-office": t("nav.technicalOffice"),
         "/plans": t("nav.plans"),

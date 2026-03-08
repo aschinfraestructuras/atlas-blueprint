@@ -63,7 +63,7 @@ const NAV_SECTIONS: SidebarSection[] = [
       { labelKey: "nav.topography",    url: "/topography",      icon: Crosshair },
       { labelKey: "nav.subcontractors", url: "/subcontractors",  icon: HardHat },
       { labelKey: "nav.workItems",      url: "/work-items",      icon: Construction },
-      { labelKey: "nav.mapMas",         url: "/materials/map-mas", icon: FileCheck2 },
+      
       { labelKey: "nav.ppi",            url: "/ppi",             icon: ClipboardCheck },
       { labelKey: "nav.dailyReports",   url: "/daily-reports",   icon: ClipboardList },
       { labelKey: "nav.recycledMaterials", url: "/recycled-materials", icon: Leaf },

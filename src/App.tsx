@@ -107,7 +107,7 @@ const App = () => (
               <Route path="/ppi/:id" element={<ProtectedLayout><PPIDetailPage /></ProtectedLayout>} />
               <Route path="/materials" element={<ProtectedLayout><MaterialsPage /></ProtectedLayout>} />
               <Route path="/materials/:id" element={<ProtectedLayout><MaterialDetailPage /></ProtectedLayout>} />
-              <Route path="/materials/map-mas" element={<ProtectedLayout><MapMasPage /></ProtectedLayout>} />
+              
               <Route path="/expirations" element={<ProtectedLayout><ExpirationsPage /></ProtectedLayout>} />
               <Route path="/deadlines" element={<ProtectedLayout><DeadlinesPage /></ProtectedLayout>} />
               <Route path="/reports/qc" element={<ProtectedLayout><QCReportPage /></ProtectedLayout>} />

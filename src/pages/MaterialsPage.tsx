@@ -265,7 +265,7 @@ export default function MaterialsPage() {
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("materials.form.specification")}</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("materials.form.unit")}</TableHead>
                      <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.status")}</TableHead>
-                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("materials.approval.mapMas")}</TableHead>
+                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("materials.approval.title", { defaultValue: "Aprovação" })}</TableHead>
                      <TableHead className="w-28" />
                   </TableRow>
                 </TableHeader>
