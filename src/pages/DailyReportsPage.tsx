@@ -106,7 +106,7 @@ export default function DailyReportsPage() {
           {loading ? (
             <div className="p-8 text-center text-muted-foreground">{t("common.loading")}</div>
           ) : filtered.length === 0 ? (
-            <EmptyState title={t("common.noData")} />
+            <EmptyState titleKey="common.noData" />
           ) : (
             <Table>
               <TableHeader>

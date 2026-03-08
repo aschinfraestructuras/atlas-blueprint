@@ -114,6 +114,8 @@ const App = () => (
               <Route path="/planning" element={<ProtectedLayout><PlanningPage /></ProtectedLayout>} />
               <Route path="/planning/activities/:id" element={<ProtectedLayout><ActivityDetailPage /></ProtectedLayout>} />
               <Route path="/audits" element={<ProtectedLayout><AuditsPage /></ProtectedLayout>} />
+              <Route path="/daily-reports" element={<ProtectedLayout><DailyReportsPage /></ProtectedLayout>} />
+              <Route path="/daily-reports/:id" element={<ProtectedLayout><DailyReportDetailPage /></ProtectedLayout>} />
               <Route path="/admin/health" element={<ProtectedLayout><HealthCheckPage /></ProtectedLayout>} />
 
               {/* Catch-all */}

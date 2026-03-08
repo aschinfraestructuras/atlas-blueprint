@@ -65,6 +65,7 @@ const NAV_SECTIONS: SidebarSection[] = [
       { labelKey: "nav.workItems",      url: "/work-items",      icon: Construction },
       { labelKey: "nav.mapMas",         url: "/materials/map-mas", icon: FileCheck2 },
       { labelKey: "nav.ppi",            url: "/ppi",             icon: ClipboardCheck },
+      { labelKey: "nav.dailyReports",   url: "/daily-reports",   icon: ClipboardList },
     ],
   },
   {

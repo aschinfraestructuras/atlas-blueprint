@@ -3313,5 +3313,84 @@
     "next": "Siguiente",
     "previous": "Anterior",
     "rowsPerPage": "Filas por página"
+  },
+  "dailyReports": {
+    "title": "Parte Diario de Obra",
+    "subtitle": "Registro diario IP.MOD.102",
+    "new": "Nuevo Parte Diario",
+    "status": {
+      "draft": "Borrador",
+      "submitted": "Enviado",
+      "validated": "Validado"
+    },
+    "sections": {
+      "identification": "1. Identificación",
+      "works": "2. Trabajos Ejecutados",
+      "labour": "3. Mano de Obra",
+      "equipment": "4. Equipamiento",
+      "materials": "5. Materiales",
+      "rmm": "6. RMM — Recursos de Monitorización y Medición",
+      "waste": "7. Sobrantes / Materiales Usados / Residuos",
+      "observations": "8. Observaciones y Firmas"
+    },
+    "fields": {
+      "reportDate": "Fecha",
+      "reportNumber": "Nº Parte Diario",
+      "weather": "Condiciones Meteorológicas",
+      "tempMin": "Temp. Mín (°C)",
+      "tempMax": "Temp. Máx (°C)",
+      "foremanName": "Encargado",
+      "contractorRep": "Representante Contratista",
+      "supervisorRep": "Representante Fiscalización",
+      "ipRep": "Representante IP"
+    },
+    "labour": {
+      "category": "Categoría",
+      "name": "Nombre",
+      "timeStart": "Inicio",
+      "timeEnd": "Fin",
+      "hours": "Horas"
+    },
+    "equipment": {
+      "designation": "Designación",
+      "type": "Tipo",
+      "serial": "Nº Serie / Nº UIC",
+      "soundPower": "Pot. Sonora (dB)",
+      "hours": "Horas"
+    },
+    "materials": {
+      "nomenclature": "Nomenclatura",
+      "quantity": "Cantidad",
+      "unit": "Unidad",
+      "lot": "Lote / Nº Serie"
+    },
+    "rmm": {
+      "code": "Código Interno",
+      "designation": "Designación"
+    },
+    "waste": {
+      "type": "Tipo",
+      "packaging": "Tipo de Acondicionamiento",
+      "quantity": "Cantidad",
+      "unit": "Unidad",
+      "storage": "Almacenamiento Preliminar",
+      "destination": "Destino Final"
+    },
+    "signatures": {
+      "title": "Firmas",
+      "foreman": "Encargado (Frente de Trabajos)",
+      "contractor": "Representante Contratista",
+      "supervisor": "Representante Fiscalización (Externa)",
+      "ip": "Representante IP"
+    },
+    "toast": {
+      "created": "Parte diario creado.",
+      "updated": "Parte diario actualizado.",
+      "submitted": "Parte diario enviado.",
+      "validated": "Parte diario validado."
+    },
+    "export": {
+      "title": "Parte Diario de Obra"
+    }
   }
 }
