@@ -110,11 +110,19 @@ export interface NCUpdateInput {
   detected_at?: string;
   discipline?: string;
   discipline_outro?: string;
+  classification?: string;
   // CAPA
   correction?: string;
+  correction_type?: string;
   root_cause?: string;
+  root_cause_method?: string;
   corrective_action?: string;
   preventive_action?: string;
+  ac_efficacy_indicator?: string;
+  deviation_justification?: string;
+  efficacy_analysis?: string;
+  actual_completion_date?: string;
+  audit_origin_type?: string;
   verification_method?: string;
   verification_result?: string;
   // Ligações
