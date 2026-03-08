@@ -75,6 +75,11 @@ const schema = (t: (k: string) => string) =>
     verified_at:         z.string().optional().or(z.literal("")),
     closure_date:        z.string().optional().or(z.literal("")),
     fip_validated_by:    z.string().trim().max(200).optional().or(z.literal("")),
+    // CE fields
+    audit_origin_type:       z.string().optional().or(z.literal("")),
+    actual_completion_date:  z.string().optional().or(z.literal("")),
+    deviation_justification: z.string().trim().max(2000).optional().or(z.literal("")),
+    efficacy_analysis:       z.string().trim().max(2000).optional().or(z.literal("")),
   }).superRefine((val, ctx) => {
     withOtherRefinement(val, ctx, "category", "category_outro", t("nc.form.validation.categoryOutroRequired"));
     withOtherRefinement(val, ctx, "discipline", "discipline_outro", t("nc.form.validation.disciplineOutroRequired"), "outros");
