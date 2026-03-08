@@ -296,7 +296,7 @@ export const supplierService = {
 
   // ── Supplier Materials ──────────────────────────────────────────
   async getMaterials(supplierId: string): Promise<SupplierMaterial[]> {
-    const { data, error } = await untypedFrom("supplier_materials")
+    const { data, error } = await db.from("supplier_materials")
       .select("*")
       .eq("supplier_id", supplierId)
       .order("created_at", { ascending: false });
