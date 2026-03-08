@@ -1981,7 +1981,10 @@
       "createPPI": "Crear PPI"
     },
     "groups": {
-      "obras": "obras"
+      "obras": "obras",
+      "frentes": "frentes",
+      "inExecution": "en ejecución",
+      "baseActivity": "Actividad base"
     },
     "deleteConfirm": {
       "title": "¿Eliminar Work Item?",
