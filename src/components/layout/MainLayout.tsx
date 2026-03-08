@@ -8,6 +8,7 @@ import { ArchivedBanner } from "@/components/ArchivedBanner";
 import { useProject } from "@/contexts/ProjectContext";
 import { useSessionTimeout } from "@/hooks/useSessionTimeout";
 import { SessionTimeoutWarning } from "@/components/session/SessionTimeoutWarning";
+import { OnboardingTour } from "@/components/onboarding/OnboardingTour";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -106,6 +107,7 @@ export function MainLayout({ children }: MainLayoutProps) {
         </main>
       </div>
       <SessionTimeoutWarning open={showWarning} onExtend={extendSession} />
+      <OnboardingTour />
     </div>
   );
 }
