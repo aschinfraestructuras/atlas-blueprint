@@ -96,6 +96,9 @@ export default function DocumentsPage() {
   // ── Role check (replaces manual admin check) ──────────────────────────────
   const { isAdmin, canCreate, canEdit, canDelete } = useProjectRole();
 
+  // ── Keyboard shortcut: N → new document ──────────────────────────────────
+  useKeyboardShortcut("n", () => { if (canCreate && activeProject) { setEditDoc(null); setFormOpen(true); } }, { enabled: canCreate && !!activeProject });
+
   // ── Filtered list ─────────────────────────────────────────────────────────
   const filtered = documents.filter((d) => {
     const matchStatus     = statusFilter === "all" || d.status === statusFilter;
