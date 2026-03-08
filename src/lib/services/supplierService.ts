@@ -322,7 +322,7 @@ export const supplierService = {
 
   // ── KPIs ────────────────────────────────────────────────────────
   async getKPIs(projectId: string): Promise<SupplierKPI | null> {
-    const { data, error } = await untypedFrom("view_suppliers_kpi")
+    const { data, error } = await db.from("view_suppliers_kpi")
       .select("*")
       .eq("project_id", projectId)
       .maybeSingle();
