@@ -383,7 +383,7 @@ function ResultsTab() {
       toast({ title: t("tests.export.noSelection"), variant: "destructive" });
       return;
     }
-    exportTestResultsBulkPdf(toExport, exportLabels, i18n.language, activeProject?.name ?? "Atlas");
+    exportTestResultsBulkPdf(toExport, exportLabels, i18n.language, activeProject?.name ?? "Atlas", logoBase64 || logoUrl);
   };
 
   const WORKFLOW_STATUSES = ["draft", "in_progress", "submitted", "reviewed", "approved", "archived"];

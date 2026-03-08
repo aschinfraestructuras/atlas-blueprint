@@ -265,7 +265,7 @@ export default function DocumentsPage() {
                   changeDescription: t("documents.form.changeDescription"),
                   uploadedAt: t("documents.export.uploadedAt"),
                 };
-                exportDocumentListPdf(toExport, labels, i18n.language, activeProject?.name ?? "Atlas", activeProject?.id);
+                exportDocumentListPdf(toExport, labels, i18n.language, activeProject?.name ?? "Atlas", activeProject?.id, logoBase64 || logoUrl);
               }}>
               <FileDown className="h-3 w-3" />
               {t("documents.bulk.exportSelected")}

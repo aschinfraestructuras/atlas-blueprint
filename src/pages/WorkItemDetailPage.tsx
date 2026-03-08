@@ -342,6 +342,7 @@ function WorkItemTestsTab({
       tests, labels, i18n.language,
       projectName ?? "Atlas",
       workItemSector ?? workItemId,
+      logoBase64 || logoUrl,
     );
   };
 

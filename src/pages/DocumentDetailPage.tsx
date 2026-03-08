@@ -369,7 +369,7 @@ export default function DocumentDetailPage() {
         changeDescription: t("documents.form.changeDescription"),
         uploadedAt: t("documents.export.uploadedAt"),
       };
-      await exportDocumentPdf(doc, versions, labels, i18n.language, activeProject.name, activeProject.code);
+      await exportDocumentPdf(doc, versions, labels, i18n.language, activeProject.name, activeProject.code, logoBase64 || logoUrl);
     } catch {
       toast({ title: t("documents.toast.error"), variant: "destructive" });
     } finally { setExporting(false); }
