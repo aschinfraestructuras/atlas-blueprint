@@ -805,6 +805,60 @@ export default function WorkItemDetailPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
+  // Load work item materials
+  useEffect(() => {
+    if (!item || !activeProject) return;
+    setMatLoading(true);
+    (supabase as any)
+      .from("work_item_materials")
+      .select("*, materials(id, code, name, category, approval_status)")
+      .eq("work_item_id", item.id)
+      .eq("project_id", activeProject.id)
+      .then(({ data }: any) => {
+        setWorkItemMaterials(data ?? []);
+        setMatLoading(false);
+      });
+  }, [item?.id, activeProject?.id]);
+
+  const handleRemoveWorkItemMaterial = async (linkId: string) => {
+    await (supabase as any).from("work_item_materials").delete().eq("id", linkId);
+    setWorkItemMaterials(prev => prev.filter(m => m.id !== linkId));
+  };
+
+  const handleAddMaterial = async () => {
+    if (!item || !activeProject || !addMatForm.material_id) return;
+    setAddMatSaving(true);
+    try {
+      const { data, error } = await (supabase as any).from("work_item_materials").insert({
+        work_item_id: item.id,
+        project_id: activeProject.id,
+        material_id: addMatForm.material_id,
+        quantity: addMatForm.quantity ? Number(addMatForm.quantity) : null,
+        unit: addMatForm.unit || null,
+        lot_ref: addMatForm.lot_ref || null,
+      }).select("*, materials(id, code, name, category, approval_status)");
+      if (error) throw error;
+      setWorkItemMaterials(prev => [...prev, ...(data ?? [])]);
+      setAddMaterialOpen(false);
+      setAddMatForm({ material_id: "", quantity: "", unit: "", lot_ref: "" });
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setAddMatSaving(false);
+    }
+  };
+
+  // Load project materials for add dialog
+  useEffect(() => {
+    if (!addMaterialOpen || !activeProject) return;
+    (supabase as any).from("materials")
+      .select("id, code, name, category, approval_status")
+      .eq("project_id", activeProject.id)
+      .eq("is_deleted", false)
+      .order("code")
+      .then(({ data }: any) => setProjectMaterials(data ?? []));
+  }, [addMaterialOpen, activeProject?.id]);
+
   if (loading) {
     return (
       <div className="space-y-6 max-w-4xl mx-auto animate-fade-in">
