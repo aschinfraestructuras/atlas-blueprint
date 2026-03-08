@@ -2063,6 +2063,31 @@
         "inactive": "Archivado"
       }
     },
+    "inspectionPointType": "Tipo de Punto",
+    "inspectionPointTypes": {
+      "hp": "HP — Hold Point",
+      "wp": "WP — Witness Point",
+      "rp": "RP — Review Point",
+      "na": "N/A"
+    },
+    "ipt": {
+      "legend": "Puntos de Inspección:",
+      "hp": {
+        "short": "Parada obligatoria",
+        "tooltip": "Hold Point — parada obligatoria, aprobación necesaria"
+      },
+      "wp": {
+        "short": "Presencia prevista",
+        "tooltip": "Witness Point — presencia prevista, avisada con 48h"
+      },
+      "rp": {
+        "short": "Revisión documental",
+        "tooltip": "Review Point — revisión documental"
+      },
+      "na": {
+        "tooltip": "No aplicable para esta entidad"
+      }
+    },
     "instances": {
       "title": "Instancias PPI",
       "subtitle": "Registros de inspección activos",
@@ -2085,7 +2110,8 @@
         "closedAt": "Cerrado el",
         "inspector": "Inspector",
         "actions": "Acciones",
-        "progress": "Progreso"
+        "progress": "Progreso",
+        "hpPending": "HP Pend."
       },
       "detail": {
         "back": "Volver",
