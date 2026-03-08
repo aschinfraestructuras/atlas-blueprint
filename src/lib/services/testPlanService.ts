@@ -173,7 +173,7 @@ export const testPlanService = {
   },
 
   async updateRule(id: string, updates: Partial<TestPlanRuleInput>): Promise<TestPlanRule> {
-    const { data, error } = await untypedFrom("test_plan_rules")
+    const { data, error } = await db.from("test_plan_rules")
       .update(updates)
       .eq("id", id)
       .select("*, tests_catalog(id, name, code, disciplina), suppliers(id, name)")
