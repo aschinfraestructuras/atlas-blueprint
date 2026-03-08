@@ -89,10 +89,9 @@ export default function ExpirationsPage() {
 
   const expiredCount = items.filter(i => i.status === "expired").length;
   const expiringCount = items.filter(i => i.status !== "expired").length;
+  const { toast } = useToast();
 
   if (!activeProject) return <NoProjectBanner />;
-
-  const { toast } = useToast();
   
   const handleNavigate = (item: ExpiringItem) => {
     const base = DOMAIN_ROUTES[item.domain] ?? "/";
