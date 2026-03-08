@@ -241,8 +241,10 @@ export default function PlansPage() {
           <Table>
             <TableHeader>
               <TableRow className="bg-muted/40">
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("plans.table.code")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("plans.table.type")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("plans.table.title")}</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("plans.table.discipline")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("plans.table.revision")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.status")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.date")}</TableHead>
