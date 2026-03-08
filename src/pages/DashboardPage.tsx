@@ -287,7 +287,21 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-      {/* ══ ROW 5 — Module Shortcuts ═══════════════════════ */}
+      {/* ══ ROW 5 — PPGRCD Widget ═══════════════════════════ */}
+      <div className="animate-fade-in" style={{ animationDelay: "220ms", animationFillMode: "both" }}>
+        <Card className="cursor-pointer hover:shadow-sm transition-shadow" onClick={() => navigate("/recycled-materials")}>
+          <CardContent className="py-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Leaf className="h-4 w-4 text-green-600" />
+              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t("recycled.dashboard.widget", { defaultValue: "PPGRCD — Reciclados" })}</span>
+              <ArrowRight className="h-3 w-3 ml-auto text-muted-foreground" />
+            </div>
+            <p className="text-sm text-muted-foreground">{t("recycled.kpi.target", { defaultValue: "Meta PPGRCD" })}: 5%</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* ══ ROW 6 — Module Shortcuts ═══════════════════════ */}
       <div className="animate-fade-in" style={{ animationDelay: "240ms", animationFillMode: "both" }}>
         <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground mb-2.5">
           {t("dashboard.modules", { defaultValue: "Módulos" })}

@@ -650,6 +650,20 @@ export default function MaterialDetailPage() {
           </Card>
         </TabsContent>
 
+        <TabsContent value="recycled">
+          <Card className="border-0 shadow-card">
+            <CardContent className="p-6">
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">{t("recycled.title", { defaultValue: "Materiais Reciclados" })}</p>
+              <p className="text-sm text-muted-foreground mb-2">
+                {t("recycled.subtitle", { defaultValue: "Registos PPGRCD associados a este material." })}
+              </p>
+              <Button variant="outline" size="sm" onClick={() => navigate("/recycled-materials")}>
+                {t("recycled.title")} →
+              </Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         <TabsContent value="audit">
           <Card className="border-0 shadow-card">
             <CardContent className="p-6">
