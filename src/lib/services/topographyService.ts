@@ -93,7 +93,7 @@ const db = supabase as any;
 
 export const topographyEquipmentService = {
   async getByProject(projectId: string): Promise<TopographyEquipment[]> {
-    const { data, error } = await untypedFrom("topography_equipment")
+    const { data, error } = await db.from("topography_equipment")
       .select("*")
       .eq("project_id", projectId)
       .order("code", { ascending: true });
