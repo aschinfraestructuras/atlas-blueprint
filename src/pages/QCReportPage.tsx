@@ -424,7 +424,7 @@ export default function QCReportPage() {
 
   // ── Active filter badges ───────────────────────────────────────────────────
   const activeFilters = [
-    filterWorkItem !== "all" && `WI: ${workItems.find(w => w.id === filterWorkItem)?.code ?? filterWorkItem}`,
+    filterWorkItem !== "all" && `WI: ${workItems.find(w => w.id === filterWorkItem)?.sector ?? filterWorkItem}`,
     filterDiscipline !== "all" && `Disc: ${filterDiscipline}`,
     filterSeverity !== "all" && `Sev: ${filterSeverity}`,
     filterSubcontractor !== "all" && `Sub: ${subcontractors.find(s => s.id === filterSubcontractor)?.name ?? filterSubcontractor}`,
