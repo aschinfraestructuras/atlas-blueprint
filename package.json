@@ -1,5 +1,6 @@
 {
-  "name": "vite_react_shadcn_ts",
+  "name": "atlas-qms",
+  "description": "Atlas QMS — Sistema de Gestão da Qualidade para Construção Civil",
   "private": true,
   "version": "0.0.0",
   "type": "module",
