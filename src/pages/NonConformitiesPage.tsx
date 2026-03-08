@@ -341,15 +341,6 @@ export default function NonConformitiesPage() {
                 }},
               ]}
             />
-            <Button
-              variant="outline" size="sm"
-              onClick={handleSeedDemo} disabled={seeding}
-              className="gap-1.5 text-xs"
-              title={t("nc.demo.tooltip")}
-            >
-              {seeding ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Database className="h-3.5 w-3.5" />}
-              {t("nc.demo.button")}
-            </Button>
             {canCreate && (
               <Button onClick={handleNew} size="sm" className="gap-1.5">
                 <Plus className="h-3.5 w-3.5" />

@@ -93,7 +93,7 @@ export function getDocumentTransitions(status: string): DocumentStatus[] {
 }
 
 export function canDeleteDocument(status: string): boolean {
-  return status === "draft";
+  return ["draft", "archived"].includes(status);
 }
 
 // ─── Storage constants ────────────────────────────────────────────────────────

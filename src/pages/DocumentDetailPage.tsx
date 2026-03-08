@@ -500,6 +500,20 @@ export default function DocumentDetailPage() {
         </div>
       </div>
 
+      {/* ── Edit warnings ──────────────────────────────────────────────── */}
+      {doc.status === "approved" && (
+        <div className="flex items-center gap-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-400">
+          <AlertTriangle className="h-3.5 w-3.5 flex-shrink-0" />
+          {t("documents.editWarningApproved")}
+        </div>
+      )}
+      {doc.status === "in_review" && (
+        <div className="flex items-center gap-2 rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-xs text-blue-700 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-400">
+          <AlertTriangle className="h-3.5 w-3.5 flex-shrink-0" />
+          {t("documents.editWarningUnderReview")}
+        </div>
+      )}
+
       {/* ── Info Card ─────────────────────────────────────────────────── */}
       <Card className="shadow-card">
         <CardHeader className="pb-2 pt-5 px-5">
