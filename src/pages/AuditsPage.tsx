@@ -179,8 +179,10 @@ export default function AuditsPage() {
 
                       {(canEdit || canDelete) && (
                         <RowActionMenu
-                          onEdit={canEdit ? () => handleEdit(audit) : undefined}
-                          onDelete={canDelete ? () => setDeleteTarget(audit) : undefined}
+                          actions={[
+                            ...(canEdit ? [{ key: "edit", labelKey: "common.edit", icon: undefined, onClick: () => handleEdit(audit) }] : []),
+                            ...(canDelete ? [{ key: "delete", labelKey: "common.delete", onClick: () => setDeleteTarget(audit), variant: "destructive" as const }] : []),
+                          ]}
                         />
                       )}
                     </div>
