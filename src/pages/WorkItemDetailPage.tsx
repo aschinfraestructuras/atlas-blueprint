@@ -1286,6 +1286,12 @@ export default function WorkItemDetailPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      {reportOpen && reportData && (
+        <WorkItemReportPreview
+          data={reportData}
+          onClose={() => { setReportOpen(false); setReportData(null); }}
+        />
+      )}
     </div>
   );
 }
