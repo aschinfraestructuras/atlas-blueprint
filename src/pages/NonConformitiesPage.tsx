@@ -134,8 +134,6 @@ export default function NonConformitiesPage() {
   // Bulk selection
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
-  // Demo seeding
-  const [seeding, setSeeding] = useState(false);
 
   // ─── Filtered list ──────────────────────────────────────────────────────────
 
