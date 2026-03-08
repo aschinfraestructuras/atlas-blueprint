@@ -50,7 +50,33 @@ export default function PPITemplatesPage() {
   const [dupCode,     setDupCode]     = useState("");
   const [duplicating, setDuplicating] = useState(false);
 
+  // Seed PF17A
+  const [seeding, setSeeding] = useState(false);
 
+  async function handleSeedPF17A() {
+    if (!activeProject || !user) return;
+    setSeeding(true);
+    try {
+      const result = await ppiSeedService.seedAllTemplates(activeProject.id, user.id);
+      if (result.created.length === 0) {
+        toast({ title: t("ppi.seed.allExist") });
+      } else {
+        toast({
+          title: t("ppi.seed.success", {
+            created: result.created.length,
+            items: result.itemsCreated,
+            skipped: result.skipped.length,
+          }),
+        });
+      }
+      refetch();
+    } catch (err) {
+      const info = classifySupabaseError(err, t);
+      toast({ title: t("ppi.seed.error"), description: info.description ?? info.raw, variant: "destructive" });
+    } finally {
+      setSeeding(false);
+    }
+  }
 
   // ── Filtering ──────────────────────────────────────────────────────────────
   const filtered = useMemo(() => {
