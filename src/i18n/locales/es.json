@@ -1938,6 +1938,8 @@
     "form": {
       "titleCreate": "Nuevo Work Item",
       "titleEdit": "Editar Work Item",
+      "titleDuplicate": "Duplicar Actividad",
+      "duplicateBtn": "Duplicar",
       "sector": "Sector",
       "sectorPlaceholder": "ej: Lote 1, Tramo A",
       "discipline": "Disciplina",
