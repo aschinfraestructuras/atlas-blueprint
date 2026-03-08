@@ -154,7 +154,7 @@ export const testPlanService = {
   // ── Rules ──────────────────────────────────────────────────────────────────
 
   async getRules(planId: string): Promise<TestPlanRule[]> {
-    const { data, error } = await untypedFrom("test_plan_rules")
+    const { data, error } = await db.from("test_plan_rules")
       .select("*, tests_catalog(id, name, code, disciplina), suppliers(id, name)")
       .eq("plan_id", planId)
       .order("created_at");
