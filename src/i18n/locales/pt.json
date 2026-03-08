@@ -2666,12 +2666,19 @@
       "expired": "Expirado"
     },
     "kpi": {
+      "totalEmes": "Total EMEs",
       "calibrated": "Calibrados",
       "expiring30d": "Expira em 30d",
       "expired": "Expirados",
       "pendingRequests": "Pedidos Pendentes",
       "ncControls": "Controlos NC"
     },
+    "alert": {
+      "expiringTitle": "{{count}} equipamento(s) com calibração a expirar nos próximos 30 dias",
+      "expiringDesc": "verificar antes de usar em campo"
+    },
+    "expiredAgo": "Expirado há {{days}} dias",
+    "expiresIn": "{{days}} dias",
     "requestStatus": {
       "pending": "Pendente",
       "assigned": "Atribuído",
