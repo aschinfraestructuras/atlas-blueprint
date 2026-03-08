@@ -5,7 +5,7 @@ import {
   ArrowLeft, Construction, FlaskConical, AlertTriangle, Paperclip,
   Pencil, Calendar, MapPin, ClipboardCheck, Plus, Eye, FileDown, FileText,
   CheckCircle2, XCircle, Clock, Crosshair, Target, Map, ListTodo,
-  ShieldCheck, ShieldAlert,
+  ShieldCheck, ShieldAlert, Copy,
 } from "lucide-react";
 import {
   exportWorkItemTestsPdf,
