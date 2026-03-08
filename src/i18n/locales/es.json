@@ -1372,6 +1372,12 @@
       "st": "Señalización y Telecomunicaciones",
       "drenagem": "Drenaje",
       "estruturas": "Estructuras",
+      "via": "Vía",
+      "geotecnia": "Geotecnia",
+      "eletrica": "Eléctrica",
+      "sinalizacao": "Señalización",
+      "passagens_nivel": "Pasos a Nivel",
+      "edificios": "Edificios",
       "outros": "Otros"
     },
     "correctionType": {

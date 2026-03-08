@@ -457,7 +457,7 @@ export default function NonConformitiesPage() {
           <SelectTrigger className="h-8 w-40 text-sm bg-background"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t("nc.filters.allDisciplines")}</SelectItem>
-            {["terras","betao","ferrovia","catenaria","st","drenagem","estruturas","outros"].map(d => (
+            {["terras","betao","ferrovia","catenaria","st","drenagem","estruturas","via","geotecnia","eletrica","sinalizacao","passagens_nivel","edificios","outros"].map(d => (
               <SelectItem key={d} value={d}>{t(`nc.discipline.${d}`)}</SelectItem>
             ))}
           </SelectContent>
