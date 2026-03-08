@@ -682,6 +682,16 @@ export default function PPIDetailPage() {
                 </div>
               ) : (
                 <div className="overflow-x-auto">
+                  {/* IPT Legend */}
+                  <div className="flex flex-wrap items-center gap-3 px-4 py-2.5 bg-muted/20 border-b border-border text-xs">
+                    <span className="flex items-center gap-1 text-muted-foreground font-medium">
+                      <Info className="h-3 w-3" /> {t("ppi.ipt.legend", { defaultValue: "Pontos de Inspeção:" })}
+                    </span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-destructive" /> <span className="text-destructive font-semibold">HP</span> <span className="text-muted-foreground">{t("ppi.ipt.hp.short", { defaultValue: "Paragem obrigatória" })}</span></span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-500" /> <span className="text-amber-600 font-semibold">WP</span> <span className="text-muted-foreground">{t("ppi.ipt.wp.short", { defaultValue: "Presença prevista" })}</span></span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-primary" /> <span className="text-primary font-semibold">RP</span> <span className="text-muted-foreground">{t("ppi.ipt.rp.short", { defaultValue: "Revisão documental" })}</span></span>
+                  </div>
+                <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-border bg-muted/40">
