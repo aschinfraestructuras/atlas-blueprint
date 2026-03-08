@@ -6,7 +6,7 @@ import {
   FlaskConical, AlertTriangle, ScrollText, Settings,
   ShieldCheck, ChevronLeft, ChevronRight, X,
   Inbox, BookOpen, Map, HardHat, Construction, ClipboardCheck, Crosshair, CalendarClock,
-  Clock, FileCheck, BarChart3, Building2,
+  Clock, FileCheck, BarChart3, Building2, FileCheck2, MapPin,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { cn } from "@/lib/utils";
@@ -42,6 +42,7 @@ const NAV_SECTIONS: SidebarSection[] = [
       { labelKey: "nav.laboratories",    url: "/laboratories",     icon: Building2 },
       { labelKey: "nav.suppliers",      url: "/suppliers",        icon: Truck },
       { labelKey: "nav.materials",      url: "/materials",        icon: Package },
+      { labelKey: "nav.survey",         url: "/survey",           icon: MapPin },
       { labelKey: "nav.nonConformities", url: "/non-conformities", icon: AlertTriangle },
     ],
   },
@@ -61,6 +62,7 @@ const NAV_SECTIONS: SidebarSection[] = [
       { labelKey: "nav.topography",    url: "/topography",      icon: Crosshair },
       { labelKey: "nav.subcontractors", url: "/subcontractors",  icon: HardHat },
       { labelKey: "nav.workItems",      url: "/work-items",      icon: Construction },
+      { labelKey: "nav.mapMas",         url: "/materials/map-mas", icon: FileCheck2 },
       { labelKey: "nav.ppi",            url: "/ppi",             icon: ClipboardCheck },
     ],
   },

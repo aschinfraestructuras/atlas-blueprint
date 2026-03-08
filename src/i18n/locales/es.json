@@ -2033,6 +2033,19 @@
         "suggestion": "El plan PE-PF17A-001 tiene {{count}} ensayos aplicables para la disciplina {{discipline}}"
       }
     },
+    "tabs": {
+      "materials": "Materiales"
+    },
+    "materials": {
+      "add": "Asociar material",
+      "empty": "Ningún material asociado a esta actividad.",
+      "form": {
+        "material": "Material",
+        "quantity": "Cantidad",
+        "unit": "Unidad",
+        "lotRef": "Lote / Referencia"
+      }
+    },
     "form": {
       "titleCreate": "Nuevo Work Item",
       "titleEdit": "Editar Work Item",

@@ -5,7 +5,7 @@ import {
   ArrowLeft, Construction, FlaskConical, AlertTriangle, Paperclip,
   Pencil, Calendar, MapPin, ClipboardCheck, Plus, Eye, FileDown, FileText,
   CheckCircle2, XCircle, Clock, Crosshair, Target, Map, ListTodo,
-  ShieldCheck, ShieldAlert, Copy,
+  ShieldCheck, ShieldAlert, Copy, Package, Trash2,
 } from "lucide-react";
 import {
   exportWorkItemTestsPdf,
@@ -27,6 +27,11 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
@@ -670,6 +675,14 @@ export default function WorkItemDetailPage() {
   const [ncs,        setNcs]        = useState<any[]>([]);
   const [subLoading, setSubLoading] = useState(true);
 
+  // Materials linked to this work item
+  const [workItemMaterials, setWorkItemMaterials] = useState<any[]>([]);
+  const [matLoading, setMatLoading] = useState(false);
+  const [addMaterialOpen, setAddMaterialOpen] = useState(false);
+  const [projectMaterials, setProjectMaterials] = useState<any[]>([]);
+  const [addMatForm, setAddMatForm] = useState({ material_id: "", quantity: "", unit: "", lot_ref: "" });
+  const [addMatSaving, setAddMatSaving] = useState(false);
+
   // State for consolidated export data
   const [ppiList, setPpiList] = useState<any[]>([]);
   const [testsList, setTestsList] = useState<any[]>([]);
@@ -791,6 +804,60 @@ export default function WorkItemDetailPage() {
     loadRelated();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  // Load work item materials
+  useEffect(() => {
+    if (!item || !activeProject) return;
+    setMatLoading(true);
+    (supabase as any)
+      .from("work_item_materials")
+      .select("*, materials(id, code, name, category, approval_status)")
+      .eq("work_item_id", item.id)
+      .eq("project_id", activeProject.id)
+      .then(({ data }: any) => {
+        setWorkItemMaterials(data ?? []);
+        setMatLoading(false);
+      });
+  }, [item?.id, activeProject?.id]);
+
+  const handleRemoveWorkItemMaterial = async (linkId: string) => {
+    await (supabase as any).from("work_item_materials").delete().eq("id", linkId);
+    setWorkItemMaterials(prev => prev.filter(m => m.id !== linkId));
+  };
+
+  const handleAddMaterial = async () => {
+    if (!item || !activeProject || !addMatForm.material_id) return;
+    setAddMatSaving(true);
+    try {
+      const { data, error } = await (supabase as any).from("work_item_materials").insert({
+        work_item_id: item.id,
+        project_id: activeProject.id,
+        material_id: addMatForm.material_id,
+        quantity: addMatForm.quantity ? Number(addMatForm.quantity) : null,
+        unit: addMatForm.unit || null,
+        lot_ref: addMatForm.lot_ref || null,
+      }).select("*, materials(id, code, name, category, approval_status)");
+      if (error) throw error;
+      setWorkItemMaterials(prev => [...prev, ...(data ?? [])]);
+      setAddMaterialOpen(false);
+      setAddMatForm({ material_id: "", quantity: "", unit: "", lot_ref: "" });
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setAddMatSaving(false);
+    }
+  };
+
+  // Load project materials for add dialog
+  useEffect(() => {
+    if (!addMaterialOpen || !activeProject) return;
+    (supabase as any).from("materials")
+      .select("id, code, name, category, approval_status")
+      .eq("project_id", activeProject.id)
+      .eq("is_deleted", false)
+      .order("code")
+      .then(({ data }: any) => setProjectMaterials(data ?? []));
+  }, [addMaterialOpen, activeProject?.id]);
 
   if (loading) {
     return (
@@ -933,7 +1000,7 @@ export default function WorkItemDetailPage() {
       </Card>
 
       <Tabs defaultValue="ppi">
-        <TabsList>
+        <TabsList className="flex-wrap">
           <TabsTrigger value="ppi" className="gap-1.5">
             <ClipboardCheck className="h-3.5 w-3.5" />
             {t("workItems.detail.tabs.ppi")}
@@ -949,6 +1016,15 @@ export default function WorkItemDetailPage() {
               <span className="ml-1 rounded-full bg-destructive/10 px-1.5 py-px text-[10px] font-bold text-destructive">
                 {ncs.length}
               </span>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="materials" className="gap-1.5">
+            <Package className="h-3.5 w-3.5" />
+            {t("workItems.tabs.materials")}
+            {workItemMaterials.length > 0 && (
+              <Badge variant="secondary" className="ml-1 text-[10px] h-4 px-1">
+                {workItemMaterials.length}
+              </Badge>
             )}
           </TabsTrigger>
           <TabsTrigger value="documents" className="gap-1.5">
@@ -1038,6 +1114,66 @@ export default function WorkItemDetailPage() {
           </Card>
         </TabsContent>
 
+        {/* Materials tab */}
+        <TabsContent value="materials" className="mt-4">
+          <Card className="shadow-card">
+            <CardHeader className="pb-2 pt-4 px-5 flex flex-row items-center justify-between">
+              <CardTitle className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                {t("workItems.tabs.materials")}
+              </CardTitle>
+              <Button size="sm" variant="outline" className="gap-1.5 h-7 text-xs" onClick={() => setAddMaterialOpen(true)}>
+                <Plus className="h-3 w-3" /> {t("workItems.materials.add")}
+              </Button>
+            </CardHeader>
+            <CardContent className="px-5 pb-4">
+              {matLoading ? (
+                <Skeleton className="h-20 w-full" />
+              ) : workItemMaterials.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-4 text-center">
+                  {t("workItems.materials.empty")}
+                </p>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>{t("materials.form.code")}</TableHead>
+                      <TableHead>{t("materials.form.name")}</TableHead>
+                      <TableHead>{t("materials.form.category")}</TableHead>
+                      <TableHead>{t("workItems.materials.form.quantity")}</TableHead>
+                      <TableHead>{t("workItems.materials.form.unit")}</TableHead>
+                      <TableHead>{t("workItems.materials.form.lotRef")}</TableHead>
+                      <TableHead>{t("common.status")}</TableHead>
+                      <TableHead className="w-[40px]" />
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {workItemMaterials.map((wm: any) => (
+                      <TableRow key={wm.id}>
+                        <TableCell className="font-mono text-xs">{wm.materials?.code ?? "—"}</TableCell>
+                        <TableCell className="text-sm">{wm.materials?.name ?? "—"}</TableCell>
+                        <TableCell className="text-xs text-muted-foreground">{wm.materials?.category ?? "—"}</TableCell>
+                        <TableCell className="text-xs tabular-nums">{wm.quantity ?? "—"}</TableCell>
+                        <TableCell className="text-xs">{wm.unit ?? "—"}</TableCell>
+                        <TableCell className="text-xs font-mono">{wm.lot_ref ?? "—"}</TableCell>
+                        <TableCell>
+                          <Badge variant={wm.materials?.approval_status === "approved" ? "default" : "outline"} className="text-[10px]">
+                            {wm.materials?.approval_status ?? "—"}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleRemoveWorkItemMaterial(wm.id)}>
+                            <Trash2 className="h-3 w-3 text-muted-foreground" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         {/* Documents tab */}
         <TabsContent value="documents" className="mt-4">
           <LinkedDocumentsPanel entityType="work_item" entityId={item.id} projectId={activeProject?.id ?? ""} />
@@ -1070,6 +1206,57 @@ export default function WorkItemDetailPage() {
         item={item}
         onSuccess={() => { loadItem(); }}
       />
+
+      {/* ── Add Material dialog ──────────────────────────────────────── */}
+      <Dialog open={addMaterialOpen} onOpenChange={setAddMaterialOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{t("workItems.materials.add")}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div>
+              <Label>{t("workItems.materials.form.material")}</Label>
+              <Select value={addMatForm.material_id} onValueChange={(v) => setAddMatForm(p => ({ ...p, material_id: v }))}>
+                <SelectTrigger><SelectValue placeholder={t("workItems.materials.form.material")} /></SelectTrigger>
+                <SelectContent>
+                  {projectMaterials.map((m: any) => (
+                    <SelectItem key={m.id} value={m.id}>
+                      <span className="font-mono text-xs">{m.code}</span> — {m.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>{t("workItems.materials.form.quantity")}</Label>
+                <Input type="number" value={addMatForm.quantity} onChange={(e) => setAddMatForm(p => ({ ...p, quantity: e.target.value }))} />
+              </div>
+              <div>
+                <Label>{t("workItems.materials.form.unit")}</Label>
+                <Select value={addMatForm.unit} onValueChange={(v) => setAddMatForm(p => ({ ...p, unit: v }))}>
+                  <SelectTrigger><SelectValue placeholder="—" /></SelectTrigger>
+                  <SelectContent>
+                    {["m³", "m²", "m", "kg", "t", "un", "l"].map(u => (
+                      <SelectItem key={u} value={u}>{u}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div>
+              <Label>{t("workItems.materials.form.lotRef")}</Label>
+              <Input value={addMatForm.lot_ref} onChange={(e) => setAddMatForm(p => ({ ...p, lot_ref: e.target.value }))} />
+            </div>
+          </div>
+          <DialogFooter>
+            <DialogClose asChild><Button variant="outline">{t("common.cancel")}</Button></DialogClose>
+            <Button onClick={handleAddMaterial} disabled={addMatSaving || !addMatForm.material_id}>
+              {t("common.save")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -2025,6 +2025,19 @@
         "suggestion": "O plano PE-PF17A-001 tem {{count}} ensaios aplicáveis para a disciplina {{discipline}}"
       }
     },
+    "tabs": {
+      "materials": "Materiais"
+    },
+    "materials": {
+      "add": "Associar material",
+      "empty": "Nenhum material associado a esta actividade.",
+      "form": {
+        "material": "Material",
+        "quantity": "Quantidade",
+        "unit": "Unidade",
+        "lotRef": "Lote / Referência"
+      }
+    },
     "form": {
       "titleCreate": "Novo Work Item",
       "titleEdit": "Editar Work Item",

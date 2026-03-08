@@ -226,7 +226,32 @@ export default function SettingsPage() {
         <SettingsRow label={s("project.activeProject")} description={activeProject?.name ?? s("project.noProject")} value={activeProject?.code} icon={Building2} />
         <SettingsRow label={s("project.location")} description={activeProject?.location ?? "—"} icon={Globe} comingSoon comingSoonLabel={cs} />
         <SettingsRow label={s("project.notifications")} description={s("project.notificationsDesc")} icon={Bell} comingSoon comingSoonLabel={cs} />
-        <SettingsRow label={s("project.exportData")} description={s("project.exportDataDesc")} icon={Database} comingSoon comingSoonLabel={cs} />
+        <div
+          className="flex items-center gap-3 py-3 border-b border-border/50 hover:bg-muted/30 -mx-2 px-2 rounded-lg transition-colors duration-150 cursor-pointer"
+          onClick={() => {
+            if (!activeProject) return;
+            const exportData = {
+              project: { name: activeProject.name, code: activeProject.code, location: activeProject.location, status: activeProject.status, start_date: (activeProject as any).start_date },
+              exported_at: new Date().toISOString(),
+              exported_by: user?.email ?? "—",
+            };
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `${activeProject.code}_export.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            toast.success(t("pages.settings.sections.project.exportDone", { defaultValue: "Dados exportados com sucesso." }));
+          }}
+        >
+          <Database className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+          <div className="flex-1 min-w-0">
+            <p className="text-[12.5px] font-medium text-foreground leading-none">{s("project.exportData")}</p>
+            <p className="text-[11px] text-muted-foreground mt-0.5 leading-snug">{s("project.exportDataDesc")}</p>
+          </div>
+          <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/40" />
+        </div>
       </SettingsSection>
 
       {/* ── 2. User Profile ──────────────────────────────────────────── */}
