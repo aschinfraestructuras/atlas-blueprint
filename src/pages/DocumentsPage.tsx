@@ -347,8 +347,8 @@ export default function DocumentsPage() {
                         <CheckboxUI checked={isSelected} onCheckedChange={() => toggleSelect(doc.id)} />
                       </TableCell>
 
-                      <TableCell className="text-xs font-mono text-muted-foreground tabular-nums">
-                        {doc.code ?? "—"}
+                      <TableCell onClick={(e) => e.stopPropagation()}>
+                        {doc.code ? <CopyableCode value={doc.code} /> : <span className="text-xs text-muted-foreground">—</span>}
                       </TableCell>
 
                       <TableCell className="font-medium text-sm text-foreground">
