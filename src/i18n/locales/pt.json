@@ -2132,7 +2132,8 @@
         "closedAt": "Fechado em",
         "inspector": "Inspetor",
         "actions": "Ações",
-        "progress": "Progresso"
+        "progress": "Progresso",
+        "hpPending": "HP Pend."
       },
       "detail": {
         "back": "Voltar",
