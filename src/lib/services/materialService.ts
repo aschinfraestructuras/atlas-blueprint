@@ -401,8 +401,7 @@ export const materialService = {
 
   // ── Supplier-Material links ─────────────────────────────────────
   async getSupplierLinks(materialId: string): Promise<SupplierMaterialLink[]> {
-    const { data, error } = await (supabase as unknown as { from: (table: string) => ReturnType<typeof supabase.from> })
-      .from("supplier_materials")
+    const { data, error } = await db.from("supplier_materials")
       .select("*, suppliers:supplier_id(id, name, code, status)")
       .eq("material_id", materialId)
       .order("created_at", { ascending: false });
@@ -412,8 +411,7 @@ export const materialService = {
 
   // ── Work Item Materials ─────────────────────────────────────────
   async getWorkItemLinks(materialId: string): Promise<WorkItemMaterial[]> {
-    const { data, error } = await (supabase as unknown as { from: (table: string) => ReturnType<typeof supabase.from> })
-      .from("work_item_materials")
+    const { data, error } = await db.from("work_item_materials")
       .select("*")
       .eq("material_id", materialId)
       .order("created_at", { ascending: false });
