@@ -148,7 +148,7 @@ export const topographyEquipmentService = {
   },
 
   async delete(id: string, projectId: string): Promise<void> {
-    const { error } = await untypedFrom("topography_equipment").delete().eq("id", id);
+    const { error } = await db.from("topography_equipment").delete().eq("id", id);
     if (error) throw error;
     await auditService.log({ projectId, entity: "topography_equipment", entityId: id, action: "DELETE", module: "topography" });
   },
