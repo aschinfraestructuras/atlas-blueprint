@@ -1618,8 +1618,10 @@
     },
     "table": {
       "type": "Tipo",
+      "code": "Código",
       "title": "Título",
-      "revision": "Rev."
+      "revision": "Rev.",
+      "discipline": "Disciplina"
     },
     "types": {
       "MS": "Method Statement",
