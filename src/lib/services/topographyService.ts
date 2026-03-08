@@ -334,7 +334,7 @@ export const topographyControlService = {
   },
 
   async delete(id: string, projectId: string): Promise<void> {
-    const { error } = await untypedFrom("topography_controls").delete().eq("id", id);
+    const { error } = await db.from("topography_controls").delete().eq("id", id);
     if (error) throw error;
     await auditService.log({ projectId, entity: "topography_controls", entityId: id, action: "DELETE", module: "topography" });
   },

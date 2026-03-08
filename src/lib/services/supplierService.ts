@@ -377,7 +377,7 @@ export const supplierService = {
 
   async createEvaluation(input: SupplierEvaluationInput): Promise<SupplierEvaluation> {
     const { data: { user } } = await supabase.auth.getUser();
-    const { data, error } = await untypedFrom("supplier_evaluations")
+    const { data, error } = await db.from("supplier_evaluations")
       .insert({ ...input, created_by: user?.id })
       .select()
       .single();

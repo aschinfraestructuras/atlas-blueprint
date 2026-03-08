@@ -183,7 +183,7 @@ export const testPlanService = {
   },
 
   async deleteRule(id: string): Promise<void> {
-    const { error } = await untypedFrom("test_plan_rules")
+    const { error } = await db.from("test_plan_rules")
       .delete()
       .eq("id", id);
     if (error) throw error;
