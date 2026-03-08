@@ -1226,9 +1226,22 @@
   "nc": {
     "newNC": "Nueva NC",
     "searchPlaceholder": "Buscar código, título, responsable…",
+    "classification": {
+      "maior": "NC MAYOR",
+      "menor": "NC MENOR",
+      "observacao": "Observación"
+    },
     "filters": {
       "allStatuses": "Todos los estados",
-      "allSeverities": "Todas las gravedades"
+      "allSeverities": "Todas las gravedades",
+      "allOrigins": "Todos los orígenes",
+      "allCategories": "Todas las categorías",
+      "allClassifications": "Todas las clasificaciones",
+      "allDisciplines": "Todas las disciplinas",
+      "from": "Desde",
+      "to": "Hasta",
+      "clear": "Limpiar filtros",
+      "results": "resultados"
     },
     "table": {
       "code": "Código NC",
