@@ -279,7 +279,7 @@ export default function DashboardPage() {
         <Button variant="outline" className="h-12 gap-2 text-sm font-medium" onClick={() => setNcOpen(true)}>
           <Plus className="h-4 w-4" /> {t("dashboard.actions.openNc", { defaultValue: "Abrir NC" })}
         </Button>
-        <Button variant="outline" className="h-12 gap-2 text-sm font-medium" onClick={() => setReceptionOpen(true)}>
+        <Button variant="outline" className="h-12 gap-2 text-sm font-medium" onClick={() => navigate("/materials")}>
           <Plus className="h-4 w-4" /> {t("dashboard.actions.reception", { defaultValue: "Receção Material" })}
         </Button>
         <Button variant="outline" className="h-12 gap-2 text-sm font-medium" onClick={() => navigate("/tests")}>
