@@ -196,23 +196,50 @@ export default function SuppliersPage() {
                   <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground flex items-center gap-1.5 mb-3">
                     <AlertTriangle className="h-3.5 w-3.5" />{t("suppliers.form.qualificationStatus")}
                   </p>
-                  <ul className="space-y-1.5">
-                    {(() => {
-                      const qualMap: Record<string, number> = {};
-                      suppliers.forEach(s => {
-                        const q = s.qualification_status ?? s.approval_status;
-                        qualMap[q] = (qualMap[q] ?? 0) + 1;
-                      });
-                      return Object.entries(qualMap)
-                        .sort((a, b) => b[1] - a[1])
-                        .map(([k, v]) => (
-                          <li key={k} className="flex items-center justify-between text-xs">
-                            <span className="text-muted-foreground truncate">{t(`suppliers.qualificationStatus.${k}`, { defaultValue: k })}</span>
-                            <span className="font-bold tabular-nums text-foreground">{v}</span>
-                          </li>
-                        ));
-                    })()}
-                  </ul>
+                  {(() => {
+                    const qualMap: Record<string, number> = {};
+                    suppliers.forEach(s => {
+                      const q = s.qualification_status ?? s.approval_status;
+                      qualMap[q] = (qualMap[q] ?? 0) + 1;
+                    });
+                    const entries = Object.entries(qualMap).sort((a, b) => b[1] - a[1]);
+                    const total = entries.reduce((s, e) => s + e[1], 0) || 1;
+                    const STATUS_CHART_COLORS: Record<string, string> = {
+                      pending: "hsl(var(--muted-foreground))",
+                      qualified: "hsl(var(--chart-2))",
+                      approved: "hsl(var(--chart-2))",
+                      conditional: "hsl(var(--chart-5))",
+                      suspended: "hsl(var(--chart-4))",
+                      blocked: "hsl(var(--destructive))",
+                      rejected: "hsl(var(--destructive))",
+                    };
+                    return (
+                      <div className="space-y-3">
+                        <div className="h-6 rounded-full overflow-hidden flex">
+                          {entries.map(([k, v]) => (
+                            <div
+                              key={k}
+                              className="h-full transition-all duration-500"
+                              style={{
+                                width: `${(v / total) * 100}%`,
+                                backgroundColor: STATUS_CHART_COLORS[k] ?? "hsl(var(--muted-foreground))",
+                              }}
+                              title={`${t(`suppliers.qualificationStatus.${k}`, { defaultValue: k })}: ${v}`}
+                            />
+                          ))}
+                        </div>
+                        <div className="flex flex-wrap gap-x-4 gap-y-1">
+                          {entries.map(([k, v]) => (
+                            <div key={k} className="flex items-center gap-1.5">
+                              <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: STATUS_CHART_COLORS[k] ?? "hsl(var(--muted-foreground))" }} />
+                              <span className="text-xs text-muted-foreground">{t(`suppliers.qualificationStatus.${k}`, { defaultValue: k })}</span>
+                              <span className="text-xs font-bold tabular-nums text-foreground">{v}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </CardContent>
               </Card>
             </div>
