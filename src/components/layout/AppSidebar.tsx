@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useProjectRole } from "@/hooks/useProjectRole";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import {
   LayoutDashboard, FolderKanban, FileText, Truck, Package,
   FlaskConical, AlertTriangle, ScrollText, Settings,
