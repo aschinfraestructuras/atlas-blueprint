@@ -53,6 +53,7 @@ export default function TechOfficeDetailPage() {
   const { user } = useAuth();
   const { activeProject } = useProject();
   const { isAdmin } = useProjectRole();
+  const reportMeta = useReportMeta();
   const { toast } = useToast();
 
   useEffect(() => {
