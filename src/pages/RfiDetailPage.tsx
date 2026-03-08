@@ -55,6 +55,7 @@ export default function RfiDetailPage() {
   const { activeProject } = useProject();
   const { isAdmin } = useProjectRole();
   const { toast } = useToast();
+  const reportMeta = useReportMeta();
 
   useEffect(() => {
     if (!id || id === "undefined" || id.trim() === "") {
