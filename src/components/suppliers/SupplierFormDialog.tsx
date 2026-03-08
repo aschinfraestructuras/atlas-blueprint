@@ -31,6 +31,7 @@ const schema = (t: (k: string) => string) =>
   z.object({
     name: z.string().trim().min(1, t("suppliers.form.validation.nameRequired")).max(200),
     category: z.string().trim().max(100).optional().or(z.literal("")),
+    category_outro: z.string().trim().max(100).optional().or(z.literal("")),
     nif_cif: z.string().trim().max(30).optional().or(z.literal("")),
     country: z.string().trim().max(80).optional().or(z.literal("")),
     address: z.string().trim().max(300).optional().or(z.literal("")),
@@ -40,6 +41,8 @@ const schema = (t: (k: string) => string) =>
     notes: z.string().trim().max(2000).optional().or(z.literal("")),
     qualification_status: z.string().min(1),
     status: z.string().min(1),
+  }).superRefine((val, ctx) => {
+    withOtherRefinement(val, ctx, "category", "category_outro", t("suppliers.form.validation.categoryOutroRequired"), "other");
   });
 
 type FormValues = z.infer<ReturnType<typeof schema>>;
