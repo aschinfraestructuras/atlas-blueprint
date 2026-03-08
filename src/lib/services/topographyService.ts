@@ -316,7 +316,7 @@ export const topographyControlService = {
   },
 
   async update(id: string, projectId: string, updates: Partial<TopographyControl>): Promise<TopographyControl> {
-    const { data, error } = await untypedFrom("topography_controls")
+    const { data, error } = await db.from("topography_controls")
       .update(updates)
       .eq("id", id)
       .select()
