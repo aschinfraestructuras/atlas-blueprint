@@ -67,7 +67,7 @@ export function ControlFormDialog({ open, onOpenChange, projectId, equipment, ed
       } else {
         setForm({ equipment_id: "", element: "", zone: "", tolerance: "", measured_value: "", deviation: "", result: "conforme", execution_date: new Date().toISOString().split("T")[0], technician: "", notes: "", work_item_id: "__none__", ppi_id: "__none__", nc_id: "__none__" });
       }
-      supabase.from("work_items").select("id, sector").eq("project_id", projectId).order("sector").then(({ data }) => {
+      supabase.from("work_items").select("id, sector, elemento, parte").eq("project_id", projectId).order("sector").then(({ data }) => {
         setWorkItems(data ?? []);
       });
     }
