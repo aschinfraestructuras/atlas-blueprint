@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useTheme } from "@/components/theme/ThemeProvider";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
@@ -7,7 +8,7 @@ import {
   Settings, Users, ShieldCheck, Sliders, Globe, Bell, Lock,
   Building2, Mail, UserCheck, Key, Database, ChevronRight,
   Plus, Trash2, UserMinus, Loader2, Sun, Moon, Monitor,
-  ImageIcon, Upload, X,
+  ImageIcon, Upload, X, ClipboardList, HardDrive, Check, Eye, Pencil, ShieldAlert,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -153,11 +154,63 @@ function BrandingSection() {
   );
 }
 
+// ── Notification Preferences Section ──────────────────────────────────────────
+const NOTIF_PREFS_KEY = "atlas_notif_prefs";
+const DEFAULT_NOTIF_PREFS = { nc_new: true, doc_approval: true, deadline_overdue: true, test_new: true, ppi_submitted: false, member_joined: false };
+
+function NotificationPreferencesSection() {
+  const { t } = useTranslation();
+  const [prefs, setPrefs] = useState(() => {
+    try { return { ...DEFAULT_NOTIF_PREFS, ...JSON.parse(localStorage.getItem(NOTIF_PREFS_KEY) || "{}") }; }
+    catch { return DEFAULT_NOTIF_PREFS; }
+  });
+
+  const toggle = (key: string) => {
+    const next = { ...prefs, [key]: !prefs[key as keyof typeof prefs] };
+    setPrefs(next);
+    localStorage.setItem(NOTIF_PREFS_KEY, JSON.stringify(next));
+  };
+
+  const items: { key: string; label: string; desc: string }[] = [
+    { key: "nc_new", label: t("pages.settings.sections.notifications.ncNew", { defaultValue: "Nova Não Conformidade" }), desc: t("pages.settings.sections.notifications.ncNewDesc", { defaultValue: "Quando uma NC é criada no projeto" }) },
+    { key: "doc_approval", label: t("pages.settings.sections.notifications.docApproval", { defaultValue: "Documento para Aprovação" }), desc: t("pages.settings.sections.notifications.docApprovalDesc", { defaultValue: "Quando um documento necessita de aprovação" }) },
+    { key: "deadline_overdue", label: t("pages.settings.sections.notifications.deadlineOverdue", { defaultValue: "Prazo de Ação Vencido" }), desc: t("pages.settings.sections.notifications.deadlineOverdueDesc", { defaultValue: "Quando uma ação ultrapassa o prazo" }) },
+    { key: "test_new", label: t("pages.settings.sections.notifications.testNew", { defaultValue: "Novo Ensaio Registado" }), desc: t("pages.settings.sections.notifications.testNewDesc", { defaultValue: "Quando é registado um resultado de ensaio" }) },
+    { key: "ppi_submitted", label: t("pages.settings.sections.notifications.ppiSubmitted", { defaultValue: "PPI Submetido" }), desc: t("pages.settings.sections.notifications.ppiSubmittedDesc", { defaultValue: "Quando um PPI é submetido para aprovação" }) },
+    { key: "member_joined", label: t("pages.settings.sections.notifications.memberJoined", { defaultValue: "Novo Membro" }), desc: t("pages.settings.sections.notifications.memberJoinedDesc", { defaultValue: "Quando alguém aceita um convite" }) },
+  ];
+
+  return (
+    <SettingsSection icon={Bell} title={t("pages.settings.sections.notifications.title", { defaultValue: "Preferências de Notificação" })} subtitle={t("pages.settings.sections.notifications.subtitle", { defaultValue: "Escolha quais eventos geram alertas" })} color="hsl(36, 70%, 50%)">
+      <div className="space-y-0.5">
+        {items.map(item => (
+          <label key={item.key} className="flex items-center gap-3 py-2.5 border-b border-border/40 last:border-0 hover:bg-muted/30 -mx-2 px-2 rounded-lg transition-colors cursor-pointer">
+            <input
+              type="checkbox"
+              checked={prefs[item.key as keyof typeof prefs] ?? false}
+              onChange={() => toggle(item.key)}
+              className="h-4 w-4 rounded border-border text-primary focus:ring-primary/30"
+            />
+            <div className="flex-1 min-w-0">
+              <p className="text-[12px] font-medium text-foreground leading-none">{item.label}</p>
+              <p className="text-[10.5px] text-muted-foreground mt-0.5">{item.desc}</p>
+            </div>
+          </label>
+        ))}
+      </div>
+      <p className="text-[10px] text-muted-foreground mt-3 italic">
+        {t("pages.settings.sections.notifications.emailNote", { defaultValue: "Notificações por email — em breve. As preferências ficam guardadas para quando a funcionalidade for ativada." })}
+      </p>
+    </SettingsSection>
+  );
+}
+
 // ═══════════════════════════════════════════════════════════════
 // MAIN
 // ═══════════════════════════════════════════════════════════════
 export default function SettingsPage() {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const { activeProject } = useProject();
   const { user } = useAuth();
   const { isAdmin, role: myRole } = useProjectRole();
@@ -523,9 +576,10 @@ export default function SettingsPage() {
         )}
       </SettingsSection>
 
-      {/* ── 4. Profiles & Permissions ────────────────────────────────── */}
+      {/* ── 4. Permissions Matrix ────────────────────────────────── */}
       <SettingsSection icon={ShieldCheck} title={s("permissions.title")} subtitle={s("permissions.subtitle")} color={MOD.suppliers}>
-        <div className="space-y-1.5 pt-1">
+        {/* Role legend */}
+        <div className="space-y-1.5 pt-1 mb-4">
           {PROJECT_ROLES.map(key => {
             const color = ROLE_COLOR[key] ?? MOD.muted;
             return (
@@ -539,6 +593,62 @@ export default function SettingsPage() {
               </div>
             );
           })}
+        </div>
+
+        {/* Module permissions matrix */}
+        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">
+          {t("pages.settings.sections.permissions.matrixTitle", { defaultValue: "Permissões por módulo" })}
+        </p>
+        <div className="overflow-x-auto rounded-lg border border-border/60">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-muted/40">
+                <TableHead className="text-[10px] font-bold uppercase tracking-wider w-[120px]">
+                  {t("pages.settings.sections.permissions.module", { defaultValue: "Módulo" })}
+                </TableHead>
+                {PROJECT_ROLES.map(r => (
+                  <TableHead key={r} className="text-center text-[9px] font-bold uppercase tracking-wider px-1">
+                    <span style={{ color: ROLE_COLOR[r] ?? MOD.muted }}>{t(`settings.roles.${r}`)}</span>
+                  </TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {(["documents", "tests", "nc", "ppi", "materials", "suppliers", "subcontractors", "plans", "planning", "daily_reports", "topography", "recycled"] as const).map(mod => {
+                const modPerms: Record<string, { view: boolean; edit: boolean; approve: boolean }> = {
+                  admin:           { view: true, edit: true, approve: true },
+                  project_manager: { view: true, edit: true, approve: true },
+                  quality_manager: { view: true, edit: true, approve: true },
+                  technician:      { view: true, edit: true, approve: false },
+                  viewer:          { view: true, edit: false, approve: false },
+                };
+                return (
+                  <TableRow key={mod} className="hover:bg-muted/20">
+                    <TableCell className="text-[11px] font-medium capitalize py-2">
+                      {t(`pages.settings.sections.permissions.modules.${mod}`, { defaultValue: mod.replace("_", " ") })}
+                    </TableCell>
+                    {PROJECT_ROLES.map(role => {
+                      const p = modPerms[role];
+                      return (
+                        <TableCell key={role} className="text-center py-2">
+                          <div className="flex items-center justify-center gap-0.5">
+                            {p?.view && <Eye className="h-3 w-3 text-muted-foreground" />}
+                            {p?.edit && <Pencil className="h-3 w-3 text-blue-500" />}
+                            {p?.approve && <ShieldAlert className="h-3 w-3 text-green-600" />}
+                          </div>
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
+        <div className="flex items-center gap-4 mt-2 text-[10px] text-muted-foreground">
+          <span className="flex items-center gap-1"><Eye className="h-3 w-3" /> {t("pages.settings.sections.permissions.view", { defaultValue: "Ver" })}</span>
+          <span className="flex items-center gap-1"><Pencil className="h-3 w-3 text-blue-500" /> {t("pages.settings.sections.permissions.edit", { defaultValue: "Editar" })}</span>
+          <span className="flex items-center gap-1"><ShieldAlert className="h-3 w-3 text-green-600" /> {t("pages.settings.sections.permissions.approve", { defaultValue: "Aprovar" })}</span>
         </div>
       </SettingsSection>
 
@@ -584,8 +694,72 @@ export default function SettingsPage() {
         </div>
       </SettingsSection>
 
-      {/* ── 6. Branding / Logo ───────────────────────────────────────── */}
+      {/* ── 6. Notification Preferences ──────────────────────────────── */}
+      <NotificationPreferencesSection />
+
+      {/* ── 7. Branding / Logo ───────────────────────────────────────── */}
       <BrandingSection />
+
+      {/* ── 8. System Audit ──────────────────────────────────────────── */}
+      {(isAdmin || myRole === "project_manager" || myRole === "quality_manager") && (
+        <SettingsSection icon={ClipboardList} title={t("pages.settings.sections.audit.title", { defaultValue: "Auditoria do Sistema" })} subtitle={t("pages.settings.sections.audit.subtitle", { defaultValue: "Logs de ações, alterações e aprovações — ISO 9001" })} color={MOD.nc}>
+          <div className="space-y-2">
+            <p className="text-[11.5px] text-muted-foreground leading-relaxed">
+              {t("pages.settings.sections.audit.desc", { defaultValue: "O sistema regista automaticamente todas as ações críticas: criação, edição, aprovação, eliminação e mudanças de estado em todos os módulos." })}
+            </p>
+            <div className="flex flex-wrap gap-1.5 py-2">
+              {["LOGIN", "INSERT", "UPDATE", "DELETE", "STATUS_CHANGE", "EXPORT", "APPROVE", "ROLE_CHANGED"].map(action => (
+                <Badge key={action} variant="secondary" className="text-[9px] font-mono">{action}</Badge>
+              ))}
+            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              className="gap-1.5 mt-2"
+              onClick={() => navigate("/audit-log")}
+            >
+              <ClipboardList className="h-3.5 w-3.5" />
+              {t("pages.settings.sections.audit.viewLogs", { defaultValue: "Ver Logs do Sistema" })}
+            </Button>
+          </div>
+        </SettingsSection>
+      )}
+
+      {/* ── 9. Backup & Security ─────────────────────────────────────── */}
+      {isAdmin && (
+        <SettingsSection icon={HardDrive} title={t("pages.settings.sections.backup.title", { defaultValue: "Backup e Segurança" })} subtitle={t("pages.settings.sections.backup.subtitle", { defaultValue: "Proteção de dados e continuidade operacional" })} color={MOD.plans}>
+          <div className="space-y-3">
+            <div className="flex items-start gap-3 py-2 border-b border-border/40">
+              <Check className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-[12px] font-medium text-foreground">{t("pages.settings.sections.backup.autoBackup", { defaultValue: "Backup Automático Diário" })}</p>
+                <p className="text-[11px] text-muted-foreground">{t("pages.settings.sections.backup.autoBackupDesc", { defaultValue: "Supabase realiza backups automáticos diários com retenção de 7 dias (Pro) ou 30 dias (Enterprise)." })}</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 py-2 border-b border-border/40">
+              <Check className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-[12px] font-medium text-foreground">{t("pages.settings.sections.backup.rls", { defaultValue: "Row-Level Security (RLS)" })}</p>
+                <p className="text-[11px] text-muted-foreground">{t("pages.settings.sections.backup.rlsDesc", { defaultValue: "Todas as tabelas possuem políticas RLS ativas — isolamento total entre projetos e utilizadores." })}</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 py-2 border-b border-border/40">
+              <Check className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-[12px] font-medium text-foreground">{t("pages.settings.sections.backup.encryption", { defaultValue: "Encriptação em Trânsito e Repouso" })}</p>
+                <p className="text-[11px] text-muted-foreground">{t("pages.settings.sections.backup.encryptionDesc", { defaultValue: "TLS 1.3 para comunicação, AES-256 para dados em repouso." })}</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 py-2">
+              <Check className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-[12px] font-medium text-foreground">{t("pages.settings.sections.backup.session", { defaultValue: "Auto-Logout por Inatividade" })}</p>
+                <p className="text-[11px] text-muted-foreground">{t("pages.settings.sections.backup.sessionDesc", { defaultValue: "Sessão termina automaticamente após 30 minutos de inatividade, com aviso aos 25 minutos." })}</p>
+              </div>
+            </div>
+          </div>
+        </SettingsSection>
+      )}
     </div>
   );
 }
