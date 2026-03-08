@@ -91,8 +91,6 @@ const App = () => (
               <Route path="/technical-office" element={<ProtectedLayout><TechnicalOfficePage /></ProtectedLayout>} />
               <Route path="/technical-office/rfis/:id" element={<ProtectedLayout><RfiDetailPage /></ProtectedLayout>} />
               <Route path="/technical-office/items/:id" element={<ProtectedLayout><TechOfficeDetailPage /></ProtectedLayout>} />
-              <Route path="/rfis" element={<ProtectedLayout><RFIsPage /></ProtectedLayout>} />
-              <Route path="/rfis/:id" element={<ProtectedLayout><RfiDetailPage /></ProtectedLayout>} />
               <Route path="/plans" element={<ProtectedLayout><PlansPage /></ProtectedLayout>} />
               <Route path="/plans/:id" element={<ProtectedLayout><PlanDetailPage /></ProtectedLayout>} />
               <Route path="/survey" element={<ProtectedLayout><SurveyPage /></ProtectedLayout>} />

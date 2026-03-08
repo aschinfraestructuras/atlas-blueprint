@@ -223,7 +223,7 @@ export default function RfiDetailPage() {
     <div className="space-y-6 max-w-5xl mx-auto">
       {/* Top bar */}
       <div className="flex items-center justify-between">
-        <Button variant="ghost" size="sm" onClick={() => navigate("/rfis")} className="gap-1.5">
+        <Button variant="ghost" size="sm" onClick={() => navigate("/technical-office")} className="gap-1.5">
           <ArrowLeft className="h-3.5 w-3.5" />
           {t("common.back")}
         </Button>
