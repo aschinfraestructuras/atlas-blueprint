@@ -98,18 +98,16 @@ export default function AuditsPage() {
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
       <PageHeader
-        titleKey="audits.title"
-        defaultTitle="Programa de Auditorias"
-        subtitleKey="audits.subtitle"
-        defaultSubtitle="Auditorias internas do programa de qualidade"
-      >
-        {canCreate && (
+        title={t("audits.title", { defaultValue: "Programa de Auditorias" })}
+        subtitle={t("audits.subtitle", { defaultValue: "Auditorias internas do programa de qualidade" })}
+        icon={CalendarClock}
+        actions={canCreate ? (
           <Button onClick={handleCreate} size="sm">
             <Plus className="h-4 w-4 mr-1.5" />
             {t("audits.create", { defaultValue: "Nova Auditoria" })}
           </Button>
-        )}
-      </PageHeader>
+        ) : undefined}
+      />
 
       {loading ? (
         <div className="space-y-3">
