@@ -373,7 +373,7 @@ export function NCFormDialog({
 
                 <FormField control={form.control} name="responsible" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t("nc.form.responsibleDetected", { defaultValue: "Detectada por" })}</FormLabel>
+                    <FormLabel>{t("nc.form.responsibleDetected")}</FormLabel>
                     <FormControl><Input placeholder={t("nc.form.responsiblePlaceholder")} {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
