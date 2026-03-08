@@ -162,21 +162,33 @@ export default function SuppliersPage() {
                   <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground flex items-center gap-1.5 mb-3">
                     <PieChartIcon className="h-3.5 w-3.5" />{t("suppliers.form.category")}
                   </p>
-                  <ul className="space-y-1.5">
-                    {(() => {
-                      const catMap: Record<string, number> = {};
-                      suppliers.forEach(s => { if (s.category) catMap[s.category] = (catMap[s.category] ?? 0) + 1; });
-                      return Object.entries(catMap)
-                        .sort((a, b) => b[1] - a[1])
-                        .slice(0, 6)
-                        .map(([k, v]) => (
-                          <li key={k} className="flex items-center justify-between text-xs">
-                            <span className="text-muted-foreground truncate">{t(`suppliers.categories.${k}`, { defaultValue: k })}</span>
-                            <span className="font-bold tabular-nums text-foreground">{v}</span>
-                          </li>
-                        ));
-                    })()}
-                  </ul>
+                  {(() => {
+                    const catMap: Record<string, number> = {};
+                    suppliers.forEach(s => { if (s.category) catMap[s.category] = (catMap[s.category] ?? 0) + 1; });
+                    const entries = Object.entries(catMap).sort((a, b) => b[1] - a[1]).slice(0, 8);
+                    const maxVal = Math.max(...entries.map(e => e[1]), 1);
+                    const COLORS = [
+                      "hsl(var(--primary))", "hsl(var(--chart-2))", "hsl(var(--chart-3))",
+                      "hsl(var(--chart-4))", "hsl(var(--chart-5))", "hsl(var(--accent-foreground))",
+                      "hsl(var(--muted-foreground))", "hsl(var(--chart-1))",
+                    ];
+                    return (
+                      <div className="space-y-2">
+                        {entries.map(([k, v], i) => (
+                          <div key={k} className="flex items-center gap-2">
+                            <span className="text-xs text-muted-foreground w-24 truncate text-right">{t(`suppliers.categories.${k}`, { defaultValue: k })}</span>
+                            <div className="flex-1 h-5 bg-muted/30 rounded-full overflow-hidden">
+                              <div
+                                className="h-full rounded-full transition-all duration-500 ease-out"
+                                style={{ width: `${(v / maxVal) * 100}%`, backgroundColor: COLORS[i % COLORS.length] }}
+                              />
+                            </div>
+                            <span className="text-xs font-bold tabular-nums text-foreground w-8 text-right">{v}</span>
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })()}
                 </CardContent>
               </Card>
               <Card className="border shadow-none">
