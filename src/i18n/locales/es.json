@@ -1751,7 +1751,12 @@
       "PPI": "PPI",
       "ITP": "ITP",
       "MethodStatement": "Method Statement",
-      "TestPlan": "Plan de Ensayos"
+      "TestPlan": "Plan de Ensayos",
+      "PlanAmb": "Plan Ambiental / PPGRCD",
+      "PlanEns": "Plan de Ensayos",
+      "PlanInsp": "Plan de Inspección y Ensayo (PIE)",
+      "PlanQual": "Plan de Calidad (PCC)",
+      "PlanTopo": "Plan de Topografía"
     },
     "disciplines": {
       "geral": "General",
