@@ -79,6 +79,7 @@ const NAV_SECTIONS: SidebarSection[] = [
     items: [
       { labelKey: "nav.deadlines",    url: "/deadlines",     icon: Clock },
       { labelKey: "nav.qcReport",     url: "/reports/qc",    icon: BarChart3 },
+      { labelKey: "nav.sgqMatrix",    url: "/sgq-matrix",    icon: ShieldCheck },
       { labelKey: "nav.auditLog",     url: "/audit",         icon: ScrollText,  requiredAction: "viewAudit" },
       { labelKey: "nav.health",       url: "/admin/health",  icon: ShieldCheck, adminOnly: true },
       { labelKey: "nav.settings",     url: "/settings",      icon: Settings,    adminOnly: true },
