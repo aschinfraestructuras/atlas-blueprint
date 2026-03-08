@@ -1376,22 +1376,6 @@
       "error": "Ocorreu um erro. Tente novamente."
     }
   },
-  "nc.discipline": {
-    "terras": "Terras",
-    "betao": "Betão",
-    "ferrovia": "Ferrovia",
-    "catenaria": "Catenária",
-    "st": "Sinalização e Telecomunicações",
-    "drenagem": "Drenagem",
-    "estruturas": "Estruturas",
-    "outros": "Outros"
-  },
-  "nc.correctionType": {
-    "accept": "Aceitar (derrogação F/IP)",
-    "repair": "Reparar",
-    "demolish": "Demolir e refazer",
-    "reject": "Rejeitar/devolver"
-  },
   "technicalOffice": {
     "newItem": "Novo Item",
     "newRfi": "Novo RFI",
