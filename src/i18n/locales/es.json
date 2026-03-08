@@ -659,7 +659,14 @@
       "specification": "Especificación",
       "form": "Impreso",
       "record": "Registro",
-      "other": "Otro"
+      "other": "Otro",
+      "cte": "Condiciones Técnicas Especiales (CTE)",
+      "dpu": "Definición de Precios Unitarios (DPU)",
+      "egt": "Estudio Geológico y Geotécnico (EGT)",
+      "index": "Índice",
+      "interoperability_report": "Informe de Interoperabilidad",
+      "mdj": "Memoria Descriptiva y Justificativa (MDJ)",
+      "med": "Mediciones Detalladas (MED)"
     },
     "form": {
       "titleCreate": "Nuevo Documento",
