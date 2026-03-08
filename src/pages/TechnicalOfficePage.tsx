@@ -112,9 +112,16 @@ export default function TechnicalOfficePage() {
       created_at: r.created_at,
       work_item_id: r.work_item_id,
       nc_id: r.nc_id,
+      discipline: (r as any).discipline,
       _source: "rfi" as const,
     }));
-    return [...toItems, ...rfiItems].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    // Sort by deadline ASC (most urgent first), nulls last
+    return [...toItems, ...rfiItems].sort((a, b) => {
+      if (a._deadline && b._deadline) return a._deadline.localeCompare(b._deadline);
+      if (a._deadline) return -1;
+      if (b._deadline) return 1;
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    });
   }, [items, rfis]);
 
   const filtered = useMemo(() => {
