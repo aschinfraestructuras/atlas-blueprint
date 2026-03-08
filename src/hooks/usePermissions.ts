@@ -35,7 +35,7 @@ const EMPTY: PermissionSet = {
   export: false,
 };
 
-const PERMISSIONS_BY_ROLE: Record<string, PermissionSet> = {
+export const PERMISSIONS_BY_ROLE: Record<string, PermissionSet> = {
   admin: {
     create: true,
     edit: true,
