@@ -1,6 +1,9 @@
 import { supabase } from "@/integrations/supabase/client";
 import { auditService } from "./auditService";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- tables not in generated types
+const db = supabase as any;
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface TestPlan {
@@ -73,54 +76,56 @@ export interface TestPlanRuleInput {
   standards_override?: string[];
 }
 
+interface TestPlanWithRules extends Record<string, unknown> {
+  id: string;
+  test_plan_rules?: Array<{ id: string }>;
+}
+
 // ─── Service ──────────────────────────────────────────────────────────────────
 
 export const testPlanService = {
   async getByProject(projectId: string): Promise<TestPlan[]> {
-    const { data, error } = await (supabase as any)
-      .from("test_plans")
+    const { data, error } = await untypedFrom("test_plans")
       .select("*, test_plan_rules(id)")
       .eq("project_id", projectId)
       .eq("is_deleted", false)
       .order("created_at", { ascending: false });
     if (error) throw error;
-    return (data ?? []).map((p: any) => ({
-      ...p,
+    return ((data ?? []) as unknown as TestPlanWithRules[]).map((p) => ({
+      ...(p as unknown as TestPlan),
       rules_count: p.test_plan_rules?.length ?? 0,
       test_plan_rules: undefined,
     }));
   },
 
   async getById(id: string): Promise<TestPlan> {
-    const { data, error } = await (supabase as any)
-      .from("test_plans")
+    const { data, error } = await untypedFrom("test_plans")
       .select("*")
       .eq("id", id)
       .single();
     if (error) throw error;
-    return data;
+    return data as unknown as TestPlan;
   },
 
   async create(input: TestPlanInput): Promise<TestPlan> {
     const { data: { user } } = await supabase.auth.getUser();
-    const { data, error } = await (supabase as any)
-      .from("test_plans")
+    const { data, error } = await untypedFrom("test_plans")
       .insert({ ...input, created_by: user?.id })
       .select()
       .single();
     if (error) throw error;
+    const result = data as unknown as TestPlan;
     await auditService.log({
       projectId: input.project_id,
-      entity: "test_plans", entityId: data.id,
+      entity: "test_plans", entityId: result.id,
       action: "INSERT", module: "tests",
       diff: { code: input.code, title: input.title },
     });
-    return data;
+    return result;
   },
 
   async update(id: string, projectId: string, updates: Partial<TestPlanInput>): Promise<TestPlan> {
-    const { data, error } = await (supabase as any)
-      .from("test_plans")
+    const { data, error } = await untypedFrom("test_plans")
       .update(updates)
       .eq("id", id)
       .select()
@@ -131,13 +136,12 @@ export const testPlanService = {
       action: "UPDATE", module: "tests",
       diff: updates as Record<string, unknown>,
     });
-    return data;
+    return data as unknown as TestPlan;
   },
 
   async softDelete(id: string, projectId: string): Promise<void> {
     const { data: { user } } = await supabase.auth.getUser();
-    const { error } = await (supabase as any)
-      .from("test_plans")
+    const { error } = await untypedFrom("test_plans")
       .update({ is_deleted: true, deleted_at: new Date().toISOString(), deleted_by: user?.id })
       .eq("id", id);
     if (error) throw error;
@@ -150,40 +154,36 @@ export const testPlanService = {
   // ── Rules ──────────────────────────────────────────────────────────────────
 
   async getRules(planId: string): Promise<TestPlanRule[]> {
-    const { data, error } = await (supabase as any)
-      .from("test_plan_rules")
+    const { data, error } = await untypedFrom("test_plan_rules")
       .select("*, tests_catalog(id, name, code, disciplina), suppliers(id, name)")
       .eq("plan_id", planId)
       .order("created_at");
     if (error) throw error;
-    return data ?? [];
+    return (data ?? []) as unknown as TestPlanRule[];
   },
 
   async createRule(input: TestPlanRuleInput): Promise<TestPlanRule> {
     const { data: { user } } = await supabase.auth.getUser();
-    const { data, error } = await (supabase as any)
-      .from("test_plan_rules")
+    const { data, error } = await untypedFrom("test_plan_rules")
       .insert({ ...input, created_by: user?.id })
       .select("*, tests_catalog(id, name, code, disciplina), suppliers(id, name)")
       .single();
     if (error) throw error;
-    return data;
+    return data as unknown as TestPlanRule;
   },
 
   async updateRule(id: string, updates: Partial<TestPlanRuleInput>): Promise<TestPlanRule> {
-    const { data, error } = await (supabase as any)
-      .from("test_plan_rules")
+    const { data, error } = await untypedFrom("test_plan_rules")
       .update(updates)
       .eq("id", id)
       .select("*, tests_catalog(id, name, code, disciplina), suppliers(id, name)")
       .single();
     if (error) throw error;
-    return data;
+    return data as unknown as TestPlanRule;
   },
 
   async deleteRule(id: string): Promise<void> {
-    const { error } = await (supabase as any)
-      .from("test_plan_rules")
+    const { error } = await untypedFrom("test_plan_rules")
       .delete()
       .eq("id", id);
     if (error) throw error;

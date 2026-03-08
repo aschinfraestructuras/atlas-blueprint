@@ -1,5 +1,14 @@
 import { supabase } from "@/integrations/supabase/client";
 import { auditService } from "./auditService";
+import type { Database } from "@/integrations/supabase/types";
+
+// ─── Supabase row types ───────────────────────────────────────────────────────
+type EquipmentRow = Database["public"]["Tables"]["topography_equipment"]["Row"];
+type EquipmentInsert = Database["public"]["Tables"]["topography_equipment"]["Insert"];
+type EquipmentUpdate = Database["public"]["Tables"]["topography_equipment"]["Update"];
+type CalibrationRow = Database["public"]["Tables"]["equipment_calibrations"]["Row"];
+type CalibrationInsert = Database["public"]["Tables"]["equipment_calibrations"]["Insert"];
+type CalibrationUpdate = Database["public"]["Tables"]["equipment_calibrations"]["Update"];
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -77,51 +86,51 @@ export interface TopographyControl {
   updated_at: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- tables not in generated types
+const db = supabase as any;
+
 // ─── Equipment Service ────────────────────────────────────────────────────────
 
 export const topographyEquipmentService = {
   async getByProject(projectId: string): Promise<TopographyEquipment[]> {
-    const { data, error } = await (supabase as any)
-      .from("topography_equipment")
+    const { data, error } = await untypedFrom("topography_equipment")
       .select("*")
       .eq("project_id", projectId)
       .order("code", { ascending: true });
     if (error) throw error;
-    return data as TopographyEquipment[];
+    return data as unknown as TopographyEquipment[];
   },
 
   async getById(id: string): Promise<TopographyEquipment> {
-    const { data, error } = await (supabase as any)
-      .from("topography_equipment")
+    const { data, error } = await untypedFrom("topography_equipment")
       .select("*")
       .eq("id", id)
       .single();
     if (error) throw error;
-    return data as TopographyEquipment;
+    return data as unknown as TopographyEquipment;
   },
 
   async create(input: Partial<TopographyEquipment> & { project_id: string; code: string; equipment_type: string }): Promise<TopographyEquipment> {
     const { data: { user } } = await supabase.auth.getUser();
-    const { data, error } = await (supabase as any)
-      .from("topography_equipment")
+    const { data, error } = await untypedFrom("topography_equipment")
       .insert({ ...input, created_by: user?.id })
       .select()
       .single();
     if (error) throw error;
+    const result = data as unknown as TopographyEquipment;
     await auditService.log({
       projectId: input.project_id,
       entity: "topography_equipment",
-      entityId: (data as TopographyEquipment).id,
+      entityId: result.id,
       action: "INSERT",
       module: "topography",
       diff: { code: input.code, type: input.equipment_type },
     });
-    return data as TopographyEquipment;
+    return result;
   },
 
   async update(id: string, projectId: string, updates: Partial<TopographyEquipment>): Promise<TopographyEquipment> {
-    const { data, error } = await (supabase as any)
-      .from("topography_equipment")
+    const { data, error } = await untypedFrom("topography_equipment")
       .update(updates)
       .eq("id", id)
       .select()
@@ -135,11 +144,11 @@ export const topographyEquipmentService = {
       module: "topography",
       diff: updates as Record<string, unknown>,
     });
-    return data as TopographyEquipment;
+    return data as unknown as TopographyEquipment;
   },
 
   async delete(id: string, projectId: string): Promise<void> {
-    const { error } = await (supabase as any).from("topography_equipment").delete().eq("id", id);
+    const { error } = await untypedFrom("topography_equipment").delete().eq("id", id);
     if (error) throw error;
     await auditService.log({ projectId, entity: "topography_equipment", entityId: id, action: "DELETE", module: "topography" });
   },
@@ -149,49 +158,54 @@ export const topographyEquipmentService = {
 
 export const calibrationService = {
   async getByEquipment(equipmentId: string): Promise<EquipmentCalibration[]> {
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from("equipment_calibrations")
       .select("*")
       .eq("equipment_id", equipmentId)
       .order("valid_until", { ascending: false });
     if (error) throw error;
-    return data as EquipmentCalibration[];
+    return (data ?? []) as unknown as EquipmentCalibration[];
   },
 
   async getByProject(projectId: string): Promise<EquipmentCalibration[]> {
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from("equipment_calibrations")
       .select("*")
       .eq("project_id", projectId)
       .order("valid_until", { ascending: false });
     if (error) throw error;
-    return data as EquipmentCalibration[];
+    return (data ?? []) as unknown as EquipmentCalibration[];
   },
 
   async create(input: Partial<EquipmentCalibration> & { equipment_id: string; project_id: string; certifying_entity: string; valid_until: string }): Promise<EquipmentCalibration> {
     const { data: { user } } = await supabase.auth.getUser();
-    const { data, error } = await (supabase as any)
+    const row: CalibrationInsert = {
+      ...input,
+      created_by: user?.id ?? null,
+    };
+    const { data, error } = await supabase
       .from("equipment_calibrations")
-      .insert({ ...input, created_by: user?.id })
+      .insert(row)
       .select()
       .single();
     if (error) throw error;
+    const result = data as unknown as EquipmentCalibration;
     await auditService.log({
       projectId: input.project_id,
       entity: "equipment_calibrations",
-      entityId: (data as EquipmentCalibration).id,
+      entityId: result.id,
       action: "INSERT",
       module: "topography",
       description: `Calibração registada para equipamento`,
       diff: { equipment_id: input.equipment_id, valid_until: input.valid_until },
     });
-    return data as EquipmentCalibration;
+    return result;
   },
 
   async update(id: string, projectId: string, updates: Partial<EquipmentCalibration>): Promise<EquipmentCalibration> {
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from("equipment_calibrations")
-      .update(updates)
+      .update(updates as CalibrationUpdate)
       .eq("id", id)
       .select()
       .single();
@@ -204,11 +218,11 @@ export const calibrationService = {
       module: "topography",
       diff: updates as Record<string, unknown>,
     });
-    return data as EquipmentCalibration;
+    return data as unknown as EquipmentCalibration;
   },
 
   async delete(id: string, projectId: string): Promise<void> {
-    const { error } = await (supabase as any).from("equipment_calibrations").delete().eq("id", id);
+    const { error } = await supabase.from("equipment_calibrations").delete().eq("id", id);
     if (error) throw error;
     await auditService.log({ projectId, entity: "equipment_calibrations", entityId: id, action: "DELETE", module: "topography" });
   },
@@ -218,37 +232,35 @@ export const calibrationService = {
 
 export const topographyRequestService = {
   async getByProject(projectId: string): Promise<TopographyRequest[]> {
-    const { data, error } = await (supabase as any)
-      .from("topography_requests")
+    const { data, error } = await untypedFrom("topography_requests")
       .select("*")
       .eq("project_id", projectId)
       .order("request_date", { ascending: false });
     if (error) throw error;
-    return data as TopographyRequest[];
+    return data as unknown as TopographyRequest[];
   },
 
   async create(input: Partial<TopographyRequest> & { project_id: string; description: string }): Promise<TopographyRequest> {
     const { data: { user } } = await supabase.auth.getUser();
-    const { data, error } = await (supabase as any)
-      .from("topography_requests")
+    const { data, error } = await untypedFrom("topography_requests")
       .insert({ ...input, created_by: user?.id })
       .select()
       .single();
     if (error) throw error;
+    const result = data as unknown as TopographyRequest;
     await auditService.log({
       projectId: input.project_id,
       entity: "topography_requests",
-      entityId: (data as TopographyRequest).id,
+      entityId: result.id,
       action: "INSERT",
       module: "topography",
       diff: { type: input.request_type, description: input.description },
     });
-    return data as TopographyRequest;
+    return result;
   },
 
   async update(id: string, projectId: string, updates: Partial<TopographyRequest>): Promise<TopographyRequest> {
-    const { data, error } = await (supabase as any)
-      .from("topography_requests")
+    const { data, error } = await untypedFrom("topography_requests")
       .update(updates)
       .eq("id", id)
       .select()
@@ -262,11 +274,11 @@ export const topographyRequestService = {
       module: "topography",
       diff: updates as Record<string, unknown>,
     });
-    return data as TopographyRequest;
+    return data as unknown as TopographyRequest;
   },
 
   async delete(id: string, projectId: string): Promise<void> {
-    const { error } = await (supabase as any).from("topography_requests").delete().eq("id", id);
+    const { error } = await untypedFrom("topography_requests").delete().eq("id", id);
     if (error) throw error;
     await auditService.log({ projectId, entity: "topography_requests", entityId: id, action: "DELETE", module: "topography" });
   },
@@ -276,37 +288,35 @@ export const topographyRequestService = {
 
 export const topographyControlService = {
   async getByProject(projectId: string): Promise<TopographyControl[]> {
-    const { data, error } = await (supabase as any)
-      .from("topography_controls")
+    const { data, error } = await untypedFrom("topography_controls")
       .select("*")
       .eq("project_id", projectId)
       .order("execution_date", { ascending: false });
     if (error) throw error;
-    return data as TopographyControl[];
+    return data as unknown as TopographyControl[];
   },
 
   async create(input: Partial<TopographyControl> & { project_id: string; equipment_id: string; element: string }): Promise<TopographyControl> {
     const { data: { user } } = await supabase.auth.getUser();
-    const { data, error } = await (supabase as any)
-      .from("topography_controls")
+    const { data, error } = await untypedFrom("topography_controls")
       .insert({ ...input, created_by: user?.id })
       .select()
       .single();
     if (error) throw error;
+    const result = data as unknown as TopographyControl;
     await auditService.log({
       projectId: input.project_id,
       entity: "topography_controls",
-      entityId: (data as TopographyControl).id,
+      entityId: result.id,
       action: "INSERT",
       module: "topography",
       diff: { element: input.element, equipment_id: input.equipment_id, result: input.result },
     });
-    return data as TopographyControl;
+    return result;
   },
 
   async update(id: string, projectId: string, updates: Partial<TopographyControl>): Promise<TopographyControl> {
-    const { data, error } = await (supabase as any)
-      .from("topography_controls")
+    const { data, error } = await untypedFrom("topography_controls")
       .update(updates)
       .eq("id", id)
       .select()
@@ -320,11 +330,11 @@ export const topographyControlService = {
       module: "topography",
       diff: updates as Record<string, unknown>,
     });
-    return data as TopographyControl;
+    return data as unknown as TopographyControl;
   },
 
   async delete(id: string, projectId: string): Promise<void> {
-    const { error } = await (supabase as any).from("topography_controls").delete().eq("id", id);
+    const { error } = await untypedFrom("topography_controls").delete().eq("id", id);
     if (error) throw error;
     await auditService.log({ projectId, entity: "topography_controls", entityId: id, action: "DELETE", module: "topography" });
   },

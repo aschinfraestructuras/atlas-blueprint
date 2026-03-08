@@ -1,5 +1,13 @@
 import { supabase } from "@/integrations/supabase/client";
 import { auditService } from "./auditService";
+import type { Database } from "@/integrations/supabase/types";
+
+// ── Supabase row types ───────────────────────────────────────────
+type SupplierRow = Database["public"]["Tables"]["suppliers"]["Row"];
+type SupplierUpdate = Database["public"]["Tables"]["suppliers"]["Update"];
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- tables not in generated types
+const db = supabase as any;
 
 export interface Supplier {
   id: string;
@@ -124,7 +132,7 @@ export const supplierService = {
     if (!includeDeleted) q = q.eq("is_deleted", false);
     const { data, error } = await q;
     if (error) throw error;
-    return data as Supplier[];
+    return data as unknown as Supplier[];
   },
 
   /** Server-side paginated query */
@@ -150,7 +158,7 @@ export const supplierService = {
 
     const { data, error, count } = await q;
     if (error) throw error;
-    return { data: (data ?? []) as Supplier[], count: count ?? 0 };
+    return { data: (data ?? []) as unknown as Supplier[], count: count ?? 0 };
   },
 
   async getById(id: string): Promise<Supplier> {
@@ -160,7 +168,7 @@ export const supplierService = {
       .eq("id", id)
       .single();
     if (error) throw error;
-    return data as Supplier;
+    return data as unknown as Supplier;
   },
 
   async create(input: SupplierInput): Promise<Supplier> {
@@ -177,18 +185,19 @@ export const supplierService = {
       p_notes: input.notes ?? null,
     });
     if (error) throw error;
-    return data as Supplier;
+    return data as unknown as Supplier;
   },
 
   async update(id: string, projectId: string, updates: Partial<Omit<SupplierInput, "project_id" | "created_by">>): Promise<Supplier> {
+    const payload: SupplierUpdate = {
+      ...updates,
+      nif_cif: updates.nif_cif,
+      qualification_status: updates.qualification_status ?? updates.approval_status,
+      approval_status: updates.approval_status,
+    };
     const { data, error } = await supabase
       .from("suppliers")
-      .update({
-        ...updates,
-        nif_cif: updates.nif_cif,
-        qualification_status: updates.qualification_status ?? updates.approval_status,
-        approval_status: updates.approval_status,
-      })
+      .update(payload)
       .eq("id", id)
       .select()
       .single();
@@ -201,7 +210,7 @@ export const supplierService = {
       module: "suppliers",
       diff: updates as Record<string, unknown>,
     });
-    return data as Supplier;
+    return data as unknown as Supplier;
   },
 
   async archive(id: string, projectId: string): Promise<void> {
@@ -232,9 +241,10 @@ export const supplierService = {
 
   async softDelete(id: string, projectId: string): Promise<void> {
     const { data: { user } } = await supabase.auth.getUser();
+    const payload: SupplierUpdate = { is_deleted: true, deleted_at: new Date().toISOString(), deleted_by: user?.id ?? null };
     const { error } = await supabase
       .from("suppliers")
-      .update({ is_deleted: true, deleted_at: new Date().toISOString(), deleted_by: user?.id ?? null } as any)
+      .update(payload)
       .eq("id", id);
     if (error) throw error;
     await auditService.log({
@@ -245,9 +255,10 @@ export const supplierService = {
   },
 
   async restore(id: string, projectId: string): Promise<void> {
+    const payload: SupplierUpdate = { is_deleted: false, deleted_at: null, deleted_by: null };
     const { error } = await supabase
       .from("suppliers")
-      .update({ is_deleted: false, deleted_at: null, deleted_by: null } as any)
+      .update(payload)
       .eq("id", id);
     if (error) throw error;
     await auditService.log({
@@ -259,8 +270,7 @@ export const supplierService = {
 
   // ── Supplier Documents ──────────────────────────────────────────
   async getDocuments(supplierId: string): Promise<SupplierDocument[]> {
-    const { data, error } = await supabase
-      .from("supplier_documents" as any)
+    const { data, error } = await untypedFrom("supplier_documents")
       .select("*")
       .eq("supplier_id", supplierId)
       .order("created_at", { ascending: false });
@@ -269,8 +279,7 @@ export const supplierService = {
   },
 
   async addDocument(input: { project_id: string; supplier_id: string; document_id: string; doc_type: string; valid_from?: string; valid_to?: string }): Promise<SupplierDocument> {
-    const { data, error } = await supabase
-      .from("supplier_documents" as any)
+    const { data, error } = await untypedFrom("supplier_documents")
       .insert(input)
       .select()
       .single();
@@ -279,8 +288,7 @@ export const supplierService = {
   },
 
   async removeDocument(id: string): Promise<void> {
-    const { error } = await supabase
-      .from("supplier_documents" as any)
+    const { error } = await untypedFrom("supplier_documents")
       .delete()
       .eq("id", id);
     if (error) throw error;
@@ -288,8 +296,7 @@ export const supplierService = {
 
   // ── Supplier Materials ──────────────────────────────────────────
   async getMaterials(supplierId: string): Promise<SupplierMaterial[]> {
-    const { data, error } = await supabase
-      .from("supplier_materials" as any)
+    const { data, error } = await untypedFrom("supplier_materials")
       .select("*")
       .eq("supplier_id", supplierId)
       .order("created_at", { ascending: false });
@@ -298,8 +305,7 @@ export const supplierService = {
   },
 
   async addMaterial(input: { project_id: string; supplier_id: string; material_name: string; is_primary?: boolean; lead_time_days?: number; unit_price?: number; currency?: string }): Promise<SupplierMaterial> {
-    const { data, error } = await supabase
-      .from("supplier_materials" as any)
+    const { data, error } = await untypedFrom("supplier_materials")
       .insert(input)
       .select()
       .single();
@@ -308,8 +314,7 @@ export const supplierService = {
   },
 
   async removeMaterial(id: string): Promise<void> {
-    const { error } = await supabase
-      .from("supplier_materials" as any)
+    const { error } = await untypedFrom("supplier_materials")
       .delete()
       .eq("id", id);
     if (error) throw error;
@@ -317,16 +322,15 @@ export const supplierService = {
 
   // ── KPIs ────────────────────────────────────────────────────────
   async getKPIs(projectId: string): Promise<SupplierKPI | null> {
-    const { data, error } = await supabase
-      .from("view_suppliers_kpi" as any)
+    const { data, error } = await untypedFrom("view_suppliers_kpi")
       .select("*")
       .eq("project_id", projectId)
       .maybeSingle();
     if (error) throw error;
     if (!data) return null;
-    const d = data as any;
+    const d = data as Record<string, unknown>;
     return {
-      project_id: d.project_id,
+      project_id: d.project_id as string,
       suppliers_total: Number(d.suppliers_total) || 0,
       suppliers_active: Number(d.suppliers_active) || 0,
       suppliers_pending_qualification: Number(d.suppliers_pending_qualification) || 0,
@@ -340,16 +344,16 @@ export const supplierService = {
 
   async getDetailMetrics(supplierId: string): Promise<SupplierDetailMetrics | null> {
     const { data, error } = await supabase
-      .from("view_supplier_detail_metrics" as any)
+      .from("view_supplier_detail_metrics")
       .select("*")
       .eq("supplier_id", supplierId)
       .maybeSingle();
     if (error) throw error;
     if (!data) return null;
-    const d = data as any;
+    const d = data as Record<string, unknown>;
     return {
-      supplier_id: d.supplier_id,
-      project_id: d.project_id,
+      supplier_id: d.supplier_id as string,
+      project_id: d.project_id as string,
       open_nc_count: Number(d.nc_open_count) || 0,
       tests_total: Number(d.tests_total) || 0,
       tests_nonconform: Number(d.tests_nonconform) || 0,
@@ -357,14 +361,13 @@ export const supplierService = {
       docs_expired: Number(d.docs_expired) || 0,
       evals_total: Number(d.evals_total) || 0,
       latest_score: d.latest_score != null ? Number(d.latest_score) : null,
-      latest_eval_result: d.latest_eval_result ?? null,
+      latest_eval_result: (d.latest_eval_result as string) ?? null,
     };
   },
 
   // ── Evaluations ─────────────────────────────────────────────────
   async getEvaluations(supplierId: string): Promise<SupplierEvaluation[]> {
-    const { data, error } = await supabase
-      .from("supplier_evaluations" as any)
+    const { data, error } = await untypedFrom("supplier_evaluations")
       .select("*")
       .eq("supplier_id", supplierId)
       .order("eval_date", { ascending: false });
@@ -374,17 +377,17 @@ export const supplierService = {
 
   async createEvaluation(input: SupplierEvaluationInput): Promise<SupplierEvaluation> {
     const { data: { user } } = await supabase.auth.getUser();
-    const { data, error } = await supabase
-      .from("supplier_evaluations" as any)
+    const { data, error } = await untypedFrom("supplier_evaluations")
       .insert({ ...input, created_by: user?.id })
       .select()
       .single();
     if (error) throw error;
+    const result = data as unknown as SupplierEvaluation;
     await auditService.log({
-      projectId: input.project_id, entity: "supplier_evaluations", entityId: (data as any).id,
+      projectId: input.project_id, entity: "supplier_evaluations", entityId: result.id,
       action: "INSERT", module: "suppliers",
       diff: { score: input.score, result: input.result } as Record<string, unknown>,
     });
-    return data as unknown as SupplierEvaluation;
+    return result;
   },
 };
