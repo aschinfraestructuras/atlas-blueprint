@@ -1299,6 +1299,15 @@
       "menor": "NC MENOR",
       "observacao": "Observação"
     },
+    "classificationCE": {
+      "C": "Correção",
+      "AC": "Ação Corretiva"
+    },
+    "auditOrigin": {
+      "auditoria_interna": "Auditoria Interna",
+      "auditoria_ip": "Auditoria IP/Fiscalização",
+      "extra_auditoria": "Extra-Auditoria"
+    },
     "filters": {
       "allStatuses": "Todos os estados",
       "allSeverities": "Todas as gravidades",
@@ -1480,6 +1489,15 @@
       "closureDate": "Data fecho",
       "fipValidatedBy": "Validado por F/IP",
       "createBtn": "Registar NC",
+      "classificationC": "C — Correção (imediata)",
+      "classificationAC": "AC — Ação Corretiva (sistémica)",
+      "auditOriginType": "Tipo de Auditoria",
+      "actualCompletionDate": "Data Real de Implementação",
+      "deviationJustification": "Justificação de Desvios",
+      "efficacyAnalysis": "Análise de Eficácia",
+      "deviationJustificationPlaceholder": "Justifique eventuais desvios face à data/método planeado…",
+      "efficacyAnalysisPlaceholder": "Descreva como foi verificada a eficácia da ação implementada…",
+      "seguimentoSection": "Seguimento CE",
       "validation": {
         "titleRequired": "O título é obrigatório.",
         "descriptionRequired": "A descrição é obrigatória.",

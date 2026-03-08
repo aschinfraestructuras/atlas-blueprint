@@ -344,10 +344,28 @@ export default function NCDetailPage() {
           <OriginIcon className="h-3.5 w-3.5" />
           {t(`nc.origin.${nc.origin}`, { defaultValue: nc.origin })}
         </Badge>
+        {nc.origin === "audit" && nc.audit_origin_type && (
+          <Badge variant="outline" className="text-sm px-3 py-1">
+            {t(`nc.auditOrigin.${nc.audit_origin_type}`, { defaultValue: nc.audit_origin_type })}
+          </Badge>
+        )}
         <Badge variant="outline" className="text-sm px-3 py-1">
           {t(`nc.category.${nc.category}`, { defaultValue: nc.category })}
           {nc.category === "outros" && nc.category_outro && ` — ${nc.category_outro}`}
         </Badge>
+        {nc.classification && (
+          <Badge variant="outline" className={cn(
+            "text-sm px-3 py-1 border",
+            nc.classification === "C" ? "bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/30" :
+            nc.classification === "AC" ? "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/30" :
+            nc.classification === "maior" ? "bg-destructive/10 text-destructive border-destructive/30" :
+            "bg-muted text-muted-foreground border-border"
+          )}>
+            {nc.classification === "C" ? t("nc.classificationCE.C", { defaultValue: "Correção" }) :
+             nc.classification === "AC" ? t("nc.classificationCE.AC", { defaultValue: "Ação Corretiva" }) :
+             t(`nc.classification.${nc.classification}`, { defaultValue: nc.classification })}
+          </Badge>
+        )}
         {nc.due_date && (
           <div className={cn(
             "flex items-center gap-1.5 text-sm px-3 py-1 rounded-full border",
@@ -468,6 +486,28 @@ export default function NCDetailPage() {
                 <CapaField label={t("nc.form.verificationMethod")} value={nc.verification_method} />
                 <CapaField label={t("nc.form.verificationResult")} value={nc.verification_result} />
               </div>
+
+              {/* Seguimento CE */}
+              {(nc.actual_completion_date || nc.deviation_justification || nc.efficacy_analysis) && (
+                <>
+                  <Separator />
+                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                    {t("nc.form.seguimentoSection", { defaultValue: "Seguimento CE" })}
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <CapaField label={t("nc.form.actualCompletionDate", { defaultValue: "Data Real de Implementação" })} value={
+                      nc.actual_completion_date ? new Date(nc.actual_completion_date + "T00:00:00").toLocaleDateString() : null
+                    } />
+                    {nc.due_date && (
+                      <CapaField label={t("nc.table.dueDate")} value={
+                        new Date(nc.due_date + "T00:00:00").toLocaleDateString()
+                      } />
+                    )}
+                  </div>
+                  <CapaField label={t("nc.form.deviationJustification", { defaultValue: "Justificação de Desvios" })} value={nc.deviation_justification} />
+                  <CapaField label={t("nc.form.efficacyAnalysis", { defaultValue: "Análise de Eficácia" })} value={nc.efficacy_analysis} />
+                </>
+              )}
 
               {(!nc.correction && !nc.root_cause && !nc.corrective_action && !nc.preventive_action) && (
                 <div className="flex flex-col items-center justify-center py-8 gap-2 text-muted-foreground">

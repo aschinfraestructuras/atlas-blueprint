@@ -34,7 +34,8 @@ import { cn } from "@/lib/utils";
 
 // ─── Schema ───────────────────────────────────────────────────────────────────
 
-const DISCIPLINES = ["terras", "betao", "ferrovia", "catenaria", "st", "drenagem", "estruturas", "outros"] as const;
+const DISCIPLINES = ["terras", "betao", "ferrovia", "catenaria", "st", "drenagem", "estruturas", "via", "geotecnia", "eletrica", "sinalizacao", "passagens_nivel", "edificios", "outros"] as const;
+const CE_DISCIPLINES = ["via", "catenaria", "drenagem", "estruturas", "geotecnia", "eletrica", "sinalizacao", "passagens_nivel", "edificios", "outros"] as const;
 const CORRECTION_TYPES = ["accept", "repair", "demolish", "reject"] as const;
 const ROOT_CAUSE_METHODS = ["5whys", "ishikawa", "other"] as const;
 
@@ -74,6 +75,11 @@ const schema = (t: (k: string) => string) =>
     verified_at:         z.string().optional().or(z.literal("")),
     closure_date:        z.string().optional().or(z.literal("")),
     fip_validated_by:    z.string().trim().max(200).optional().or(z.literal("")),
+    // CE fields
+    audit_origin_type:       z.string().optional().or(z.literal("")),
+    actual_completion_date:  z.string().optional().or(z.literal("")),
+    deviation_justification: z.string().trim().max(2000).optional().or(z.literal("")),
+    efficacy_analysis:       z.string().trim().max(2000).optional().or(z.literal("")),
   }).superRefine((val, ctx) => {
     withOtherRefinement(val, ctx, "category", "category_outro", t("nc.form.validation.categoryOutroRequired"));
     withOtherRefinement(val, ctx, "discipline", "discipline_outro", t("nc.form.validation.disciplineOutroRequired"), "outros");
@@ -106,6 +112,8 @@ const defaultValues = (origin?: string): FormValues => ({
   assigned_to: "", ac_efficacy_indicator: "",
   verification_method: "", verification_result: "",
   verified_at: "", closure_date: "", fip_validated_by: "",
+  audit_origin_type: "", actual_completion_date: "",
+  deviation_justification: "", efficacy_analysis: "",
 });
 
 // ─── Componente ───────────────────────────────────────────────────────────────
@@ -125,6 +133,7 @@ export function NCFormDialog({
     defaultValues: defaultValues(originOverride),
   });
 
+  const watchedOrigin = form.watch("origin");
   const watchedCategory = form.watch("category");
   const watchedClassification = form.watch("classification");
   const isMaior = watchedClassification === "maior";
@@ -162,6 +171,10 @@ export function NCFormDialog({
       verified_at:         (nc as any).verified_at ? new Date((nc as any).verified_at).toISOString().split("T")[0] : "",
       closure_date:        nc.closure_date ?? "",
       fip_validated_by:    (nc as any).fip_validated_by ?? "",
+      audit_origin_type:       nc.audit_origin_type ?? "",
+      actual_completion_date:  nc.actual_completion_date ?? "",
+      deviation_justification: nc.deviation_justification ?? "",
+      efficacy_analysis:       nc.efficacy_analysis ?? "",
     } : defaultValues(originOverride));
   }, [open, nc, form, originOverride]);
 
@@ -198,6 +211,10 @@ export function NCFormDialog({
         verified_at:         values.verified_at || undefined,
         closure_date:        values.closure_date || undefined,
         fip_validated_by:    values.fip_validated_by || undefined,
+        audit_origin_type:       values.audit_origin_type || undefined,
+        actual_completion_date:  values.actual_completion_date || undefined,
+        deviation_justification: values.deviation_justification || undefined,
+        efficacy_analysis:       values.efficacy_analysis || undefined,
       };
 
       if (isEdit && nc) {
@@ -452,6 +469,24 @@ export function NCFormDialog({
                     </FormItem>
                   )} />
                 </div>
+
+                {/* Audit origin type - only when origin === 'audit' */}
+                {watchedOrigin === "audit" && (
+                  <FormField control={form.control} name="audit_origin_type" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("nc.form.auditOriginType", { defaultValue: "Tipo de Auditoria" })}</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value || ""}>
+                        <FormControl><SelectTrigger><SelectValue placeholder="—" /></SelectTrigger></FormControl>
+                        <SelectContent>
+                          <SelectItem value="auditoria_interna">{t("nc.auditOrigin.auditoria_interna", { defaultValue: "Auditoria Interna" })}</SelectItem>
+                          <SelectItem value="auditoria_ip">{t("nc.auditOrigin.auditoria_ip", { defaultValue: "Auditoria IP/Fiscalização" })}</SelectItem>
+                          <SelectItem value="extra_auditoria">{t("nc.auditOrigin.extra_auditoria", { defaultValue: "Extra-Auditoria" })}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                )}
               </TabsContent>
 
               {/* ── SECÇÃO 2: DESCRIÇÃO ─────────────────────────────────── */}
@@ -587,6 +622,54 @@ export function NCFormDialog({
                     <FormLabel>{t("nc.form.preventiveAction")}</FormLabel>
                     <FormControl>
                       <Textarea placeholder={t("nc.form.preventiveActionPlaceholder")} className="resize-none" rows={2} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+
+                <Separator className="my-2" />
+                <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                  {t("nc.form.seguimentoSection", { defaultValue: "Seguimento CE" })}
+                </p>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <FormField control={form.control} name="actual_completion_date" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("nc.form.actualCompletionDate", { defaultValue: "Data Real de Implementação" })}</FormLabel>
+                      <FormControl><Input type="date" {...field} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="due_date" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("nc.table.dueDate")} <span className="text-xs text-muted-foreground">({t("common.optional")})</span></FormLabel>
+                      <FormControl><Input type="date" {...field} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                </div>
+
+                <FormField control={form.control} name="deviation_justification" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("nc.form.deviationJustification", { defaultValue: "Justificação de Desvios" })}</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder={t("nc.form.deviationJustificationPlaceholder", { defaultValue: "Justifique eventuais desvios face à data/método planeado…" })}
+                        className="resize-none" rows={3} {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+
+                <FormField control={form.control} name="efficacy_analysis" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("nc.form.efficacyAnalysis", { defaultValue: "Análise de Eficácia" })}</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder={t("nc.form.efficacyAnalysisPlaceholder", { defaultValue: "Descreva como foi verificada a eficácia da ação implementada…" })}
+                        className="resize-none" rows={3} {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
