@@ -191,7 +191,7 @@ export default function TechnicalOfficePage() {
 
   if (!activeProject) return <NoProjectBanner />;
 
-  const meta = useReportMeta() ?? { projectName: activeProject.name, projectCode: activeProject.code, locale: "pt" };
+  const meta = reportMeta ?? { projectName: activeProject.name, projectCode: activeProject.code, locale: "pt" };
 
   const handleNew = () => { setEditingItem(null); setDialogOpen(true); };
 
