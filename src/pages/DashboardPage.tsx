@@ -292,7 +292,6 @@ export default function DashboardPage() {
 
       {/* ── Dialogs ───────────────────────────────────────── */}
       <NCFormDialog open={ncOpen} onOpenChange={setNcOpen} onSuccess={refetch} />
-      <MaterialReceptionDialog open={receptionOpen} onOpenChange={setReceptionOpen} onSuccess={refetch} />
       <RfiFormDialog open={rfiOpen} onOpenChange={setRfiOpen} onSuccess={refetch} />
     </div>
   );
