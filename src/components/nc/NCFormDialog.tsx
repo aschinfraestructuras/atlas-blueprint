@@ -170,6 +170,10 @@ export function NCFormDialog({
       verified_at:         (nc as any).verified_at ? new Date((nc as any).verified_at).toISOString().split("T")[0] : "",
       closure_date:        nc.closure_date ?? "",
       fip_validated_by:    (nc as any).fip_validated_by ?? "",
+      audit_origin_type:       nc.audit_origin_type ?? "",
+      actual_completion_date:  nc.actual_completion_date ?? "",
+      deviation_justification: nc.deviation_justification ?? "",
+      efficacy_analysis:       nc.efficacy_analysis ?? "",
     } : defaultValues(originOverride));
   }, [open, nc, form, originOverride]);
 
