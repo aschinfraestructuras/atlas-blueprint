@@ -208,7 +208,7 @@ export default function RfiDetailPage() {
     try {
       await rfiService.softDelete(rfi.id, activeProject.id);
       toast({ title: t("technicalOffice.toast.rfiDeleted", { defaultValue: "RFI eliminado" }) });
-      navigate("/rfis");
+      navigate("/technical-office");
     } catch (err) {
       const { title, description } = classifySupabaseError(err, t);
       toast({ variant: "destructive", title, description });
