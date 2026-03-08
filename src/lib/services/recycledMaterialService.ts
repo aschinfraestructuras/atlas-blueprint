@@ -62,7 +62,7 @@ export interface RecycledMaterialDocument {
 
 export const recycledMaterialService = {
   async getByProject(projectId: string): Promise<RecycledMaterial[]> {
-    const { data, error } = await untypedFrom("recycled_materials")
+    const { data, error } = await db.from("recycled_materials")
       .select("*")
       .eq("project_id", projectId)
       .eq("is_deleted", false)
