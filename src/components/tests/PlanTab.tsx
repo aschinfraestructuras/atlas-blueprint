@@ -300,7 +300,7 @@ export function PlanTab() {
       setAllRules(data);
     } catch (err) { console.error(err); }
     finally { setLoadingRules(false); }
-  }, [activePlan?.id]);
+  }, [activePlan?.id, activePlan]);
 
   useEffect(() => { loadAllRules(); }, [loadAllRules]);
 

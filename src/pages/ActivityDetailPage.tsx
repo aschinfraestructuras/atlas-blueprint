@@ -54,7 +54,7 @@ export default function ActivityDetailPage() {
       toast({ title: t("common.recordNotFound", { defaultValue: "Registo não encontrado." }), variant: "destructive" });
       navigate("/planning/activities", { replace: true });
     }
-  }, [id]);
+  }, [id, navigate, t]);
 
   const [activity, setActivity] = useState<Activity | null>(null);
   const [loading, setLoading] = useState(true);
@@ -67,6 +67,7 @@ export default function ActivityDetailPage() {
   const [testResults, setTestResults] = useState<any[]>([]);
   const [subcontractor, setSubcontractor] = useState<any>(null);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!id || !activeProject) return;
     loadActivity();

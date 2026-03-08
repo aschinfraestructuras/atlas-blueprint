@@ -92,7 +92,7 @@ export default function MaterialDetailPage() {
       toast({ title: t("common.recordNotFound", { defaultValue: "Registo não encontrado." }), variant: "destructive" });
       navigate("/materials", { replace: true });
     }
-  }, [id]);
+  }, [id, navigate, t]);
 
   const [material, setMaterial] = useState<Material | null>(null);
   const [metrics, setMetrics] = useState<MaterialDetailMetrics | null>(null);

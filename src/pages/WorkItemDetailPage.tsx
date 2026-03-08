@@ -686,7 +686,7 @@ export default function WorkItemDetailPage() {
       toast({ title: t("common.recordNotFound", { defaultValue: "Registo não encontrado." }), variant: "destructive" });
       navigate("/work-items", { replace: true });
     }
-  }, [id]);
+  }, [id, navigate, t]);
 
   const [item,       setItem]       = useState<WorkItem | null>(null);
   const [loading,    setLoading]    = useState(true);
@@ -841,7 +841,6 @@ export default function WorkItemDetailPage() {
   useEffect(() => {
     loadItem();
     loadRelated();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   // Load work item materials

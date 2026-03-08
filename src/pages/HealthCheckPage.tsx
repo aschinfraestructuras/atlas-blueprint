@@ -213,7 +213,7 @@ export default function HealthCheckPage() {
     setResults(checks);
     setLastRun(new Date());
     setRunning(false);
-  }, [activeProject, user]);
+  }, [activeProject, user, t]);
 
   const passCount = results.filter((r) => r.status === "pass").length;
   const failCount = results.filter((r) => r.status === "fail").length;

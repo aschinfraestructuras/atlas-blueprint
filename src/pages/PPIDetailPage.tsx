@@ -113,7 +113,7 @@ export default function PPIDetailPage() {
       toast({ title: t("common.recordNotFound", { defaultValue: "Registo não encontrado." }), variant: "destructive" });
       navigate("/ppi", { replace: true });
     }
-  }, [id]);
+  }, [id, navigate, t]);
 
   const [instance,    setInstance]    = useState<PpiInstance | null>(null);
   const [items,       setItems]       = useState<PpiInstanceItem[]>([]);

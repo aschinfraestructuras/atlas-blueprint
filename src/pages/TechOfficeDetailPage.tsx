@@ -61,7 +61,7 @@ export default function TechOfficeDetailPage() {
       toast({ title: t("common.recordNotFound", { defaultValue: "Registo não encontrado." }), variant: "destructive" });
       navigate("/technical-office", { replace: true });
     }
-  }, [id]);
+  }, [id, navigate, t, toast]);
   const { data: workItems } = useWorkItems();
 
   const [item, setItem] = useState<TechnicalOfficeItem | null>(null);
@@ -81,7 +81,7 @@ export default function TechOfficeDetailPage() {
       toast({ variant: "destructive", title: t("common.error", { defaultValue: "Erro" }) });
       navigate("/technical-office");
     }).finally(() => setLoading(false));
-  }, [id]);
+  }, [id, navigate, t, toast]);
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;

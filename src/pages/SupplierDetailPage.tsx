@@ -149,7 +149,7 @@ export default function SupplierDetailPage() {
       toast({ title: t("common.recordNotFound", { defaultValue: "Registo não encontrado." }), variant: "destructive" });
       navigate("/suppliers", { replace: true });
     }
-  }, [id]);
+  }, [id, navigate, t]);
 
   const [supplier, setSupplier] = useState<Supplier | null>(null);
   const [metrics, setMetrics] = useState<SupplierDetailMetrics | null>(null);

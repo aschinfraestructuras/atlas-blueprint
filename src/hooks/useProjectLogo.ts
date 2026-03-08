@@ -47,7 +47,7 @@ export function useProjectLogo() {
     setLogoUrl(url);
     // Pre-fetch base64 for PDF exports
     fetchAsBase64(url).then(b64 => setLogoBase64(b64));
-  }, [(activeProject as any)?.logo_url, activeProject?.id]);
+  }, [(activeProject as any)?.logo_url, activeProject?.id, activeProject]);
 
   const uploadLogo = async (file: File): Promise<boolean> => {
     if (!activeProject) return false;

@@ -62,7 +62,7 @@ export default function RfiDetailPage() {
       toast({ title: t("common.recordNotFound", { defaultValue: "Registo não encontrado." }), variant: "destructive" });
       navigate("/technical-office", { replace: true });
     }
-  }, [id]);
+  }, [id, navigate, t, toast]);
 
   const { data: workItems } = useWorkItems();
 
@@ -97,7 +97,7 @@ export default function RfiDetailPage() {
         navigate("/technical-office");
       })
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [id, navigate, t, toast]);
 
   // Auto-scroll messages
   useEffect(() => {

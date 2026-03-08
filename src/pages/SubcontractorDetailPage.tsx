@@ -63,7 +63,7 @@ export default function SubcontractorDetailPage() {
       toast({ title: t("common.recordNotFound", { defaultValue: "Registo não encontrado." }), variant: "destructive" });
       navigate("/subcontractors", { replace: true });
     }
-  }, [id]);
+  }, [id, navigate, t, toast]);
 
   const [sub, setSub] = useState<Subcontractor | null>(null);
   const [loading, setLoading] = useState(true);
