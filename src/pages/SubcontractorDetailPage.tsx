@@ -23,7 +23,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { ArrowLeft, HardHat, Plus, Trash2, FileCheck, AlertTriangle, ClipboardList, Briefcase, History, AlertCircle, FlaskConical } from "lucide-react";
+import { ArrowLeft, HardHat, Plus, Trash2, FileCheck, AlertTriangle, ClipboardList, Briefcase, History, AlertCircle, FlaskConical, Package, Leaf, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import { exportSubcontractorDetailPdf } from "@/lib/services/subcontractorExportService";
