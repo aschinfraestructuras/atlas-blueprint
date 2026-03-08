@@ -382,8 +382,9 @@ export async function exportDocumentPdf(
   locale: string,
   projectName: string,
   projectCode?: string,
+  logoUrl?: string | null,
 ): Promise<void> {
-  const html = buildSingleHtml(doc, versions, labels, locale, projectName);
+  const html = buildSingleHtml(doc, versions, labels, locale, projectName, logoUrl);
   printHtml(html, buildDocFilename(doc, projectName, projectCode));
 
   // Audit log
