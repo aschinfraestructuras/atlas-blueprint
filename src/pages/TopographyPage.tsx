@@ -48,6 +48,7 @@ import { SurveyFormDialog } from "@/components/survey/SurveyFormDialog";
 import { DocumentFormDialog } from "@/components/documents/DocumentFormDialog";
 import type { TopographyRequest, TopographyControl } from "@/lib/services/topographyService";
 import type { SurveyRecord } from "@/lib/services/surveyService";
+import { seedTopographyDocuments, TOPOGRAPHY_SEED_COUNT } from "@/lib/services/topographyDocSeedService";
 import { cn } from "@/lib/utils";
 
 function CalibrationBadge({ status }: { status: string }) {
@@ -126,6 +127,8 @@ export default function TopographyPage() {
   const [editSurvey, setEditSurvey] = useState<SurveyRecord | null>(null);
   const [docDialogOpen, setDocDialogOpen] = useState(false);
   const [editDoc, setEditDoc] = useState<any>(null);
+  const [seeding, setSeeding] = useState(false);
+
 
   // Filters
   const [search, setSearch] = useState("");
@@ -513,7 +516,7 @@ export default function TopographyPage() {
               <TableHeader><TableRow>
                 <TableHead>{t("topography.table.code")}</TableHead>
                 <TableHead>{t("documents.form.title")}</TableHead>
-                <TableHead>{t("documents.form.docType")}</TableHead>
+                <TableHead>{t("documents.form.type")}</TableHead>
                 <TableHead>{t("documents.form.revision")}</TableHead>
                 <TableHead>{t("common.status")}</TableHead>
                 <TableHead>{t("common.actions")}</TableHead>
@@ -545,14 +548,37 @@ export default function TopographyPage() {
                 {topoDocuments.length === 0 && (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
-                      <div className="flex flex-col items-center gap-2">
+                      <div className="flex flex-col items-center gap-3">
                         <FolderOpen className="h-8 w-8 opacity-30" />
                         <p>{t("topography.noDocuments")}</p>
-                        {canCreate && (
-                          <Button variant="outline" size="sm" onClick={() => { setEditDoc(null); setDocDialogOpen(true); }}>
-                            <Plus className="h-3.5 w-3.5 mr-1" />{t("topography.newDocument")}
-                          </Button>
-                        )}
+                        <div className="flex gap-2">
+                          {canCreate && (
+                            <Button variant="outline" size="sm" onClick={() => { setEditDoc(null); setDocDialogOpen(true); }}>
+                              <Plus className="h-3.5 w-3.5 mr-1" />{t("topography.newDocument")}
+                            </Button>
+                          )}
+                          {canCreate && (
+                            <Button
+                              size="sm"
+                              disabled={seeding}
+                              onClick={async () => {
+                                setSeeding(true);
+                                try {
+                                  const count = await seedTopographyDocuments(activeProject.id);
+                                  toast.success(`${count} documentos de topografia criados com sucesso`);
+                                  refetchDocs();
+                                } catch (e) {
+                                  toast.error("Erro ao criar documentos");
+                                } finally {
+                                  setSeeding(false);
+                                }
+                              }}
+                            >
+                              <FileText className="h-3.5 w-3.5 mr-1" />
+                              {seeding ? t("common.loading") : `Carregar ${TOPOGRAPHY_SEED_COUNT} docs do projeto`}
+                            </Button>
+                          )}
+                        </div>
                       </div>
                     </TableCell>
                   </TableRow>
