@@ -498,6 +498,69 @@ export default function TopographyPage() {
             </Table>
           </div>
         </TabsContent>
+
+        {/* ── E) Documentos ──────────────────────────────────────────── */}
+        <TabsContent value="documents" className="space-y-4">
+          <div className="flex justify-end">
+            {canCreate && (
+              <Button onClick={() => { setEditDoc(null); setDocDialogOpen(true); }}>
+                <Plus className="h-4 w-4 mr-1" />{t("topography.newDocument")}
+              </Button>
+            )}
+          </div>
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader><TableRow>
+                <TableHead>{t("topography.table.code")}</TableHead>
+                <TableHead>{t("documents.form.title")}</TableHead>
+                <TableHead>{t("documents.form.docType")}</TableHead>
+                <TableHead>{t("documents.form.revision")}</TableHead>
+                <TableHead>{t("common.status")}</TableHead>
+                <TableHead>{t("common.actions")}</TableHead>
+              </TableRow></TableHeader>
+              <TableBody>
+                {topoDocuments.map((doc) => (
+                  <TableRow key={doc.id} className="cursor-pointer hover:bg-muted/20" onClick={() => navigate(`/documents/${doc.id}`)}>
+                    <TableCell className="font-medium font-mono text-xs">{doc.code || "—"}</TableCell>
+                    <TableCell className="max-w-[300px] truncate">{doc.title}</TableCell>
+                    <TableCell>{t(`documents.docTypes.${doc.doc_type}`, { defaultValue: doc.doc_type })}</TableCell>
+                    <TableCell className="font-mono text-xs">Rev. {doc.revision ?? "0"}</TableCell>
+                    <TableCell>
+                      <Badge variant={doc.status === "approved" ? "default" : "secondary"} className="text-xs">
+                        {t(`documents.status.${doc.status}`, { defaultValue: doc.status })}
+                      </Badge>
+                    </TableCell>
+                    <TableCell onClick={e => e.stopPropagation()}>
+                      <div className="flex gap-1">
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => navigate(`/documents/${doc.id}`)}>
+                          <Eye className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setEditDoc(doc); setDocDialogOpen(true); }}>
+                          <Pencil className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+                {topoDocuments.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
+                      <div className="flex flex-col items-center gap-2">
+                        <FolderOpen className="h-8 w-8 opacity-30" />
+                        <p>{t("topography.noDocuments")}</p>
+                        {canCreate && (
+                          <Button variant="outline" size="sm" onClick={() => { setEditDoc(null); setDocDialogOpen(true); }}>
+                            <Plus className="h-3.5 w-3.5 mr-1" />{t("topography.newDocument")}
+                          </Button>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </TabsContent>
       </Tabs>
 
       {/* Dialogs */}
@@ -506,6 +569,13 @@ export default function TopographyPage() {
       <CalibrationFormDialog open={calDialogOpen} onOpenChange={setCalDialogOpen} projectId={activeProject.id} equipmentId={calEquipmentId} onSuccess={() => { refetchCal(); refetchEq(); setCalDialogOpen(false); }} />
       <RequestFormDialog open={reqDialogOpen} onOpenChange={setReqDialogOpen} projectId={activeProject.id} editRequest={editRequest} onSuccess={() => { refetchReq(); setReqDialogOpen(false); }} />
       <ControlFormDialog open={ctrlDialogOpen} onOpenChange={setCtrlDialogOpen} projectId={activeProject.id} equipment={equipment} editControl={editControl} onSuccess={() => { refetchCtrl(); setCtrlDialogOpen(false); }} />
+      <DocumentFormDialog
+        open={docDialogOpen}
+        onOpenChange={setDocDialogOpen}
+        document={editDoc}
+        defaultValues={{ disciplina: "topografia" }}
+        onSuccess={() => { refetchDocs(); setDocDialogOpen(false); }}
+      />
     </div>
   );
 }
