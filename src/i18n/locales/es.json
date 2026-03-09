@@ -2939,6 +2939,9 @@
     "calibrationHistory": "Historial de Calibraciones",
     "noCalibrationsYet": "Sin calibraciones registradas.",
     "noLinked": "Sin registros topográficos vinculados a esta actividad.",
+    "documents": "Documentos",
+    "newDocument": "Nuevo Documento",
+    "noDocuments": "Sin documentos de topografía. Cree el primer documento para este módulo.",
     "deleteConfirm": "Este registro será eliminado permanentemente. ¿Está seguro?",
     "searchPlaceholder": "Buscar código, tipo, zona…",
     "status": {

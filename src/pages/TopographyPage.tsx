@@ -1,10 +1,12 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { useProject } from "@/contexts/ProjectContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useReportMeta } from "@/hooks/useReportMeta";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import { useSurveys } from "@/hooks/useSurveys";
+import { useDocuments } from "@/hooks/useDocuments";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { PageHeader } from "@/components/ui/page-header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -21,7 +23,7 @@ import {
 import { FilterBar } from "@/components/ui/filter-bar";
 import {
   Plus, AlertTriangle, CheckCircle, Clock, Wrench, FileText, Target, Trash2, Pencil, Search,
-  Map, ShieldAlert,
+  Map, ShieldAlert, FolderOpen, Eye,
 } from "lucide-react";
 import { toast } from "sonner";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
@@ -43,6 +45,7 @@ import { CalibrationFormDialog } from "@/components/topography/CalibrationFormDi
 import { RequestFormDialog } from "@/components/topography/RequestFormDialog";
 import { ControlFormDialog } from "@/components/topography/ControlFormDialog";
 import { SurveyFormDialog } from "@/components/survey/SurveyFormDialog";
+import { DocumentFormDialog } from "@/components/documents/DocumentFormDialog";
 import type { TopographyRequest, TopographyControl } from "@/lib/services/topographyService";
 import type { SurveyRecord } from "@/lib/services/surveyService";
 import { cn } from "@/lib/utils";
@@ -100,6 +103,7 @@ export default function TopographyPage() {
   const { activeProject } = useProject();
   const { user } = useAuth();
   const { isAdmin, canCreate, canDelete } = useProjectRole();
+  const navigate = useNavigate();
   const reportMeta = useReportMeta();
   const [activeTab, setActiveTab] = useState("equipment");
 
@@ -108,6 +112,7 @@ export default function TopographyPage() {
   const { data: requests, loading: reqLoading, refetch: refetchReq } = useTopographyRequests();
   const { data: controls, loading: ctrlLoading, refetch: refetchCtrl } = useTopographyControls();
   const { data: surveys, loading: surveyLoading, refetch: refetchSurveys } = useSurveys();
+  const { data: allDocuments, loading: docsLoading, refetch: refetchDocs } = useDocuments();
 
   const [eqDialogOpen, setEqDialogOpen] = useState(false);
   const [viewEquipment, setViewEquipment] = useState<any>(null);
@@ -119,6 +124,8 @@ export default function TopographyPage() {
   const [editControl, setEditControl] = useState<TopographyControl | null>(null);
   const [surveyDialogOpen, setSurveyDialogOpen] = useState(false);
   const [editSurvey, setEditSurvey] = useState<SurveyRecord | null>(null);
+  const [docDialogOpen, setDocDialogOpen] = useState(false);
+  const [editDoc, setEditDoc] = useState<any>(null);
 
   // Filters
   const [search, setSearch] = useState("");
@@ -157,6 +164,16 @@ export default function TopographyPage() {
     if (filterCtrlResult !== "__all__") list = list.filter(c => c.result === filterCtrlResult);
     return list;
   }, [controls, search, filterCtrlResult]);
+
+  // Documents filtered to topografia discipline
+  const topoDocuments = useMemo(() => {
+    let list = allDocuments.filter(d => d.disciplina === "topografia" && !d.is_deleted);
+    if (search) {
+      const q = search.toLowerCase();
+      list = list.filter(d => d.title.toLowerCase().includes(q) || (d.code ?? "").toLowerCase().includes(q) || d.doc_type.toLowerCase().includes(q));
+    }
+    return list;
+  }, [allDocuments, search]);
 
   if (!activeProject) return <NoProjectBanner />;
 
@@ -255,6 +272,7 @@ export default function TopographyPage() {
           <TabsTrigger value="requests"><FileText className="h-4 w-4 mr-1" />{t("topography.requests")}</TabsTrigger>
           <TabsTrigger value="controls"><Target className="h-4 w-4 mr-1" />{t("topography.controls")}</TabsTrigger>
           <TabsTrigger value="surveys"><Map className="h-4 w-4 mr-1" />{t("topography.surveys")}</TabsTrigger>
+          <TabsTrigger value="documents"><FolderOpen className="h-4 w-4 mr-1" />{t("topography.documents")}<Badge variant="secondary" className="ml-1.5 text-[10px] px-1.5 py-0">{topoDocuments.length}</Badge></TabsTrigger>
         </TabsList>
 
         <div className="mt-4">
@@ -480,6 +498,69 @@ export default function TopographyPage() {
             </Table>
           </div>
         </TabsContent>
+
+        {/* ── E) Documentos ──────────────────────────────────────────── */}
+        <TabsContent value="documents" className="space-y-4">
+          <div className="flex justify-end">
+            {canCreate && (
+              <Button onClick={() => { setEditDoc(null); setDocDialogOpen(true); }}>
+                <Plus className="h-4 w-4 mr-1" />{t("topography.newDocument")}
+              </Button>
+            )}
+          </div>
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader><TableRow>
+                <TableHead>{t("topography.table.code")}</TableHead>
+                <TableHead>{t("documents.form.title")}</TableHead>
+                <TableHead>{t("documents.form.docType")}</TableHead>
+                <TableHead>{t("documents.form.revision")}</TableHead>
+                <TableHead>{t("common.status")}</TableHead>
+                <TableHead>{t("common.actions")}</TableHead>
+              </TableRow></TableHeader>
+              <TableBody>
+                {topoDocuments.map((doc) => (
+                  <TableRow key={doc.id} className="cursor-pointer hover:bg-muted/20" onClick={() => navigate(`/documents/${doc.id}`)}>
+                    <TableCell className="font-medium font-mono text-xs">{doc.code || "—"}</TableCell>
+                    <TableCell className="max-w-[300px] truncate">{doc.title}</TableCell>
+                    <TableCell>{t(`documents.docTypes.${doc.doc_type}`, { defaultValue: doc.doc_type })}</TableCell>
+                    <TableCell className="font-mono text-xs">Rev. {doc.revision ?? "0"}</TableCell>
+                    <TableCell>
+                      <Badge variant={doc.status === "approved" ? "default" : "secondary"} className="text-xs">
+                        {t(`documents.status.${doc.status}`, { defaultValue: doc.status })}
+                      </Badge>
+                    </TableCell>
+                    <TableCell onClick={e => e.stopPropagation()}>
+                      <div className="flex gap-1">
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => navigate(`/documents/${doc.id}`)}>
+                          <Eye className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setEditDoc(doc); setDocDialogOpen(true); }}>
+                          <Pencil className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+                {topoDocuments.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
+                      <div className="flex flex-col items-center gap-2">
+                        <FolderOpen className="h-8 w-8 opacity-30" />
+                        <p>{t("topography.noDocuments")}</p>
+                        {canCreate && (
+                          <Button variant="outline" size="sm" onClick={() => { setEditDoc(null); setDocDialogOpen(true); }}>
+                            <Plus className="h-3.5 w-3.5 mr-1" />{t("topography.newDocument")}
+                          </Button>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </TabsContent>
       </Tabs>
 
       {/* Dialogs */}
@@ -488,6 +569,13 @@ export default function TopographyPage() {
       <CalibrationFormDialog open={calDialogOpen} onOpenChange={setCalDialogOpen} projectId={activeProject.id} equipmentId={calEquipmentId} onSuccess={() => { refetchCal(); refetchEq(); setCalDialogOpen(false); }} />
       <RequestFormDialog open={reqDialogOpen} onOpenChange={setReqDialogOpen} projectId={activeProject.id} editRequest={editRequest} onSuccess={() => { refetchReq(); setReqDialogOpen(false); }} />
       <ControlFormDialog open={ctrlDialogOpen} onOpenChange={setCtrlDialogOpen} projectId={activeProject.id} equipment={equipment} editControl={editControl} onSuccess={() => { refetchCtrl(); setCtrlDialogOpen(false); }} />
+      <DocumentFormDialog
+        open={docDialogOpen}
+        onOpenChange={setDocDialogOpen}
+        document={editDoc}
+        defaultValues={{ disciplina: "topografia" }}
+        onSuccess={() => { refetchDocs(); setDocDialogOpen(false); }}
+      />
     </div>
   );
 }

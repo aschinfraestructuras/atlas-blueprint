@@ -79,6 +79,8 @@ interface DocumentFormDialogProps {
   onOpenChange: (open: boolean) => void;
   document?: Document | null;
   onSuccess: () => void;
+  /** Optional default values for new document creation (e.g. pre-fill disciplina) */
+  defaultValues?: Partial<FormValues>;
 }
 
 function formatBytes(b: number | null | undefined): string {
@@ -88,7 +90,7 @@ function formatBytes(b: number | null | undefined): string {
   return `${(b / 1024 / 1024).toFixed(1)} MB`;
 }
 
-export function DocumentFormDialog({ open, onOpenChange, document: doc, onSuccess }: DocumentFormDialogProps) {
+export function DocumentFormDialog({ open, onOpenChange, document: doc, onSuccess, defaultValues: propDefaults }: DocumentFormDialogProps) {
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const { activeProject } = useProject();
@@ -129,7 +131,7 @@ export function DocumentFormDialog({ open, onOpenChange, document: doc, onSucces
               disciplina_outro: doc.disciplina_outro ?? "",
               type_outro: doc.type_outro ?? "",
             }
-          : { title: "", doc_type: "", disciplina: "geral", status: "draft", revision: "", code: "", issued_at: "", tags: "", file_url: "", disciplina_outro: "", type_outro: "" }
+          : { title: "", doc_type: "", disciplina: "geral", status: "draft", revision: "", code: "", issued_at: "", tags: "", file_url: "", disciplina_outro: "", type_outro: "", ...propDefaults }
       );
       setPendingFile(null);
       setSelectedTemplate("");
