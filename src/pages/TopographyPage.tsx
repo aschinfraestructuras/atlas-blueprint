@@ -165,6 +165,16 @@ export default function TopographyPage() {
     return list;
   }, [controls, search, filterCtrlResult]);
 
+  // Documents filtered to topografia discipline
+  const topoDocuments = useMemo(() => {
+    let list = allDocuments.filter(d => d.disciplina === "topografia" && !d.is_deleted);
+    if (search) {
+      const q = search.toLowerCase();
+      list = list.filter(d => d.title.toLowerCase().includes(q) || (d.code ?? "").toLowerCase().includes(q) || d.doc_type.toLowerCase().includes(q));
+    }
+    return list;
+  }, [allDocuments, search]);
+
   if (!activeProject) return <NoProjectBanner />;
 
   const meta = reportMeta ?? { projectName: activeProject.name, projectCode: activeProject.code, locale: "pt", generatedBy: user?.email ?? undefined };
