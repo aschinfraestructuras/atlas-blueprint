@@ -50,6 +50,8 @@ const TOPOGRAPHY_SEED_DOCS: SeedDoc[] = [
 ];
 
 export async function seedTopographyDocuments(projectId: string): Promise<number> {
+  const { data: { user } } = await supabase.auth.getUser();
+  const userId = user?.id ?? "";
   let created = 0;
   for (const doc of TOPOGRAPHY_SEED_DOCS) {
     try {
