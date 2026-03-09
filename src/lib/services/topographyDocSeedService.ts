@@ -62,6 +62,7 @@ export async function seedTopographyDocuments(projectId: string): Promise<number
         disciplina: "topografia",
         revision: doc.revision,
         status: "draft",
+        created_by: userId,
       });
       created++;
     } catch (e) {
