@@ -548,14 +548,37 @@ export default function TopographyPage() {
                 {topoDocuments.length === 0 && (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
-                      <div className="flex flex-col items-center gap-2">
+                      <div className="flex flex-col items-center gap-3">
                         <FolderOpen className="h-8 w-8 opacity-30" />
                         <p>{t("topography.noDocuments")}</p>
-                        {canCreate && (
-                          <Button variant="outline" size="sm" onClick={() => { setEditDoc(null); setDocDialogOpen(true); }}>
-                            <Plus className="h-3.5 w-3.5 mr-1" />{t("topography.newDocument")}
-                          </Button>
-                        )}
+                        <div className="flex gap-2">
+                          {canCreate && (
+                            <Button variant="outline" size="sm" onClick={() => { setEditDoc(null); setDocDialogOpen(true); }}>
+                              <Plus className="h-3.5 w-3.5 mr-1" />{t("topography.newDocument")}
+                            </Button>
+                          )}
+                          {canCreate && (
+                            <Button
+                              size="sm"
+                              disabled={seeding}
+                              onClick={async () => {
+                                setSeeding(true);
+                                try {
+                                  const count = await seedTopographyDocuments(activeProject.id);
+                                  toast.success(`${count} documentos de topografia criados com sucesso`);
+                                  refetchDocs();
+                                } catch (e) {
+                                  toast.error("Erro ao criar documentos");
+                                } finally {
+                                  setSeeding(false);
+                                }
+                              }}
+                            >
+                              <FileText className="h-3.5 w-3.5 mr-1" />
+                              {seeding ? t("common.loading") : `Carregar ${TOPOGRAPHY_SEED_COUNT} docs do projeto`}
+                            </Button>
+                          )}
+                        </div>
                       </div>
                     </TableCell>
                   </TableRow>
