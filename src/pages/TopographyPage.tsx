@@ -48,6 +48,7 @@ import { SurveyFormDialog } from "@/components/survey/SurveyFormDialog";
 import { DocumentFormDialog } from "@/components/documents/DocumentFormDialog";
 import type { TopographyRequest, TopographyControl } from "@/lib/services/topographyService";
 import type { SurveyRecord } from "@/lib/services/surveyService";
+import { seedTopographyDocuments, TOPOGRAPHY_SEED_COUNT } from "@/lib/services/topographyDocSeedService";
 import { cn } from "@/lib/utils";
 
 function CalibrationBadge({ status }: { status: string }) {
