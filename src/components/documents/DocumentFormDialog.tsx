@@ -131,7 +131,7 @@ export function DocumentFormDialog({ open, onOpenChange, document: doc, onSucces
               disciplina_outro: doc.disciplina_outro ?? "",
               type_outro: doc.type_outro ?? "",
             }
-          : { title: "", doc_type: "", disciplina: "geral", status: "draft", revision: "", code: "", issued_at: "", tags: "", file_url: "", disciplina_outro: "", type_outro: "" }
+          : { title: "", doc_type: "", disciplina: "geral", status: "draft", revision: "", code: "", issued_at: "", tags: "", file_url: "", disciplina_outro: "", type_outro: "", ...propDefaults }
       );
       setPendingFile(null);
       setSelectedTemplate("");
