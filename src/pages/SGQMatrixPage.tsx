@@ -163,8 +163,8 @@ const SGQ_REQUIREMENTS: SGQRequirement[] = [
     route: "/topography",
     icon: Crosshair,
     coverage: "full",
-    details: "Levantamentos, equipamentos com calibração, pedidos e controlo geométrico. Bloqueio por calibração expirada.",
-    registryTypes: ["Survey", "Equipment", "Control"],
+    details: "Levantamentos, equipamentos com calibração, pedidos, controlo geométrico e repositório de documentos de topografia (MDJ, cartografia, perfis). Bloqueio por calibração expirada.",
+    registryTypes: ["Survey", "Equipment", "Control", "MDJ", "Drawing"],
   },
   // ─── 9. Relatórios Diários ────────────────────────────────────
   {
