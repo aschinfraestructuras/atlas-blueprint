@@ -513,7 +513,7 @@ export default function TopographyPage() {
               <TableHeader><TableRow>
                 <TableHead>{t("topography.table.code")}</TableHead>
                 <TableHead>{t("documents.form.title")}</TableHead>
-                <TableHead>{t("documents.form.docType")}</TableHead>
+                <TableHead>{t("documents.form.type")}</TableHead>
                 <TableHead>{t("documents.form.revision")}</TableHead>
                 <TableHead>{t("common.status")}</TableHead>
                 <TableHead>{t("common.actions")}</TableHead>
