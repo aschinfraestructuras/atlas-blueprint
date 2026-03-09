@@ -79,6 +79,8 @@ interface DocumentFormDialogProps {
   onOpenChange: (open: boolean) => void;
   document?: Document | null;
   onSuccess: () => void;
+  /** Optional default values for new document creation (e.g. pre-fill disciplina) */
+  defaultValues?: Partial<FormValues>;
 }
 
 function formatBytes(b: number | null | undefined): string {
