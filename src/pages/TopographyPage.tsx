@@ -127,6 +127,8 @@ export default function TopographyPage() {
   const [editSurvey, setEditSurvey] = useState<SurveyRecord | null>(null);
   const [docDialogOpen, setDocDialogOpen] = useState(false);
   const [editDoc, setEditDoc] = useState<any>(null);
+  const [seeding, setSeeding] = useState(false);
+
 
   // Filters
   const [search, setSearch] = useState("");
