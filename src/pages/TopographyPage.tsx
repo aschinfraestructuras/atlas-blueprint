@@ -112,6 +112,7 @@ export default function TopographyPage() {
   const { data: requests, loading: reqLoading, refetch: refetchReq } = useTopographyRequests();
   const { data: controls, loading: ctrlLoading, refetch: refetchCtrl } = useTopographyControls();
   const { data: surveys, loading: surveyLoading, refetch: refetchSurveys } = useSurveys();
+  const { data: allDocuments, loading: docsLoading, refetch: refetchDocs } = useDocuments();
 
   const [eqDialogOpen, setEqDialogOpen] = useState(false);
   const [viewEquipment, setViewEquipment] = useState<any>(null);
@@ -123,6 +124,8 @@ export default function TopographyPage() {
   const [editControl, setEditControl] = useState<TopographyControl | null>(null);
   const [surveyDialogOpen, setSurveyDialogOpen] = useState(false);
   const [editSurvey, setEditSurvey] = useState<SurveyRecord | null>(null);
+  const [docDialogOpen, setDocDialogOpen] = useState(false);
+  const [editDoc, setEditDoc] = useState<any>(null);
 
   // Filters
   const [search, setSearch] = useState("");
