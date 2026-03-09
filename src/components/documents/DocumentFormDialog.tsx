@@ -90,7 +90,7 @@ function formatBytes(b: number | null | undefined): string {
   return `${(b / 1024 / 1024).toFixed(1)} MB`;
 }
 
-export function DocumentFormDialog({ open, onOpenChange, document: doc, onSuccess }: DocumentFormDialogProps) {
+export function DocumentFormDialog({ open, onOpenChange, document: doc, onSuccess, defaultValues: propDefaults }: DocumentFormDialogProps) {
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const { activeProject } = useProject();
