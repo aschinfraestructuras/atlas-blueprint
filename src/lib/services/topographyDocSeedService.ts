@@ -3,6 +3,7 @@
  * Based on the PF17A project document index.
  */
 import { documentService } from "./documentService";
+import { supabase } from "@/integrations/supabase/client";
 
 interface SeedDoc {
   title: string;
