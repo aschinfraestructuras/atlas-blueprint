@@ -1,10 +1,12 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { useProject } from "@/contexts/ProjectContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useReportMeta } from "@/hooks/useReportMeta";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import { useSurveys } from "@/hooks/useSurveys";
+import { useDocuments } from "@/hooks/useDocuments";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { PageHeader } from "@/components/ui/page-header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -21,7 +23,7 @@ import {
 import { FilterBar } from "@/components/ui/filter-bar";
 import {
   Plus, AlertTriangle, CheckCircle, Clock, Wrench, FileText, Target, Trash2, Pencil, Search,
-  Map, ShieldAlert,
+  Map, ShieldAlert, FolderOpen, Eye,
 } from "lucide-react";
 import { toast } from "sonner";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
@@ -43,6 +45,7 @@ import { CalibrationFormDialog } from "@/components/topography/CalibrationFormDi
 import { RequestFormDialog } from "@/components/topography/RequestFormDialog";
 import { ControlFormDialog } from "@/components/topography/ControlFormDialog";
 import { SurveyFormDialog } from "@/components/survey/SurveyFormDialog";
+import { DocumentFormDialog } from "@/components/documents/DocumentFormDialog";
 import type { TopographyRequest, TopographyControl } from "@/lib/services/topographyService";
 import type { SurveyRecord } from "@/lib/services/surveyService";
 import { cn } from "@/lib/utils";
