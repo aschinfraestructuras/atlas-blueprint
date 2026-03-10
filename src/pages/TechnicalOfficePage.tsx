@@ -354,7 +354,8 @@ export default function TechnicalOfficePage() {
           </FilterBar>
         </div>
 
-        {/* Table */}
+        {/* Table — standard items */}
+        {!isTopoDrawingsTab && (
         <div className="mt-4">
           {(loading || rfisLoading) ? (
             <div className="rounded-xl border border-border overflow-hidden divide-y divide-border">
@@ -453,6 +454,12 @@ export default function TechnicalOfficePage() {
             </div>
           )}
         </div>
+        )}
+
+        {/* Topography Drawings — linked from Topography module */}
+        {isTopoDrawingsTab && (
+          <TopoDrawingsView documents={allDocuments} navigate={navigate} />
+        )}
       </Tabs>
 
       <TechnicalOfficeFormDialog open={dialogOpen} onOpenChange={setDialogOpen} item={editingItem} onSuccess={refetch} />
