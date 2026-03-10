@@ -2937,6 +2937,8 @@
     "newDocument": "Novo Documento",
     "noDocuments": "Sem documentos no Arquivo Topográfico. Crie o primeiro documento ou carregue os documentos padrão do projeto.",
     "seedDocs": "Carregar {{count}} docs do projeto",
+    "seedSuccess": "{{count}} documentos de topografia criados com sucesso",
+    "seedError": "Erro ao criar documentos de topografia",
     "topoDrawings": "Desenhos Topográficos",
     "noDrawingsInTechOffice": "Sem desenhos topográficos registados. Crie peças desenhadas no Arquivo Topográfico para que apareçam aqui.",
     "deleteConfirm": "Este registo será eliminado permanentemente. Tem a certeza?",
