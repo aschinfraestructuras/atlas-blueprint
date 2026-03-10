@@ -91,6 +91,7 @@ export default function TechnicalOfficePage() {
   const { activeProject } = useProject();
   const { data: items, loading, error, refetch } = useTechnicalOffice();
   const { data: rfis, loading: rfisLoading, refetch: refetchRfis } = useRfis();
+  const { data: allDocuments } = useDocuments();
   const { canCreate, isAdmin } = useProjectRole();
   const reportMeta = useReportMeta();
   const navigate = useNavigate();
