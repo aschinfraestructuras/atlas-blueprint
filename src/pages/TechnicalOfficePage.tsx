@@ -5,6 +5,7 @@ import { useProject } from "@/contexts/ProjectContext";
 import { useReportMeta } from "@/hooks/useReportMeta";
 import { useTechnicalOffice } from "@/hooks/useTechnicalOffice";
 import { useRfis } from "@/hooks/useRfis";
+import { useDocuments } from "@/hooks/useDocuments";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import { technicalOfficeService, TECH_OFFICE_TYPES, TECH_OFFICE_STATUSES, PRIORITIES } from "@/lib/services/technicalOfficeService";
 import { rfiService } from "@/lib/services/rfiService";
