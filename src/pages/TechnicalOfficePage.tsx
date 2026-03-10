@@ -110,6 +110,7 @@ export default function TechnicalOfficePage() {
   const [filterDiscipline, setFilterDiscipline] = useState("__all__");
 
   const isRfiTab = activeTab === "rfis";
+  const isTopoDrawingsTab = activeTab === "topo_drawings";
   const todayDate = new Date();
   const todayStr = todayDate.toISOString().slice(0, 10);
 
