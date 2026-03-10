@@ -302,6 +302,7 @@ export default function TechnicalOfficePage() {
           <TabsTrigger value="submittals">Submittals</TabsTrigger>
           <TabsTrigger value="transmittals">Transmittals</TabsTrigger>
           <TabsTrigger value="others">{t("technicalOffice.tabs.others", { defaultValue: "Outros" })}</TabsTrigger>
+          <TabsTrigger value="topo_drawings"><Map className="h-4 w-4 mr-1" />{t("topography.topoDrawings")}</TabsTrigger>
         </TabsList>
 
         <div className="mt-4">
