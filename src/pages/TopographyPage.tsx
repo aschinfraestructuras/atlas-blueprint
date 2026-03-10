@@ -275,7 +275,7 @@ export default function TopographyPage() {
           <TabsTrigger value="requests"><FileText className="h-4 w-4 mr-1" />{t("topography.requests")}</TabsTrigger>
           <TabsTrigger value="controls"><Target className="h-4 w-4 mr-1" />{t("topography.controls")}</TabsTrigger>
           <TabsTrigger value="surveys"><Map className="h-4 w-4 mr-1" />{t("topography.surveys")}</TabsTrigger>
-          <TabsTrigger value="documents"><FolderOpen className="h-4 w-4 mr-1" />{t("topography.documents")}<Badge variant="secondary" className="ml-1.5 text-[10px] px-1.5 py-0">{topoDocuments.length}</Badge></TabsTrigger>
+          <TabsTrigger value="documents"><FolderOpen className="h-4 w-4 mr-1" />{t("topography.archiveTab")}<Badge variant="secondary" className="ml-1.5 text-[10px] px-1.5 py-0">{topoDocuments.length}</Badge></TabsTrigger>
         </TabsList>
 
         <div className="mt-4">
