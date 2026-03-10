@@ -565,10 +565,10 @@ export default function TopographyPage() {
                                 setSeeding(true);
                                 try {
                                   const count = await seedTopographyDocuments(activeProject.id);
-                                  toast.success(`${count} documentos de topografia criados com sucesso`);
+                                  toast.success(t("topography.seedSuccess", { count }));
                                   refetchDocs();
                                 } catch (e) {
-                                  toast.error("Erro ao criar documentos");
+                                  toast.error(t("topography.seedError"));
                                 } finally {
                                   setSeeding(false);
                                 }
