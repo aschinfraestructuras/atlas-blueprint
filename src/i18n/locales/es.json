@@ -2940,8 +2940,12 @@
     "noCalibrationsYet": "Sin calibraciones registradas.",
     "noLinked": "Sin registros topográficos vinculados a esta actividad.",
     "documents": "Documentos",
+    "archiveTab": "Archivo Topográfico",
+    "archiveSubtitle": "MDJs, Anexos, Fichas y Piezas Dibujadas de la disciplina de Topografía",
     "newDocument": "Nuevo Documento",
-    "noDocuments": "Sin documentos de topografía. Cree el primer documento para este módulo.",
+    "noDocuments": "Sin documentos en el Archivo Topográfico. Cree el primer documento o cargue los documentos estándar del proyecto.",
+    "seedDocs": "Cargar {{count}} docs del proyecto",
+    "topoDrawings": "Dibujos Topográficos",
     "deleteConfirm": "Este registro será eliminado permanentemente. ¿Está seguro?",
     "searchPlaceholder": "Buscar código, tipo, zona…",
     "status": {

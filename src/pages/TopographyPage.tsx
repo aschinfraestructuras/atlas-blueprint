@@ -575,7 +575,7 @@ export default function TopographyPage() {
                               }}
                             >
                               <FileText className="h-3.5 w-3.5 mr-1" />
-                              {seeding ? t("common.loading") : `Carregar ${TOPOGRAPHY_SEED_COUNT} docs do projeto`}
+                              {seeding ? t("common.loading") : t("topography.seedDocs", { count: TOPOGRAPHY_SEED_COUNT })}
                             </Button>
                           )}
                         </div>
