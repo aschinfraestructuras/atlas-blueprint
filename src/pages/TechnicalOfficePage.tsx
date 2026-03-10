@@ -12,7 +12,7 @@ import { rfiService } from "@/lib/services/rfiService";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import { exportRfisCsv, exportRfisPdf } from "@/lib/services/rfiExportService";
 import { exportTechOfficeCsv, exportTechOfficePdf } from "@/lib/services/techOfficeExportService";
-import { Inbox, Plus, Trash2, MessageSquareText, Search, Eye, AlertTriangle, Clock, CheckCircle, FileText } from "lucide-react";
+import { Inbox, Plus, Trash2, MessageSquareText, Search, Eye, AlertTriangle, Clock, CheckCircle, FileText, Map } from "lucide-react";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
