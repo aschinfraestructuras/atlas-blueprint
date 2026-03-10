@@ -168,7 +168,7 @@ export default function TopographyPage() {
     return list;
   }, [controls, search, filterCtrlResult]);
 
-  // Documents filtered to topografia discipline
+  // Arquivo Topográfico: ALL docs with disciplina=topografia
   const topoDocuments = useMemo(() => {
     let list = allDocuments.filter(d => d.disciplina === "topografia" && !d.is_deleted);
     if (search) {
@@ -275,7 +275,7 @@ export default function TopographyPage() {
           <TabsTrigger value="requests"><FileText className="h-4 w-4 mr-1" />{t("topography.requests")}</TabsTrigger>
           <TabsTrigger value="controls"><Target className="h-4 w-4 mr-1" />{t("topography.controls")}</TabsTrigger>
           <TabsTrigger value="surveys"><Map className="h-4 w-4 mr-1" />{t("topography.surveys")}</TabsTrigger>
-          <TabsTrigger value="documents"><FolderOpen className="h-4 w-4 mr-1" />{t("topography.documents")}<Badge variant="secondary" className="ml-1.5 text-[10px] px-1.5 py-0">{topoDocuments.length}</Badge></TabsTrigger>
+          <TabsTrigger value="documents"><FolderOpen className="h-4 w-4 mr-1" />{t("topography.archiveTab")}<Badge variant="secondary" className="ml-1.5 text-[10px] px-1.5 py-0">{topoDocuments.length}</Badge></TabsTrigger>
         </TabsList>
 
         <div className="mt-4">
@@ -565,17 +565,17 @@ export default function TopographyPage() {
                                 setSeeding(true);
                                 try {
                                   const count = await seedTopographyDocuments(activeProject.id);
-                                  toast.success(`${count} documentos de topografia criados com sucesso`);
+                                  toast.success(t("topography.seedSuccess", { count }));
                                   refetchDocs();
                                 } catch (e) {
-                                  toast.error("Erro ao criar documentos");
+                                  toast.error(t("topography.seedError"));
                                 } finally {
                                   setSeeding(false);
                                 }
                               }}
                             >
                               <FileText className="h-3.5 w-3.5 mr-1" />
-                              {seeding ? t("common.loading") : `Carregar ${TOPOGRAPHY_SEED_COUNT} docs do projeto`}
+                              {seeding ? t("common.loading") : t("topography.seedDocs", { count: TOPOGRAPHY_SEED_COUNT })}
                             </Button>
                           )}
                         </div>

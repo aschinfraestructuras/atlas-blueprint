@@ -5,13 +5,14 @@ import { useProject } from "@/contexts/ProjectContext";
 import { useReportMeta } from "@/hooks/useReportMeta";
 import { useTechnicalOffice } from "@/hooks/useTechnicalOffice";
 import { useRfis } from "@/hooks/useRfis";
+import { useDocuments } from "@/hooks/useDocuments";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import { technicalOfficeService, TECH_OFFICE_TYPES, TECH_OFFICE_STATUSES, PRIORITIES } from "@/lib/services/technicalOfficeService";
 import { rfiService } from "@/lib/services/rfiService";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import { exportRfisCsv, exportRfisPdf } from "@/lib/services/rfiExportService";
 import { exportTechOfficeCsv, exportTechOfficePdf } from "@/lib/services/techOfficeExportService";
-import { Inbox, Plus, Trash2, MessageSquareText, Search, Eye, AlertTriangle, Clock, CheckCircle, FileText } from "lucide-react";
+import { Inbox, Plus, Trash2, MessageSquareText, Search, Eye, AlertTriangle, Clock, CheckCircle, FileText, Map } from "lucide-react";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
@@ -85,11 +86,62 @@ function DeleteButton({ onConfirm, label }: { onConfirm: () => void; label?: str
   );
 }
 
+function TopoDrawingsView({ documents, navigate }: { documents: any[]; navigate: (path: string) => void }) {
+  const { t } = useTranslation();
+  const topoDrawings = useMemo(() =>
+    documents.filter(d => d.disciplina === "topografia" && d.doc_type === "drawing" && !d.is_deleted),
+    [documents]
+  );
+
+  return (
+    <div className="mt-4 space-y-3">
+      <p className="text-sm text-muted-foreground">{t("topography.archiveSubtitle")}</p>
+      {topoDrawings.length === 0 ? (
+        <EmptyState icon={Map} subtitleKey="topography.noDrawingsInTechOffice" />
+      ) : (
+        <div className="rounded-xl border border-border overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-muted/40">
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("technicalOffice.table.code")}</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("documents.form.title")}</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("documents.form.revision")}</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.status")}</TableHead>
+                <TableHead className="w-16">{t("common.actions")}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {topoDrawings.map((doc) => (
+                <TableRow key={doc.id} className="hover:bg-muted/20 transition-colors cursor-pointer" onClick={() => navigate(`/documents/${doc.id}`)}>
+                  <TableCell className="font-mono text-xs font-medium">{doc.code || "—"}</TableCell>
+                  <TableCell className="font-medium text-sm max-w-[350px] truncate">{doc.title}</TableCell>
+                  <TableCell className="font-mono text-xs">Rev. {doc.revision ?? "0"}</TableCell>
+                  <TableCell>
+                    <Badge variant={doc.status === "approved" ? "default" : "secondary"} className="text-xs">
+                      {t(`documents.status.${doc.status}`, { defaultValue: doc.status })}
+                    </Badge>
+                  </TableCell>
+                  <TableCell onClick={e => e.stopPropagation()}>
+                    <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={() => navigate(`/documents/${doc.id}`)}>
+                      <Eye className="h-3.5 w-3.5" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function TechnicalOfficePage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
   const { data: items, loading, error, refetch } = useTechnicalOffice();
   const { data: rfis, loading: rfisLoading, refetch: refetchRfis } = useRfis();
+  const { data: allDocuments } = useDocuments();
   const { canCreate, isAdmin } = useProjectRole();
   const reportMeta = useReportMeta();
   const navigate = useNavigate();
@@ -108,6 +160,7 @@ export default function TechnicalOfficePage() {
   const [filterDiscipline, setFilterDiscipline] = useState("__all__");
 
   const isRfiTab = activeTab === "rfis";
+  const isTopoDrawingsTab = activeTab === "topo_drawings";
   const todayDate = new Date();
   const todayStr = todayDate.toISOString().slice(0, 10);
 
@@ -299,6 +352,7 @@ export default function TechnicalOfficePage() {
           <TabsTrigger value="submittals">Submittals</TabsTrigger>
           <TabsTrigger value="transmittals">Transmittals</TabsTrigger>
           <TabsTrigger value="others">{t("technicalOffice.tabs.others", { defaultValue: "Outros" })}</TabsTrigger>
+          <TabsTrigger value="topo_drawings"><Map className="h-4 w-4 mr-1" />{t("topography.topoDrawings")}</TabsTrigger>
         </TabsList>
 
         <div className="mt-4">
@@ -350,7 +404,8 @@ export default function TechnicalOfficePage() {
           </FilterBar>
         </div>
 
-        {/* Table */}
+        {/* Table — standard items */}
+        {!isTopoDrawingsTab && (
         <div className="mt-4">
           {(loading || rfisLoading) ? (
             <div className="rounded-xl border border-border overflow-hidden divide-y divide-border">
@@ -449,6 +504,12 @@ export default function TechnicalOfficePage() {
             </div>
           )}
         </div>
+        )}
+
+        {/* Topography Drawings — linked from Topography module */}
+        {isTopoDrawingsTab && (
+          <TopoDrawingsView documents={allDocuments} navigate={navigate} />
+        )}
       </Tabs>
 
       <TechnicalOfficeFormDialog open={dialogOpen} onOpenChange={setDialogOpen} item={editingItem} onSuccess={refetch} />
