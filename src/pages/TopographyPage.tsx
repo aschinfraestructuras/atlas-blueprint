@@ -168,7 +168,7 @@ export default function TopographyPage() {
     return list;
   }, [controls, search, filterCtrlResult]);
 
-  // Documents filtered to topografia discipline
+  // Arquivo Topográfico: ALL docs with disciplina=topografia
   const topoDocuments = useMemo(() => {
     let list = allDocuments.filter(d => d.disciplina === "topografia" && !d.is_deleted);
     if (search) {
