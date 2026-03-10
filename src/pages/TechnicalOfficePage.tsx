@@ -86,6 +86,56 @@ function DeleteButton({ onConfirm, label }: { onConfirm: () => void; label?: str
   );
 }
 
+function TopoDrawingsView({ documents, navigate }: { documents: any[]; navigate: (path: string) => void }) {
+  const { t } = useTranslation();
+  const topoDrawings = useMemo(() =>
+    documents.filter(d => d.disciplina === "topografia" && d.doc_type === "drawing" && !d.is_deleted),
+    [documents]
+  );
+
+  return (
+    <div className="mt-4 space-y-3">
+      <p className="text-sm text-muted-foreground">{t("topography.archiveSubtitle")}</p>
+      {topoDrawings.length === 0 ? (
+        <EmptyState icon={Map} subtitleKey="topography.noDrawingsInTechOffice" />
+      ) : (
+        <div className="rounded-xl border border-border overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-muted/40">
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("technicalOffice.table.code")}</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("documents.form.title")}</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("documents.form.revision")}</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.status")}</TableHead>
+                <TableHead className="w-16">{t("common.actions")}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {topoDrawings.map((doc) => (
+                <TableRow key={doc.id} className="hover:bg-muted/20 transition-colors cursor-pointer" onClick={() => navigate(`/documents/${doc.id}`)}>
+                  <TableCell className="font-mono text-xs font-medium">{doc.code || "—"}</TableCell>
+                  <TableCell className="font-medium text-sm max-w-[350px] truncate">{doc.title}</TableCell>
+                  <TableCell className="font-mono text-xs">Rev. {doc.revision ?? "0"}</TableCell>
+                  <TableCell>
+                    <Badge variant={doc.status === "approved" ? "default" : "secondary"} className="text-xs">
+                      {t(`documents.status.${doc.status}`, { defaultValue: doc.status })}
+                    </Badge>
+                  </TableCell>
+                  <TableCell onClick={e => e.stopPropagation()}>
+                    <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={() => navigate(`/documents/${doc.id}`)}>
+                      <Eye className="h-3.5 w-3.5" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function TechnicalOfficePage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
