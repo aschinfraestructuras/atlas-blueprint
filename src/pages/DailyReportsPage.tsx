@@ -102,7 +102,7 @@ export default function DailyReportsPage() {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">{t("common.status")}: All</SelectItem>
+            <SelectItem value="all">{t("dailyReports.filters.allStatuses")}</SelectItem>
             <SelectItem value="draft">{t("dailyReports.status.draft")}</SelectItem>
             <SelectItem value="submitted">{t("dailyReports.status.submitted")}</SelectItem>
             <SelectItem value="validated">{t("dailyReports.status.validated")}</SelectItem>

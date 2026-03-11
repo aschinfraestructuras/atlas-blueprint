@@ -110,7 +110,7 @@ export default function RecycledMaterialsPage() {
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-[160px]"><SelectValue /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">{t("common.status")}: All</SelectItem>
+            <SelectItem value="all">{t("recycled.filters.allStatuses")}</SelectItem>
             <SelectItem value="pending">{t("recycled.status.pending")}</SelectItem>
             <SelectItem value="submitted">{t("recycled.status.submitted")}</SelectItem>
             <SelectItem value="approved">{t("recycled.status.approved")}</SelectItem>
