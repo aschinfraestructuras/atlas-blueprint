@@ -179,13 +179,13 @@ export default function LaboratoriesPage() {
         <div className="space-y-1">
           <h1 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
             <Building2 className="h-6 w-6 text-muted-foreground" />
-            Laboratórios
+            {t("laboratories.title")}
           </h1>
-          <p className="text-sm text-muted-foreground">Gestão de laboratórios acreditados do projeto</p>
+          <p className="text-sm text-muted-foreground">{t("laboratories.subtitle")}</p>
         </div>
         <Button size="sm" className="h-8 gap-1.5" onClick={() => { setEditing(null); setDialogOpen(true); }}>
           <Plus className="h-3.5 w-3.5" />
-          {t("common.create")}
+          {t("laboratories.form.createBtn")}
         </Button>
       </div>
 
