@@ -3515,6 +3515,9 @@
     },
     "export": {
       "title": "Parte Diária de Obra"
+    },
+    "filters": {
+      "allStatuses": "Todos os estados"
     }
   },
   "recycled": {
