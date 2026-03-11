@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { FilterBar } from "@/components/ui/filter-bar";
 import { ModuleKPICard } from "@/components/ModuleKPICard";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { EmptyState } from "@/components/EmptyState";
