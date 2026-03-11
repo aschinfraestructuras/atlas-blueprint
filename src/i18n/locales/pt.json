@@ -3557,6 +3557,10 @@
       "BAM": "BAM — Boletim de Acompanhamento de Materiais",
       "OUTRO": "Outro"
     },
+    "filters": {
+      "allTypes": "Todos os tipos",
+      "allStatuses": "Todos os estados"
+    },
     "documents": {
       "title": "Documentos Comprovativos",
       "upload": "Anexar Documento"
