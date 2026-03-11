@@ -1145,6 +1145,8 @@
       "updated": "Laboratorio actualizado.",
       "deleted": "Laboratorio eliminado."
     },
+    "notes": "Observaciones",
+    "notesPlaceholder": "Observaciones adicionales…",
     "form": {
       "titleCreate": "Nuevo Laboratorio",
       "titleEdit": "Editar Laboratorio",
