@@ -100,7 +100,7 @@ export default function RecycledMaterialsPage() {
         <Select value={typeFilter} onValueChange={setTypeFilter}>
           <SelectTrigger className="w-[160px]"><SelectValue /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">{t("recycled.fields.referenceType")}: All</SelectItem>
+            <SelectItem value="all">{t("recycled.filters.allTypes")}</SelectItem>
             <SelectItem value="FAM">FAM</SelectItem>
             <SelectItem value="PAP">PAP</SelectItem>
             <SelectItem value="BAM">BAM</SelectItem>
