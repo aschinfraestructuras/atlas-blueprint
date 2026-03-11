@@ -11,7 +11,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FilterBar } from "@/components/ui/filter-bar";
 import { ModuleKPICard } from "@/components/ModuleKPICard";
-import { ModuleKPICard } from "@/components/ModuleKPICard";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { EmptyState } from "@/components/EmptyState";
 import { ArchivedBanner } from "@/components/ArchivedBanner";
