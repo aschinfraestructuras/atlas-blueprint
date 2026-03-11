@@ -95,13 +95,13 @@ function LabFormDialog({ open, onOpenChange, lab, onSuccess }: {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>{lab ? t("common.edit") : t("common.create")}</DialogTitle>
+          <DialogTitle>{lab ? t("laboratories.form.titleEdit") : t("laboratories.form.titleCreate")}</DialogTitle>
         </DialogHeader>
         <div className="space-y-3">
           <div className="space-y-1.5">
-            <Label>{t("tests.results.table.supplier")}</Label>
+            <Label>{t("laboratories.selectSupplier")}</Label>
             <Select value={supplierId} onValueChange={setSupplierId} disabled={!!lab}>
-              <SelectTrigger><SelectValue placeholder="..." /></SelectTrigger>
+              <SelectTrigger><SelectValue placeholder={t("laboratories.selectSupplierPlaceholder")} /></SelectTrigger>
               <SelectContent>
                 {suppliers.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
               </SelectContent>
@@ -109,33 +109,33 @@ function LabFormDialog({ open, onOpenChange, lab, onSuccess }: {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label>Entidade Acreditação</Label>
-              <Input value={accBody} onChange={(e) => setAccBody(e.target.value)} placeholder="ex: IPAC" />
+              <Label>{t("laboratories.accreditationBody")}</Label>
+              <Input value={accBody} onChange={(e) => setAccBody(e.target.value)} placeholder={t("laboratories.accreditationBodyPlaceholder")} />
             </div>
             <div className="space-y-1.5">
-              <Label>Código Acreditação</Label>
-              <Input value={accCode} onChange={(e) => setAccCode(e.target.value)} placeholder="ex: L0001" />
+              <Label>{t("laboratories.accreditationCode")}</Label>
+              <Input value={accCode} onChange={(e) => setAccCode(e.target.value)} placeholder={t("laboratories.accreditationCodePlaceholder")} />
             </div>
           </div>
           <div className="space-y-1.5">
-            <Label>Âmbito</Label>
-            <Textarea value={scope} onChange={(e) => setScope(e.target.value)} rows={2} />
+            <Label>{t("laboratories.scope")}</Label>
+            <Textarea value={scope} onChange={(e) => setScope(e.target.value)} rows={2} placeholder={t("laboratories.scopePlaceholder")} />
           </div>
           <div className="grid grid-cols-3 gap-3">
-            <div className="space-y-1.5"><Label>{t("common.name")}</Label><Input value={contactName} onChange={(e) => setContactName(e.target.value)} /></div>
-            <div className="space-y-1.5"><Label>Email</Label><Input value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} /></div>
-            <div className="space-y-1.5"><Label>Telefone</Label><Input value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} /></div>
+            <div className="space-y-1.5"><Label>{t("laboratories.contactName")}</Label><Input value={contactName} onChange={(e) => setContactName(e.target.value)} /></div>
+            <div className="space-y-1.5"><Label>{t("laboratories.contactEmail")}</Label><Input type="email" value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} /></div>
+            <div className="space-y-1.5"><Label>{t("laboratories.contactPhone")}</Label><Input value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} /></div>
           </div>
           <div className="space-y-1.5">
-            <Label>{t("common.description")}</Label>
-            <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} />
+            <Label>{t("laboratories.notes", { defaultValue: "Observações" })}</Label>
+            <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} placeholder={t("laboratories.notesPlaceholder", { defaultValue: "Observações adicionais…" })} />
           </div>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>{t("common.cancel")}</Button>
           <Button onClick={handleSave} disabled={saving || !supplierId}>
             {saving && <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" />}
-            {t("common.save")}
+            {lab ? t("laboratories.form.saveBtn") : t("laboratories.form.createBtn")}
           </Button>
         </DialogFooter>
       </DialogContent>
