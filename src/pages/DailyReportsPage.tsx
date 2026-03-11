@@ -93,13 +93,13 @@ export default function DailyReportsPage() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="relative flex-1 min-w-[200px] max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input className="pl-9" placeholder={t("common.search")} value={search} onChange={e => setSearch(e.target.value)} />
+      <FilterBar>
+        <div className="relative flex-1 min-w-[180px] max-w-sm">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+          <Input className="pl-8 h-8 text-sm" placeholder={t("common.search")} value={search} onChange={e => setSearch(e.target.value)} />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-[180px] h-8 text-sm">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -109,7 +109,10 @@ export default function DailyReportsPage() {
             <SelectItem value="validated">{t("dailyReports.status.validated")}</SelectItem>
           </SelectContent>
         </Select>
-      </div>
+        <span className="ml-auto text-xs text-muted-foreground tabular-nums">
+          {filtered.length} / {data.length}
+        </span>
+      </FilterBar>
 
       {/* Table */}
       <Card>
