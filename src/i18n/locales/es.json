@@ -3480,6 +3480,9 @@
     },
     "export": {
       "title": "Parte Diario de Obra"
+    },
+    "filters": {
+      "allStatuses": "Todos los estados"
     }
   },
   "recycled": {
