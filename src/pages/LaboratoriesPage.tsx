@@ -191,10 +191,10 @@ export default function LaboratoriesPage() {
 
       {/* KPI row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <ModuleKPICard icon={Building2} label="Laboratórios Ativos" value={labs.length} />
-        <ModuleKPICard icon={Award} label="Acreditados" value={labs.filter(l => l.accreditation_code).length} />
-        <ModuleKPICard icon={CheckCircle2} label="Com ensaios" value={0} />
-        <ModuleKPICard icon={FlaskConical} label="Total Ensaios" value={0} />
+        <ModuleKPICard icon={Building2} label={t("laboratories.stats.total")} value={labs.length} />
+        <ModuleKPICard icon={Award} label={t("laboratories.accreditationCode")} value={labs.filter(l => l.accreditation_code).length} />
+        <ModuleKPICard icon={CheckCircle2} label={t("laboratories.stats.tests30d")} value={0} />
+        <ModuleKPICard icon={FlaskConical} label={t("laboratories.stats.pass30d")} value={0} />
       </div>
 
       {/* Toolbar */}
