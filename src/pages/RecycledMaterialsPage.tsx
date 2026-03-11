@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { FilterBar } from "@/components/ui/filter-bar";
 import { ModuleKPICard } from "@/components/ModuleKPICard";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { EmptyState } from "@/components/EmptyState";
@@ -92,15 +93,15 @@ export default function RecycledMaterialsPage() {
       </Card>
 
       {/* Filters */}
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="relative flex-1 min-w-[200px] max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input className="pl-9" placeholder={t("common.search")} value={search} onChange={e => setSearch(e.target.value)} />
+      <FilterBar>
+        <div className="relative flex-1 min-w-[180px] max-w-sm">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+          <Input className="pl-8 h-8 text-sm" placeholder={t("common.search")} value={search} onChange={e => setSearch(e.target.value)} />
         </div>
         <Select value={typeFilter} onValueChange={setTypeFilter}>
-          <SelectTrigger className="w-[160px]"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="w-[160px] h-8 text-sm"><SelectValue /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">{t("recycled.fields.referenceType")}: All</SelectItem>
+            <SelectItem value="all">{t("recycled.filters.allTypes")}</SelectItem>
             <SelectItem value="FAM">FAM</SelectItem>
             <SelectItem value="PAP">PAP</SelectItem>
             <SelectItem value="BAM">BAM</SelectItem>
@@ -108,16 +109,19 @@ export default function RecycledMaterialsPage() {
           </SelectContent>
         </Select>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-[160px]"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="w-[160px] h-8 text-sm"><SelectValue /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">{t("common.status")}: All</SelectItem>
+            <SelectItem value="all">{t("recycled.filters.allStatuses")}</SelectItem>
             <SelectItem value="pending">{t("recycled.status.pending")}</SelectItem>
             <SelectItem value="submitted">{t("recycled.status.submitted")}</SelectItem>
             <SelectItem value="approved">{t("recycled.status.approved")}</SelectItem>
             <SelectItem value="rejected">{t("recycled.status.rejected")}</SelectItem>
           </SelectContent>
         </Select>
-      </div>
+        <span className="ml-auto text-xs text-muted-foreground tabular-nums">
+          {filtered.length} / {data.length}
+        </span>
+      </FilterBar>
 
       {/* Table */}
       <Card>

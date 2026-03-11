@@ -95,13 +95,13 @@ function LabFormDialog({ open, onOpenChange, lab, onSuccess }: {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>{lab ? t("common.edit") : t("common.create")}</DialogTitle>
+          <DialogTitle>{lab ? t("laboratories.form.titleEdit") : t("laboratories.form.titleCreate")}</DialogTitle>
         </DialogHeader>
         <div className="space-y-3">
           <div className="space-y-1.5">
-            <Label>{t("tests.results.table.supplier")}</Label>
+            <Label>{t("laboratories.selectSupplier")}</Label>
             <Select value={supplierId} onValueChange={setSupplierId} disabled={!!lab}>
-              <SelectTrigger><SelectValue placeholder="..." /></SelectTrigger>
+              <SelectTrigger><SelectValue placeholder={t("laboratories.selectSupplierPlaceholder")} /></SelectTrigger>
               <SelectContent>
                 {suppliers.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
               </SelectContent>
@@ -109,33 +109,33 @@ function LabFormDialog({ open, onOpenChange, lab, onSuccess }: {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label>Entidade Acreditação</Label>
-              <Input value={accBody} onChange={(e) => setAccBody(e.target.value)} placeholder="ex: IPAC" />
+              <Label>{t("laboratories.accreditationBody")}</Label>
+              <Input value={accBody} onChange={(e) => setAccBody(e.target.value)} placeholder={t("laboratories.accreditationBodyPlaceholder")} />
             </div>
             <div className="space-y-1.5">
-              <Label>Código Acreditação</Label>
-              <Input value={accCode} onChange={(e) => setAccCode(e.target.value)} placeholder="ex: L0001" />
+              <Label>{t("laboratories.accreditationCode")}</Label>
+              <Input value={accCode} onChange={(e) => setAccCode(e.target.value)} placeholder={t("laboratories.accreditationCodePlaceholder")} />
             </div>
           </div>
           <div className="space-y-1.5">
-            <Label>Âmbito</Label>
-            <Textarea value={scope} onChange={(e) => setScope(e.target.value)} rows={2} />
+            <Label>{t("laboratories.scope")}</Label>
+            <Textarea value={scope} onChange={(e) => setScope(e.target.value)} rows={2} placeholder={t("laboratories.scopePlaceholder")} />
           </div>
           <div className="grid grid-cols-3 gap-3">
-            <div className="space-y-1.5"><Label>{t("common.name")}</Label><Input value={contactName} onChange={(e) => setContactName(e.target.value)} /></div>
-            <div className="space-y-1.5"><Label>Email</Label><Input value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} /></div>
-            <div className="space-y-1.5"><Label>Telefone</Label><Input value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} /></div>
+            <div className="space-y-1.5"><Label>{t("laboratories.contactName")}</Label><Input value={contactName} onChange={(e) => setContactName(e.target.value)} /></div>
+            <div className="space-y-1.5"><Label>{t("laboratories.contactEmail")}</Label><Input type="email" value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} /></div>
+            <div className="space-y-1.5"><Label>{t("laboratories.contactPhone")}</Label><Input value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} /></div>
           </div>
           <div className="space-y-1.5">
-            <Label>{t("common.description")}</Label>
-            <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} />
+            <Label>{t("laboratories.notes", { defaultValue: "Observações" })}</Label>
+            <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} placeholder={t("laboratories.notesPlaceholder", { defaultValue: "Observações adicionais…" })} />
           </div>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>{t("common.cancel")}</Button>
           <Button onClick={handleSave} disabled={saving || !supplierId}>
             {saving && <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" />}
-            {t("common.save")}
+            {lab ? t("laboratories.form.saveBtn") : t("laboratories.form.createBtn")}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -179,22 +179,22 @@ export default function LaboratoriesPage() {
         <div className="space-y-1">
           <h1 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
             <Building2 className="h-6 w-6 text-muted-foreground" />
-            Laboratórios
+            {t("laboratories.title")}
           </h1>
-          <p className="text-sm text-muted-foreground">Gestão de laboratórios acreditados do projeto</p>
+          <p className="text-sm text-muted-foreground">{t("laboratories.subtitle")}</p>
         </div>
         <Button size="sm" className="h-8 gap-1.5" onClick={() => { setEditing(null); setDialogOpen(true); }}>
           <Plus className="h-3.5 w-3.5" />
-          {t("common.create")}
+          {t("laboratories.form.createBtn")}
         </Button>
       </div>
 
       {/* KPI row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <ModuleKPICard icon={Building2} label="Laboratórios Ativos" value={labs.length} />
-        <ModuleKPICard icon={Award} label="Acreditados" value={labs.filter(l => l.accreditation_code).length} />
-        <ModuleKPICard icon={CheckCircle2} label="Com ensaios" value={0} />
-        <ModuleKPICard icon={FlaskConical} label="Total Ensaios" value={0} />
+        <ModuleKPICard icon={Building2} label={t("laboratories.stats.total")} value={labs.length} />
+        <ModuleKPICard icon={Award} label={t("laboratories.accreditationCode")} value={labs.filter(l => l.accreditation_code).length} />
+        <ModuleKPICard icon={CheckCircle2} label={t("laboratories.stats.tests30d")} value={0} />
+        <ModuleKPICard icon={FlaskConical} label={t("laboratories.stats.pass30d")} value={0} />
       </div>
 
       {/* Toolbar */}
@@ -217,10 +217,10 @@ export default function LaboratoriesPage() {
           <Table>
             <TableHeader>
               <TableRow className="bg-muted/40">
-                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Fornecedor</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Acreditação</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Âmbito</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Contacto</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("laboratories.selectSupplier")}</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("laboratories.accreditationBody")}</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("laboratories.scope")}</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("laboratories.contactName")}</TableHead>
                 <TableHead className="w-24" />
               </TableRow>
             </TableHeader>

@@ -1145,6 +1145,8 @@
       "updated": "Laboratorio actualizado.",
       "deleted": "Laboratorio eliminado."
     },
+    "notes": "Observaciones",
+    "notesPlaceholder": "Observaciones adicionales…",
     "form": {
       "titleCreate": "Nuevo Laboratorio",
       "titleEdit": "Editar Laboratorio",
@@ -3480,6 +3482,9 @@
     },
     "export": {
       "title": "Parte Diario de Obra"
+    },
+    "filters": {
+      "allStatuses": "Todos los estados"
     }
   },
   "recycled": {
@@ -3521,6 +3526,10 @@
       "PAP": "PAP — Plan de Aplicación de Productos",
       "BAM": "BAM — Boletín de Acompañamiento de Materiales",
       "OUTRO": "Otro"
+    },
+    "filters": {
+      "allTypes": "Todos los tipos",
+      "allStatuses": "Todos los estados"
     },
     "documents": {
       "title": "Documentos Comprobatorios",
