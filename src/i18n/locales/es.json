@@ -3522,6 +3522,10 @@
       "BAM": "BAM — Boletín de Acompañamiento de Materiales",
       "OUTRO": "Otro"
     },
+    "filters": {
+      "allTypes": "Todos los tipos",
+      "allStatuses": "Todos los estados"
+    },
     "documents": {
       "title": "Documentos Comprobatorios",
       "upload": "Adjuntar Documento"
