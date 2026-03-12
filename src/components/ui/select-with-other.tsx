@@ -39,10 +39,7 @@ import { cn } from "@/lib/utils";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export interface SelectOption {
-  value: string;
-  label: string;
-}
+import type { SelectOption } from "./select-with-other.utils";
 
 interface SelectWithOtherProps<T extends FieldValues> {
   /** The main select: value + onChange wired by the parent FormField */
@@ -151,29 +148,5 @@ export function SelectWithOther<T extends FieldValues>({
   );
 }
 
-// ─── Zod helper ──────────────────────────────────────────────────────────────
-// Use this in your makeSchema to validate the "outro" field conditionally.
-//
-// Example:
-//   import { withOtherRefinement } from "@/components/ui/select-with-other";
-//   const schema = z.object({ disciplina: z.string().min(1), disciplina_outro: z.string().optional() })
-//     .superRefine((val, ctx) => withOtherRefinement(val, ctx, "disciplina", "disciplina_outro", errorMsg));
-
-import { type z, ZodIssueCode } from "zod";
-
-export function withOtherRefinement<T extends Record<string, unknown>>(
-  val: T,
-  ctx: z.RefinementCtx,
-  selectField: keyof T,
-  otherField: keyof T,
-  errorMessage: string,
-  otherValue = "outros",
-): void {
-  if (val[selectField] === otherValue && !String(val[otherField] ?? "").trim()) {
-    ctx.addIssue({
-      path: [otherField as string],
-      code: ZodIssueCode.custom,
-      message: errorMessage,
-    });
-  }
-}
+// withOtherRefinement and SelectOption moved to select-with-other.utils.ts
+export { withOtherRefinement, type SelectOption } from "./select-with-other.utils";

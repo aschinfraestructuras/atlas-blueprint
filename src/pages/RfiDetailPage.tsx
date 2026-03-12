@@ -146,7 +146,9 @@ export default function RfiDetailPage() {
       setRfi(r);
       setResponseText((r as any).response_text ?? "");
       setRespondedBy((r as any).responded_by ?? "");
-    } catch {}
+    } catch {
+      // best-effort refresh, error intentionally ignored
+    }
   };
 
   const handleSend = async () => {

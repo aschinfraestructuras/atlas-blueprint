@@ -101,7 +101,9 @@ export default function TechOfficeDetailPage() {
   const meta = reportMeta ?? { projectName: activeProject.name, projectCode: activeProject.code, locale: "pt", generatedBy: user.email ?? undefined };
 
   const refreshItem = async () => {
-    try { const r = await technicalOfficeService.getById(item.id); setItem(r); } catch {}
+    try { const r = await technicalOfficeService.getById(item.id); setItem(r); } catch {
+      // best-effort refresh, error intentionally ignored
+    }
   };
 
   const handleSend = async () => {
