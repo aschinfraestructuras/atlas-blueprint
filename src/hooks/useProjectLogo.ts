@@ -36,17 +36,32 @@ export function useProjectLogo() {
   useEffect(() => {
     const raw = (activeProject as any)?.logo_url as string | null | undefined;
     if (!raw) { setLogoUrl(null); setLogoBase64(null); return; }
-    let url: string;
-    if (raw.startsWith("http")) {
-      url = raw;
-    } else {
-      const { data } = supabase.storage.from("qms-files").getPublicUrl(raw);
-      url = data?.publicUrl ?? "";
+
+    let cancelled = false;
+
+    async function resolve() {
+      let url: string;
+      if (raw!.startsWith("http")) {
+        url = raw!;
+      } else {
+        // Use signed URL instead of public URL to keep bucket private
+        const { data, error } = await supabase.storage
+          .from("qms-files")
+          .createSignedUrl(raw!, 86400); // 24h expiry
+        if (error || !data?.signedUrl) {
+          if (!cancelled) { setLogoUrl(null); setLogoBase64(null); }
+          return;
+        }
+        url = data.signedUrl;
+      }
+      if (cancelled || !url) return;
+      setLogoUrl(url);
+      // Pre-fetch base64 for PDF exports
+      fetchAsBase64(url).then(b64 => { if (!cancelled) setLogoBase64(b64); });
     }
-    if (!url) { setLogoUrl(null); setLogoBase64(null); return; }
-    setLogoUrl(url);
-    // Pre-fetch base64 for PDF exports
-    fetchAsBase64(url).then(b64 => setLogoBase64(b64));
+
+    resolve();
+    return () => { cancelled = true; };
   }, [(activeProject as any)?.logo_url, activeProject?.id, activeProject]);
 
   const uploadLogo = async (file: File): Promise<boolean> => {
@@ -67,8 +82,10 @@ export function useProjectLogo() {
         .eq("id", activeProject.id);
       if (dbErr) throw dbErr;
 
-      const { data } = supabase.storage.from("qms-files").getPublicUrl(path);
-      const newUrl = data?.publicUrl ?? null;
+      const { data: signedData } = await supabase.storage
+        .from("qms-files")
+        .createSignedUrl(path, 86400);
+      const newUrl = signedData?.signedUrl ?? null;
       setLogoUrl(newUrl);
       if (newUrl) fetchAsBase64(newUrl).then(b64 => setLogoBase64(b64));
       await refetchProjects();
