@@ -6,8 +6,10 @@
 
 import { useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
+import { Navigate } from "react-router-dom";
 import { useProject } from "@/contexts/ProjectContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useProjectRole } from "@/hooks/useProjectRole";
 import { supabase } from "@/integrations/supabase/client";
 import {
   ShieldCheck, RefreshCw, CheckCircle2, XCircle, AlertCircle,
