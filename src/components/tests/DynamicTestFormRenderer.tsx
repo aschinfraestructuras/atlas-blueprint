@@ -214,6 +214,3 @@ export function DynamicTestFormRenderer({ schema, values, onChange, readOnly }: 
     </div>
   );
 }
-
-// computePassFail moved to DynamicTestFormRenderer.constants.ts
-export { computePassFail } from "./DynamicTestFormRenderer.constants";
