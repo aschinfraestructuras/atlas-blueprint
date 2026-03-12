@@ -1,73 +1,170 @@
-# Welcome to your Lovable project
+# ATLAS Blueprint
 
-## Project info
+Sistema de Gestão da Qualidade para Construção Civil, concebido para suportar operações multi-projeto com rastreabilidade, controlo documental, ensaios, PPI, não conformidades, fornecedores, subempreiteiros, topografia e reporting operacional.
 
-**URL**: https://lovable.dev/projects/6f0172f0-0e65-408d-8e26-8a8bcb9437cf
+---
 
-## How can I edit this code?
+## Visão Geral
 
-There are several ways of editing your application.
+O **ATLAS Blueprint** é uma plataforma web orientada à digitalização e estruturação do controlo da qualidade em obra.
 
-**Use Lovable**
+A aplicação foi desenhada para ambientes com múltiplos projetos, múltiplos utilizadores e diferentes níveis de responsabilidade, permitindo centralizar informação técnica e operacional num único sistema, com controlo de acessos, segregação de dados e rastreabilidade de ações.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/6f0172f0-0e65-408d-8e26-8a8bcb9437cf) and start prompting.
+O objetivo é substituir fluxos dispersos em folhas de cálculo, emails, pastas partilhadas e registos manuais por uma base digital coerente, auditável e evolutiva.
 
-Changes made via Lovable will be committed automatically to this repo.
+---
 
-**Use your preferred IDE**
+## Objetivos
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- Centralizar a gestão documental e operacional da qualidade
+- Assegurar rastreabilidade de decisões, evidências e alterações
+- Suportar workflows de obra com controlo por projeto e por perfil
+- Reduzir dispersão de informação e redundância de registos
+- Criar uma base escalável para um SGQ digital orientado à construção civil
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+---
 
-Follow these steps:
+## Principais Módulos
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+O sistema cobre ou prevê os seguintes domínios funcionais:
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+- Autenticação e gestão de utilizadores
+- Gestão de projetos
+- Perfis, funções e permissões
+- Documentos e versões documentais
+- Ensaios e resultados
+- Planos de inspeção e ensaio (PPI)
+- Não conformidades
+- Fornecedores
+- Subempreiteiros
+- Oficina técnica
+- Planos e planeamento
+- Topografia
+- Work items / frentes / elementos de controlo
+- Daily reports
+- Materiais e lotes
+- Materiais reciclados
+- Auditoria e histórico de ações
+- Notificações e seguimento operacional
 
-# Step 3: Install the necessary dependencies.
-npm i
+---
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+## Arquitetura Técnica
 
-**Edit a file directly in GitHub**
+### Frontend
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
 - React
-- shadcn-ui
+- TypeScript
+- Vite
 - Tailwind CSS
+- shadcn/ui
+- React Router
+- TanStack Query
+- React Hook Form
+- Zod
+- i18next
 
-## How can I deploy this project?
+### Backend / Infraestrutura
 
-Simply open [Lovable](https://lovable.dev/projects/6f0172f0-0e65-408d-8e26-8a8bcb9437cf) and click on Share -> Publish.
+- Supabase
+- PostgreSQL
+- Row Level Security (RLS)
+- Supabase Auth
+- Supabase Storage
+- Edge Functions
 
-## Can I connect a custom domain to my Lovable project?
+---
 
-Yes, you can!
+## Princípios de Desenho
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+- **Multi-tenant**: isolamento lógico por organização/tenant
+- **Multi-projeto**: operação contextualizada por obra/projeto ativo
+- **RBAC + RLS**: permissões aplicadas ao nível funcional e ao nível da base de dados
+- **Auditabilidade**: registo de ações críticas e alterações relevantes
+- **Modularidade**: organização por domínios funcionais
+- **Escalabilidade evolutiva**: base preparada para expansão futura
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+---
+
+## Estrutura do Repositório
+
+```text
+.
+├── docs/                  # Documentação funcional e técnica
+├── public/                # Recursos públicos estáticos
+├── src/
+│   ├── components/        # Componentes UI e módulos funcionais
+│   ├── contexts/          # Contextos globais (auth, projeto, etc.)
+│   ├── hooks/             # Hooks reutilizáveis
+│   ├── i18n/              # Internacionalização
+│   ├── integrations/      # Integrações externas, incluindo Supabase
+│   ├── lib/               # Serviços, utilitários, tipos e lógica partilhada
+│   ├── pages/             # Páginas e rotas da aplicação
+│   └── test/              # Testes
+├── supabase/
+│   ├── migrations/        # Migrações SQL
+│   ├── functions/         # Edge Functions
+│   └── config.toml        # Configuração Supabase
+└── ...
+
+O projeto encontra-se em evolução contínua, com uma base funcional alargada e documentação técnica estruturada.
+
+Trata-se de uma base aplicacional já organizada e operacional, embora existam ainda áreas em consolidação, nomeadamente:
+
+otimização de políticas RLS
+
+performance de queries e índices
+
+uniformização transversal entre módulos
+
+reforço do audit trail
+
+redução de dívida técnica
+
+melhoria da documentação pública do repositório
+
+Roadmap Técnico
+
+Linhas de evolução prioritárias:
+
+consolidação de permissões e políticas RLS
+
+otimização de índices e performance SQL
+
+reforço da auditoria automática
+
+melhoria dos dashboards operacionais
+
+workflows de aprovação e validação
+
+reforço da consistência funcional e técnica entre módulos
+
+Contribuição
+
+Este repositório suporta a evolução do ecossistema ATLAS.
+
+Antes de introduzir alterações estruturais relevantes, recomenda-se:
+
+rever a documentação existente em docs/
+
+validar impacto no modelo de dados
+
+confirmar impacto em permissões, RLS e auditoria
+
+manter coerência com os princípios funcionais e arquiteturais do sistema
+
+Licença
+
+Definir de acordo com o enquadramento pretendido para o projeto.
+
+Exemplos possíveis:
+
+Proprietary
+
+Internal Use Only
+
+MIT
+
+Apache-2.0
+
+Até definição formal, recomenda-se não assumir utilização livre por terceiros.
