@@ -82,8 +82,10 @@ export function useProjectLogo() {
         .eq("id", activeProject.id);
       if (dbErr) throw dbErr;
 
-      const { data } = supabase.storage.from("qms-files").getPublicUrl(path);
-      const newUrl = data?.publicUrl ?? null;
+      const { data: signedData } = await supabase.storage
+        .from("qms-files")
+        .createSignedUrl(path, 86400);
+      const newUrl = signedData?.signedUrl ?? null;
       setLogoUrl(newUrl);
       if (newUrl) fetchAsBase64(newUrl).then(b64 => setLogoBase64(b64));
       await refetchProjects();
