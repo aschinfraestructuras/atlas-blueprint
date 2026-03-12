@@ -215,11 +215,5 @@ export function DynamicTestFormRenderer({ schema, values, onChange, readOnly }: 
   );
 }
 
-/** Compute the pass/fail result from schema + values */
-export function computePassFail(schema: TestFormSchema, values: Record<string, unknown>): "pass" | "fail" | "inconclusive" {
-  if (!schema.auto_pass_fail) return "inconclusive";
-  const { allPass, results } = evaluateCriteria(schema.criteria, values);
-  const evaluated = results.filter(r => r.pass !== null);
-  if (evaluated.length === 0) return "inconclusive";
-  return allPass ? "pass" : "fail";
-}
+// computePassFail moved to DynamicTestFormRenderer.constants.ts
+export { computePassFail } from "./DynamicTestFormRenderer.constants";

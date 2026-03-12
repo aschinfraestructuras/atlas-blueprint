@@ -39,10 +39,7 @@ import { cn } from "@/lib/utils";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export interface SelectOption {
-  value: string;
-  label: string;
-}
+import type { SelectOption } from "./select-with-other.utils";
 
 interface SelectWithOtherProps<T extends FieldValues> {
   /** The main select: value + onChange wired by the parent FormField */
