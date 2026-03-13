@@ -256,29 +256,51 @@ export default function SettingsPage() {
     if (!activeProject || !inviteEmail.trim()) return;
     setInviting(true);
     try {
-      const result = await memberService.invite(activeProject.id, inviteEmail.trim(), inviteRole);
-      if (result.status === "added_directly") {
-        toast.success(t("settings.members.addedDirectly"));
-      } else {
-        if (result.token) {
-          const inviteUrl = `${window.location.origin}/invite/accept?token=${result.token}`;
-          try {
-            await navigator.clipboard.writeText(inviteUrl);
-            toast.success(t("settings.members.inviteSent"), { description: inviteUrl });
-          } catch {
-            toast.success(t("settings.members.inviteSent"), { description: inviteUrl });
-          }
+      if (inviteMode === "create") {
+        // Direct account creation via Edge Function
+        if (!invitePassword || invitePassword.length < 6) {
+          toast.error(t("settings.members.passwordTooShort", { defaultValue: "A senha deve ter pelo menos 6 caracteres." }));
+          setInviting(false);
+          return;
+        }
+        const result = await memberService.createMember(activeProject.id, inviteEmail.trim(), invitePassword, inviteRole);
+        if (result.status === "added_existing") {
+          toast.success(t("settings.members.addedDirectly", { defaultValue: "Utilizador existente adicionado ao projecto." }));
         } else {
-          toast.success(t("settings.members.inviteSent"));
+          toast.success(t("settings.members.accountCreated", { defaultValue: "Conta criada com sucesso. O membro pode agora aceder com o email e senha definidos." }));
+        }
+      } else {
+        // Token-based invite (original flow)
+        const result = await memberService.invite(activeProject.id, inviteEmail.trim(), inviteRole);
+        if (result.status === "added_directly") {
+          toast.success(t("settings.members.addedDirectly"));
+        } else {
+          if (result.token) {
+            const inviteUrl = `${window.location.origin}/invite/accept?token=${result.token}`;
+            try {
+              await navigator.clipboard.writeText(inviteUrl);
+              toast.success(t("settings.members.inviteSent"), { description: inviteUrl });
+            } catch {
+              toast.success(t("settings.members.inviteSent"), { description: inviteUrl });
+            }
+          } else {
+            toast.success(t("settings.members.inviteSent"));
+          }
         }
       }
       setInviteEmail("");
+      setInvitePassword("");
       setInviteRole("technician");
       setInviteDialogOpen(false);
       fetchMembers();
     } catch (err: any) {
-      const classified = classifySupabaseError(err, t);
-      toast.error(classified.title, { description: classified.description ?? classified.raw });
+      const msg = err?.message || err?.toString() || "";
+      if (msg.includes("already an active member")) {
+        toast.error(t("settings.members.alreadyMember", { defaultValue: "Este utilizador já é membro activo deste projecto." }));
+      } else {
+        const classified = classifySupabaseError(err, t);
+        toast.error(classified.title, { description: classified.description ?? classified.raw });
+      }
     } finally {
       setInviting(false);
     }
