@@ -223,6 +223,9 @@ export default function SettingsPage() {
   const [inviteRole, setInviteRole] = useState("technician");
   const [inviting, setInviting] = useState(false);
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
+  const [inviteMode, setInviteMode] = useState<"create" | "invite">("create");
+  const [invitePassword, setInvitePassword] = useState("");
+  const [showInvitePassword, setShowInvitePassword] = useState(false);
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [changingPassword, setChangingPassword] = useState(false);
