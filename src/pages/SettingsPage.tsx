@@ -473,13 +473,64 @@ export default function SettingsPage() {
               </DialogTrigger>
               <DialogContent className="sm:max-w-md">
                 <DialogHeader>
-                  <DialogTitle>{t("settings.members.inviteTitle")}</DialogTitle>
+                  <DialogTitle>{t("settings.members.inviteTitle", { defaultValue: "Adicionar Membro" })}</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4 py-2">
+                  {/* Mode toggle */}
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={inviteMode === "create" ? "default" : "outline"}
+                      className="flex-1 gap-1.5 text-xs"
+                      onClick={() => setInviteMode("create")}
+                    >
+                      <UserCheck className="h-3.5 w-3.5" />
+                      {t("settings.members.createAccount", { defaultValue: "Criar Conta" })}
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={inviteMode === "invite" ? "default" : "outline"}
+                      className="flex-1 gap-1.5 text-xs"
+                      onClick={() => setInviteMode("invite")}
+                    >
+                      <Mail className="h-3.5 w-3.5" />
+                      {t("settings.members.inviteToken", { defaultValue: "Convite (Token)" })}
+                    </Button>
+                  </div>
+
                   <div>
                     <Label>{t("settings.members.emailLabel")}</Label>
                     <Input type="email" value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} placeholder={t("settings.members.emailPlaceholder")} />
                   </div>
+
+                  {inviteMode === "create" && (
+                    <div>
+                      <Label>{t("settings.members.passwordLabel", { defaultValue: "Senha de acesso" })}</Label>
+                      <div className="relative">
+                        <Input
+                          type={showInvitePassword ? "text" : "password"}
+                          value={invitePassword}
+                          onChange={(e) => setInvitePassword(e.target.value)}
+                          placeholder={t("settings.members.passwordPlaceholder", { defaultValue: "Mínimo 6 caracteres" })}
+                          className="pr-10"
+                        />
+                        <button
+                          type="button"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                          onClick={() => setShowInvitePassword((v) => !v)}
+                          tabIndex={-1}
+                        >
+                          {showInvitePassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </button>
+                      </div>
+                      <p className="text-[10px] text-muted-foreground mt-1">
+                        {t("settings.members.passwordHint", { defaultValue: "O membro pode alterar a senha nas Definições após o primeiro login." })}
+                      </p>
+                    </div>
+                  )}
+
                   <div>
                     <Label>{t("settings.members.roleLabel")}</Label>
                     <Select value={inviteRole} onValueChange={setInviteRole}>
@@ -494,9 +545,15 @@ export default function SettingsPage() {
                 </div>
                 <DialogFooter>
                   <DialogClose asChild><Button variant="outline">{t("common.cancel")}</Button></DialogClose>
-                  <Button onClick={handleInvite} disabled={inviting || !inviteEmail.trim()}>
+                  <Button
+                    onClick={handleInvite}
+                    disabled={inviting || !inviteEmail.trim() || (inviteMode === "create" && invitePassword.length < 6)}
+                  >
                     {inviting && <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" />}
-                    {t("settings.members.sendInvite")}
+                    {inviteMode === "create"
+                      ? t("settings.members.createBtn", { defaultValue: "Criar Membro" })
+                      : t("settings.members.sendInvite")
+                    }
                   </Button>
                 </DialogFooter>
               </DialogContent>
