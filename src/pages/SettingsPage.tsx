@@ -8,7 +8,7 @@ import {
   Settings, Users, ShieldCheck, Sliders, Globe, Bell, Lock,
   Building2, Mail, UserCheck, Key, Database, ChevronRight,
   Plus, Trash2, UserMinus, Loader2, Sun, Moon, Monitor,
-  ImageIcon, Upload, X, ClipboardList, HardDrive, Check, Eye, Pencil, ShieldAlert, Rocket,
+  ImageIcon, Upload, X, ClipboardList, HardDrive, Check, Eye, EyeOff, Pencil, ShieldAlert, Rocket,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -223,6 +223,9 @@ export default function SettingsPage() {
   const [inviteRole, setInviteRole] = useState("technician");
   const [inviting, setInviting] = useState(false);
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
+  const [inviteMode, setInviteMode] = useState<"create" | "invite">("create");
+  const [invitePassword, setInvitePassword] = useState("");
+  const [showInvitePassword, setShowInvitePassword] = useState(false);
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [changingPassword, setChangingPassword] = useState(false);
@@ -253,29 +256,51 @@ export default function SettingsPage() {
     if (!activeProject || !inviteEmail.trim()) return;
     setInviting(true);
     try {
-      const result = await memberService.invite(activeProject.id, inviteEmail.trim(), inviteRole);
-      if (result.status === "added_directly") {
-        toast.success(t("settings.members.addedDirectly"));
-      } else {
-        if (result.token) {
-          const inviteUrl = `${window.location.origin}/invite/accept?token=${result.token}`;
-          try {
-            await navigator.clipboard.writeText(inviteUrl);
-            toast.success(t("settings.members.inviteSent"), { description: inviteUrl });
-          } catch {
-            toast.success(t("settings.members.inviteSent"), { description: inviteUrl });
-          }
+      if (inviteMode === "create") {
+        // Direct account creation via Edge Function
+        if (!invitePassword || invitePassword.length < 6) {
+          toast.error(t("settings.members.passwordTooShort", { defaultValue: "A senha deve ter pelo menos 6 caracteres." }));
+          setInviting(false);
+          return;
+        }
+        const result = await memberService.createMember(activeProject.id, inviteEmail.trim(), invitePassword, inviteRole);
+        if (result.status === "added_existing") {
+          toast.success(t("settings.members.addedDirectly", { defaultValue: "Utilizador existente adicionado ao projecto." }));
         } else {
-          toast.success(t("settings.members.inviteSent"));
+          toast.success(t("settings.members.accountCreated", { defaultValue: "Conta criada com sucesso. O membro pode agora aceder com o email e senha definidos." }));
+        }
+      } else {
+        // Token-based invite (original flow)
+        const result = await memberService.invite(activeProject.id, inviteEmail.trim(), inviteRole);
+        if (result.status === "added_directly") {
+          toast.success(t("settings.members.addedDirectly"));
+        } else {
+          if (result.token) {
+            const inviteUrl = `${window.location.origin}/invite/accept?token=${result.token}`;
+            try {
+              await navigator.clipboard.writeText(inviteUrl);
+              toast.success(t("settings.members.inviteSent"), { description: inviteUrl });
+            } catch {
+              toast.success(t("settings.members.inviteSent"), { description: inviteUrl });
+            }
+          } else {
+            toast.success(t("settings.members.inviteSent"));
+          }
         }
       }
       setInviteEmail("");
+      setInvitePassword("");
       setInviteRole("technician");
       setInviteDialogOpen(false);
       fetchMembers();
     } catch (err: any) {
-      const classified = classifySupabaseError(err, t);
-      toast.error(classified.title, { description: classified.description ?? classified.raw });
+      const msg = err?.message || err?.toString() || "";
+      if (msg.includes("already an active member")) {
+        toast.error(t("settings.members.alreadyMember", { defaultValue: "Este utilizador já é membro activo deste projecto." }));
+      } else {
+        const classified = classifySupabaseError(err, t);
+        toast.error(classified.title, { description: classified.description ?? classified.raw });
+      }
     } finally {
       setInviting(false);
     }
@@ -448,13 +473,64 @@ export default function SettingsPage() {
               </DialogTrigger>
               <DialogContent className="sm:max-w-md">
                 <DialogHeader>
-                  <DialogTitle>{t("settings.members.inviteTitle")}</DialogTitle>
+                  <DialogTitle>{t("settings.members.inviteTitle", { defaultValue: "Adicionar Membro" })}</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4 py-2">
+                  {/* Mode toggle */}
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={inviteMode === "create" ? "default" : "outline"}
+                      className="flex-1 gap-1.5 text-xs"
+                      onClick={() => setInviteMode("create")}
+                    >
+                      <UserCheck className="h-3.5 w-3.5" />
+                      {t("settings.members.createAccount", { defaultValue: "Criar Conta" })}
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={inviteMode === "invite" ? "default" : "outline"}
+                      className="flex-1 gap-1.5 text-xs"
+                      onClick={() => setInviteMode("invite")}
+                    >
+                      <Mail className="h-3.5 w-3.5" />
+                      {t("settings.members.inviteToken", { defaultValue: "Convite (Token)" })}
+                    </Button>
+                  </div>
+
                   <div>
                     <Label>{t("settings.members.emailLabel")}</Label>
                     <Input type="email" value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} placeholder={t("settings.members.emailPlaceholder")} />
                   </div>
+
+                  {inviteMode === "create" && (
+                    <div>
+                      <Label>{t("settings.members.passwordLabel", { defaultValue: "Senha de acesso" })}</Label>
+                      <div className="relative">
+                        <Input
+                          type={showInvitePassword ? "text" : "password"}
+                          value={invitePassword}
+                          onChange={(e) => setInvitePassword(e.target.value)}
+                          placeholder={t("settings.members.passwordPlaceholder", { defaultValue: "Mínimo 6 caracteres" })}
+                          className="pr-10"
+                        />
+                        <button
+                          type="button"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                          onClick={() => setShowInvitePassword((v) => !v)}
+                          tabIndex={-1}
+                        >
+                          {showInvitePassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </button>
+                      </div>
+                      <p className="text-[10px] text-muted-foreground mt-1">
+                        {t("settings.members.passwordHint", { defaultValue: "O membro pode alterar a senha nas Definições após o primeiro login." })}
+                      </p>
+                    </div>
+                  )}
+
                   <div>
                     <Label>{t("settings.members.roleLabel")}</Label>
                     <Select value={inviteRole} onValueChange={setInviteRole}>
@@ -469,9 +545,15 @@ export default function SettingsPage() {
                 </div>
                 <DialogFooter>
                   <DialogClose asChild><Button variant="outline">{t("common.cancel")}</Button></DialogClose>
-                  <Button onClick={handleInvite} disabled={inviting || !inviteEmail.trim()}>
+                  <Button
+                    onClick={handleInvite}
+                    disabled={inviting || !inviteEmail.trim() || (inviteMode === "create" && invitePassword.length < 6)}
+                  >
                     {inviting && <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" />}
-                    {t("settings.members.sendInvite")}
+                    {inviteMode === "create"
+                      ? t("settings.members.createBtn", { defaultValue: "Criar Membro" })
+                      : t("settings.members.sendInvite")
+                    }
                   </Button>
                 </DialogFooter>
               </DialogContent>

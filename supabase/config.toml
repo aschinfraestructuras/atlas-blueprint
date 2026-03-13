@@ -1,1 +1,4 @@
 project_id = "qrsdpsugfjmrdeychxzf"
+
+[functions.create-project-member]
+verify_jwt = false

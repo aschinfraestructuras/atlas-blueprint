@@ -125,4 +125,18 @@ export const memberService = {
     if (error) throw error;
     return data as unknown as Array<Database["public"]["Tables"]["projects"]["Row"]>;
   },
+
+  async createMember(
+    projectId: string,
+    email: string,
+    password: string,
+    role: string
+  ): Promise<{ status: string; user_id: string }> {
+    const { data, error } = await supabase.functions.invoke("create-project-member", {
+      body: { email, password, role, project_id: projectId },
+    });
+    if (error) throw error;
+    if (data?.error) throw new Error(data.error);
+    return data as { status: string; user_id: string };
+  },
 };
