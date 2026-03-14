@@ -133,7 +133,20 @@ export const memberService = {
     role: string
   ): Promise<{ status: string; user_id: string }> {
     const { data, error } = await supabase.functions.invoke("create-project-member", {
-      body: { email, password, role, project_id: projectId },
+      body: { email, password, role, project_id: projectId, action: "create" },
+    });
+    if (error) throw error;
+    if (data?.error) throw new Error(data.error);
+    return data as { status: string; user_id: string };
+  },
+
+  async inviteByEmail(
+    projectId: string,
+    email: string,
+    role: string
+  ): Promise<{ status: string; user_id: string }> {
+    const { data, error } = await supabase.functions.invoke("create-project-member", {
+      body: { email, role, project_id: projectId, action: "invite" },
     });
     if (error) throw error;
     if (data?.error) throw new Error(data.error);

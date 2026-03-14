@@ -9,7 +9,8 @@ import { ncService } from "@/lib/services/ncService";
 import type { NonConformity } from "@/lib/services/ncService";
 import { toast } from "@/hooks/use-toast";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
-import { withOtherRefinement, SelectWithOther } from "@/components/ui/select-with-other";
+import { withOtherRefinement } from "@/components/ui/select-with-other.utils";
+import { SelectWithOther } from "@/components/ui/select-with-other";
 import { usePPIInstances } from "@/hooks/usePPI";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,

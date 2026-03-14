@@ -148,5 +148,5 @@ export function SelectWithOther<T extends FieldValues>({
   );
 }
 
-// withOtherRefinement and SelectOption moved to select-with-other.utils.ts
-export { withOtherRefinement, type SelectOption } from "./select-with-other.utils";
+// withOtherRefinement and SelectOption are in select-with-other.utils.ts
+// Import them directly from there to avoid react-refresh warnings.

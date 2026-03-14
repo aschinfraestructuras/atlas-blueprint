@@ -22,7 +22,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, X, Plus } from "lucide-react";
-import { withOtherRefinement } from "@/components/ui/select-with-other";
+import { withOtherRefinement } from "@/components/ui/select-with-other.utils";
 
 const schema = (t: (k: string) => string) =>
   z.object({
