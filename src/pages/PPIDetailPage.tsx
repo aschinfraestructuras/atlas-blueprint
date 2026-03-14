@@ -268,6 +268,7 @@ export default function PPIDetailPage() {
       const info = classifySupabaseError(err, t);
       toast({ title: info.title, description: info.description ?? info.raw, variant: "destructive" });
     } finally {
+      // best-effort — no cleanup needed
     }
   }
 
