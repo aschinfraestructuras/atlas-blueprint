@@ -270,22 +270,12 @@ export default function SettingsPage() {
           toast.success(t("settings.members.accountCreated", { defaultValue: "Conta criada com sucesso. O membro pode agora aceder com o email e senha definidos." }));
         }
       } else {
-        // Token-based invite (original flow)
-        const result = await memberService.invite(activeProject.id, inviteEmail.trim(), inviteRole);
-        if (result.status === "added_directly") {
-          toast.success(t("settings.members.addedDirectly"));
+        // Email invite via Supabase built-in invite system
+        const result = await memberService.inviteByEmail(activeProject.id, inviteEmail.trim(), inviteRole);
+        if (result.status === "added_existing") {
+          toast.success(t("settings.members.addedDirectly", { defaultValue: "Utilizador existente adicionado ao projecto." }));
         } else {
-          if (result.token) {
-            const inviteUrl = `${window.location.origin}/invite/accept?token=${result.token}`;
-            try {
-              await navigator.clipboard.writeText(inviteUrl);
-              toast.success(t("settings.members.inviteSent"), { description: inviteUrl });
-            } catch {
-              toast.success(t("settings.members.inviteSent"), { description: inviteUrl });
-            }
-          } else {
-            toast.success(t("settings.members.inviteSent"));
-          }
+          toast.success(t("settings.members.inviteEmailSent", { defaultValue: "Convite enviado por email. O utilizador receberá um link para configurar a sua conta." }));
         }
       }
       setInviteEmail("");
