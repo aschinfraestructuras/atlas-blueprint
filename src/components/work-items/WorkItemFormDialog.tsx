@@ -16,7 +16,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { SelectWithOther, withOtherRefinement } from "@/components/ui/select-with-other";
+import { SelectWithOther } from "@/components/ui/select-with-other";
+import { withOtherRefinement } from "@/components/ui/select-with-other.utils";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";

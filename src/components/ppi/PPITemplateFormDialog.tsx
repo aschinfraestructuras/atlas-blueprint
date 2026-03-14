@@ -20,7 +20,8 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { SelectWithOther, withOtherRefinement } from "@/components/ui/select-with-other";
+import { SelectWithOther } from "@/components/ui/select-with-other";
+import { withOtherRefinement } from "@/components/ui/select-with-other.utils";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
