@@ -181,9 +181,9 @@ export default function PlanningPage() {
 
   const handleExport = (type: "csv" | "pdf") => {
     if (activeTab === "wbs") {
-      type === "csv" ? exportWbsCsv(wbsTree as WbsNode[], meta) : exportWbsPdf(wbsTree as WbsNode[], meta);
+      if (type === "csv") { exportWbsCsv(wbsTree as WbsNode[], meta); } else { exportWbsPdf(wbsTree as WbsNode[], meta); }
     } else {
-      type === "csv" ? exportActivitiesCsv(filteredActivities, meta) : exportActivitiesPdf(filteredActivities, meta);
+      if (type === "csv") { exportActivitiesCsv(filteredActivities, meta); } else { exportActivitiesPdf(filteredActivities, meta); }
     }
     auditService.log({
       projectId: activeProject.id,

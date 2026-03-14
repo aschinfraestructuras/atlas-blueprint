@@ -35,7 +35,7 @@ function fileDateTime(): string {
 }
 
 function sanitize(s: string): string {
-  return s.replace(/[^a-zA-Z0-9_\-]/g, "_").slice(0, 40);
+  return s.replace(/[^a-zA-Z0-9_-]/g, "_").slice(0, 40);
 }
 
 // ─── Colors ───────────────────────────────────────────────────────────────────

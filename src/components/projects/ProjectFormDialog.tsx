@@ -46,7 +46,7 @@ const schema = (t: (k: string) => string) =>
       .trim()
       .min(1, t("projects.form.validation.codeRequired"))
       .max(30, t("projects.form.validation.codeTooLong"))
-      .regex(/^[A-Za-z0-9_\-]+$/, t("projects.form.validation.codeFormat")),
+      .regex(/^[A-Za-z0-9_-]+$/, t("projects.form.validation.codeFormat")),
     client: z.string().trim().max(120).optional().or(z.literal("")),
     location: z.string().trim().max(200).optional().or(z.literal("")),
     start_date: z.string().optional().or(z.literal("")),

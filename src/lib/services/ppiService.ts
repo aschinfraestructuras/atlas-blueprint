@@ -365,7 +365,7 @@ export const ppiService = {
 
     // Fetch HP pending counts for all instances
     const instanceIds = (data ?? []).map((r: any) => r.id);
-    let hpCounts: Record<string, number> = {};
+    const hpCounts: Record<string, number> = {};
     
     if (instanceIds.length > 0) {
       const { data: itemsData } = await supabase

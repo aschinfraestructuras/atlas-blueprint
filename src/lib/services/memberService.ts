@@ -55,7 +55,7 @@ export const memberService = {
 
     const members = (data ?? []) as unknown as Array<{ project_id: string; user_id: string; role: string; is_active: boolean; created_at: string }>;
     const userIds = members.map(m => m.user_id);
-    let profiles: Record<string, { full_name: string | null; email: string | null }> = {};
+    const profiles: Record<string, { full_name: string | null; email: string | null }> = {};
     if (userIds.length > 0) {
       const { data: profileData } = await db.from("profiles")
         .select("user_id, full_name, email")

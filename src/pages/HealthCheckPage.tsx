@@ -76,11 +76,6 @@ export default function HealthCheckPage() {
   const [running, setRunning] = useState(false);
   const [lastRun, setLastRun] = useState<Date | null>(null);
 
-  // Only admins can access this page
-  if (!roleLoading && !isAdmin) {
-    return <Navigate to="/" replace />;
-  }
-
   const runChecks = useCallback(async () => {
     if (!activeProject || !user) return;
     setRunning(true);
@@ -222,6 +217,11 @@ export default function HealthCheckPage() {
     setLastRun(new Date());
     setRunning(false);
   }, [activeProject, user, t]);
+
+  // Only admins can access this page (guard placed after all hooks)
+  if (!roleLoading && !isAdmin) {
+    return <Navigate to="/" replace />;
+  }
 
   const passCount = results.filter((r) => r.status === "pass").length;
   const failCount = results.filter((r) => r.status === "fail").length;

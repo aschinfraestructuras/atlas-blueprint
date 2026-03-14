@@ -11,7 +11,8 @@ describe("cn()", () => {
   });
 
   it("handles conditional classes", () => {
-    expect(cn("text-sm", false && "hidden", "font-bold")).toBe("text-sm font-bold");
+    const condition = false;
+    expect(cn("text-sm", condition && "hidden", "font-bold")).toBe("text-sm font-bold");
   });
 
   it("returns empty string for no input", () => {
