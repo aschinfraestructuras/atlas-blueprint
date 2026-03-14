@@ -218,6 +218,11 @@ export default function HealthCheckPage() {
     setRunning(false);
   }, [activeProject, user, t]);
 
+  // Only admins can access this page (guard placed after all hooks)
+  if (!roleLoading && !isAdmin) {
+    return <Navigate to="/" replace />;
+  }
+
   const passCount = results.filter((r) => r.status === "pass").length;
   const failCount = results.filter((r) => r.status === "fail").length;
   const warnCount = results.filter((r) => r.status === "warn").length;
