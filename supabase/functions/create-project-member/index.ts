@@ -35,17 +35,19 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { email, password, role, project_id } = await req.json();
+    const body = await req.json();
+    const { email, password, role, project_id, action } = body;
+    const mode = action ?? "create"; // "create" | "invite"
 
     // Validate inputs
-    if (!email || !password || !role || !project_id) {
-      return new Response(JSON.stringify({ error: "Missing required fields: email, password, role, project_id" }), {
+    if (!email || !role || !project_id) {
+      return new Response(JSON.stringify({ error: "Missing required fields: email, role, project_id" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    if (password.length < 6) {
+    if (mode === "create" && (!password || password.length < 6)) {
       return new Response(JSON.stringify({ error: "Password must be at least 6 characters" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -80,6 +82,103 @@ Deno.serve(async (req) => {
 
     const normalizedEmail = email.trim().toLowerCase();
 
+    // ── INVITE MODE: use Supabase built-in invite email ──────────────
+    if (mode === "invite") {
+      // Check if user already exists
+      const { data: existingUsers } = await adminClient.auth.admin.listUsers();
+      const existingUser = existingUsers?.users?.find(
+        (u) => u.email?.toLowerCase() === normalizedEmail
+      );
+
+      if (existingUser) {
+        // Check if already a member
+        const { data: existingMember } = await adminClient
+          .from("project_members")
+          .select("user_id")
+          .eq("project_id", project_id)
+          .eq("user_id", existingUser.id)
+          .eq("is_active", true)
+          .maybeSingle();
+
+        if (existingMember) {
+          return new Response(
+            JSON.stringify({ error: "User is already an active member of this project" }),
+            { status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+
+        // Add existing user directly
+        await adminClient
+          .from("project_members")
+          .upsert({ project_id, user_id: existingUser.id, role, is_active: true }, {
+            onConflict: "project_id,user_id",
+          });
+
+        // Audit log
+        await adminClient.from("audit_log").insert({
+          project_id,
+          user_id: caller.id,
+          entity: "project_members",
+          entity_id: existingUser.id,
+          action: "MEMBER_ADDED",
+          module: "settings",
+          diff: { email: normalizedEmail, role, method: "invite_existing" },
+        });
+
+        return new Response(
+          JSON.stringify({ status: "added_existing", user_id: existingUser.id }),
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      // New user — invite via Supabase built-in email
+      const { data: inviteData, error: inviteError } = await adminClient.auth.admin.inviteUserByEmail(
+        normalizedEmail,
+        {
+          data: { role, project_id, invited_by: caller.id },
+          redirectTo: `${req.headers.get("origin") || supabaseUrl}/login`,
+        }
+      );
+
+      if (inviteError || !inviteData?.user) {
+        return new Response(
+          JSON.stringify({ error: inviteError?.message || "Failed to send invite" }),
+          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      const invitedUserId = inviteData.user.id;
+
+      // Create profile
+      await adminClient.from("profiles").upsert({
+        user_id: invitedUserId,
+        email: normalizedEmail,
+        full_name: normalizedEmail.split("@")[0],
+      }, { onConflict: "user_id" });
+
+      // Add to project
+      await adminClient
+        .from("project_members")
+        .insert({ project_id, user_id: invitedUserId, role, is_active: true });
+
+      // Audit log
+      await adminClient.from("audit_log").insert({
+        project_id,
+        user_id: caller.id,
+        entity: "project_members",
+        entity_id: invitedUserId,
+        action: "MEMBER_INVITED",
+        module: "settings",
+        diff: { email: normalizedEmail, role, method: "invite_email" },
+      });
+
+      return new Response(
+        JSON.stringify({ status: "invited", user_id: invitedUserId }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // ── CREATE MODE: direct account creation ─────────────────────────
     // Check if user already exists
     const { data: existingUsers } = await adminClient.auth.admin.listUsers();
     const existingUser = existingUsers?.users?.find(
