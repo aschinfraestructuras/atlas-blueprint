@@ -33,6 +33,7 @@ const makeSchema = (t: (k: string) => string) =>
     work_item_id:      z.string().min(1, t("ppi.instances.validation.workItemRequired")),
     template_id:       z.string().optional(),
     code:              z.string().optional(),
+    auto_code:         z.boolean().optional(),
     inspector_id:      z.string().optional(),
     inspection_date:   z.string().optional(),
   });
