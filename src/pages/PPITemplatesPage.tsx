@@ -27,6 +27,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { useProjectRole } from "@/hooks/useProjectRole";
 import { supabase } from "@/integrations/supabase/client";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 
