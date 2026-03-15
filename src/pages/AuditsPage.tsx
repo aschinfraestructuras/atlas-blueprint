@@ -204,12 +204,21 @@ export default function AuditsPage() {
         subtitle={t("audits.subtitle", { defaultValue: "Auditorias internas e externas do programa de qualidade" })}
         icon={CalendarClock}
         actions={
-          canCreate ? (
-            <Button onClick={openCreate} size="sm">
-              <Plus className="h-4 w-4 mr-1.5" />
-              {t("audits.create", { defaultValue: "Nova Auditoria" })}
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" className="gap-1.5" onClick={async () => {
+              if (!reportMeta) return;
+              await exportPAI(audits, reportMeta);
+            }}>
+              <FileDown className="h-3.5 w-3.5" />
+              Exportar PAI
             </Button>
-          ) : undefined
+            {canCreate && (
+              <Button onClick={openCreate} size="sm">
+                <Plus className="h-4 w-4 mr-1.5" />
+                {t("audits.create", { defaultValue: "Nova Auditoria" })}
+              </Button>
+            )}
+          </div>
         }
       />
 

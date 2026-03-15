@@ -316,6 +316,10 @@ export default function NonConformitiesPage() {
               disabled={filtered.length === 0}
               options={[
                 { label: t("report.pdfList", { defaultValue: "PDF — Lista" }), icon: "pdf", action: handleBulkExport },
+                { label: "Exportar LNC", icon: "pdf", action: async () => {
+                  if (!reportMeta) return;
+                  await exportLNC(filtered as any, reportMeta);
+                }},
                 { label: t("report.csvList", { defaultValue: "CSV — Lista" }), icon: "csv", action: () => {
                   if (!activeProject) return;
                   const headers = [t("nc.table.code"), t("nc.form.title"), t("nc.table.severity"), t("common.status"), t("nc.form.detectedAt"), t("nc.table.dueDate")];

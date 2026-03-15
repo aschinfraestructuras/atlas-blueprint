@@ -186,6 +186,14 @@ export default function DocumentsPage() {
             <p className="text-sm text-muted-foreground">{t("pages.documents.subtitle")}</p>
           </div>
           <div className="flex items-center gap-2 flex-wrap justify-end">
+            <Button variant="outline" size="sm" className="gap-1.5" onClick={async () => {
+              const meta = reportMetaRef;
+              if (!meta) return;
+              await exportLMD(documents.filter(d => !d.is_deleted), meta);
+            }}>
+              <FileDown className="h-3.5 w-3.5" />
+              Exportar LMD
+            </Button>
             <ShareButton />
             {canCreate && (
               <Button size="sm" className="gap-1.5" onClick={() => { setEditDoc(null); setFormOpen(true); }}>

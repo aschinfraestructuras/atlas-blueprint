@@ -120,6 +120,14 @@ export default function SuppliersPage() {
           <ReportExportMenu
             options={[
               {
+                label: "Exportar LGR",
+                icon: "pdf" as const,
+                action: async () => {
+                  if (!reportMeta) return;
+                  await exportLGR(suppliers as any, subcontractors as any, reportMeta);
+                },
+              },
+              {
                 label: "CSV",
                 icon: "csv" as const,
                 action: () => {
