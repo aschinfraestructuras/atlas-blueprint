@@ -407,7 +407,7 @@ export default function MonthlyReportPage() {
           </DialogHeader>
           <div className="grid gap-4 py-2">
             <div className="grid gap-1.5">
-              <Label>Mês de referência</Label>
+              <Label>{t("monthlyReport.refMonth")}</Label>
               <Select value={selectedMonth} onValueChange={setSelectedMonth}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
