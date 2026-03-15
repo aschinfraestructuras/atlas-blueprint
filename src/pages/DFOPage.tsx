@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/collapsible";
 import {
   Archive, ChevronDown, FileDown, Loader2, Plus, CheckCircle2, Clock,
-  AlertCircle, Minus, FileText, Link2,
+  AlertCircle, Minus, FileText, Link2, RefreshCw,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -42,16 +42,18 @@ export default function DFOPage() {
   const [volumes, setVolumes] = useState<DfoVolume[]>([]);
   const [loading, setLoading] = useState(true);
   const [initializing, setInitializing] = useState(false);
+  const [syncing, setSyncing] = useState(false);
   const [openVols, setOpenVols] = useState<Set<string>>(new Set());
 
   const load = useCallback(async () => {
     if (!activeProject) return;
     setLoading(true);
     try {
+      // Auto-sync statuses before loading
+      try { await dfoService.syncItemStatuses(activeProject.id); } catch { /* ignore */ }
       const data = await dfoService.getVolumes(activeProject.id);
       setVolumes(data);
     } catch {
-      // Tables may not exist yet
       setVolumes([]);
     } finally {
       setLoading(false);
@@ -117,13 +119,26 @@ export default function DFOPage() {
         actions={
           <div className="flex items-center gap-2">
             {volumes.length > 0 && (
-              <Button variant="outline" size="sm" className="gap-1.5" onClick={async () => {
-                if (!reportMeta) return;
-                await dfoService.exportDfoIndex(volumes, reportMeta);
-              }}>
-                <FileDown className="h-3.5 w-3.5" />
-                Exportar Índice DFO
-              </Button>
+              <>
+                <Button variant="outline" size="sm" className="gap-1.5" onClick={async () => {
+                  setSyncing(true);
+                  try {
+                    await dfoService.syncItemStatuses(activeProject.id);
+                    await load();
+                    toast({ title: "DFO sincronizado" });
+                  } catch { /* ignore */ } finally { setSyncing(false); }
+                }} disabled={syncing}>
+                  <RefreshCw className={cn("h-3.5 w-3.5", syncing && "animate-spin")} />
+                  Sincronizar
+                </Button>
+                <Button variant="outline" size="sm" className="gap-1.5" onClick={async () => {
+                  if (!reportMeta) return;
+                  await dfoService.exportDfoIndex(volumes, reportMeta);
+                }}>
+                  <FileDown className="h-3.5 w-3.5" />
+                  Exportar Índice DFO
+                </Button>
+              </>
             )}
             {isAdmin && volumes.length === 0 && (
               <Button size="sm" className="gap-1.5" onClick={handleInit} disabled={initializing}>

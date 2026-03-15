@@ -195,7 +195,7 @@ function buildSinglePdfHtml(
 
     // Phase separator row — detect phase change from check_code prefix (e.g. "01" → "02")
     const phasePrefix = it.check_code.split(".")[0] ?? "";
-    let phaseRow = "";
+    const phaseRow = "";
     if (phasePrefix !== lastPhase && phasePrefix) {
       lastPhase = phasePrefix;
       // We don't have phase_name on instance items, so omit explicit phase headers

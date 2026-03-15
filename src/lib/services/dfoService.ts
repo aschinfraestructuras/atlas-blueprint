@@ -210,6 +210,51 @@ export const dfoService = {
     if (error) throw error;
   },
 
+  async syncItemStatuses(projectId: string): Promise<void> {
+    // Batch-query counts of completed entities
+    const [ppiRes, rmsgqRes, ncRes, pameRes, hpRes, auditsRes] = await Promise.all([
+      supabase.from("ppi_instances").select("id", { count: "exact", head: true }).eq("project_id", projectId).eq("status", "approved"),
+      supabase.from("monthly_quality_reports").select("id", { count: "exact", head: true }).eq("project_id", projectId).eq("status", "submitted"),
+      supabase.from("non_conformities").select("id", { count: "exact", head: true }).eq("project_id", projectId).eq("status", "closed"),
+      supabase.from("materials").select("id", { count: "exact", head: true }).eq("project_id", projectId).eq("pame_status", "approved"),
+      supabase.from("hp_notifications").select("id", { count: "exact", head: true }).eq("project_id", projectId).eq("status", "confirmed"),
+      supabase.from("quality_audits").select("id", { count: "exact", head: true }).eq("project_id", projectId).eq("status", "completed"),
+    ]);
+
+    const ppiDone = ppiRes.count ?? 0;
+    const rmsgqDone = rmsgqRes.count ?? 0;
+    const ncDone = ncRes.count ?? 0;
+    const pameDone = pameRes.count ?? 0;
+    const hpDone = hpRes.count ?? 0;
+    const auditsDone = auditsRes.count ?? 0;
+
+    const { data: items } = await supabase
+      .from("dfo_items" as any)
+      .select("id, code, status")
+      .eq("project_id", projectId);
+
+    for (const item of (items ?? []) as any[]) {
+      let newStatus: string | null = null;
+
+      if (item.code.includes("PPI") && ppiDone > 0)
+        newStatus = ppiDone >= 12 ? "complete" : "in_progress";
+      if (item.code.includes("RM-SGQ") && rmsgqDone > 0)
+        newStatus = "in_progress";
+      if (item.code.includes("LNC") && ncDone > 0)
+        newStatus = "in_progress";
+      if (item.code.includes("PAME") && pameDone > 0)
+        newStatus = "in_progress";
+      if (item.code.includes("NOT-HP") && hpDone > 0)
+        newStatus = "in_progress";
+      if (item.code.includes("RAI") && auditsDone > 0)
+        newStatus = auditsDone >= 4 ? "complete" : "in_progress";
+
+      if (newStatus && item.status === "pending") {
+        await supabase.from("dfo_items" as any).update({ status: newStatus }).eq("id", item.id);
+      }
+    }
+  },
+
   async exportDfoIndex(volumes: DfoVolume[], meta: ReportMeta): Promise<void> {
     const labels: ReportLabels = {
       appName: "Atlas QMS",

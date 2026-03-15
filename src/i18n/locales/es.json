@@ -523,7 +523,7 @@
       "subtitle": "Gestión de RFIs, Submittals y Clarificaciones"
     },
     "plans": {
-      "title": "Planos Técnicos de Obra",
+      "title": "Planes Técnicos de Obra",
       "subtitle": "Method Statements, programas de hormigonados, montaje, tráfico y cronograma"
     },
     "survey": {
@@ -1540,7 +1540,7 @@
       "approver": "Aprobador",
       "linkedTo": "Vínculos",
       "workItem": "Work Item",
-      "viewWorkItem": "Ver Work Item →",
+      "viewWorkItem": "Ver Actividad →",
       "ppiInstance": "Inspección PPI",
       "viewPpi": "Ver Inspección PPI →",
       "dueDate": "Plazo",
@@ -1691,8 +1691,8 @@
     "filters": {
       "allStatuses": "Todos los estados",
       "overdue": "⚠ Atrasados",
-      "allDisciplines": "Todas disciplinas",
-      "allPriorities": "Todas prioridades"
+      "allDisciplines": "Todas las disciplinas",
+      "allPriorities": "Todas las prioridades"
     },
     "priority": {
       "normal": "Normal",
@@ -2199,7 +2199,7 @@
     },
     "form": {
       "titleCreate": "Nuevo Work Item",
-      "titleEdit": "Editar Work Item",
+      "titleEdit": "Editar Actividad",
       "titleDuplicate": "Duplicar Actividad",
       "duplicateBtn": "Duplicar",
       "sector": "Sector",
@@ -2234,7 +2234,7 @@
     "toast": {
       "created": "Work Item creado con éxito.",
       "updated": "Work Item actualizado con éxito.",
-      "deleted": "Work Item eliminado.",
+      "deleted": "Actividad eliminada.",
       "duplicated": "Actividad duplicada — rellene el elemento y PK.",
       "error": "Ocurrió un error. Inténtelo de nuevo."
     },
@@ -2697,7 +2697,7 @@
       "allCategories": "Todas las categorías",
       "allApprovals": "Todas las aprobaciones"
     },
-    "status": { "active": "Activo", "discontinued": "Descontinuado", "archived": "Archivado" },
+    "status": { "active": "Activo", "discontinued": "Descatalogado", "archived": "Archivado" },
     "categories": {
       "betao": "Hormigón",
       "aco": "Acero",
@@ -2715,7 +2715,7 @@
     "kpi": {
       "total": "Total",
       "active": "Activos",
-      "discontinued": "Descontinuados",
+      "discontinued": "Descatalogados",
       "docsExpired": "Docs Expirados",
       "withOpenNC": "Con NC Abierta",
       "nonconformTests": "Ensayos NC (30d)",
