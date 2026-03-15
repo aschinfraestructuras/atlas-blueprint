@@ -10,6 +10,8 @@ import { ncService } from "@/lib/services/ncService";
 import { exportNCBulkPdf, type NCExportLabels } from "@/lib/services/ncExportService";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import { exportToCSV, generateListPdf, buildReportFilename } from "@/lib/services/reportService";
+import { exportLNC } from "@/lib/services/sgqListExportService";
+import { useReportMeta } from "@/hooks/useReportMeta";
 import type { NonConformity } from "@/lib/services/ncService";
 import { toast } from "@/hooks/use-toast";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
