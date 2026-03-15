@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
+import { exportREQ } from "@/lib/services/sgqListExportService";
 import {
   exportTopographyEquipmentCsv, exportTopographyEquipmentPdf,
   exportTopographyRequestsCsv, exportTopographyControlsCsv,
