@@ -418,7 +418,7 @@ export default function MonthlyReportPage() {
               </Select>
             </div>
             <p className="text-xs text-muted-foreground">
-              Os KPIs serão automaticamente preenchidos com os dados actuais do projecto.
+              {t("monthlyReport.kpiAutoFill")}
             </p>
           </div>
           <DialogFooter>
