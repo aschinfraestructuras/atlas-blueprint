@@ -109,6 +109,7 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
     setActivity(item.label);
     setLocationPk("");
     setNotes("");
+    setRfiRef("");
     // Default date: 48h+ from now
     const minDate = new Date(Date.now() + 48 * 60 * 60 * 1000);
     setPlannedDate(minDate.toISOString().slice(0, 10));
