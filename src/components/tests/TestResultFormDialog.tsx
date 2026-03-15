@@ -43,6 +43,13 @@ const schema = (t: (k: string) => string) =>
     notes:            z.string().trim().optional().or(z.literal("")),
     work_item_id:     z.string().optional().or(z.literal("")),
     supplier_id:      z.string().optional().or(z.literal("")),
+    // BE-CAMPO fields
+    be_campo_code:    z.string().trim().optional().or(z.literal("")),
+    eme_code:         z.string().trim().optional().or(z.literal("")),
+    eme_calibration_date: z.string().optional().or(z.literal("")),
+    location_pk:      z.string().trim().optional().or(z.literal("")),
+    weather:          z.string().optional().or(z.literal("")),
+    ambient_temperature: z.string().optional().or(z.literal("")),
   });
 
 type FormValues = z.infer<ReturnType<typeof schema>>;
