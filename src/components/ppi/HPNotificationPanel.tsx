@@ -334,10 +334,27 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
                             </Button>
                           )}
                           {status === "pending" && latestNotif && (
-                            <Button
-                              size="sm"
-                              variant="default"
-                              className="gap-1 text-xs h-7"
+                            <>
+                              <Button
+                                size="sm"
+                                variant="default"
+                                className="gap-1 text-xs h-7"
+                                onClick={() => openConfirmDialog(latestNotif.id)}
+                              >
+                                <CheckCircle2 className="h-3 w-3" />
+                                {t("ppi.hpNotification.confirmBtn", { defaultValue: "Confirmar" })}
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="gap-1 text-xs h-7 text-muted-foreground"
+                                onClick={() => navigate(`/technical-office?type=rfi&ppi_ref=${encodeURIComponent(latestNotif.code)}&subject=${encodeURIComponent(`HP ${latestNotif.point_no} ${latestNotif.activity.slice(0, 50)}`)}`)}
+                              >
+                                <ExternalLink className="h-3 w-3" />
+                                Criar RFI
+                              </Button>
+                            </>
+                          )}
                               onClick={() => openConfirmDialog(latestNotif.id)}
                             >
                               <CheckCircle2 className="h-3 w-3" />
