@@ -191,6 +191,24 @@ export default function WorkItemsPage() {
   const [ppiDialogOpen, setPpiDialogOpen] = useState(false);
   const [ppiWorkItemId, setPpiWorkItemId] = useState<string | undefined>();
 
+  // HP alert badge — work items with pending HP notifications
+  const [hpAlertIds, setHpAlertIds] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    if (!activeProject) return;
+    supabase
+      .from("hp_notifications")
+      .select("instance_id, ppi_instances!inner(work_item_id)")
+      .eq("project_id", activeProject.id)
+      .eq("status", "pending")
+      .then(({ data: hpData }) => {
+        const ids = new Set<string>(
+          (hpData ?? []).map((h: any) => h.ppi_instances?.work_item_id).filter(Boolean)
+        );
+        setHpAlertIds(ids);
+      });
+  }, [activeProject, data]);
+
   // Collapsible state
   const [expandedSectors, setExpandedSectors] = useState<Set<string>>(new Set());
   const [expandedObras, setExpandedObras]     = useState<Set<string>>(new Set());
