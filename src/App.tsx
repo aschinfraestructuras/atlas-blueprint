@@ -119,7 +119,7 @@ const App = () => (
                 <Route path="/suppliers/:id" element={<ProtectedLayout><SupplierDetailPage /></ProtectedLayout>} />
                 <Route path="/non-conformities" element={<ProtectedLayout><NonConformitiesPage /></ProtectedLayout>} />
                 <Route path="/non-conformities/:id" element={<ProtectedLayout><NCDetailPage /></ProtectedLayout>} />
-                <Route path="/audit" element={<ProtectedLayout><AuditLogPage /></ProtectedLayout>} />
+                <Route path="/audit-log" element={<ProtectedLayout><AuditLogPage /></ProtectedLayout>} />
                 <Route path="/settings" element={<ProtectedLayout><SettingsPage /></ProtectedLayout>} />
 
                 {/* New structural modules */}
