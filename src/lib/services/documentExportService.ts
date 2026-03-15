@@ -7,6 +7,7 @@
 
 import type { Document, DocumentVersion } from "./documentService";
 import { auditService } from "./auditService";
+import { projectInfoStripHtml } from "./pdfProjectHeader";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
