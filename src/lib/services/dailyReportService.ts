@@ -260,6 +260,10 @@ export const dailyReportService = {
     if (error) throw error;
     return data as unknown as RmmRow;
   },
+  async updateRmm(id: string, fields: Partial<Omit<RmmRow, "id" | "created_at" | "daily_report_id">>): Promise<void> {
+    const { error } = await supabase.from("daily_report_rmm").update(fields as any).eq("id", id);
+    if (error) throw error;
+  },
   async deleteRmm(id: string): Promise<void> {
     const { error } = await supabase.from("daily_report_rmm").delete().eq("id", id);
     if (error) throw error;
