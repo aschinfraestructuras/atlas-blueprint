@@ -842,6 +842,7 @@ export type Database = {
           point_no: string
           ppi_ref: string
           project_id: string
+          rfi_ref: string | null
           status: string
         }
         Insert: {
@@ -861,6 +862,7 @@ export type Database = {
           point_no: string
           ppi_ref: string
           project_id: string
+          rfi_ref?: string | null
           status?: string
         }
         Update: {
@@ -880,6 +882,7 @@ export type Database = {
           point_no?: string
           ppi_ref?: string
           project_id?: string
+          rfi_ref?: string | null
           status?: string
         }
         Relationships: [
@@ -2667,6 +2670,88 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tenants"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_audits: {
+        Row: {
+          audit_type: string
+          auditor_name: string | null
+          code: string
+          completed_date: string | null
+          created_at: string
+          created_by: string | null
+          findings: string | null
+          id: string
+          nc_count: number
+          obs_count: number
+          observations: string | null
+          planned_date: string
+          project_id: string
+          report_ref: string | null
+          scope: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          audit_type?: string
+          auditor_name?: string | null
+          code: string
+          completed_date?: string | null
+          created_at?: string
+          created_by?: string | null
+          findings?: string | null
+          id?: string
+          nc_count?: number
+          obs_count?: number
+          observations?: string | null
+          planned_date: string
+          project_id: string
+          report_ref?: string | null
+          scope?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          audit_type?: string
+          auditor_name?: string | null
+          code?: string
+          completed_date?: string | null
+          created_at?: string
+          created_by?: string | null
+          findings?: string | null
+          id?: string
+          nc_count?: number
+          obs_count?: number
+          observations?: string | null
+          planned_date?: string
+          project_id?: string
+          report_ref?: string | null
+          scope?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_audits_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_audits_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "quality_audits_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
           },
         ]
       }
@@ -6133,6 +6218,7 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      fn_next_audit_code: { Args: { p_project_id: string }; Returns: string }
       fn_next_hp_notification_code: {
         Args: { p_project_id: string }
         Returns: string

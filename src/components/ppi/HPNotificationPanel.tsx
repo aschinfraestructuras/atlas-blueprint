@@ -26,11 +26,13 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
 import {
   AlertTriangle,
   Bell,
   CheckCircle2,
   Clock,
+  ExternalLink,
   Loader2,
   Plus,
   XCircle,
@@ -44,6 +46,7 @@ interface Props {
 
 export function HPNotificationPanel({ instance, items, projectId }: Props) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState<HpNotification[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -55,6 +58,7 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
   const [activity, setActivity] = useState("");
   const [locationPk, setLocationPk] = useState("");
   const [notes, setNotes] = useState("");
+  const [rfiRef, setRfiRef] = useState("");
   const [creating, setCreating] = useState(false);
 
   // Confirm dialog
@@ -105,6 +109,7 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
     setActivity(item.label);
     setLocationPk("");
     setNotes("");
+    setRfiRef("");
     // Default date: 48h+ from now
     const minDate = new Date(Date.now() + 48 * 60 * 60 * 1000);
     setPlannedDate(minDate.toISOString().slice(0, 10));
@@ -139,6 +144,7 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
         location_pk: locationPk || null,
         planned_datetime: plannedDatetime,
         notes: notes || null,
+        rfi_ref: rfiRef || null,
       };
       await hpNotificationService.create(input);
       toast({
@@ -328,15 +334,26 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
                             </Button>
                           )}
                           {status === "pending" && latestNotif && (
-                            <Button
-                              size="sm"
-                              variant="default"
-                              className="gap-1 text-xs h-7"
-                              onClick={() => openConfirmDialog(latestNotif.id)}
-                            >
-                              <CheckCircle2 className="h-3 w-3" />
-                              {t("ppi.hpNotification.confirmBtn", { defaultValue: "Confirmar" })}
-                            </Button>
+                            <>
+                              <Button
+                                size="sm"
+                                variant="default"
+                                className="gap-1 text-xs h-7"
+                                onClick={() => openConfirmDialog(latestNotif.id)}
+                              >
+                                <CheckCircle2 className="h-3 w-3" />
+                                {t("ppi.hpNotification.confirmBtn", { defaultValue: "Confirmar" })}
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="gap-1 text-xs h-7 text-muted-foreground"
+                                onClick={() => navigate(`/technical-office?type=rfi&ppi_ref=${encodeURIComponent(latestNotif.code)}&subject=${encodeURIComponent(`HP ${latestNotif.point_no} ${latestNotif.activity.slice(0, 50)}`)}`)}
+                              >
+                                <ExternalLink className="h-3 w-3" />
+                                Criar RFI
+                              </Button>
+                            </>
                           )}
                         </div>
                       </td>
@@ -372,6 +389,20 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
+                  {(n as any).rfi_ref && (
+                    <span className="text-[10px] font-mono text-primary">RFI: {(n as any).rfi_ref}</span>
+                  )}
+                  {n.status === "pending" && (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="gap-1 text-[10px] h-6 px-2 text-muted-foreground"
+                      onClick={() => navigate(`/technical-office?type=rfi&ppi_ref=${encodeURIComponent(n.code)}&subject=${encodeURIComponent(`HP ${n.point_no} ${n.activity.slice(0, 50)}`)}`)}
+                    >
+                      <ExternalLink className="h-3 w-3" />
+                      Criar RFI
+                    </Button>
+                  )}
                   <span className="text-[10px] text-muted-foreground">
                     {new Date(n.planned_datetime).toLocaleString()}
                   </span>
@@ -467,6 +498,17 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
                 onChange={(e) => setNotes(e.target.value)}
                 rows={2}
                 className="text-sm resize-none"
+              />
+            </div>
+            <div>
+              <Label className="text-xs">
+                Referência RFI (se aplicável)
+              </Label>
+              <Input
+                value={rfiRef}
+                onChange={(e) => setRfiRef(e.target.value)}
+                placeholder="RFI-0001"
+                className="text-sm"
               />
             </div>
           </div>
