@@ -9,6 +9,7 @@ import {
   exportTestResultsBulkPdf,
   type TestExportLabels,
 } from "@/lib/services/testExportService";
+import { exportBeCampoPdf } from "@/lib/services/beCampoExportService";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { toast } from "@/hooks/use-toast";
 import {
