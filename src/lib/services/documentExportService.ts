@@ -253,6 +253,7 @@ function buildSingleHtml(
       <div class="gen">${escHtml(labels.generatedOn)}: ${fmtDate(new Date().toISOString(), locale)}</div>
     </div>
   </div>
+  ${projectInfoStripHtml()}
 
   <div class="info-grid">
     <div class="info-row"><span class="info-label">${escHtml(labels.code)}</span><span class="info-value" style="font-family:monospace;font-weight:700;">${escHtml(doc.code ?? "—")}</span></div>
