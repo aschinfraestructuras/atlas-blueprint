@@ -144,6 +144,7 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
         location_pk: locationPk || null,
         planned_datetime: plannedDatetime,
         notes: notes || null,
+        rfi_ref: rfiRef || null,
       };
       await hpNotificationService.create(input);
       toast({
