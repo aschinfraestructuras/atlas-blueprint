@@ -39,6 +39,7 @@ import { CompletionCheckDialog } from "@/components/planning/CompletionCheckDial
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import type { WbsNode, Activity } from "@/lib/services/planningService";
+import { seedWbsPF17A } from "@/lib/services/wbsSeedService";
 
 const STATUS_COLORS: Record<string, string> = {
   planned: "bg-muted text-muted-foreground",
