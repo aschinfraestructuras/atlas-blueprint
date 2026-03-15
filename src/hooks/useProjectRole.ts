@@ -24,16 +24,13 @@ export function useProjectRole() {
     (async () => {
       setLoading(true);
       try {
-        const { data, error } = await supabase
-          .from("project_members")
-          .select("role")
-          .eq("project_id", activeProject.id)
-          .eq("user_id", user.id)
-          .eq("is_active", true)
-          .maybeSingle();
+        const { data, error } = await supabase.rpc('get_project_role', {
+          _user_id: user.id,
+          _project_id: activeProject.id,
+        });
 
         if (!cancelled) {
-          setRole(error || !data ? null : (data.role as ProjectRole));
+          setRole(error || !data ? null : (data as ProjectRole));
         }
       } catch {
         if (!cancelled) setRole(null);

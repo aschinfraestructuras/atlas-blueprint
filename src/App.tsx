@@ -2,7 +2,7 @@ import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProjectProvider } from "@/contexts/ProjectContext";
@@ -11,6 +11,7 @@ import { MainLayout } from "@/components/layout/MainLayout";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { Loader2 } from "lucide-react";
+import { queryClient } from "@/lib/queryClient";
 
 // Static imports — needed before auth redirect
 import LoginPage from "./pages/LoginPage";
@@ -60,20 +61,6 @@ const SGQMatrixPage = lazy(() => import("./pages/SGQMatrixPage"));
 const TrainingPage = lazy(() => import("./pages/TrainingPage"));
 const MonthlyReportPage = lazy(() => import("./pages/MonthlyReportPage"));
 const DFOPage = lazy(() => import("./pages/DFOPage"));
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60 * 2,
-      gcTime: 1000 * 60 * 10,
-      retry: 1,
-      refetchOnWindowFocus: false,
-    },
-    mutations: {
-      retry: 0,
-    },
-  },
-});
 
 function ProtectedLayout({ children }: { children: React.ReactNode }) {
   return (

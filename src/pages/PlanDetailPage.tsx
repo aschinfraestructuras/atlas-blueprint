@@ -1,15 +1,16 @@
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   ArrowLeft, FileText, CheckCircle2, Clock, RotateCcw,
-  Upload, ExternalLink, Download, Archive, Loader2,
+  Upload, ExternalLink, Download, Archive, Loader2, FileUp,
 } from "lucide-react";
 import { planService, PLAN_STATUS_TRANSITIONS } from "@/lib/services/planService";
 import type { Plan } from "@/lib/services/planService";
 import { documentService } from "@/lib/services/documentService";
 import type { DocumentVersion } from "@/lib/services/documentService";
 import { exportPlanDetailPdf } from "@/lib/services/planExportService";
+import { attachmentService, getSignedUrlForPath } from "@/lib/services/attachmentService";
 import { useProject } from "@/contexts/ProjectContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -51,6 +52,14 @@ function formatBytes(b: number | null | undefined): string {
   return `${(b / (1024 * 1024)).toFixed(1)} MB`;
 }
 
+function isPdf(fileName: string | null | undefined): boolean {
+  return !!fileName && fileName.toLowerCase().endsWith(".pdf");
+}
+
+function isDwg(fileName: string | null | undefined): boolean {
+  return !!fileName && (fileName.toLowerCase().endsWith(".dwg") || fileName.toLowerCase().endsWith(".dxf"));
+}
+
 export default function PlanDetailPage() {
   const { t, i18n } = useTranslation();
   const { id } = useParams<{ id: string }>();
@@ -65,6 +74,7 @@ export default function PlanDetailPage() {
     }
   }, [id, navigate, t]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const attachFileInputRef = useRef<HTMLInputElement>(null);
 
   const [plan, setPlan] = useState<Plan | null>(null);
   const [versions, setVersions] = useState<DocumentVersion[]>([]);
@@ -73,6 +83,8 @@ export default function PlanDetailPage() {
   const [transitioning, setTransitioning] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [changeDesc, setChangeDesc] = useState("");
+  const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
+  const [loadingPreview, setLoadingPreview] = useState(false);
 
   const loadPlan = useCallback(async () => {
     if (!id) return;
@@ -98,6 +110,23 @@ export default function PlanDetailPage() {
 
   useEffect(() => { loadPlan(); }, [loadPlan]);
   useEffect(() => { loadVersions(); }, [loadVersions]);
+
+  // Load PDF preview when current version is PDF
+  const currentVersion = useMemo(() => versions.find(v => v.is_current), [versions]);
+
+  useEffect(() => {
+    if (!currentVersion || !isPdf(currentVersion.file_name) || !activeProject || !plan) {
+      setPdfPreviewUrl(null);
+      return;
+    }
+    let cancelled = false;
+    setLoadingPreview(true);
+    planService.getSignedUrl(currentVersion.file_path, activeProject.id, plan.id)
+      .then(url => { if (!cancelled) setPdfPreviewUrl(url); })
+      .catch(() => { if (!cancelled) setPdfPreviewUrl(null); })
+      .finally(() => { if (!cancelled) setLoadingPreview(false); });
+    return () => { cancelled = true; };
+  }, [currentVersion, activeProject, plan]);
 
   const handleStatusTransition = async (toStatus: string) => {
     if (!plan || !activeProject) return;
@@ -132,6 +161,21 @@ export default function PlanDetailPage() {
     }
   };
 
+  const handleAttachFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file || !plan || !activeProject || !user) return;
+    setUploading(true);
+    try {
+      await attachmentService.upload(file, activeProject.id, "plans", plan.id, user.id);
+      toast({ title: t("plans.toast.fileUploaded", { defaultValue: "Ficheiro anexado com sucesso." }) });
+    } catch (err) {
+      toast({ title: t("plans.toast.uploadError", { defaultValue: "Falha no upload" }), description: err instanceof Error ? err.message : String(err), variant: "destructive" });
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleDownloadVersion = async (version: DocumentVersion) => {
     if (!activeProject || !plan) return;
     try {
@@ -139,6 +183,16 @@ export default function PlanDetailPage() {
       window.open(url, "_blank", "noopener,noreferrer");
     } catch {
       toast({ title: t("plans.toast.downloadError", { defaultValue: "Erro no download" }), variant: "destructive" });
+    }
+  };
+
+  const handleOpenPdf = async () => {
+    if (!currentVersion || !activeProject || !plan) return;
+    try {
+      const url = await planService.getSignedUrl(currentVersion.file_path, activeProject.id, plan.id);
+      window.open(url, "_blank", "noopener,noreferrer");
+    } catch {
+      toast({ title: t("plans.toast.downloadError", { defaultValue: "Erro ao abrir ficheiro" }), variant: "destructive" });
     }
   };
 
@@ -173,7 +227,6 @@ export default function PlanDetailPage() {
   if (!plan || !activeProject) return null;
 
   const transitions = PLAN_STATUS_TRANSITIONS[plan.status] ?? [];
-  const currentVersion = versions.find(v => v.is_current);
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -201,7 +254,19 @@ export default function PlanDetailPage() {
             Rev. {plan.revision ?? "0"} · {new Date(plan.updated_at).toLocaleDateString()}
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          {currentVersion && isPdf(currentVersion.file_name) && (
+            <Button variant="outline" size="sm" onClick={handleOpenPdf} className="gap-1.5">
+              <ExternalLink className="h-3.5 w-3.5" />
+              {t("plans.detail.openPdf", { defaultValue: "Abrir PDF" })}
+            </Button>
+          )}
+          {currentVersion && isDwg(currentVersion.file_name) && (
+            <Button variant="outline" size="sm" onClick={() => handleDownloadVersion(currentVersion)} className="gap-1.5">
+              <Download className="h-3.5 w-3.5" />
+              {t("plans.detail.downloadDwg", { defaultValue: "Descarregar DWG" })}
+            </Button>
+          )}
           <Button variant="outline" size="sm" onClick={handleExportPdf}>
             <Download className="h-3.5 w-3.5 mr-1.5" />
             PDF
@@ -232,6 +297,32 @@ export default function PlanDetailPage() {
             </Button>
           ))}
         </div>
+      )}
+
+      {/* PDF Inline Preview */}
+      {currentVersion && isPdf(currentVersion.file_name) && (
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm">{t("plans.detail.pdfPreview", { defaultValue: "Pré-visualização PDF" })}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {loadingPreview ? (
+              <div className="flex items-center justify-center h-96">
+                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+              </div>
+            ) : pdfPreviewUrl ? (
+              <iframe
+                src={pdfPreviewUrl}
+                className="w-full h-96 border border-border rounded"
+                title="PDF Preview"
+              />
+            ) : (
+              <p className="text-sm text-muted-foreground text-center py-8">
+                {t("plans.detail.pdfPreviewError", { defaultValue: "Não foi possível carregar a pré-visualização." })}
+              </p>
+            )}
+          </CardContent>
+        </Card>
       )}
 
       {/* Info card */}
@@ -270,6 +361,9 @@ export default function PlanDetailPage() {
               <div className="flex items-center gap-2">
                 <span className="text-xs">{currentVersion.file_name ?? "—"}</span>
                 <span className="text-xs text-muted-foreground">{formatBytes(currentVersion.file_size)}</span>
+                <span className="text-[10px] text-muted-foreground">
+                  {new Date(currentVersion.uploaded_at).toLocaleDateString()}
+                </span>
                 <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleDownloadVersion(currentVersion)}>
                   <ExternalLink className="h-3 w-3" />
                 </Button>
@@ -291,17 +385,36 @@ export default function PlanDetailPage() {
             onChange={e => setChangeDesc(e.target.value)}
             className="h-8 text-sm"
           />
-          <input ref={fileInputRef} type="file" className="hidden" onChange={handleFileUpload} />
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-1.5"
-            disabled={uploading}
-            onClick={() => fileInputRef.current?.click()}
-          >
-            {uploading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}
-            {t("plans.detail.uploadBtn", { defaultValue: "Selecionar ficheiro" })}
-          </Button>
+          <div className="flex items-center gap-2">
+            <input ref={fileInputRef} type="file" className="hidden" onChange={handleFileUpload} />
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5"
+              disabled={uploading}
+              onClick={() => fileInputRef.current?.click()}
+            >
+              {uploading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}
+              {t("plans.detail.uploadBtn", { defaultValue: "Selecionar ficheiro" })}
+            </Button>
+            <input
+              ref={attachFileInputRef}
+              type="file"
+              className="hidden"
+              accept=".pdf,.dwg,.dxf,.xlsx"
+              onChange={handleAttachFile}
+            />
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5"
+              disabled={uploading}
+              onClick={() => attachFileInputRef.current?.click()}
+            >
+              <FileUp className="h-3.5 w-3.5" />
+              {t("plans.detail.attachFile", { defaultValue: "📎 Anexar ficheiro" })}
+            </Button>
+          </div>
         </CardContent>
       </Card>
 
