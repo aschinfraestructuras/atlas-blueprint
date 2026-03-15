@@ -9,6 +9,7 @@ import {
   exportTestResultsBulkPdf,
   type TestExportLabels,
 } from "@/lib/services/testExportService";
+import { exportBeCampoPdf } from "@/lib/services/beCampoExportService";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { toast } from "@/hooks/use-toast";
 import {
@@ -642,6 +643,16 @@ function ResultsTab() {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-0.5">
+                        {(r as any).be_campo_code && (
+                          <Button
+                            variant="ghost" size="icon"
+                            className="h-7 w-7 text-muted-foreground hover:text-primary"
+                            title="Exportar BE-CAMPO"
+                            onClick={() => exportBeCampoPdf(r as any, activeProject?.name ?? "Projeto")}
+                          >
+                            <BookOpen className="h-3.5 w-3.5" />
+                          </Button>
+                        )}
                         <Button
                           variant="ghost" size="icon"
                           className="h-7 w-7 text-muted-foreground hover:text-primary"

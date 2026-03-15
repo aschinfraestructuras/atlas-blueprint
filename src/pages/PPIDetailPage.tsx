@@ -829,6 +829,17 @@ export default function PPIDetailPage() {
                                   )}
                                 </div>
                               )}
+                              {(item as any).evidence_required && (d.result === "pass" || d.result === "fail") && (
+                                <div className="mt-1">
+                                  <Badge
+                                    variant="outline"
+                                    className="gap-1 text-[10px] border-primary/30 text-primary cursor-pointer hover:bg-primary/5"
+                                    onClick={() => navigate(`/tests?ppi_ref=${encodeURIComponent(instance.code)}&item=${encodeURIComponent((item as any).check_code ?? item.item_no)}`)}
+                                  >
+                                    📋 BE-CAMPO
+                                  </Badge>
+                                </div>
+                              )}
                             </td>
 
                             {/* Result selector */}

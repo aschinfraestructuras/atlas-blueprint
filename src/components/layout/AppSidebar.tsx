@@ -87,6 +87,7 @@ const NAV_SECTIONS: SidebarSection[] = [
     sectionKey: "system",
     collapsible: true,
     items: [
+      { labelKey: "nav.dfo",          url: "/dfo",           icon: FolderKanban },
       { labelKey: "nav.auditLog",     url: "/audit",         icon: ScrollText,  requiredAction: "viewAudit" },
       { labelKey: "nav.health",       url: "/admin/health",  icon: ShieldCheck, adminOnly: true },
       { labelKey: "nav.settings",     url: "/settings",      icon: Settings,    adminOnly: true },
