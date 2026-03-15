@@ -104,7 +104,11 @@
       "projectManagement": "Gestão de Projeto",
       "technicalOfficeSection": "Escritório Técnico",
       "fieldSection": "Campo & Subempreiteiros",
-      "system": "Sistema"
+      "system": "Sistema",
+      "execution": "Execução",
+      "quality": "Qualidade",
+      "documentation": "Documentação",
+      "reports": "Relatórios"
     },
     "dashboard": "Painel Geral",
     "projects": "Projetos",
