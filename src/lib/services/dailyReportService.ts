@@ -284,6 +284,10 @@ export const dailyReportService = {
     if (error) throw error;
     return data as unknown as WasteRow;
   },
+  async updateWaste(id: string, fields: Partial<Omit<WasteRow, "id" | "created_at" | "daily_report_id">>): Promise<void> {
+    const { error } = await supabase.from("daily_report_waste").update(fields as any).eq("id", id);
+    if (error) throw error;
+  },
   async deleteWaste(id: string): Promise<void> {
     const { error } = await supabase.from("daily_report_waste").delete().eq("id", id);
     if (error) throw error;
