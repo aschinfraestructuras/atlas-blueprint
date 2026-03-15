@@ -500,6 +500,21 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
                 className="text-sm resize-none"
               />
             </div>
+            <div>
+              <Label className="text-xs">
+                Referência RFI (se aplicável)
+              </Label>
+              <Input
+                value={rfiRef}
+                onChange={(e) => setRfiRef(e.target.value)}
+                placeholder="RFI-0001"
+                className="text-sm"
+              />
+            </div>
+                rows={2}
+                className="text-sm resize-none"
+              />
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDialogOpen(false)}>
