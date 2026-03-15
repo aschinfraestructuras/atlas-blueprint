@@ -459,6 +459,130 @@ export type Database = {
           },
         ]
       }
+      dfo_items: {
+        Row: {
+          code: string
+          document_type: string | null
+          id: string
+          linked_doc_id: string | null
+          notes: string | null
+          project_id: string
+          sort_order: number
+          status: string
+          title: string
+          volume_id: string
+        }
+        Insert: {
+          code: string
+          document_type?: string | null
+          id?: string
+          linked_doc_id?: string | null
+          notes?: string | null
+          project_id: string
+          sort_order?: number
+          status?: string
+          title: string
+          volume_id: string
+        }
+        Update: {
+          code?: string
+          document_type?: string | null
+          id?: string
+          linked_doc_id?: string | null
+          notes?: string | null
+          project_id?: string
+          sort_order?: number
+          status?: string
+          title?: string
+          volume_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dfo_items_linked_doc_id_fkey"
+            columns: ["linked_doc_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dfo_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dfo_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "dfo_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "dfo_items_volume_id_fkey"
+            columns: ["volume_id"]
+            isOneToOne: false
+            referencedRelation: "dfo_volumes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dfo_volumes: {
+        Row: {
+          description: string | null
+          id: string
+          project_id: string
+          sort_order: number
+          title: string
+          volume_no: number
+        }
+        Insert: {
+          description?: string | null
+          id?: string
+          project_id: string
+          sort_order?: number
+          title: string
+          volume_no: number
+        }
+        Update: {
+          description?: string | null
+          id?: string
+          project_id?: string
+          sort_order?: number
+          title?: string
+          volume_no?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dfo_volumes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dfo_volumes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "dfo_volumes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
       document_files: {
         Row: {
           created_at: string
