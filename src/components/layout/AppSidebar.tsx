@@ -38,51 +38,55 @@ const NAV_SECTIONS: SidebarSection[] = [
     ],
   },
   {
-    sectionKey: "projectManagement",
+    sectionKey: "execution",
     collapsible: true,
     items: [
-      { labelKey: "nav.projects",       url: "/projects",         icon: FolderKanban },
-      { labelKey: "nav.documents",      url: "/documents",        icon: FileText },
-      { labelKey: "nav.tests",          url: "/tests",            icon: FlaskConical },
-      { labelKey: "nav.laboratories",    url: "/laboratories",     icon: Building2 },
-      { labelKey: "nav.suppliers",      url: "/suppliers",        icon: Truck },
-      { labelKey: "nav.materials",      url: "/materials",        icon: Package },
-      
-      { labelKey: "nav.nonConformities", url: "/non-conformities", icon: AlertTriangle },
-    ],
-  },
-  {
-    sectionKey: "technicalOfficeSection",
-    collapsible: true,
-    items: [
-      { labelKey: "nav.technicalOffice", url: "/technical-office", icon: Inbox },
-      { labelKey: "nav.plans",           url: "/plans",            icon: BookOpen },
-      { labelKey: "nav.planning",        url: "/planning",         icon: CalendarClock },
-      { labelKey: "nav.audits",          url: "/audits",           icon: FileCheck },
-    ],
-  },
-  {
-    sectionKey: "fieldSection",
-    collapsible: true,
-    items: [
-      { labelKey: "nav.topography",    url: "/topography",      icon: Crosshair },
-      { labelKey: "nav.subcontractors", url: "/subcontractors",  icon: HardHat },
       { labelKey: "nav.workItems",      url: "/work-items",      icon: Construction },
       { labelKey: "nav.ppi",            url: "/ppi",             icon: ClipboardCheck },
       { labelKey: "nav.dailyReports",   url: "/daily-reports",   icon: ClipboardList },
+      { labelKey: "nav.planning",        url: "/planning",        icon: CalendarClock },
+      { labelKey: "nav.topography",    url: "/topography",      icon: Crosshair },
+    ],
+  },
+  {
+    sectionKey: "quality",
+    collapsible: true,
+    items: [
+      { labelKey: "nav.nonConformities", url: "/non-conformities", icon: AlertTriangle },
+      { labelKey: "nav.tests",          url: "/tests",            icon: FlaskConical },
+      { labelKey: "nav.materials",      url: "/materials",        icon: Package },
+      { labelKey: "nav.subcontractors", url: "/subcontractors",  icon: HardHat },
+      { labelKey: "nav.suppliers",      url: "/suppliers",        icon: Truck },
+      { labelKey: "nav.laboratories",    url: "/laboratories",     icon: Building2 },
       { labelKey: "nav.recycledMaterials", url: "/recycled-materials", icon: Leaf },
+    ],
+  },
+  {
+    sectionKey: "documentation",
+    collapsible: true,
+    items: [
+      { labelKey: "nav.documents",      url: "/documents",        icon: FileText },
+      { labelKey: "nav.plans",           url: "/plans",            icon: BookOpen },
+      { labelKey: "nav.technicalOffice", url: "/technical-office", icon: Inbox },
+      { labelKey: "nav.audits",          url: "/audits",           icon: FileCheck },
       { labelKey: "nav.training",   url: "/training",   icon: GraduationCap },
+    ],
+  },
+  {
+    sectionKey: "reports",
+    collapsible: true,
+    items: [
+      { labelKey: "nav.qcReport",     url: "/reports/qc",    icon: BarChart3 },
+      { labelKey: "nav.monthlyReport", url: "/reports/monthly", icon: FileBarChart2 },
+      { labelKey: "nav.deadlines",    url: "/deadlines",     icon: Clock },
+      { labelKey: "nav.expirations",  url: "/expirations",   icon: AlertTriangle },
+      { labelKey: "nav.sgqMatrix",    url: "/sgq-matrix",    icon: ShieldCheck },
     ],
   },
   {
     sectionKey: "system",
     collapsible: true,
     items: [
-      { labelKey: "nav.expirations",  url: "/expirations",   icon: AlertTriangle },
-      { labelKey: "nav.deadlines",    url: "/deadlines",     icon: Clock },
-      { labelKey: "nav.qcReport",     url: "/reports/qc",    icon: BarChart3 },
-      { labelKey: "nav.monthlyReport", url: "/reports/monthly", icon: FileBarChart2 },
-      { labelKey: "nav.sgqMatrix",    url: "/sgq-matrix",    icon: ShieldCheck },
       { labelKey: "nav.auditLog",     url: "/audit",         icon: ScrollText,  requiredAction: "viewAudit" },
       { labelKey: "nav.health",       url: "/admin/health",  icon: ShieldCheck, adminOnly: true },
       { labelKey: "nav.settings",     url: "/settings",      icon: Settings,    adminOnly: true },
@@ -165,7 +169,6 @@ function SidebarContent({ collapsed, onClose }: { collapsed: boolean; onClose?: 
   const { can, isAdmin } = useProjectRole();
   const { logoUrl } = useProjectLogo();
 
-  // Track which sections are open — default all open
   const [openSections, setOpenSections] = useState<Record<string, boolean>>(() => {
     const initial: Record<string, boolean> = {};
     NAV_SECTIONS.forEach(s => { initial[s.sectionKey] = true; });
@@ -179,13 +182,11 @@ function SidebarContent({ collapsed, onClose }: { collapsed: boolean; onClose?: 
   const isActive = (url: string, exact?: boolean) =>
     exact ? location.pathname === url : location.pathname.startsWith(url);
 
-  // Auto-open section if it contains active route
   const sectionContainsActive = (section: SidebarSection) =>
     section.items.some(item => isActive(item.url, item.exact));
 
   return (
     <div className="flex flex-col h-full bg-sidebar">
-
       {/* ── Brand ───────────────────────────────────────────────── */}
       <div
         className={cn(
@@ -232,7 +233,6 @@ function SidebarContent({ collapsed, onClose }: { collapsed: boolean; onClose?: 
 
           if (filteredItems.length === 0) return null;
 
-          // Force open if section contains active route
           const isOpen = openSections[section.sectionKey] || sectionContainsActive(section);
 
           return (
@@ -246,7 +246,6 @@ function SidebarContent({ collapsed, onClose }: { collapsed: boolean; onClose?: 
                   collapsible={section.collapsible}
                 />
               )}
-              {/* Animated collapse */}
               <div
                 className={cn(
                   "space-y-[2px] overflow-hidden transition-all duration-200",
