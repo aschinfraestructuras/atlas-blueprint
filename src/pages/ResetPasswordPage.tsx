@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Eye, EyeOff, ShieldCheck, Loader2, CheckCircle2 } from "lucide-react";
+import { Eye, EyeOff, ShieldCheck, Loader2, CheckCircle2, AlertTriangle } from "lucide-react";
+import { PasswordStrengthIndicator } from "@/components/auth/PasswordStrengthIndicator";
 
 export default function ResetPasswordPage() {
   const { t } = useTranslation();
@@ -23,7 +24,10 @@ export default function ResetPasswordPage() {
   useEffect(() => {
     // Check URL hash for recovery type
     const hash = window.location.hash;
-    if (hash.includes("type=recovery")) {
+    const search = window.location.search;
+    const hasRecoveryToken = hash.includes("type=recovery") || search.includes("type=recovery");
+
+    if (hasRecoveryToken) {
       setIsRecovery(true);
     }
 
@@ -43,8 +47,8 @@ export default function ResetPasswordPage() {
     e.preventDefault();
     setError(null);
 
-    if (password.length < 6) {
-      setError(t("auth.errors.passwordTooShort"));
+    if (password.length < 8) {
+      setError(t("auth.errors.passwordTooShort", { defaultValue: "A password deve ter pelo menos 8 caracteres." }));
       return;
     }
 
@@ -71,6 +75,32 @@ export default function ResetPasswordPage() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-secondary">
         <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  // Invalid/expired link — no recovery token detected
+  if (!isRecovery) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-secondary px-4">
+        <div className="w-full max-w-md rounded-xl border bg-card p-10 shadow-sm text-center">
+          <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-destructive/10">
+            <AlertTriangle className="h-7 w-7 text-destructive" />
+          </div>
+          <h2 className="mb-2 text-xl font-semibold tracking-tight text-card-foreground">
+            {t("auth.invalidRecoveryTitle", { defaultValue: "Link inválido ou expirado" })}
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            {t("auth.invalidRecoveryText", { defaultValue: "Solicite um novo link de recuperação na página de login." })}
+          </p>
+          <Button
+            variant="outline"
+            className="mt-6"
+            onClick={() => navigate("/login", { replace: true })}
+          >
+            {t("auth.backToSignIn", { defaultValue: "Voltar ao login" })}
+          </Button>
+        </div>
       </div>
     );
   }
@@ -143,6 +173,7 @@ export default function ResetPasswordPage() {
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
+              <PasswordStrengthIndicator password={password} />
             </div>
 
             <div className="space-y-2">

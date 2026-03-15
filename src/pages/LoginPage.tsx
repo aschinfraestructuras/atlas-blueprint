@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { PasswordStrengthIndicator } from "@/components/auth/PasswordStrengthIndicator";
 
 type Mode = "login" | "forgot";
 
@@ -22,6 +23,8 @@ const LANGUAGES = [
   { code: "pt", label: "PT" },
   { code: "es", label: "ES" },
 ];
+
+const COOLDOWN_MS = 2000;
 
 const RAW_ERRORS: Record<string, string> = {
   "Invalid login credentials": "errors.invalidCredentials",
@@ -48,6 +51,29 @@ export default function LoginPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [resetSent, setResetSent] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
+  const cooldownRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Cleanup cooldown timer
+  useEffect(() => {
+    return () => {
+      if (cooldownRef.current) clearInterval(cooldownRef.current);
+    };
+  }, []);
+
+  const startCooldown = useCallback(() => {
+    setCooldown(COOLDOWN_MS / 1000);
+    cooldownRef.current = setInterval(() => {
+      setCooldown(prev => {
+        if (prev <= 1) {
+          if (cooldownRef.current) clearInterval(cooldownRef.current);
+          cooldownRef.current = null;
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  }, []);
 
   if (!loading && user) {
     return <Navigate to="/" replace />;
@@ -66,6 +92,7 @@ export default function LoginPage() {
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Unknown error";
       setError(mapError(msg, t));
+      startCooldown();
     } finally {
       setSubmitting(false);
     }
@@ -88,6 +115,8 @@ export default function LoginPage() {
       setSubmitting(false);
     }
   };
+
+  const isLoginDisabled = submitting || !email || !password || cooldown > 0;
 
   // Reset email sent confirmation
   if (resetSent) {
@@ -250,13 +279,15 @@ export default function LoginPage() {
                 <Button
                   type="submit"
                   className="w-full min-h-[48px]"
-                  disabled={submitting || !email || !password}
+                  disabled={isLoginDisabled}
                 >
                   {submitting ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       {t("auth.signingIn")}
                     </>
+                  ) : cooldown > 0 ? (
+                    t("auth.cooldown", { seconds: cooldown, defaultValue: `Aguarda ${cooldown}s…` })
                   ) : (
                     t("auth.signIn")
                   )}
