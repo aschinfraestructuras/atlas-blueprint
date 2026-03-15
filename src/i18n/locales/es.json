@@ -3606,5 +3606,45 @@
   },
   "shortcuts": {
     "newRecord": "Nuevo registro (N)"
+  },
+  "monthlyReport": {
+    "title": "Informe Mensual SGQ",
+    "subtitle": "CE Cláusula 35.ª §11 — Informe mensual de calidad",
+    "create": "Nuevo Informe",
+    "createTitle": "Nuevo Informe Mensual SGQ",
+    "refMonth": "Mes de referencia",
+    "kpiAutoFill": "Los KPIs se rellenarán automáticamente con los datos actuales del proyecto.",
+    "submit": "Enviar informe",
+    "submitConfirm": "¿Confirmar envío del informe mensual?",
+    "submitted": "Informe enviado correctamente",
+    "observations": "Observaciones",
+    "correctiveActions": "Acciones Correctivas",
+    "nextMonthPlan": "Plan para el Próximo Mes",
+    "exportPdf": "Exportar PDF",
+    "onTime": "A tiempo",
+    "late": "Fuera de plazo",
+    "submittedAt": "Enviado",
+    "deadline": "Plazo",
+    "deleteConfirm": "¿Seguro que desea eliminar el informe {{code}}?",
+    "deadlineAlert": "⚠️ Informe Mensual SGQ — entregar hasta {{date}} ({{days}} días)",
+    "deadlineOverdue": "🔴 Informe Mensual SGQ atrasado — {{days}} días de atraso",
+    "createReport": "Crear Informe",
+    "emptyTitle": "Ningún informe mensual",
+    "emptySubtitle": "Cree el primer informe mensual para iniciar el registro de KPIs.",
+    "status": {
+      "draft": "Borrador",
+      "submitted": "Enviado",
+      "accepted": "Aceptado"
+    },
+    "kpi": {
+      "testsPass": "Ensayos Conformes",
+      "ncOpen": "NCs Abiertas",
+      "ncClosed": "NCs Cerradas",
+      "hpConfirmed": "HPs Confirmados",
+      "matApproved": "Mat. Aprobados",
+      "matPending": "Mat. Pendientes",
+      "ppiCompleted": "PPIs Completados",
+      "emesExpiring": "EMEs por Expirar"
+    }
   }
 }
