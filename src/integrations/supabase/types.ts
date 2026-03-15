@@ -824,6 +824,168 @@ export type Database = {
           },
         ]
       }
+      field_record_checks: {
+        Row: {
+          criteria: string | null
+          description: string
+          id: string
+          item_no: number
+          measured_value: string | null
+          method: string | null
+          record_id: string
+          result: string | null
+        }
+        Insert: {
+          criteria?: string | null
+          description: string
+          id?: string
+          item_no: number
+          measured_value?: string | null
+          method?: string | null
+          record_id: string
+          result?: string | null
+        }
+        Update: {
+          criteria?: string | null
+          description?: string
+          id?: string
+          item_no?: number
+          measured_value?: string | null
+          method?: string | null
+          record_id?: string
+          result?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "field_record_checks_record_id_fkey"
+            columns: ["record_id"]
+            isOneToOne: false
+            referencedRelation: "field_records"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      field_record_materials: {
+        Row: {
+          fav_pame_ref: string | null
+          id: string
+          lot_ref: string | null
+          material_name: string
+          quantity: string | null
+          record_id: string
+        }
+        Insert: {
+          fav_pame_ref?: string | null
+          id?: string
+          lot_ref?: string | null
+          material_name: string
+          quantity?: string | null
+          record_id: string
+        }
+        Update: {
+          fav_pame_ref?: string | null
+          id?: string
+          lot_ref?: string | null
+          material_name?: string
+          quantity?: string | null
+          record_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "field_record_materials_record_id_fkey"
+            columns: ["record_id"]
+            isOneToOne: false
+            referencedRelation: "field_records"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      field_records: {
+        Row: {
+          activity: string
+          code: string
+          created_at: string
+          created_by: string | null
+          has_photos: boolean
+          id: string
+          inspection_date: string
+          inspector_id: string | null
+          location_pk: string | null
+          observations: string | null
+          point_type: string
+          ppi_instance_id: string | null
+          project_id: string
+          result: string
+          specialist_name: string | null
+          weather: string | null
+        }
+        Insert: {
+          activity: string
+          code: string
+          created_at?: string
+          created_by?: string | null
+          has_photos?: boolean
+          id?: string
+          inspection_date?: string
+          inspector_id?: string | null
+          location_pk?: string | null
+          observations?: string | null
+          point_type?: string
+          ppi_instance_id?: string | null
+          project_id: string
+          result?: string
+          specialist_name?: string | null
+          weather?: string | null
+        }
+        Update: {
+          activity?: string
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          has_photos?: boolean
+          id?: string
+          inspection_date?: string
+          inspector_id?: string | null
+          location_pk?: string | null
+          observations?: string | null
+          point_type?: string
+          ppi_instance_id?: string | null
+          project_id?: string
+          result?: string
+          specialist_name?: string | null
+          weather?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "field_records_ppi_instance_id_fkey"
+            columns: ["ppi_instance_id"]
+            isOneToOne: false
+            referencedRelation: "ppi_instances"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "field_records_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "field_records_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "field_records_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
       hp_notifications: {
         Row: {
           activity: string
@@ -4163,17 +4325,23 @@ export type Database = {
       }
       test_results: {
         Row: {
+          ambient_temperature: number | null
           approved_at: string | null
           approved_by: string | null
+          be_campo_code: string | null
           code: string | null
           created_at: string
           created_by: string | null
           date: string
           deleted_at: string | null
           deleted_by: string | null
+          eme_calibration_date: string | null
+          eme_code: string | null
+          gr_id: string | null
           id: string
           is_deleted: boolean
           location: string | null
+          location_pk: string | null
           material: string | null
           material_id: string | null
           material_outro: string | null
@@ -4198,20 +4366,27 @@ export type Database = {
           test_id: string
           updated_at: string
           updated_by: string | null
+          weather: string | null
           work_item_id: string | null
         }
         Insert: {
+          ambient_temperature?: number | null
           approved_at?: string | null
           approved_by?: string | null
+          be_campo_code?: string | null
           code?: string | null
           created_at?: string
           created_by?: string | null
           date?: string
           deleted_at?: string | null
           deleted_by?: string | null
+          eme_calibration_date?: string | null
+          eme_code?: string | null
+          gr_id?: string | null
           id?: string
           is_deleted?: boolean
           location?: string | null
+          location_pk?: string | null
           material?: string | null
           material_id?: string | null
           material_outro?: string | null
@@ -4236,20 +4411,27 @@ export type Database = {
           test_id: string
           updated_at?: string
           updated_by?: string | null
+          weather?: string | null
           work_item_id?: string | null
         }
         Update: {
+          ambient_temperature?: number | null
           approved_at?: string | null
           approved_by?: string | null
+          be_campo_code?: string | null
           code?: string | null
           created_at?: string
           created_by?: string | null
           date?: string
           deleted_at?: string | null
           deleted_by?: string | null
+          eme_calibration_date?: string | null
+          eme_code?: string | null
+          gr_id?: string | null
           id?: string
           is_deleted?: boolean
           location?: string | null
+          location_pk?: string | null
           material?: string | null
           material_id?: string | null
           material_outro?: string | null
@@ -4274,9 +4456,17 @@ export type Database = {
           test_id?: string
           updated_at?: string
           updated_by?: string | null
+          weather?: string | null
           work_item_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "test_results_gr_id_fkey"
+            columns: ["gr_id"]
+            isOneToOne: false
+            referencedRelation: "field_records"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "test_results_material_id_fkey"
             columns: ["material_id"]
@@ -6131,17 +6321,23 @@ export type Database = {
           p_work_item_id?: string
         }
         Returns: {
+          ambient_temperature: number | null
           approved_at: string | null
           approved_by: string | null
+          be_campo_code: string | null
           code: string | null
           created_at: string
           created_by: string | null
           date: string
           deleted_at: string | null
           deleted_by: string | null
+          eme_calibration_date: string | null
+          eme_code: string | null
+          gr_id: string | null
           id: string
           is_deleted: boolean
           location: string | null
+          location_pk: string | null
           material: string | null
           material_id: string | null
           material_outro: string | null
@@ -6166,6 +6362,7 @@ export type Database = {
           test_id: string
           updated_at: string
           updated_by: string | null
+          weather: string | null
           work_item_id: string | null
         }
         SetofOptions: {
@@ -6219,6 +6416,11 @@ export type Database = {
         }
       }
       fn_next_audit_code: { Args: { p_project_id: string }; Returns: string }
+      fn_next_be_campo_code: {
+        Args: { p_project_id: string; p_test_type?: string }
+        Returns: string
+      }
+      fn_next_gr_code: { Args: { p_project_id: string }; Returns: string }
       fn_next_hp_notification_code: {
         Args: { p_project_id: string }
         Returns: string
@@ -6227,7 +6429,12 @@ export type Database = {
         Args: { p_material_code: string; p_project_id: string }
         Returns: string
       }
-      fn_next_ppi_code: { Args: { p_project_id: string }; Returns: string }
+      fn_next_ppi_code:
+        | { Args: { p_project_id: string }; Returns: string }
+        | {
+            Args: { p_disciplina?: string; p_project_id: string }
+            Returns: string
+          }
       fn_next_rmsgq_code: { Args: { p_project_id: string }; Returns: string }
       fn_next_tech_office_code: {
         Args: { p_prefix: string; p_project_id: string }
@@ -6410,17 +6617,23 @@ export type Database = {
       fn_update_test_status: {
         Args: { p_result_id: string; p_to_status: string }
         Returns: {
+          ambient_temperature: number | null
           approved_at: string | null
           approved_by: string | null
+          be_campo_code: string | null
           code: string | null
           created_at: string
           created_by: string | null
           date: string
           deleted_at: string | null
           deleted_by: string | null
+          eme_calibration_date: string | null
+          eme_code: string | null
+          gr_id: string | null
           id: string
           is_deleted: boolean
           location: string | null
+          location_pk: string | null
           material: string | null
           material_id: string | null
           material_outro: string | null
@@ -6445,6 +6658,7 @@ export type Database = {
           test_id: string
           updated_at: string
           updated_by: string | null
+          weather: string | null
           work_item_id: string | null
         }
         SetofOptions: {

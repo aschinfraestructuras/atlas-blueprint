@@ -1,9 +1,9 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   Plus, Search, Construction, Pencil, Trash2, Eye, ClipboardCheck, Loader2,
-  ShieldCheck, ShieldAlert, AlertTriangle, FlaskConical, Copy, ChevronDown, ChevronRight,
+  ShieldCheck, ShieldAlert, AlertTriangle, FlaskConical, Copy, ChevronDown, ChevronRight, Bell,
 } from "lucide-react";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import {
@@ -45,6 +45,7 @@ import {
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
+import { supabase } from "@/integrations/supabase/client";
 
 // ─── Discipline codes ──────────────────────────────────────────────────────────
 const DISCIPLINE_CODES = [
@@ -189,6 +190,24 @@ export default function WorkItemsPage() {
   // PPI creation
   const [ppiDialogOpen, setPpiDialogOpen] = useState(false);
   const [ppiWorkItemId, setPpiWorkItemId] = useState<string | undefined>();
+
+  // HP alert badge — work items with pending HP notifications
+  const [hpAlertIds, setHpAlertIds] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    if (!activeProject) return;
+    supabase
+      .from("hp_notifications")
+      .select("instance_id, ppi_instances!inner(work_item_id)")
+      .eq("project_id", activeProject.id)
+      .eq("status", "pending")
+      .then(({ data: hpData }) => {
+        const ids = new Set<string>(
+          (hpData ?? []).map((h: any) => h.ppi_instances?.work_item_id).filter(Boolean)
+        );
+        setHpAlertIds(ids);
+      });
+  }, [activeProject, data]);
 
   // Collapsible state
   const [expandedSectors, setExpandedSectors] = useState<Set<string>>(new Set());
@@ -400,7 +419,12 @@ export default function WorkItemsPage() {
         onClick={() => navigate(`/work-items/${item.id}`)}
       >
         <TableCell className="text-sm text-muted-foreground">
-          {t(`workItems.disciplines.${item.disciplina}`, { defaultValue: item.disciplina })}
+          <span className="flex items-center gap-1.5">
+            {t(`workItems.disciplines.${item.disciplina}`, { defaultValue: item.disciplina })}
+            {hpAlertIds.has(item.id) && (
+              <span className="inline-flex" title="HP sem confirmação F/IP"><Bell className="h-3.5 w-3.5 text-amber-500 flex-shrink-0" /></span>
+            )}
+          </span>
         </TableCell>
         <TableCell className="text-sm text-muted-foreground">
           {[item.elemento, item.parte].filter(Boolean).join(" · ") || "—"}

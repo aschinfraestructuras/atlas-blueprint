@@ -43,6 +43,13 @@ const schema = (t: (k: string) => string) =>
     notes:            z.string().trim().optional().or(z.literal("")),
     work_item_id:     z.string().optional().or(z.literal("")),
     supplier_id:      z.string().optional().or(z.literal("")),
+    // BE-CAMPO fields
+    be_campo_code:    z.string().trim().optional().or(z.literal("")),
+    eme_code:         z.string().trim().optional().or(z.literal("")),
+    eme_calibration_date: z.string().optional().or(z.literal("")),
+    location_pk:      z.string().trim().optional().or(z.literal("")),
+    weather:          z.string().optional().or(z.literal("")),
+    ambient_temperature: z.string().optional().or(z.literal("")),
   });
 
 type FormValues = z.infer<ReturnType<typeof schema>>;
@@ -74,6 +81,7 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
       test_id: "", date: new Date().toISOString().split("T")[0],
       status_workflow: "draft", result_status: "", sample_ref: "", location: "", pk_inicio: "", pk_fim: "",
       report_number: "", notes: "", work_item_id: "", supplier_id: "",
+      be_campo_code: "", eme_code: "", eme_calibration_date: "", location_pk: "", weather: "", ambient_temperature: "",
     },
   });
 
@@ -108,12 +116,19 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
       notes:            testResult.notes ?? "",
       work_item_id:     testResult.work_item_id ?? "",
       supplier_id:      testResult.supplier_id ?? "",
+      be_campo_code:    (testResult as any).be_campo_code ?? "",
+      eme_code:         (testResult as any).eme_code ?? "",
+      eme_calibration_date: (testResult as any).eme_calibration_date ?? "",
+      location_pk:      (testResult as any).location_pk ?? "",
+      weather:          (testResult as any).weather ?? "",
+      ambient_temperature: (testResult as any).ambient_temperature != null ? String((testResult as any).ambient_temperature) : "",
     } : {
       test_id: "", date: new Date().toISOString().split("T")[0],
       status_workflow: "draft", result_status: "", sample_ref: "", location: "", pk_inicio: "", pk_fim: "",
       report_number: "", notes: "",
       work_item_id:  preselectedWorkItemId ?? "",
       supplier_id: "",
+      be_campo_code: "", eme_code: "", eme_calibration_date: "", location_pk: "", weather: "", ambient_temperature: "",
     });
     setCreatingNew(false);
     setNewTestName(""); setNewTestCode("");
@@ -374,7 +389,69 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
               )} />
             )}
 
-            {/* Notes */}
+            {/* BE-CAMPO fields */}
+            <Separator />
+            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+              {t("tests.results.form.beCampoSection", { defaultValue: "BE-CAMPO — Boletim de Ensaio de Campo" })}
+            </p>
+            <div className="grid grid-cols-2 gap-3">
+              <FormField control={form.control} name="be_campo_code" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("tests.results.form.beCampoCode", { defaultValue: "Código BE-CAMPO" })} <span className="text-xs text-muted-foreground">({t("common.optional")})</span></FormLabel>
+                  <FormControl><Input placeholder="BE-COMP-PF17A-001" className="font-mono text-sm" {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="location_pk" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>PK <span className="text-xs text-muted-foreground">({t("common.optional")})</span></FormLabel>
+                  <FormControl><Input placeholder="45+200" className="font-mono text-sm" {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              <FormField control={form.control} name="eme_code" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("tests.results.form.emeCode", { defaultValue: "Cód. EME" })} <span className="text-xs text-muted-foreground">({t("common.optional")})</span></FormLabel>
+                  <FormControl><Input placeholder="EME-001" className="font-mono text-sm" {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="eme_calibration_date" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("tests.results.form.emeCalDate", { defaultValue: "Calibração" })} <span className="text-xs text-muted-foreground">({t("common.optional")})</span></FormLabel>
+                  <FormControl><Input type="date" {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="ambient_temperature" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("tests.results.form.temperature", { defaultValue: "Temp. (°C)" })} <span className="text-xs text-muted-foreground">({t("common.optional")})</span></FormLabel>
+                  <FormControl><Input type="number" step="0.1" placeholder="22.5" {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            </div>
+            <FormField control={form.control} name="weather" render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("tests.results.form.weather", { defaultValue: "Meteorologia" })} <span className="text-xs text-muted-foreground">({t("common.optional")})</span></FormLabel>
+                <Select onValueChange={(v) => field.onChange(v === "__none__" ? "" : v)} value={field.value || "__none__"}>
+                  <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                  <SelectContent>
+                    <SelectItem value="__none__">—</SelectItem>
+                    <SelectItem value="bom">Bom</SelectItem>
+                    <SelectItem value="nublado">Nublado</SelectItem>
+                    <SelectItem value="chuva">Chuva</SelectItem>
+                    <SelectItem value="chuva_forte">Chuva Forte</SelectItem>
+                    <SelectItem value="vento">Vento</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )} />
+
+
             <FormField control={form.control} name="notes" render={({ field }) => (
               <FormItem>
                 <FormLabel>{t("tests.results.form.notes")} <span className="text-xs text-muted-foreground">({t("common.optional")})</span></FormLabel>

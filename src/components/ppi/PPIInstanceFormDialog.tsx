@@ -22,8 +22,9 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Loader2, AlertTriangle, Info, LayoutTemplate, ExternalLink, Calendar } from "lucide-react";
+import { Loader2, AlertTriangle, Info, LayoutTemplate, ExternalLink, Calendar, Sparkles } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 // ─── Schema ───────────────────────────────────────────────────────────────────
 
@@ -32,6 +33,7 @@ const makeSchema = (t: (k: string) => string) =>
     work_item_id:      z.string().min(1, t("ppi.instances.validation.workItemRequired")),
     template_id:       z.string().optional(),
     code:              z.string().optional(),
+    auto_code:         z.boolean().optional(),
     inspector_id:      z.string().optional(),
     inspection_date:   z.string().optional(),
   });
@@ -73,10 +75,14 @@ export function PPIInstanceFormDialog({
       work_item_id:    preselectedWorkItemId ?? "",
       template_id:     "",
       code:            "",
+      auto_code:       true,
       inspector_id:    "",
       inspection_date: format(new Date(), "yyyy-MM-dd"),
     },
   });
+
+  const watchedAutoCode = form.watch("auto_code");
+  const [previewCode, setPreviewCode] = useState<string | null>(null);
 
   const watchedWorkItemId = form.watch("work_item_id");
   const watchedTemplateId = form.watch("template_id");
@@ -89,10 +95,12 @@ export function PPIInstanceFormDialog({
       work_item_id:    preselectedWorkItemId ?? "",
       template_id:     "",
       code:            "",
+      auto_code:       true,
       inspector_id:    "",
       inspection_date: format(new Date(), "yyyy-MM-dd"),
     });
     setNoActiveTemplates(false);
+    setPreviewCode(null);
 
     setLoadingWI(true);
     workItemService.getByProject(activeProject.id)
@@ -138,7 +146,26 @@ export function PPIInstanceFormDialog({
     }
   }, [selectedWI, matchingTemplates, loadingTpl, watchedTemplateId, form]);
 
-  // ── Discipline mismatch check ──────────────────────────────────────────────
+  // ── Preview auto-generated code ────────────────────────────────────────────
+
+  useEffect(() => {
+    if (!activeProject || !selectedWI || !watchedAutoCode) {
+      setPreviewCode(null);
+      return;
+    }
+    // Determine disciplina from template or work item
+    const tpl = watchedTemplateId && watchedTemplateId !== "__none__"
+      ? templates.find(tp => tp.id === watchedTemplateId)
+      : null;
+    const disc = tpl?.disciplina ?? selectedWI.disciplina;
+
+    supabase.rpc("fn_next_ppi_code" as any, {
+      p_project_id: activeProject.id,
+      p_disciplina: disc,
+    }).then(({ data }) => {
+      if (data) setPreviewCode(data as string);
+    });
+  }, [activeProject, selectedWI, watchedTemplateId, watchedAutoCode, templates]);
 
   const disciplineMismatch = useMemo(() => {
     if (!watchedTemplateId || watchedTemplateId === "__none__" || !selectedWI) return null;
@@ -387,35 +414,56 @@ export function PPIInstanceFormDialog({
               )}
             />
 
-            {/* Code — optional, auto-generated if empty */}
-            <FormField
-              control={form.control}
-              name="code"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="flex items-center gap-1.5">
-                    {t("ppi.instances.form.code")}
-                    <span className="text-[10px] font-normal text-muted-foreground">
-                      ({t("ppi.instances.form.codeAutoHint")})
-                    </span>
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t("ppi.instances.form.codePlaceholder")}
-                      {...field}
-                      className="font-mono"
-                    />
-                  </FormControl>
-                  <div className="flex items-center gap-1 text-[11px] text-muted-foreground mt-0.5">
-                    <Info className="h-3 w-3 flex-shrink-0" />
-                    {t("ppi.instances.form.codeAutoDescription", {
-                      example: `PPI-${activeProject?.code ?? "PRJ"}-0001`,
-                    })}
-                  </div>
-                  <FormMessage />
-                </FormItem>
+            {/* Code — auto-generated with discipline prefix, or manual override */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium">
+                  {t("ppi.instances.form.code")}
+                </label>
+                <button
+                  type="button"
+                  className="text-[11px] text-primary underline-offset-2 hover:underline flex items-center gap-1"
+                  onClick={() => {
+                    const next = !form.getValues("auto_code");
+                    form.setValue("auto_code", next);
+                    if (next) form.setValue("code", "");
+                  }}
+                >
+                  <Sparkles className="h-3 w-3" />
+                  {watchedAutoCode
+                    ? t("ppi.instances.form.manualCode", { defaultValue: "Inserir manualmente" })
+                    : t("ppi.instances.form.autoCode", { defaultValue: "Gerar automaticamente" })}
+                </button>
+              </div>
+              {watchedAutoCode ? (
+                <div className="flex items-center gap-2 rounded-md border border-border bg-muted/30 px-3 py-2">
+                  <Sparkles className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+                  <span className="font-mono text-sm font-semibold text-foreground">
+                    {previewCode ?? "PPI-…"}
+                  </span>
+                  <span className="text-[10px] text-muted-foreground ml-auto">
+                    ({t("ppi.instances.form.codeAutoHint")})
+                  </span>
+                </div>
+              ) : (
+                <FormField
+                  control={form.control}
+                  name="code"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input
+                          placeholder={t("ppi.instances.form.codePlaceholder")}
+                          {...field}
+                          className="font-mono"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               )}
-            />
+            </div>
 
             <DialogFooter>
               <Button
