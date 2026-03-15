@@ -213,6 +213,9 @@ export default function DashboardPage() {
         </div>
       </div>
 
+      {/* ══ HP Pending Alert ════════════════════════════════ */}
+      <HPPendingAlert projectId={activeProject.id} />
+
       {/* ══ ROW 3 — 3 Main Charts ═══════════════════════════ */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 animate-fade-in" style={{ animationDelay: "120ms", animationFillMode: "both" }}>
         <NCTrendChart data={ncMonthly} loading={viewsLoading} />
