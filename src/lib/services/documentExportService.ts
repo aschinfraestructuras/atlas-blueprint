@@ -331,6 +331,7 @@ function buildListHtml(
       <div class="gen">${escHtml(labels.generatedOn)}: ${fmtDate(new Date().toISOString(), locale)} · ${docs.length} doc(s)</div>
     </div>
   </div>
+  ${projectInfoStripHtml()}
 
   <table class="list">
     <thead><tr>

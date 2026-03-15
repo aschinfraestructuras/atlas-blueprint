@@ -347,6 +347,7 @@ export function generatePdfDocument(opts: {
 </head>
 <body>
 ${headerHtml(opts.labels.reportTitle, opts.labels, opts.meta)}
+${projectInfoStripHtml()}
 ${opts.bodyHtml}
 ${footerHtml(opts.footerRef, opts.labels, opts.meta.locale)}
 </body>

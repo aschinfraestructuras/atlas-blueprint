@@ -198,6 +198,8 @@ export const trainingService = {
     </div>
   </div>
 
+  ${projectInfoStripHtml()}
+
   <div style="padding:20px;">
     <table style="margin-bottom:20px;">
       <tr>
