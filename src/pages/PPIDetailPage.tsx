@@ -685,6 +685,10 @@ export default function PPIDetailPage() {
               )}
             </TabsTrigger>
           )}
+          <TabsTrigger value="field-records" className="gap-1.5">
+            <FileText className="h-3.5 w-3.5" />
+            GRs
+          </TabsTrigger>
           <TabsTrigger value="attachments">
             {t("ppi.templates.items.evidenceRequired")}
           </TabsTrigger>
@@ -693,6 +697,19 @@ export default function PPIDetailPage() {
             {t("documents.linkedPanel.title")}
           </TabsTrigger>
         </TabsList>
+
+        {/* Field Records (GR) tab */}
+        <TabsContent value="field-records" className="mt-4">
+          <Card className="shadow-card">
+            <CardContent className="p-0">
+              <FieldRecordsTab
+                instanceId={instance.id}
+                ppiCode={instance.code}
+                disciplina={workItem?.disciplina}
+              />
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         {/* Checklist tab */}
         <TabsContent value="checklist" className="mt-4">

@@ -45,6 +45,7 @@ import {
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
+import { supabase } from "@/integrations/supabase/client";
 
 // ─── Discipline codes ──────────────────────────────────────────────────────────
 const DISCIPLINE_CODES = [
