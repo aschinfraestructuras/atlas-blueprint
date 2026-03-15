@@ -26,10 +26,12 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { CalendarClock, Plus, FileText, Loader2 } from "lucide-react";
+import { CalendarClock, Plus, FileText, FileDown, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/ui/page-header";
+import { exportPAI } from "@/lib/services/sgqListExportService";
+import { useReportMeta } from "@/hooks/useReportMeta";
 
 const TYPE_LABELS: Record<string, string> = {
   internal: "Interna",
