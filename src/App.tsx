@@ -59,6 +59,7 @@ const RecycledMaterialsPage = lazy(() => import("./pages/RecycledMaterialsPage")
 const SGQMatrixPage = lazy(() => import("./pages/SGQMatrixPage"));
 const TrainingPage = lazy(() => import("./pages/TrainingPage"));
 const MonthlyReportPage = lazy(() => import("./pages/MonthlyReportPage"));
+const DFOPage = lazy(() => import("./pages/DFOPage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
