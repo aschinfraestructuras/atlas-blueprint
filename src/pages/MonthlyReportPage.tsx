@@ -378,7 +378,7 @@ export default function MonthlyReportPage() {
                       <span>{t("monthlyReport.submittedAt")} {new Date(r.submitted_at).toLocaleDateString("pt-PT")}</span>
                     ) : r.status === "draft" ? (
                       <span className={cn(daysUntil <= 0 ? "text-destructive font-bold" : daysUntil <= 5 ? "text-amber-500 font-bold" : "")}>
-                        Prazo: {deadline.toLocaleDateString("pt-PT")}
+                        {t("monthlyReport.deadline")}: {deadline.toLocaleDateString("pt-PT")}
                       </span>
                     ) : null}
                   </div>
