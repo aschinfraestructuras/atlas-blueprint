@@ -42,6 +42,7 @@ export default function DFOPage() {
   const [volumes, setVolumes] = useState<DfoVolume[]>([]);
   const [loading, setLoading] = useState(true);
   const [initializing, setInitializing] = useState(false);
+  const [syncing, setSyncing] = useState(false);
   const [openVols, setOpenVols] = useState<Set<string>>(new Set());
 
   const load = useCallback(async () => {
