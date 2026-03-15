@@ -266,7 +266,7 @@ export default function MonthlyReportPage() {
           <div className="space-y-4">
             {r.observations && (
               <Card><CardContent className="p-4">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">Observações</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">{t("monthlyReport.observations")}</p>
                 <p className="text-sm text-foreground whitespace-pre-wrap">{r.observations}</p>
               </CardContent></Card>
             )}
