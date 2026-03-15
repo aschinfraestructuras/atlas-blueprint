@@ -177,57 +177,122 @@ export const fieldRecordService = {
       pendente: "PENDENTE",
     };
 
-    const checkResultLabel: Record<string, string> = { ok: "OK", nc: "NC", na: "N/A" };
+    const resultColor: Record<string, string> = {
+      conforme: "#166534",
+      conforme_obs: "#a16207",
+      nao_conforme: "#dc2626",
+      pendente: "#6b7280",
+    };
+
+    const checkResultIcon: Record<string, string> = { ok: "✓", nc: "✗", na: "N/A" };
+    const checkResultColor: Record<string, string> = { ok: "#166534", nc: "#dc2626", na: "#6b7280" };
+
+    const weatherIcon: Record<string, string> = {
+      bom: "☀️", nublado: "☁️", chuva: "🌧️", chuva_forte: "⛈️", vento: "💨",
+    };
+
+    const pointBadge = (type: string) => {
+      const colors: Record<string, string> = { rp: "#2563eb", wp: "#dc2626", hp: "#a16207" };
+      const color = colors[type] ?? "#6b7280";
+      return `<span style="display:inline-block;background:${color};color:#fff;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:.06em">${type.toUpperCase()}</span>`;
+    };
 
     const materialsHtml = (record.materials ?? []).length > 0
       ? `<h3>2. Materiais Utilizados</h3>
-         <table><thead><tr><th>Material</th><th>FAV/PAME</th><th>Lote</th><th>Qtd</th></tr></thead>
+         <table><thead><tr><th>Material</th><th>FAV/PAME Ref.</th><th>Lote</th><th>Quantidade</th></tr></thead>
          <tbody>${(record.materials ?? []).map((m) => `<tr><td>${m.material_name}</td><td>${m.fav_pame_ref ?? "—"}</td><td>${m.lot_ref ?? "—"}</td><td>${m.quantity ?? "—"}</td></tr>`).join("")}</tbody></table>`
       : "";
 
     const checksHtml = (record.checks ?? []).length > 0
       ? `<h3>3. Verificações</h3>
-         <table><thead><tr><th>#</th><th>Descrição</th><th>Critério</th><th>Método</th><th>Resultado</th><th>Valor</th></tr></thead>
-         <tbody>${(record.checks ?? []).map((c) => `<tr><td>${c.item_no}</td><td>${c.description}</td><td>${c.criteria ?? "—"}</td><td>${c.method ?? "—"}</td><td>${checkResultLabel[c.result] ?? c.result}</td><td>${c.measured_value ?? "—"}</td></tr>`).join("")}</tbody></table>`
+         <table><thead><tr><th style="width:30px">#</th><th>Descrição</th><th>Critério</th><th>Método</th><th style="width:60px">Resultado</th><th>Valor Medido</th></tr></thead>
+         <tbody>${(record.checks ?? []).map((c) => `<tr>
+           <td>${c.item_no}</td>
+           <td>${c.description}</td>
+           <td>${c.criteria ?? "—"}</td>
+           <td>${c.method ?? "—"}</td>
+           <td style="text-align:center;font-weight:700;color:${checkResultColor[c.result] ?? "#333"}">${checkResultIcon[c.result] ?? c.result}</td>
+           <td>${c.measured_value ?? "—"}</td>
+         </tr>`).join("")}</tbody></table>`
       : "";
+
+    const resColor = resultColor[record.result] ?? "#333";
 
     w.document.write(`<!DOCTYPE html><html><head><title>${record.code}</title>
       <style>
         body{font-family:Arial,sans-serif;margin:30px;font-size:11px}
         h2{margin:0 0 4px;font-size:16px}
-        h3{margin:18px 0 6px;font-size:12px;border-bottom:1px solid #ccc;padding-bottom:3px}
+        h3{margin:18px 0 6px;font-size:12px;border-bottom:1px solid #ccc;padding-bottom:3px;text-transform:uppercase;letter-spacing:.08em;color:#555}
         table{width:100%;border-collapse:collapse;margin-top:6px}
-        th,td{border:1px solid #ccc;padding:4px 6px;text-align:left;font-size:10px}
-        th{background:#f5f5f5;font-weight:600}
-        .header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #333;padding-bottom:8px;margin-bottom:12px}
-        .result-box{margin-top:16px;padding:8px 12px;border:2px solid #333;font-size:13px;font-weight:700}
-        .sig-row{display:flex;gap:40px;margin-top:40px}
-        .sig-block{flex:1;border-top:1px solid #333;padding-top:4px;text-align:center;font-size:10px}
-        .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 20px}
+        th,td{border:1px solid #ccc;padding:5px 8px;text-align:left;font-size:10px}
+        th{background:#f0f4f8;font-weight:700;text-transform:uppercase;font-size:9px;letter-spacing:.06em;color:#555}
+        .header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #2F4F75;padding-bottom:10px;margin-bottom:14px}
+        .result-box{margin-top:18px;padding:10px 16px;border:3px solid ${resColor};border-radius:6px;font-size:14px;font-weight:900;color:${resColor};text-align:center}
+        .sig-row{display:flex;gap:40px;margin-top:50px}
+        .sig-block{flex:1;text-align:center;font-size:10px}
+        .sig-block .line{border-top:1px solid #333;margin-top:40px;padding-top:4px}
+        .sig-block .role{font-weight:700;color:#555;margin-bottom:2px}
+        .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 24px}
         .info-grid span{font-size:10px}
-        .info-grid .label{font-weight:600;color:#555}
+        .info-grid .label{font-weight:700;color:#555;text-transform:uppercase;font-size:8px;letter-spacing:.1em}
+        .info-grid .value{font-size:11px;color:#111}
+        .photo-reg{margin-top:16px;font-size:10px;color:#555;border:1px solid #ccc;padding:8px 12px;border-radius:4px}
+        @page{size:A4 portrait;margin:14mm 12mm}
+        @media print{.no-print{display:none!important}}
       </style>
     </head><body>
       <div class="header">
-        <div><h2>ATLAS QMS</h2><p style="color:#777;margin:0">${projectName}</p></div>
-        <div style="text-align:right"><h2 style="font-size:14px">${record.code}</h2><p style="margin:0;color:#777">Grelha de Registo</p></div>
+        <div>
+          <h2 style="color:#2F4F75;font-size:18px;font-weight:900">ATLAS QMS</h2>
+          <p style="color:#777;margin:2px 0 0;font-size:10px">${projectName}</p>
+        </div>
+        <div style="text-align:right">
+          <h2 style="font-size:16px;color:#2F4F75;font-weight:900">${record.code}</h2>
+          <p style="margin:2px 0 0;color:#777;font-size:9px;text-transform:uppercase;letter-spacing:.1em">Grelha de Registo</p>
+        </div>
       </div>
+
       <h3>1. Identificação</h3>
       <div class="info-grid">
-        <span class="label">Data:</span><span>${record.inspection_date}</span>
-        <span class="label">Tipo Ponto:</span><span>${record.point_type.toUpperCase()}</span>
-        <span class="label">Actividade:</span><span>${record.activity}</span>
-        <span class="label">PK:</span><span>${record.location_pk ?? "—"}</span>
-        <span class="label">Meteorologia:</span><span>${record.weather ?? "—"}</span>
-        <span class="label">Especialista:</span><span>${record.specialist_name ?? "—"}</span>
+        <div><span class="label">Data Inspecção</span><br/><span class="value">${record.inspection_date}</span></div>
+        <div><span class="label">Tipo Ponto</span><br/>${pointBadge(record.point_type)}</div>
+        <div><span class="label">Ref. PPI</span><br/><span class="value">${record.ppi_code ?? "—"}</span></div>
+        <div><span class="label">Actividade</span><br/><span class="value">${record.activity}</span></div>
+        <div><span class="label">PK / Localização</span><br/><span class="value">${record.location_pk ?? "—"}</span></div>
+        <div><span class="label">Meteorologia</span><br/><span class="value">${weatherIcon[record.weather ?? ""] ?? ""} ${record.weather ?? "—"}</span></div>
+        <div><span class="label">Técnico Qualidade (TQ)</span><br/><span class="value">${record.specialist_name ?? "—"}</span></div>
+        <div><span class="label">Especialista / Encarregado</span><br/><span class="value">${record.specialist_name ?? "—"}</span></div>
       </div>
+
       ${materialsHtml}
       ${checksHtml}
-      <div class="result-box">Resultado: ${resultLabel[record.result] ?? record.result}</div>
-      ${record.observations ? `<p style="margin-top:12px"><strong>Observações:</strong> ${record.observations}</p>` : ""}
+
+      <div class="result-box">${resultLabel[record.result] ?? record.result}</div>
+      ${record.observations ? `<p style="margin-top:12px;font-size:10px"><strong>Observações:</strong> ${record.observations}</p>` : ""}
+
+      <div class="photo-reg">
+        <strong>Registo Fotográfico:</strong>
+        ${record.has_photos ? "Sim — n.º _____" : "N/A ☐"}
+      </div>
+
       <div class="sig-row">
-        <div class="sig-block">TQ — Técnico de Qualidade</div>
-        <div class="sig-block">Especialista / Encarregado</div>
+        <div class="sig-block">
+          <div class="role">TQ — Técnico de Qualidade</div>
+          <div>Nome: ______________________</div>
+          <div>Data: ______________________</div>
+          <div class="line">Assinatura</div>
+        </div>
+        <div class="sig-block">
+          <div class="role">Resp. Especialidade / Encarregado</div>
+          <div>Nome: ______________________</div>
+          <div>Data: ______________________</div>
+          <div class="line">Assinatura</div>
+        </div>
+      </div>
+
+      <div style="margin-top:30px;padding-top:8px;border-top:1px solid #ccc;font-size:8px;color:#999;display:flex;justify-content:space-between">
+        <span>Atlas QMS · ${projectName} · ACE ASCH Infraestructuras + Cimontubo</span>
+        <span>${record.code}</span>
       </div>
     </body></html>`);
     w.document.close();
