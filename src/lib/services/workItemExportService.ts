@@ -6,6 +6,7 @@
 
 import type { WorkItem } from "./workItemService";
 import { formatPk } from "./workItemService";
+import { projectInfoStripHtml } from "./pdfProjectHeader";
 
 // ─── Atlas brand colours ──────────────────────────────────────────────────────
 
@@ -189,6 +190,8 @@ function buildConsolidatedHtml(
   const topoCtrlSection = sectionHtml("Topografia — Controlos", ["Elemento", "Zona", "Desvio", "Resultado"],
     data.topoControls.map(c => [c.element, c.zone, c.deviation, statusDot(c.result)]));
 
+  const logo = `<svg width="32" height="32" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="6" fill="#2F4F75"/><path d="M16 4L6 9v7c0 5.25 4.25 10.15 10 11.35C21.75 26.15 26 21.25 26 16V9L16 4z" fill="white" fill-opacity="0.9"/><path d="M13 16l2 2 4-4" stroke="#2F4F75" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
   return `<!DOCTYPE html>
 <html lang="${locale}">
 <head>
@@ -203,19 +206,20 @@ function buildConsolidatedHtml(
 </style>
 </head>
 <body>
-  <div style="display:flex;align-items:flex-start;justify-content:space-between;padding-bottom:10px;border-bottom:3px solid ${BRAND.primary};margin-bottom:16px;">
-    <div style="display:flex;align-items:center;gap:10px;">
-      <div style="width:6px;height:40px;background:${BRAND.primary};border-radius:3px;"></div>
+  <div style="background:#0f1e37;color:#fff;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      ${logo}
       <div>
-        <div style="font-size:18px;font-weight:800;color:${BRAND.primary};letter-spacing:-.5px;">${labels.appName}</div>
-        <div style="font-size:9px;font-weight:600;color:${BRAND.muted};text-transform:uppercase;letter-spacing:.1em;">Quality Management System</div>
+        <div style="font-size:18px;font-weight:900;letter-spacing:0.1em;">ATLAS QMS</div>
+        <div style="font-size:10px;opacity:0.7;">${labels.reportTitle} — Consolidado</div>
       </div>
     </div>
     <div style="text-align:right;">
-      <div style="font-size:13px;font-weight:700;color:${BRAND.primary};">${labels.reportTitle} — Consolidado</div>
-      <div style="font-size:9px;color:${BRAND.textLight};margin-top:3px;">${labels.generatedOn}: ${fmtDate(new Date().toISOString(), locale)}</div>
+      <div style="font-size:16px;font-weight:700;">${item.sector}</div>
+      <div style="font-size:10px;opacity:0.7;">${projectName}</div>
     </div>
   </div>
+  ${projectInfoStripHtml()}
 
   <div style="font-size:20px;font-weight:800;color:${BRAND.primary};margin-bottom:4px;">${item.sector}</div>
   <div style="font-size:11px;color:${BRAND.muted};margin-bottom:16px;">${labels.project}: ${projectName}</div>

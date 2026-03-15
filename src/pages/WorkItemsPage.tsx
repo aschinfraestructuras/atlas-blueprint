@@ -460,8 +460,8 @@ export default function WorkItemsPage() {
             <ReportExportMenu
               disabled={filtered.length === 0}
               options={[
-                { label: t("report.pdfList"), icon: "pdf", action: handleExportPdf },
-                { label: t("report.csvList"), icon: "csv", action: handleExportCsv },
+                { label: t("report.pdfList", { defaultValue: "PDF — Lista" }), icon: "pdf", action: handleExportPdf },
+                { label: t("report.csvList", { defaultValue: "CSV — Lista" }), icon: "csv", action: handleExportCsv },
               ]}
             />
             {canCreate && (

@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { projectInfoStripHtml } from "./pdfProjectHeader";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const db = supabase as any;
@@ -196,6 +197,8 @@ export const trainingService = {
       <div style="font-size:10px;opacity:0.7;">${projectName}</div>
     </div>
   </div>
+
+  ${projectInfoStripHtml()}
 
   <div style="padding:20px;">
     <table style="margin-bottom:20px;">

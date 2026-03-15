@@ -7,6 +7,8 @@
  * Supported entities: work_items, ppi_instances, test_results, non_conformities, documents
  */
 
+import { projectInfoStripHtml } from "./pdfProjectHeader";
+
 // ─── Atlas brand colours ──────────────────────────────────────────────────────
 
 const BRAND = {
@@ -345,6 +347,7 @@ export function generatePdfDocument(opts: {
 </head>
 <body>
 ${headerHtml(opts.labels.reportTitle, opts.labels, opts.meta)}
+${projectInfoStripHtml()}
 ${opts.bodyHtml}
 ${footerHtml(opts.footerRef, opts.labels, opts.meta.locale)}
 </body>

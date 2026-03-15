@@ -7,6 +7,7 @@
 
 import type { Document, DocumentVersion } from "./documentService";
 import { auditService } from "./auditService";
+import { projectInfoStripHtml } from "./pdfProjectHeader";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -252,6 +253,7 @@ function buildSingleHtml(
       <div class="gen">${escHtml(labels.generatedOn)}: ${fmtDate(new Date().toISOString(), locale)}</div>
     </div>
   </div>
+  ${projectInfoStripHtml()}
 
   <div class="info-grid">
     <div class="info-row"><span class="info-label">${escHtml(labels.code)}</span><span class="info-value" style="font-family:monospace;font-weight:700;">${escHtml(doc.code ?? "—")}</span></div>
@@ -329,6 +331,7 @@ function buildListHtml(
       <div class="gen">${escHtml(labels.generatedOn)}: ${fmtDate(new Date().toISOString(), locale)} · ${docs.length} doc(s)</div>
     </div>
   </div>
+  ${projectInfoStripHtml()}
 
   <table class="list">
     <thead><tr>
