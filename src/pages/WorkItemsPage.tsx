@@ -419,7 +419,12 @@ export default function WorkItemsPage() {
         onClick={() => navigate(`/work-items/${item.id}`)}
       >
         <TableCell className="text-sm text-muted-foreground">
-          {t(`workItems.disciplines.${item.disciplina}`, { defaultValue: item.disciplina })}
+          <span className="flex items-center gap-1.5">
+            {t(`workItems.disciplines.${item.disciplina}`, { defaultValue: item.disciplina })}
+            {hpAlertIds.has(item.id) && (
+              <Bell className="h-3.5 w-3.5 text-amber-500 flex-shrink-0" title="HP sem confirmação F/IP" />
+            )}
+          </span>
         </TableCell>
         <TableCell className="text-sm text-muted-foreground">
           {[item.elemento, item.parte].filter(Boolean).join(" · ") || "—"}
