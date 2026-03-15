@@ -5,6 +5,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { printHtml, sharedCss, headerHtmlAsync, type ReportMeta, type ReportLabels } from "./reportService";
+import { projectInfoStripHtml } from "./pdfProjectHeader";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
