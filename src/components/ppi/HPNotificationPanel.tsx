@@ -355,12 +355,6 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
                               </Button>
                             </>
                           )}
-                              onClick={() => openConfirmDialog(latestNotif.id)}
-                            >
-                              <CheckCircle2 className="h-3 w-3" />
-                              {t("ppi.hpNotification.confirmBtn", { defaultValue: "Confirmar" })}
-                            </Button>
-                          )}
                         </div>
                       </td>
                     </tr>
