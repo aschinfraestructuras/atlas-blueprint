@@ -254,7 +254,7 @@ export default function MonthlyReportPage() {
               </Button>
               <Button onClick={() => handleSubmit(r)} disabled={saving}>
                 <Send className="h-3.5 w-3.5 mr-1.5" />
-                Submeter
+                {t("monthlyReport.submit")}
               </Button>
               <Button variant="outline" onClick={() => monthlyReportService.exportPdf(r, activeProject.name)}>
                 <FileText className="h-3.5 w-3.5 mr-1.5" />
