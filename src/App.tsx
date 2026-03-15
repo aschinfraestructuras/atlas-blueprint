@@ -58,6 +58,7 @@ const DailyReportDetailPage = lazy(() => import("./pages/DailyReportDetailPage")
 const RecycledMaterialsPage = lazy(() => import("./pages/RecycledMaterialsPage"));
 const SGQMatrixPage = lazy(() => import("./pages/SGQMatrixPage"));
 const TrainingPage = lazy(() => import("./pages/TrainingPage"));
+const MonthlyReportPage = lazy(() => import("./pages/MonthlyReportPage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
