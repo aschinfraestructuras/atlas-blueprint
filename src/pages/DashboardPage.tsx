@@ -293,8 +293,26 @@ export default function DashboardPage() {
         <ConformityByFrenteChart />
       </div>
 
-      {/* ══ ROW 6 — PPGRCD Widget ═══════════════════════════ */}
-      <div className="animate-fade-in" style={{ animationDelay: "220ms", animationFillMode: "both" }}>
+      {/* ══ ROW 5b — Expirations + PPGRCD Widgets ═══════════════ */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-fade-in" style={{ animationDelay: "220ms", animationFillMode: "both" }}>
+        <Card className="cursor-pointer hover:shadow-sm transition-shadow" onClick={() => navigate("/expirations")}>
+          <CardContent className="py-4">
+            <div className="flex items-center gap-2 mb-2">
+              <AlertTriangle className="h-4 w-4 text-destructive" />
+              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                {t("nav.expirations", { defaultValue: "Expirações" })}
+              </span>
+              <Badge variant={kpis.emesExpiring30d > 0 ? "destructive" : "secondary"} className="ml-auto text-[10px]">
+                {kpiLoading ? "—" : kpis.emesExpiring30d}
+              </Badge>
+              <ArrowRight className="h-3 w-3 text-muted-foreground" />
+            </div>
+            <p className="text-sm text-muted-foreground">
+              {t("dashboard.expirations.subtitle", { defaultValue: "Documentos e calibrações a expirar nos próximos 30 dias" })}
+            </p>
+          </CardContent>
+        </Card>
+
         <Card className="cursor-pointer hover:shadow-sm transition-shadow" onClick={() => navigate("/recycled-materials")}>
           <CardContent className="py-4">
             <div className="flex items-center gap-2 mb-2">
