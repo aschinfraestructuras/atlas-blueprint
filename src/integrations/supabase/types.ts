@@ -1247,6 +1247,7 @@ export type Database = {
           current_approved_doc_id: string | null
           deleted_at: string | null
           deleted_by: string | null
+          fav_documents: Json | null
           id: string
           is_deleted: boolean
           name: string
@@ -1269,6 +1270,7 @@ export type Database = {
           submitted_at: string | null
           submitted_by: string | null
           supplier_id: string | null
+          technical_comparison: Json | null
           unit: string | null
           updated_at: string
         }
@@ -1285,6 +1287,7 @@ export type Database = {
           current_approved_doc_id?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
+          fav_documents?: Json | null
           id?: string
           is_deleted?: boolean
           name: string
@@ -1307,6 +1310,7 @@ export type Database = {
           submitted_at?: string | null
           submitted_by?: string | null
           supplier_id?: string | null
+          technical_comparison?: Json | null
           unit?: string | null
           updated_at?: string
         }
@@ -1323,6 +1327,7 @@ export type Database = {
           current_approved_doc_id?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
+          fav_documents?: Json | null
           id?: string
           is_deleted?: boolean
           name?: string
@@ -1345,6 +1350,7 @@ export type Database = {
           submitted_at?: string | null
           submitted_by?: string | null
           supplier_id?: string | null
+          technical_comparison?: Json | null
           unit?: string | null
           updated_at?: string
         }
@@ -4641,6 +4647,114 @@ export type Database = {
           },
         ]
       }
+      training_attendees: {
+        Row: {
+          company: string | null
+          id: string
+          name: string
+          role_function: string | null
+          session_id: string
+          signed: boolean
+        }
+        Insert: {
+          company?: string | null
+          id?: string
+          name: string
+          role_function?: string | null
+          session_id: string
+          signed?: boolean
+        }
+        Update: {
+          company?: string | null
+          id?: string
+          name?: string
+          role_function?: string | null
+          session_id?: string
+          signed?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "training_attendees_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "training_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      training_sessions: {
+        Row: {
+          attendee_count: number
+          code: string
+          created_at: string
+          created_by: string | null
+          end_time: string | null
+          id: string
+          location: string | null
+          project_id: string
+          session_date: string
+          session_type: string
+          start_time: string | null
+          title: string
+          topics: string | null
+          trainer_name: string | null
+        }
+        Insert: {
+          attendee_count?: number
+          code: string
+          created_at?: string
+          created_by?: string | null
+          end_time?: string | null
+          id?: string
+          location?: string | null
+          project_id: string
+          session_date?: string
+          session_type?: string
+          start_time?: string | null
+          title: string
+          topics?: string | null
+          trainer_name?: string | null
+        }
+        Update: {
+          attendee_count?: number
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          end_time?: string | null
+          id?: string
+          location?: string | null
+          project_id?: string
+          session_date?: string
+          session_type?: string
+          start_time?: string | null
+          title?: string
+          topics?: string | null
+          trainer_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "training_sessions_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "training_sessions_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "training_sessions_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -5444,6 +5558,7 @@ export type Database = {
           current_approved_doc_id: string | null
           deleted_at: string | null
           deleted_by: string | null
+          fav_documents: Json | null
           id: string
           is_deleted: boolean
           name: string
@@ -5466,6 +5581,7 @@ export type Database = {
           submitted_at: string | null
           submitted_by: string | null
           supplier_id: string | null
+          technical_comparison: Json | null
           unit: string | null
           updated_at: string
         }
@@ -5930,6 +6046,7 @@ export type Database = {
         Args: { p_prefix: string; p_project_id: string }
         Returns: string
       }
+      fn_next_training_code: { Args: { p_project_id: string }; Returns: string }
       fn_ppi_bulk_mark_ok: { Args: { p_instance_id: string }; Returns: number }
       fn_ppi_bulk_save_items: {
         Args: { p_instance_id: string; p_items: Json }

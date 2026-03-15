@@ -317,6 +317,9 @@ export default function MaterialsPage() {
                         <div className="flex items-center gap-2">
                           <Package className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
                           {m.name}
+                          {(m.pame_status === "rejected" || (m as any).approval_status === "rejected") && (
+                            <span title="Material em quarentena" className="text-destructive text-xs">⛔</span>
+                          )}
                         </div>
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground">{t(`materials.categories.${m.category}`, { defaultValue: m.category })}</TableCell>

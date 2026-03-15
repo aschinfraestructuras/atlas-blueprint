@@ -10,9 +10,10 @@ import {
   type MaterialDetailMetrics,
   type WorkItemMaterial,
 } from "@/lib/services/materialService";
-import { exportMaterialPdf } from "@/lib/services/materialExportService";
+import { exportMaterialPdf, exportFavPdf } from "@/lib/services/materialExportService";
+import { printQuarantineLabel } from "@/components/materials/QuarantineLabelView";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, Package, Plus, History, CheckCircle2, XCircle, SendHorizontal, AlertTriangle, Clock, Loader2 } from "lucide-react";
+import { ArrowLeft, Package, Plus, History, CheckCircle2, XCircle, SendHorizontal, AlertTriangle, Clock, Loader2, Tag, FileDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -228,8 +229,30 @@ export default function MaterialDetailPage() {
           </div>
           <p className="text-sm text-muted-foreground mt-0.5">{material.code} · {t(`materials.categories.${material.category}`, { defaultValue: material.category })}</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <ReportExportMenu options={[{ label: "PDF", icon: "pdf" as const, action: handleExportPdf }]} />
+          {/* FAV Export */}
+          {material.pame_code && (
+            <Button size="sm" variant="outline" className="gap-1.5" onClick={() => exportFavPdf(material, ncs, activeProject.name, activeProject.code)}>
+              <FileDown className="h-3.5 w-3.5" />
+              {t("materials.fav.exportFav", { defaultValue: "Exportar FAV" })}
+            </Button>
+          )}
+          {/* Quarantine Label */}
+          {(material.pame_status === "rejected" || ncs.some((nc: any) => nc.status !== "closed")) && (
+            <Button
+              size="sm"
+              variant="destructive"
+              className="gap-1.5"
+              onClick={() => {
+                const openNc = ncs.find((nc: any) => nc.status !== "closed");
+                printQuarantineLabel(material, openNc ? { code: openNc.code, description: openNc.title ?? openNc.description ?? "", detected_at: openNc.detected_at } : undefined);
+              }}
+            >
+              <Tag className="h-3.5 w-3.5" />
+              {t("materials.quarantine.printLabel", { defaultValue: "🏷️ Etiqueta Quarentena" })}
+            </Button>
+          )}
           {canEdit && (
             <Button size="sm" variant="outline" onClick={() => setEditOpen(true)}>{t("common.edit")}</Button>
           )}
