@@ -438,7 +438,7 @@ export default function MonthlyReportPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>{t("common.confirm")}</AlertDialogTitle>
             <AlertDialogDescription>
-              Tem a certeza que pretende eliminar o relatório {deleteTarget?.code}?
+              {t("monthlyReport.deleteConfirm", { code: deleteTarget?.code })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
