@@ -1378,6 +1378,106 @@ export type Database = {
           },
         ]
       }
+      monthly_quality_reports: {
+        Row: {
+          accepted_at: string | null
+          code: string
+          corrective_actions: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          kpi_emes_expiring: number | null
+          kpi_hp_approved: number | null
+          kpi_hp_total: number | null
+          kpi_mat_approved: number | null
+          kpi_mat_pending: number | null
+          kpi_nc_closed_month: number | null
+          kpi_nc_open: number | null
+          kpi_ppi_completed: number | null
+          kpi_tests_pass_rate: number | null
+          next_month_plan: string | null
+          observations: string | null
+          project_id: string
+          reference_month: string
+          status: string
+          submitted_at: string | null
+          submitted_by: string | null
+          updated_at: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          code: string
+          corrective_actions?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          kpi_emes_expiring?: number | null
+          kpi_hp_approved?: number | null
+          kpi_hp_total?: number | null
+          kpi_mat_approved?: number | null
+          kpi_mat_pending?: number | null
+          kpi_nc_closed_month?: number | null
+          kpi_nc_open?: number | null
+          kpi_ppi_completed?: number | null
+          kpi_tests_pass_rate?: number | null
+          next_month_plan?: string | null
+          observations?: string | null
+          project_id: string
+          reference_month: string
+          status?: string
+          submitted_at?: string | null
+          submitted_by?: string | null
+          updated_at?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          code?: string
+          corrective_actions?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          kpi_emes_expiring?: number | null
+          kpi_hp_approved?: number | null
+          kpi_hp_total?: number | null
+          kpi_mat_approved?: number | null
+          kpi_mat_pending?: number | null
+          kpi_nc_closed_month?: number | null
+          kpi_nc_open?: number | null
+          kpi_ppi_completed?: number | null
+          kpi_tests_pass_rate?: number | null
+          next_month_plan?: string | null
+          observations?: string | null
+          project_id?: string
+          reference_month?: string
+          status?: string
+          submitted_at?: string | null
+          submitted_by?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "monthly_quality_reports_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "monthly_quality_reports_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "monthly_quality_reports_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
       non_conformities: {
         Row: {
           ac_efficacy_indicator: string | null
@@ -6042,6 +6142,7 @@ export type Database = {
         Returns: string
       }
       fn_next_ppi_code: { Args: { p_project_id: string }; Returns: string }
+      fn_next_rmsgq_code: { Args: { p_project_id: string }; Returns: string }
       fn_next_tech_office_code: {
         Args: { p_prefix: string; p_project_id: string }
         Returns: string
