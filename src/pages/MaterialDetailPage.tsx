@@ -229,8 +229,30 @@ export default function MaterialDetailPage() {
           </div>
           <p className="text-sm text-muted-foreground mt-0.5">{material.code} · {t(`materials.categories.${material.category}`, { defaultValue: material.category })}</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <ReportExportMenu options={[{ label: "PDF", icon: "pdf" as const, action: handleExportPdf }]} />
+          {/* FAV Export */}
+          {material.pame_code && (
+            <Button size="sm" variant="outline" className="gap-1.5" onClick={() => exportFavPdf(material, ncs, activeProject.name, activeProject.code)}>
+              <FileDown className="h-3.5 w-3.5" />
+              {t("materials.fav.exportFav", { defaultValue: "Exportar FAV" })}
+            </Button>
+          )}
+          {/* Quarantine Label */}
+          {(material.pame_status === "rejected" || ncs.some((nc: any) => nc.status !== "closed")) && (
+            <Button
+              size="sm"
+              variant="destructive"
+              className="gap-1.5"
+              onClick={() => {
+                const openNc = ncs.find((nc: any) => nc.status !== "closed");
+                printQuarantineLabel(material, openNc ? { code: openNc.code, description: openNc.title ?? openNc.description ?? "", detected_at: openNc.detected_at } : undefined);
+              }}
+            >
+              <Tag className="h-3.5 w-3.5" />
+              {t("materials.quarantine.printLabel", { defaultValue: "🏷️ Etiqueta Quarentena" })}
+            </Button>
+          )}
           {canEdit && (
             <Button size="sm" variant="outline" onClick={() => setEditOpen(true)}>{t("common.edit")}</Button>
           )}
