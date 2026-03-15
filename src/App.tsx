@@ -148,6 +148,7 @@ const App = () => (
                 <Route path="/recycled-materials" element={<ProtectedLayout><RecycledMaterialsPage /></ProtectedLayout>} />
                 <Route path="/admin/health" element={<ProtectedLayout><HealthCheckPage /></ProtectedLayout>} />
                 <Route path="/sgq-matrix" element={<ProtectedLayout><SGQMatrixPage /></ProtectedLayout>} />
+                <Route path="/training" element={<ProtectedLayout><TrainingPage /></ProtectedLayout>} />
 
                 {/* Catch-all */}
                 <Route path="*" element={<NotFound />} />
