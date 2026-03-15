@@ -249,7 +249,7 @@ export default function LoginPage() {
 
                 <Button
                   type="submit"
-                  className="w-full"
+                  className="w-full min-h-[48px]"
                   disabled={submitting || !email || !password}
                 >
                   {submitting ? (
