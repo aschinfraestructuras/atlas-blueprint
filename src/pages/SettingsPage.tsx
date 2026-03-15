@@ -360,7 +360,7 @@ export default function SettingsPage() {
           onClick={() => {
             if (!activeProject) return;
             const exportData = {
-              project: { name: activeProject.name, code: activeProject.code, location: activeProject.location, status: activeProject.status, start_date: (activeProject as Record<string, unknown>)?.start_date ?? null },
+              project: { name: activeProject.name, code: activeProject.code, location: activeProject.location, status: activeProject.status, start_date: (activeProject as unknown as Record<string, unknown>)?.start_date ?? null },
               exported_at: new Date().toISOString(),
               exported_by: user?.email ?? "—",
             };
