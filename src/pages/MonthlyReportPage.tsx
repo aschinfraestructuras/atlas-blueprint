@@ -285,7 +285,7 @@ export default function MonthlyReportPage() {
             <div className="flex items-center gap-2 justify-end">
               <Button variant="outline" onClick={() => monthlyReportService.exportPdf(r, activeProject.name)}>
                 <FileText className="h-3.5 w-3.5 mr-1.5" />
-                Exportar PDF
+                {t("monthlyReport.exportPdf")}
               </Button>
             </div>
           </div>
