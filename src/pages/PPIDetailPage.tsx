@@ -390,7 +390,16 @@ export default function PPIDetailPage() {
   const availableTransitions = instance
     ? TRANSITIONS.filter((tr) => tr.from === instance.status)
     : [];
-  const hasHoldPointWarning = pendingTransition?.to === "submitted" && items.some((item) => item.inspection_point_type === "hp" && (item.result === "pending" || item.result === "fail"));
+
+  // HP items detection
+  const hpItems = useMemo(
+    () => items.filter((it) => (it as any).ipt_e === "hp" || (it as any).ipt_f === "hp" || (it as any).ipt_ip === "hp"),
+    [items]
+  );
+  const hasHpItems = hpItems.length > 0;
+  const hpPendingResult = hpItems.filter((it) => it.result === "pending" || it.result === "fail").length;
+
+  const hasHoldPointWarning = pendingTransition?.to === "submitted" && hpPendingResult > 0;
 
   // ── Render ─────────────────────────────────────────────────────────────────
 
