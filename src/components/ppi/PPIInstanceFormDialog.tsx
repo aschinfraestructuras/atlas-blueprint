@@ -95,10 +95,12 @@ export function PPIInstanceFormDialog({
       work_item_id:    preselectedWorkItemId ?? "",
       template_id:     "",
       code:            "",
+      auto_code:       true,
       inspector_id:    "",
       inspection_date: format(new Date(), "yyyy-MM-dd"),
     });
     setNoActiveTemplates(false);
+    setPreviewCode(null);
 
     setLoadingWI(true);
     workItemService.getByProject(activeProject.id)
