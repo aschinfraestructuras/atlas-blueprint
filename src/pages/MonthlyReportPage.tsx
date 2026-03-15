@@ -324,8 +324,8 @@ export default function MonthlyReportPage() {
           <AlertTriangle className="h-4 w-4 flex-shrink-0" />
           <span className="text-sm flex-1">
             {deadlineAlert.overdue
-              ? `🔴 Relatório Mensal SGQ em atraso — ${Math.abs(deadlineAlert.daysUntil)} dias de atraso`
-              : `⚠️ Relatório Mensal SGQ — entregar até ${deadlineAlert.deadline.toLocaleDateString("pt-PT")} (${deadlineAlert.daysUntil} dias)`}
+              ? t("monthlyReport.deadlineOverdue", { days: Math.abs(deadlineAlert.daysUntil) })
+              : t("monthlyReport.deadlineAlert", { date: deadlineAlert.deadline.toLocaleDateString("pt-PT"), days: deadlineAlert.daysUntil })}
           </span>
           <Button size="sm" variant="outline" onClick={() => {
             setSelectedMonth(deadlineAlert.refMonth);
