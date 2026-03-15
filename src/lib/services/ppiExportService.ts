@@ -9,6 +9,7 @@
 
 import type { PpiInstance, PpiInstanceItem } from "./ppiService";
 import type { HpNotification } from "./hpNotificationService";
+import { projectInfoStripHtml } from "./pdfProjectHeader";
 
 // ─── Shared types ─────────────────────────────────────────────────────────────
 
