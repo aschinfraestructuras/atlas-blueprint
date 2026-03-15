@@ -22,8 +22,9 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Loader2, AlertTriangle, Info, LayoutTemplate, ExternalLink, Calendar } from "lucide-react";
+import { Loader2, AlertTriangle, Info, LayoutTemplate, ExternalLink, Calendar, Sparkles } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 // ─── Schema ───────────────────────────────────────────────────────────────────
 
