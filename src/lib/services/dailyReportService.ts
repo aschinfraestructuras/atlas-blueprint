@@ -188,6 +188,10 @@ export const dailyReportService = {
     if (error) throw error;
     return data as unknown as LabourRow;
   },
+  async updateLabour(id: string, fields: Partial<Omit<LabourRow, "id" | "created_at" | "daily_report_id">>): Promise<void> {
+    const { error } = await supabase.from("daily_report_labour").update(fields as any).eq("id", id);
+    if (error) throw error;
+  },
   async deleteLabour(id: string): Promise<void> {
     const { error } = await supabase.from("daily_report_labour").delete().eq("id", id);
     if (error) throw error;
