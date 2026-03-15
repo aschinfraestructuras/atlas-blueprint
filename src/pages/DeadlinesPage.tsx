@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useProject } from "@/contexts/ProjectContext";
 import { deadlineService, type DeadlineItem } from "@/lib/services/deadlineService";
+import { hpNotificationService, type HpNotification } from "@/lib/services/hpNotificationService";
 import { notificationService } from "@/lib/services/notificationService";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { EmptyState } from "@/components/EmptyState";
