@@ -116,12 +116,19 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
       notes:            testResult.notes ?? "",
       work_item_id:     testResult.work_item_id ?? "",
       supplier_id:      testResult.supplier_id ?? "",
+      be_campo_code:    (testResult as any).be_campo_code ?? "",
+      eme_code:         (testResult as any).eme_code ?? "",
+      eme_calibration_date: (testResult as any).eme_calibration_date ?? "",
+      location_pk:      (testResult as any).location_pk ?? "",
+      weather:          (testResult as any).weather ?? "",
+      ambient_temperature: (testResult as any).ambient_temperature != null ? String((testResult as any).ambient_temperature) : "",
     } : {
       test_id: "", date: new Date().toISOString().split("T")[0],
       status_workflow: "draft", result_status: "", sample_ref: "", location: "", pk_inicio: "", pk_fim: "",
       report_number: "", notes: "",
       work_item_id:  preselectedWorkItemId ?? "",
       supplier_id: "",
+      be_campo_code: "", eme_code: "", eme_calibration_date: "", location_pk: "", weather: "", ambient_temperature: "",
     });
     setCreatingNew(false);
     setNewTestName(""); setNewTestCode("");
