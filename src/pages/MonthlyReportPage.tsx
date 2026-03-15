@@ -212,7 +212,7 @@ export default function MonthlyReportPage() {
             <p className="text-sm text-muted-foreground capitalize">{refLabel}</p>
           </div>
           <Badge variant="secondary" className={cn("text-xs", STATUS_COLORS[r.status])}>
-            {STATUS_LABELS[r.status] ?? r.status}
+            {getStatusLabel(r.status, t)}
           </Badge>
           {onTime !== null && (
             <Badge variant="secondary" className={cn("text-xs", onTime ? "bg-emerald-500/10 text-emerald-600" : "bg-destructive/10 text-destructive")}>
