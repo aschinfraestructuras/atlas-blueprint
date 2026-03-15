@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { projectInfoStripHtml } from "./pdfProjectHeader";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
