@@ -65,6 +65,7 @@ export default function AuditsPage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
   const { canCreate, canEdit, canDelete } = useProjectRole();
+  const reportMeta = useReportMeta();
 
   const [audits, setAudits] = useState<QualityAudit[]>([]);
   const [loading, setLoading] = useState(true);
