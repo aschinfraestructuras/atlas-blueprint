@@ -305,7 +305,7 @@ export default function MonthlyReportPage() {
           canCreate ? (
             <Button onClick={() => setCreateOpen(true)} size="sm">
               <Plus className="h-4 w-4 mr-1.5" />
-              Novo Relatório
+              {t("monthlyReport.create")}
             </Button>
           ) : undefined
         }
