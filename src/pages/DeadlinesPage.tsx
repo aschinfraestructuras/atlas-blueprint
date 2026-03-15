@@ -39,14 +39,15 @@ import {
 const SOURCE_ICONS: Record<string, React.ElementType> = {
   supplier_doc: Truck,
   material_doc: Package,
-  subcontractor_doc: Truck,       // ← adicionar
+  subcontractor_doc: Truck,
   calibration: Crosshair,
   nc_due: AlertTriangle,
   rfi_due: Inbox,
   tech_office_due: Inbox,
   planning_due: CalendarClock,
-  ppi_pending: ClipboardCheck,    // ← adicionar
-  ppi_approval: ClipboardCheck,   // ← adicionar
+  ppi_pending: ClipboardCheck,
+  ppi_approval: ClipboardCheck,
+  hp_notification: Bell,
 };
 
 const SOURCE_ROUTES: Record<string, string> = {
