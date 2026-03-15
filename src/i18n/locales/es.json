@@ -365,6 +365,7 @@
       "hpPending": "HP Pendientes",
       "inspCompleted": "inspecciones completadas"
     },
+    "hpPending": "HPs Sin Confirmación",
     "healthBreakdown": "Indicadores de Salud",
     "recentActivity": "Actividad Reciente",
     "nextActions": "Próximas Acciones",
