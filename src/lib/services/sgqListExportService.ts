@@ -192,3 +192,41 @@ export async function exportLGR(
   const html = await buildDoc({ code: `LGR-${meta.projectCode}-001`, title: "Lista de Fornecedores e Subcontratados Qualificados", meta, body });
   printHtml(html, `LGR_${meta.projectCode}.pdf`);
 }
+
+// ─── LFQ: Lista de Fornecedores Qualificados com Avaliação ───────────────────
+
+export async function exportLFQ(
+  suppliers: { name: string; code?: string | null; category?: string | null; qualification_status?: string | null; approval_status?: string | null }[],
+  evaluations: { supplier_id: string; quality_score: number; delivery_score: number; nc_management_score: number; cooperation_score: number; overall_score: number; evaluation_period?: string | null; recommendation?: string | null; notes?: string | null }[],
+  meta: ReportMeta,
+) {
+  const evalMap = new Map<string, typeof evaluations[0][]>();
+  evaluations.forEach(e => {
+    if (!evalMap.has(e.supplier_id)) evalMap.set(e.supplier_id, []);
+    evalMap.get(e.supplier_id)!.push(e);
+  });
+
+  const columns = ["Fornecedor", "Categoria", "Período", "Qualidade (35%)", "Prazo (25%)", "NC (25%)", "Cooperação (15%)", "Score", "Recomendação"];
+  const rows: string[][] = [];
+
+  for (const sup of suppliers) {
+    const evals = evalMap.get((sup as any).id) ?? [];
+    if (evals.length === 0) {
+      rows.push([sup.name, sup.category ?? "—", "—", "—", "—", "—", "—", "—", "—"]);
+    } else {
+      for (const ev of evals) {
+        const rec = ev.overall_score < 60 ? "Desqualificado" : ev.overall_score < 75 ? "Condicional" : "Qualificado";
+        rows.push([
+          sup.name, sup.category ?? "—", ev.evaluation_period ?? "—",
+          `${ev.quality_score}`, `${ev.delivery_score}`, `${ev.nc_management_score}`, `${ev.cooperation_score}`,
+          `${ev.overall_score}%`, rec,
+        ]);
+      }
+    }
+  }
+
+  const body = tableHtml(columns, rows) +
+    `<div style="margin-top:8px;font-size:9px;color:${BRAND.muted}">${rows.length} registo(s)</div>`;
+  const html = await buildDoc({ code: `LFQ-${meta.projectCode}-001`, title: "Lista de Fornecedores Qualificados com Avaliação de Desempenho", meta, body });
+  printHtml(html, `LFQ_${meta.projectCode}.pdf`);
+}
