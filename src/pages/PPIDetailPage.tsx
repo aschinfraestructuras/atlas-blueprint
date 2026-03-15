@@ -663,7 +663,7 @@ export default function PPIDetailPage() {
         </CardContent>
       </Card>
 
-      {/* ── Tabs: Checklist / Attachments ────────────────────────────── */}
+      {/* ── Tabs: Checklist / NOT-HP / Attachments ────────────────────── */}
       <Tabs defaultValue="checklist">
         <TabsList>
           <TabsTrigger value="checklist" className="gap-1.5">
@@ -673,6 +673,17 @@ export default function PPIDetailPage() {
               {items.length}
             </span>
           </TabsTrigger>
+          {hasHpItems && (
+            <TabsTrigger value="not-hp" className="gap-1.5">
+              <Bell className="h-3.5 w-3.5" />
+              NOT-HP
+              {hpPendingResult > 0 && (
+                <span className="ml-1 rounded-full bg-destructive px-1.5 py-px text-[10px] font-bold text-destructive-foreground">
+                  {hpItems.length}
+                </span>
+              )}
+            </TabsTrigger>
+          )}
           <TabsTrigger value="attachments">
             {t("ppi.templates.items.evidenceRequired")}
           </TabsTrigger>
