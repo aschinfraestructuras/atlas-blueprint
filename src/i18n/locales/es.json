@@ -2715,7 +2715,7 @@
     "kpi": {
       "total": "Total",
       "active": "Activos",
-      "discontinued": "Descontinuados",
+      "discontinued": "Descatalogados",
       "docsExpired": "Docs Expirados",
       "withOpenNC": "Con NC Abierta",
       "nonconformTests": "Ensayos NC (30d)",
