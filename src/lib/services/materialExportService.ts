@@ -184,3 +184,144 @@ export async function exportMaterialPdf(data: ExportData) {
     description: `PDF exportado: ${material.code}`,
   }).catch(() => null);
 }
+
+// ── FAV PDF Export (Print Window) ────────────────────────────────────────────
+
+export function exportFavPdf(
+  material: Material,
+  ncs: { code: string; title: string; severity: string; status: string }[],
+  projectName: string,
+  projectCode: string,
+) {
+  const techComparison = (material as any).technical_comparison ?? [];
+  const favDocs = (material as any).fav_documents ?? [];
+
+  const defaultDocs = [
+    "Ficha técnica do produto",
+    "Declaração de Desempenho (DoP) / Marcação CE",
+    "Certificado de ensaio de fábrica (FPC)",
+    "Certificado de calibração do equipamento (se aplicável)",
+    "Amostra física (se aplicável)",
+  ];
+
+  const docsToShow = favDocs.length > 0 ? favDocs : defaultDocs.map((d: string) => ({ label: d, checked: false }));
+
+  const techRows = techComparison.map((r: any) => `
+    <tr>
+      <td style="padding:6px 8px;border:1px solid #d1d5db;">${r.parameter ?? ""}</td>
+      <td style="padding:6px 8px;border:1px solid #d1d5db;">${r.specified ?? ""}</td>
+      <td style="padding:6px 8px;border:1px solid #d1d5db;">${r.proposed ?? ""}</td>
+      <td style="padding:6px 8px;border:1px solid #d1d5db;text-align:center;">${r.compliant ? "✅" : "❌"}</td>
+    </tr>
+  `).join("");
+
+  const docRows = docsToShow.map((d: any) => {
+    const label = typeof d === "string" ? d : d.label;
+    const checked = typeof d === "string" ? false : d.checked;
+    return `<tr>
+      <td style="padding:6px 8px;border:1px solid #d1d5db;">${checked ? "☑" : "☐"} ${label}</td>
+    </tr>`;
+  }).join("");
+
+  const html = `<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<title>FAV — ${material.pame_code ?? material.code}</title>
+<style>
+  @media print { body { margin: 0; } }
+  body { margin: 0; font-family: Arial, Helvetica, sans-serif; font-size: 12px; }
+  @page { size: A4 portrait; margin: 15mm; }
+  table { border-collapse: collapse; width: 100%; }
+</style>
+</head><body>
+  <div style="background:#0f1e37;color:#fff;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;">
+    <div>
+      <div style="font-size:18px;font-weight:900;letter-spacing:0.1em;">ATLAS QMS</div>
+      <div style="font-size:10px;opacity:0.7;">Ficha de Aprovação de Materiais (FAV)</div>
+    </div>
+    <div style="text-align:right;">
+      <div style="font-size:16px;font-weight:700;">${material.pame_code ?? material.code}</div>
+      <div style="font-size:10px;opacity:0.7;">${projectName} (${projectCode})</div>
+    </div>
+  </div>
+
+  <div style="padding:20px;">
+    <table style="margin-bottom:20px;">
+      <tr>
+        <td style="padding:6px 8px;font-weight:700;width:140px;border:1px solid #d1d5db;background:#f3f4f6;">Material</td>
+        <td style="padding:6px 8px;border:1px solid #d1d5db;">${material.name}</td>
+        <td style="padding:6px 8px;font-weight:700;width:100px;border:1px solid #d1d5db;background:#f3f4f6;">Código</td>
+        <td style="padding:6px 8px;border:1px solid #d1d5db;">${material.code}</td>
+      </tr>
+      <tr>
+        <td style="padding:6px 8px;font-weight:700;border:1px solid #d1d5db;background:#f3f4f6;">Categoria</td>
+        <td style="padding:6px 8px;border:1px solid #d1d5db;">${material.category}</td>
+        <td style="padding:6px 8px;font-weight:700;border:1px solid #d1d5db;background:#f3f4f6;">Unidade</td>
+        <td style="padding:6px 8px;border:1px solid #d1d5db;">${material.unit ?? "—"}</td>
+      </tr>
+      <tr>
+        <td style="padding:6px 8px;font-weight:700;border:1px solid #d1d5db;background:#f3f4f6;">Especificação</td>
+        <td colspan="3" style="padding:6px 8px;border:1px solid #d1d5db;">${material.specification ?? "—"}</td>
+      </tr>
+      <tr>
+        <td style="padding:6px 8px;font-weight:700;border:1px solid #d1d5db;background:#f3f4f6;">Referências Normativas</td>
+        <td colspan="3" style="padding:6px 8px;border:1px solid #d1d5db;">${material.normative_refs ?? "—"}</td>
+      </tr>
+      ${material.submitted_at ? `<tr>
+        <td style="padding:6px 8px;font-weight:700;border:1px solid #d1d5db;background:#f3f4f6;">Data Submissão</td>
+        <td colspan="3" style="padding:6px 8px;border:1px solid #d1d5db;">${new Date(material.submitted_at).toLocaleDateString("pt-PT")}</td>
+      </tr>` : ""}
+    </table>
+
+    ${techComparison.length > 0 ? `
+    <div style="font-weight:700;font-size:11px;text-transform:uppercase;color:#6b7280;margin-bottom:6px;">A — Comparação Técnica: Especificado vs. Proposto</div>
+    <table style="margin-bottom:20px;">
+      <thead>
+        <tr style="background:#f3f4f6;">
+          <th style="padding:6px 8px;border:1px solid #d1d5db;text-align:left;">Parâmetro</th>
+          <th style="padding:6px 8px;border:1px solid #d1d5db;text-align:left;">Especificado</th>
+          <th style="padding:6px 8px;border:1px solid #d1d5db;text-align:left;">Proposto</th>
+          <th style="padding:6px 8px;border:1px solid #d1d5db;width:60px;">Conf.</th>
+        </tr>
+      </thead>
+      <tbody>${techRows}</tbody>
+    </table>` : ""}
+
+    <div style="font-weight:700;font-size:11px;text-transform:uppercase;color:#6b7280;margin-bottom:6px;">B — Documentos Submetidos</div>
+    <table style="margin-bottom:30px;">
+      <tbody>${docRows}</tbody>
+    </table>
+
+    <div style="font-weight:700;font-size:11px;text-transform:uppercase;color:#6b7280;margin-bottom:12px;">C — Decisão</div>
+    <div style="display:flex;gap:20px;margin-bottom:30px;font-size:13px;">
+      <span>☐ Aprovado</span>
+      <span>☐ Aprovado com condições</span>
+      <span>☐ Rejeitado</span>
+    </div>
+    ${material.rejection_reason ? `<div style="margin-bottom:20px;font-size:11px;"><strong>Motivo:</strong> ${material.rejection_reason}</div>` : ""}
+
+    <div style="display:flex;justify-content:space-between;margin-top:40px;">
+      <div style="width:45%;">
+        <div style="font-weight:700;font-size:11px;margin-bottom:30px;">TQ / Inspector</div>
+        <div style="border-top:1px solid #000;padding-top:4px;font-size:10px;">Nome: ________________</div>
+        <div style="font-size:10px;margin-top:4px;">Data: _______ &nbsp; Assinatura: ________________</div>
+      </div>
+      <div style="width:45%;">
+        <div style="font-weight:700;font-size:11px;margin-bottom:30px;">Fiscalização</div>
+        <div style="border-top:1px solid #000;padding-top:4px;font-size:10px;">Nome: ________________</div>
+        <div style="font-size:10px;margin-top:4px;">Data: _______ &nbsp; Assinatura: ________________</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center;font-size:8px;color:#999;margin-top:20px;padding:8px;">
+    Atlas QMS · PF17A · Gerado em ${new Date().toLocaleString("pt-PT")}
+  </div>
+</body></html>`;
+
+  const w = window.open("", "_blank", "width=800,height=1000");
+  if (!w) return;
+  w.document.write(html);
+  w.document.close();
+  setTimeout(() => w.print(), 400);
+}
