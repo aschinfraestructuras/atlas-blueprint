@@ -389,7 +389,69 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
               )} />
             )}
 
-            {/* Notes */}
+            {/* BE-CAMPO fields */}
+            <Separator />
+            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+              {t("tests.results.form.beCampoSection", { defaultValue: "BE-CAMPO — Boletim de Ensaio de Campo" })}
+            </p>
+            <div className="grid grid-cols-2 gap-3">
+              <FormField control={form.control} name="be_campo_code" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("tests.results.form.beCampoCode", { defaultValue: "Código BE-CAMPO" })} <span className="text-xs text-muted-foreground">({t("common.optional")})</span></FormLabel>
+                  <FormControl><Input placeholder="BE-COMP-PF17A-001" className="font-mono text-sm" {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="location_pk" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>PK <span className="text-xs text-muted-foreground">({t("common.optional")})</span></FormLabel>
+                  <FormControl><Input placeholder="45+200" className="font-mono text-sm" {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              <FormField control={form.control} name="eme_code" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("tests.results.form.emeCode", { defaultValue: "Cód. EME" })} <span className="text-xs text-muted-foreground">({t("common.optional")})</span></FormLabel>
+                  <FormControl><Input placeholder="EME-001" className="font-mono text-sm" {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="eme_calibration_date" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("tests.results.form.emeCalDate", { defaultValue: "Calibração" })} <span className="text-xs text-muted-foreground">({t("common.optional")})</span></FormLabel>
+                  <FormControl><Input type="date" {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="ambient_temperature" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("tests.results.form.temperature", { defaultValue: "Temp. (°C)" })} <span className="text-xs text-muted-foreground">({t("common.optional")})</span></FormLabel>
+                  <FormControl><Input type="number" step="0.1" placeholder="22.5" {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            </div>
+            <FormField control={form.control} name="weather" render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("tests.results.form.weather", { defaultValue: "Meteorologia" })} <span className="text-xs text-muted-foreground">({t("common.optional")})</span></FormLabel>
+                <Select onValueChange={(v) => field.onChange(v === "__none__" ? "" : v)} value={field.value || "__none__"}>
+                  <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                  <SelectContent>
+                    <SelectItem value="__none__">—</SelectItem>
+                    <SelectItem value="bom">Bom</SelectItem>
+                    <SelectItem value="nublado">Nublado</SelectItem>
+                    <SelectItem value="chuva">Chuva</SelectItem>
+                    <SelectItem value="chuva_forte">Chuva Forte</SelectItem>
+                    <SelectItem value="vento">Vento</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )} />
+
+
             <FormField control={form.control} name="notes" render={({ field }) => (
               <FormItem>
                 <FormLabel>{t("tests.results.form.notes")} <span className="text-xs text-muted-foreground">({t("common.optional")})</span></FormLabel>
