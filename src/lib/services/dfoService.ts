@@ -233,6 +233,8 @@ export const dfoService = {
       .select("id, code, status")
       .eq("project_id", projectId);
 
+    const updates: { id: string; status: string }[] = [];
+
     for (const item of (items ?? []) as any[]) {
       let newStatus: string | null = null;
 
@@ -250,8 +252,16 @@ export const dfoService = {
         newStatus = auditsDone >= 4 ? "complete" : "in_progress";
 
       if (newStatus && item.status === "pending") {
-        await supabase.from("dfo_items" as any).update({ status: newStatus }).eq("id", item.id);
+        updates.push({ id: item.id, status: newStatus });
       }
+    }
+
+    if (updates.length > 0) {
+      await Promise.all(
+        updates.map(u =>
+          supabase.from("dfo_items" as any).update({ status: u.status }).eq("id", u.id)
+        )
+      );
     }
   },
 
