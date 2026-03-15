@@ -81,6 +81,7 @@ const ALL_SOURCES = [
   "ppi_pending",
   "ppi_approval",
   "subcontractor_doc",
+  "hp_notification",
 ] as const;
 
 export default function DeadlinesPage() {
