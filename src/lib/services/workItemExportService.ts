@@ -6,6 +6,7 @@
 
 import type { WorkItem } from "./workItemService";
 import { formatPk } from "./workItemService";
+import { projectInfoStripHtml } from "./pdfProjectHeader";
 
 // ─── Atlas brand colours ──────────────────────────────────────────────────────
 
