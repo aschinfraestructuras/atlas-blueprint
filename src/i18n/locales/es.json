@@ -2234,7 +2234,7 @@
     "toast": {
       "created": "Work Item creado con éxito.",
       "updated": "Work Item actualizado con éxito.",
-      "deleted": "Work Item eliminado.",
+      "deleted": "Actividad eliminada.",
       "duplicated": "Actividad duplicada — rellene el elemento y PK.",
       "error": "Ocurrió un error. Inténtelo de nuevo."
     },
