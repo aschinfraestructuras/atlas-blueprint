@@ -146,7 +146,26 @@ export function PPIInstanceFormDialog({
     }
   }, [selectedWI, matchingTemplates, loadingTpl, watchedTemplateId, form]);
 
-  // ── Discipline mismatch check ──────────────────────────────────────────────
+  // ── Preview auto-generated code ────────────────────────────────────────────
+
+  useEffect(() => {
+    if (!activeProject || !selectedWI || !watchedAutoCode) {
+      setPreviewCode(null);
+      return;
+    }
+    // Determine disciplina from template or work item
+    const tpl = watchedTemplateId && watchedTemplateId !== "__none__"
+      ? templates.find(tp => tp.id === watchedTemplateId)
+      : null;
+    const disc = tpl?.disciplina ?? selectedWI.disciplina;
+
+    supabase.rpc("fn_next_ppi_code" as any, {
+      p_project_id: activeProject.id,
+      p_disciplina: disc,
+    }).then(({ data }) => {
+      if (data) setPreviewCode(data as string);
+    });
+  }, [activeProject, selectedWI, watchedTemplateId, watchedAutoCode, templates]);
 
   const disciplineMismatch = useMemo(() => {
     if (!watchedTemplateId || watchedTemplateId === "__none__" || !selectedWI) return null;
