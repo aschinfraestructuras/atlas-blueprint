@@ -389,6 +389,20 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
+                  {(n as any).rfi_ref && (
+                    <span className="text-[10px] font-mono text-primary">RFI: {(n as any).rfi_ref}</span>
+                  )}
+                  {n.status === "pending" && (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="gap-1 text-[10px] h-6 px-2 text-muted-foreground"
+                      onClick={() => navigate(`/technical-office?type=rfi&ppi_ref=${encodeURIComponent(n.code)}&subject=${encodeURIComponent(`HP ${n.point_no} ${n.activity.slice(0, 50)}`)}`)}
+                    >
+                      <ExternalLink className="h-3 w-3" />
+                      Criar RFI
+                    </Button>
+                  )}
                   <span className="text-[10px] text-muted-foreground">
                     {new Date(n.planned_datetime).toLocaleString()}
                   </span>
