@@ -45,6 +45,65 @@ const ACTIVITY_CFG: Record<string, { icon: React.ElementType; cls: string }> = {
   test: { icon: FlaskConical,   cls: "text-amber-500" },
 };
 
+// ── Monthly Report Deadline Alert ─────────────────────────────────
+function MonthlyReportAlert({ projectId }: { projectId: string }) {
+  const navigate = useNavigate();
+  const [show, setShow] = useState<{ overdue: boolean; days: number; deadline: Date } | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      const now = new Date();
+      const prevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const prevStr = prevMonth.toISOString().slice(0, 7); // YYYY-MM
+
+      const { data } = await (supabase as any)
+        .from("monthly_quality_reports")
+        .select("id")
+        .eq("project_id", projectId)
+        .neq("status", "draft")
+        .gte("reference_month", prevMonth.toISOString().slice(0, 10))
+        .lt("reference_month", new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10))
+        .limit(1);
+
+      if (data && data.length > 0) { setShow(null); return; }
+
+      // Calculate 5th working day of current month
+      let wd = 0;
+      const d = new Date(now.getFullYear(), now.getMonth(), 1);
+      while (wd < 5) { const dow = d.getDay(); if (dow !== 0 && dow !== 6) wd++; if (wd < 5) d.setDate(d.getDate() + 1); }
+      const daysUntil = Math.ceil((d.getTime() - now.getTime()) / 86400000);
+      if (daysUntil < -30) { setShow(null); return; }
+      setShow({ overdue: daysUntil < 0, days: daysUntil, deadline: d });
+    })();
+  }, [projectId]);
+
+  if (!show) return null;
+
+  return (
+    <div
+      className={`flex items-center gap-3 px-4 py-3 rounded-lg border animate-fade-in ${
+        show.overdue
+          ? "bg-destructive/5 border-destructive/30 text-destructive"
+          : "bg-amber-500/5 border-amber-500/30 text-amber-700 dark:text-amber-400"
+      }`}
+      style={{ animationDelay: "0ms", animationFillMode: "both" }}
+    >
+      <FileBarChart2 className="h-4 w-4 flex-shrink-0" />
+      <span className="text-sm flex-1">
+        {show.overdue
+          ? `🔴 Relatório Mensal SGQ em atraso — ${Math.abs(show.days)} dias`
+          : `⚠️ Relatório Mensal SGQ — entregar até ${show.deadline.toLocaleDateString("pt-PT")}`}
+      </span>
+      <button
+        onClick={() => navigate("/reports/monthly")}
+        className="text-xs font-medium underline underline-offset-2 hover:opacity-80"
+      >
+        Criar Relatório
+      </button>
+    </div>
+  );
+}
+
 // ══════════════════════════════════════════════════════════════════
 export default function DashboardPage() {
   const { t } = useTranslation();
