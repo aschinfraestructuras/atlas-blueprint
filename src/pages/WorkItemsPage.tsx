@@ -422,7 +422,7 @@ export default function WorkItemsPage() {
           <span className="flex items-center gap-1.5">
             {t(`workItems.disciplines.${item.disciplina}`, { defaultValue: item.disciplina })}
             {hpAlertIds.has(item.id) && (
-              <Bell className="h-3.5 w-3.5 text-amber-500 flex-shrink-0" title="HP sem confirmação F/IP" />
+              <span className="inline-flex" title="HP sem confirmação F/IP"><Bell className="h-3.5 w-3.5 text-amber-500 flex-shrink-0" /></span>
             )}
           </span>
         </TableCell>
