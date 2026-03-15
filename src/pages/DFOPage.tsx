@@ -49,10 +49,11 @@ export default function DFOPage() {
     if (!activeProject) return;
     setLoading(true);
     try {
+      // Auto-sync statuses before loading
+      try { await dfoService.syncItemStatuses(activeProject.id); } catch { /* ignore */ }
       const data = await dfoService.getVolumes(activeProject.id);
       setVolumes(data);
     } catch {
-      // Tables may not exist yet
       setVolumes([]);
     } finally {
       setLoading(false);
