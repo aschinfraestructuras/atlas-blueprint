@@ -110,12 +110,20 @@ export default function AuditsPage() {
           {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-24 w-full" />)}
         </div>
       ) : audits.length === 0 ? (
-        <EmptyState
-          icon={CalendarClock}
-          subtitleKey="audits.empty"
-          ctaKey="audits.create"
-          onCta={canCreate ? handleCreate : undefined}
-        />
+        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-card py-20 px-6 text-center">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted mb-4">
+            <CalendarClock className="h-5 w-5 text-muted-foreground" />
+          </div>
+          <h3 className="text-sm font-semibold text-foreground mb-1">
+            {t("audits.emptyTitle", { defaultValue: "Nenhuma auditoria registada" })}
+          </h3>
+          <p className="text-sm text-muted-foreground max-w-md">
+            {t("audits.emptyDescription", { defaultValue: "As auditorias internas são registadas como actividades de planeamento com prefixo AI-. Crie uma actividade no módulo de Planificação com descrição iniciada por \"AI-\" para aparecer aqui." })}
+          </p>
+          <Button size="sm" className="mt-6" onClick={() => navigate("/planning")}>
+            {t("audits.goToPlanning", { defaultValue: "Ir para Planeamento" })}
+          </Button>
+        </div>
       ) : (
         <div className="space-y-4">
           {audits.map(audit => {

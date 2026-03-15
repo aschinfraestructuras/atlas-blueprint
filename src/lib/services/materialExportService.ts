@@ -223,6 +223,8 @@ export function exportFavPdf(
     </tr>`;
   }).join("");
 
+  const logo = `<svg width="32" height="32" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="6" fill="#2F4F75"/><path d="M16 4L6 9v7c0 5.25 4.25 10.15 10 11.35C21.75 26.15 26 21.25 26 16V9L16 4z" fill="white" fill-opacity="0.9"/><path d="M13 16l2 2 4-4" stroke="#2F4F75" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
   const html = `<!DOCTYPE html>
 <html><head>
 <meta charset="utf-8">
@@ -235,9 +237,12 @@ export function exportFavPdf(
 </style>
 </head><body>
   <div style="background:#0f1e37;color:#fff;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;">
-    <div>
-      <div style="font-size:18px;font-weight:900;letter-spacing:0.1em;">ATLAS QMS</div>
-      <div style="font-size:10px;opacity:0.7;">Ficha de Aprovação de Materiais (FAV)</div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      ${logo}
+      <div>
+        <div style="font-size:18px;font-weight:900;letter-spacing:0.1em;">ATLAS QMS</div>
+        <div style="font-size:10px;opacity:0.7;">Ficha de Aprovação de Materiais (FAV)</div>
+      </div>
     </div>
     <div style="text-align:right;">
       <div style="font-size:16px;font-weight:700;">${material.pame_code ?? material.code}</div>

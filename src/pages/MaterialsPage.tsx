@@ -65,7 +65,9 @@ export default function MaterialsPage() {
     }
     if (filterStatus !== "all") result = result.filter(m => m.status === filterStatus);
     if (filterCategory !== "all") result = result.filter(m => m.category === filterCategory);
-    if (filterApproval !== "all") result = result.filter(m => m.approval_status === filterApproval);
+    if (filterApproval !== "all") result = result.filter(m =>
+      (m as any).pame_status === filterApproval || m.approval_status === filterApproval
+    );
     return result;
   }, [materials, search, filterStatus, filterCategory, filterApproval]);
 
