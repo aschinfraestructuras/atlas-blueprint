@@ -131,7 +131,7 @@ function NavItem({ item, active, collapsed, onClose }: {
       to={item.url}
       onClick={onClose}
       className={cn(
-        "group relative flex items-center gap-2.5 rounded-lg text-sm font-medium h-[36px]",
+        "group relative flex items-center gap-2.5 rounded-lg text-sm font-medium min-h-[44px]",
         "transition-all duration-150",
         collapsed ? "justify-center px-0 mx-1.5" : "px-3 mx-1.5",
         active
