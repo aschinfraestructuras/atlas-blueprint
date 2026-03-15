@@ -331,7 +331,7 @@ export default function MonthlyReportPage() {
             setSelectedMonth(deadlineAlert.refMonth);
             setCreateOpen(true);
           }}>
-            Criar Relatório
+            {t("monthlyReport.createReport")}
           </Button>
         </div>
       )}
