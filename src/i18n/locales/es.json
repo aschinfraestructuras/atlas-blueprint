@@ -1691,8 +1691,8 @@
     "filters": {
       "allStatuses": "Todos los estados",
       "overdue": "⚠ Atrasados",
-      "allDisciplines": "Todas disciplinas",
-      "allPriorities": "Todas prioridades"
+      "allDisciplines": "Todas las disciplinas",
+      "allPriorities": "Todas las prioridades"
     },
     "priority": {
       "normal": "Normal",
