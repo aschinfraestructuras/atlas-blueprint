@@ -13,7 +13,7 @@ import {
 import { exportMaterialPdf } from "@/lib/services/materialExportService";
 import { printQuarantineLabel } from "@/components/materials/QuarantineLabelView";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, Package, Plus, History, CheckCircle2, XCircle, SendHorizontal, AlertTriangle, Clock, Loader2 } from "lucide-react";
+import { ArrowLeft, Package, Plus, History, CheckCircle2, XCircle, SendHorizontal, AlertTriangle, Clock, Loader2, Tag, FileDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
