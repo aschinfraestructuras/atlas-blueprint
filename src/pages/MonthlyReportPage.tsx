@@ -191,14 +191,14 @@ export default function MonthlyReportPage() {
     const onTime = isOnTime(r);
 
     const kpis = [
-      { label: "Ensaios Conformes", value: r.kpi_tests_pass_rate !== null ? `${r.kpi_tests_pass_rate}%` : "—", ok: r.kpi_tests_pass_rate !== null && r.kpi_tests_pass_rate >= 95 },
-      { label: "NCs Abertas", value: String(r.kpi_nc_open ?? 0), ok: (r.kpi_nc_open ?? 0) === 0 },
-      { label: "NCs Encerradas", value: String(r.kpi_nc_closed_month ?? 0), ok: true },
-      { label: "HPs Confirmados", value: `${r.kpi_hp_approved ?? 0}/${r.kpi_hp_total ?? 0}`, ok: r.kpi_hp_total ? r.kpi_hp_approved === r.kpi_hp_total : true },
-      { label: "Mat. Aprovados", value: String(r.kpi_mat_approved ?? 0), ok: true },
-      { label: "Mat. Pendentes", value: String(r.kpi_mat_pending ?? 0), ok: (r.kpi_mat_pending ?? 0) === 0 },
-      { label: "PPIs Concluídos", value: String(r.kpi_ppi_completed ?? 0), ok: true },
-      { label: "EMEs a Expirar", value: String(r.kpi_emes_expiring ?? 0), ok: (r.kpi_emes_expiring ?? 0) === 0 },
+      { label: t("monthlyReport.kpi.testsPass"), value: r.kpi_tests_pass_rate !== null ? `${r.kpi_tests_pass_rate}%` : "—", ok: r.kpi_tests_pass_rate !== null && r.kpi_tests_pass_rate >= 95 },
+      { label: t("monthlyReport.kpi.ncOpen"), value: String(r.kpi_nc_open ?? 0), ok: (r.kpi_nc_open ?? 0) === 0 },
+      { label: t("monthlyReport.kpi.ncClosed"), value: String(r.kpi_nc_closed_month ?? 0), ok: true },
+      { label: t("monthlyReport.kpi.hpConfirmed"), value: `${r.kpi_hp_approved ?? 0}/${r.kpi_hp_total ?? 0}`, ok: r.kpi_hp_total ? r.kpi_hp_approved === r.kpi_hp_total : true },
+      { label: t("monthlyReport.kpi.matApproved"), value: String(r.kpi_mat_approved ?? 0), ok: true },
+      { label: t("monthlyReport.kpi.matPending"), value: String(r.kpi_mat_pending ?? 0), ok: (r.kpi_mat_pending ?? 0) === 0 },
+      { label: t("monthlyReport.kpi.ppiCompleted"), value: String(r.kpi_ppi_completed ?? 0), ok: true },
+      { label: t("monthlyReport.kpi.emesExpiring"), value: String(r.kpi_emes_expiring ?? 0), ok: (r.kpi_emes_expiring ?? 0) === 0 },
     ];
 
     return (
