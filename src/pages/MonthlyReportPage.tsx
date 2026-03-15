@@ -158,7 +158,7 @@ export default function MonthlyReportPage() {
     setSaving(true);
     try {
       await monthlyReportService.submit(report.id);
-      toast({ title: "Relatório submetido" });
+      toast({ title: t("monthlyReport.submitted") });
       setSelectedReport(null);
       await fetchReports();
     } catch (err: any) {
