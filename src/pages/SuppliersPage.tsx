@@ -5,7 +5,10 @@ import { useProject } from "@/contexts/ProjectContext";
 import { useSuppliers } from "@/hooks/useSuppliers";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import { supplierService } from "@/lib/services/supplierService";
-import { Truck, Plus, Pencil, Search, Archive, RotateCcw, Eye, Trash2, PieChart as PieChartIcon, AlertTriangle } from "lucide-react";
+import { Truck, Plus, Pencil, Search, Archive, RotateCcw, Eye, Trash2, PieChart as PieChartIcon, AlertTriangle, FileDown } from "lucide-react";
+import { exportLGR } from "@/lib/services/sgqListExportService";
+import { useReportMeta } from "@/hooks/useReportMeta";
+import { useSubcontractors } from "@/hooks/useSubcontractors";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
