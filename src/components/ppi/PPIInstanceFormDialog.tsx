@@ -75,10 +75,14 @@ export function PPIInstanceFormDialog({
       work_item_id:    preselectedWorkItemId ?? "",
       template_id:     "",
       code:            "",
+      auto_code:       true,
       inspector_id:    "",
       inspection_date: format(new Date(), "yyyy-MM-dd"),
     },
   });
+
+  const watchedAutoCode = form.watch("auto_code");
+  const [previewCode, setPreviewCode] = useState<string | null>(null);
 
   const watchedWorkItemId = form.watch("work_item_id");
   const watchedTemplateId = form.watch("template_id");
