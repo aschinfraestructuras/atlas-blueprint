@@ -414,35 +414,56 @@ export function PPIInstanceFormDialog({
               )}
             />
 
-            {/* Code — optional, auto-generated if empty */}
-            <FormField
-              control={form.control}
-              name="code"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="flex items-center gap-1.5">
-                    {t("ppi.instances.form.code")}
-                    <span className="text-[10px] font-normal text-muted-foreground">
-                      ({t("ppi.instances.form.codeAutoHint")})
-                    </span>
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t("ppi.instances.form.codePlaceholder")}
-                      {...field}
-                      className="font-mono"
-                    />
-                  </FormControl>
-                  <div className="flex items-center gap-1 text-[11px] text-muted-foreground mt-0.5">
-                    <Info className="h-3 w-3 flex-shrink-0" />
-                    {t("ppi.instances.form.codeAutoDescription", {
-                      example: `PPI-${activeProject?.code ?? "PRJ"}-0001`,
-                    })}
-                  </div>
-                  <FormMessage />
-                </FormItem>
+            {/* Code — auto-generated with discipline prefix, or manual override */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium">
+                  {t("ppi.instances.form.code")}
+                </label>
+                <button
+                  type="button"
+                  className="text-[11px] text-primary underline-offset-2 hover:underline flex items-center gap-1"
+                  onClick={() => {
+                    const next = !form.getValues("auto_code");
+                    form.setValue("auto_code", next);
+                    if (next) form.setValue("code", "");
+                  }}
+                >
+                  <Sparkles className="h-3 w-3" />
+                  {watchedAutoCode
+                    ? t("ppi.instances.form.manualCode", { defaultValue: "Inserir manualmente" })
+                    : t("ppi.instances.form.autoCode", { defaultValue: "Gerar automaticamente" })}
+                </button>
+              </div>
+              {watchedAutoCode ? (
+                <div className="flex items-center gap-2 rounded-md border border-border bg-muted/30 px-3 py-2">
+                  <Sparkles className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+                  <span className="font-mono text-sm font-semibold text-foreground">
+                    {previewCode ?? "PPI-…"}
+                  </span>
+                  <span className="text-[10px] text-muted-foreground ml-auto">
+                    ({t("ppi.instances.form.codeAutoHint")})
+                  </span>
+                </div>
+              ) : (
+                <FormField
+                  control={form.control}
+                  name="code"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input
+                          placeholder={t("ppi.instances.form.codePlaceholder")}
+                          {...field}
+                          className="font-mono"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               )}
-            />
+            </div>
 
             <DialogFooter>
               <Button
