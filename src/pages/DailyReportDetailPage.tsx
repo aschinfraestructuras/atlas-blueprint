@@ -290,14 +290,44 @@ export default function DailyReportDetailPage() {
       </Card>
 
       {/* Section 3: Labour */}
-      <SectionTable
-        title={t("dailyReports.sections.labour")}
-        headers={[t("dailyReports.labour.category"), t("dailyReports.labour.name"), t("dailyReports.labour.timeStart"), t("dailyReports.labour.timeEnd"), t("dailyReports.labour.hours"), ""]}
-        rows={labour.map(r => [r.category, r.name ?? "—", r.time_start ?? "—", r.time_end ?? "—", r.hours_worked != null ? String(r.hours_worked) : "—",
-          isDraft ? <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => deleteRow("labour", r.id)}><Trash2 className="h-3.5 w-3.5" /></Button> : null
-        ])}
-        onAdd={isDraft ? addLabourRow : undefined}
-      />
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between py-3">
+          <CardTitle className="text-sm">{t("dailyReports.sections.labour")}</CardTitle>
+          {isDraft && (
+            <Button variant="outline" size="sm" onClick={addLabourRow}>
+              <Plus className="h-3.5 w-3.5 mr-1" /> {t("common.create")}
+            </Button>
+          )}
+        </CardHeader>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>{t("dailyReports.labour.category")}</TableHead>
+                <TableHead>{t("dailyReports.labour.name")}</TableHead>
+                <TableHead>{t("dailyReports.labour.timeStart")}</TableHead>
+                <TableHead>{t("dailyReports.labour.timeEnd")}</TableHead>
+                <TableHead>{t("dailyReports.labour.hours")}</TableHead>
+                <TableHead />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {labour.length === 0 ? (
+                <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-4">{t("common.noData")}</TableCell></TableRow>
+              ) : labour.map(r => (
+                <TableRow key={r.id}>
+                  <TableCell>{isDraft ? <Input className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1" defaultValue={r.category} onBlur={e => { if (e.target.value !== r.category) dailyReportService.updateLabour(r.id, { category: e.target.value }); }} /> : r.category}</TableCell>
+                  <TableCell>{isDraft ? <Input className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1" defaultValue={r.name ?? ""} onBlur={e => dailyReportService.updateLabour(r.id, { name: e.target.value || null })} /> : (r.name ?? "—")}</TableCell>
+                  <TableCell>{isDraft ? <Input type="time" className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1" defaultValue={r.time_start ?? ""} onBlur={e => dailyReportService.updateLabour(r.id, { time_start: e.target.value || null })} /> : (r.time_start ?? "—")}</TableCell>
+                  <TableCell>{isDraft ? <Input type="time" className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1" defaultValue={r.time_end ?? ""} onBlur={e => dailyReportService.updateLabour(r.id, { time_end: e.target.value || null })} /> : (r.time_end ?? "—")}</TableCell>
+                  <TableCell>{isDraft ? <Input type="number" className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1 w-16" defaultValue={r.hours_worked ?? ""} onBlur={e => dailyReportService.updateLabour(r.id, { hours_worked: e.target.value ? Number(e.target.value) : null })} /> : (r.hours_worked != null ? String(r.hours_worked) : "—")}</TableCell>
+                  <TableCell>{isDraft && <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => deleteRow("labour", r.id)}><Trash2 className="h-3.5 w-3.5" /></Button>}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
 
       {/* Section 4: Equipment */}
       <SectionTable
