@@ -38,11 +38,9 @@ const STATUS_COLORS: Record<string, string> = {
   accepted: "bg-emerald-500/10 text-emerald-600",
 };
 
-const STATUS_LABELS: Record<string, string> = {
-  draft: "Rascunho",
-  submitted: "Submetido",
-  accepted: "Aceite",
-};
+function getStatusLabel(status: string, t: (key: string, opts?: any) => string): string {
+  return t(`monthlyReport.status.${status}`, { defaultValue: status });
+}
 
 function getMonthOptions(): { value: string; label: string }[] {
   const opts: { value: string; label: string }[] = [];
@@ -160,7 +158,7 @@ export default function MonthlyReportPage() {
     setSaving(true);
     try {
       await monthlyReportService.submit(report.id);
-      toast({ title: "Relatório submetido" });
+      toast({ title: t("monthlyReport.submitted") });
       setSelectedReport(null);
       await fetchReports();
     } catch (err: any) {
@@ -193,14 +191,14 @@ export default function MonthlyReportPage() {
     const onTime = isOnTime(r);
 
     const kpis = [
-      { label: "Ensaios Conformes", value: r.kpi_tests_pass_rate !== null ? `${r.kpi_tests_pass_rate}%` : "—", ok: r.kpi_tests_pass_rate !== null && r.kpi_tests_pass_rate >= 95 },
-      { label: "NCs Abertas", value: String(r.kpi_nc_open ?? 0), ok: (r.kpi_nc_open ?? 0) === 0 },
-      { label: "NCs Encerradas", value: String(r.kpi_nc_closed_month ?? 0), ok: true },
-      { label: "HPs Confirmados", value: `${r.kpi_hp_approved ?? 0}/${r.kpi_hp_total ?? 0}`, ok: r.kpi_hp_total ? r.kpi_hp_approved === r.kpi_hp_total : true },
-      { label: "Mat. Aprovados", value: String(r.kpi_mat_approved ?? 0), ok: true },
-      { label: "Mat. Pendentes", value: String(r.kpi_mat_pending ?? 0), ok: (r.kpi_mat_pending ?? 0) === 0 },
-      { label: "PPIs Concluídos", value: String(r.kpi_ppi_completed ?? 0), ok: true },
-      { label: "EMEs a Expirar", value: String(r.kpi_emes_expiring ?? 0), ok: (r.kpi_emes_expiring ?? 0) === 0 },
+      { label: t("monthlyReport.kpi.testsPass"), value: r.kpi_tests_pass_rate !== null ? `${r.kpi_tests_pass_rate}%` : "—", ok: r.kpi_tests_pass_rate !== null && r.kpi_tests_pass_rate >= 95 },
+      { label: t("monthlyReport.kpi.ncOpen"), value: String(r.kpi_nc_open ?? 0), ok: (r.kpi_nc_open ?? 0) === 0 },
+      { label: t("monthlyReport.kpi.ncClosed"), value: String(r.kpi_nc_closed_month ?? 0), ok: true },
+      { label: t("monthlyReport.kpi.hpConfirmed"), value: `${r.kpi_hp_approved ?? 0}/${r.kpi_hp_total ?? 0}`, ok: r.kpi_hp_total ? r.kpi_hp_approved === r.kpi_hp_total : true },
+      { label: t("monthlyReport.kpi.matApproved"), value: String(r.kpi_mat_approved ?? 0), ok: true },
+      { label: t("monthlyReport.kpi.matPending"), value: String(r.kpi_mat_pending ?? 0), ok: (r.kpi_mat_pending ?? 0) === 0 },
+      { label: t("monthlyReport.kpi.ppiCompleted"), value: String(r.kpi_ppi_completed ?? 0), ok: true },
+      { label: t("monthlyReport.kpi.emesExpiring"), value: String(r.kpi_emes_expiring ?? 0), ok: (r.kpi_emes_expiring ?? 0) === 0 },
     ];
 
     return (
@@ -214,11 +212,11 @@ export default function MonthlyReportPage() {
             <p className="text-sm text-muted-foreground capitalize">{refLabel}</p>
           </div>
           <Badge variant="secondary" className={cn("text-xs", STATUS_COLORS[r.status])}>
-            {STATUS_LABELS[r.status] ?? r.status}
+            {getStatusLabel(r.status, t)}
           </Badge>
           {onTime !== null && (
             <Badge variant="secondary" className={cn("text-xs", onTime ? "bg-emerald-500/10 text-emerald-600" : "bg-destructive/10 text-destructive")}>
-              {onTime ? "No prazo" : "Fora do prazo"}
+               {onTime ? t("monthlyReport.onTime") : t("monthlyReport.late")}
             </Badge>
           )}
         </div>
@@ -239,15 +237,15 @@ export default function MonthlyReportPage() {
         {r.status === "draft" && canEdit ? (
           <div className="space-y-4">
             <div className="grid gap-1.5">
-              <Label>Observações</Label>
+              <Label>{t("monthlyReport.observations")}</Label>
               <Textarea value={observations} onChange={e => setObservations(e.target.value)} rows={4} />
             </div>
             <div className="grid gap-1.5">
-              <Label>Acções Correctivas</Label>
+              <Label>{t("monthlyReport.correctiveActions")}</Label>
               <Textarea value={correctiveActions} onChange={e => setCorrectiveActions(e.target.value)} rows={4} />
             </div>
             <div className="grid gap-1.5">
-              <Label>Plano para o Próximo Mês</Label>
+              <Label>{t("monthlyReport.nextMonthPlan")}</Label>
               <Textarea value={nextMonthPlan} onChange={e => setNextMonthPlan(e.target.value)} rows={4} />
             </div>
             <div className="flex items-center gap-2 justify-end">
@@ -256,7 +254,7 @@ export default function MonthlyReportPage() {
               </Button>
               <Button onClick={() => handleSubmit(r)} disabled={saving}>
                 <Send className="h-3.5 w-3.5 mr-1.5" />
-                Submeter
+                {t("monthlyReport.submit")}
               </Button>
               <Button variant="outline" onClick={() => monthlyReportService.exportPdf(r, activeProject.name)}>
                 <FileText className="h-3.5 w-3.5 mr-1.5" />
@@ -268,26 +266,26 @@ export default function MonthlyReportPage() {
           <div className="space-y-4">
             {r.observations && (
               <Card><CardContent className="p-4">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">Observações</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">{t("monthlyReport.observations")}</p>
                 <p className="text-sm text-foreground whitespace-pre-wrap">{r.observations}</p>
               </CardContent></Card>
             )}
             {r.corrective_actions && (
               <Card><CardContent className="p-4">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">Acções Correctivas</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">{t("monthlyReport.correctiveActions")}</p>
                 <p className="text-sm text-foreground whitespace-pre-wrap">{r.corrective_actions}</p>
               </CardContent></Card>
             )}
             {r.next_month_plan && (
               <Card><CardContent className="p-4">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">Plano Próximo Mês</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">{t("monthlyReport.nextMonthPlan")}</p>
                 <p className="text-sm text-foreground whitespace-pre-wrap">{r.next_month_plan}</p>
               </CardContent></Card>
             )}
             <div className="flex items-center gap-2 justify-end">
               <Button variant="outline" onClick={() => monthlyReportService.exportPdf(r, activeProject.name)}>
                 <FileText className="h-3.5 w-3.5 mr-1.5" />
-                Exportar PDF
+                {t("monthlyReport.exportPdf")}
               </Button>
             </div>
           </div>
@@ -307,7 +305,7 @@ export default function MonthlyReportPage() {
           canCreate ? (
             <Button onClick={() => setCreateOpen(true)} size="sm">
               <Plus className="h-4 w-4 mr-1.5" />
-              Novo Relatório
+              {t("monthlyReport.create")}
             </Button>
           ) : undefined
         }
@@ -326,14 +324,14 @@ export default function MonthlyReportPage() {
           <AlertTriangle className="h-4 w-4 flex-shrink-0" />
           <span className="text-sm flex-1">
             {deadlineAlert.overdue
-              ? `🔴 Relatório Mensal SGQ em atraso — ${Math.abs(deadlineAlert.daysUntil)} dias de atraso`
-              : `⚠️ Relatório Mensal SGQ — entregar até ${deadlineAlert.deadline.toLocaleDateString("pt-PT")} (${deadlineAlert.daysUntil} dias)`}
+              ? t("monthlyReport.deadlineOverdue", { days: Math.abs(deadlineAlert.daysUntil) })
+              : t("monthlyReport.deadlineAlert", { date: deadlineAlert.deadline.toLocaleDateString("pt-PT"), days: deadlineAlert.daysUntil })}
           </span>
           <Button size="sm" variant="outline" onClick={() => {
             setSelectedMonth(deadlineAlert.refMonth);
             setCreateOpen(true);
           }}>
-            Criar Relatório
+            {t("monthlyReport.createReport")}
           </Button>
         </div>
       )}
@@ -365,11 +363,11 @@ export default function MonthlyReportPage() {
                     <div className="flex items-center gap-2">
                       <span className="font-mono text-sm font-bold text-foreground">{r.code}</span>
                       <Badge variant="secondary" className={cn("text-[10px]", STATUS_COLORS[r.status])}>
-                        {STATUS_LABELS[r.status] ?? r.status}
+                        {getStatusLabel(r.status, t)}
                       </Badge>
                       {onTime !== null && (
                         <Badge variant="secondary" className={cn("text-[10px]", onTime ? "bg-emerald-500/10 text-emerald-600" : "bg-destructive/10 text-destructive")}>
-                          {onTime ? "No prazo" : "Fora do prazo"}
+                          {onTime ? t("monthlyReport.onTime") : t("monthlyReport.late")}
                         </Badge>
                       )}
                     </div>
@@ -377,10 +375,10 @@ export default function MonthlyReportPage() {
                   </div>
                   <div className="text-right text-xs text-muted-foreground flex-shrink-0">
                     {r.submitted_at ? (
-                      <span>Submetido {new Date(r.submitted_at).toLocaleDateString("pt-PT")}</span>
+                      <span>{t("monthlyReport.submittedAt")} {new Date(r.submitted_at).toLocaleDateString("pt-PT")}</span>
                     ) : r.status === "draft" ? (
                       <span className={cn(daysUntil <= 0 ? "text-destructive font-bold" : daysUntil <= 5 ? "text-amber-500 font-bold" : "")}>
-                        Prazo: {deadline.toLocaleDateString("pt-PT")}
+                        {t("monthlyReport.deadline")}: {deadline.toLocaleDateString("pt-PT")}
                       </span>
                     ) : null}
                   </div>
@@ -405,11 +403,11 @@ export default function MonthlyReportPage() {
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Novo Relatório Mensal SGQ</DialogTitle>
+            <DialogTitle>{t("monthlyReport.createTitle")}</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-2">
             <div className="grid gap-1.5">
-              <Label>Mês de referência</Label>
+              <Label>{t("monthlyReport.refMonth")}</Label>
               <Select value={selectedMonth} onValueChange={setSelectedMonth}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -420,7 +418,7 @@ export default function MonthlyReportPage() {
               </Select>
             </div>
             <p className="text-xs text-muted-foreground">
-              Os KPIs serão automaticamente preenchidos com os dados actuais do projecto.
+              {t("monthlyReport.kpiAutoFill")}
             </p>
           </div>
           <DialogFooter>
@@ -428,7 +426,7 @@ export default function MonthlyReportPage() {
               {t("common.cancel")}
             </Button>
             <Button onClick={handleCreate} disabled={creating || !selectedMonth}>
-              {creating ? t("common.loading") : "Criar Relatório"}
+              {creating ? t("common.loading") : t("monthlyReport.createReport")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -440,7 +438,7 @@ export default function MonthlyReportPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>{t("common.confirm")}</AlertDialogTitle>
             <AlertDialogDescription>
-              Tem a certeza que pretende eliminar o relatório {deleteTarget?.code}?
+              {t("monthlyReport.deleteConfirm", { code: deleteTarget?.code })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

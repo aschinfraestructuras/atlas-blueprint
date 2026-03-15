@@ -3641,5 +3641,45 @@
   },
   "shortcuts": {
     "newRecord": "Novo registo (N)"
+  },
+  "monthlyReport": {
+    "title": "Relatório Mensal SGQ",
+    "subtitle": "CE Cláusula 35.ª §11 — Relatório mensal de qualidade",
+    "create": "Novo Relatório",
+    "createTitle": "Novo Relatório Mensal SGQ",
+    "refMonth": "Mês de referência",
+    "kpiAutoFill": "Os KPIs serão automaticamente preenchidos com os dados actuais do projecto.",
+    "submit": "Submeter",
+    "submitConfirm": "Confirmar submissão do relatório mensal?",
+    "submitted": "Relatório submetido com sucesso",
+    "observations": "Observações",
+    "correctiveActions": "Acções Correctivas",
+    "nextMonthPlan": "Plano para o Próximo Mês",
+    "exportPdf": "Exportar PDF",
+    "onTime": "No prazo",
+    "late": "Fora do prazo",
+    "submittedAt": "Submetido",
+    "deadline": "Prazo",
+    "deleteConfirm": "Tem a certeza que pretende eliminar o relatório {{code}}?",
+    "deadlineAlert": "⚠️ Relatório Mensal SGQ — entregar até {{date}} ({{days}} dias)",
+    "deadlineOverdue": "🔴 Relatório Mensal SGQ em atraso — {{days}} dias de atraso",
+    "createReport": "Criar Relatório",
+    "emptyTitle": "Nenhum relatório mensal",
+    "emptySubtitle": "Crie o primeiro relatório mensal para iniciar o registo de KPIs.",
+    "status": {
+      "draft": "Rascunho",
+      "submitted": "Submetido",
+      "accepted": "Aceite"
+    },
+    "kpi": {
+      "testsPass": "Ensaios Conformes",
+      "ncOpen": "NCs Abertas",
+      "ncClosed": "NCs Encerradas",
+      "hpConfirmed": "HPs Confirmados",
+      "matApproved": "Mat. Aprovados",
+      "matPending": "Mat. Pendentes",
+      "ppiCompleted": "PPIs Concluídos",
+      "emesExpiring": "EMEs a Expirar"
+    }
   }
 }
