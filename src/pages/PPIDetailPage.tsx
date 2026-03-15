@@ -9,6 +9,7 @@ import {
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { HPNotificationPanel } from "@/components/ppi/HPNotificationPanel";
 import { PPIExportMenu } from "@/components/ppi/PPIExportMenu";
+import { FieldRecordsTab } from "@/components/ppi/FieldRecordsTab";
 import type { PpiInstanceForExport } from "@/lib/services/ppiExportService";
 import {
   ppiService,
