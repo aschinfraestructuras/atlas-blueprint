@@ -241,7 +241,7 @@ export default function MonthlyReportPage() {
               <Textarea value={observations} onChange={e => setObservations(e.target.value)} rows={4} />
             </div>
             <div className="grid gap-1.5">
-              <Label>Acções Correctivas</Label>
+              <Label>{t("monthlyReport.correctiveActions")}</Label>
               <Textarea value={correctiveActions} onChange={e => setCorrectiveActions(e.target.value)} rows={4} />
             </div>
             <div className="grid gap-1.5">
