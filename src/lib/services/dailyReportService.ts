@@ -236,6 +236,10 @@ export const dailyReportService = {
     if (error) throw error;
     return data as unknown as MaterialRow;
   },
+  async updateMaterial(id: string, fields: Partial<Omit<MaterialRow, "id" | "created_at" | "daily_report_id">>): Promise<void> {
+    const { error } = await supabase.from("daily_report_materials").update(fields as any).eq("id", id);
+    if (error) throw error;
+  },
   async deleteMaterial(id: string): Promise<void> {
     const { error } = await supabase.from("daily_report_materials").delete().eq("id", id);
     if (error) throw error;
