@@ -438,24 +438,80 @@ export default function DailyReportDetailPage() {
       </Card>
 
       {/* Section 6: RMM */}
-      <SectionTable
-        title={t("dailyReports.sections.rmm")}
-        headers={[t("dailyReports.rmm.code"), t("dailyReports.rmm.designation"), ""]}
-        rows={rmm.map(r => [r.internal_code ?? "—", r.designation,
-          isDraft ? <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => deleteRow("rmm", r.id)}><Trash2 className="h-3.5 w-3.5" /></Button> : null
-        ])}
-        onAdd={isDraft ? addRmmRow : undefined}
-      />
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between py-3">
+          <CardTitle className="text-sm">{t("dailyReports.sections.rmm")}</CardTitle>
+          {isDraft && (
+            <Button variant="outline" size="sm" onClick={addRmmRow}>
+              <Plus className="h-3.5 w-3.5 mr-1" /> {t("common.create")}
+            </Button>
+          )}
+        </CardHeader>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>{t("dailyReports.rmm.code")}</TableHead>
+                <TableHead>{t("dailyReports.rmm.designation")}</TableHead>
+                <TableHead />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {rmm.length === 0 ? (
+                <TableRow><TableCell colSpan={3} className="text-center text-muted-foreground py-4">{t("common.noData")}</TableCell></TableRow>
+              ) : rmm.map(r => (
+                <TableRow key={r.id}>
+                  <TableCell>{isDraft ? <Input className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1" defaultValue={r.internal_code ?? ""} onBlur={e => dailyReportService.updateRmm(r.id, { internal_code: e.target.value || null })} /> : (r.internal_code ?? "—")}</TableCell>
+                  <TableCell>{isDraft ? <Input className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1" defaultValue={r.designation} onBlur={e => { if (e.target.value !== r.designation) dailyReportService.updateRmm(r.id, { designation: e.target.value }); }} /> : r.designation}</TableCell>
+                  <TableCell>{isDraft && <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => deleteRow("rmm", r.id)}><Trash2 className="h-3.5 w-3.5" /></Button>}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
 
       {/* Section 7: Waste */}
-      <SectionTable
-        title={t("dailyReports.sections.waste")}
-        headers={[t("dailyReports.waste.type"), t("dailyReports.waste.packaging"), t("dailyReports.waste.quantity"), t("dailyReports.waste.unit"), t("dailyReports.waste.storage"), t("dailyReports.waste.destination"), ""]}
-        rows={waste.map(r => [r.type, r.packaging_type ?? "—", r.quantity != null ? String(r.quantity) : "—", r.unit ?? "—", r.preliminary_storage ?? "—", r.final_destination ?? "—",
-          isDraft ? <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => deleteRow("waste", r.id)}><Trash2 className="h-3.5 w-3.5" /></Button> : null
-        ])}
-        onAdd={isDraft ? addWasteRow : undefined}
-      />
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between py-3">
+          <CardTitle className="text-sm">{t("dailyReports.sections.waste")}</CardTitle>
+          {isDraft && (
+            <Button variant="outline" size="sm" onClick={addWasteRow}>
+              <Plus className="h-3.5 w-3.5 mr-1" /> {t("common.create")}
+            </Button>
+          )}
+        </CardHeader>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>{t("dailyReports.waste.type")}</TableHead>
+                <TableHead>{t("dailyReports.waste.packaging")}</TableHead>
+                <TableHead>{t("dailyReports.waste.quantity")}</TableHead>
+                <TableHead>{t("dailyReports.waste.unit")}</TableHead>
+                <TableHead>{t("dailyReports.waste.storage")}</TableHead>
+                <TableHead>{t("dailyReports.waste.destination")}</TableHead>
+                <TableHead />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {waste.length === 0 ? (
+                <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-4">{t("common.noData")}</TableCell></TableRow>
+              ) : waste.map(r => (
+                <TableRow key={r.id}>
+                  <TableCell>{isDraft ? <Input className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1" defaultValue={r.type} onBlur={e => { if (e.target.value !== r.type) dailyReportService.updateWaste(r.id, { type: e.target.value }); }} /> : r.type}</TableCell>
+                  <TableCell>{isDraft ? <Input className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1" defaultValue={r.packaging_type ?? ""} onBlur={e => dailyReportService.updateWaste(r.id, { packaging_type: e.target.value || null })} /> : (r.packaging_type ?? "—")}</TableCell>
+                  <TableCell>{isDraft ? <Input type="number" className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1 w-16" defaultValue={r.quantity ?? ""} onBlur={e => dailyReportService.updateWaste(r.id, { quantity: e.target.value ? Number(e.target.value) : null })} /> : (r.quantity != null ? String(r.quantity) : "—")}</TableCell>
+                  <TableCell>{isDraft ? <Input className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1 w-16" defaultValue={r.unit ?? ""} onBlur={e => dailyReportService.updateWaste(r.id, { unit: e.target.value || null })} /> : (r.unit ?? "—")}</TableCell>
+                  <TableCell>{isDraft ? <Input className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1" defaultValue={r.preliminary_storage ?? ""} onBlur={e => dailyReportService.updateWaste(r.id, { preliminary_storage: e.target.value || null })} /> : (r.preliminary_storage ?? "—")}</TableCell>
+                  <TableCell>{isDraft ? <Input className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1" defaultValue={r.final_destination ?? ""} onBlur={e => dailyReportService.updateWaste(r.id, { final_destination: e.target.value || null })} /> : (r.final_destination ?? "—")}</TableCell>
+                  <TableCell>{isDraft && <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => deleteRow("waste", r.id)}><Trash2 className="h-3.5 w-3.5" /></Button>}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
 
       {/* Section 8: Signatures */}
       <Card>
