@@ -46,6 +46,7 @@ interface Props {
 
 export function HPNotificationPanel({ instance, items, projectId }: Props) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState<HpNotification[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -57,6 +58,7 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
   const [activity, setActivity] = useState("");
   const [locationPk, setLocationPk] = useState("");
   const [notes, setNotes] = useState("");
+  const [rfiRef, setRfiRef] = useState("");
   const [creating, setCreating] = useState(false);
 
   // Confirm dialog
