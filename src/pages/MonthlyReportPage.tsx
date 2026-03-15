@@ -403,7 +403,7 @@ export default function MonthlyReportPage() {
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Novo Relatório Mensal SGQ</DialogTitle>
+            <DialogTitle>{t("monthlyReport.createTitle")}</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-2">
             <div className="grid gap-1.5">
