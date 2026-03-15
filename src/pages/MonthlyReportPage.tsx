@@ -245,7 +245,7 @@ export default function MonthlyReportPage() {
               <Textarea value={correctiveActions} onChange={e => setCorrectiveActions(e.target.value)} rows={4} />
             </div>
             <div className="grid gap-1.5">
-              <Label>Plano para o Próximo Mês</Label>
+              <Label>{t("monthlyReport.nextMonthPlan")}</Label>
               <Textarea value={nextMonthPlan} onChange={e => setNextMonthPlan(e.target.value)} rows={4} />
             </div>
             <div className="flex items-center gap-2 justify-end">
