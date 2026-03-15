@@ -61,6 +61,7 @@ const SOURCE_ROUTES: Record<string, string> = {
   planning_due: "/planning/activities",
   ppi_pending: "/ppi",
   ppi_approval: "/ppi",
+  hp_notification: "/ppi",
 };
 
 const SEVERITY_COLORS: Record<string, string> = {
