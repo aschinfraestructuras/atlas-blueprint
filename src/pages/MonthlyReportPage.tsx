@@ -38,11 +38,9 @@ const STATUS_COLORS: Record<string, string> = {
   accepted: "bg-emerald-500/10 text-emerald-600",
 };
 
-const STATUS_LABELS: Record<string, string> = {
-  draft: "Rascunho",
-  submitted: "Submetido",
-  accepted: "Aceite",
-};
+function getStatusLabel(status: string, t: (key: string, opts?: any) => string): string {
+  return t(`monthlyReport.status.${status}`, { defaultValue: status });
+}
 
 function getMonthOptions(): { value: string; label: string }[] {
   const opts: { value: string; label: string }[] = [];
