@@ -272,7 +272,7 @@ export default function MonthlyReportPage() {
             )}
             {r.corrective_actions && (
               <Card><CardContent className="p-4">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">Acções Correctivas</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">{t("monthlyReport.correctiveActions")}</p>
                 <p className="text-sm text-foreground whitespace-pre-wrap">{r.corrective_actions}</p>
               </CardContent></Card>
             )}
