@@ -418,18 +418,12 @@ export default function DailyReportDetailPage() {
                 <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-4">{t("common.noData")}</TableCell></TableRow>
               ) : materials.map(r => (
                 <TableRow key={r.id}>
-                  <TableCell className="text-sm">{r.nomenclature}</TableCell>
+                  <TableCell className="text-sm">{isDraft && !r.material_id ? <Input className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1" defaultValue={r.nomenclature} onBlur={e => { if (e.target.value !== r.nomenclature) dailyReportService.updateMaterial(r.id, { nomenclature: e.target.value }); }} /> : r.nomenclature}</TableCell>
                   <TableCell className="text-xs font-mono text-muted-foreground">{r.pame_reference ?? "—"}</TableCell>
-                  <TableCell className="text-sm tabular-nums">{r.quantity != null ? String(r.quantity) : "—"}</TableCell>
-                  <TableCell className="text-sm">{r.unit ?? "—"}</TableCell>
-                  <TableCell className="text-sm">{r.lot_number ?? "—"}</TableCell>
-                  <TableCell>
-                    {isDraft && (
-                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => deleteRow("materials", r.id)}>
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </Button>
-                    )}
-                  </TableCell>
+                  <TableCell>{isDraft ? <Input type="number" className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1 w-16" defaultValue={r.quantity ?? ""} onBlur={e => dailyReportService.updateMaterial(r.id, { quantity: e.target.value ? Number(e.target.value) : null })} /> : (r.quantity != null ? String(r.quantity) : "—")}</TableCell>
+                  <TableCell>{isDraft ? <Input className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1 w-16" defaultValue={r.unit ?? ""} onBlur={e => dailyReportService.updateMaterial(r.id, { unit: e.target.value || null })} /> : (r.unit ?? "—")}</TableCell>
+                  <TableCell>{isDraft ? <Input className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1" defaultValue={r.lot_number ?? ""} onBlur={e => dailyReportService.updateMaterial(r.id, { lot_number: e.target.value || null })} /> : (r.lot_number ?? "—")}</TableCell>
+                  <TableCell>{isDraft && <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => deleteRow("materials", r.id)}><Trash2 className="h-3.5 w-3.5" /></Button>}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
