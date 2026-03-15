@@ -1,12 +1,13 @@
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   ArrowLeft, ClipboardCheck, CheckCircle2, XCircle,
   Clock, Loader2, Construction, Calendar, CheckCheck,
-  Save, AlertTriangle, Link2, Archive, Trash2, Pencil, FileText, Info,
+  Save, AlertTriangle, Link2, Archive, Trash2, Pencil, FileText, Info, Bell,
 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { HPNotificationPanel } from "@/components/ppi/HPNotificationPanel";
 import { PPIExportMenu } from "@/components/ppi/PPIExportMenu";
 import type { PpiInstanceForExport } from "@/lib/services/ppiExportService";
 import {
@@ -389,7 +390,16 @@ export default function PPIDetailPage() {
   const availableTransitions = instance
     ? TRANSITIONS.filter((tr) => tr.from === instance.status)
     : [];
-  const hasHoldPointWarning = pendingTransition?.to === "submitted" && items.some((item) => item.inspection_point_type === "hp" && (item.result === "pending" || item.result === "fail"));
+
+  // HP items detection
+  const hpItems = useMemo(
+    () => items.filter((it) => (it as any).ipt_e === "hp" || (it as any).ipt_f === "hp" || (it as any).ipt_ip === "hp"),
+    [items]
+  );
+  const hasHpItems = hpItems.length > 0;
+  const hpPendingResult = hpItems.filter((it) => it.result === "pending" || it.result === "fail").length;
+
+  const hasHoldPointWarning = pendingTransition?.to === "submitted" && hpPendingResult > 0;
 
   // ── Render ─────────────────────────────────────────────────────────────────
 
@@ -653,7 +663,7 @@ export default function PPIDetailPage() {
         </CardContent>
       </Card>
 
-      {/* ── Tabs: Checklist / Attachments ────────────────────────────── */}
+      {/* ── Tabs: Checklist / NOT-HP / Attachments ────────────────────── */}
       <Tabs defaultValue="checklist">
         <TabsList>
           <TabsTrigger value="checklist" className="gap-1.5">
@@ -663,6 +673,17 @@ export default function PPIDetailPage() {
               {items.length}
             </span>
           </TabsTrigger>
+          {hasHpItems && (
+            <TabsTrigger value="not-hp" className="gap-1.5">
+              <Bell className="h-3.5 w-3.5" />
+              NOT-HP
+              {hpPendingResult > 0 && (
+                <span className="ml-1 rounded-full bg-destructive px-1.5 py-px text-[10px] font-bold text-destructive-foreground">
+                  {hpItems.length}
+                </span>
+              )}
+            </TabsTrigger>
+          )}
           <TabsTrigger value="attachments">
             {t("ppi.templates.items.evidenceRequired")}
           </TabsTrigger>
@@ -910,6 +931,17 @@ export default function PPIDetailPage() {
             </CardContent>
           </Card>
         </TabsContent>
+
+        {/* NOT-HP tab */}
+        {hasHpItems && (
+          <TabsContent value="not-hp" className="mt-4">
+            <HPNotificationPanel
+              instance={instance}
+              items={items}
+              projectId={activeProject?.id ?? ""}
+            />
+          </TabsContent>
+        )}
 
         {/* Attachments / Evidence tab */}
         <TabsContent value="attachments" className="mt-4">
