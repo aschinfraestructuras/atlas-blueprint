@@ -113,6 +113,7 @@ export default function NonConformitiesPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { data: ncs, loading, error, refetch } = useNonConformities();
+  const reportMeta = useReportMeta();
   const { canCreate, canEdit, canValidate } = usePermissions();
 
   // Filters

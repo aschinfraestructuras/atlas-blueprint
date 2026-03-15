@@ -77,6 +77,7 @@ export default function DocumentsPage() {
   const { activeProject } = useProject();
   const { user } = useAuth();
   const { logoUrl, logoBase64 } = useProjectLogo();
+  const reportMetaRef = useReportMeta();
 
   const { data: documents, loading, error, refetch } = useDocuments();
 
