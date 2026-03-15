@@ -56,6 +56,8 @@ export default function SuppliersPage() {
   const { activeProject } = useProject();
   const { data: suppliers, kpis, loading, error, refetch } = useSuppliers();
   const { canCreate, canEdit } = useProjectRole();
+  const reportMeta = useReportMeta();
+  const { data: subcontractors } = useSubcontractors();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingSupplier, setEditingSupplier] = useState<Supplier | null>(null);
   const [search, setSearch] = useState("");
