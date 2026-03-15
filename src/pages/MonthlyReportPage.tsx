@@ -363,7 +363,7 @@ export default function MonthlyReportPage() {
                     <div className="flex items-center gap-2">
                       <span className="font-mono text-sm font-bold text-foreground">{r.code}</span>
                       <Badge variant="secondary" className={cn("text-[10px]", STATUS_COLORS[r.status])}>
-                        {STATUS_LABELS[r.status] ?? r.status}
+                        {getStatusLabel(r.status, t)}
                       </Badge>
                       {onTime !== null && (
                         <Badge variant="secondary" className={cn("text-[10px]", onTime ? "bg-emerald-500/10 text-emerald-600" : "bg-destructive/10 text-destructive")}>
