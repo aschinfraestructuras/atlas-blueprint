@@ -45,6 +45,39 @@ const ACTIVITY_CFG: Record<string, { icon: React.ElementType; cls: string }> = {
   test: { icon: FlaskConical,   cls: "text-amber-500" },
 };
 
+// ── HP Pending Alert ──────────────────────────────────────────
+function HPPendingAlert({ projectId }: { projectId: string }) {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    (async () => {
+      const { count: c } = await supabase
+        .from("hp_notifications")
+        .select("id", { count: "exact", head: true })
+        .eq("project_id", projectId)
+        .eq("status", "pending");
+      setCount(c ?? 0);
+    })();
+  }, [projectId]);
+
+  if (count === 0) return null;
+
+  return (
+    <div
+      className="flex items-center gap-3 px-4 py-3 rounded-lg border animate-fade-in bg-amber-500/5 border-amber-500/30 text-amber-700 dark:text-amber-400 cursor-pointer"
+      onClick={() => navigate("/deadlines")}
+    >
+      <Bell className="h-4 w-4 flex-shrink-0" />
+      <span className="text-sm flex-1">
+        {t("dashboard.hpPending", { defaultValue: "HPs Sem Confirmação" })}: <strong>{count}</strong>
+      </span>
+      <ArrowRight className="h-3 w-3" />
+    </div>
+  );
+}
+
 // ── Monthly Report Deadline Alert ─────────────────────────────────
 function MonthlyReportAlert({ projectId }: { projectId: string }) {
   const navigate = useNavigate();
