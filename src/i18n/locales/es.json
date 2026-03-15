@@ -2697,7 +2697,7 @@
       "allCategories": "Todas las categorías",
       "allApprovals": "Todas las aprobaciones"
     },
-    "status": { "active": "Activo", "discontinued": "Descontinuado", "archived": "Archivado" },
+    "status": { "active": "Activo", "discontinued": "Descatalogado", "archived": "Archivado" },
     "categories": {
       "betao": "Hormigón",
       "aco": "Acero",
