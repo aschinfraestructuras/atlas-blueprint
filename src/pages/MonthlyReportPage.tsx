@@ -278,7 +278,7 @@ export default function MonthlyReportPage() {
             )}
             {r.next_month_plan && (
               <Card><CardContent className="p-4">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">Plano Próximo Mês</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">{t("monthlyReport.nextMonthPlan")}</p>
                 <p className="text-sm text-foreground whitespace-pre-wrap">{r.next_month_plan}</p>
               </CardContent></Card>
             )}
