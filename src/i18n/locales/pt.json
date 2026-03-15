@@ -3647,6 +3647,96 @@
   "shortcuts": {
     "newRecord": "Novo registo (N)"
   },
+  "training": {
+    "title": "Formação",
+    "subtitle": "Registo de sessões de formação e sensibilização",
+    "newSession": "Nova Sessão",
+    "empty": "Ainda não existem sessões de formação registadas.",
+    "kpi": {
+      "total": "Total",
+      "thisMonth": "Este Mês",
+      "attendees": "Formandos",
+      "types": "Tipos"
+    },
+    "table": {
+      "code": "Código",
+      "type": "Tipo",
+      "title": "Título",
+      "attendees": "Formandos"
+    },
+    "form": {
+      "type": "Tipo",
+      "title": "Título",
+      "location": "Local",
+      "startTime": "Início",
+      "endTime": "Fim",
+      "trainer": "Formador",
+      "topics": "Conteúdos / Tópicos",
+      "attendees": "Formandos",
+      "addAttendee": "Adicionar",
+      "function": "Função",
+      "company": "Empresa"
+    },
+    "toast": {
+      "created": "Sessão de formação criada",
+      "deleted": "Sessão eliminada"
+    },
+    "types": {
+      "initial": "Formação Inicial",
+      "new_personnel": "Novos Colaboradores",
+      "specific": "Específica",
+      "subcontractor": "Subempreiteiro",
+      "other": "Outra"
+    }
+  },
+  "audits": {
+    "title": "Auditorias",
+    "subtitle": "Programa anual de auditorias internas e externas",
+    "new": "Nova Auditoria",
+    "empty": "Nenhuma auditoria registada. O programa anual de auditorias deve ser definido no PQO.",
+    "type": {
+      "internal": "Interna",
+      "external": "Externa",
+      "surveillance": "Vigilância",
+      "closing": "Encerramento"
+    },
+    "status": {
+      "planned": "Planeada",
+      "in_progress": "Em Curso",
+      "completed": "Concluída",
+      "cancelled": "Cancelada"
+    },
+    "form": {
+      "type": "Tipo",
+      "plannedDate": "Data Planeada",
+      "completedDate": "Data de Realização",
+      "auditor": "Auditor",
+      "scope": "Âmbito",
+      "findings": "Constatações",
+      "observations": "Observações",
+      "ncCount": "Nº NCs",
+      "obsCount": "Nº Observações",
+      "reportRef": "Ref. Relatório"
+    },
+    "toast": {
+      "created": "Auditoria criada",
+      "updated": "Auditoria actualizada",
+      "deleted": "Auditoria cancelada"
+    }
+  },
+  "sgqMatrix": {
+    "title": "Matriz de Conformidade SGQ",
+    "subtitle": "Mapeamento dos requisitos do Plano de Qualidade aos módulos do Atlas QMS",
+    "kpi": {
+      "totalReqs": "Requisitos Totais",
+      "fullCoverage": "Cobertura Total",
+      "partialCoverage": "Cobertura Parcial",
+      "coverageIndex": "Índice de Cobertura"
+    },
+    "tableTitle": "Capítulos do Plano de Qualidade vs. Módulos Atlas",
+    "progress": "Progresso",
+    "detailsCol": "Detalhes"
+  },
   "monthlyReport": {
     "title": "Relatório Mensal SGQ",
     "subtitle": "CE Cláusula 35.ª §11 — Relatório mensal de qualidade",
