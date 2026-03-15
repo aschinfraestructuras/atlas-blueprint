@@ -237,7 +237,7 @@ export default function MonthlyReportPage() {
         {r.status === "draft" && canEdit ? (
           <div className="space-y-4">
             <div className="grid gap-1.5">
-              <Label>Observações</Label>
+              <Label>{t("monthlyReport.observations")}</Label>
               <Textarea value={observations} onChange={e => setObservations(e.target.value)} rows={4} />
             </div>
             <div className="grid gap-1.5">
