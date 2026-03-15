@@ -105,8 +105,33 @@ export default function DeadlinesPage() {
     }
     setLoading(true);
     try {
-      const result = await deadlineService.getAll(activeProject.id, Number(daysFilter));
-      setItems(result);
+      const [result, hpNotifs] = await Promise.all([
+        deadlineService.getAll(activeProject.id, Number(daysFilter)),
+        hpNotificationService.listPendingForDeadlines(activeProject.id, Number(daysFilter)),
+      ]);
+
+      // Convert HP notifications to DeadlineItem format
+      const hpDeadlines: DeadlineItem[] = hpNotifs.map((n: HpNotification) => {
+        const now = new Date();
+        const planned = new Date(n.planned_datetime);
+        const daysRemaining = Math.ceil((planned.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+        return {
+          id: n.id,
+          project_id: n.project_id,
+          source: "hp_notification" as any,
+          entity_id: n.instance_id,
+          entity_label: `HP — ${n.ppi_ref} ponto ${n.point_no}`,
+          document_id: null,
+          due_date: n.planned_datetime,
+          status: n.status,
+          doc_type: "NOT-HP",
+          assigned_to: null,
+          severity: daysRemaining <= 0 ? "critical" : daysRemaining <= 7 ? "warning" : "info",
+          days_remaining: daysRemaining,
+        };
+      });
+
+      setItems([...result, ...hpDeadlines].sort((a, b) => a.days_remaining - b.days_remaining));
     } catch {
       /* swallow */
     } finally {
