@@ -290,24 +290,84 @@ export default function DailyReportDetailPage() {
       </Card>
 
       {/* Section 3: Labour */}
-      <SectionTable
-        title={t("dailyReports.sections.labour")}
-        headers={[t("dailyReports.labour.category"), t("dailyReports.labour.name"), t("dailyReports.labour.timeStart"), t("dailyReports.labour.timeEnd"), t("dailyReports.labour.hours"), ""]}
-        rows={labour.map(r => [r.category, r.name ?? "—", r.time_start ?? "—", r.time_end ?? "—", r.hours_worked != null ? String(r.hours_worked) : "—",
-          isDraft ? <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => deleteRow("labour", r.id)}><Trash2 className="h-3.5 w-3.5" /></Button> : null
-        ])}
-        onAdd={isDraft ? addLabourRow : undefined}
-      />
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between py-3">
+          <CardTitle className="text-sm">{t("dailyReports.sections.labour")}</CardTitle>
+          {isDraft && (
+            <Button variant="outline" size="sm" onClick={addLabourRow}>
+              <Plus className="h-3.5 w-3.5 mr-1" /> {t("common.create")}
+            </Button>
+          )}
+        </CardHeader>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>{t("dailyReports.labour.category")}</TableHead>
+                <TableHead>{t("dailyReports.labour.name")}</TableHead>
+                <TableHead>{t("dailyReports.labour.timeStart")}</TableHead>
+                <TableHead>{t("dailyReports.labour.timeEnd")}</TableHead>
+                <TableHead>{t("dailyReports.labour.hours")}</TableHead>
+                <TableHead />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {labour.length === 0 ? (
+                <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-4">{t("common.noData")}</TableCell></TableRow>
+              ) : labour.map(r => (
+                <TableRow key={r.id}>
+                  <TableCell>{isDraft ? <Input className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1" defaultValue={r.category} onBlur={e => { if (e.target.value !== r.category) dailyReportService.updateLabour(r.id, { category: e.target.value }); }} /> : r.category}</TableCell>
+                  <TableCell>{isDraft ? <Input className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1" defaultValue={r.name ?? ""} onBlur={e => dailyReportService.updateLabour(r.id, { name: e.target.value || null })} /> : (r.name ?? "—")}</TableCell>
+                  <TableCell>{isDraft ? <Input type="time" className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1" defaultValue={r.time_start ?? ""} onBlur={e => dailyReportService.updateLabour(r.id, { time_start: e.target.value || null })} /> : (r.time_start ?? "—")}</TableCell>
+                  <TableCell>{isDraft ? <Input type="time" className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1" defaultValue={r.time_end ?? ""} onBlur={e => dailyReportService.updateLabour(r.id, { time_end: e.target.value || null })} /> : (r.time_end ?? "—")}</TableCell>
+                  <TableCell>{isDraft ? <Input type="number" className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1 w-16" defaultValue={r.hours_worked ?? ""} onBlur={e => dailyReportService.updateLabour(r.id, { hours_worked: e.target.value ? Number(e.target.value) : null })} /> : (r.hours_worked != null ? String(r.hours_worked) : "—")}</TableCell>
+                  <TableCell>{isDraft && <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => deleteRow("labour", r.id)}><Trash2 className="h-3.5 w-3.5" /></Button>}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
 
       {/* Section 4: Equipment */}
-      <SectionTable
-        title={t("dailyReports.sections.equipment")}
-        headers={[t("dailyReports.equipment.designation"), t("dailyReports.equipment.type"), t("dailyReports.equipment.serial"), t("dailyReports.equipment.soundPower"), t("dailyReports.equipment.hours"), ""]}
-        rows={equipment.map(r => [r.designation, r.type ?? "—", r.serial_number ?? "—", r.sound_power_db != null ? String(r.sound_power_db) : "—", r.hours_worked != null ? String(r.hours_worked) : "—",
-          isDraft ? <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => deleteRow("equipment", r.id)}><Trash2 className="h-3.5 w-3.5" /></Button> : null
-        ])}
-        onAdd={isDraft ? addEquipmentRow : undefined}
-      />
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between py-3">
+          <CardTitle className="text-sm">{t("dailyReports.sections.equipment")}</CardTitle>
+          {isDraft && (
+            <Button variant="outline" size="sm" onClick={addEquipmentRow}>
+              <Plus className="h-3.5 w-3.5 mr-1" /> {t("common.create")}
+            </Button>
+          )}
+        </CardHeader>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>{t("dailyReports.equipment.designation")}</TableHead>
+                <TableHead>{t("dailyReports.equipment.type")}</TableHead>
+                <TableHead>{t("dailyReports.equipment.serial")}</TableHead>
+                <TableHead>{t("dailyReports.equipment.soundPower")}</TableHead>
+                <TableHead>{t("dailyReports.equipment.hours")}</TableHead>
+                <TableHead />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {equipment.length === 0 ? (
+                <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-4">{t("common.noData")}</TableCell></TableRow>
+              ) : equipment.map(r => (
+                <TableRow key={r.id}>
+                  <TableCell>{isDraft ? <Input className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1" defaultValue={r.designation} onBlur={e => { if (e.target.value !== r.designation) dailyReportService.updateEquipment(r.id, { designation: e.target.value }); }} /> : r.designation}</TableCell>
+                  <TableCell>{isDraft ? <Input className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1" defaultValue={r.type ?? ""} onBlur={e => dailyReportService.updateEquipment(r.id, { type: e.target.value || null })} /> : (r.type ?? "—")}</TableCell>
+                  <TableCell>{isDraft ? <Input className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1" defaultValue={r.serial_number ?? ""} onBlur={e => dailyReportService.updateEquipment(r.id, { serial_number: e.target.value || null })} /> : (r.serial_number ?? "—")}</TableCell>
+                  <TableCell>{isDraft ? <Input type="number" className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1 w-16" defaultValue={r.sound_power_db ?? ""} onBlur={e => dailyReportService.updateEquipment(r.id, { sound_power_db: e.target.value ? Number(e.target.value) : null })} /> : (r.sound_power_db != null ? String(r.sound_power_db) : "—")}</TableCell>
+                  <TableCell>{isDraft ? <Input type="number" className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1 w-16" defaultValue={r.hours_worked ?? ""} onBlur={e => dailyReportService.updateEquipment(r.id, { hours_worked: e.target.value ? Number(e.target.value) : null })} /> : (r.hours_worked != null ? String(r.hours_worked) : "—")}</TableCell>
+                  <TableCell>{isDraft && <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => deleteRow("equipment", r.id)}><Trash2 className="h-3.5 w-3.5" /></Button>}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
 
       {/* Section 5: Materials — PAME-linked */}
       <Card>
@@ -358,18 +418,12 @@ export default function DailyReportDetailPage() {
                 <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-4">{t("common.noData")}</TableCell></TableRow>
               ) : materials.map(r => (
                 <TableRow key={r.id}>
-                  <TableCell className="text-sm">{r.nomenclature}</TableCell>
+                  <TableCell className="text-sm">{isDraft && !r.material_id ? <Input className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1" defaultValue={r.nomenclature} onBlur={e => { if (e.target.value !== r.nomenclature) dailyReportService.updateMaterial(r.id, { nomenclature: e.target.value }); }} /> : r.nomenclature}</TableCell>
                   <TableCell className="text-xs font-mono text-muted-foreground">{r.pame_reference ?? "—"}</TableCell>
-                  <TableCell className="text-sm tabular-nums">{r.quantity != null ? String(r.quantity) : "—"}</TableCell>
-                  <TableCell className="text-sm">{r.unit ?? "—"}</TableCell>
-                  <TableCell className="text-sm">{r.lot_number ?? "—"}</TableCell>
-                  <TableCell>
-                    {isDraft && (
-                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => deleteRow("materials", r.id)}>
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </Button>
-                    )}
-                  </TableCell>
+                  <TableCell>{isDraft ? <Input type="number" className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1 w-16" defaultValue={r.quantity ?? ""} onBlur={e => dailyReportService.updateMaterial(r.id, { quantity: e.target.value ? Number(e.target.value) : null })} /> : (r.quantity != null ? String(r.quantity) : "—")}</TableCell>
+                  <TableCell>{isDraft ? <Input className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1 w-16" defaultValue={r.unit ?? ""} onBlur={e => dailyReportService.updateMaterial(r.id, { unit: e.target.value || null })} /> : (r.unit ?? "—")}</TableCell>
+                  <TableCell>{isDraft ? <Input className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1" defaultValue={r.lot_number ?? ""} onBlur={e => dailyReportService.updateMaterial(r.id, { lot_number: e.target.value || null })} /> : (r.lot_number ?? "—")}</TableCell>
+                  <TableCell>{isDraft && <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => deleteRow("materials", r.id)}><Trash2 className="h-3.5 w-3.5" /></Button>}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -378,24 +432,80 @@ export default function DailyReportDetailPage() {
       </Card>
 
       {/* Section 6: RMM */}
-      <SectionTable
-        title={t("dailyReports.sections.rmm")}
-        headers={[t("dailyReports.rmm.code"), t("dailyReports.rmm.designation"), ""]}
-        rows={rmm.map(r => [r.internal_code ?? "—", r.designation,
-          isDraft ? <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => deleteRow("rmm", r.id)}><Trash2 className="h-3.5 w-3.5" /></Button> : null
-        ])}
-        onAdd={isDraft ? addRmmRow : undefined}
-      />
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between py-3">
+          <CardTitle className="text-sm">{t("dailyReports.sections.rmm")}</CardTitle>
+          {isDraft && (
+            <Button variant="outline" size="sm" onClick={addRmmRow}>
+              <Plus className="h-3.5 w-3.5 mr-1" /> {t("common.create")}
+            </Button>
+          )}
+        </CardHeader>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>{t("dailyReports.rmm.code")}</TableHead>
+                <TableHead>{t("dailyReports.rmm.designation")}</TableHead>
+                <TableHead />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {rmm.length === 0 ? (
+                <TableRow><TableCell colSpan={3} className="text-center text-muted-foreground py-4">{t("common.noData")}</TableCell></TableRow>
+              ) : rmm.map(r => (
+                <TableRow key={r.id}>
+                  <TableCell>{isDraft ? <Input className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1" defaultValue={r.internal_code ?? ""} onBlur={e => dailyReportService.updateRmm(r.id, { internal_code: e.target.value || null })} /> : (r.internal_code ?? "—")}</TableCell>
+                  <TableCell>{isDraft ? <Input className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1" defaultValue={r.designation} onBlur={e => { if (e.target.value !== r.designation) dailyReportService.updateRmm(r.id, { designation: e.target.value }); }} /> : r.designation}</TableCell>
+                  <TableCell>{isDraft && <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => deleteRow("rmm", r.id)}><Trash2 className="h-3.5 w-3.5" /></Button>}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
 
       {/* Section 7: Waste */}
-      <SectionTable
-        title={t("dailyReports.sections.waste")}
-        headers={[t("dailyReports.waste.type"), t("dailyReports.waste.packaging"), t("dailyReports.waste.quantity"), t("dailyReports.waste.unit"), t("dailyReports.waste.storage"), t("dailyReports.waste.destination"), ""]}
-        rows={waste.map(r => [r.type, r.packaging_type ?? "—", r.quantity != null ? String(r.quantity) : "—", r.unit ?? "—", r.preliminary_storage ?? "—", r.final_destination ?? "—",
-          isDraft ? <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => deleteRow("waste", r.id)}><Trash2 className="h-3.5 w-3.5" /></Button> : null
-        ])}
-        onAdd={isDraft ? addWasteRow : undefined}
-      />
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between py-3">
+          <CardTitle className="text-sm">{t("dailyReports.sections.waste")}</CardTitle>
+          {isDraft && (
+            <Button variant="outline" size="sm" onClick={addWasteRow}>
+              <Plus className="h-3.5 w-3.5 mr-1" /> {t("common.create")}
+            </Button>
+          )}
+        </CardHeader>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>{t("dailyReports.waste.type")}</TableHead>
+                <TableHead>{t("dailyReports.waste.packaging")}</TableHead>
+                <TableHead>{t("dailyReports.waste.quantity")}</TableHead>
+                <TableHead>{t("dailyReports.waste.unit")}</TableHead>
+                <TableHead>{t("dailyReports.waste.storage")}</TableHead>
+                <TableHead>{t("dailyReports.waste.destination")}</TableHead>
+                <TableHead />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {waste.length === 0 ? (
+                <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-4">{t("common.noData")}</TableCell></TableRow>
+              ) : waste.map(r => (
+                <TableRow key={r.id}>
+                  <TableCell>{isDraft ? <Input className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1" defaultValue={r.type} onBlur={e => { if (e.target.value !== r.type) dailyReportService.updateWaste(r.id, { type: e.target.value }); }} /> : r.type}</TableCell>
+                  <TableCell>{isDraft ? <Input className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1" defaultValue={r.packaging_type ?? ""} onBlur={e => dailyReportService.updateWaste(r.id, { packaging_type: e.target.value || null })} /> : (r.packaging_type ?? "—")}</TableCell>
+                  <TableCell>{isDraft ? <Input type="number" className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1 w-16" defaultValue={r.quantity ?? ""} onBlur={e => dailyReportService.updateWaste(r.id, { quantity: e.target.value ? Number(e.target.value) : null })} /> : (r.quantity != null ? String(r.quantity) : "—")}</TableCell>
+                  <TableCell>{isDraft ? <Input className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1 w-16" defaultValue={r.unit ?? ""} onBlur={e => dailyReportService.updateWaste(r.id, { unit: e.target.value || null })} /> : (r.unit ?? "—")}</TableCell>
+                  <TableCell>{isDraft ? <Input className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1" defaultValue={r.preliminary_storage ?? ""} onBlur={e => dailyReportService.updateWaste(r.id, { preliminary_storage: e.target.value || null })} /> : (r.preliminary_storage ?? "—")}</TableCell>
+                  <TableCell>{isDraft ? <Input className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1" defaultValue={r.final_destination ?? ""} onBlur={e => dailyReportService.updateWaste(r.id, { final_destination: e.target.value || null })} /> : (r.final_destination ?? "—")}</TableCell>
+                  <TableCell>{isDraft && <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => deleteRow("waste", r.id)}><Trash2 className="h-3.5 w-3.5" /></Button>}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
 
       {/* Section 8: Signatures */}
       <Card>

@@ -188,6 +188,10 @@ export const dailyReportService = {
     if (error) throw error;
     return data as unknown as LabourRow;
   },
+  async updateLabour(id: string, fields: Partial<Omit<LabourRow, "id" | "created_at" | "daily_report_id">>): Promise<void> {
+    const { error } = await supabase.from("daily_report_labour").update(fields as any).eq("id", id);
+    if (error) throw error;
+  },
   async deleteLabour(id: string): Promise<void> {
     const { error } = await supabase.from("daily_report_labour").delete().eq("id", id);
     if (error) throw error;
@@ -207,6 +211,10 @@ export const dailyReportService = {
     const { data, error } = await supabase.from("daily_report_equipment").insert(input).select().single();
     if (error) throw error;
     return data as unknown as EquipmentRow;
+  },
+  async updateEquipment(id: string, fields: Partial<Omit<EquipmentRow, "id" | "created_at" | "daily_report_id">>): Promise<void> {
+    const { error } = await supabase.from("daily_report_equipment").update(fields as any).eq("id", id);
+    if (error) throw error;
   },
   async deleteEquipment(id: string): Promise<void> {
     const { error } = await supabase.from("daily_report_equipment").delete().eq("id", id);
@@ -228,6 +236,10 @@ export const dailyReportService = {
     if (error) throw error;
     return data as unknown as MaterialRow;
   },
+  async updateMaterial(id: string, fields: Partial<Omit<MaterialRow, "id" | "created_at" | "daily_report_id">>): Promise<void> {
+    const { error } = await supabase.from("daily_report_materials").update(fields as any).eq("id", id);
+    if (error) throw error;
+  },
   async deleteMaterial(id: string): Promise<void> {
     const { error } = await supabase.from("daily_report_materials").delete().eq("id", id);
     if (error) throw error;
@@ -248,6 +260,10 @@ export const dailyReportService = {
     if (error) throw error;
     return data as unknown as RmmRow;
   },
+  async updateRmm(id: string, fields: Partial<Omit<RmmRow, "id" | "created_at" | "daily_report_id">>): Promise<void> {
+    const { error } = await supabase.from("daily_report_rmm").update(fields as any).eq("id", id);
+    if (error) throw error;
+  },
   async deleteRmm(id: string): Promise<void> {
     const { error } = await supabase.from("daily_report_rmm").delete().eq("id", id);
     if (error) throw error;
@@ -267,6 +283,10 @@ export const dailyReportService = {
     const { data, error } = await supabase.from("daily_report_waste").insert(input).select().single();
     if (error) throw error;
     return data as unknown as WasteRow;
+  },
+  async updateWaste(id: string, fields: Partial<Omit<WasteRow, "id" | "created_at" | "daily_report_id">>): Promise<void> {
+    const { error } = await supabase.from("daily_report_waste").update(fields as any).eq("id", id);
+    if (error) throw error;
   },
   async deleteWaste(id: string): Promise<void> {
     const { error } = await supabase.from("daily_report_waste").delete().eq("id", id);

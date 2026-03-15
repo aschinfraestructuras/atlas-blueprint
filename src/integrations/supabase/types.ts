@@ -6553,12 +6553,10 @@ export type Database = {
         Args: { p_material_code: string; p_project_id: string }
         Returns: string
       }
-      fn_next_ppi_code:
-        | { Args: { p_project_id: string }; Returns: string }
-        | {
-            Args: { p_disciplina?: string; p_project_id: string }
-            Returns: string
-          }
+      fn_next_ppi_code: {
+        Args: { p_disciplina?: string; p_project_id: string }
+        Returns: string
+      }
       fn_next_rmsgq_code: { Args: { p_project_id: string }; Returns: string }
       fn_next_tech_office_code: {
         Args: { p_prefix: string; p_project_id: string }

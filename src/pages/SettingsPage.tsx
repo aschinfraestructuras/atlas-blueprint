@@ -801,7 +801,7 @@ export default function SettingsPage() {
               {t("pages.settings.sections.audit.desc", { defaultValue: "O sistema regista automaticamente todas as ações críticas: criação, edição, aprovação, eliminação e mudanças de estado em todos os módulos." })}
             </p>
             <div className="flex flex-wrap gap-1.5 py-2">
-              {["LOGIN", "INSERT", "UPDATE", "DELETE", "STATUS_CHANGE", "EXPORT", "APPROVE", "ROLE_CHANGED"].map(action => (
+              {["login", "insert", "update", "delete", "status_change", "export", "approve", "role_change"].map(action => (
                 <Badge key={action} variant="secondary" className="text-[9px] font-mono">{action}</Badge>
               ))}
             </div>
