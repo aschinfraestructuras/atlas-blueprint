@@ -932,6 +932,17 @@ export default function PPIDetailPage() {
           </Card>
         </TabsContent>
 
+        {/* NOT-HP tab */}
+        {hasHpItems && (
+          <TabsContent value="not-hp" className="mt-4">
+            <HPNotificationPanel
+              instance={instance}
+              items={items}
+              projectId={activeProject?.id ?? ""}
+            />
+          </TabsContent>
+        )}
+
         {/* Attachments / Evidence tab */}
         <TabsContent value="attachments" className="mt-4">
           <AttachmentsPanel
