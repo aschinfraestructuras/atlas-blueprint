@@ -136,7 +136,7 @@ Deno.serve(async (req) => {
         normalizedEmail,
         {
           data: { role, project_id, invited_by: caller.id },
-          redirectTo: `${req.headers.get("origin") || supabaseUrl}/login`,
+          redirectTo: `${req.headers.get("origin") || supabaseUrl}/invite/accept`,
         }
       );
 
