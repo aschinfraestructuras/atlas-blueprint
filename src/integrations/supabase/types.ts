@@ -824,6 +824,102 @@ export type Database = {
           },
         ]
       }
+      hp_notifications: {
+        Row: {
+          activity: string
+          code: string
+          confirmed_at: string | null
+          confirmed_by: string | null
+          created_at: string
+          id: string
+          instance_id: string
+          item_id: string | null
+          location_pk: string | null
+          notes: string | null
+          notified_at: string
+          notified_by: string | null
+          planned_datetime: string
+          point_no: string
+          ppi_ref: string
+          project_id: string
+          status: string
+        }
+        Insert: {
+          activity: string
+          code: string
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          created_at?: string
+          id?: string
+          instance_id: string
+          item_id?: string | null
+          location_pk?: string | null
+          notes?: string | null
+          notified_at?: string
+          notified_by?: string | null
+          planned_datetime: string
+          point_no: string
+          ppi_ref: string
+          project_id: string
+          status?: string
+        }
+        Update: {
+          activity?: string
+          code?: string
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          created_at?: string
+          id?: string
+          instance_id?: string
+          item_id?: string | null
+          location_pk?: string | null
+          notes?: string | null
+          notified_at?: string
+          notified_by?: string | null
+          planned_datetime?: string
+          point_no?: string
+          ppi_ref?: string
+          project_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hp_notifications_instance_id_fkey"
+            columns: ["instance_id"]
+            isOneToOne: false
+            referencedRelation: "ppi_instances"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hp_notifications_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "ppi_instance_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hp_notifications_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hp_notifications_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "hp_notifications_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
       laboratories: {
         Row: {
           accreditation_body: string | null
@@ -5820,6 +5916,10 @@ export type Database = {
           isOneToOne: false
           isSetofReturn: true
         }
+      }
+      fn_next_hp_notification_code: {
+        Args: { p_project_id: string }
+        Returns: string
       }
       fn_next_lot_code: {
         Args: { p_material_code: string; p_project_id: string }
