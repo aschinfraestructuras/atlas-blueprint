@@ -9,6 +9,7 @@
 
 import type { PpiInstance, PpiInstanceItem } from "./ppiService";
 import type { HpNotification } from "./hpNotificationService";
+import { projectInfoStripHtml } from "./pdfProjectHeader";
 
 // ─── Shared types ─────────────────────────────────────────────────────────────
 
@@ -309,6 +310,8 @@ function buildSinglePdfHtml(
       <div class="gen">${labels.generatedOn}: ${fmtDate(new Date().toISOString(), locale)}</div>
     </div>
   </div>
+
+  ${projectInfoStripHtml()}
 
   <!-- Info grid -->
   <div class="info-grid">

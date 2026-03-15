@@ -39,6 +39,7 @@ import { CompletionCheckDialog } from "@/components/planning/CompletionCheckDial
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import type { WbsNode, Activity } from "@/lib/services/planningService";
+import { seedWbsPF17A } from "@/lib/services/wbsSeedService";
 
 const STATUS_COLORS: Record<string, string> = {
   planned: "bg-muted text-muted-foreground",
@@ -293,9 +294,29 @@ export default function PlanningPage() {
                 {t("planning.wbs.collapseAll")}
               </Button>
             </div>
-            <RoleGate action="create">
-              <Button size="sm" className="gap-1.5" onClick={() => handleNewWbs()}><Plus className="h-3.5 w-3.5" /> {t("planning.wbs.add")}</Button>
-            </RoleGate>
+            <div className="flex gap-2">
+              {isAdmin && wbs.length === 0 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-1.5 text-xs"
+                  onClick={async () => {
+                    try {
+                      const count = await seedWbsPF17A(activeProject.id, user?.id ?? "");
+                      toast.success(`WBS PF17A populada com ${count} nós`);
+                      refetch();
+                    } catch (err) {
+                      toast.error(err instanceof Error ? err.message : "Erro ao popular WBS");
+                    }
+                  }}
+                >
+                  <Network className="h-3.5 w-3.5" /> Popular WBS PF17A
+                </Button>
+              )}
+              <RoleGate action="create">
+                <Button size="sm" className="gap-1.5" onClick={() => handleNewWbs()}><Plus className="h-3.5 w-3.5" /> {t("planning.wbs.add")}</Button>
+              </RoleGate>
+            </div>
           </div>
           {loading ? (
             <div className="rounded-xl border border-border overflow-hidden divide-y divide-border">

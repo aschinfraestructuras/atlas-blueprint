@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { projectInfoStripHtml } from "./pdfProjectHeader";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -251,6 +252,8 @@ export const fieldRecordService = {
           <p style="margin:2px 0 0;color:#777;font-size:9px;text-transform:uppercase;letter-spacing:.1em">Grelha de Registo</p>
         </div>
       </div>
+
+      ${projectInfoStripHtml()}
 
       <h3>1. Identificação</h3>
       <div class="info-grid">

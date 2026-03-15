@@ -5,6 +5,7 @@
 
 import type { TestResult } from "./testService";
 import { printHtml } from "./reportService";
+import { projectInfoStripHtml } from "./pdfProjectHeader";
 
 const BRAND = { primary: "#2F4F75", muted: "#6B7280", border: "#E5E7EB", bg: "#F9FAFB" };
 
@@ -74,6 +75,8 @@ export function exportBeCampoPdf(
       <p style="margin:2px 0 0;color:#777;font-size:9px;text-transform:uppercase;letter-spacing:.1em">Boletim de Ensaio de Campo</p>
     </div>
   </div>
+
+  ${projectInfoStripHtml()}
 
   <h3>1. Identificação</h3>
   <div class="info-grid">
