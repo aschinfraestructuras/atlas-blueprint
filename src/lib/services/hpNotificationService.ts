@@ -22,6 +22,7 @@ export interface HpNotification {
   confirmed_by: string | null;
   status: "pending" | "confirmed" | "expired" | "cancelled";
   notes: string | null;
+  rfi_ref: string | null;
   created_at: string;
 }
 
@@ -35,6 +36,7 @@ export interface HpNotificationInput {
   location_pk?: string | null;
   planned_datetime: string;
   notes?: string | null;
+  rfi_ref?: string | null;
 }
 
 export const hpNotificationService = {
@@ -63,11 +65,42 @@ export const hpNotificationService = {
         planned_datetime: input.planned_datetime,
         notified_by: user?.id ?? null,
         notes: input.notes ?? null,
+        rfi_ref: input.rfi_ref ?? null,
         status: "pending",
       })
       .select()
       .single();
     if (error) throw error;
+
+    // Notify relevant project members (project_manager, quality_manager, tenant_admin)
+    try {
+      const { data: members } = await (supabase as any)
+        .from("project_members")
+        .select("user_id, role")
+        .eq("project_id", input.project_id)
+        .in("role", ["project_manager", "quality_manager", "tenant_admin", "admin"]);
+
+      if (members && members.length > 0) {
+        const notifications = members
+          .filter((m: any) => m.user_id !== user?.id)
+          .map((m: any) => ({
+            project_id: input.project_id,
+            user_id: m.user_id,
+            type: "hp_notification",
+            title: `HP Notificado: ${input.ppi_ref} — Ponto ${input.point_no}`,
+            body: `Actividade: ${input.activity}. Previsto: ${new Date(input.planned_datetime).toLocaleString("pt-PT")}`,
+            link_entity_type: "ppi_instance",
+            link_entity_id: input.instance_id,
+            is_read: false,
+          }));
+        if (notifications.length > 0) {
+          await (supabase as any).from("notifications").insert(notifications);
+        }
+      }
+    } catch {
+      // Non-blocking: don't fail HP creation if notification insert fails
+    }
+
     return data as HpNotification;
   },
 
@@ -121,7 +154,28 @@ export const hpNotificationService = {
       .select()
       .single();
     if (error) throw error;
-    return data as HpNotification;
+
+    const notification = data as HpNotification;
+
+    // Notify the original submitter that HP was confirmed
+    try {
+      if (notification.notified_by) {
+        await (supabase as any).from("notifications").insert({
+          project_id: notification.project_id,
+          user_id: notification.notified_by,
+          type: "hp_confirmed",
+          title: `HP Confirmado: ${notification.ppi_ref} — Ponto ${notification.point_no}`,
+          body: `Confirmado por: ${confirmedBy}`,
+          link_entity_type: "ppi_instance",
+          link_entity_id: notification.instance_id,
+          is_read: false,
+        });
+      }
+    } catch {
+      // Non-blocking
+    }
+
+    return notification;
   },
 
   async cancel(id: string): Promise<HpNotification> {

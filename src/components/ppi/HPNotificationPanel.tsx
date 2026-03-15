@@ -26,11 +26,13 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
 import {
   AlertTriangle,
   Bell,
   CheckCircle2,
   Clock,
+  ExternalLink,
   Loader2,
   Plus,
   XCircle,
