@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   Plus, Search, Construction, Pencil, Trash2, Eye, ClipboardCheck, Loader2,
-  ShieldCheck, ShieldAlert, AlertTriangle, FlaskConical, Copy, ChevronDown, ChevronRight,
+  ShieldCheck, ShieldAlert, AlertTriangle, FlaskConical, Copy, ChevronDown, ChevronRight, Bell,
 } from "lucide-react";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import {
