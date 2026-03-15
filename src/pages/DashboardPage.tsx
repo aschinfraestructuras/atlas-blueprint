@@ -9,7 +9,7 @@ import { useProjectHealth } from "@/hooks/useProjectHealth";
 import { useRealtimeProject } from "@/hooks/useRealtimeProject";
 import {
   AlertTriangle, Package, Crosshair, CalendarClock,
-  ClipboardCheck, FlaskConical, Clock, ArrowRight, Leaf, FileBarChart2,
+  ClipboardCheck, FlaskConical, Clock, ArrowRight, Leaf, FileBarChart2, Bell,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
