@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/collapsible";
 import {
   Archive, ChevronDown, FileDown, Loader2, Plus, CheckCircle2, Clock,
-  AlertCircle, Minus, FileText, Link2,
+  AlertCircle, Minus, FileText, Link2, RefreshCw,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
