@@ -10,6 +10,8 @@ import { ncService } from "@/lib/services/ncService";
 import { exportNCBulkPdf, type NCExportLabels } from "@/lib/services/ncExportService";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import { exportToCSV, generateListPdf, buildReportFilename } from "@/lib/services/reportService";
+import { exportLNC } from "@/lib/services/sgqListExportService";
+import { useReportMeta } from "@/hooks/useReportMeta";
 import type { NonConformity } from "@/lib/services/ncService";
 import { toast } from "@/hooks/use-toast";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
@@ -111,6 +113,7 @@ export default function NonConformitiesPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { data: ncs, loading, error, refetch } = useNonConformities();
+  const reportMeta = useReportMeta();
   const { canCreate, canEdit, canValidate } = usePermissions();
 
   // Filters
@@ -314,6 +317,10 @@ export default function NonConformitiesPage() {
               disabled={filtered.length === 0}
               options={[
                 { label: t("report.pdfList", { defaultValue: "PDF — Lista" }), icon: "pdf", action: handleBulkExport },
+                { label: "Exportar LNC", icon: "pdf", action: async () => {
+                  if (!reportMeta) return;
+                  await exportLNC(filtered as any, reportMeta);
+                }},
                 { label: t("report.csvList", { defaultValue: "CSV — Lista" }), icon: "csv", action: () => {
                   if (!activeProject) return;
                   const headers = [t("nc.table.code"), t("nc.form.title"), t("nc.table.severity"), t("common.status"), t("nc.form.detectedAt"), t("nc.table.dueDate")];

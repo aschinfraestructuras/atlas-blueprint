@@ -26,10 +26,12 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { CalendarClock, Plus, FileText, Loader2 } from "lucide-react";
+import { CalendarClock, Plus, FileText, FileDown, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/ui/page-header";
+import { exportPAI } from "@/lib/services/sgqListExportService";
+import { useReportMeta } from "@/hooks/useReportMeta";
 
 const TYPE_LABELS: Record<string, string> = {
   internal: "Interna",
@@ -63,6 +65,7 @@ export default function AuditsPage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
   const { canCreate, canEdit, canDelete } = useProjectRole();
+  const reportMeta = useReportMeta();
 
   const [audits, setAudits] = useState<QualityAudit[]>([]);
   const [loading, setLoading] = useState(true);
@@ -201,12 +204,21 @@ export default function AuditsPage() {
         subtitle={t("audits.subtitle", { defaultValue: "Auditorias internas e externas do programa de qualidade" })}
         icon={CalendarClock}
         actions={
-          canCreate ? (
-            <Button onClick={openCreate} size="sm">
-              <Plus className="h-4 w-4 mr-1.5" />
-              {t("audits.create", { defaultValue: "Nova Auditoria" })}
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" className="gap-1.5" onClick={async () => {
+              if (!reportMeta) return;
+              await exportPAI(audits, reportMeta);
+            }}>
+              <FileDown className="h-3.5 w-3.5" />
+              Exportar PAI
             </Button>
-          ) : undefined
+            {canCreate && (
+              <Button onClick={openCreate} size="sm">
+                <Plus className="h-4 w-4 mr-1.5" />
+                {t("audits.create", { defaultValue: "Nova Auditoria" })}
+              </Button>
+            )}
+          </div>
         }
       />
 

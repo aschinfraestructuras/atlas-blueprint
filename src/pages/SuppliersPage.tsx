@@ -5,7 +5,10 @@ import { useProject } from "@/contexts/ProjectContext";
 import { useSuppliers } from "@/hooks/useSuppliers";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import { supplierService } from "@/lib/services/supplierService";
-import { Truck, Plus, Pencil, Search, Archive, RotateCcw, Eye, Trash2, PieChart as PieChartIcon, AlertTriangle } from "lucide-react";
+import { Truck, Plus, Pencil, Search, Archive, RotateCcw, Eye, Trash2, PieChart as PieChartIcon, AlertTriangle, FileDown } from "lucide-react";
+import { exportLGR } from "@/lib/services/sgqListExportService";
+import { useReportMeta } from "@/hooks/useReportMeta";
+import { useSubcontractors } from "@/hooks/useSubcontractors";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
@@ -53,6 +56,8 @@ export default function SuppliersPage() {
   const { activeProject } = useProject();
   const { data: suppliers, kpis, loading, error, refetch } = useSuppliers();
   const { canCreate, canEdit } = useProjectRole();
+  const reportMeta = useReportMeta();
+  const { data: subcontractors } = useSubcontractors();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingSupplier, setEditingSupplier] = useState<Supplier | null>(null);
   const [search, setSearch] = useState("");
@@ -114,6 +119,14 @@ export default function SuppliersPage() {
         <div className="flex gap-2">
           <ReportExportMenu
             options={[
+              {
+                label: "Exportar LGR",
+                icon: "pdf" as const,
+                action: async () => {
+                  if (!reportMeta) return;
+                  await exportLGR(suppliers as any, subcontractors as any, reportMeta);
+                },
+              },
               {
                 label: "CSV",
                 icon: "csv" as const,

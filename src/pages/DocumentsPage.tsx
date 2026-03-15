@@ -10,6 +10,8 @@ import { documentService } from "@/lib/services/documentService";
 import type { Document } from "@/lib/services/documentService";
 import type { DocumentStatus } from "@/lib/services/documentService";
 import { exportDocumentListPdf, type DocExportLabels } from "@/lib/services/documentExportService";
+import { exportLMD } from "@/lib/services/sgqListExportService";
+import { useReportMeta } from "@/hooks/useReportMeta";
 import { auditService } from "@/lib/services/auditService";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -75,6 +77,7 @@ export default function DocumentsPage() {
   const { activeProject } = useProject();
   const { user } = useAuth();
   const { logoUrl, logoBase64 } = useProjectLogo();
+  const reportMetaRef = useReportMeta();
 
   const { data: documents, loading, error, refetch } = useDocuments();
 
@@ -184,6 +187,14 @@ export default function DocumentsPage() {
             <p className="text-sm text-muted-foreground">{t("pages.documents.subtitle")}</p>
           </div>
           <div className="flex items-center gap-2 flex-wrap justify-end">
+            <Button variant="outline" size="sm" className="gap-1.5" onClick={async () => {
+              const meta = reportMetaRef;
+              if (!meta) return;
+              await exportLMD(documents.filter(d => !d.is_deleted), meta);
+            }}>
+              <FileDown className="h-3.5 w-3.5" />
+              Exportar LMD
+            </Button>
             <ShareButton />
             {canCreate && (
               <Button size="sm" className="gap-1.5" onClick={() => { setEditDoc(null); setFormOpen(true); }}>
