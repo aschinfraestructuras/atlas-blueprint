@@ -38,6 +38,7 @@ export default function PPITemplatesPage() {
   const navigate          = useNavigate();
   const { activeProject } = useProject();
   const { user }          = useAuth();
+  const { isAdmin }       = useProjectRole();
   const { data, loading, refetch } = usePPITemplates(true);
 
   const [formOpen,    setFormOpen]    = useState(false);
