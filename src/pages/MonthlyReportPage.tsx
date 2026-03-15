@@ -367,7 +367,7 @@ export default function MonthlyReportPage() {
                       </Badge>
                       {onTime !== null && (
                         <Badge variant="secondary" className={cn("text-[10px]", onTime ? "bg-emerald-500/10 text-emerald-600" : "bg-destructive/10 text-destructive")}>
-                          {onTime ? "No prazo" : "Fora do prazo"}
+                          {onTime ? t("monthlyReport.onTime") : t("monthlyReport.late")}
                         </Badge>
                       )}
                     </div>
