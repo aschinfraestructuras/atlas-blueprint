@@ -58,6 +58,7 @@ const DailyReportDetailPage = lazy(() => import("./pages/DailyReportDetailPage")
 const RecycledMaterialsPage = lazy(() => import("./pages/RecycledMaterialsPage"));
 const SGQMatrixPage = lazy(() => import("./pages/SGQMatrixPage"));
 const TrainingPage = lazy(() => import("./pages/TrainingPage"));
+const MonthlyReportPage = lazy(() => import("./pages/MonthlyReportPage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -149,6 +150,7 @@ const App = () => (
                 <Route path="/admin/health" element={<ProtectedLayout><HealthCheckPage /></ProtectedLayout>} />
                 <Route path="/sgq-matrix" element={<ProtectedLayout><SGQMatrixPage /></ProtectedLayout>} />
                 <Route path="/training" element={<ProtectedLayout><TrainingPage /></ProtectedLayout>} />
+                <Route path="/reports/monthly" element={<ProtectedLayout><MonthlyReportPage /></ProtectedLayout>} />
 
                 {/* Catch-all */}
                 <Route path="*" element={<NotFound />} />

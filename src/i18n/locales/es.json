@@ -134,7 +134,8 @@
     "dailyReports": "Parte Diario",
     "recycledMaterials": "Reciclados / PPGRCD",
     "sgqMatrix": "Matriz SGC",
-    "training": "Formación"
+    "training": "Formación",
+    "monthlyReport": "Informe Mensual SGQ"
   },
   "topbar": {
     "language": "Idioma",

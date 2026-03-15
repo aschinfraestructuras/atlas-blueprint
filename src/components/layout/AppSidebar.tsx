@@ -8,7 +8,7 @@ import {
   FlaskConical, AlertTriangle, ScrollText, Settings,
   ShieldCheck, ChevronLeft, ChevronRight, X, ChevronDown,
   Inbox, BookOpen, Map, HardHat, Construction, ClipboardCheck, Crosshair, CalendarClock,
-  Clock, FileCheck, BarChart3, Building2, ClipboardList, Leaf, GraduationCap,
+  Clock, FileCheck, BarChart3, Building2, ClipboardList, Leaf, GraduationCap, FileBarChart2,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { cn } from "@/lib/utils";
@@ -81,6 +81,7 @@ const NAV_SECTIONS: SidebarSection[] = [
       { labelKey: "nav.expirations",  url: "/expirations",   icon: AlertTriangle },
       { labelKey: "nav.deadlines",    url: "/deadlines",     icon: Clock },
       { labelKey: "nav.qcReport",     url: "/reports/qc",    icon: BarChart3 },
+      { labelKey: "nav.monthlyReport", url: "/reports/monthly", icon: FileBarChart2 },
       { labelKey: "nav.sgqMatrix",    url: "/sgq-matrix",    icon: ShieldCheck },
       { labelKey: "nav.auditLog",     url: "/audit",         icon: ScrollText,  requiredAction: "viewAudit" },
       { labelKey: "nav.health",       url: "/admin/health",  icon: ShieldCheck, adminOnly: true },
