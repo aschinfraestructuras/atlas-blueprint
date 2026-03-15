@@ -9,6 +9,7 @@ import {
   sharedCss, headerHtmlAsync, footerHtml,
   type ReportMeta, type ReportLabels, printHtml,
 } from "./reportService";
+import { projectInfoStripHtml } from "./pdfProjectHeader";
 
 const BRAND = {
   primary: "#2F4F75",
