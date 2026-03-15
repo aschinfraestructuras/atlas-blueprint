@@ -81,6 +81,7 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
       test_id: "", date: new Date().toISOString().split("T")[0],
       status_workflow: "draft", result_status: "", sample_ref: "", location: "", pk_inicio: "", pk_fim: "",
       report_number: "", notes: "", work_item_id: "", supplier_id: "",
+      be_campo_code: "", eme_code: "", eme_calibration_date: "", location_pk: "", weather: "", ambient_temperature: "",
     },
   });
 
