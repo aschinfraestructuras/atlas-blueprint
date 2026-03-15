@@ -11,6 +11,7 @@ import {
   type WorkItemMaterial,
 } from "@/lib/services/materialService";
 import { exportMaterialPdf } from "@/lib/services/materialExportService";
+import { printQuarantineLabel } from "@/components/materials/QuarantineLabelView";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, Package, Plus, History, CheckCircle2, XCircle, SendHorizontal, AlertTriangle, Clock, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
