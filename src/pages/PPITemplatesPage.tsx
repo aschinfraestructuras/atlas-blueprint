@@ -60,14 +60,14 @@ export default function PPITemplatesPage() {
     setSeeding(true);
     try {
       const result = await ppiSeedService.seedAllTemplates(activeProject.id, user.id);
-      if (result.created.length === 0) {
+      if (result.created === 0) {
         toast({ title: t("ppi.seed.allExist") });
       } else {
         toast({
           title: t("ppi.seed.success", {
-            created: result.created.length,
+            created: result.created,
             items: result.itemsCreated,
-            skipped: result.skipped.length,
+            skipped: result.skipped,
           }),
         });
       }
