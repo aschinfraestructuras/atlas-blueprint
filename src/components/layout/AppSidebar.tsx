@@ -77,6 +77,7 @@ const NAV_SECTIONS: SidebarSection[] = [
     sectionKey: "system",
     collapsible: true,
     items: [
+      { labelKey: "nav.expirations",  url: "/expirations",   icon: AlertTriangle },
       { labelKey: "nav.deadlines",    url: "/deadlines",     icon: Clock },
       { labelKey: "nav.qcReport",     url: "/reports/qc",    icon: BarChart3 },
       { labelKey: "nav.sgqMatrix",    url: "/sgq-matrix",    icon: ShieldCheck },
