@@ -45,7 +45,7 @@ export function MainLayout({ children }: MainLayoutProps) {
         "/expirations": t("nav.expirations"),
         "/deadlines": t("nav.deadlines"),
         "/reports/qc": t("nav.qcReport"),
-        "/audit": t("nav.auditLog"),
+        "/audit-log": t("nav.auditLog"),
         "/settings": t("nav.settings"),
         "/laboratories": t("nav.laboratories"),
       };

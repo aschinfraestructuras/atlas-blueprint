@@ -213,7 +213,7 @@ const SGQ_REQUIREMENTS: SGQRequirement[] = [
   },
   {
     chapter: "13", requirement: "Rastreabilidade e Audit Trail",
-    atlasModule: "Registo de Auditoria", route: "/audit", icon: BarChart3, coverage: "full",
+    atlasModule: "Registo de Auditoria", route: "/audit-log", icon: BarChart3, coverage: "full",
     details: "Todas as ações (INSERT, UPDATE, STATUS_CHANGE, DELETE) são registadas automaticamente com diff, user_id e timestamp.",
   },
   {
