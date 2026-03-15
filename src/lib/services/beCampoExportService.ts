@@ -5,6 +5,7 @@
 
 import type { TestResult } from "./testService";
 import { printHtml } from "./reportService";
+import { projectInfoStripHtml } from "./pdfProjectHeader";
 
 const BRAND = { primary: "#2F4F75", muted: "#6B7280", border: "#E5E7EB", bg: "#F9FAFB" };
 
