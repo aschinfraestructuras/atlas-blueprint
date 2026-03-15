@@ -311,6 +311,8 @@ function buildSinglePdfHtml(
     </div>
   </div>
 
+  ${projectInfoStripHtml()}
+
   <!-- Info grid -->
   <div class="info-grid">
     <div class="info-row">

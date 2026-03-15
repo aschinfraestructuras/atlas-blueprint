@@ -76,6 +76,8 @@ export function exportBeCampoPdf(
     </div>
   </div>
 
+  ${projectInfoStripHtml()}
+
   <h3>1. Identificação</h3>
   <div class="info-grid">
     <div><span class="label">Código BE</span><br/><span class="value">${code}</span></div>

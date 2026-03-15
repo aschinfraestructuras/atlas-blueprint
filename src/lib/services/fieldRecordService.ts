@@ -253,6 +253,8 @@ export const fieldRecordService = {
         </div>
       </div>
 
+      ${projectInfoStripHtml()}
+
       <h3>1. Identificação</h3>
       <div class="info-grid">
         <div><span class="label">Data Inspecção</span><br/><span class="value">${record.inspection_date}</span></div>
