@@ -567,7 +567,7 @@ export default function TopographyPage() {
                               <Plus className="h-3.5 w-3.5 mr-1" />{t("topography.newDocument")}
                             </Button>
                           )}
-                          {canCreate && (
+                          {isAdmin && (
                             <Button
                               size="sm"
                               disabled={seeding}
