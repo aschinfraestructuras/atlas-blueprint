@@ -134,6 +134,15 @@ export function MaterialReceptionDialog({ open, onOpenChange, projectId, materia
         .single();
       if (error) throw error;
 
+      // Sync pame_status on the materials table
+      if (receptionStatus === "rejected") {
+        await (supabase.from("materials") as any).update({ pame_status: "rejected" }).eq("id", material.id);
+      } else if (receptionStatus === "approved") {
+        await (supabase.from("materials") as any).update({ pame_status: "approved" }).eq("id", material.id);
+      } else if (receptionStatus === "quarantine") {
+        await (supabase.from("materials") as any).update({ pame_status: "quarantine" }).eq("id", material.id);
+      }
+
       await onSuccess();
       onOpenChange(false);
 
