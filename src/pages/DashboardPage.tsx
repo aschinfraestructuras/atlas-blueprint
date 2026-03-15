@@ -96,6 +96,9 @@ export default function DashboardPage() {
         />
       </div>
 
+      {/* ══ Monthly Report Deadline Alert ═══════════════════ */}
+      <MonthlyReportAlert projectId={activeProject.id} />
+
       {/* ══ ROW 2 — Health Gauge + 4 KPI Sparklines ═════════ */}
       <div className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-4 animate-fade-in" style={{ animationDelay: "60ms", animationFillMode: "both" }}>
         <Card
