@@ -426,7 +426,7 @@ export default function MonthlyReportPage() {
               {t("common.cancel")}
             </Button>
             <Button onClick={handleCreate} disabled={creating || !selectedMonth}>
-              {creating ? t("common.loading") : "Criar Relatório"}
+              {creating ? t("common.loading") : t("monthlyReport.createReport")}
             </Button>
           </DialogFooter>
         </DialogContent>
