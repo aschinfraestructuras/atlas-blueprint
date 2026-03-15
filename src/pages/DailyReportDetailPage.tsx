@@ -330,14 +330,44 @@ export default function DailyReportDetailPage() {
       </Card>
 
       {/* Section 4: Equipment */}
-      <SectionTable
-        title={t("dailyReports.sections.equipment")}
-        headers={[t("dailyReports.equipment.designation"), t("dailyReports.equipment.type"), t("dailyReports.equipment.serial"), t("dailyReports.equipment.soundPower"), t("dailyReports.equipment.hours"), ""]}
-        rows={equipment.map(r => [r.designation, r.type ?? "—", r.serial_number ?? "—", r.sound_power_db != null ? String(r.sound_power_db) : "—", r.hours_worked != null ? String(r.hours_worked) : "—",
-          isDraft ? <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => deleteRow("equipment", r.id)}><Trash2 className="h-3.5 w-3.5" /></Button> : null
-        ])}
-        onAdd={isDraft ? addEquipmentRow : undefined}
-      />
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between py-3">
+          <CardTitle className="text-sm">{t("dailyReports.sections.equipment")}</CardTitle>
+          {isDraft && (
+            <Button variant="outline" size="sm" onClick={addEquipmentRow}>
+              <Plus className="h-3.5 w-3.5 mr-1" /> {t("common.create")}
+            </Button>
+          )}
+        </CardHeader>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>{t("dailyReports.equipment.designation")}</TableHead>
+                <TableHead>{t("dailyReports.equipment.type")}</TableHead>
+                <TableHead>{t("dailyReports.equipment.serial")}</TableHead>
+                <TableHead>{t("dailyReports.equipment.soundPower")}</TableHead>
+                <TableHead>{t("dailyReports.equipment.hours")}</TableHead>
+                <TableHead />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {equipment.length === 0 ? (
+                <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-4">{t("common.noData")}</TableCell></TableRow>
+              ) : equipment.map(r => (
+                <TableRow key={r.id}>
+                  <TableCell>{isDraft ? <Input className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1" defaultValue={r.designation} onBlur={e => { if (e.target.value !== r.designation) dailyReportService.updateEquipment(r.id, { designation: e.target.value }); }} /> : r.designation}</TableCell>
+                  <TableCell>{isDraft ? <Input className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1" defaultValue={r.type ?? ""} onBlur={e => dailyReportService.updateEquipment(r.id, { type: e.target.value || null })} /> : (r.type ?? "—")}</TableCell>
+                  <TableCell>{isDraft ? <Input className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1" defaultValue={r.serial_number ?? ""} onBlur={e => dailyReportService.updateEquipment(r.id, { serial_number: e.target.value || null })} /> : (r.serial_number ?? "—")}</TableCell>
+                  <TableCell>{isDraft ? <Input type="number" className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1 w-16" defaultValue={r.sound_power_db ?? ""} onBlur={e => dailyReportService.updateEquipment(r.id, { sound_power_db: e.target.value ? Number(e.target.value) : null })} /> : (r.sound_power_db != null ? String(r.sound_power_db) : "—")}</TableCell>
+                  <TableCell>{isDraft ? <Input type="number" className="h-7 text-xs border-0 bg-transparent focus:bg-background focus:border focus:border-input px-1 w-16" defaultValue={r.hours_worked ?? ""} onBlur={e => dailyReportService.updateEquipment(r.id, { hours_worked: e.target.value ? Number(e.target.value) : null })} /> : (r.hours_worked != null ? String(r.hours_worked) : "—")}</TableCell>
+                  <TableCell>{isDraft && <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => deleteRow("equipment", r.id)}><Trash2 className="h-3.5 w-3.5" /></Button>}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
 
       {/* Section 5: Materials — PAME-linked */}
       <Card>
