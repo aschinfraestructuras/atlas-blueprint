@@ -140,7 +140,10 @@
     "sgqMatrix": "Matriz SGC",
     "training": "Formación",
     "monthlyReport": "Informe Mensual SGQ",
-    "dfo": "DFO — Dossier Final"
+    "dfo": "DFO — Dossier Final",
+    "concrete": "Control de Hormigón",
+    "compaction": "Control de Compactación",
+    "soils": "Caracterización de Suelos"
   },
   "topbar": {
     "language": "Idioma",
