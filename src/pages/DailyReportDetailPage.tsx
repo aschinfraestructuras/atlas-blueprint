@@ -186,8 +186,8 @@ export default function DailyReportDetailPage() {
         equipment.map(r => [r.designation, r.type ?? "", r.serial_number ?? "", String(r.sound_power_db ?? ""), String(r.hours_worked ?? "")])
       )),
       sectionHtml(t("dailyReports.sections.materials"), tableHtml(
-        [t("dailyReports.materials.nomenclature"), t("dailyReports.materials.pameRef"), t("dailyReports.materials.quantity"), t("dailyReports.materials.unit"), t("dailyReports.materials.lot")],
-        materials.map(r => [r.nomenclature, r.pame_reference ?? "—", String(r.quantity ?? ""), r.unit ?? "", r.lot_number ?? ""])
+        [t("dailyReports.materials.nomenclature"), t("dailyReports.materials.pameRef"), t("dailyReports.materials.quantity"), t("dailyReports.materials.unit"), t("dailyReports.materials.lot"), t("dailyReports.materials.preliminaryStorage"), t("dailyReports.materials.finalDestination")],
+        materials.map(r => [r.nomenclature, r.pame_reference ?? "—", String(r.quantity ?? ""), r.unit ?? "", r.lot_number ?? "", r.preliminary_storage ?? "", r.final_destination ?? ""])
       )),
       sectionHtml(t("dailyReports.sections.rmm"), tableHtml(
         [t("dailyReports.rmm.code"), t("dailyReports.rmm.designation")],
