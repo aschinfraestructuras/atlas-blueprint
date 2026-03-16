@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { ClipboardList, Plus, Search, FileText, Send, CheckCircle, Hash, Eye, Calendar } from "lucide-react";
+import { ClipboardList, Plus, Search, FileText, Send, CheckCircle, Hash, Eye, Calendar, Trash2 } from "lucide-react";
 import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,8 +20,11 @@ import { RowActionMenu } from "@/components/ui/row-action-menu";
 import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 import { useProject } from "@/contexts/ProjectContext";
 import { useArchivedProject } from "@/hooks/useArchivedProject";
+import { usePermissions } from "@/hooks/usePermissions";
 import { useDailyReports } from "@/hooks/useDailyReports";
+import { dailyReportService } from "@/lib/services/dailyReportService";
 import { DailyReportFormDialog } from "@/components/daily-reports/DailyReportFormDialog";
+import { toast } from "@/hooks/use-toast";
 
 const STATUS_COLORS: Record<string, string> = {
   draft: "bg-muted text-muted-foreground",
@@ -34,7 +37,19 @@ export default function DailyReportsPage() {
   const navigate = useNavigate();
   const { activeProject } = useProject();
   const isArchived = useArchivedProject();
+  const { canDelete } = usePermissions();
   const { data, loading, refetch } = useDailyReports();
+
+  const handleDelete = async (id: string) => {
+    if (!confirm(t("common.confirmDelete"))) return;
+    try {
+      await dailyReportService.update(id, { is_deleted: true });
+      toast({ title: t("common.softDeleted") });
+      refetch();
+    } catch {
+      toast({ title: "Erro ao eliminar", variant: "destructive" });
+    }
+  };
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -158,6 +173,7 @@ export default function DailyReportsPage() {
                         shareUrl={`${window.location.origin}/daily-reports/${r.id}`}
                         actions={[
                           { key: "view", label: t("common.view"), icon: Eye, onClick: () => navigate(`/daily-reports/${r.id}`) },
+                          ...(canDelete && r.status === "draft" ? [{ key: "delete", label: t("common.delete"), icon: Trash2, onClick: () => handleDelete(r.id), variant: "destructive" as const }] : []),
                         ]}
                       />
                     </TableCell>
