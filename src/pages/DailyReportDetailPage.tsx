@@ -109,6 +109,8 @@ export default function DailyReportDetailPage() {
       lot_number: null,
       material_id: mat?.id ?? null,
       pame_reference: mat?.pame_code ?? null,
+      preliminary_storage: null,
+      final_destination: null,
     });
     setMaterials(await dailyReportService.getMaterials(id));
   };
