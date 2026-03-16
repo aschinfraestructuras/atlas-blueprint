@@ -173,6 +173,7 @@ export default function DailyReportsPage() {
                         shareUrl={`${window.location.origin}/daily-reports/${r.id}`}
                         actions={[
                           { key: "view", label: t("common.view"), icon: Eye, onClick: () => navigate(`/daily-reports/${r.id}`) },
+                          ...(canDelete && r.status === "draft" ? [{ key: "delete", label: t("common.delete"), icon: Trash2, onClick: () => handleDelete(r.id), variant: "destructive" as const }] : []),
                         ]}
                       />
                     </TableCell>
