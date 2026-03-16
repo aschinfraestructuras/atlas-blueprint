@@ -228,33 +228,39 @@ export type Database = {
         Row: {
           created_at: string | null
           daily_report_id: string
+          final_destination: string | null
           id: string
           lot_number: string | null
           material_id: string | null
           nomenclature: string
           pame_reference: string | null
+          preliminary_storage: string | null
           quantity: number | null
           unit: string | null
         }
         Insert: {
           created_at?: string | null
           daily_report_id: string
+          final_destination?: string | null
           id?: string
           lot_number?: string | null
           material_id?: string | null
           nomenclature: string
           pame_reference?: string | null
+          preliminary_storage?: string | null
           quantity?: number | null
           unit?: string | null
         }
         Update: {
           created_at?: string | null
           daily_report_id?: string
+          final_destination?: string | null
           id?: string
           lot_number?: string | null
           material_id?: string | null
           nomenclature?: string
           pame_reference?: string | null
+          preliminary_storage?: string | null
           quantity?: number | null
           unit?: string | null
         }
