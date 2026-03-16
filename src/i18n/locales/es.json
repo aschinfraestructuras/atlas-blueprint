@@ -3744,5 +3744,42 @@
       "ppiCompleted": "PPIs Completados",
       "emesExpiring": "EMEs por Expirar"
     }
-  }
+  },
+  "concrete": {
+    "title": "Control de Hormigón — Fichas de Hormigonado",
+    "subtitle": "Registro y control de amasadas conforme EN 12390",
+    "newBatch": "Nueva Amasada",
+    "empty": "Ninguna amasada registrada",
+    "emptySubtitle": "Cree la primera ficha de hormigonado.",
+    "tabs": { "identification": "Identificación", "fresh": "Hormigón Fresco", "specimens": "Probetas" },
+    "fields": { "code": "Código", "element": "Elemento Hormigonado", "class": "Clase", "consistency": "Consistencia", "specimens": "Probetas", "result": "Resultado" },
+    "kpi": { "total": "Total Amasadas", "pass": "Conformes", "fail": "No Conformes", "pendingSpecimens": "Probetas Pendientes" }
+  },
+  "compaction": {
+    "title": "Control de Compactación",
+    "subtitle": "Zonas de compactación — densímetro nuclear y ensayo de placa",
+    "newZone": "Nueva Zona",
+    "empty": "Ninguna zona registrada",
+    "emptySubtitle": "Cree la primera zona de compactación.",
+    "fields": { "description": "Descripción", "material": "Material" },
+    "kpi": { "total": "Total Zonas", "pass": "Conformes", "fail": "No Conformes", "pending": "Pendientes" }
+  },
+  "soils": {
+    "title": "Caracterización de Suelos",
+    "subtitle": "Muestras y ensayos de caracterización",
+    "newSample": "Nueva Muestra",
+    "empty": "Ninguna muestra registrada",
+    "emptySubtitle": "Cree la primera muestra de suelo.",
+    "kpi": { "total": "Total Muestras", "apto": "Aptas", "conditional": "Condicionales", "inapto": "No Aptas" }
+  },
+  "tests": {
+    "ppiTab": {
+      "title": "Ensayos asociados a este PPI",
+      "empty": "Ningún ensayo asociado a este PPI",
+      "concrete": "Hormigón",
+      "compaction": "Compactación",
+      "soils": "Suelos"
+    }
+  },
+  "ppiTestsTab": "Ensayos"
 }

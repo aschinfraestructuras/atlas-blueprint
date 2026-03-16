@@ -9,6 +9,7 @@ import {
   ShieldCheck, ChevronLeft, ChevronRight, X, ChevronDown,
   Inbox, BookOpen, Map, HardHat, Construction, ClipboardCheck, Crosshair, CalendarClock,
   Clock, FileCheck, BarChart3, Building2, ClipboardList, Leaf, GraduationCap, FileBarChart2,
+  Layers, Gauge, Mountain,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { cn } from "@/lib/utils";
@@ -54,6 +55,9 @@ const NAV_SECTIONS: SidebarSection[] = [
     items: [
       { labelKey: "nav.nonConformities", url: "/non-conformities", icon: AlertTriangle },
       { labelKey: "nav.tests",          url: "/tests",            icon: FlaskConical },
+      { labelKey: "nav.concrete",       url: "/tests/concrete",   icon: Layers },
+      { labelKey: "nav.compaction",     url: "/tests/compaction", icon: Gauge },
+      { labelKey: "nav.soils",          url: "/tests/soils",      icon: Mountain },
       { labelKey: "nav.materials",      url: "/materials",        icon: Package },
       { labelKey: "nav.subcontractors", url: "/subcontractors",  icon: HardHat },
       { labelKey: "nav.suppliers",      url: "/suppliers",        icon: Truck },
