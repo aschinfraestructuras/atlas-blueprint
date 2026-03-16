@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { ClipboardList, Plus, Search, FileText, Send, CheckCircle, Hash, Eye, Calendar } from "lucide-react";
+import { ClipboardList, Plus, Search, FileText, Send, CheckCircle, Hash, Eye, Calendar, Trash2 } from "lucide-react";
 import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,8 +20,11 @@ import { RowActionMenu } from "@/components/ui/row-action-menu";
 import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 import { useProject } from "@/contexts/ProjectContext";
 import { useArchivedProject } from "@/hooks/useArchivedProject";
+import { usePermissions } from "@/hooks/usePermissions";
 import { useDailyReports } from "@/hooks/useDailyReports";
+import { dailyReportService } from "@/lib/services/dailyReportService";
 import { DailyReportFormDialog } from "@/components/daily-reports/DailyReportFormDialog";
+import { toast } from "@/hooks/use-toast";
 
 const STATUS_COLORS: Record<string, string> = {
   draft: "bg-muted text-muted-foreground",
