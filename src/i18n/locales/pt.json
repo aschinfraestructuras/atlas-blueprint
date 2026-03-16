@@ -3496,7 +3496,9 @@
       "selectMaterial": "Seleccionar material aprovado (PAME)",
       "noApproved": "Nenhum material aprovado disponível.",
       "goToPame": "Submeter Ficha PAME",
-      "warningNoPame": "material(s) sem referência PAME"
+      "warningNoPame": "material(s) sem referência PAME",
+      "preliminaryStorage": "Armazém Preliminar",
+      "finalDestination": "Destino Final"
     },
     "rmm": {
       "code": "Código Interno",

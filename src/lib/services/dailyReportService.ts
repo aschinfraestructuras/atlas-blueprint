@@ -83,6 +83,8 @@ export interface MaterialRow {
   lot_number: string | null;
   material_id: string | null;
   pame_reference: string | null;
+  preliminary_storage: string | null;
+  final_destination: string | null;
   created_at: string;
 }
 
