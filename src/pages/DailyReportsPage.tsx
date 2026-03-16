@@ -37,7 +37,19 @@ export default function DailyReportsPage() {
   const navigate = useNavigate();
   const { activeProject } = useProject();
   const isArchived = useArchivedProject();
+  const { canDelete } = usePermissions();
   const { data, loading, refetch } = useDailyReports();
+
+  const handleDelete = async (id: string) => {
+    if (!confirm(t("common.confirmDelete"))) return;
+    try {
+      await dailyReportService.update(id, { is_deleted: true });
+      toast({ title: t("common.softDeleted") });
+      refetch();
+    } catch {
+      toast({ title: "Erro ao eliminar", variant: "destructive" });
+    }
+  };
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
