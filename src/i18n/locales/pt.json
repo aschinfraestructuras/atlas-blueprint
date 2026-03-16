@@ -140,7 +140,10 @@
     "sgqMatrix": "Matriz SGQ",
     "training": "Formação",
     "monthlyReport": "Relatório Mensal SGQ",
-    "dfo": "DFO — Dossier Final"
+    "dfo": "DFO — Dossier Final",
+    "concrete": "Controlo de Betão",
+    "compaction": "Controlo de Compactação",
+    "soils": "Caracterização de Solos"
   },
   "topbar": {
     "language": "Idioma",
@@ -3779,5 +3782,42 @@
       "ppiCompleted": "PPIs Concluídos",
       "emesExpiring": "EMEs a Expirar"
     }
-  }
+  },
+  "concrete": {
+    "title": "Controlo de Betão — Fichas de Betonagem",
+    "subtitle": "Registo e controlo de amassadas conforme EN 12390",
+    "newBatch": "Nova Amassada",
+    "empty": "Nenhuma amassada registada",
+    "emptySubtitle": "Crie a primeira ficha de betonagem para iniciar o controlo.",
+    "tabs": { "identification": "Identificação", "fresh": "Betão Fresco", "specimens": "Provetes" },
+    "fields": { "code": "Código", "element": "Elemento Betonado", "class": "Classe", "consistency": "Consistência", "specimens": "Provetes", "result": "Resultado" },
+    "kpi": { "total": "Total Amassadas", "pass": "Conformes", "fail": "Não Conformes", "pendingSpecimens": "Provetes Pendentes" }
+  },
+  "compaction": {
+    "title": "Controlo de Compactação",
+    "subtitle": "Zonas de compactação — densímetro nuclear e ensaio de placa",
+    "newZone": "Nova Zona",
+    "empty": "Nenhuma zona registada",
+    "emptySubtitle": "Crie a primeira zona de compactação.",
+    "fields": { "description": "Descrição", "material": "Material" },
+    "kpi": { "total": "Total Zonas", "pass": "Conformes", "fail": "Não Conformes", "pending": "Pendentes" }
+  },
+  "soils": {
+    "title": "Caracterização de Solos",
+    "subtitle": "Amostras e ensaios de caracterização conforme LNEC",
+    "newSample": "Nova Amostra",
+    "empty": "Nenhuma amostra registada",
+    "emptySubtitle": "Crie a primeira amostra de solo.",
+    "kpi": { "total": "Total Amostras", "apto": "Aptas", "conditional": "Condicionais", "inapto": "Inaptas" }
+  },
+  "tests": {
+    "ppiTab": {
+      "title": "Ensaios associados a este PPI",
+      "empty": "Nenhum ensaio associado a este PPI",
+      "concrete": "Betão",
+      "compaction": "Compactação",
+      "soils": "Solos"
+    }
+  },
+  "ppiTestsTab": "Ensaios"
 }

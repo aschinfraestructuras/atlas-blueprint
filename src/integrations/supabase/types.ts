@@ -142,6 +142,503 @@ export type Database = {
           },
         ]
       }
+      compaction_nuclear_points: {
+        Row: {
+          compaction_degree: number | null
+          created_at: string
+          depth_cm: number | null
+          eme_calibration_date: string | null
+          eme_code: string | null
+          gamma_dry_measured: number
+          id: string
+          notes: string | null
+          pass_fail: string | null
+          pk_point: string | null
+          point_no: number
+          project_id: string
+          water_content: number | null
+          zone_id: string
+        }
+        Insert: {
+          compaction_degree?: number | null
+          created_at?: string
+          depth_cm?: number | null
+          eme_calibration_date?: string | null
+          eme_code?: string | null
+          gamma_dry_measured: number
+          id?: string
+          notes?: string | null
+          pass_fail?: string | null
+          pk_point?: string | null
+          point_no: number
+          project_id: string
+          water_content?: number | null
+          zone_id: string
+        }
+        Update: {
+          compaction_degree?: number | null
+          created_at?: string
+          depth_cm?: number | null
+          eme_calibration_date?: string | null
+          eme_code?: string | null
+          gamma_dry_measured?: number
+          id?: string
+          notes?: string | null
+          pass_fail?: string | null
+          pk_point?: string | null
+          point_no?: number
+          project_id?: string
+          water_content?: number | null
+          zone_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "compaction_nuclear_points_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "compaction_nuclear_points_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "compaction_nuclear_points_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "compaction_nuclear_points_zone_id_fkey"
+            columns: ["zone_id"]
+            isOneToOne: false
+            referencedRelation: "compaction_zones"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      compaction_plate_tests: {
+        Row: {
+          created_at: string
+          ev1_mpa: number | null
+          ev2_ev1_ratio: number | null
+          ev2_mpa: number | null
+          id: string
+          notes: string | null
+          pass_fail: string | null
+          pk_point: string | null
+          point_no: number
+          project_id: string
+          zone_id: string
+        }
+        Insert: {
+          created_at?: string
+          ev1_mpa?: number | null
+          ev2_ev1_ratio?: number | null
+          ev2_mpa?: number | null
+          id?: string
+          notes?: string | null
+          pass_fail?: string | null
+          pk_point?: string | null
+          point_no: number
+          project_id: string
+          zone_id: string
+        }
+        Update: {
+          created_at?: string
+          ev1_mpa?: number | null
+          ev2_ev1_ratio?: number | null
+          ev2_mpa?: number | null
+          id?: string
+          notes?: string | null
+          pass_fail?: string | null
+          pk_point?: string | null
+          point_no?: number
+          project_id?: string
+          zone_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "compaction_plate_tests_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "compaction_plate_tests_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "compaction_plate_tests_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "compaction_plate_tests_zone_id_fkey"
+            columns: ["zone_id"]
+            isOneToOne: false
+            referencedRelation: "compaction_zones"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      compaction_zones: {
+        Row: {
+          code: string
+          compaction_criteria: number | null
+          created_at: string
+          created_by: string | null
+          ev2_criteria: number | null
+          ev2_ev1_criteria: number | null
+          id: string
+          layer_no: number | null
+          material_ref: string | null
+          material_type: string | null
+          notes: string | null
+          overall_result: string | null
+          pk_end: string | null
+          pk_start: string | null
+          ppi_instance_id: string | null
+          proctor_gamma_max: number | null
+          proctor_wopt: number | null
+          project_id: string
+          technician_name: string | null
+          test_date: string
+          updated_at: string
+          work_item_id: string | null
+          zone_description: string
+        }
+        Insert: {
+          code: string
+          compaction_criteria?: number | null
+          created_at?: string
+          created_by?: string | null
+          ev2_criteria?: number | null
+          ev2_ev1_criteria?: number | null
+          id?: string
+          layer_no?: number | null
+          material_ref?: string | null
+          material_type?: string | null
+          notes?: string | null
+          overall_result?: string | null
+          pk_end?: string | null
+          pk_start?: string | null
+          ppi_instance_id?: string | null
+          proctor_gamma_max?: number | null
+          proctor_wopt?: number | null
+          project_id: string
+          technician_name?: string | null
+          test_date?: string
+          updated_at?: string
+          work_item_id?: string | null
+          zone_description: string
+        }
+        Update: {
+          code?: string
+          compaction_criteria?: number | null
+          created_at?: string
+          created_by?: string | null
+          ev2_criteria?: number | null
+          ev2_ev1_criteria?: number | null
+          id?: string
+          layer_no?: number | null
+          material_ref?: string | null
+          material_type?: string | null
+          notes?: string | null
+          overall_result?: string | null
+          pk_end?: string | null
+          pk_start?: string | null
+          ppi_instance_id?: string | null
+          proctor_gamma_max?: number | null
+          proctor_wopt?: number | null
+          project_id?: string
+          technician_name?: string | null
+          test_date?: string
+          updated_at?: string
+          work_item_id?: string | null
+          zone_description?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "compaction_zones_ppi_instance_id_fkey"
+            columns: ["ppi_instance_id"]
+            isOneToOne: false
+            referencedRelation: "ppi_instances"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "compaction_zones_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "compaction_zones_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "compaction_zones_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "compaction_zones_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      concrete_batches: {
+        Row: {
+          air_content: number | null
+          batch_date: string
+          batch_time: string | null
+          cement_type: string | null
+          code: string
+          concrete_class: string
+          consistency_class: string | null
+          created_at: string
+          created_by: string | null
+          delivery_note_ref: string | null
+          element_betonado: string
+          id: string
+          lab_name: string | null
+          max_aggregate: number | null
+          notes: string | null
+          pk_location: string | null
+          ppi_instance_id: string | null
+          project_id: string
+          slump_mm: number | null
+          slump_pass: boolean | null
+          status: string
+          supplier_id: string | null
+          technician_name: string | null
+          temp_ambient: number | null
+          temp_concrete: number | null
+          temp_pass: boolean | null
+          truck_plate: string | null
+          updated_at: string
+          work_item_id: string | null
+        }
+        Insert: {
+          air_content?: number | null
+          batch_date?: string
+          batch_time?: string | null
+          cement_type?: string | null
+          code: string
+          concrete_class?: string
+          consistency_class?: string | null
+          created_at?: string
+          created_by?: string | null
+          delivery_note_ref?: string | null
+          element_betonado: string
+          id?: string
+          lab_name?: string | null
+          max_aggregate?: number | null
+          notes?: string | null
+          pk_location?: string | null
+          ppi_instance_id?: string | null
+          project_id: string
+          slump_mm?: number | null
+          slump_pass?: boolean | null
+          status?: string
+          supplier_id?: string | null
+          technician_name?: string | null
+          temp_ambient?: number | null
+          temp_concrete?: number | null
+          temp_pass?: boolean | null
+          truck_plate?: string | null
+          updated_at?: string
+          work_item_id?: string | null
+        }
+        Update: {
+          air_content?: number | null
+          batch_date?: string
+          batch_time?: string | null
+          cement_type?: string | null
+          code?: string
+          concrete_class?: string
+          consistency_class?: string | null
+          created_at?: string
+          created_by?: string | null
+          delivery_note_ref?: string | null
+          element_betonado?: string
+          id?: string
+          lab_name?: string | null
+          max_aggregate?: number | null
+          notes?: string | null
+          pk_location?: string | null
+          ppi_instance_id?: string | null
+          project_id?: string
+          slump_mm?: number | null
+          slump_pass?: boolean | null
+          status?: string
+          supplier_id?: string | null
+          technician_name?: string | null
+          temp_ambient?: number | null
+          temp_concrete?: number | null
+          temp_pass?: boolean | null
+          truck_plate?: string | null
+          updated_at?: string
+          work_item_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "concrete_batches_ppi_instance_id_fkey"
+            columns: ["ppi_instance_id"]
+            isOneToOne: false
+            referencedRelation: "ppi_instances"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concrete_batches_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concrete_batches_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "concrete_batches_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "concrete_batches_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concrete_batches_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "view_supplier_detail_metrics"
+            referencedColumns: ["supplier_id"]
+          },
+          {
+            foreignKeyName: "concrete_batches_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      concrete_specimens: {
+        Row: {
+          batch_id: string
+          break_load_kn: number | null
+          created_at: string
+          cure_days: number
+          dimension_mm: number | null
+          fracture_type: string | null
+          id: string
+          lab_ref: string | null
+          mold_date: string
+          notes: string | null
+          pass_fail: string | null
+          project_id: string
+          shape: string | null
+          specimen_no: number
+          strength_mpa: number | null
+          test_date: string | null
+        }
+        Insert: {
+          batch_id: string
+          break_load_kn?: number | null
+          created_at?: string
+          cure_days?: number
+          dimension_mm?: number | null
+          fracture_type?: string | null
+          id?: string
+          lab_ref?: string | null
+          mold_date: string
+          notes?: string | null
+          pass_fail?: string | null
+          project_id: string
+          shape?: string | null
+          specimen_no: number
+          strength_mpa?: number | null
+          test_date?: string | null
+        }
+        Update: {
+          batch_id?: string
+          break_load_kn?: number | null
+          created_at?: string
+          cure_days?: number
+          dimension_mm?: number | null
+          fracture_type?: string | null
+          id?: string
+          lab_ref?: string | null
+          mold_date?: string
+          notes?: string | null
+          pass_fail?: string | null
+          project_id?: string
+          shape?: string | null
+          specimen_no?: number
+          strength_mpa?: number | null
+          test_date?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "concrete_specimens_batch_id_fkey"
+            columns: ["batch_id"]
+            isOneToOne: false
+            referencedRelation: "concrete_batches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concrete_specimens_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concrete_specimens_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "concrete_specimens_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
       daily_report_equipment: {
         Row: {
           created_at: string | null
@@ -3375,6 +3872,220 @@ export type Database = {
         }
         Relationships: []
       }
+      soil_samples: {
+        Row: {
+          aashto_class: string | null
+          cbr_95: number | null
+          cbr_98: number | null
+          cbr_criteria: number | null
+          cbr_expansion: number | null
+          cbr_pass: boolean | null
+          chloride_pct: number | null
+          code: string
+          created_at: string
+          created_by: string | null
+          depth_from: number | null
+          depth_to: number | null
+          extra_tests: Json | null
+          grading_cc: number | null
+          grading_cu: number | null
+          grading_d10: number | null
+          grading_d30: number | null
+          grading_d60: number | null
+          grading_p0075: number | null
+          grading_p0425: number | null
+          grading_p10: number | null
+          grading_p2: number | null
+          grading_p20: number | null
+          grading_p50: number | null
+          has_atterberg: boolean | null
+          has_cbr: boolean | null
+          has_grading: boolean | null
+          has_organic: boolean | null
+          has_proctor: boolean | null
+          has_sulfates: boolean | null
+          id: string
+          ip_pct: number | null
+          ll_pct: number | null
+          lp_pct: number | null
+          material_type: string | null
+          notes: string | null
+          organic_limit: number | null
+          organic_method: string | null
+          organic_pass: boolean | null
+          organic_pct: number | null
+          overall_result: string | null
+          pk_location: string | null
+          proctor_gamma_max: number | null
+          proctor_points: Json | null
+          proctor_wopt: number | null
+          project_id: string
+          sample_date: string
+          sample_ref: string
+          sulfate_limit: number | null
+          sulfate_pass: boolean | null
+          sulfate_pct: number | null
+          supplier_id: string | null
+          updated_at: string
+          work_item_id: string | null
+        }
+        Insert: {
+          aashto_class?: string | null
+          cbr_95?: number | null
+          cbr_98?: number | null
+          cbr_criteria?: number | null
+          cbr_expansion?: number | null
+          cbr_pass?: boolean | null
+          chloride_pct?: number | null
+          code: string
+          created_at?: string
+          created_by?: string | null
+          depth_from?: number | null
+          depth_to?: number | null
+          extra_tests?: Json | null
+          grading_cc?: number | null
+          grading_cu?: number | null
+          grading_d10?: number | null
+          grading_d30?: number | null
+          grading_d60?: number | null
+          grading_p0075?: number | null
+          grading_p0425?: number | null
+          grading_p10?: number | null
+          grading_p2?: number | null
+          grading_p20?: number | null
+          grading_p50?: number | null
+          has_atterberg?: boolean | null
+          has_cbr?: boolean | null
+          has_grading?: boolean | null
+          has_organic?: boolean | null
+          has_proctor?: boolean | null
+          has_sulfates?: boolean | null
+          id?: string
+          ip_pct?: number | null
+          ll_pct?: number | null
+          lp_pct?: number | null
+          material_type?: string | null
+          notes?: string | null
+          organic_limit?: number | null
+          organic_method?: string | null
+          organic_pass?: boolean | null
+          organic_pct?: number | null
+          overall_result?: string | null
+          pk_location?: string | null
+          proctor_gamma_max?: number | null
+          proctor_points?: Json | null
+          proctor_wopt?: number | null
+          project_id: string
+          sample_date?: string
+          sample_ref: string
+          sulfate_limit?: number | null
+          sulfate_pass?: boolean | null
+          sulfate_pct?: number | null
+          supplier_id?: string | null
+          updated_at?: string
+          work_item_id?: string | null
+        }
+        Update: {
+          aashto_class?: string | null
+          cbr_95?: number | null
+          cbr_98?: number | null
+          cbr_criteria?: number | null
+          cbr_expansion?: number | null
+          cbr_pass?: boolean | null
+          chloride_pct?: number | null
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          depth_from?: number | null
+          depth_to?: number | null
+          extra_tests?: Json | null
+          grading_cc?: number | null
+          grading_cu?: number | null
+          grading_d10?: number | null
+          grading_d30?: number | null
+          grading_d60?: number | null
+          grading_p0075?: number | null
+          grading_p0425?: number | null
+          grading_p10?: number | null
+          grading_p2?: number | null
+          grading_p20?: number | null
+          grading_p50?: number | null
+          has_atterberg?: boolean | null
+          has_cbr?: boolean | null
+          has_grading?: boolean | null
+          has_organic?: boolean | null
+          has_proctor?: boolean | null
+          has_sulfates?: boolean | null
+          id?: string
+          ip_pct?: number | null
+          ll_pct?: number | null
+          lp_pct?: number | null
+          material_type?: string | null
+          notes?: string | null
+          organic_limit?: number | null
+          organic_method?: string | null
+          organic_pass?: boolean | null
+          organic_pct?: number | null
+          overall_result?: string | null
+          pk_location?: string | null
+          proctor_gamma_max?: number | null
+          proctor_points?: Json | null
+          proctor_wopt?: number | null
+          project_id?: string
+          sample_date?: string
+          sample_ref?: string
+          sulfate_limit?: number | null
+          sulfate_pass?: boolean | null
+          sulfate_pct?: number | null
+          supplier_id?: string | null
+          updated_at?: string
+          work_item_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "soil_samples_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "soil_samples_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "soil_samples_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "soil_samples_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "soil_samples_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "view_supplier_detail_metrics"
+            referencedColumns: ["supplier_id"]
+          },
+          {
+            foreignKeyName: "soil_samples_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       subcontractor_documents: {
         Row: {
           created_at: string
@@ -4479,6 +5190,7 @@ export type Database = {
           pass_fail: string | null
           pk_fim: number | null
           pk_inicio: number | null
+          ppi_instance_id: string | null
           project_id: string
           report_number: string | null
           result: Json | null
@@ -4524,6 +5236,7 @@ export type Database = {
           pass_fail?: string | null
           pk_fim?: number | null
           pk_inicio?: number | null
+          ppi_instance_id?: string | null
           project_id: string
           report_number?: string | null
           result?: Json | null
@@ -4569,6 +5282,7 @@ export type Database = {
           pass_fail?: string | null
           pk_fim?: number | null
           pk_inicio?: number | null
+          ppi_instance_id?: string | null
           project_id?: string
           report_number?: string | null
           result?: Json | null
@@ -4610,6 +5324,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "view_material_detail_metrics"
             referencedColumns: ["material_id"]
+          },
+          {
+            foreignKeyName: "test_results_ppi_instance_id_fkey"
+            columns: ["ppi_instance_id"]
+            isOneToOne: false
+            referencedRelation: "ppi_instances"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "test_results_project_id_fkey"
@@ -6475,6 +7196,7 @@ export type Database = {
           pass_fail: string | null
           pk_fim: number | null
           pk_inicio: number | null
+          ppi_instance_id: string | null
           project_id: string
           report_number: string | null
           result: Json | null
@@ -6550,6 +7272,14 @@ export type Database = {
         Args: { p_project_id: string; p_test_type?: string }
         Returns: string
       }
+      fn_next_compaction_code: {
+        Args: { p_project_id: string }
+        Returns: string
+      }
+      fn_next_concrete_batch_code: {
+        Args: { p_project_id: string }
+        Returns: string
+      }
       fn_next_gr_code: { Args: { p_project_id: string }; Returns: string }
       fn_next_hp_notification_code: {
         Args: { p_project_id: string }
@@ -6564,6 +7294,7 @@ export type Database = {
         Returns: string
       }
       fn_next_rmsgq_code: { Args: { p_project_id: string }; Returns: string }
+      fn_next_soil_code: { Args: { p_project_id: string }; Returns: string }
       fn_next_tech_office_code: {
         Args: { p_prefix: string; p_project_id: string }
         Returns: string
@@ -6769,6 +7500,7 @@ export type Database = {
           pass_fail: string | null
           pk_fim: number | null
           pk_inicio: number | null
+          ppi_instance_id: string | null
           project_id: string
           report_number: string | null
           result: Json | null

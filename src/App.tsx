@@ -61,6 +61,9 @@ const SGQMatrixPage = lazy(() => import("./pages/SGQMatrixPage"));
 const TrainingPage = lazy(() => import("./pages/TrainingPage"));
 const MonthlyReportPage = lazy(() => import("./pages/MonthlyReportPage"));
 const DFOPage = lazy(() => import("./pages/DFOPage"));
+const ConcretePage = lazy(() => import("./pages/ConcretePage"));
+const CompactionPage = lazy(() => import("./pages/CompactionPage"));
+const SoilPage = lazy(() => import("./pages/SoilPage"));
 
 function ProtectedLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -141,6 +144,9 @@ const App = () => (
                 <Route path="/training" element={<ProtectedLayout><TrainingPage /></ProtectedLayout>} />
                 <Route path="/reports/monthly" element={<ProtectedLayout><MonthlyReportPage /></ProtectedLayout>} />
                 <Route path="/dfo" element={<ProtectedLayout><DFOPage /></ProtectedLayout>} />
+                <Route path="/tests/concrete" element={<ProtectedLayout><ConcretePage /></ProtectedLayout>} />
+                <Route path="/tests/compaction" element={<ProtectedLayout><CompactionPage /></ProtectedLayout>} />
+                <Route path="/tests/soils" element={<ProtectedLayout><SoilPage /></ProtectedLayout>} />
 
                 {/* Catch-all */}
                 <Route path="*" element={<NotFound />} />
