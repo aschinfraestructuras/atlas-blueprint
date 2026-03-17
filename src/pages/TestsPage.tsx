@@ -40,6 +40,10 @@ import { TEST_DISCIPLINES } from "@/lib/services/testService";
 import { supabase } from "@/integrations/supabase/client";
 import { DueTab } from "@/components/tests/DueTab";
 import { PlanTab } from "@/components/tests/PlanTab";
+import { ConcreteTab } from "@/components/tests/ConcreteTab";
+import { CompactionTab } from "@/components/tests/CompactionTab";
+import { SoilsTab } from "@/components/tests/SoilsTab";
+import { WeldTab } from "@/components/tests/WeldTab";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
