@@ -1127,6 +1127,14 @@
       "updated": "Ensayo actualizado con éxito.",
       "catalogCreated": "Tipo de ensayo añadido al catálogo.",
       "error": "Ocurrió un error. Inténtelo de nuevo."
+    },
+
+    "ppiTab": {
+      "title": "Ensayos asociados a este PPI",
+      "empty": "Ningún ensayo asociado a este PPI",
+      "concrete": "Hormigón",
+      "compaction": "Compactación",
+      "soils": "Suelos"
     }
   },
   "laboratories": {
