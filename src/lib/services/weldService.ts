@@ -175,14 +175,14 @@ export const weldService = {
   exportPdf(record: WeldRecord, projectName: string) {
     const passBadge = (v: boolean | null | undefined, passLabel = "OK", failLabel = "NC") =>
       v === true
-        ? `<span style="color:${ATLAS_PDF.colors.primary};font-weight:700">${passLabel}</span>`
+        ? `<span style="color:${ATLAS_PDF.colors.ok_fg};font-weight:700">${passLabel}</span>`
         : v === false
-          ? `<span style="color:${ATLAS_PDF.colors.destructive};font-weight:700">${failLabel}</span>`
+          ? `<span style="color:${ATLAS_PDF.colors.nc_fg};font-weight:700">${failLabel}</span>`
           : `<span style="color:#999">—</span>`;
 
     const resultMap: Record<string, { label: string; color: string }> = {
-      pass: { label: "ACEITE", color: ATLAS_PDF.colors.primary },
-      fail: { label: "REJEITADA", color: ATLAS_PDF.colors.destructive },
+      pass: { label: "ACEITE", color: ATLAS_PDF.colors.ok_fg },
+      fail: { label: "REJEITADA", color: ATLAS_PDF.colors.nc_fg },
       repair_needed: { label: "REPARAÇÃO NECESSÁRIA", color: "#e67e22" },
       pending: { label: "PENDENTE", color: "#999" },
     };
@@ -190,7 +190,7 @@ export const weldService = {
 
     const html = `<html><head><style>
       body{font-family:Arial,sans-serif;font-size:11px;color:${ATLAS_PDF.colors.navy};margin:20px 30px}
-      h2{font-size:14px;margin:18px 0 8px;border-bottom:2px solid ${ATLAS_PDF.colors.primary};padding-bottom:4px}
+      h2{font-size:14px;margin:18px 0 8px;border-bottom:2px solid ${ATLAS_PDF.colors.navym};padding-bottom:4px}
       table{width:100%;border-collapse:collapse;margin-bottom:14px}
       th,td{border:1px solid #ccc;padding:5px 8px;text-align:left;font-size:10px}
       th{background:#f0f0f0;font-weight:700}
@@ -202,7 +202,7 @@ export const weldService = {
       <div style="text-align:center;margin-bottom:6px">
         <strong style="font-size:16px;letter-spacing:2px;color:${ATLAS_PDF.colors.navy}">ATLAS QMS</strong>
       </div>
-      ${projectInfoStripHtml(projectName)}
+      ${projectInfoStripHtml()}
       <h2>1. Identificação da Soldadura</h2>
       <table>
         <tr><th>Código</th><td>${record.code}</td><th>Data</th><td>${record.weld_date}</td></tr>
