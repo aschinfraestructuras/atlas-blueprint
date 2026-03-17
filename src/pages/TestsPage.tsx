@@ -16,6 +16,7 @@ import {
   FlaskConical, Plus, Pencil, Search, Filter, Archive, Copy, Trash2,
   CheckCircle2, XCircle, Clock, AlertCircle, BookOpen, FileDown,
   Loader2, AlertTriangle, PieChart as PieChartIcon, BarChart3,
+  Layers, Gauge, Mountain, Flame,
 } from "lucide-react";
 import { ModuleKPICard } from "@/components/ModuleKPICard";
 import {
