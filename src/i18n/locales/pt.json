@@ -3820,5 +3820,5 @@
     "empty": "Nenhuma amostra registada",
     "emptySubtitle": "Crie a primeira amostra de solo.",
     "kpi": { "total": "Total Amostras", "apto": "Aptas", "conditional": "Condicionais", "inapto": "Inaptas" }
-  },
+  }
 }

@@ -3785,5 +3785,5 @@
     "empty": "Ninguna muestra registrada",
     "emptySubtitle": "Cree la primera muestra de suelo.",
     "kpi": { "total": "Total Muestras", "apto": "Aptas", "conditional": "Condicionales", "inapto": "No Aptas" }
-  },
+  }
 }
