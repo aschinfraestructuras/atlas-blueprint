@@ -2295,6 +2295,9 @@
     "title": "Planos de Pontos de Inspeção (PPI)",
     "subtitle": "Gerir templates e inspeções por frente de obra",
     "nav": "PPI",
+    "tabs": {
+      "tests": "Ensaios"
+    },
     "templates": {
       "title": "Planos de Inspeção PPI",
       "subtitle": "Biblioteca de planos de inspeção reutilizáveis por disciplina",
