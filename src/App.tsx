@@ -64,6 +64,7 @@ const DFOPage = lazy(() => import("./pages/DFOPage"));
 const ConcretePage = lazy(() => import("./pages/ConcretePage"));
 const CompactionPage = lazy(() => import("./pages/CompactionPage"));
 const SoilPage = lazy(() => import("./pages/SoilPage"));
+const WeldPage = lazy(() => import("./pages/WeldPage"));
 
 function ProtectedLayout({ children }: { children: React.ReactNode }) {
   return (
