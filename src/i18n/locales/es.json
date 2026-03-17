@@ -3786,5 +3786,19 @@
     "empty": "Ninguna muestra registrada",
     "emptySubtitle": "Cree la primera muestra de suelo.",
     "kpi": { "total": "Total Muestras", "apto": "Aptas", "conditional": "Condicionales", "inapto": "No Aptas" }
+  },
+  "welding": {
+    "title": "Control de Soldadura Aluminotérmica",
+    "subtitle": "Inspección y ensayos de soldaduras EN 14730",
+    "empty": "Ninguna soldadura registrada",
+    "emptySubtitle": "Cree el primer registro de soldadura.",
+    "kpi": { "total": "Total Soldaduras", "pass": "Aceptadas", "fail": "Rechazadas", "repair": "Reparación", "ut": "Con UT" },
+    "result": { "pass": "Aceptada", "fail": "Rechazada", "repair_needed": "Reparación necesaria", "pending": "Pendiente" },
+    "fields": {
+      "pk": "PK Soldadura", "railProfile": "Perfil de carril", "operator": "Operador",
+      "certRef": "Ref. certificado", "portionBrand": "Marca porción", "portionLot": "Lote porción",
+      "preheat": "Precalentamiento", "visual": "Inspección visual", "alignment": "Desalineación (mm)",
+      "ut": "Ensayo Ultrasónico (UT)", "hardness": "Dureza (HV)"
+    }
   }
 }
