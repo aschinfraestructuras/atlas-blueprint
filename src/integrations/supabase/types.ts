@@ -6002,6 +6002,180 @@ export type Database = {
         }
         Relationships: []
       }
+      weld_records: {
+        Row: {
+          alignment_criteria: number | null
+          alignment_mm: number | null
+          alignment_pass: boolean | null
+          code: string
+          created_at: string
+          created_by: string | null
+          excess_material_ok: boolean | null
+          has_hardness: boolean | null
+          has_ut: boolean | null
+          hv_criteria_max: number | null
+          hv_criteria_min: number | null
+          hv_pass: boolean | null
+          hv_rail_left: number | null
+          hv_rail_right: number | null
+          hv_weld_center: number | null
+          id: string
+          mold_type: string | null
+          notes: string | null
+          operator_cert_ref: string | null
+          operator_name: string | null
+          overall_result: string
+          pk_location: string
+          portion_brand: string | null
+          portion_lot: string | null
+          ppi_instance_id: string | null
+          preheat_duration_min: number | null
+          preheat_pass: boolean | null
+          preheat_temp_c: number | null
+          project_id: string
+          rail_profile: string
+          rejection_reason: string | null
+          track_side: string | null
+          updated_at: string
+          ut_calibration_date: string | null
+          ut_defect_desc: string | null
+          ut_equipment_code: string | null
+          ut_operator: string | null
+          ut_result: string | null
+          visual_notes: string | null
+          visual_pass: boolean | null
+          weld_date: string
+          weld_type: string
+          work_item_id: string | null
+        }
+        Insert: {
+          alignment_criteria?: number | null
+          alignment_mm?: number | null
+          alignment_pass?: boolean | null
+          code: string
+          created_at?: string
+          created_by?: string | null
+          excess_material_ok?: boolean | null
+          has_hardness?: boolean | null
+          has_ut?: boolean | null
+          hv_criteria_max?: number | null
+          hv_criteria_min?: number | null
+          hv_pass?: boolean | null
+          hv_rail_left?: number | null
+          hv_rail_right?: number | null
+          hv_weld_center?: number | null
+          id?: string
+          mold_type?: string | null
+          notes?: string | null
+          operator_cert_ref?: string | null
+          operator_name?: string | null
+          overall_result?: string
+          pk_location: string
+          portion_brand?: string | null
+          portion_lot?: string | null
+          ppi_instance_id?: string | null
+          preheat_duration_min?: number | null
+          preheat_pass?: boolean | null
+          preheat_temp_c?: number | null
+          project_id: string
+          rail_profile?: string
+          rejection_reason?: string | null
+          track_side?: string | null
+          updated_at?: string
+          ut_calibration_date?: string | null
+          ut_defect_desc?: string | null
+          ut_equipment_code?: string | null
+          ut_operator?: string | null
+          ut_result?: string | null
+          visual_notes?: string | null
+          visual_pass?: boolean | null
+          weld_date?: string
+          weld_type?: string
+          work_item_id?: string | null
+        }
+        Update: {
+          alignment_criteria?: number | null
+          alignment_mm?: number | null
+          alignment_pass?: boolean | null
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          excess_material_ok?: boolean | null
+          has_hardness?: boolean | null
+          has_ut?: boolean | null
+          hv_criteria_max?: number | null
+          hv_criteria_min?: number | null
+          hv_pass?: boolean | null
+          hv_rail_left?: number | null
+          hv_rail_right?: number | null
+          hv_weld_center?: number | null
+          id?: string
+          mold_type?: string | null
+          notes?: string | null
+          operator_cert_ref?: string | null
+          operator_name?: string | null
+          overall_result?: string
+          pk_location?: string
+          portion_brand?: string | null
+          portion_lot?: string | null
+          ppi_instance_id?: string | null
+          preheat_duration_min?: number | null
+          preheat_pass?: boolean | null
+          preheat_temp_c?: number | null
+          project_id?: string
+          rail_profile?: string
+          rejection_reason?: string | null
+          track_side?: string | null
+          updated_at?: string
+          ut_calibration_date?: string | null
+          ut_defect_desc?: string | null
+          ut_equipment_code?: string | null
+          ut_operator?: string | null
+          ut_result?: string | null
+          visual_notes?: string | null
+          visual_pass?: boolean | null
+          weld_date?: string
+          weld_type?: string
+          work_item_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "weld_records_ppi_instance_id_fkey"
+            columns: ["ppi_instance_id"]
+            isOneToOne: false
+            referencedRelation: "ppi_instances"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "weld_records_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "weld_records_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "weld_records_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "weld_records_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       work_item_materials: {
         Row: {
           created_at: string
@@ -7300,6 +7474,7 @@ export type Database = {
         Returns: string
       }
       fn_next_training_code: { Args: { p_project_id: string }; Returns: string }
+      fn_next_weld_code: { Args: { p_project_id: string }; Returns: string }
       fn_ppi_bulk_mark_ok: { Args: { p_instance_id: string }; Returns: number }
       fn_ppi_bulk_save_items: {
         Args: { p_instance_id: string; p_items: Json }

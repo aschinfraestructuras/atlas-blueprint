@@ -16,6 +16,7 @@ import {
   FlaskConical, Plus, Pencil, Search, Filter, Archive, Copy, Trash2,
   CheckCircle2, XCircle, Clock, AlertCircle, BookOpen, FileDown,
   Loader2, AlertTriangle, PieChart as PieChartIcon, BarChart3,
+  Layers, Gauge, Mountain, Flame,
 } from "lucide-react";
 import { ModuleKPICard } from "@/components/ModuleKPICard";
 import {
@@ -39,6 +40,10 @@ import { TEST_DISCIPLINES } from "@/lib/services/testService";
 import { supabase } from "@/integrations/supabase/client";
 import { DueTab } from "@/components/tests/DueTab";
 import { PlanTab } from "@/components/tests/PlanTab";
+import { ConcreteTab } from "@/components/tests/ConcreteTab";
+import { CompactionTab } from "@/components/tests/CompactionTab";
+import { SoilsTab } from "@/components/tests/SoilsTab";
+import { WeldTab } from "@/components/tests/WeldTab";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -815,9 +820,9 @@ export default function TestsPage() {
         </div>
       </div>
 
-      {/* Tabs — 4 PRO tabs */}
+      {/* Tabs — PRO tabs + specialized modules */}
       <Tabs defaultValue="due">
-        <TabsList>
+        <TabsList className="flex-wrap">
           <TabsTrigger value="due" className="gap-1.5">
             <Clock className="h-3.5 w-3.5" />
             {t("tests.tabs.due")}
@@ -834,6 +839,22 @@ export default function TestsPage() {
             <BookOpen className="h-3.5 w-3.5" />
             {t("tests.tabs.catalog")}
           </TabsTrigger>
+          <TabsTrigger value="concrete" className="gap-1.5">
+            <Layers className="h-3.5 w-3.5" />
+            {t("nav.concrete")}
+          </TabsTrigger>
+          <TabsTrigger value="compaction" className="gap-1.5">
+            <Gauge className="h-3.5 w-3.5" />
+            {t("nav.compaction")}
+          </TabsTrigger>
+          <TabsTrigger value="soils" className="gap-1.5">
+            <Mountain className="h-3.5 w-3.5" />
+            {t("nav.soils")}
+          </TabsTrigger>
+          <TabsTrigger value="welding" className="gap-1.5">
+            <Flame className="h-3.5 w-3.5" />
+            {t("nav.welding")}
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="due" className="mt-5">
@@ -847,6 +868,18 @@ export default function TestsPage() {
         </TabsContent>
         <TabsContent value="catalog" className="mt-5">
           <CatalogTab />
+        </TabsContent>
+        <TabsContent value="concrete" className="mt-5">
+          <ConcreteTab projectId={activeProject?.id ?? ""} />
+        </TabsContent>
+        <TabsContent value="compaction" className="mt-5">
+          <CompactionTab projectId={activeProject?.id ?? ""} />
+        </TabsContent>
+        <TabsContent value="soils" className="mt-5">
+          <SoilsTab projectId={activeProject?.id ?? ""} />
+        </TabsContent>
+        <TabsContent value="welding" className="mt-5">
+          <WeldTab projectId={activeProject?.id ?? ""} />
         </TabsContent>
       </Tabs>
     </div>
