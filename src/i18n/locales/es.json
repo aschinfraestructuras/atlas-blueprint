@@ -3783,14 +3783,4 @@
     "emptySubtitle": "Cree la primera muestra de suelo.",
     "kpi": { "total": "Total Muestras", "apto": "Aptas", "conditional": "Condicionales", "inapto": "No Aptas" }
   },
-  "tests": {
-    "ppiTab": {
-      "title": "Ensayos asociados a este PPI",
-      "empty": "Ningún ensayo asociado a este PPI",
-      "concrete": "Hormigón",
-      "compaction": "Compactación",
-      "soils": "Suelos"
-    }
-  },
-  "ppiTestsTab": "Ensayos"
 }

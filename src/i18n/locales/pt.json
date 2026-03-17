@@ -3818,14 +3818,4 @@
     "emptySubtitle": "Crie a primeira amostra de solo.",
     "kpi": { "total": "Total Amostras", "apto": "Aptas", "conditional": "Condicionais", "inapto": "Inaptas" }
   },
-  "tests": {
-    "ppiTab": {
-      "title": "Ensaios associados a este PPI",
-      "empty": "Nenhum ensaio associado a este PPI",
-      "concrete": "Betão",
-      "compaction": "Compactação",
-      "soils": "Solos"
-    }
-  },
-  "ppiTestsTab": "Ensaios"
 }

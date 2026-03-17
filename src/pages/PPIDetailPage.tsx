@@ -727,7 +727,7 @@ export default function PPIDetailPage() {
           </TabsTrigger>
           <TabsTrigger value="tests" className="gap-1.5">
             <FlaskConical className="h-3.5 w-3.5" />
-            {t("ppiTestsTab", { defaultValue: "Ensaios" })}
+            {t("ppi.tabs.tests")}
           </TabsTrigger>
           <TabsTrigger value="attachments">{t("ppi.templates.items.evidenceRequired")}</TabsTrigger>
           <TabsTrigger value="documents" className="gap-1.5">
