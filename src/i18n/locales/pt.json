@@ -1119,6 +1119,14 @@
       "updated": "Ensaio atualizado com sucesso.",
       "catalogCreated": "Tipo de ensaio adicionado ao catálogo.",
       "error": "Ocorreu um erro. Tente novamente."
+    },
+
+    "ppiTab": {
+      "title": "Ensaios associados a este PPI",
+      "empty": "Nenhum ensaio associado a este PPI",
+      "concrete": "Betão",
+      "compaction": "Compactação",
+      "soils": "Solos"
     }
   },
   "laboratories": {
@@ -2287,6 +2295,9 @@
     "title": "Planos de Pontos de Inspeção (PPI)",
     "subtitle": "Gerir templates e inspeções por frente de obra",
     "nav": "PPI",
+    "tabs": {
+      "tests": "Ensaios"
+    },
     "templates": {
       "title": "Planos de Inspeção PPI",
       "subtitle": "Biblioteca de planos de inspeção reutilizáveis por disciplina",
@@ -3809,15 +3820,5 @@
     "empty": "Nenhuma amostra registada",
     "emptySubtitle": "Crie a primeira amostra de solo.",
     "kpi": { "total": "Total Amostras", "apto": "Aptas", "conditional": "Condicionais", "inapto": "Inaptas" }
-  },
-  "tests": {
-    "ppiTab": {
-      "title": "Ensaios associados a este PPI",
-      "empty": "Nenhum ensaio associado a este PPI",
-      "concrete": "Betão",
-      "compaction": "Compactação",
-      "soils": "Solos"
-    }
-  },
-  "ppiTestsTab": "Ensaios"
+  }
 }

@@ -1127,6 +1127,14 @@
       "updated": "Ensayo actualizado con éxito.",
       "catalogCreated": "Tipo de ensayo añadido al catálogo.",
       "error": "Ocurrió un error. Inténtelo de nuevo."
+    },
+
+    "ppiTab": {
+      "title": "Ensayos asociados a este PPI",
+      "empty": "Ningún ensayo asociado a este PPI",
+      "concrete": "Hormigón",
+      "compaction": "Compactación",
+      "soils": "Suelos"
     }
   },
   "laboratories": {
@@ -2295,6 +2303,9 @@
     "title": "Planes de Puntos de Inspección (PPI)",
     "subtitle": "Gestionar plantillas e inspecciones por frente de obra",
     "nav": "PPI",
+    "tabs": {
+      "tests": "Ensayos"
+    },
     "templates": {
       "title": "Planes de Inspección PPI",
       "subtitle": "Biblioteca de planes de inspección reutilizables por disciplina",
@@ -3774,15 +3785,5 @@
     "empty": "Ninguna muestra registrada",
     "emptySubtitle": "Cree la primera muestra de suelo.",
     "kpi": { "total": "Total Muestras", "apto": "Aptas", "conditional": "Condicionales", "inapto": "No Aptas" }
-  },
-  "tests": {
-    "ppiTab": {
-      "title": "Ensayos asociados a este PPI",
-      "empty": "Ningún ensayo asociado a este PPI",
-      "concrete": "Hormigón",
-      "compaction": "Compactación",
-      "soils": "Suelos"
-    }
-  },
-  "ppiTestsTab": "Ensayos"
+  }
 }
