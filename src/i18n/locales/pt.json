@@ -1119,6 +1119,14 @@
       "updated": "Ensaio atualizado com sucesso.",
       "catalogCreated": "Tipo de ensaio adicionado ao catálogo.",
       "error": "Ocorreu um erro. Tente novamente."
+    },
+
+    "ppiTab": {
+      "title": "Ensaios associados a este PPI",
+      "empty": "Nenhum ensaio associado a este PPI",
+      "concrete": "Betão",
+      "compaction": "Compactação",
+      "soils": "Solos"
     }
   },
   "laboratories": {
