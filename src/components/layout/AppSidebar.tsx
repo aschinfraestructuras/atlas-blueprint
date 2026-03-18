@@ -67,6 +67,7 @@ const NAV_SECTIONS: SidebarSection[] = [
     collapsible: true,
     items: [
       { labelKey: "nav.nonConformities", url: "/non-conformities", icon: AlertTriangle },
+      { labelKey: "nav.actionPlan",      url: "/action-plan",      icon: ClipboardList },
       { labelKey: "nav.tests",           url: "/tests",            icon: FlaskConical },
       { labelKey: "nav.testSchedule",    url: "/tests/schedule",   icon: CalendarClock },
       { labelKey: "nav.materials",       url: "/materials",        icon: Package },
@@ -82,6 +83,7 @@ const NAV_SECTIONS: SidebarSection[] = [
     collapsible: true,
     items: [
       { labelKey: "nav.documents",       url: "/documents",        icon: FileText },
+      { labelKey: "nav.submittals",      url: "/submittals",       icon: FileCheck },
       { labelKey: "nav.technicalOffice", url: "/technical-office", icon: Inbox },
       { labelKey: "nav.plans",           url: "/plans",            icon: BookOpen },
       { labelKey: "nav.dfo",             url: "/dfo",              icon: FolderKanban },
