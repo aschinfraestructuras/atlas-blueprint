@@ -650,6 +650,8 @@ export function PlanTab() {
         </>
       )}
 
+      <AnnexBSection />
+
       <PlanFormDialog open={dialogOpen} onOpenChange={setDialogOpen} plan={editing} onSuccess={refetch} />
     </div>
   );
