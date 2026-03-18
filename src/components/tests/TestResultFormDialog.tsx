@@ -235,9 +235,18 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-1">
 
-            {/* Traceability chain — edit only */}
+            {/* Traceability chain — edit only — now in its own card */}
             {isEdit && testResult && activeProject && (
-              <TraceabilityChain testResultId={testResult.id} projectId={activeProject.id} />
+              <Card className="border-primary/10">
+                <CardHeader className="pb-2 pt-3 px-4">
+                  <CardTitle className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                    Rastreabilidade
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="px-4 pb-3">
+                  <TraceabilityChain testResultId={testResult.id} projectId={activeProject.id} />
+                </CardContent>
+              </Card>
             )}
             <FormField control={form.control} name="test_id" render={({ field }) => (
               <FormItem>
