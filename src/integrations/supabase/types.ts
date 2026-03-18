@@ -2893,6 +2893,90 @@ export type Database = {
           },
         ]
       }
+      plan_controlled_copies: {
+        Row: {
+          confirmed_at: string | null
+          copy_number: number
+          created_at: string | null
+          created_by: string | null
+          delivered_at: string | null
+          delivered_by: string | null
+          id: string
+          notes: string | null
+          plan_id: string
+          project_id: string
+          received_confirmed: boolean | null
+          recipient_entity: string | null
+          recipient_name: string
+        }
+        Insert: {
+          confirmed_at?: string | null
+          copy_number: number
+          created_at?: string | null
+          created_by?: string | null
+          delivered_at?: string | null
+          delivered_by?: string | null
+          id?: string
+          notes?: string | null
+          plan_id: string
+          project_id: string
+          received_confirmed?: boolean | null
+          recipient_entity?: string | null
+          recipient_name: string
+        }
+        Update: {
+          confirmed_at?: string | null
+          copy_number?: number
+          created_at?: string | null
+          created_by?: string | null
+          delivered_at?: string | null
+          delivered_by?: string | null
+          id?: string
+          notes?: string | null
+          plan_id?: string
+          project_id?: string
+          received_confirmed?: boolean | null
+          recipient_entity?: string | null
+          recipient_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plan_controlled_copies_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_controlled_copies_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_controlled_copies_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "plan_controlled_copies_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "plan_controlled_copies_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
       planning_activities: {
         Row: {
           actual_end: string | null

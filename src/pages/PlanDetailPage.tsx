@@ -21,6 +21,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
+import { ControlledCopiesPanel } from "@/components/plans/ControlledCopiesPanel";
 import { PlanFormDialog } from "@/components/plans/PlanFormDialog";
 import { toast } from "@/hooks/use-toast";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
@@ -465,6 +466,16 @@ export default function PlanDetailPage() {
               ))}
             </ul>
           )}
+        </CardContent>
+      </Card>
+
+      {/* Controlled Copies */}
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm">{i18n.language?.startsWith("es") ? "Copias Controladas" : "Cópias Controladas"}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ControlledCopiesPanel planId={plan.id} projectId={activeProject.id} />
         </CardContent>
       </Card>
 
