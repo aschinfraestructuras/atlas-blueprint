@@ -454,7 +454,29 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
               <FormField control={form.control} name="eme_code" render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t("tests.results.form.emeCode", { defaultValue: "Cód. EME" })} <span className="text-xs text-muted-foreground">({t("common.optional")})</span></FormLabel>
-                  <FormControl><Input placeholder="EME-001" className="font-mono text-sm" {...field} /></FormControl>
+                  <Select
+                    onValueChange={(v) => {
+                      if (v === "__none__") { field.onChange(""); return; }
+                      field.onChange(v);
+                      // Auto-fill calibration date from equipment_calibrations
+                      const cal = equipmentCals.find(e => (e as any).equipment?.serial_number === v || e.id === v);
+                      if (cal) {
+                        form.setValue("eme_code", (cal as any).equipment?.serial_number ?? v);
+                        form.setValue("eme_calibration_date", cal.valid_until?.slice(0, 10) ?? "");
+                      }
+                    }}
+                    value={field.value || "__none__"}
+                  >
+                    <FormControl><SelectTrigger className="font-mono text-sm"><SelectValue placeholder="EME-001" /></SelectTrigger></FormControl>
+                    <SelectContent>
+                      <SelectItem value="__none__">—</SelectItem>
+                      {equipmentCals.map((cal) => (
+                        <SelectItem key={cal.id} value={cal.id}>
+                          {(cal as any).equipment?.serial_number ?? cal.certificate_number ?? cal.id.slice(0, 8)} — {cal.certifying_entity}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )} />
