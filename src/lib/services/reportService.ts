@@ -341,8 +341,6 @@ export function generatePdfDocument(opts: {
 }): string {
   let headerBlock: string;
   if (opts.logoBase64) {
-    // Use the institutional header with logo
-    const { fullPdfHeader } = require("./pdfProjectHeader");
     headerBlock = fullPdfHeader(
       opts.logoBase64,
       `LINHA DO SUL — ${opts.meta.projectCode}`,
