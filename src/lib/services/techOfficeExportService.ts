@@ -5,6 +5,7 @@ import {
 } from "./reportService";
 import { fullPdfHeader } from "./pdfProjectHeader";
 import type { TechnicalOfficeItem, TechOfficeMessage } from "./technicalOfficeService";
+import { parseSubmittalMeta } from "./submittalMeta";
 
 const TYPE_LABELS: Record<string, Record<string, string>> = {
   pt: { RFI: "RFI", SUBMITTAL: "Submittal", TRANSMITTAL: "Transmittal", CLARIFICATION: "Pedido Esclarecimento", APPROVAL_REQUEST: "Pedido Aprovação", CHANGE_NOTICE: "Alteração/VO" },
