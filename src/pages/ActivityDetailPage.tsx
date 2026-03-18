@@ -254,7 +254,7 @@ export default function ActivityDetailPage() {
         </Badge>
         <ReportExportMenu options={[
           { label: "PDF", icon: "pdf", action: () => {
-            exportActivityDetailPdf(activity, requirements, meta);
+            exportActivityDetailPdf(activity, requirements, meta, logoBase64);
             auditService.log({ projectId: activeProject.id, entity: "planning_activities", entityId: activity.id, action: "EXPORT", module: "planning", description: `Exportação PDF da atividade "${activity.description}"` });
           }},
         ]} />
