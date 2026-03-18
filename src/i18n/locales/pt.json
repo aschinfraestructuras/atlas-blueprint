@@ -2907,8 +2907,7 @@
       "docsValid": "Documentos Válidos",
       "docsExpired": "Documentos Expirados",
       "openNCs": "NCs Abertas"
-    }
-  },
+    },
     "toast": {
       "created": "Material criado com sucesso.",
       "updated": "Material atualizado.",
