@@ -47,7 +47,6 @@ interface DossierProps {
   }>;
   docs: Array<{
     id: string;
-    name: string;
     doc_type: string;
     status: string;
     valid_to?: string | null;
