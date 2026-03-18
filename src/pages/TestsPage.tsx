@@ -632,13 +632,16 @@ function ResultsTab() {
                           {t(`tests.status.${r.status_workflow}`, { defaultValue: r.status_workflow })}
                         </Badge>
                         {r.result_status && (
-                          <Badge variant="outline" className={cn("text-[10px] py-0",
+                          <Badge variant="outline" className={cn("text-[10px] py-0 gap-0.5",
                             r.result_status === "pass" ? "border-primary/40 text-primary" :
                             r.result_status === "fail" ? "border-destructive/40 text-destructive" :
                             r.result_status === "na" ? "border-border text-muted-foreground" :
                             "border-orange-400/40 text-orange-600",
                           )}>
                             {t(`tests.status.${r.result_status}`, { defaultValue: r.result_status })}
+                            {r.result_status === "fail" && (r as any).nc_id && (
+                              <AlertTriangle className="h-2.5 w-2.5 ml-0.5" />
+                            )}
                           </Badge>
                         )}
                       </div>

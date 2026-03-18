@@ -155,6 +155,8 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
     } finally { setSubmitting(false); }
   };
 
+  const navigate = useNavigate();
+
   const onSubmit = async (values: FormValues) => {
     if (!activeProject) return;
     setSubmitting(true);
@@ -174,13 +176,41 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
         work_item_id:     values.work_item_id  || undefined,
         supplier_id:      values.supplier_id   || undefined,
       };
+
+      let savedId: string | undefined;
       if (isEdit && testResult) {
         await testService.update(testResult.id, activeProject.id, input);
+        savedId = testResult.id;
         toast({ title: t("tests.results.toast.updated") });
       } else {
-        await testService.create(input);
+        const created = await testService.create(input);
+        savedId = created?.id;
         toast({ title: t("tests.results.toast.created") });
       }
+
+      // FAIL → suggest NC
+      if (values.result_status === "fail" && savedId) {
+        const testName = catalog.find((c) => c.id === values.test_id)?.name ?? "Ensaio";
+        const testCode = catalog.find((c) => c.id === values.test_id)?.code ?? "";
+        toast({
+          title: "Resultado não conforme",
+          description: `${testName} (${testCode}) — Deseja abrir uma Não Conformidade?`,
+          action: (
+            <Button
+              size="sm"
+              variant="destructive"
+              className="ml-2 text-xs"
+              onClick={() => {
+                navigate(`/non-conformities?new=1&test_result_id=${savedId}&description=${encodeURIComponent(`Resultado não conforme: ${testName} — ${testCode}`)}&category=qualidade`);
+              }}
+            >
+              Abrir RNC
+            </Button>
+          ),
+          duration: 10000,
+        });
+      }
+
       onSuccess();
       onOpenChange(false);
     } catch (err) {
