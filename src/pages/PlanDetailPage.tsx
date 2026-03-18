@@ -469,6 +469,16 @@ export default function PlanDetailPage() {
         </CardContent>
       </Card>
 
+      {/* Controlled Copies */}
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm">{i18n.language?.startsWith("es") ? "Copias Controladas" : "Cópias Controladas"}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ControlledCopiesPanel planId={plan.id} projectId={activeProject.id} />
+        </CardContent>
+      </Card>
+
       {/* Attachments */}
       <Card>
         <CardHeader className="pb-2">
