@@ -269,7 +269,7 @@ export default function TechnicalOfficePage() {
   const handleExport = (fmt: "csv" | "pdf") => {
     if (isRfiTab) {
       if (fmt === "csv") exportRfisCsv(rfis, meta);
-      else exportRfisPdf(rfis, meta);
+      else exportRfisPdf(rfis, meta, logoBase64);
     } else {
       if (fmt === "csv") exportTechOfficeCsv(items, meta);
       else exportTechOfficePdf(items, meta);
