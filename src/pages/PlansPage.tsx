@@ -10,8 +10,9 @@ import { auditService } from "@/lib/services/auditService";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import {
   BookOpen, Plus, Pencil, Trash2, Search, Eye, Download,
-  FileCheck, FileClock, FileWarning, Archive, Send,
+  FileCheck, FileClock, FileWarning, Archive, Send, PieChart as PieChartIcon,
 } from "lucide-react";
+import { DistributionBar, StackedBar } from "@/components/dashboard/DistributionBar";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
