@@ -76,6 +76,7 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
   const [newTestName, setNewTestName]     = useState("");
   const [newTestCode, setNewTestCode]     = useState("");
   const [creatingNew, setCreatingNew]     = useState(false);
+  const [equipmentCals, setEquipmentCals] = useState<any[]>([]);
   const isEdit = !!testResult;
 
   const form = useForm<FormValues>({
