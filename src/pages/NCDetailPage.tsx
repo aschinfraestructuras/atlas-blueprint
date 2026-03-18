@@ -13,6 +13,7 @@ import {
   exportNCPdf,
   type NCExportLabels,
 } from "@/lib/services/ncExportService";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { NCFormDialog } from "@/components/nc/NCFormDialog";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { LinkedDocumentsPanel } from "@/components/documents/LinkedDocumentsPanel";
