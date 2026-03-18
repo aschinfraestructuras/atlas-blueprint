@@ -82,6 +82,7 @@ const NAV_SECTIONS: SidebarSection[] = [
       { labelKey: "nav.deadlines",    url: "/deadlines",     icon: Clock },
       { labelKey: "nav.expirations",  url: "/expirations",   icon: AlertTriangle },
       { labelKey: "nav.sgqMatrix",    url: "/sgq-matrix",    icon: ShieldCheck },
+      { labelKey: "nav.traceability", url: "/traceability",  icon: Link2 },
     ],
   },
   {

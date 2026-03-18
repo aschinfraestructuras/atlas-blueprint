@@ -470,6 +470,9 @@ export default function DocumentsPage() {
           </AlertDialogContent>
         </AlertDialog>
 
+        {/* Meeting Actions Panel */}
+        <MeetingActionsPanel />
+
       </div>
     </TooltipProvider>
   );

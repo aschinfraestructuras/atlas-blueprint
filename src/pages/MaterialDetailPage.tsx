@@ -295,6 +295,7 @@ export default function MaterialDetailPage() {
           <TabsTrigger value="workItems">{t("materials.detail.tabs.workItems")}</TabsTrigger>
           <TabsTrigger value="usage">{t("materials.usageTab")}</TabsTrigger>
           <TabsTrigger value="recycled">{t("recycled.title", { defaultValue: "Reciclado" })}</TabsTrigger>
+          <TabsTrigger value="dossier">{t("materials.detail.tabs.dossier")}</TabsTrigger>
           <TabsTrigger value="audit">{t("materials.detail.tabs.audit")}</TabsTrigger>
         </TabsList>
 
