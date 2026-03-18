@@ -49,6 +49,7 @@ export default function ActivityDetailPage() {
   const navigate = useNavigate();
   const { activeProject } = useProject();
   const reportMeta = useReportMeta();
+  const { logoBase64 } = useProjectLogo();
 
   useEffect(() => {
     if (!id || id === "undefined" || id.trim() === "") {
