@@ -373,6 +373,24 @@
       "hpPending": "HP Pendientes",
       "inspCompleted": "inspecciones completadas"
     },
+    "testStatus": {
+      "title": "Estado de los Ensayos",
+      "ncOpen": "NCs abiertas",
+      "ppiInProgress": "PPIs en progreso",
+      "specimensOverdue": "Probetas 28d sin resultado",
+      "weldsUsPending": "Soldaduras sin US",
+      "testsOverdue": "Ensayos pendientes"
+    },
+    "concrete": {
+      "title": "Hormigón por Clase",
+      "noData": "Sin datos de hormigón",
+      "samples": "muestras"
+    },
+    "monthlyReport": {
+      "overdue": "Informe Mensual SGQ atrasado — {{days}} días",
+      "upcoming": "Informe Mensual SGQ — entregar hasta {{date}}",
+      "create": "Crear Informe"
+    },
     "hpPending": "HPs Sin Confirmación",
     "healthBreakdown": "Indicadores de Salud",
     "recentActivity": "Actividad Reciente",
