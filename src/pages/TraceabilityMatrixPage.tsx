@@ -79,7 +79,7 @@ export default function TraceabilityMatrixPage() {
       <PageHeader
         title={t("traceability.title")}
         subtitle={t("traceability.subtitle")}
-        icon={<Link2 className="h-5 w-5" />}
+        icon={Link2}
       />
 
       {/* KPIs */}
