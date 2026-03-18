@@ -144,6 +144,7 @@ export default function SupplierDetailPage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
   const { canEdit, canCreate } = useProjectRole();
+  const { logoBase64 } = useProjectLogo();
 
   useEffect(() => {
     if (!id || id === "undefined" || id.trim() === "") {
