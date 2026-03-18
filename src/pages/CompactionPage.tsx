@@ -5,6 +5,7 @@ import {
 } from "lucide-react";
 import { compactionService, type CompactionZoneWithCounts, type CompactionZone, type NuclearPoint, type PlateTest } from "@/lib/services/compactionService";
 import { useProject } from "@/contexts/ProjectContext";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { useWorkItems } from "@/hooks/useWorkItems";
 import { usePPIInstances } from "@/hooks/usePPI";
 import { PageHeader } from "@/components/ui/page-header";
