@@ -5,6 +5,7 @@ import {
 } from "./reportService";
 import { fullPdfHeader } from "./pdfProjectHeader";
 import type { TechnicalOfficeItem, TechOfficeMessage } from "./technicalOfficeService";
+import { parseSubmittalMeta } from "./submittalMeta";
 
 const TYPE_LABELS: Record<string, Record<string, string>> = {
   pt: { RFI: "RFI", SUBMITTAL: "Submittal", TRANSMITTAL: "Transmittal", CLARIFICATION: "Pedido Esclarecimento", APPROVAL_REQUEST: "Pedido Aprovação", CHANGE_NOTICE: "Alteração/VO" },
@@ -70,8 +71,27 @@ export function exportTechOfficeDetailPdf(
     ["Respondido em", fmtDate(item.responded_at)],
   ]);
 
-  const descHtml = item.description
-    ? `<div class="atlas-section">Descrição</div><p style="font-size:11px;line-height:1.6;white-space:pre-wrap;">${item.description}</p>`
+  const isSubmittal = item.type === "SUBMITTAL";
+  const parsed = isSubmittal ? parseSubmittalMeta(item.description) : null;
+  const visibleDesc = parsed ? parsed.visibleDescription : item.description;
+  const sMeta = parsed?.meta;
+
+  const descHtml = visibleDesc
+    ? `<div class="atlas-section">Descrição</div><p style="font-size:11px;line-height:1.6;white-space:pre-wrap;">${visibleDesc}</p>`
+    : "";
+
+  const submittalMetaHtml = isSubmittal && sMeta
+    ? `<div class="atlas-section">Dados Técnicos do Submittal</div>
+       ${infoGridHtml([
+         ["Disciplina", sMeta.discipline || "—"],
+         ["Tipo", sMeta.subtype || "—"],
+         ["Fornecedor", sMeta.supplier_name || "—"],
+         ["Subempreiteiro", sMeta.subcontractor_name || "—"],
+         ["Ref. Normativa", sMeta.spec_reference || "—"],
+         ["Revisão", sMeta.revision || "0"],
+         ["Aprovação", sMeta.approval_result || "pending"],
+         ["Submetido em", sMeta.submitted_at || "—"],
+       ])}`
     : "";
 
   const msgsHtml = messages.length > 0
@@ -86,7 +106,7 @@ export function exportTechOfficeDetailPdf(
        </table>`
     : "";
 
-  const bodyHtml = `${info}${descHtml}${msgsHtml}`;
+  const bodyHtml = `${info}${submittalMetaHtml}${descHtml}${msgsHtml}`;
 
   const html = `<!DOCTYPE html><html lang="${meta.locale}"><head><meta charset="UTF-8"/><title>${item.type} ${docCode} — Atlas QMS</title>
 <style>${sharedCss()}</style></head><body>

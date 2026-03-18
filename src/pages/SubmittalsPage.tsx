@@ -33,7 +33,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
+  Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
 import { RowActionMenu } from "@/components/ui/row-action-menu";
 import { cn } from "@/lib/utils";
@@ -370,7 +370,10 @@ export default function SubmittalsPage() {
                         actions={[
                           { key: "view", label: t("common.view"), icon: Eye, onClick: () => navigate(`/technical-office/items/${item.id}`) },
                           ...(canCreate ? [
-                            { key: "edit", label: t("common.edit"), icon: Pencil, onClick: () => openEditDialog({ item, desc: "", meta }) },
+                            { key: "edit", label: t("common.edit"), icon: Pencil, onClick: () => {
+                              const { visibleDescription, meta: parsedMeta } = parseSubmittalMeta(item.description);
+                              openEditDialog({ item, desc: visibleDescription, meta: parsedMeta });
+                            } },
                           ] : []),
                         ]}
                       />
@@ -392,6 +395,9 @@ export default function SubmittalsPage() {
                 ? t("submittals.form.titleEdit", { defaultValue: "Editar Submittal" })
                 : t("submittals.new", { defaultValue: "Novo Submittal" })}
             </DialogTitle>
+            <DialogDescription className="sr-only">
+              {t("submittals.subtitle", { defaultValue: "Aprovações técnicas de materiais, desenhos e métodos" })}
+            </DialogDescription>
           </DialogHeader>
           <ScrollArea className="max-h-[72vh] pr-1">
             <div className="space-y-4 py-1">
