@@ -30,6 +30,7 @@ import { useToast } from "@/hooks/use-toast";
 import {
   ArrowLeft, Send, Trash2, AlertTriangle, MessageSquare,
   ExternalLink, LinkIcon, Download, FileText, Paperclip,
+  ShieldCheck, ShieldAlert, RotateCcw, Clock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
