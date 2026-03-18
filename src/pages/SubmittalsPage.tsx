@@ -370,7 +370,10 @@ export default function SubmittalsPage() {
                         actions={[
                           { key: "view", label: t("common.view"), icon: Eye, onClick: () => navigate(`/technical-office/items/${item.id}`) },
                           ...(canCreate ? [
-                            { key: "edit", label: t("common.edit"), icon: Pencil, onClick: () => openEditDialog({ item, desc: "", meta }) },
+                            { key: "edit", label: t("common.edit"), icon: Pencil, onClick: () => {
+                              const { visibleDescription, meta: parsedMeta } = parseSubmittalMeta(item.description);
+                              openEditDialog({ item, desc: visibleDescription, meta: parsedMeta });
+                            } },
                           ] : []),
                         ]}
                       />
