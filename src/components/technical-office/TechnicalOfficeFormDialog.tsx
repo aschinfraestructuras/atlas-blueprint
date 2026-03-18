@@ -249,6 +249,72 @@ export function TechnicalOfficeFormDialog({ open, onOpenChange, item, onSuccess 
                   </FormItem>
                 )} />
 
+                {/* Transmittal-specific fields */}
+                {isTransmittal && (
+                  <>
+                    <Separator className="my-1" />
+                    <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                      {t("technicalOffice.transmittal.section", { defaultValue: "Dados do Transmittal" })}
+                    </p>
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField control={form.control} name="emitter_entity" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("technicalOffice.transmittal.emitter", { defaultValue: "Entidade Emissora" })}</FormLabel>
+                          <FormControl><Input placeholder="Ex: ACE ASCH + Cimontubo" {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                      <FormField control={form.control} name="receiver_entity" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("technicalOffice.transmittal.receiver", { defaultValue: "Entidade Recetora" })}</FormLabel>
+                          <FormControl><Input placeholder="Ex: Fiscalização / DO" {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                    </div>
+                    <FormField control={form.control} name="transmittal_reason" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("technicalOffice.transmittal.reason", { defaultValue: "Motivo do Envio" })}</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value || ""}>
+                          <FormControl><SelectTrigger><SelectValue placeholder="—" /></SelectTrigger></FormControl>
+                          <SelectContent>
+                            <SelectItem value="approval">{t("technicalOffice.transmittal.reasonApproval", { defaultValue: "Para Aprovação" })}</SelectItem>
+                            <SelectItem value="information">{t("technicalOffice.transmittal.reasonInfo", { defaultValue: "Para Informação" })}</SelectItem>
+                            <SelectItem value="review">{t("technicalOffice.transmittal.reasonReview", { defaultValue: "Para Revisão" })}</SelectItem>
+                            <SelectItem value="record">{t("technicalOffice.transmittal.reasonRecord", { defaultValue: "Para Registo" })}</SelectItem>
+                            <SelectItem value="response">{t("technicalOffice.transmittal.reasonResponse", { defaultValue: "Em Resposta a" })}</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                    <FormField control={form.control} name="docs_sent" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("technicalOffice.transmittal.docsSent", { defaultValue: "Documentos Enviados" })}</FormLabel>
+                        <FormControl><Textarea placeholder={t("technicalOffice.transmittal.docsSentPlaceholder", { defaultValue: "Lista de documentos, revisões e códigos enviados…" })} rows={2} {...field} /></FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                    {isEdit && (
+                      <FormField control={form.control} name="response_status" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("technicalOffice.transmittal.responseStatus", { defaultValue: "Resposta" })}</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value || ""}>
+                            <FormControl><SelectTrigger><SelectValue placeholder="—" /></SelectTrigger></FormControl>
+                            <SelectContent>
+                              <SelectItem value="pending">{t("technicalOffice.transmittal.respPending", { defaultValue: "Pendente" })}</SelectItem>
+                              <SelectItem value="approved">{t("technicalOffice.transmittal.respApproved", { defaultValue: "Aprovado" })}</SelectItem>
+                              <SelectItem value="approved_comments">{t("technicalOffice.transmittal.respApprovedComments", { defaultValue: "Aprovado c/ Comentários" })}</SelectItem>
+                              <SelectItem value="rejected">{t("technicalOffice.transmittal.respRejected", { defaultValue: "Rejeitado" })}</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                    )}
+                  </>
+                )}
+
                 <div className="grid grid-cols-2 gap-4">
                   <FormField control={form.control} name="deadline" render={({ field }) => (
                     <FormItem>
