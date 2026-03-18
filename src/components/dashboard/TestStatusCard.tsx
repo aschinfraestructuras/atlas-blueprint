@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useProject } from "@/contexts/ProjectContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,6 +18,7 @@ interface TestStatus {
 }
 
 export function TestStatusCard() {
+  const { t } = useTranslation();
   const { activeProject } = useProject();
   const navigate = useNavigate();
   const [data, setData] = useState<TestStatus | null>(null);
@@ -29,7 +31,6 @@ export function TestStatusCard() {
 
     (async () => {
       try {
-        const today = new Date().toISOString().split("T")[0];
         const twentyEightDaysAgo = new Date(Date.now() - 28 * 86400000).toISOString().split("T")[0];
         const sevenDaysAgo = new Date(Date.now() - 7 * 86400000).toISOString().split("T")[0];
 
@@ -65,11 +66,11 @@ export function TestStatusCard() {
   if (!activeProject) return null;
 
   const items = data ? [
-    { label: "NCs abertas", value: data.ncOpen, sub: `${data.ncMajorOpen} major`, icon: AlertTriangle, route: "/non-conformities", alert: data.ncOpen > 0 },
-    { label: "PPIs em progresso", value: data.ppiInProgress, icon: ClipboardCheck, route: "/ppi", alert: false },
-    { label: "Provetes 28d s/ resultado", value: data.specimensOverdue, icon: Beaker, route: "/tests/concrete", alert: data.specimensOverdue > 0 },
-    { label: "Soldaduras s/ US", value: data.weldsUsPending, icon: Flame, route: "/tests/welding", alert: data.weldsUsPending > 0 },
-    { label: "Ensaios pendentes", value: data.testsOverdue, icon: FlaskConical, route: "/tests", alert: data.testsOverdue > 3 },
+    { label: t("dashboard.testStatus.ncOpen", { defaultValue: "NCs abertas" }), value: data.ncOpen, sub: `${data.ncMajorOpen} major`, icon: AlertTriangle, route: "/non-conformities", alert: data.ncOpen > 0 },
+    { label: t("dashboard.testStatus.ppiInProgress", { defaultValue: "PPIs em progresso" }), value: data.ppiInProgress, icon: ClipboardCheck, route: "/ppi", alert: false },
+    { label: t("dashboard.testStatus.specimensOverdue", { defaultValue: "Provetes 28d s/ resultado" }), value: data.specimensOverdue, icon: Beaker, route: "/tests/concrete", alert: data.specimensOverdue > 0 },
+    { label: t("dashboard.testStatus.weldsUsPending", { defaultValue: "Soldaduras s/ US" }), value: data.weldsUsPending, icon: Flame, route: "/tests/welding", alert: data.weldsUsPending > 0 },
+    { label: t("dashboard.testStatus.testsOverdue", { defaultValue: "Ensaios pendentes" }), value: data.testsOverdue, icon: FlaskConical, route: "/tests", alert: data.testsOverdue > 3 },
   ] : [];
 
   return (
@@ -77,7 +78,7 @@ export function TestStatusCard() {
       <CardHeader className="pb-2 pt-4 px-5">
         <CardTitle className="text-[11px] font-bold uppercase tracking-[0.12em] text-muted-foreground flex items-center gap-1.5">
           <FlaskConical className="h-3.5 w-3.5" />
-          Estado dos Ensaios
+          {t("dashboard.testStatus.title", { defaultValue: "Estado dos Ensaios" })}
         </CardTitle>
       </CardHeader>
       <CardContent className="px-5 pb-4">

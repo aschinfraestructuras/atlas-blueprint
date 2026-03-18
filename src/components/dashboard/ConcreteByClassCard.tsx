@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useProject } from "@/contexts/ProjectContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,6 +18,7 @@ interface ClassSummary {
 }
 
 export function ConcreteByClassCard() {
+  const { t } = useTranslation();
   const { activeProject } = useProject();
   const navigate = useNavigate();
   const [data, setData] = useState<ClassSummary[]>([]);
@@ -28,7 +30,6 @@ export function ConcreteByClassCard() {
 
     (async () => {
       try {
-        // Aggregate concrete batches by class
         const { data: batches } = await supabase
           .from("concrete_batches")
           .select("concrete_class, id")
@@ -96,14 +97,17 @@ export function ConcreteByClassCard() {
       <CardHeader className="pb-2 pt-4 px-5">
         <CardTitle className="text-[11px] font-bold uppercase tracking-[0.12em] text-muted-foreground flex items-center gap-1.5">
           <Beaker className="h-3.5 w-3.5" />
-          Betão por Classe
+          {t("dashboard.concrete.title", { defaultValue: "Betão por Classe" })}
         </CardTitle>
       </CardHeader>
       <CardContent className="px-5 pb-4">
         {loading ? (
           <Skeleton className="h-[160px] w-full" />
         ) : data.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-6">Sem dados de betão</p>
+          <div className="h-[140px] flex flex-col items-center justify-center gap-2">
+            <Beaker className="h-8 w-8 text-muted-foreground/20" />
+            <p className="text-sm text-muted-foreground/60">{t("dashboard.concrete.noData", { defaultValue: "Sem dados de betão" })}</p>
+          </div>
         ) : (
           <>
             <div className="h-[140px] mb-3">
@@ -112,8 +116,8 @@ export function ConcreteByClassCard() {
                   <XAxis dataKey="name" tick={{ fontSize: 10 }} />
                   <YAxis tick={{ fontSize: 9 }} />
                   <Tooltip
-                    contentStyle={{ fontSize: 11, borderRadius: 8 }}
-                    formatter={(value: number, name: string) => [value, name === "amostras" ? "Amostras" : "fcm (MPa)"]}
+                    contentStyle={{ fontSize: 11, borderRadius: 8, border: "1px solid hsl(var(--border))", background: "hsl(var(--card))" }}
+                    formatter={(value: number, name: string) => [value, name === "amostras" ? t("dashboard.concrete.samples", { defaultValue: "Amostras" }) : "fcm (MPa)"]}
                   />
                   <Bar dataKey="amostras" radius={[4, 4, 0, 0]} maxBarSize={32}>
                     {chartData.map((_, idx) => (
@@ -131,10 +135,10 @@ export function ConcreteByClassCard() {
                   onClick={() => navigate("/tests/concrete")}
                 >
                   <span className="font-mono font-semibold w-16">{d.concrete_class}</span>
-                  <span className="flex-1 text-muted-foreground">{d.specimen_count} amostras</span>
+                  <span className="flex-1 text-muted-foreground">{d.specimen_count} {t("dashboard.concrete.samples", { defaultValue: "amostras" })}</span>
                   <span className="tabular-nums">{d.avg_fcm != null ? `${d.avg_fcm} MPa` : "—"}</span>
                   <Badge variant={d.status === "conforme" ? "secondary" : d.status === "nc" ? "destructive" : "outline"} className="text-[9px]">
-                    {d.status === "conforme" ? "OK" : d.status === "nc" ? "NC" : "Pend."}
+                    {d.status === "conforme" ? "OK" : d.status === "nc" ? "NC" : t("common.pending", { defaultValue: "Pend." })}
                   </Badge>
                 </li>
               ))}
