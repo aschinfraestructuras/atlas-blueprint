@@ -28,6 +28,7 @@ import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { MaterialFormDialog } from "@/components/materials/MaterialFormDialog";
 import { MaterialReceptionDialog } from "@/components/materials/MaterialReceptionDialog";
 import { LinkedDocumentsPanel } from "@/components/documents/LinkedDocumentsPanel";
+import { TechnicalDossierTab } from "@/components/materials/TechnicalDossierTab";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
