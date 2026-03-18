@@ -126,14 +126,14 @@ function MonthlyReportAlert({ projectId }: { projectId: string }) {
       <FileBarChart2 className="h-4 w-4 flex-shrink-0" />
       <span className="text-sm flex-1">
         {show.overdue
-          ? `🔴 Relatório Mensal SGQ em atraso — ${Math.abs(show.days)} dias`
-          : `⚠️ Relatório Mensal SGQ — entregar até ${show.deadline.toLocaleDateString("pt-PT")}`}
+          ? `🔴 ${t("dashboard.monthlyReport.overdue", { days: Math.abs(show.days), defaultValue: `Relatório Mensal SGQ em atraso — ${Math.abs(show.days)} dias` })}`
+          : `⚠️ ${t("dashboard.monthlyReport.upcoming", { date: show.deadline.toLocaleDateString(), defaultValue: `Relatório Mensal SGQ — entregar até ${show.deadline.toLocaleDateString()}` })}`}
       </span>
       <button
         onClick={() => navigate("/reports/monthly")}
         className="text-xs font-medium underline underline-offset-2 hover:opacity-80"
       >
-        Criar Relatório
+        {t("dashboard.monthlyReport.create", { defaultValue: "Criar Relatório" })}
       </button>
     </div>
   );
