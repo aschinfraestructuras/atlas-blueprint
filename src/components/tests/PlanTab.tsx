@@ -271,6 +271,151 @@ function RuleEditor({ plan }: { plan: TestPlan }) {
   );
 }
 
+// ─── Anexo B PE Section ──────────────────────────────────────────────────────
+
+interface AnnexBRow {
+  id: string;
+  test_code: string;
+  test_name: string;
+  disciplina: string;
+  standards: string[] | null;
+  frequency: string | null;
+  acceptance_criteria: string | null;
+  requires_lab: boolean;
+  material_scope: string;
+}
+
+function AnnexBSection() {
+  const { t } = useTranslation();
+  const { activeProject } = useProject();
+  const { logoBase64 } = useProjectLogo();
+  const reportMeta = useReportMeta();
+  const [rows, setRows] = useState<AnnexBRow[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!activeProject) return;
+    setLoading(true);
+    supabase
+      .from("view_pe_annexb_pf17a" as any)
+      .select("*")
+      .eq("project_id", activeProject.id)
+      .then(({ data, error }) => {
+        if (error) console.error("[AnnexB]", error);
+        setRows((data ?? []) as unknown as AnnexBRow[]);
+      })
+      .finally(() => setLoading(false));
+  }, [activeProject]);
+
+  // Group by discipline
+  const grouped = useMemo(() => {
+    const map = new Map<string, AnnexBRow[]>();
+    rows.forEach(r => {
+      const disc = r.disciplina || "outros";
+      if (!map.has(disc)) map.set(disc, []);
+      map.get(disc)!.push(r);
+    });
+    return Array.from(map.entries());
+  }, [rows]);
+
+  const handleExportPdf = () => {
+    if (!reportMeta) return;
+    const l: ReportLabels = { appName: "Atlas QMS", reportTitle: "Mapa de Ensaios — Anexo B PE", generatedOn: "Gerado a" };
+
+    let counter = 1;
+    let tableHtml = "";
+    for (const [disc, items] of grouped) {
+      tableHtml += `<div class="atlas-section">${t(`ppi.disciplinas.${disc}`, { defaultValue: disc })}</div>`;
+      tableHtml += `<table class="atlas-table"><thead><tr>
+        <th>#</th><th>Código</th><th>Ensaio</th><th>Norma</th><th>Frequência</th><th>Critério</th><th>Lab?</th>
+      </tr></thead><tbody>`;
+      for (const item of items) {
+        tableHtml += `<tr>
+          <td>${counter++}</td>
+          <td>${item.test_code}</td>
+          <td>${item.test_name}</td>
+          <td>${(item.standards ?? []).join(", ") || "—"}</td>
+          <td>${item.frequency ?? "—"}</td>
+          <td>${item.acceptance_criteria ?? "—"}</td>
+          <td>${item.requires_lab ? "Sim" : "Não"}</td>
+        </tr>`;
+      }
+      tableHtml += `</tbody></table>`;
+    }
+
+    const html = generatePdfDocument({
+      title: "Mapa de Ensaios — Anexo B PE",
+      labels: l,
+      meta: reportMeta,
+      bodyHtml: tableHtml + `<div style="margin-top:8px;font-size:9px;color:#6B7280;">${rows.length} ensaio(s)</div>`,
+      footerRef: `ANEXO-B-${reportMeta.projectCode}`,
+    });
+    printHtml(html, buildReportFilename("ANEXO-B", reportMeta.projectCode, "PE"));
+  };
+
+  if (loading) return <Skeleton className="h-40 w-full" />;
+  if (rows.length === 0) return null;
+
+  return (
+    <div className="space-y-3 mt-6">
+      <div className="flex items-center justify-between">
+        <h4 className="text-sm font-semibold text-foreground">Mapa de Ensaios (Anexo B PE)</h4>
+        <Button size="sm" variant="outline" className="h-7 text-xs gap-1.5" onClick={handleExportPdf}>
+          <FileDown className="h-3.5 w-3.5" />
+          Exportar PDF
+        </Button>
+      </div>
+      {grouped.map(([disc, items]) => (
+        <Collapsible key={disc} defaultOpen>
+          <CollapsibleTrigger className="flex items-center gap-2 w-full text-left py-2 px-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors">
+            <ChevronDown className="h-3.5 w-3.5 text-muted-foreground transition-transform [&[data-state=closed]]:rotate-[-90deg]" />
+            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              {t(`ppi.disciplinas.${disc}`, { defaultValue: disc })}
+            </span>
+            <Badge variant="secondary" className="text-[10px] py-0 ml-auto">{items.length}</Badge>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <div className="rounded-lg border border-border overflow-hidden mt-1">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-muted/40">
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground w-8">#</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Código</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Ensaio</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Norma</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Frequência</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Critério</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Lab?</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {items.map((item, idx) => (
+                    <TableRow key={item.id} className="hover:bg-muted/10">
+                      <TableCell className="text-xs text-muted-foreground">{idx + 1}</TableCell>
+                      <TableCell className="font-mono text-xs font-semibold">{item.test_code}</TableCell>
+                      <TableCell className="text-sm">{item.test_name}</TableCell>
+                      <TableCell className="text-xs">{(item.standards ?? []).join(", ") || "—"}</TableCell>
+                      <TableCell className="text-xs">{item.frequency ?? "—"}</TableCell>
+                      <TableCell className="text-xs max-w-[200px] truncate">{item.acceptance_criteria ?? "—"}</TableCell>
+                      <TableCell>
+                        {item.requires_lab ? (
+                          <Badge variant="secondary" className="text-xs bg-primary/10 text-primary">Sim</Badge>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">Não</span>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+      ))}
+    </div>
+  );
+}
+
 // ─── Discipline chips for KPIs ───────────────────────────────────────────────
 const DISCIPLINE_CHIPS = [
   { code: "D1", key: "terras", label: "Topografia" },
