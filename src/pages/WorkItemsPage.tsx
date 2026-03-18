@@ -178,6 +178,7 @@ export default function WorkItemsPage() {
   const { data, loading, refetch } = useWorkItems();
   const { canCreate, canEdit, canDelete } = useProjectRole();
   const reportMeta = useReportMeta();
+  const { logoBase64 } = useProjectLogo();
 
   const [dialogOpen, setDialogOpen]   = useState(false);
   const [editItem,   setEditItem]     = useState<WorkItem | null>(null);
