@@ -300,7 +300,7 @@ function LotsTab({
             </div>
             <div>
               <Label>Atividade</Label>
-              <Select value={lotForm.work_item_id} onValueChange={(v) => setLotForm((f) => ({ ...f, work_item_id: v }))}>
+              <Select value={lotForm.work_item_id || "__none__"} onValueChange={(v) => setLotForm((f) => ({ ...f, work_item_id: v === "__none__" ? "" : v }))}>
                 <SelectTrigger><SelectValue placeholder="Selecionar..." /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="__none__">—</SelectItem>
