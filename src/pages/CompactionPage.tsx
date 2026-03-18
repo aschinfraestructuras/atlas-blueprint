@@ -355,6 +355,13 @@ export default function CompactionPage() {
                 )}
               </div>
 
+              {/* Attachments */}
+              <AttachmentsPanel
+                projectId={activeProject?.id ?? ""}
+                entityType="compaction_tests"
+                entityId={detailData.zone.id}
+              />
+
               <DialogFooter>
                 <Button variant="outline" onClick={() => {
                   if (detailData) compactionService.exportPdf(detailData.zone, detailData.nuclear, detailData.plates, activeProject?.name ?? "PF17A", logoBase64);
