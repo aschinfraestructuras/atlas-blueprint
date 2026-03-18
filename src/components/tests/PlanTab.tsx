@@ -300,11 +300,11 @@ function AnnexBSection() {
       .from("view_pe_annexb_pf17a" as any)
       .select("*")
       .eq("project_id", activeProject.id)
-      .then(({ data, error }) => {
+      .then(({ data, error }: any) => {
         if (error) console.error("[AnnexB]", error);
         setRows((data ?? []) as unknown as AnnexBRow[]);
-      })
-      .finally(() => setLoading(false));
+        setLoading(false);
+      });
   }, [activeProject]);
 
   // Group by discipline
