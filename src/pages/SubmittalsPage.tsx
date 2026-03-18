@@ -434,10 +434,10 @@ export default function SubmittalsPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
                   <Label>{t("submittals.form.supplier", { defaultValue: "Fornecedor" })}</Label>
-                  <Select value={formSupplier} onValueChange={setFormSupplier}>
+                  <Select value={formSupplier || "__none__"} onValueChange={v => setFormSupplier(v === "__none__" ? "" : v)}>
                     <SelectTrigger><SelectValue placeholder="—" /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">—</SelectItem>
+                      <SelectItem value="__none__">—</SelectItem>
                       {suppliers.map(s => (
                         <SelectItem key={s.id} value={s.name}>{s.code} — {s.name}</SelectItem>
                       ))}
@@ -446,10 +446,10 @@ export default function SubmittalsPage() {
                 </div>
                 <div className="space-y-2">
                   <Label>{t("submittals.form.subcontractor", { defaultValue: "Subempreiteiro" })}</Label>
-                  <Select value={formSubcontractor} onValueChange={setFormSubcontractor}>
+                  <Select value={formSubcontractor || "__none__"} onValueChange={v => setFormSubcontractor(v === "__none__" ? "" : v)}>
                     <SelectTrigger><SelectValue placeholder="—" /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">—</SelectItem>
+                      <SelectItem value="__none__">—</SelectItem>
                       {subcontractors.map(s => (
                         <SelectItem key={s.id} value={s.name}>{s.name}</SelectItem>
                       ))}
@@ -500,10 +500,10 @@ export default function SubmittalsPage() {
                 </div>
                 <div className="space-y-2">
                   <Label>{t("submittals.form.workItem", { defaultValue: "Atividade" })}</Label>
-                  <Select value={formWorkItemId} onValueChange={setFormWorkItemId}>
+                  <Select value={formWorkItemId || "__none__"} onValueChange={v => setFormWorkItemId(v === "__none__" ? "" : v)}>
                     <SelectTrigger><SelectValue placeholder="—" /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">—</SelectItem>
+                      <SelectItem value="__none__">—</SelectItem>
                       {workItems.map(w => (
                         <SelectItem key={w.id} value={w.id}>{w.sector}</SelectItem>
                       ))}
