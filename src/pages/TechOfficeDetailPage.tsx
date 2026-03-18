@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useProject } from "@/contexts/ProjectContext";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import { useReportMeta } from "@/hooks/useReportMeta";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { useWorkItems } from "@/hooks/useWorkItems";
 import { technicalOfficeService, type TechnicalOfficeItem, type TechOfficeMessage, TECH_OFFICE_STATUSES } from "@/lib/services/technicalOfficeService";
 import { useTechOfficeMessages } from "@/hooks/useTechnicalOffice";
@@ -54,6 +55,7 @@ export default function TechOfficeDetailPage() {
   const { activeProject } = useProject();
   const { isAdmin } = useProjectRole();
   const reportMeta = useReportMeta();
+  const { logoBase64 } = useProjectLogo();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -143,7 +145,7 @@ export default function TechOfficeDetailPage() {
   };
 
   const handleExportPdf = () => {
-    exportTechOfficeDetailPdf(item, messages, meta);
+    exportTechOfficeDetailPdf(item, messages, meta, logoBase64);
   };
 
   const WORKFLOW_STATUSES = TECH_OFFICE_STATUSES.filter(s => s !== "cancelled");

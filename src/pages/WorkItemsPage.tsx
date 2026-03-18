@@ -16,6 +16,7 @@ import { useWorkItems } from "@/hooks/useWorkItems";
 import { useProject } from "@/contexts/ProjectContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useReportMeta } from "@/hooks/useReportMeta";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import { RoleGate, RoleGateAdmin } from "@/components/RoleGate";
 import {
@@ -177,6 +178,7 @@ export default function WorkItemsPage() {
   const { data, loading, refetch } = useWorkItems();
   const { canCreate, canEdit, canDelete } = useProjectRole();
   const reportMeta = useReportMeta();
+  const { logoBase64 } = useProjectLogo();
 
   const [dialogOpen, setDialogOpen]   = useState(false);
   const [editItem,   setEditItem]     = useState<WorkItem | null>(null);
@@ -360,6 +362,7 @@ export default function WorkItemsPage() {
       rows,
       footerRef: `${filtered.length} work items`,
       filename: buildReportFilename("WI", activeProject.code, "list"),
+      logoBase64,
     });
   }
 

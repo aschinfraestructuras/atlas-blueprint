@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { useReportMeta } from "@/hooks/useReportMeta";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { planningService, type Activity, type CompletionCheck } from "@/lib/services/planningService";
 import { supabase } from "@/integrations/supabase/client";
 import { auditService } from "@/lib/services/auditService";
@@ -48,6 +49,7 @@ export default function ActivityDetailPage() {
   const navigate = useNavigate();
   const { activeProject } = useProject();
   const reportMeta = useReportMeta();
+  const { logoBase64 } = useProjectLogo();
 
   useEffect(() => {
     if (!id || id === "undefined" || id.trim() === "") {
@@ -252,7 +254,7 @@ export default function ActivityDetailPage() {
         </Badge>
         <ReportExportMenu options={[
           { label: "PDF", icon: "pdf", action: () => {
-            exportActivityDetailPdf(activity, requirements, meta);
+            exportActivityDetailPdf(activity, requirements, meta, logoBase64);
             auditService.log({ projectId: activeProject.id, entity: "planning_activities", entityId: activity.id, action: "EXPORT", module: "planning", description: `Exportação PDF da atividade "${activity.description}"` });
           }},
         ]} />

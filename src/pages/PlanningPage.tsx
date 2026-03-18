@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useProject } from "@/contexts/ProjectContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useReportMeta } from "@/hooks/useReportMeta";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { usePlanning } from "@/hooks/usePlanning";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import { planningService } from "@/lib/services/planningService";
@@ -80,6 +81,7 @@ export default function PlanningPage() {
   const { wbs, activities, loading, error, refetch } = usePlanning();
   const { canCreate, isAdmin } = useProjectRole();
   const reportMeta = useReportMeta();
+  const { logoBase64 } = useProjectLogo();
   const [activeTab, setActiveTab] = useState("activities");
 
   const [wbsDialogOpen, setWbsDialogOpen] = useState(false);
@@ -182,9 +184,9 @@ export default function PlanningPage() {
 
   const handleExport = (type: "csv" | "pdf") => {
     if (activeTab === "wbs") {
-      if (type === "csv") { exportWbsCsv(wbsTree as WbsNode[], meta); } else { exportWbsPdf(wbsTree as WbsNode[], meta); }
+      if (type === "csv") { exportWbsCsv(wbsTree as WbsNode[], meta); } else { exportWbsPdf(wbsTree as WbsNode[], meta, logoBase64); }
     } else {
-      if (type === "csv") { exportActivitiesCsv(filteredActivities, meta); } else { exportActivitiesPdf(filteredActivities, meta); }
+      if (type === "csv") { exportActivitiesCsv(filteredActivities, meta); } else { exportActivitiesPdf(filteredActivities, meta, logoBase64); }
     }
     auditService.log({
       projectId: activeProject.id,

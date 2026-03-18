@@ -11,6 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useReportMeta } from "@/hooks/useReportMeta";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { useProject } from "@/contexts/ProjectContext";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -42,6 +43,7 @@ export default function DailyReportDetailPage() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const meta = useReportMeta();
+  const { logoBase64 } = useProjectLogo();
   const { activeProject } = useProject();
 
   const [report, setReport] = useState<DailyReport | null>(null);
@@ -223,6 +225,7 @@ export default function DailyReportDetailPage() {
       meta,
       bodyHtml: body,
       footerRef: `IP.MOD.102 · ${report.report_number}`,
+      logoBase64,
     });
     printHtml(html, buildReportFilename("PD", meta.projectCode, report.report_number));
   };
