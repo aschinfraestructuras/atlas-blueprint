@@ -1,7 +1,8 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import {
-  Gauge, Plus, FileDown, Trash2, Eye, CheckCircle2, XCircle, Clock, Loader2,
+  Gauge, Plus, FileDown, Trash2, Eye, CheckCircle2, XCircle, Clock, Loader2, AlertTriangle, Link2,
 } from "lucide-react";
 import { compactionService, type CompactionZoneWithCounts, type CompactionZone, type NuclearPoint, type PlateTest } from "@/lib/services/compactionService";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
@@ -24,6 +25,7 @@ import { RowActionMenu } from "@/components/ui/row-action-menu";
 import { EmptyState } from "@/components/EmptyState";
 import { ModuleKPICard } from "@/components/ModuleKPICard";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 function ResultBadge({ result }: { result: string }) {
   if (result === "pass") return <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-0">Conforme</Badge>;
@@ -33,6 +35,7 @@ function ResultBadge({ result }: { result: string }) {
 
 export default function CompactionPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { activeProject } = useProject();
   const { logoBase64 } = useProjectLogo();
   const { data: workItems } = useWorkItems();
@@ -44,6 +47,9 @@ export default function CompactionPage() {
   const [detailData, setDetailData] = useState<{ zone: CompactionZone; nuclear: NuclearPoint[]; plates: PlateTest[] } | null>(null);
   const [saving, setSaving] = useState(false);
   const [filterResult, setFilterResult] = useState("all");
+
+  // Linked concrete lots
+  const [concreteLots, setConcreteLots] = useState<Record<string, { lot_code: string; id: string }>>({});
 
   const [form, setForm] = useState({
     work_item_id: "",
@@ -70,6 +76,19 @@ export default function CompactionPage() {
     try {
       const data = await compactionService.listByProject(activeProject.id);
       setZones(data);
+
+      // Check for linked concrete lots via work_item_id
+      const wiIds = [...new Set(data.map(z => z.work_item_id).filter(Boolean))] as string[];
+      if (wiIds.length > 0) {
+        const { data: lots } = await supabase
+          .from("concrete_lots")
+          .select("id, lot_code, work_item_id")
+          .in("work_item_id", wiIds)
+          .eq("is_deleted", false);
+        const map: Record<string, { lot_code: string; id: string }> = {};
+        (lots ?? []).forEach((l: any) => { if (l.work_item_id) map[l.work_item_id] = { lot_code: l.lot_code, id: l.id }; });
+        setConcreteLots(map);
+      }
     } catch { /* */ } finally { setLoading(false); }
   }, [activeProject]);
 
@@ -89,6 +108,20 @@ export default function CompactionPage() {
   const passZones = zones.filter((z) => z.overall_result === "pass").length;
   const failZones = zones.filter((z) => z.overall_result === "fail").length;
   const pendingZones = zones.filter((z) => z.overall_result === "pending").length;
+
+  // AF.3 — KPI: points with GC < 95%
+  const [lowGcCount, setLowGcCount] = useState(0);
+  useEffect(() => {
+    if (!activeProject) return;
+    (async () => {
+      const { count } = await supabase
+        .from("compaction_nuclear_points" as any)
+        .select("id", { count: "exact", head: true })
+        .eq("project_id", activeProject.id)
+        .lt("compaction_degree", 95);
+      setLowGcCount(count ?? 0);
+    })();
+  }, [activeProject, zones]);
 
   const filteredPpis = form.work_item_id
     ? ppis.filter((p) => (p as any).work_item_id === form.work_item_id)
@@ -149,11 +182,12 @@ export default function CompactionPage() {
         actions={<Button onClick={() => setDialogOpen(true)} className="gap-1.5"><Plus className="h-4 w-4" /> {t("compaction.newZone")}</Button>}
       />
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         <ModuleKPICard label={t("compaction.kpi.total")} value={totalZones} icon={Gauge} />
         <ModuleKPICard label={t("compaction.kpi.pass")} value={passZones} icon={CheckCircle2} color="hsl(158,45%,32%)" />
         <ModuleKPICard label={t("compaction.kpi.fail")} value={failZones} icon={XCircle} color="hsl(2,60%,44%)" />
         <ModuleKPICard label={t("compaction.kpi.pending")} value={pendingZones} icon={Clock} color="hsl(33,75%,38%)" />
+        <ModuleKPICard label="GC < 95%" value={lowGcCount} icon={AlertTriangle} color={lowGcCount > 0 ? "hsl(0,65%,50%)" : undefined} />
       </div>
 
       <FilterBar>
@@ -192,7 +226,19 @@ export default function CompactionPage() {
                 {filtered.map((z) => (
                   <TableRow key={z.id} className="cursor-pointer hover:bg-muted/30" onClick={() => setDetailId(z.id)}>
                     <TableCell className="font-mono text-xs font-semibold">{z.code}</TableCell>
-                    <TableCell className="max-w-[200px] truncate">{z.zone_description}</TableCell>
+                    <TableCell className="max-w-[200px] truncate">
+                      {z.zone_description}
+                      {z.work_item_id && concreteLots[z.work_item_id] && (
+                        <Badge
+                          variant="outline"
+                          className="ml-2 text-[10px] cursor-pointer hover:bg-primary/10"
+                          onClick={(e) => { e.stopPropagation(); navigate("/tests/concrete"); }}
+                        >
+                          <Link2 className="h-2.5 w-2.5 mr-0.5" />
+                          {concreteLots[z.work_item_id].lot_code}
+                        </Badge>
+                      )}
+                    </TableCell>
                     <TableCell className="text-xs">{z.pk_start ?? "—"}</TableCell>
                     <TableCell className="text-xs">{z.material_type ?? "—"}</TableCell>
                     <TableCell className="text-xs">{z.nuclear_count}</TableCell>
@@ -308,6 +354,21 @@ export default function CompactionPage() {
                   <div><span className="text-muted-foreground text-xs font-semibold uppercase">γd máx</span><p>{detailData.zone.proctor_gamma_max ?? "—"} kN/m³</p></div>
                   <div><span className="text-muted-foreground text-xs font-semibold uppercase">w óptimo</span><p>{detailData.zone.proctor_wopt ?? "—"} %</p></div>
                 </div>
+
+                {/* Linked concrete lot badge */}
+                {detailData.zone.work_item_id && concreteLots[detailData.zone.work_item_id] && (
+                  <div className="flex items-center gap-2 p-2 rounded-lg border border-border bg-muted/30">
+                    <Link2 className="h-4 w-4 text-primary" />
+                    <span className="text-xs font-semibold">Lote de Betão associado:</span>
+                    <Badge
+                      variant="outline"
+                      className="cursor-pointer hover:bg-primary/10"
+                      onClick={() => navigate("/tests/concrete")}
+                    >
+                      {concreteLots[detailData.zone.work_item_id].lot_code}
+                    </Badge>
+                  </div>
+                )}
 
                 {detailData.nuclear.length > 0 && (
                   <>
