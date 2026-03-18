@@ -77,5 +77,6 @@ export function exportSubcontractorDetailPdf(
     rows,
     footerRef: `SUB-${meta.projectCode}-${sub.name.replace(/\s+/g, "_")}`,
     filename: buildReportFilename("SUB", meta.projectCode, sub.name.replace(/\s+/g, "_")),
+    logoBase64,
   });
 }
