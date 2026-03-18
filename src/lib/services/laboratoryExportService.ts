@@ -23,10 +23,10 @@ function printHtml(html: string) {
 }
 
 export interface LabTestRow {
-  code: string;
-  test_type: string;
-  result_status: string;
-  test_date: string | null;
+  code: string | null;
+  material: string | null;
+  result_status: string | null;
+  date: string | null;
 }
 
 export function exportLaboratoryPdf(
