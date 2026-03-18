@@ -660,7 +660,7 @@ function WorkItemWeldTab({ workItemId }: { workItemId: string }) {
     (async () => {
       setLoading(true);
       try {
-        const data = await weldService.getByWorkItem(workItemId);
+        const data = await weldService.listByWorkItem(workItemId);
         setWelds(data);
       } catch { /* */ } finally { setLoading(false); }
     })();
