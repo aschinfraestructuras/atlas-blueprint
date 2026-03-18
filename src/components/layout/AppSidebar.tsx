@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useProjectRole } from "@/hooks/useProjectRole";
@@ -7,13 +7,20 @@ import {
   LayoutDashboard, FolderKanban, FileText, Truck, Package,
   FlaskConical, AlertTriangle, ScrollText, Settings,
   ShieldCheck, ChevronLeft, ChevronRight, X, ChevronDown,
-  Inbox, BookOpen, Map, HardHat, Construction, ClipboardCheck, Crosshair, CalendarClock,
+  Inbox, BookOpen, HardHat, Construction, ClipboardCheck, Crosshair, CalendarClock,
   Clock, FileCheck, BarChart3, Building2, ClipboardList, Leaf, GraduationCap, FileBarChart2,
-  Users, Link2,
+  Users, Link2, Hammer, CheckSquare, FileStack, PieChart, Cog,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
+/* ── Types ───────────────────────────────────────────────────── */
 
 interface SidebarNavItem {
   labelKey: string;
@@ -26,13 +33,17 @@ interface SidebarNavItem {
 
 interface SidebarSection {
   sectionKey: string;
+  sectionIcon: React.ElementType;
   items: SidebarNavItem[];
   collapsible?: boolean;
 }
 
+/* ── Navigation Structure ────────────────────────────────────── */
+
 const NAV_SECTIONS: SidebarSection[] = [
   {
     sectionKey: "core",
+    sectionIcon: LayoutDashboard,
     collapsible: false,
     items: [
       { labelKey: "nav.dashboard", url: "/", icon: LayoutDashboard, exact: true },
@@ -40,93 +51,133 @@ const NAV_SECTIONS: SidebarSection[] = [
   },
   {
     sectionKey: "execution",
+    sectionIcon: Hammer,
     collapsible: true,
     items: [
-      { labelKey: "nav.workItems",      url: "/work-items",      icon: Construction },
-      { labelKey: "nav.ppi",            url: "/ppi",             icon: ClipboardCheck },
-      { labelKey: "nav.dailyReports",   url: "/daily-reports",   icon: ClipboardList },
-      { labelKey: "nav.planning",        url: "/planning",        icon: CalendarClock },
-      { labelKey: "nav.topography",    url: "/topography",      icon: Crosshair },
+      { labelKey: "nav.workItems",    url: "/work-items",    icon: Construction },
+      { labelKey: "nav.ppi",          url: "/ppi",           icon: ClipboardCheck },
+      { labelKey: "nav.dailyReports", url: "/daily-reports", icon: ClipboardList },
+      { labelKey: "nav.planning",     url: "/planning",      icon: CalendarClock },
+      { labelKey: "nav.topography",   url: "/topography",    icon: Crosshair },
     ],
   },
   {
     sectionKey: "quality",
+    sectionIcon: CheckSquare,
     collapsible: true,
     items: [
       { labelKey: "nav.nonConformities", url: "/non-conformities", icon: AlertTriangle },
-      { labelKey: "nav.tests",          url: "/tests",            icon: FlaskConical },
-      { labelKey: "nav.testSchedule", url: "/tests/schedule", icon: CalendarClock },
-      { labelKey: "nav.materials",      url: "/materials",        icon: Package },
+      { labelKey: "nav.tests",           url: "/tests",            icon: FlaskConical },
+      { labelKey: "nav.testSchedule",    url: "/tests/schedule",   icon: CalendarClock },
+      { labelKey: "nav.materials",       url: "/materials",        icon: Package },
       { labelKey: "nav.recycledMaterials", url: "/recycled-materials", icon: Leaf },
-      { labelKey: "nav.subcontractors", url: "/subcontractors",  icon: HardHat },
-      { labelKey: "nav.suppliers",      url: "/suppliers",        icon: Truck },
+      { labelKey: "nav.subcontractors",  url: "/subcontractors",   icon: HardHat },
+      { labelKey: "nav.suppliers",       url: "/suppliers",        icon: Truck },
       { labelKey: "nav.laboratories",    url: "/laboratories",     icon: Building2 },
     ],
   },
   {
     sectionKey: "documentation",
+    sectionIcon: FileStack,
     collapsible: true,
     items: [
-      { labelKey: "nav.documents",      url: "/documents",        icon: FileText },
+      { labelKey: "nav.documents",       url: "/documents",        icon: FileText },
       { labelKey: "nav.technicalOffice", url: "/technical-office", icon: Inbox },
       { labelKey: "nav.plans",           url: "/plans",            icon: BookOpen },
-      { labelKey: "nav.dfo",          url: "/dfo",           icon: FolderKanban },
+      { labelKey: "nav.dfo",             url: "/dfo",              icon: FolderKanban },
       { labelKey: "nav.audits",          url: "/audits",           icon: FileCheck },
-      { labelKey: "nav.training",   url: "/training",   icon: GraduationCap },
+      { labelKey: "nav.training",        url: "/training",         icon: GraduationCap },
     ],
   },
   {
     sectionKey: "reports",
+    sectionIcon: PieChart,
     collapsible: true,
     items: [
-      { labelKey: "nav.qcReport",     url: "/reports/qc",    icon: BarChart3 },
-      { labelKey: "nav.monthlyReport", url: "/reports/monthly", icon: FileBarChart2 },
-      { labelKey: "nav.traceability", url: "/traceability",  icon: Link2 },
-      { labelKey: "nav.deadlines",    url: "/deadlines",     icon: Clock },
-      { labelKey: "nav.expirations",  url: "/expirations",   icon: AlertTriangle },
-      { labelKey: "nav.sgqMatrix",    url: "/sgq-matrix",    icon: ShieldCheck },
+      { labelKey: "nav.qcReport",      url: "/reports/qc",     icon: BarChart3 },
+      { labelKey: "nav.monthlyReport",  url: "/reports/monthly", icon: FileBarChart2 },
+      { labelKey: "nav.traceability",   url: "/traceability",   icon: Link2 },
+      { labelKey: "nav.deadlines",      url: "/deadlines",      icon: Clock },
+      { labelKey: "nav.expirations",    url: "/expirations",    icon: AlertTriangle },
+      { labelKey: "nav.sgqMatrix",      url: "/sgq-matrix",     icon: ShieldCheck },
     ],
   },
   {
     sectionKey: "system",
+    sectionIcon: Cog,
     collapsible: true,
     items: [
-      { labelKey: "nav.orgChart",     url: "/org-chart",     icon: Users },
-      { labelKey: "nav.auditLog",     url: "/audit-log",     icon: ScrollText,  requiredAction: "viewAudit" },
-      { labelKey: "nav.health",       url: "/admin/health",  icon: ShieldCheck, adminOnly: true },
-      { labelKey: "nav.settings",     url: "/settings",      icon: Settings,    adminOnly: true },
+      { labelKey: "nav.orgChart",  url: "/org-chart",    icon: Users },
+      { labelKey: "nav.auditLog",  url: "/audit-log",    icon: ScrollText,  requiredAction: "viewAudit" },
+      { labelKey: "nav.health",    url: "/admin/health",  icon: ShieldCheck, adminOnly: true },
+      { labelKey: "nav.settings",  url: "/settings",      icon: Settings,    adminOnly: true },
     ],
   },
 ];
 
-/* ── Section Label (collapsible) ─────────────────────────────── */
+/* ── Section Header (accordion trigger) ──────────────────────── */
 
-function SectionLabel({ label, collapsed, open, onToggle, collapsible }: {
-  label: string; collapsed: boolean; open: boolean; onToggle: () => void; collapsible?: boolean;
+function SectionHeader({
+  label, sectionIcon: Icon, collapsed, open, onToggle, hasActive, collapsible,
+}: {
+  label: string;
+  sectionIcon: React.ElementType;
+  collapsed: boolean;
+  open: boolean;
+  onToggle: () => void;
+  hasActive: boolean;
+  collapsible?: boolean;
 }) {
-  if (collapsed) return <div className="my-2.5 h-px mx-2.5 bg-sidebar-border/40" />;
-
-  return (
+  const inner = (
     <button
       type="button"
       onClick={collapsible ? onToggle : undefined}
       className={cn(
-        "flex items-center gap-2 px-3 mb-1 mt-4 w-full text-left group/section",
-        collapsible && "cursor-pointer hover:opacity-80 transition-opacity"
+        "flex items-center w-full rounded-lg transition-all duration-150 group/header",
+        collapsed ? "justify-center mx-1.5 min-h-[40px]" : "gap-2.5 px-3 mx-1.5 min-h-[36px]",
+        collapsible && "cursor-pointer",
+        hasActive && !open
+          ? "text-sidebar-primary"
+          : "text-sidebar-foreground/45 hover:text-sidebar-foreground/75",
       )}
     >
-      <span className="text-[9px] font-semibold uppercase tracking-[0.18em] whitespace-nowrap text-sidebar-foreground/35 select-none">
-        {label}
-      </span>
-      <div className="flex-1 h-px bg-sidebar-border/30" />
-      {collapsible && (
-        <ChevronDown className={cn(
-          "h-2.5 w-2.5 text-sidebar-foreground/25 transition-transform duration-200 flex-shrink-0",
-          !open && "-rotate-90"
-        )} />
+      <Icon className={cn(
+        "flex-shrink-0 transition-all duration-150",
+        collapsed ? "h-4 w-4" : "h-3.5 w-3.5",
+        hasActive ? "text-sidebar-primary opacity-100" : "opacity-40 group-hover/header:opacity-70",
+      )} />
+      {!collapsed && (
+        <>
+          <span className={cn(
+            "text-[10px] font-bold uppercase tracking-[0.14em] whitespace-nowrap select-none leading-none",
+            hasActive ? "text-sidebar-primary" : "text-sidebar-foreground/40 group-hover/header:text-sidebar-foreground/60"
+          )}>
+            {label}
+          </span>
+          <div className="flex-1" />
+          {collapsible && (
+            <ChevronDown className={cn(
+              "h-2.5 w-2.5 text-sidebar-foreground/25 transition-transform duration-200 flex-shrink-0",
+              !open && "-rotate-90"
+            )} />
+          )}
+        </>
       )}
     </button>
   );
+
+  if (collapsed) {
+    return (
+      <Tooltip delayDuration={0}>
+        <TooltipTrigger asChild>{inner}</TooltipTrigger>
+        <TooltipContent side="right" className="text-xs font-medium">
+          {label}
+        </TooltipContent>
+      </Tooltip>
+    );
+  }
+
+  return inner;
 }
 
 /* ── Nav Item ────────────────────────────────────────────────── */
@@ -137,32 +188,45 @@ function NavItem({ item, active, collapsed, onClose }: {
   const Icon = item.icon;
   const { t } = useTranslation();
 
-  return (
+  const inner = (
     <NavLink
       to={item.url}
       onClick={onClose}
       className={cn(
-        "group relative flex items-center gap-2.5 rounded-lg text-sm font-medium min-h-[44px]",
+        "group relative flex items-center gap-2.5 rounded-lg text-sm font-medium",
         "transition-all duration-150",
-        collapsed ? "justify-center px-0 mx-1.5" : "px-3 mx-1.5",
+        collapsed ? "justify-center px-0 mx-1.5 min-h-[38px]" : "px-3 mx-1.5 min-h-[34px] pl-9",
         active
           ? "bg-sidebar-accent text-sidebar-accent-foreground"
           : "text-sidebar-foreground/55 hover:text-sidebar-foreground/90 hover:bg-sidebar-accent/50"
       )}
     >
       {active && (
-        <span className="absolute left-0 top-[6px] bottom-[6px] w-[3px] rounded-r-full bg-sidebar-primary" />
+        <span className="absolute left-0 top-[5px] bottom-[5px] w-[3px] rounded-r-full bg-sidebar-primary" />
       )}
       <Icon className={cn(
         "flex-shrink-0 transition-all duration-150",
-        collapsed ? "h-4 w-4" : "h-[15px] w-[15px]",
+        collapsed ? "h-4 w-4" : "h-[14px] w-[14px]",
         active ? "text-sidebar-primary" : "opacity-50 group-hover:opacity-75"
       )} />
       {!collapsed && (
-        <span className="truncate leading-none text-[12.5px] tracking-[0.01em]">{t(item.labelKey)}</span>
+        <span className="truncate leading-none text-[12px] tracking-[0.01em]">{t(item.labelKey)}</span>
       )}
     </NavLink>
   );
+
+  if (collapsed) {
+    return (
+      <Tooltip delayDuration={0}>
+        <TooltipTrigger asChild>{inner}</TooltipTrigger>
+        <TooltipContent side="right" className="text-xs">
+          {t(item.labelKey)}
+        </TooltipContent>
+      </Tooltip>
+    );
+  }
+
+  return inner;
 }
 
 /* ── Sidebar Content ─────────────────────────────────────────── */
@@ -174,21 +238,33 @@ function SidebarContent({ collapsed, onClose }: { collapsed: boolean; onClose?: 
   const { can, isAdmin } = useProjectRole();
   const { logoUrl } = useProjectLogo();
 
-  const [openSections, setOpenSections] = useState<Record<string, boolean>>(() => {
-    const initial: Record<string, boolean> = {};
-    NAV_SECTIONS.forEach(s => { initial[s.sectionKey] = true; });
-    return initial;
-  });
+  const isActive = useCallback(
+    (url: string, exact?: boolean) =>
+      exact ? location.pathname === url : location.pathname.startsWith(url),
+    [location.pathname]
+  );
+
+  // Determine which section contains the active route
+  const activeSectionKey = useMemo(() => {
+    for (const section of NAV_SECTIONS) {
+      if (section.items.some(item => isActive(item.url, item.exact))) {
+        return section.sectionKey;
+      }
+    }
+    return "core";
+  }, [isActive]);
+
+  // Accordion state: only one section open at a time
+  const [expandedSection, setExpandedSection] = useState<string | null>(activeSectionKey);
+
+  // Auto-expand when route changes
+  useEffect(() => {
+    setExpandedSection(activeSectionKey);
+  }, [activeSectionKey]);
 
   const toggleSection = useCallback((key: string) => {
-    setOpenSections(prev => ({ ...prev, [key]: !prev[key] }));
+    setExpandedSection(prev => prev === key ? null : key);
   }, []);
-
-  const isActive = (url: string, exact?: boolean) =>
-    exact ? location.pathname === url : location.pathname.startsWith(url);
-
-  const sectionContainsActive = (section: SidebarSection) =>
-    section.items.some(item => isActive(item.url, item.exact));
 
   return (
     <div className="flex flex-col h-full bg-sidebar">
@@ -228,8 +304,8 @@ function SidebarContent({ collapsed, onClose }: { collapsed: boolean; onClose?: 
       </div>
 
       {/* ── Navigation ───────────────────────────────────────────── */}
-      <nav className="flex-1 overflow-y-auto py-3 space-y-0.5" style={{ scrollbarWidth: "none" }}>
-        {NAV_SECTIONS.map((section, idx) => {
+      <nav className="flex-1 overflow-y-auto py-2 space-y-0.5" style={{ scrollbarWidth: "none" }}>
+        {NAV_SECTIONS.map((section) => {
           const filteredItems = section.items.filter(item => {
             if (item.adminOnly && !isAdmin) return false;
             if (item.requiredAction && !can(item.requiredAction)) return false;
@@ -238,28 +314,49 @@ function SidebarContent({ collapsed, onClose }: { collapsed: boolean; onClose?: 
 
           if (filteredItems.length === 0) return null;
 
-          const isOpen = openSections[section.sectionKey] || sectionContainsActive(section);
+          const hasActive = filteredItems.some(item => isActive(item.url, item.exact));
+          const isOpen = expandedSection === section.sectionKey || !section.collapsible;
 
-          return (
-            <div key={section.sectionKey}>
-              {idx > 0 && (
-                <SectionLabel
-                  label={t(`nav.sections.${section.sectionKey}`)}
-                  collapsed={collapsed}
-                  open={isOpen}
-                  onToggle={() => toggleSection(section.sectionKey)}
-                  collapsible={section.collapsible}
-                />
-              )}
-              <div
-                className={cn(
-                  "space-y-[2px] overflow-hidden transition-all duration-200",
-                  idx > 0 && !isOpen && !collapsed ? "max-h-0 opacity-0" : "max-h-[600px] opacity-100"
-                )}
-              >
+          // Core section: render items directly (Dashboard)
+          if (!section.collapsible) {
+            return (
+              <div key={section.sectionKey} className="mb-1">
                 {filteredItems.map(item => (
                   <NavItem key={item.url} item={item} active={isActive(item.url, item.exact)} collapsed={collapsed} onClose={onClose} />
                 ))}
+                {!collapsed && <div className="h-px mx-3 mt-2 bg-sidebar-border/30" />}
+                {collapsed && <div className="h-px mx-2.5 my-1 bg-sidebar-border/30" />}
+              </div>
+            );
+          }
+
+          return (
+            <div key={section.sectionKey}>
+              {/* Section Header */}
+              <SectionHeader
+                label={t(`nav.sections.${section.sectionKey}`)}
+                sectionIcon={section.sectionIcon}
+                collapsed={collapsed}
+                open={isOpen}
+                onToggle={() => toggleSection(section.sectionKey)}
+                hasActive={hasActive}
+                collapsible={section.collapsible}
+              />
+
+              {/* Section Items — animated accordion */}
+              <div
+                className={cn(
+                  "overflow-hidden transition-all duration-250 ease-in-out",
+                  isOpen && !collapsed
+                    ? "max-h-[500px] opacity-100 mt-0.5 mb-1"
+                    : "max-h-0 opacity-0"
+                )}
+              >
+                <div className="space-y-[1px]">
+                  {filteredItems.map(item => (
+                    <NavItem key={item.url} item={item} active={isActive(item.url, item.exact)} collapsed={collapsed} onClose={onClose} />
+                  ))}
+                </div>
               </div>
             </div>
           );
