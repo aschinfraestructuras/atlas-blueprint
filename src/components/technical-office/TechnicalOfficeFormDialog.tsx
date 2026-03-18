@@ -110,14 +110,30 @@ export function TechnicalOfficeFormDialog({ open, onOpenChange, item, onSuccess 
     }
   }, [item, open, form]);
 
+  const buildDescription = (values: FormValues) => {
+    let desc = values.description ?? "";
+    if (values.type === "TRANSMITTAL") {
+      const meta = [
+        values.emitter_entity ? `EMITTER:${values.emitter_entity}` : "",
+        values.receiver_entity ? `RECEIVER:${values.receiver_entity}` : "",
+        values.transmittal_reason ? `REASON:${values.transmittal_reason}` : "",
+        values.response_status ? `RESPONSE:${values.response_status}` : "",
+        values.docs_sent ? `DOCS:${values.docs_sent}` : "",
+      ].filter(Boolean).join("\n");
+      if (meta) desc = `${desc}\n{{TRANSMITTAL_META}}\n${meta}`;
+    }
+    return desc;
+  };
+
   const onSubmit = async (values: FormValues) => {
     if (!activeProject || !user) return;
     try {
+      const description = buildDescription(values);
       if (item) {
         await technicalOfficeService.update(item.id, activeProject.id, {
           type: values.type,
           title: values.title,
-          description: values.description,
+          description,
           status: values.status,
           priority: values.priority,
           deadline: values.deadline || undefined,
@@ -133,7 +149,7 @@ export function TechnicalOfficeFormDialog({ open, onOpenChange, item, onSuccess 
           created_by: user.id,
           type: values.type,
           title: values.title,
-          description: values.description,
+          description,
           status: values.status,
           priority: values.priority,
           deadline: values.deadline || undefined,
