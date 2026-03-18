@@ -606,7 +606,7 @@ function WorkItemConcreteTab({ workItemId, projectId }: { workItemId: string; pr
     (async () => {
       setLoading(true);
       try {
-        const data = await concreteService.getByWorkItem(workItemId);
+        const data = await concreteService.listByWorkItem(workItemId);
         setBatches(data);
       } catch { /* */ } finally { setLoading(false); }
     })();
