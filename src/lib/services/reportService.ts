@@ -7,7 +7,7 @@
  * Supported entities: work_items, ppi_instances, test_results, non_conformities, documents
  */
 
-import { projectInfoStripHtml } from "./pdfProjectHeader";
+import { projectInfoStripHtml, fullPdfHeader } from "./pdfProjectHeader";
 
 // ─── Atlas brand colours ──────────────────────────────────────────────────────
 
