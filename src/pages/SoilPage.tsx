@@ -459,6 +459,13 @@ export default function SoilPage() {
                 )}
               </div>
 
+              {/* Attachments */}
+              <AttachmentsPanel
+                projectId={activeProject?.id ?? ""}
+                entityType="soil_samples"
+                entityId={detailData.id}
+              />
+
               <DialogFooter>
                 <Button variant="outline" onClick={() => { if (detailData) soilService.exportPdf(detailData, activeProject?.name ?? "PF17A", logoBase64); }}>
                   <FileDown className="h-4 w-4 mr-1.5" /> {t("common.exportPdf")}
