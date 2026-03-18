@@ -1,7 +1,9 @@
 import {
-  exportToCSV, generatePdfDocument, printHtml, buildReportFilename,
-  infoGridHtml, type ReportMeta, type ReportLabels, generateListPdf,
+  exportToCSV, printHtml, buildReportFilename,
+  infoGridHtml, sharedCss,
+  type ReportMeta, type ReportLabels,
 } from "./reportService";
+import { fullPdfHeader } from "./pdfProjectHeader";
 import type { Plan } from "./planService";
 import type { DocumentVersion } from "./documentService";
 
@@ -17,11 +19,33 @@ export function exportPlansCsv(data: Plan[], meta: ReportMeta) {
   exportToCSV(headers, rows, buildReportFilename("PLANS", meta.projectCode, "lista", "csv"));
 }
 
-export function exportPlansPdf(data: Plan[], meta: ReportMeta) {
+export function exportPlansPdf(data: Plan[], meta: ReportMeta, logoBase64?: string | null) {
   const l = labels(meta.locale);
+  const today = new Date().toLocaleDateString("pt-PT");
+  const header = fullPdfHeader(logoBase64 ?? null, `LINHA DO SUL — ${meta.projectCode}`, "PLANS-LISTA", "0", today);
+
   const columns = ["Tipo", "Título", "Revisão", "Estado", "Data"];
   const rows = data.map(p => [p.plan_type, p.title, p.revision ?? "—", p.status, p.created_at.slice(0, 10)]);
-  generateListPdf({ reportTitle: l.reportTitle, labels: l, meta, columns, rows, footerRef: `PLANS-${meta.projectCode}`, filename: buildReportFilename("PLANS", meta.projectCode, "lista") });
+  const tableRows = rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join("")}</tr>`).join("");
+
+  const bodyHtml = `
+    <table class="atlas-table">
+      <thead><tr>${columns.map(c => `<th>${c}</th>`).join("")}</tr></thead>
+      <tbody>${tableRows}</tbody>
+    </table>
+    <div style="margin-top:8px;font-size:9px;color:#6B7280;">${rows.length} registo(s)</div>`;
+
+  const html = `<!DOCTYPE html>
+<html lang="${meta.locale}">
+<head><meta charset="UTF-8"/><title>${l.reportTitle} — Atlas QMS</title>
+<style>${sharedCss()}</style></head>
+<body>
+${header}
+${bodyHtml}
+<div class="atlas-footer"><span>Atlas QMS · Sistema de Gestão da Qualidade</span><span>PLANS-${meta.projectCode}</span></div>
+</body></html>`;
+
+  printHtml(html, buildReportFilename("PLANS", meta.projectCode, "lista"));
 }
 
 export function exportPlanDetailPdf(
@@ -30,9 +54,12 @@ export function exportPlanDetailPdf(
   meta: ReportMeta,
   statusLabels: Record<string, string>,
   typeLabels: Record<string, string>,
+  logoBase64?: string | null,
 ) {
-  const l = labels(meta.locale);
   const isPt = meta.locale === "pt";
+  const today = new Date().toLocaleDateString("pt-PT");
+  const docCode = (plan as any).code ?? `PLAN-${plan.plan_type}`;
+  const header = fullPdfHeader(logoBase64 ?? null, `LINHA DO SUL — ${meta.projectCode}`, docCode, plan.revision ?? "0", today);
 
   const info = infoGridHtml([
     [isPt ? "Tipo" : "Tipo", typeLabels[plan.plan_type] ?? plan.plan_type],
@@ -56,13 +83,16 @@ export function exportPlanDetailPdf(
       </table>`;
   }
 
-  const html = generatePdfDocument({
-    title: `${isPt ? "Ficha do Plano" : "Ficha del Plan"} — ${plan.title}`,
-    labels: { ...l, reportTitle: isPt ? "Ficha do Plano" : "Ficha del Plan" },
-    meta,
-    bodyHtml: info + versionsHtml,
-    footerRef: `PLAN-${meta.projectCode}-${plan.plan_type}`,
-  });
+  const html = `<!DOCTYPE html>
+<html lang="${meta.locale}">
+<head><meta charset="UTF-8"/><title>${isPt ? "Ficha do Plano" : "Ficha del Plan"} — Atlas QMS</title>
+<style>${sharedCss()}</style></head>
+<body>
+${header}
+${info}
+${versionsHtml}
+<div class="atlas-footer"><span>Atlas QMS · Sistema de Gestão da Qualidade</span><span>${docCode}-${meta.projectCode}</span></div>
+</body></html>`;
 
   printHtml(html, buildReportFilename("PLAN", meta.projectCode, plan.plan_type));
 }

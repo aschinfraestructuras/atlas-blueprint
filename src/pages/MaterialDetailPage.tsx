@@ -12,6 +12,7 @@ import {
 } from "@/lib/services/materialService";
 import { exportMaterialPdf, exportFavPdf } from "@/lib/services/materialExportService";
 import { printQuarantineLabel } from "@/components/materials/QuarantineLabelView";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, Package, Plus, History, CheckCircle2, XCircle, SendHorizontal, AlertTriangle, Clock, Loader2, Tag, FileDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -87,6 +88,7 @@ export default function MaterialDetailPage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
   const { canEdit, canCreate, canValidate } = useProjectRole();
+  const { logoBase64 } = useProjectLogo();
 
   useEffect(() => {
     if (!id || id === "undefined" || id.trim() === "") {
@@ -208,6 +210,7 @@ export default function MaterialDetailPage() {
       tests: tests.map(tr => ({ code: tr.code ?? "", date: tr.date, pass_fail: tr.pass_fail ?? "", status: tr.status ?? "" })),
       projectName: activeProject.name,
       projectCode: activeProject.code,
+      logoBase64,
       t,
     });
   };
@@ -233,7 +236,7 @@ export default function MaterialDetailPage() {
           <ReportExportMenu options={[{ label: "PDF", icon: "pdf" as const, action: handleExportPdf }]} />
           {/* FAV Export */}
           {material.pame_code && (
-            <Button size="sm" variant="outline" className="gap-1.5" onClick={() => exportFavPdf(material, ncs, activeProject.name, activeProject.code)}>
+            <Button size="sm" variant="outline" className="gap-1.5" onClick={() => exportFavPdf(material, ncs, activeProject.name, activeProject.code, logoBase64)}>
               <FileDown className="h-3.5 w-3.5" />
               {t("materials.fav.exportFav", { defaultValue: "Exportar FAV" })}
             </Button>

@@ -1,6 +1,13 @@
-import jsPDF from "jspdf";
-import type { Material, MaterialDocument, MaterialDetailMetrics, WorkItemMaterial } from "./materialService";
+/**
+ * Material Export Service — Atlas QMS
+ * Migrated to HTML template with fullPdfHeader for consistent institutional branding.
+ */
+
+import { fullPdfHeader } from "./pdfProjectHeader";
+import { printHtml, sharedCss, buildReportFilename } from "./reportService";
+import { ATLAS_PDF } from "@/lib/atlas-pdf-theme";
 import { auditService } from "./auditService";
+import type { Material, MaterialDocument, MaterialDetailMetrics, WorkItemMaterial } from "./materialService";
 
 interface ExportData {
   material: Material;
@@ -11,170 +18,141 @@ interface ExportData {
   tests: { code: string; date: string; pass_fail: string; status: string }[];
   projectName: string;
   projectCode: string;
-  logoUrl?: string | null;
+  logoBase64?: string | null;
   t: (k: string, opts?: Record<string, unknown>) => string;
 }
 
+function esc(s?: string | null): string {
+  if (!s) return "—";
+  return s.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function fmtDate(d?: string | null): string {
+  if (!d) return "—";
+  return new Date(d).toLocaleDateString("pt-PT");
+}
+
+const localCss = `
+  .mat-section { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.15em; color:${ATLAS_PDF.colors.muted}; margin:16px 0 6px; border-bottom:2px solid ${ATLAS_PDF.colors.navy}; padding-bottom:3px; }
+  .mat-grid { display:grid; grid-template-columns:1fr 1fr; gap:4px 20px; background:#f8fafc; border:1px solid ${ATLAS_PDF.colors.rule}; border-radius:6px; padding:10px 14px; margin-bottom:12px; }
+  .mat-row label { font-size:7.5px; font-weight:700; text-transform:uppercase; letter-spacing:.12em; color:${ATLAS_PDF.colors.muted}; }
+  .mat-row .val { font-size:10px; color:${ATLAS_PDF.colors.ink}; font-weight:500; margin-top:1px; }
+  table.mat-table { width:100%; border-collapse:collapse; font-size:10px; margin-top:6px; }
+  table.mat-table th { background:${ATLAS_PDF.colors.navy}; color:#fff; padding:5px 8px; font-size:8px; font-weight:700; text-transform:uppercase; text-align:left; }
+  table.mat-table td { padding:5px 8px; border-bottom:1px solid ${ATLAS_PDF.colors.rule}; }
+  table.mat-table tr:nth-child(even) { background:${ATLAS_PDF.colors.tint}; }
+`;
+
+function infoRow(label: string, value: string): string {
+  return `<div class="mat-row"><label>${label}</label><div class="val">${value}</div></div>`;
+}
+
 export async function exportMaterialPdf(data: ExportData) {
-  const { material, metrics, docs, workItemLinks, ncs, tests, projectName, projectCode, t } = data;
-  const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-  const W = doc.internal.pageSize.getWidth();
-  const margin = 15;
-  let y = 15;
+  const { material, metrics, docs, workItemLinks, ncs, tests, projectName, projectCode, logoBase64, t } = data;
+  const today = new Date().toLocaleDateString("pt-PT");
+  const docCode = `MAT-${projectCode}-${material.code}`;
 
-  const addPage = () => { doc.addPage(); y = 15; drawHeader(); };
-  const checkY = (need: number) => { if (y + need > 275) addPage(); };
+  const header = fullPdfHeader(
+    logoBase64 ?? null,
+    `LINHA DO SUL — ${projectCode}`,
+    docCode,
+    "0",
+    today,
+  );
 
-  function drawHeader() {
-    doc.setFillColor(15, 30, 55);
-    doc.rect(0, 0, W, 12, "F");
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(8);
-    doc.setTextColor(255, 255, 255);
-    // If logo available, try to add it (jsPDF addImage is complex, fallback to text)
-    doc.text("ATLAS QMS", margin, 8);
-    doc.setFontSize(7);
-    doc.text(t("materials.export.reportTitle", { defaultValue: "Ficha de Material" }), W - margin, 8, { align: "right" });
-    y = 18;
-  }
-
-  function sectionTitle(title: string) {
-    checkY(10);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(9);
-    doc.setTextColor(15, 30, 55);
-    doc.text(title.toUpperCase(), margin, y);
-    y += 1;
-    doc.setDrawColor(15, 30, 55);
-    doc.setLineWidth(0.3);
-    doc.line(margin, y, W - margin, y);
-    y += 5;
-  }
-
-  function field(label: string, value: string) {
-    checkY(6);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(7);
-    doc.setTextColor(100);
-    doc.text(label, margin, y);
-    doc.setTextColor(30);
-    doc.setFont("helvetica", "bold");
-    doc.text(value || "—", margin + 50, y);
-    y += 5;
-  }
-
-  drawHeader();
-
-  // Title
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(14);
-  doc.setTextColor(15, 30, 55);
-  doc.text(material.name, margin, y + 2);
-  y += 8;
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(8);
-  doc.setTextColor(100);
-  doc.text(`${material.code} · ${projectName} (${projectCode})`, margin, y);
-  y += 8;
+  let body = "";
 
   // Identification
-  sectionTitle(t("materials.detail.tabs.summary", { defaultValue: "Resumo" }));
-  field(t("materials.form.category"), t(`materials.categories.${material.category}`, { defaultValue: material.category }));
-  field(t("materials.form.subcategory"), material.subcategory ?? "—");
-  field(t("materials.form.specification"), material.specification ?? "—");
-  field(t("materials.form.unit"), material.unit ?? "—");
-  field(t("materials.form.normativeRefs"), material.normative_refs ?? "—");
-  field(t("materials.form.acceptanceCriteria"), material.acceptance_criteria ?? "—");
-  field(t("common.status"), t(`materials.status.${material.status}`));
-  field(t("materials.approval.status"), t(`materials.approval.statuses.${material.approval_status}`, { defaultValue: material.approval_status }));
-  if (material.rejection_reason) field(t("materials.approval.rejectionReason"), material.rejection_reason);
-  y += 3;
+  body += `<div class="mat-section">${t("materials.detail.tabs.summary", { defaultValue: "Resumo" })}</div>`;
+  body += `<div class="mat-grid">
+    ${infoRow(t("materials.form.category"), t(`materials.categories.${material.category}`, { defaultValue: material.category }))}
+    ${infoRow(t("materials.form.subcategory"), esc(material.subcategory))}
+    ${infoRow(t("materials.form.specification"), esc(material.specification))}
+    ${infoRow(t("materials.form.unit"), esc(material.unit))}
+    ${infoRow(t("materials.form.normativeRefs"), esc(material.normative_refs))}
+    ${infoRow(t("materials.form.acceptanceCriteria"), esc(material.acceptance_criteria))}
+    ${infoRow(t("common.status"), t(`materials.status.${material.status}`))}
+    ${infoRow(t("materials.approval.status"), t(`materials.approval.statuses.${material.approval_status}`, { defaultValue: material.approval_status }))}
+    ${material.rejection_reason ? infoRow(t("materials.approval.rejectionReason"), esc(material.rejection_reason)) : ""}
+  </div>`;
 
   // KPIs
   if (metrics) {
-    sectionTitle("KPIs");
-    field(t("materials.detail.suppliersCount"), String(metrics.suppliers_count));
-    field(t("materials.detail.testsTotal"), String(metrics.tests_total));
-    field(t("materials.detail.testsNC"), String(metrics.tests_nonconform));
-    field(t("materials.detail.ncOpen"), String(metrics.nc_open_count));
-    field(t("materials.detail.docsExpiring"), String(metrics.docs_expiring_30d));
-    field(t("materials.detail.docsExpired"), String(metrics.docs_expired));
-    field(t("materials.detail.workItems"), String(metrics.work_items_count));
-    y += 3;
+    body += `<div class="mat-section">KPIs</div>`;
+    body += `<div class="mat-grid">
+      ${infoRow(t("materials.detail.suppliersCount"), String(metrics.suppliers_count))}
+      ${infoRow(t("materials.detail.testsTotal"), String(metrics.tests_total))}
+      ${infoRow(t("materials.detail.testsNC"), String(metrics.tests_nonconform))}
+      ${infoRow(t("materials.detail.ncOpen"), String(metrics.nc_open_count))}
+      ${infoRow(t("materials.detail.docsExpiring"), String(metrics.docs_expiring_30d))}
+      ${infoRow(t("materials.detail.docsExpired"), String(metrics.docs_expired))}
+      ${infoRow(t("materials.detail.workItems"), String(metrics.work_items_count))}
+    </div>`;
   }
 
   // Documents
   if (docs.length > 0) {
-    sectionTitle(t("materials.detail.tabs.documents", { defaultValue: "Documentos" }));
+    body += `<div class="mat-section">${t("materials.detail.tabs.documents", { defaultValue: "Documentos" })}</div>`;
+    body += `<table class="mat-table"><thead><tr><th>Tipo</th><th>Validade</th><th>Estado</th></tr></thead><tbody>`;
     docs.forEach(d => {
-      checkY(6);
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(7);
-      doc.setTextColor(30);
-      doc.text(`${t(`materials.docTypes.${d.doc_type}`, { defaultValue: d.doc_type })} — ${d.valid_to ? new Date(d.valid_to).toLocaleDateString() : "—"} — ${d.status}`, margin, y);
-      y += 4.5;
+      body += `<tr><td>${t(`materials.docTypes.${d.doc_type}`, { defaultValue: d.doc_type })}</td><td>${d.valid_to ? fmtDate(d.valid_to) : "—"}</td><td>${d.status}</td></tr>`;
     });
-    y += 3;
+    body += `</tbody></table>`;
   }
 
   // Tests
   if (tests.length > 0) {
-    sectionTitle(t("materials.detail.tabs.tests", { defaultValue: "Ensaios" }));
+    body += `<div class="mat-section">${t("materials.detail.tabs.tests", { defaultValue: "Ensaios" })}</div>`;
+    body += `<table class="mat-table"><thead><tr><th>Código</th><th>Data</th><th>Resultado</th></tr></thead><tbody>`;
     tests.slice(0, 20).forEach(tr => {
-      checkY(6);
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(7);
-      doc.setTextColor(30);
-      doc.text(`${tr.code ?? "—"} — ${new Date(tr.date).toLocaleDateString()} — ${tr.pass_fail ?? "—"}`, margin, y);
-      y += 4.5;
+      body += `<tr><td>${esc(tr.code)}</td><td>${fmtDate(tr.date)}</td><td>${esc(tr.pass_fail)}</td></tr>`;
     });
-    y += 3;
+    body += `</tbody></table>`;
   }
 
   // NCs
   if (ncs.length > 0) {
-    sectionTitle(t("materials.detail.tabs.ncs", { defaultValue: "Não Conformidades" }));
+    body += `<div class="mat-section">${t("materials.detail.tabs.ncs", { defaultValue: "Não Conformidades" })}</div>`;
+    body += `<table class="mat-table"><thead><tr><th>Código</th><th>Título</th><th>Gravidade</th><th>Estado</th></tr></thead><tbody>`;
     ncs.forEach(nc => {
-      checkY(6);
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(7);
-      doc.setTextColor(30);
-      doc.text(`${nc.code} — ${nc.title ?? "—"} — ${t(`nc.severity.${nc.severity}`, { defaultValue: nc.severity })} — ${t(`nc.status.${nc.status}`, { defaultValue: nc.status })}`, margin, y);
-      y += 4.5;
+      body += `<tr><td>${esc(nc.code)}</td><td>${esc(nc.title)}</td><td>${t(`nc.severity.${nc.severity}`, { defaultValue: nc.severity })}</td><td>${t(`nc.status.${nc.status}`, { defaultValue: nc.status })}</td></tr>`;
     });
-    y += 3;
+    body += `</tbody></table>`;
   }
 
   // Work Items
   if (workItemLinks.length > 0) {
-    sectionTitle(t("materials.detail.tabs.workItems", { defaultValue: "Aplicação em Obra" }));
+    body += `<div class="mat-section">${t("materials.detail.tabs.workItems", { defaultValue: "Aplicação em Obra" })}</div>`;
+    body += `<table class="mat-table"><thead><tr><th>WI</th><th>Lote</th><th>Quantidade</th></tr></thead><tbody>`;
     workItemLinks.slice(0, 20).forEach(wl => {
-      checkY(6);
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(7);
-      doc.setTextColor(30);
-      doc.text(`${wl.work_item_id.substring(0, 8)}… — ${wl.lot_ref ?? "—"} — ${wl.quantity ?? "—"} ${wl.unit ?? ""}`, margin, y);
-      y += 4.5;
+      body += `<tr><td>${wl.work_item_id.substring(0, 8)}…</td><td>${esc(wl.lot_ref)}</td><td>${wl.quantity ?? "—"} ${wl.unit ?? ""}</td></tr>`;
     });
+    body += `</tbody></table>`;
   }
 
-  // Footer
-  const pages = doc.getNumberOfPages();
-  for (let i = 1; i <= pages; i++) {
-    doc.setPage(i);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(6);
-    doc.setTextColor(150);
-    doc.text(
-      `${t("documents.export.generatedOn", { defaultValue: "Gerado em" })}: ${new Date().toLocaleString()} — ${t("documents.export.page", { defaultValue: "Página" })} ${i}/${pages}`,
-      W / 2, 290, { align: "center" }
-    );
-  }
+  // Signatures
+  body += `<div style="margin-top:30px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;font-size:9px;text-align:center;">
+    <div style="border-top:1px solid ${ATLAS_PDF.colors.rule};padding-top:6px;">Elaborado por</div>
+    <div style="border-top:1px solid ${ATLAS_PDF.colors.rule};padding-top:6px;">Verificado por</div>
+    <div style="border-top:1px solid ${ATLAS_PDF.colors.rule};padding-top:6px;">Aprovado por</div>
+  </div>`;
+
+  const html = `<!DOCTYPE html>
+<html lang="pt">
+<head><meta charset="UTF-8"/><title>${docCode} — Atlas QMS</title>
+<style>${sharedCss()}${localCss}</style></head>
+<body>
+${header}
+${body}
+<div class="atlas-footer">
+  <span>Atlas QMS · Sistema de Gestão da Qualidade</span>
+  <span>${docCode} · Gerado em ${today}</span>
+</div>
+</body></html>`;
 
   const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
-  doc.save(`MAT_${projectCode}_${material.code}_${dateStr}.pdf`);
+  printHtml(html, `MAT_${projectCode}_${material.code}_${dateStr}.pdf`);
 
-  // Audit
   await auditService.log({
     projectId: material.project_id,
     entity: "materials",
@@ -192,6 +170,7 @@ export function exportFavPdf(
   ncs: { code: string; title: string; severity: string; status: string }[],
   projectName: string,
   projectCode: string,
+  logoBase64?: string | null,
 ) {
   const techComparison = (material as any).technical_comparison ?? [];
   const favDocs = (material as any).fav_documents ?? [];
@@ -223,7 +202,16 @@ export function exportFavPdf(
     </tr>`;
   }).join("");
 
-  const logo = `<svg width="32" height="32" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="6" fill="#2F4F75"/><path d="M16 4L6 9v7c0 5.25 4.25 10.15 10 11.35C21.75 26.15 26 21.25 26 16V9L16 4z" fill="white" fill-opacity="0.9"/><path d="M13 16l2 2 4-4" stroke="#2F4F75" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  const today = new Date().toLocaleDateString("pt-PT");
+  const header = fullPdfHeader(
+    logoBase64 ?? null,
+    `LINHA DO SUL — ${projectCode}`,
+    material.pame_code ?? material.code,
+    "0",
+    today,
+    "ACE ASCH Infraestructuras + Cimontubo",
+    "IP — Infraestruturas de Portugal, S.A.",
+  );
 
   const html = `<!DOCTYPE html>
 <html><head>
@@ -231,26 +219,14 @@ export function exportFavPdf(
 <title>FAV — ${material.pame_code ?? material.code}</title>
 <style>
   @media print { body { margin: 0; } }
-  body { margin: 0; font-family: Arial, Helvetica, sans-serif; font-size: 12px; }
+  body { margin: 0; font-family: Arial, Helvetica, sans-serif; font-size: 12px; padding: 20px; }
   @page { size: A4 portrait; margin: 15mm; }
   table { border-collapse: collapse; width: 100%; }
 </style>
 </head><body>
-  <div style="background:#0f1e37;color:#fff;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;">
-    <div style="display:flex;align-items:center;gap:12px;">
-      ${logo}
-      <div>
-        <div style="font-size:18px;font-weight:900;letter-spacing:0.1em;">ATLAS QMS</div>
-        <div style="font-size:10px;opacity:0.7;">Ficha de Aprovação de Materiais (FAV)</div>
-      </div>
-    </div>
-    <div style="text-align:right;">
-      <div style="font-size:16px;font-weight:700;">${material.pame_code ?? material.code}</div>
-      <div style="font-size:10px;opacity:0.7;">${projectName} (${projectCode})</div>
-    </div>
-  </div>
+  ${header}
 
-  <div style="padding:20px;">
+  <div style="padding-top:10px;">
     <table style="margin-bottom:20px;">
       <tr>
         <td style="padding:6px 8px;font-weight:700;width:140px;border:1px solid #d1d5db;background:#f3f4f6;">Material</td>

@@ -34,6 +34,7 @@ import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import { exportPlansCsv, exportPlansPdf } from "@/lib/services/planExportService";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import type { Plan } from "@/lib/services/planService";
 import type { ReportMeta } from "@/lib/services/reportService";
 
@@ -66,6 +67,7 @@ export default function PlansPage() {
   const { data: plans, loading, error, refetch } = usePlans();
   const { canCreate, canDelete } = useProjectRole();
   const { toast } = useToast();
+  const { logoBase64 } = useProjectLogo();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingPlan, setEditingPlan] = useState<Plan | null>(null);
   const [deletingPlan, setDeletingPlan] = useState<Plan | null>(null);
@@ -113,7 +115,7 @@ export default function PlansPage() {
 
   const handleExport = (type: "csv" | "pdf") => {
     if (type === "csv") exportPlansCsv(filtered, meta);
-    else exportPlansPdf(filtered, meta);
+    else exportPlansPdf(filtered, meta, logoBase64);
     auditService.log({
       projectId: activeProject.id,
       entity: "plans",

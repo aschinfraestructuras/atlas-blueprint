@@ -12,6 +12,7 @@ import type { DocumentVersion } from "@/lib/services/documentService";
 import { exportPlanDetailPdf } from "@/lib/services/planExportService";
 import { attachmentService, getSignedUrlForPath } from "@/lib/services/attachmentService";
 import { useProject } from "@/contexts/ProjectContext";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -66,6 +67,7 @@ export default function PlanDetailPage() {
   const navigate = useNavigate();
   const { activeProject } = useProject();
   const { user } = useAuth();
+  const { logoBase64 } = useProjectLogo();
 
   useEffect(() => {
     if (!id || id === "undefined" || id.trim() === "") {
@@ -212,7 +214,7 @@ export default function PlanDetailPage() {
     ["MS", "PlanEsc", "PlanBet", "PlanMont", "PlanTraf", "PlanSeg", "Schedule", "Drawing", "Other"].forEach(pt => {
       typeLabels[pt] = t(`plans.types.${pt}`, { defaultValue: pt });
     });
-    exportPlanDetailPdf(plan, versions, meta, statusLabels, typeLabels);
+    exportPlanDetailPdf(plan, versions, meta, statusLabels, typeLabels, logoBase64);
   };
 
   if (loading) {

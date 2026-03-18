@@ -12,6 +12,7 @@ import {
   type SupplierEvaluation,
 } from "@/lib/services/supplierService";
 import { exportSupplierPdf } from "@/lib/services/supplierExportService";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, Truck, FileText, Package, FlaskConical, AlertTriangle, History, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -143,6 +144,7 @@ export default function SupplierDetailPage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
   const { canEdit, canCreate } = useProjectRole();
+  const { logoBase64 } = useProjectLogo();
 
   useEffect(() => {
     if (!id || id === "undefined" || id.trim() === "") {
@@ -250,6 +252,7 @@ export default function SupplierDetailPage() {
       projectName: activeProject.name,
       projectCode: activeProject.code,
       t,
+      logoBase64,
     });
   };
 

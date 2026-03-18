@@ -1,4 +1,9 @@
-import { exportToCSV, generateListPdf, generatePdfDocument, printHtml, infoGridHtml, buildReportFilename, type ReportMeta, type ReportLabels } from "./reportService";
+import {
+  exportToCSV, printHtml, buildReportFilename,
+  infoGridHtml, sharedCss,
+  type ReportMeta, type ReportLabels,
+} from "./reportService";
+import { fullPdfHeader } from "./pdfProjectHeader";
 import type { WbsNode, Activity } from "./planningService";
 
 const labels = (locale: string): ReportLabels => ({
@@ -13,12 +18,21 @@ export function exportWbsCsv(data: WbsNode[], meta: ReportMeta) {
   exportToCSV(headers, rows, buildReportFilename("WBS", meta.projectCode, "lista", "csv"));
 }
 
-export function exportWbsPdf(data: WbsNode[], meta: ReportMeta) {
-  const l = labels(meta.locale);
-  l.reportTitle = "WBS";
+export function exportWbsPdf(data: WbsNode[], meta: ReportMeta, logoBase64?: string | null) {
+  const today = new Date().toLocaleDateString("pt-PT");
+  const header = fullPdfHeader(logoBase64 ?? null, `LINHA DO SUL — ${meta.projectCode}`, "WBS-LISTA", "0", today);
   const columns = ["Código", "Descrição", "Zona", "Início", "Fim", "Responsável"];
   const rows = data.map(w => [w.wbs_code, w.description, w.zone ?? "—", w.planned_start ?? "—", w.planned_end ?? "—", w.responsible ?? "—"]);
-  generateListPdf({ reportTitle: l.reportTitle, labels: l, meta, columns, rows, footerRef: `WBS-${meta.projectCode}`, filename: buildReportFilename("WBS", meta.projectCode, "lista") });
+  const tableRows = rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join("")}</tr>`).join("");
+
+  const html = `<!DOCTYPE html><html lang="${meta.locale}"><head><meta charset="UTF-8"/><title>WBS — Atlas QMS</title>
+<style>${sharedCss()}</style></head><body>
+${header}
+<table class="atlas-table"><thead><tr>${columns.map(c => `<th>${c}</th>`).join("")}</tr></thead><tbody>${tableRows}</tbody></table>
+<div style="margin-top:8px;font-size:9px;color:#6B7280;">${rows.length} registo(s)</div>
+<div class="atlas-footer"><span>Atlas QMS</span><span>WBS-${meta.projectCode}</span></div>
+</body></html>`;
+  printHtml(html, buildReportFilename("WBS", meta.projectCode, "lista"));
 }
 
 export function exportActivitiesCsv(data: Activity[], meta: ReportMeta) {
@@ -27,12 +41,22 @@ export function exportActivitiesCsv(data: Activity[], meta: ReportMeta) {
   exportToCSV(headers, rows, buildReportFilename("ATIVIDADES", meta.projectCode, "lista", "csv"));
 }
 
-export function exportActivitiesPdf(data: Activity[], meta: ReportMeta) {
-  const l = labels(meta.locale);
-  l.reportTitle = meta.locale === "pt" ? "Atividades" : "Actividades";
+export function exportActivitiesPdf(data: Activity[], meta: ReportMeta, logoBase64?: string | null) {
+  const today = new Date().toLocaleDateString("pt-PT");
+  const title = meta.locale === "pt" ? "Atividades" : "Actividades";
+  const header = fullPdfHeader(logoBase64 ?? null, `LINHA DO SUL — ${meta.projectCode}`, "ACT-LISTA", "0", today);
   const columns = ["Descrição", "WBS", "Zona", "Estado", "Progresso", "Datas"];
   const rows = data.map(a => [a.description, a.wbs_code ?? "—", a.zone ?? "—", a.status, `${a.progress_pct}%`, `${a.planned_start ?? "?"} → ${a.planned_end ?? "?"}`]);
-  generateListPdf({ reportTitle: l.reportTitle, labels: l, meta, columns, rows, footerRef: `ACT-${meta.projectCode}`, filename: buildReportFilename("ATIVIDADES", meta.projectCode, "lista") });
+  const tableRows = rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join("")}</tr>`).join("");
+
+  const html = `<!DOCTYPE html><html lang="${meta.locale}"><head><meta charset="UTF-8"/><title>${title} — Atlas QMS</title>
+<style>${sharedCss()}</style></head><body>
+${header}
+<table class="atlas-table"><thead><tr>${columns.map(c => `<th>${c}</th>`).join("")}</tr></thead><tbody>${tableRows}</tbody></table>
+<div style="margin-top:8px;font-size:9px;color:#6B7280;">${rows.length} registo(s)</div>
+<div class="atlas-footer"><span>Atlas QMS</span><span>ACT-${meta.projectCode}</span></div>
+</body></html>`;
+  printHtml(html, buildReportFilename("ATIVIDADES", meta.projectCode, "lista"));
 }
 
 interface RequirementStatus {
@@ -45,10 +69,12 @@ interface RequirementStatus {
 export function exportActivityDetailPdf(
   activity: Activity,
   requirements: RequirementStatus[],
-  meta: ReportMeta
+  meta: ReportMeta,
+  logoBase64?: string | null,
 ) {
-  const l = labels(meta.locale);
-  l.reportTitle = meta.locale === "pt" ? "Detalhe da Atividade" : "Detalle de Actividad";
+  const today = new Date().toLocaleDateString("pt-PT");
+  const title = meta.locale === "pt" ? "Detalhe da Atividade" : "Detalle de Actividad";
+  const header = fullPdfHeader(logoBase64 ?? null, `LINHA DO SUL — ${meta.projectCode}`, `ACT-${meta.projectCode}`, "0", today);
 
   const info = infoGridHtml([
     [meta.locale === "pt" ? "Descrição" : "Descripción", activity.description],
@@ -68,24 +94,23 @@ export function exportActivityDetailPdf(
     const reqRows = requirements.map(r =>
       `<tr><td style="padding:4px 8px">${r.label}</td><td style="padding:4px 8px">${r.met ? "✅ Cumprido" : "❌ Pendente"}</td><td style="padding:4px 8px">${r.details}</td></tr>`
     ).join("");
-    reqHtml = `<h3 style="margin-top:16px">${meta.locale === "pt" ? "Requisitos" : "Requisitos"}</h3>
-      <table style="width:100%;border-collapse:collapse;font-size:10px">
-        <tr style="background:#f0f0f0"><th style="padding:4px 8px;text-align:left">Requisito</th><th style="padding:4px 8px;text-align:left">Estado</th><th style="padding:4px 8px;text-align:left">Detalhe</th></tr>
-        ${reqRows}
+    reqHtml = `<div class="atlas-section">${meta.locale === "pt" ? "Requisitos" : "Requisitos"}</div>
+      <table class="atlas-table">
+        <thead><tr><th>Requisito</th><th>Estado</th><th>Detalhe</th></tr></thead>
+        <tbody>${reqRows}</tbody>
       </table>`;
   }
 
   const constraintHtml = activity.constraints_text
-    ? `<h3 style="margin-top:16px">${meta.locale === "pt" ? "Restrições" : "Restricciones"}</h3><p style="font-size:10px">${activity.constraints_text}</p>`
+    ? `<div class="atlas-section">${meta.locale === "pt" ? "Restrições" : "Restricciones"}</div><p style="font-size:10px">${activity.constraints_text}</p>`
     : "";
 
-  const filename = buildReportFilename("ATIVIDADE", meta.projectCode, activity.description.slice(0, 20).replace(/\s+/g, "_"));
-  const html = generatePdfDocument({
-    title: l.reportTitle,
-    labels: l,
-    meta,
-    bodyHtml: info + reqHtml + constraintHtml,
-    footerRef: `ACT-${meta.projectCode}`,
-  });
-  printHtml(html, filename);
+  const html = `<!DOCTYPE html><html lang="${meta.locale}"><head><meta charset="UTF-8"/><title>${title} — Atlas QMS</title>
+<style>${sharedCss()}</style></head><body>
+${header}
+${info}${reqHtml}${constraintHtml}
+<div class="atlas-footer"><span>Atlas QMS</span><span>ACT-${meta.projectCode}</span></div>
+</body></html>`;
+
+  printHtml(html, buildReportFilename("ATIVIDADE", meta.projectCode, activity.description.slice(0, 20).replace(/\s+/g, "_")));
 }

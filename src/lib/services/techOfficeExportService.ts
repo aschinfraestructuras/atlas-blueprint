@@ -1,15 +1,10 @@
 import {
-  exportToCSV, generatePdfDocument, printHtml,
-  buildReportFilename, infoGridHtml,
+  exportToCSV, printHtml, buildReportFilename,
+  infoGridHtml, sharedCss,
   type ReportMeta, type ReportLabels,
 } from "./reportService";
+import { fullPdfHeader } from "./pdfProjectHeader";
 import type { TechnicalOfficeItem, TechOfficeMessage } from "./technicalOfficeService";
-
-const labels = (locale: string): ReportLabels => ({
-  appName: "Atlas QMS",
-  reportTitle: locale === "pt" ? "Oficina Técnica" : "Oficina Técnica",
-  generatedOn: locale === "pt" ? "Gerado a" : "Generado el",
-});
 
 const TYPE_LABELS: Record<string, Record<string, string>> = {
   pt: { RFI: "RFI", SUBMITTAL: "Submittal", TRANSMITTAL: "Transmittal", CLARIFICATION: "Pedido Esclarecimento", APPROVAL_REQUEST: "Pedido Aprovação", CHANGE_NOTICE: "Alteração/VO" },
@@ -25,8 +20,11 @@ export function exportTechOfficeCsv(data: TechnicalOfficeItem[], meta: ReportMet
   exportToCSV(headers, rows, buildReportFilename("OT", meta.projectCode, "lista", "csv"));
 }
 
-export function exportTechOfficePdf(data: TechnicalOfficeItem[], meta: ReportMeta) {
-  const l = labels(meta.locale);
+export function exportTechOfficePdf(data: TechnicalOfficeItem[], meta: ReportMeta, logoBase64?: string | null) {
+  const today = new Date().toLocaleDateString("pt-PT");
+  const title = meta.locale === "pt" ? "Oficina Técnica" : "Oficina Técnica";
+  const header = fullPdfHeader(logoBase64 ?? null, `LINHA DO SUL — ${meta.projectCode}`, "OT-LISTA", "0", today);
+
   const cols = ["Código", "Tipo", "Título", "Prioridade", "Estado", "Prazo"];
   const rows = data.map(r => [
     r.code ?? "—", (TYPE_LABELS[meta.locale] || TYPE_LABELS.pt)[r.type] || r.type,
@@ -39,16 +37,26 @@ export function exportTechOfficePdf(data: TechnicalOfficeItem[], meta: ReportMet
       <tbody>${tableRows}</tbody>
     </table>
     <div style="margin-top:8px;font-size:9px;color:#6B7280;">${rows.length} registo(s)</div>`;
-  const html = generatePdfDocument({ title: l.reportTitle, labels: l, meta, bodyHtml, footerRef: `OT-${meta.projectCode}` });
+
+  const html = `<!DOCTYPE html><html lang="${meta.locale}"><head><meta charset="UTF-8"/><title>${title} — Atlas QMS</title>
+<style>${sharedCss()}</style></head><body>
+${header}
+${bodyHtml}
+<div class="atlas-footer"><span>Atlas QMS</span><span>OT-${meta.projectCode}</span></div>
+</body></html>`;
   printHtml(html, buildReportFilename("OT", meta.projectCode, "lista"));
 }
 
 export function exportTechOfficeDetailPdf(
   item: TechnicalOfficeItem,
   messages: TechOfficeMessage[],
-  meta: ReportMeta
+  meta: ReportMeta,
+  logoBase64?: string | null,
 ) {
-  const l: ReportLabels = { ...labels(meta.locale), reportTitle: `${item.type} — ${item.code ?? item.title}` };
+  const today = new Date().toLocaleDateString("pt-PT");
+  const docCode = item.code ?? item.title.slice(0, 20);
+  const header = fullPdfHeader(logoBase64 ?? null, `LINHA DO SUL — ${meta.projectCode}`, docCode, "0", today);
+
   const fmtDate = (d: string | null) => d ? new Date(d).toLocaleDateString("pt-PT") : "—";
 
   const info = infoGridHtml([
@@ -79,6 +87,12 @@ export function exportTechOfficeDetailPdf(
     : "";
 
   const bodyHtml = `${info}${descHtml}${msgsHtml}`;
-  const html = generatePdfDocument({ title: l.reportTitle, labels: l, meta, bodyHtml, footerRef: `OT-${meta.projectCode}-${item.code ?? ""}` });
+
+  const html = `<!DOCTYPE html><html lang="${meta.locale}"><head><meta charset="UTF-8"/><title>${item.type} ${docCode} — Atlas QMS</title>
+<style>${sharedCss()}</style></head><body>
+${header}
+${bodyHtml}
+<div class="atlas-footer"><span>Atlas QMS</span><span>OT-${meta.projectCode}-${item.code ?? ""}</span></div>
+</body></html>`;
   printHtml(html, buildReportFilename("OT", meta.projectCode, item.code ?? "detail"));
 }

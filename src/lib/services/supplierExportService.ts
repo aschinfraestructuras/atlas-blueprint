@@ -1,4 +1,11 @@
-import jsPDF from "jspdf";
+/**
+ * Supplier Export Service — Atlas QMS
+ * Migrated to HTML template with fullPdfHeader for consistent institutional branding.
+ */
+
+import { fullPdfHeader } from "./pdfProjectHeader";
+import { printHtml, sharedCss, buildReportFilename } from "./reportService";
+import { ATLAS_PDF } from "@/lib/atlas-pdf-theme";
 import type { Supplier, SupplierDocument, SupplierMaterial, SupplierDetailMetrics } from "./supplierService";
 
 interface ExportData {
@@ -13,159 +20,125 @@ interface ExportData {
   logoBase64?: string | null;
 }
 
+function esc(s?: string | null): string {
+  if (!s) return "—";
+  return s.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function fmtDate(d?: string | null): string {
+  if (!d) return "—";
+  return new Date(d).toLocaleDateString("pt-PT");
+}
+
+const localCss = `
+  .sup-section { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.15em; color:${ATLAS_PDF.colors.muted}; margin:16px 0 6px; border-bottom:2px solid ${ATLAS_PDF.colors.navy}; padding-bottom:3px; }
+  .sup-grid { display:grid; grid-template-columns:1fr 1fr; gap:4px 20px; background:#f8fafc; border:1px solid ${ATLAS_PDF.colors.rule}; border-radius:6px; padding:10px 14px; margin-bottom:12px; }
+  .sup-row label { font-size:7.5px; font-weight:700; text-transform:uppercase; letter-spacing:.12em; color:${ATLAS_PDF.colors.muted}; }
+  .sup-row .val { font-size:10px; color:${ATLAS_PDF.colors.ink}; font-weight:500; margin-top:1px; }
+  table.sup-table { width:100%; border-collapse:collapse; font-size:10px; margin-top:6px; }
+  table.sup-table th { background:${ATLAS_PDF.colors.navy}; color:#fff; padding:5px 8px; font-size:8px; font-weight:700; text-transform:uppercase; text-align:left; }
+  table.sup-table td { padding:5px 8px; border-bottom:1px solid ${ATLAS_PDF.colors.rule}; }
+  table.sup-table tr:nth-child(even) { background:${ATLAS_PDF.colors.tint}; }
+`;
+
+function infoRow(label: string, value: string): string {
+  return `<div class="sup-row"><label>${label}</label><div class="val">${value}</div></div>`;
+}
+
 export function exportSupplierPdf(data: ExportData) {
   const { supplier, metrics, docs, materials, ncs, projectName, projectCode, t, logoBase64 } = data;
-  const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-  const W = doc.internal.pageSize.getWidth();
-  const margin = 15;
-  let y = 15;
+  const today = new Date().toLocaleDateString("pt-PT");
+  const docCode = `SUP-${projectCode}-${supplier.code ?? "FORN"}`;
 
-  const addPage = () => { doc.addPage(); y = 15; drawHeader(); };
-  const checkY = (need: number) => { if (y + need > 275) addPage(); };
+  const header = fullPdfHeader(
+    logoBase64 ?? null,
+    `LINHA DO SUL — ${projectCode}`,
+    docCode,
+    "0",
+    today,
+  );
 
-  function drawHeader() {
-    doc.setFillColor(15, 30, 55);
-    doc.rect(0, 0, W, 12, "F");
+  let body = "";
 
-    let logoEndX = margin;
-    if (logoBase64) {
-      try { doc.addImage(logoBase64, "PNG", margin, 1, 10, 10); logoEndX = margin + 12; } catch { /* ignore */ }
-    }
+  // Identification
+  body += `<div class="sup-section">${t("suppliers.detail.tabs.summary", { defaultValue: "Resumo" })}</div>`;
+  body += `<div class="sup-grid">
+    ${infoRow(t("suppliers.form.category"), supplier.category ? t(`suppliers.categories.${supplier.category}`, { defaultValue: supplier.category }) : "—")}
+    ${infoRow(t("suppliers.form.nifCif"), esc(supplier.nif_cif))}
+    ${infoRow(t("suppliers.form.country"), esc(supplier.country))}
+    ${infoRow(t("suppliers.form.address"), esc(supplier.address))}
+    ${infoRow(t("suppliers.form.contactName"), esc(supplier.contact_name))}
+    ${infoRow(t("suppliers.form.contactEmail"), esc(supplier.contact_email))}
+    ${infoRow(t("suppliers.form.contactPhone"), esc(supplier.contact_phone))}
+    ${infoRow(t("common.status"), t(`suppliers.status.${supplier.status}`))}
+    ${infoRow(t("suppliers.form.qualificationStatus"), t(`suppliers.qualificationStatus.${supplier.qualification_status ?? supplier.approval_status}`))}
+    ${supplier.qualification_score != null ? infoRow(t("suppliers.form.qualificationScore"), `${supplier.qualification_score}/100`) : ""}
+    ${supplier.notes ? infoRow(t("suppliers.form.notes"), esc(supplier.notes)) : ""}
+  </div>`;
 
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(8);
-    doc.setTextColor(255, 255, 255);
-    doc.text("ATLAS QMS", logoEndX, 8);
-    doc.setFontSize(7);
-    doc.text(t("suppliers.export.reportTitle", { defaultValue: "Ficha de Fornecedor" }), W - margin, 8, { align: "right" });
-    y = 18;
-  }
-
-  function sectionTitle(title: string) {
-    checkY(10);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(9);
-    doc.setTextColor(15, 30, 55);
-    doc.text(title.toUpperCase(), margin, y);
-    y += 1;
-    doc.setDrawColor(15, 30, 55);
-    doc.setLineWidth(0.3);
-    doc.line(margin, y, W - margin, y);
-    y += 5;
-  }
-
-  function field(label: string, value: string) {
-    checkY(6);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(7);
-    doc.setTextColor(100);
-    doc.text(label, margin, y);
-    doc.setTextColor(30);
-    doc.setFont("helvetica", "bold");
-    doc.text(value || "—", margin + 45, y);
-    y += 5;
-  }
-
-  // ── Header ──────────────────────────────────────────────────
-  drawHeader();
-
-  // Title
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(14);
-  doc.setTextColor(15, 30, 55);
-  doc.text(supplier.name, margin, y + 2);
-  y += 8;
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(8);
-  doc.setTextColor(100);
-  doc.text(`${supplier.code ?? "—"} · ${projectName} (${projectCode})`, margin, y);
-  y += 8;
-
-  // ── Identification ──────────────────────────────────────────
-  sectionTitle(t("suppliers.detail.tabs.summary", { defaultValue: "Resumo" }));
-  field(t("suppliers.form.category"), supplier.category ? t(`suppliers.categories.${supplier.category}`, { defaultValue: supplier.category }) : "—");
-  field(t("suppliers.form.nifCif"), supplier.nif_cif ?? "—");
-  field(t("suppliers.form.country"), supplier.country ?? "—");
-  field(t("suppliers.form.address"), supplier.address ?? "—");
-  field(t("suppliers.form.contactName"), supplier.contact_name ?? "—");
-  field(t("suppliers.form.contactEmail"), supplier.contact_email ?? "—");
-  field(t("suppliers.form.contactPhone"), supplier.contact_phone ?? "—");
-  field(t("common.status"), t(`suppliers.status.${supplier.status}`));
-  field(t("suppliers.form.qualificationStatus"), t(`suppliers.qualificationStatus.${supplier.qualification_status ?? supplier.approval_status}`));
-  if (supplier.qualification_score != null) {
-    field(t("suppliers.form.qualificationScore"), `${supplier.qualification_score}/100`);
-  }
-  if (supplier.notes) {
-    field(t("suppliers.form.notes"), supplier.notes);
-  }
-  y += 3;
-
-  // ── KPIs ────────────────────────────────────────────────────
+  // KPIs
   if (metrics) {
-    sectionTitle("KPIs");
-    field(t("suppliers.detail.openNCs"), String(metrics.open_nc_count));
-    field(t("suppliers.detail.testsTotal"), String(metrics.tests_total));
-    field(t("suppliers.detail.testsNC"), String(metrics.tests_nonconform));
-    field(t("suppliers.detail.docsExpiring"), String(metrics.docs_expiring_30d));
-    field(t("suppliers.detail.docsExpired"), String(metrics.docs_expired));
-    y += 3;
+    body += `<div class="sup-section">KPIs</div>`;
+    body += `<div class="sup-grid">
+      ${infoRow(t("suppliers.detail.openNCs"), String(metrics.open_nc_count))}
+      ${infoRow(t("suppliers.detail.testsTotal"), String(metrics.tests_total))}
+      ${infoRow(t("suppliers.detail.testsNC"), String(metrics.tests_nonconform))}
+      ${infoRow(t("suppliers.detail.docsExpiring"), String(metrics.docs_expiring_30d))}
+      ${infoRow(t("suppliers.detail.docsExpired"), String(metrics.docs_expired))}
+    </div>`;
   }
 
-  // ── Documents ───────────────────────────────────────────────
+  // Documents
   if (docs.length > 0) {
-    sectionTitle(t("suppliers.detail.tabs.documents", { defaultValue: "Documentos" }));
+    body += `<div class="sup-section">${t("suppliers.detail.tabs.documents", { defaultValue: "Documentos" })}</div>`;
+    body += `<table class="sup-table"><thead><tr><th>Tipo</th><th>Validade</th><th>Estado</th></tr></thead><tbody>`;
     docs.forEach(d => {
-      checkY(6);
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(7);
-      doc.setTextColor(30);
-      doc.text(`${t(`suppliers.docTypes.${d.doc_type}`, { defaultValue: d.doc_type })} — ${d.valid_to ? new Date(d.valid_to).toLocaleDateString() : "—"} — ${d.status}`, margin, y);
-      y += 4.5;
+      body += `<tr><td>${t(`suppliers.docTypes.${d.doc_type}`, { defaultValue: d.doc_type })}</td><td>${d.valid_to ? fmtDate(d.valid_to) : "—"}</td><td>${d.status}</td></tr>`;
     });
-    y += 3;
+    body += `</tbody></table>`;
   }
 
-  // ── Materials ───────────────────────────────────────────────
+  // Materials
   if (materials.length > 0) {
-    sectionTitle(t("suppliers.detail.tabs.materials", { defaultValue: "Materiais" }));
+    body += `<div class="sup-section">${t("suppliers.detail.tabs.materials", { defaultValue: "Materiais" })}</div>`;
+    body += `<table class="sup-table"><thead><tr><th>Material</th><th>Tipo</th><th>Preço</th></tr></thead><tbody>`;
     materials.forEach(m => {
-      checkY(6);
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(7);
-      doc.setTextColor(30);
-      const price = m.unit_price != null ? ` · ${m.unit_price} ${m.currency}` : "";
-      doc.text(`${m.material_name}${m.is_primary ? " (Principal)" : ""}${price}`, margin, y);
-      y += 4.5;
+      const price = m.unit_price != null ? `${m.unit_price} ${m.currency}` : "—";
+      body += `<tr><td>${esc(m.material_name)}${m.is_primary ? " (Principal)" : ""}</td><td>—</td><td>${price}</td></tr>`;
     });
-    y += 3;
+    body += `</tbody></table>`;
   }
 
-  // ── NCs ─────────────────────────────────────────────────────
+  // NCs
   if (ncs.length > 0) {
-    sectionTitle(t("suppliers.detail.tabs.ncs", { defaultValue: "Não Conformidades" }));
+    body += `<div class="sup-section">${t("suppliers.detail.tabs.ncs", { defaultValue: "Não Conformidades" })}</div>`;
+    body += `<table class="sup-table"><thead><tr><th>Código</th><th>Título</th><th>Gravidade</th><th>Estado</th></tr></thead><tbody>`;
     ncs.forEach(nc => {
-      checkY(6);
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(7);
-      doc.setTextColor(30);
-      doc.text(`${nc.code} — ${nc.title ?? "—"} — ${t(`nc.severity.${nc.severity}`, { defaultValue: nc.severity })} — ${t(`nc.status.${nc.status}`, { defaultValue: nc.status })}`, margin, y);
-      y += 4.5;
+      body += `<tr><td>${esc(nc.code)}</td><td>${esc(nc.title)}</td><td>${t(`nc.severity.${nc.severity}`, { defaultValue: nc.severity })}</td><td>${t(`nc.status.${nc.status}`, { defaultValue: nc.status })}</td></tr>`;
     });
+    body += `</tbody></table>`;
   }
 
-  // ── Footer ──────────────────────────────────────────────────
-  const pages = doc.getNumberOfPages();
-  for (let i = 1; i <= pages; i++) {
-    doc.setPage(i);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(6);
-    doc.setTextColor(150);
-    doc.text(
-      `${t("documents.export.generatedOn", { defaultValue: "Gerado em" })}: ${new Date().toLocaleString()} — ${t("documents.export.page", { defaultValue: "Página" })} ${i}/${pages}`,
-      W / 2, 290, { align: "center" }
-    );
-  }
+  // Footer
+  body += `<div style="margin-top:30px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;font-size:9px;text-align:center;">
+    <div style="border-top:1px solid ${ATLAS_PDF.colors.rule};padding-top:6px;">Elaborado por</div>
+    <div style="border-top:1px solid ${ATLAS_PDF.colors.rule};padding-top:6px;">Verificado por</div>
+    <div style="border-top:1px solid ${ATLAS_PDF.colors.rule};padding-top:6px;">Aprovado por</div>
+  </div>`;
+
+  const html = `<!DOCTYPE html>
+<html lang="pt">
+<head><meta charset="UTF-8"/><title>${docCode} — Atlas QMS</title>
+<style>${sharedCss()}${localCss}</style></head>
+<body>
+${header}
+${body}
+<div class="atlas-footer">
+  <span>Atlas QMS · Sistema de Gestão da Qualidade</span>
+  <span>${docCode} · Gerado em ${today}</span>
+</div>
+</body></html>`;
 
   const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
-  doc.save(`SUP_${projectCode}_${supplier.code ?? "FORN"}_${dateStr}.pdf`);
+  printHtml(html, `SUP_${projectCode}_${supplier.code ?? "FORN"}_${dateStr}.pdf`);
 }
