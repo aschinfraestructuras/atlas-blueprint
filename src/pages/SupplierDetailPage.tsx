@@ -252,6 +252,7 @@ export default function SupplierDetailPage() {
       projectName: activeProject.name,
       projectCode: activeProject.code,
       t,
+      logoBase64,
     });
   };
 
