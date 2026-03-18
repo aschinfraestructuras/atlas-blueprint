@@ -55,11 +55,12 @@ const NAV_SECTIONS: SidebarSection[] = [
     items: [
       { labelKey: "nav.nonConformities", url: "/non-conformities", icon: AlertTriangle },
       { labelKey: "nav.tests",          url: "/tests",            icon: FlaskConical },
+      { labelKey: "nav.testSchedule", url: "/tests/schedule", icon: CalendarClock },
       { labelKey: "nav.materials",      url: "/materials",        icon: Package },
+      { labelKey: "nav.recycledMaterials", url: "/recycled-materials", icon: Leaf },
       { labelKey: "nav.subcontractors", url: "/subcontractors",  icon: HardHat },
       { labelKey: "nav.suppliers",      url: "/suppliers",        icon: Truck },
       { labelKey: "nav.laboratories",    url: "/laboratories",     icon: Building2 },
-      { labelKey: "nav.recycledMaterials", url: "/recycled-materials", icon: Leaf },
     ],
   },
   {
@@ -67,8 +68,9 @@ const NAV_SECTIONS: SidebarSection[] = [
     collapsible: true,
     items: [
       { labelKey: "nav.documents",      url: "/documents",        icon: FileText },
-      { labelKey: "nav.plans",           url: "/plans",            icon: BookOpen },
       { labelKey: "nav.technicalOffice", url: "/technical-office", icon: Inbox },
+      { labelKey: "nav.plans",           url: "/plans",            icon: BookOpen },
+      { labelKey: "nav.dfo",          url: "/dfo",           icon: FolderKanban },
       { labelKey: "nav.audits",          url: "/audits",           icon: FileCheck },
       { labelKey: "nav.training",   url: "/training",   icon: GraduationCap },
     ],
@@ -79,10 +81,10 @@ const NAV_SECTIONS: SidebarSection[] = [
     items: [
       { labelKey: "nav.qcReport",     url: "/reports/qc",    icon: BarChart3 },
       { labelKey: "nav.monthlyReport", url: "/reports/monthly", icon: FileBarChart2 },
+      { labelKey: "nav.traceability", url: "/traceability",  icon: Link2 },
       { labelKey: "nav.deadlines",    url: "/deadlines",     icon: Clock },
       { labelKey: "nav.expirations",  url: "/expirations",   icon: AlertTriangle },
       { labelKey: "nav.sgqMatrix",    url: "/sgq-matrix",    icon: ShieldCheck },
-      { labelKey: "nav.traceability", url: "/traceability",  icon: Link2 },
     ],
   },
   {
@@ -90,8 +92,6 @@ const NAV_SECTIONS: SidebarSection[] = [
     collapsible: true,
     items: [
       { labelKey: "nav.orgChart",     url: "/org-chart",     icon: Users },
-      { labelKey: "nav.testSchedule", url: "/tests/schedule", icon: CalendarClock },
-      { labelKey: "nav.dfo",          url: "/dfo",           icon: FolderKanban },
       { labelKey: "nav.auditLog",     url: "/audit-log",     icon: ScrollText,  requiredAction: "viewAudit" },
       { labelKey: "nav.health",       url: "/admin/health",  icon: ShieldCheck, adminOnly: true },
       { labelKey: "nav.settings",     url: "/settings",      icon: Settings,    adminOnly: true },

@@ -258,24 +258,24 @@ export function NCFormDialog({
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-0 pt-1">
             <Tabs defaultValue="identification" className="w-full">
               <TabsList className="w-full mb-4 flex-wrap h-auto gap-1">
-                <TabsTrigger value="identification" className="text-xs">
-                  1. {t("nc.form.tabs.identification", { defaultValue: "Identificação" })}
+                <TabsTrigger value="identification" className="text-xs gap-1">
+                  {watchedClassification ? "✓" : "○"} 1. {t("nc.form.tabs.identification", { defaultValue: "Identificação" })}
                 </TabsTrigger>
-                <TabsTrigger value="description" className="text-xs">
-                  2. {t("nc.form.tabs.description", { defaultValue: "Descrição" })}
+                <TabsTrigger value="description" className="text-xs gap-1">
+                  {form.watch("description") ? "✓" : "○"} 2. {t("nc.form.tabs.description", { defaultValue: "Descrição" })}
                 </TabsTrigger>
-                <TabsTrigger value="correction" className="text-xs">
-                  3. {t("nc.form.tabs.correction", { defaultValue: "Correcção" })}
+                <TabsTrigger value="correction" className="text-xs gap-1">
+                  {form.watch("correction_type") ? "✓" : "○"} 3. {t("nc.form.tabs.correction", { defaultValue: "Correcção" })}
                 </TabsTrigger>
-                <TabsTrigger value="rootcause" className="text-xs">
-                  4. {t("nc.form.tabs.rootCause", { defaultValue: "Causa Raiz" })}
+                <TabsTrigger value="rootcause" className="text-xs gap-1">
+                  {form.watch("root_cause") ? "✓" : isMaior ? "⚠" : "○"} 4. {t("nc.form.tabs.rootCause", { defaultValue: "Causa Raiz" })}
                 </TabsTrigger>
-                <TabsTrigger value="capa" className="text-xs">
-                  5. {t("nc.form.tabs.capa", { defaultValue: "Acção Corretiva" })}
+                <TabsTrigger value="capa" className="text-xs gap-1">
+                  {form.watch("corrective_action") ? "✓" : "○"} 5. {t("nc.form.tabs.capa", { defaultValue: "Acção Corretiva" })}
                 </TabsTrigger>
                 {showClosure && (
-                  <TabsTrigger value="closure" className="text-xs">
-                    6. {t("nc.form.tabs.closure", { defaultValue: "Fecho" })}
+                  <TabsTrigger value="closure" className="text-xs gap-1">
+                    {form.watch("verification_result") ? "✓" : "○"} 6. {t("nc.form.tabs.closure", { defaultValue: "Fecho" })}
                   </TabsTrigger>
                 )}
                 {isEdit && (
@@ -562,9 +562,15 @@ export function NCFormDialog({
 
               {/* ── SECÇÃO 4: CAUSA RAIZ (visível sempre, destaque se maior) ── */}
               <TabsContent value="rootcause" className="space-y-4 mt-0">
+                {isMaior && !form.watch("root_cause") && (
+                  <div className="rounded-lg border border-destructive/40 bg-destructive/5 px-4 py-2 text-sm text-destructive flex items-center gap-2">
+                    <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                    <span>{t("nc.form.rootCauseRequired", { defaultValue: "Análise de causa raiz é OBRIGATÓRIA para NC MAIOR. Preencha antes de submeter para fecho." })}</span>
+                  </div>
+                )}
                 {!isMaior && (
                   <div className="rounded-lg bg-muted/40 border border-border px-4 py-2 text-xs text-muted-foreground">
-                    Secção obrigatória apenas para NC MAIOR. Pode preencher opcionalmente.
+                    {t("nc.form.rootCauseOptional", { defaultValue: "Secção obrigatória apenas para NC MAIOR. Pode preencher opcionalmente." })}
                   </div>
                 )}
                 <FormField control={form.control} name="root_cause_method" render={({ field }) => (

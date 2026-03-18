@@ -37,6 +37,12 @@ const schema = z.object({
   assigned_to: z.string().optional(),
   work_item_id: z.string().optional(),
   nc_id: z.string().optional(),
+  // Transmittal-specific fields (stored in description as structured text)
+  emitter_entity: z.string().optional(),
+  receiver_entity: z.string().optional(),
+  transmittal_reason: z.string().optional(),
+  response_status: z.string().optional(),
+  docs_sent: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -59,15 +65,33 @@ export function TechnicalOfficeFormDialog({ open, onOpenChange, item, onSuccess 
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { type: "SUBMITTAL", title: "", description: "", status: "open", priority: "normal", deadline: "", recipient: "", assigned_to: "", work_item_id: "", nc_id: "" },
+    defaultValues: { type: "SUBMITTAL", title: "", description: "", status: "open", priority: "normal", deadline: "", recipient: "", assigned_to: "", work_item_id: "", nc_id: "", emitter_entity: "", receiver_entity: "", transmittal_reason: "", response_status: "", docs_sent: "" },
   });
+
+  const watchedType = form.watch("type");
+  const isTransmittal = watchedType === "TRANSMITTAL";
 
   useEffect(() => {
     if (item) {
+      // Parse transmittal metadata from description if exists
+      let desc = item.description ?? "";
+      let emitter = "", receiver = "", reason = "", respStatus = "", docsSent = "";
+      if (item.type === "TRANSMITTAL" && desc.includes("{{TRANSMITTAL_META}}")) {
+        const metaPart = desc.split("{{TRANSMITTAL_META}}")[1] ?? "";
+        const lines = metaPart.split("\n").filter(Boolean);
+        lines.forEach(l => {
+          if (l.startsWith("EMITTER:")) emitter = l.replace("EMITTER:", "").trim();
+          if (l.startsWith("RECEIVER:")) receiver = l.replace("RECEIVER:", "").trim();
+          if (l.startsWith("REASON:")) reason = l.replace("REASON:", "").trim();
+          if (l.startsWith("RESPONSE:")) respStatus = l.replace("RESPONSE:", "").trim();
+          if (l.startsWith("DOCS:")) docsSent = l.replace("DOCS:", "").trim();
+        });
+        desc = desc.split("{{TRANSMITTAL_META}}")[0].trim();
+      }
       form.reset({
         type: (item.type as typeof TECH_OFFICE_TYPES[number]) ?? "SUBMITTAL",
         title: item.title,
-        description: item.description ?? "",
+        description: desc,
         status: (item.status as typeof TECH_OFFICE_STATUSES[number]) ?? "open",
         priority: (item.priority as typeof PRIORITIES[number]) ?? "normal",
         deadline: item.deadline ?? item.due_date ?? "",
@@ -75,20 +99,41 @@ export function TechnicalOfficeFormDialog({ open, onOpenChange, item, onSuccess 
         assigned_to: item.assigned_to ?? "",
         work_item_id: item.work_item_id ?? "",
         nc_id: item.nc_id ?? "",
+        emitter_entity: emitter,
+        receiver_entity: receiver,
+        transmittal_reason: reason,
+        response_status: respStatus,
+        docs_sent: docsSent,
       });
     } else {
-      form.reset({ type: "SUBMITTAL", title: "", description: "", status: "open", priority: "normal", deadline: "", recipient: "", assigned_to: "", work_item_id: "", nc_id: "" });
+      form.reset({ type: "SUBMITTAL", title: "", description: "", status: "open", priority: "normal", deadline: "", recipient: "", assigned_to: "", work_item_id: "", nc_id: "", emitter_entity: "", receiver_entity: "", transmittal_reason: "", response_status: "", docs_sent: "" });
     }
   }, [item, open, form]);
+
+  const buildDescription = (values: FormValues) => {
+    let desc = values.description ?? "";
+    if (values.type === "TRANSMITTAL") {
+      const meta = [
+        values.emitter_entity ? `EMITTER:${values.emitter_entity}` : "",
+        values.receiver_entity ? `RECEIVER:${values.receiver_entity}` : "",
+        values.transmittal_reason ? `REASON:${values.transmittal_reason}` : "",
+        values.response_status ? `RESPONSE:${values.response_status}` : "",
+        values.docs_sent ? `DOCS:${values.docs_sent}` : "",
+      ].filter(Boolean).join("\n");
+      if (meta) desc = `${desc}\n{{TRANSMITTAL_META}}\n${meta}`;
+    }
+    return desc;
+  };
 
   const onSubmit = async (values: FormValues) => {
     if (!activeProject || !user) return;
     try {
+      const description = buildDescription(values);
       if (item) {
         await technicalOfficeService.update(item.id, activeProject.id, {
           type: values.type,
           title: values.title,
-          description: values.description,
+          description,
           status: values.status,
           priority: values.priority,
           deadline: values.deadline || undefined,
@@ -104,7 +149,7 @@ export function TechnicalOfficeFormDialog({ open, onOpenChange, item, onSuccess 
           created_by: user.id,
           type: values.type,
           title: values.title,
-          description: values.description,
+          description,
           status: values.status,
           priority: values.priority,
           deadline: values.deadline || undefined,
@@ -203,6 +248,72 @@ export function TechnicalOfficeFormDialog({ open, onOpenChange, item, onSuccess 
                     <FormMessage />
                   </FormItem>
                 )} />
+
+                {/* Transmittal-specific fields */}
+                {isTransmittal && (
+                  <>
+                    <Separator className="my-1" />
+                    <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                      {t("technicalOffice.transmittal.section", { defaultValue: "Dados do Transmittal" })}
+                    </p>
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField control={form.control} name="emitter_entity" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("technicalOffice.transmittal.emitter", { defaultValue: "Entidade Emissora" })}</FormLabel>
+                          <FormControl><Input placeholder="Ex: ACE ASCH + Cimontubo" {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                      <FormField control={form.control} name="receiver_entity" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("technicalOffice.transmittal.receiver", { defaultValue: "Entidade Recetora" })}</FormLabel>
+                          <FormControl><Input placeholder="Ex: Fiscalização / DO" {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                    </div>
+                    <FormField control={form.control} name="transmittal_reason" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("technicalOffice.transmittal.reason", { defaultValue: "Motivo do Envio" })}</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value || ""}>
+                          <FormControl><SelectTrigger><SelectValue placeholder="—" /></SelectTrigger></FormControl>
+                          <SelectContent>
+                            <SelectItem value="approval">{t("technicalOffice.transmittal.reasonApproval", { defaultValue: "Para Aprovação" })}</SelectItem>
+                            <SelectItem value="information">{t("technicalOffice.transmittal.reasonInfo", { defaultValue: "Para Informação" })}</SelectItem>
+                            <SelectItem value="review">{t("technicalOffice.transmittal.reasonReview", { defaultValue: "Para Revisão" })}</SelectItem>
+                            <SelectItem value="record">{t("technicalOffice.transmittal.reasonRecord", { defaultValue: "Para Registo" })}</SelectItem>
+                            <SelectItem value="response">{t("technicalOffice.transmittal.reasonResponse", { defaultValue: "Em Resposta a" })}</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                    <FormField control={form.control} name="docs_sent" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("technicalOffice.transmittal.docsSent", { defaultValue: "Documentos Enviados" })}</FormLabel>
+                        <FormControl><Textarea placeholder={t("technicalOffice.transmittal.docsSentPlaceholder", { defaultValue: "Lista de documentos, revisões e códigos enviados…" })} rows={2} {...field} /></FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                    {isEdit && (
+                      <FormField control={form.control} name="response_status" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("technicalOffice.transmittal.responseStatus", { defaultValue: "Resposta" })}</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value || ""}>
+                            <FormControl><SelectTrigger><SelectValue placeholder="—" /></SelectTrigger></FormControl>
+                            <SelectContent>
+                              <SelectItem value="pending">{t("technicalOffice.transmittal.respPending", { defaultValue: "Pendente" })}</SelectItem>
+                              <SelectItem value="approved">{t("technicalOffice.transmittal.respApproved", { defaultValue: "Aprovado" })}</SelectItem>
+                              <SelectItem value="approved_comments">{t("technicalOffice.transmittal.respApprovedComments", { defaultValue: "Aprovado c/ Comentários" })}</SelectItem>
+                              <SelectItem value="rejected">{t("technicalOffice.transmittal.respRejected", { defaultValue: "Rejeitado" })}</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                    )}
+                  </>
+                )}
 
                 <div className="grid grid-cols-2 gap-4">
                   <FormField control={form.control} name="deadline" render={({ field }) => (
