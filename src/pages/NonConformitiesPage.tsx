@@ -8,6 +8,7 @@ import { useNonConformities } from "@/hooks/useNonConformities";
 import { ncService } from "@/lib/services/ncService";
 
 import { exportNCBulkPdf, type NCExportLabels } from "@/lib/services/ncExportService";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import { exportToCSV, generateListPdf, buildReportFilename } from "@/lib/services/reportService";
 import { exportLNC } from "@/lib/services/sgqListExportService";
