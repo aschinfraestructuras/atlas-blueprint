@@ -329,6 +329,7 @@ export function printHtml(html: string, filename: string): void {
 /**
  * Generate a full PDF HTML document with Atlas corporate branding.
  * Use this to wrap any entity content.
+ * When logoBase64 is provided, uses the institutional fullPdfHeader with logo.
  */
 export function generatePdfDocument(opts: {
   title: string;
@@ -336,7 +337,23 @@ export function generatePdfDocument(opts: {
   meta: ReportMeta;
   bodyHtml: string;
   footerRef: string;
+  logoBase64?: string | null;
 }): string {
+  let headerBlock: string;
+  if (opts.logoBase64) {
+    // Use the institutional header with logo
+    const { fullPdfHeader } = require("./pdfProjectHeader");
+    headerBlock = fullPdfHeader(
+      opts.logoBase64,
+      `LINHA DO SUL — ${opts.meta.projectCode}`,
+      opts.footerRef,
+      "0",
+      new Date().toLocaleDateString("pt-PT"),
+    );
+  } else {
+    headerBlock = headerHtml(opts.labels.reportTitle, opts.labels, opts.meta) + projectInfoStripHtml();
+  }
+
   return `<!DOCTYPE html>
 <html lang="${opts.meta.locale}">
 <head>
@@ -346,8 +363,7 @@ export function generatePdfDocument(opts: {
 <style>${sharedCss()}</style>
 </head>
 <body>
-${headerHtml(opts.labels.reportTitle, opts.labels, opts.meta)}
-${projectInfoStripHtml()}
+${headerBlock}
 ${opts.bodyHtml}
 ${footerHtml(opts.footerRef, opts.labels, opts.meta.locale)}
 </body>
@@ -365,6 +381,7 @@ export function generateListPdf(opts: {
   rows: string[][];
   footerRef: string;
   filename: string;
+  logoBase64?: string | null;
 }): void {
   const tableRows = opts.rows.map((r) =>
     `<tr>${r.map((c) => `<td>${c}</td>`).join("")}</tr>`
@@ -383,6 +400,7 @@ export function generateListPdf(opts: {
     meta: opts.meta,
     bodyHtml,
     footerRef: opts.footerRef,
+    logoBase64: opts.logoBase64,
   });
 
   printHtml(html, opts.filename);
