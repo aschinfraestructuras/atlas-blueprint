@@ -101,6 +101,8 @@ export default function TraceabilityMatrixPage() {
     return list;
   }, [data, search, filterSupplier, filterPame, filterLotStatus, filterTestResult, filterCompleteness]);
 
+  if (!activeProject) return <NoProjectBanner />;
+
   // KPIs
   const total = data.length;
   const withLot = data.filter(r => r.lot_id).length;
