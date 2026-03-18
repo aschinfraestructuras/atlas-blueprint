@@ -503,7 +503,7 @@ export default function SubmittalsPage() {
                   <Select value={formWorkItemId} onValueChange={setFormWorkItemId}>
                     <SelectTrigger><SelectValue placeholder="—" /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">—</SelectItem>
+                      <SelectItem value="__none__">—</SelectItem>
                       {workItems.map(w => (
                         <SelectItem key={w.id} value={w.id}>{w.sector}</SelectItem>
                       ))}
