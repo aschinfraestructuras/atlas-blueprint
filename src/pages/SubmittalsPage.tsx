@@ -437,7 +437,7 @@ export default function SubmittalsPage() {
                   <Select value={formSupplier} onValueChange={setFormSupplier}>
                     <SelectTrigger><SelectValue placeholder="—" /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">—</SelectItem>
+                      <SelectItem value="__none__">—</SelectItem>
                       {suppliers.map(s => (
                         <SelectItem key={s.id} value={s.name}>{s.code} — {s.name}</SelectItem>
                       ))}
