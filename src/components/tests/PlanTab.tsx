@@ -1,6 +1,8 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
+import { useReportMeta } from "@/hooks/useReportMeta";
 import { useTestPlans } from "@/hooks/useTestPlans";
 import {
   testPlanService,
@@ -25,13 +27,17 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
 import {
-  BookOpen, Plus, Pencil, Trash2, ChevronRight, Loader2,
+  BookOpen, Plus, Pencil, Trash2, ChevronRight, Loader2, FileDown, ChevronDown,
 } from "lucide-react";
 import { TEST_DISCIPLINES } from "@/lib/services/testService";
 import { testService } from "@/lib/services/testService";
 import type { TestCatalogEntry } from "@/lib/services/testService";
+import { supabase } from "@/integrations/supabase/client";
+import { generatePdfDocument, printHtml, buildReportFilename } from "@/lib/services/reportService";
+import type { ReportLabels } from "@/lib/services/reportService";
 
 // ─── Plan Status colors ─────────────────────────────────────────────────────
 const PLAN_STATUS_COLORS: Record<string, string> = {
