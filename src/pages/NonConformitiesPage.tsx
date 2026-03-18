@@ -252,7 +252,7 @@ export default function NonConformitiesPage() {
       origin_document: t("nc.origin.document"), origin_audit: t("nc.origin.audit"),
     };
     try {
-      await exportNCBulkPdf(items, labels, activeProject?.name ?? "Atlas");
+      await exportNCBulkPdf(items, labels, activeProject?.name ?? "Atlas", logoBase64);
     } catch {
       toast({ title: t("nc.export.noData", { defaultValue: "Erro ao exportar" }), variant: "destructive" });
     }
