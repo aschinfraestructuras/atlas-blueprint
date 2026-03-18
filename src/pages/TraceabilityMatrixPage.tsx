@@ -71,12 +71,9 @@ export default function TraceabilityMatrixPage() {
 
   useEffect(() => { fetch(); }, [fetch]);
 
-  if (!activeProject) return <NoProjectBanner />;
-
   // Unique values for filters
   const suppliers = useMemo(() => [...new Set(data.filter(r => r.supplier_name).map(r => r.supplier_name!))].sort(), [data]);
   const pameStatuses = useMemo(() => [...new Set(data.filter(r => r.pame_status).map(r => r.pame_status!))].sort(), [data]);
-  const lotStatuses = useMemo(() => [...new Set(data.filter(r => r.lot_reception_status).map(r => r.lot_reception_status!))].sort(), [data]);
 
   const filtered = useMemo(() => {
     let list = data;
