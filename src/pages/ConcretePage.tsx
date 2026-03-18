@@ -1008,6 +1008,13 @@ export default function ConcretePage() {
                 )}
               </div>
 
+              {/* Attachments */}
+              <AttachmentsPanel
+                projectId={activeProject?.id ?? ""}
+                entityType="concrete_batches"
+                entityId={detailData.batch.id}
+              />
+
               <DialogFooter>
                 <Button variant="outline" onClick={() => {
                   if (detailData) concreteService.exportPdf(detailData.batch, detailData.specimens, activeProject?.name ?? "PF17A", logoBase64);
