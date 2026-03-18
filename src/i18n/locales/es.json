@@ -3804,5 +3804,44 @@
       "preheat": "Precalentamiento", "visual": "Inspección visual", "alignment": "Desalineación (mm)",
       "ut": "Ensayo Ultrasónico (UT)", "hardness": "Dureza (HV)"
     }
+  },
+  "traceability": {
+    "title": "Matriz de Trazabilidad",
+    "subtitle": "Vista integrada: Proveedor → Material → Lote → Ensayo → PPI → Actividad",
+    "searchPlaceholder": "Buscar material, proveedor, lote…",
+    "empty": "Sin datos de trazabilidad para este proyecto.",
+    "kpi": {
+      "materials": "Materiales",
+      "withLot": "Con Lote",
+      "withTest": "Con Ensayo",
+      "withPPI": "Con PPI",
+      "fullyTraced": "Totalmente Trazados"
+    },
+    "col": {
+      "material": "Material",
+      "pame": "PAME",
+      "supplier": "Proveedor",
+      "lot": "Lote",
+      "lotStatus": "Recepción",
+      "ce": "CE",
+      "test": "Ensayo",
+      "testResult": "Resultado",
+      "ppi": "PPI",
+      "workItem": "Actividad"
+    }
+  },
+  "meetingActions": {
+    "title": "Acciones de Reuniones (ATA-Q)",
+    "col": {
+      "ata": "Acta",
+      "date": "Fecha",
+      "action": "Acción",
+      "responsible": "Responsable",
+      "dueDate": "Plazo"
+    },
+    "createDeadline": "Crear plazo",
+    "created": "Creado",
+    "deadlineCreated": "Plazo creado con éxito a partir de la acción del acta.",
+    "deadlineError": "Error al crear plazo. Intente de nuevo."
   }
 }
