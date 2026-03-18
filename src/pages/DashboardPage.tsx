@@ -82,6 +82,7 @@ function HPPendingAlert({ projectId }: { projectId: string }) {
 
 // ── Monthly Report Deadline Alert ─────────────────────────────────
 function MonthlyReportAlert({ projectId }: { projectId: string }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [show, setShow] = useState<{ overdue: boolean; days: number; deadline: Date } | null>(null);
 
@@ -126,14 +127,14 @@ function MonthlyReportAlert({ projectId }: { projectId: string }) {
       <FileBarChart2 className="h-4 w-4 flex-shrink-0" />
       <span className="text-sm flex-1">
         {show.overdue
-          ? `🔴 Relatório Mensal SGQ em atraso — ${Math.abs(show.days)} dias`
-          : `⚠️ Relatório Mensal SGQ — entregar até ${show.deadline.toLocaleDateString("pt-PT")}`}
+          ? `🔴 ${t("dashboard.monthlyReport.overdue", { days: Math.abs(show.days), defaultValue: `Relatório Mensal SGQ em atraso — ${Math.abs(show.days)} dias` })}`
+          : `⚠️ ${t("dashboard.monthlyReport.upcoming", { date: show.deadline.toLocaleDateString(), defaultValue: `Relatório Mensal SGQ — entregar até ${show.deadline.toLocaleDateString()}` })}`}
       </span>
       <button
         onClick={() => navigate("/reports/monthly")}
         className="text-xs font-medium underline underline-offset-2 hover:opacity-80"
       >
-        Criar Relatório
+        {t("dashboard.monthlyReport.create", { defaultValue: "Criar Relatório" })}
       </button>
     </div>
   );
@@ -289,11 +290,14 @@ export default function DashboardPage() {
             },
           ].map((mod) => {
             const pct = mod.total > 0 ? Math.round((mod.approved / mod.total) * 100) : 0;
-            const strokeColor = pct >= 70
-              ? "hsl(145, 55%, 42%)"
-              : pct >= 40
-                ? "hsl(38, 85%, 50%)"
-                : "hsl(var(--muted-foreground))";
+            const isEmpty = mod.total === 0;
+            const strokeColor = isEmpty
+              ? "hsl(var(--muted))"
+              : pct >= 70
+                ? "hsl(145, 55%, 42%)"
+                : pct >= 40
+                  ? "hsl(38, 85%, 50%)"
+                  : "hsl(var(--muted-foreground))";
             return (
               <Card
                 key={mod.label}
@@ -305,16 +309,21 @@ export default function DashboardPage() {
                   <div className="relative flex-shrink-0">
                     <svg width="52" height="52" viewBox="0 0 52 52">
                       <circle cx="26" cy="26" r="22" fill="none" stroke="hsl(var(--muted))" strokeWidth="4" />
-                      <circle
-                        cx="26" cy="26" r="22" fill="none"
-                        stroke={strokeColor} strokeWidth="4" strokeLinecap="round"
-                        strokeDasharray={`${pct * 1.382} 138.2`}
-                        transform="rotate(-90 26 26)"
-                        className="transition-all duration-700 ease-out"
-                      />
+                      {!isEmpty && (
+                        <circle
+                          cx="26" cy="26" r="22" fill="none"
+                          stroke={strokeColor} strokeWidth="4" strokeLinecap="round"
+                          strokeDasharray={`${pct * 1.382} 138.2`}
+                          transform="rotate(-90 26 26)"
+                          className="transition-all duration-700 ease-out"
+                        />
+                      )}
                     </svg>
-                    <span className="absolute inset-0 flex items-center justify-center text-[11px] font-black tabular-nums text-foreground">
-                      {kpiLoading ? "—" : `${pct}%`}
+                    <span className={cn(
+                      "absolute inset-0 flex items-center justify-center text-[11px] font-black tabular-nums",
+                      isEmpty ? "text-muted-foreground/40" : "text-foreground"
+                    )}>
+                      {kpiLoading ? "—" : isEmpty ? "—" : `${pct}%`}
                     </span>
                   </div>
                   {/* Text */}
