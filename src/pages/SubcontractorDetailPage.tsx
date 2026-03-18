@@ -58,6 +58,7 @@ export default function SubcontractorDetailPage() {
   const { user } = useAuth();
   const { toast } = useToast();
   const reportMeta = useReportMeta();
+  const { logoBase64 } = useProjectLogo();
 
   useEffect(() => {
     if (!id || id === "undefined" || id.trim() === "") {

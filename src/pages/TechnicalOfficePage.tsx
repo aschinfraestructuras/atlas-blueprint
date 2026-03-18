@@ -273,7 +273,7 @@ export default function TechnicalOfficePage() {
       else exportRfisPdf(rfis, meta, logoBase64);
     } else {
       if (fmt === "csv") exportTechOfficeCsv(items, meta);
-      else exportTechOfficePdf(items, meta);
+      else exportTechOfficePdf(items, meta, logoBase64);
     }
   };
 
