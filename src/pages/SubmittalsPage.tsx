@@ -446,7 +446,7 @@ export default function SubmittalsPage() {
                 </div>
                 <div className="space-y-2">
                   <Label>{t("submittals.form.subcontractor", { defaultValue: "Subempreiteiro" })}</Label>
-                  <Select value={formSubcontractor} onValueChange={setFormSubcontractor}>
+                  <Select value={formSubcontractor || "__none__"} onValueChange={v => setFormSubcontractor(v === "__none__" ? "" : v)}>
                     <SelectTrigger><SelectValue placeholder="—" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="__none__">—</SelectItem>
