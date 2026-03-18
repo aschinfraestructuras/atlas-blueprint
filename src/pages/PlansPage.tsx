@@ -115,7 +115,7 @@ export default function PlansPage() {
 
   const handleExport = (type: "csv" | "pdf") => {
     if (type === "csv") exportPlansCsv(filtered, meta);
-    else exportPlansPdf(filtered, meta);
+    else exportPlansPdf(filtered, meta, logoBase64);
     auditService.log({
       projectId: activeProject.id,
       entity: "plans",

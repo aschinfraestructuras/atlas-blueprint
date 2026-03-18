@@ -214,7 +214,7 @@ export default function PlanDetailPage() {
     ["MS", "PlanEsc", "PlanBet", "PlanMont", "PlanTraf", "PlanSeg", "Schedule", "Drawing", "Other"].forEach(pt => {
       typeLabels[pt] = t(`plans.types.${pt}`, { defaultValue: pt });
     });
-    exportPlanDetailPdf(plan, versions, meta, statusLabels, typeLabels);
+    exportPlanDetailPdf(plan, versions, meta, statusLabels, typeLabels, logoBase64);
   };
 
   if (loading) {
