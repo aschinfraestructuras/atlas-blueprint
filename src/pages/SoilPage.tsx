@@ -5,6 +5,7 @@ import {
 } from "lucide-react";
 import { soilService, computeOverallResult, computeAashtoClass, type SoilSample, type CreateSoilInput } from "@/lib/services/soilService";
 import { useProject } from "@/contexts/ProjectContext";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { useWorkItems } from "@/hooks/useWorkItems";
 import { PageHeader } from "@/components/ui/page-header";
 import { FilterBar } from "@/components/ui/filter-bar";
