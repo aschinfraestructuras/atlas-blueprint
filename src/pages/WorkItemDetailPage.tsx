@@ -1421,6 +1421,7 @@ export default function WorkItemDetailPage() {
         {/* Soils tab */}
         <TabsContent value="soils" className="mt-4">
           <WorkItemSoilTab workItemId={item.id} />
+        </TabsContent>
 
         {/* Attachments tab */}
         <TabsContent value="attachments" className="mt-4">
