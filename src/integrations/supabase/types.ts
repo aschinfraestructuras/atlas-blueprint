@@ -5522,6 +5522,13 @@ export type Database = {
             referencedRelation: "view_advanced_quality_metrics"
             referencedColumns: ["test_catalog_id"]
           },
+          {
+            foreignKeyName: "test_plan_rules_test_id_fkey"
+            columns: ["test_id"]
+            isOneToOne: false
+            referencedRelation: "view_pe_annexb_pf17a"
+            referencedColumns: ["id"]
+          },
         ]
       }
       test_plans: {
@@ -5846,6 +5853,13 @@ export type Database = {
             referencedColumns: ["test_catalog_id"]
           },
           {
+            foreignKeyName: "test_results_test_id_fkey"
+            columns: ["test_id"]
+            isOneToOne: false
+            referencedRelation: "view_pe_annexb_pf17a"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "test_results_work_item_id_fkey"
             columns: ["work_item_id"]
             isOneToOne: false
@@ -5933,6 +5947,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "view_advanced_quality_metrics"
             referencedColumns: ["test_catalog_id"]
+          },
+          {
+            foreignKeyName: "test_templates_test_id_fkey"
+            columns: ["test_id"]
+            isOneToOne: false
+            referencedRelation: "view_pe_annexb_pf17a"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -7257,22 +7278,80 @@ export type Database = {
       }
       view_pe_annexb_pf17a: {
         Row: {
-          base: string | null
-          criterio: string | null
+          acceptance_criteria: string | null
+          active: boolean | null
+          description: string | null
           disciplina: string | null
-          elemento: string | null
-          ensaio: string | null
-          exc: string | null
-          freq_unidade: string | null
-          freq_valor: number | null
-          laboratorio: boolean | null
-          linha: number | null
-          norma: string | null
-          pe_code: string | null
-          qtd_mqt: number | null
-          seccao_pe: string | null
+          frequency: string | null
+          id: string | null
+          material_scope: string | null
+          project_id: string | null
+          requires_lab: boolean | null
+          standards: string[] | null
+          test_code: string | null
+          test_name: string | null
+          unit: string | null
         }
-        Relationships: []
+        Insert: {
+          acceptance_criteria?: string | null
+          active?: boolean | null
+          description?: string | null
+          disciplina?: string | null
+          frequency?: string | null
+          id?: string | null
+          material_scope?: never
+          project_id?: string | null
+          requires_lab?: never
+          standards?: string[] | null
+          test_code?: string | null
+          test_name?: string | null
+          unit?: string | null
+        }
+        Update: {
+          acceptance_criteria?: string | null
+          active?: boolean | null
+          description?: string | null
+          disciplina?: string | null
+          frequency?: string | null
+          id?: string | null
+          material_scope?: never
+          project_id?: string | null
+          requires_lab?: never
+          standards?: string[] | null
+          test_code?: string | null
+          test_name?: string | null
+          unit?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tests_catalog_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tests_catalog_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "tests_catalog_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "tests_catalog_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+        ]
       }
       view_quality_dashboard: {
         Row: {

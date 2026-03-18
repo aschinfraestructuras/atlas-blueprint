@@ -30,6 +30,7 @@ import { Loader2, Camera, Image as ImageIcon } from "lucide-react";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { supabase } from "@/integrations/supabase/client";
 import { TraceabilityChain } from "@/components/tests/TraceabilityChain";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const schema = (t: (k: string) => string) =>
   z.object({
@@ -75,6 +76,7 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
   const [newTestName, setNewTestName]     = useState("");
   const [newTestCode, setNewTestCode]     = useState("");
   const [creatingNew, setCreatingNew]     = useState(false);
+  const [equipmentCals, setEquipmentCals] = useState<any[]>([]);
   const isEdit = !!testResult;
 
   const form = useForm<FormValues>({
@@ -95,10 +97,12 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
       testService.getCatalogByProject(activeProject.id),
       supabase.from("work_items").select("id, sector").eq("project_id", activeProject.id).order("sector"),
       supabase.from("suppliers").select("id, name").eq("project_id", activeProject.id).eq("status", "active").order("name"),
-    ]).then(([cats, wi, sup]) => {
+      supabase.from("equipment_calibrations").select("id, certificate_number, certifying_entity, valid_until, equipment_id, topography_equipment(id, serial_number)").eq("project_id", activeProject.id).eq("status", "active"),
+    ]).then(([cats, wi, sup, cals]) => {
       setCatalog(cats);
       setWorkItems((wi.data ?? []) as { id: string; sector: string }[]);
       setSuppliers((sup.data ?? []) as { id: string; name: string }[]);
+      setEquipmentCals((cals.data ?? []).map((c: any) => ({ ...c, equipment: c.topography_equipment })));
     }).catch((err) => console.error("[TestResultFormDialog] load error:", err))
       .finally(() => setLoadingCatalog(false));
   }, [open, activeProject]);
@@ -235,9 +239,18 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-1">
 
-            {/* Traceability chain — edit only */}
+            {/* Traceability chain — edit only — now in its own card */}
             {isEdit && testResult && activeProject && (
-              <TraceabilityChain testResultId={testResult.id} projectId={activeProject.id} />
+              <Card className="border-primary/10">
+                <CardHeader className="pb-2 pt-3 px-4">
+                  <CardTitle className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                    Rastreabilidade
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="px-4 pb-3">
+                  <TraceabilityChain testResultId={testResult.id} projectId={activeProject.id} />
+                </CardContent>
+              </Card>
             )}
             <FormField control={form.control} name="test_id" render={({ field }) => (
               <FormItem>
@@ -444,7 +457,29 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
               <FormField control={form.control} name="eme_code" render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t("tests.results.form.emeCode", { defaultValue: "Cód. EME" })} <span className="text-xs text-muted-foreground">({t("common.optional")})</span></FormLabel>
-                  <FormControl><Input placeholder="EME-001" className="font-mono text-sm" {...field} /></FormControl>
+                  <Select
+                    onValueChange={(v) => {
+                      if (v === "__none__") { field.onChange(""); return; }
+                      field.onChange(v);
+                      // Auto-fill calibration date from equipment_calibrations
+                      const cal = equipmentCals.find(e => (e as any).equipment?.serial_number === v || e.id === v);
+                      if (cal) {
+                        form.setValue("eme_code", (cal as any).equipment?.serial_number ?? v);
+                        form.setValue("eme_calibration_date", cal.valid_until?.slice(0, 10) ?? "");
+                      }
+                    }}
+                    value={field.value || "__none__"}
+                  >
+                    <FormControl><SelectTrigger className="font-mono text-sm"><SelectValue placeholder="EME-001" /></SelectTrigger></FormControl>
+                    <SelectContent>
+                      <SelectItem value="__none__">—</SelectItem>
+                      {equipmentCals.map((cal) => (
+                        <SelectItem key={cal.id} value={cal.id}>
+                          {(cal as any).equipment?.serial_number ?? cal.certificate_number ?? cal.id.slice(0, 8)} — {cal.certifying_entity}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )} />

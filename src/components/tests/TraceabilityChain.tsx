@@ -155,7 +155,7 @@ export function TraceabilityChain({ testResultId, projectId }: Props) {
     return <Skeleton className="h-16 w-full rounded-lg" />;
   }
 
-  if (nodes.length <= 1) return null;
+  if (nodes.length === 0) return null;
 
   return (
     <Card className="shadow-card border-primary/10">
