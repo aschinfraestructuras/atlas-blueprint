@@ -67,6 +67,7 @@ const SoilPage = lazy(() => import("./pages/SoilPage"));
 const WeldPage = lazy(() => import("./pages/WeldPage"));
 const OrgChartPage = lazy(() => import("./pages/OrgChartPage"));
 const TestSchedulePage = lazy(() => import("./pages/TestSchedulePage"));
+const TraceabilityMatrixPage = lazy(() => import("./pages/TraceabilityMatrixPage"));
 
 function ProtectedLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -153,6 +154,7 @@ const App = () => (
                 <Route path="/tests/welding" element={<ProtectedLayout><WeldPage /></ProtectedLayout>} />
                 <Route path="/org-chart" element={<ProtectedLayout><OrgChartPage /></ProtectedLayout>} />
                 <Route path="/tests/schedule" element={<ProtectedLayout><TestSchedulePage /></ProtectedLayout>} />
+                <Route path="/traceability" element={<ProtectedLayout><TraceabilityMatrixPage /></ProtectedLayout>} />
 
                 {/* Catch-all */}
                 <Route path="*" element={<NotFound />} />

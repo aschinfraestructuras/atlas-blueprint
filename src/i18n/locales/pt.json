@@ -146,7 +146,8 @@
     "soils": "Caracterização de Solos",
     "welding": "Soldadura — Via-Férrea",
     "orgChart": "Organigrama",
-    "testSchedule": "Programação Ensaios"
+    "testSchedule": "Programação Ensaios",
+    "traceability": "Rastreabilidade"
   },
   "topbar": {
     "language": "Idioma",
@@ -2859,7 +2860,8 @@
         "tests": "Ensaios",
         "ncs": "Não Conformidades",
         "workItems": "Aplicação em Obra",
-        "audit": "Auditoria"
+        "audit": "Auditoria",
+        "dossier": "Dossier Técnico"
       },
       "noSuppliers": "Sem fornecedores associados.",
       "noTests": "Sem ensaios registados.",
@@ -2881,7 +2883,32 @@
       "workItem": "Atividade",
       "total": "Total acumulado"
     },
-    "export": { "reportTitle": "Ficha de Material" },
+    "dossier": {
+      "fitForUse": "Material apto para uso em obra",
+      "notFitForUse": "Material NÃO apto para uso em obra",
+      "fitDescription": "Aprovação PAME válida, sem lotes em quarentena, sem ensaios não conformes e sem NC abertas.",
+      "notFitDescription": "Existem pendências que impedem a utilização deste material em obra.",
+      "identification": "Identificação e Aprovação",
+      "pameCode": "Código PAME",
+      "approvalStatus": "Estado de Aprovação",
+      "specification": "Especificação",
+      "normativeRefs": "Referências Normativas",
+      "acceptanceCriteria": "Critérios de Aceitação",
+      "receptionSummary": "Resumo de Receção",
+      "totalLots": "Total de Lotes",
+      "lotsApproved": "Lotes Aceites",
+      "lotsQuarantine": "Lotes em Quarentena",
+      "ceMarking": "Marcação CE",
+      "testsSummary": "Resumo de Ensaios",
+      "totalTests": "Total de Ensaios",
+      "testsPassed": "Ensaios Conformes",
+      "testsFailed": "Ensaios Não Conformes",
+      "documentation": "Documentação e NCs",
+      "docsValid": "Documentos Válidos",
+      "docsExpired": "Documentos Expirados",
+      "openNCs": "NCs Abertas"
+    }
+  },
     "toast": {
       "created": "Material criado com sucesso.",
       "updated": "Material atualizado.",
@@ -3837,5 +3864,44 @@
       "preheat": "Pré-aquecimento", "visual": "Inspecção visual", "alignment": "Desalinhamento (mm)",
       "ut": "Ensaio Ultrassónico (UT)", "hardness": "Dureza (HV)"
     }
+  },
+  "traceability": {
+    "title": "Matriz de Rastreabilidade",
+    "subtitle": "Vista integrada: Fornecedor → Material → Lote → Ensaio → PPI → Atividade",
+    "searchPlaceholder": "Pesquisar material, fornecedor, lote…",
+    "empty": "Sem dados de rastreabilidade para este projeto.",
+    "kpi": {
+      "materials": "Materiais",
+      "withLot": "Com Lote",
+      "withTest": "Com Ensaio",
+      "withPPI": "Com PPI",
+      "fullyTraced": "Totalmente Rastreados"
+    },
+    "col": {
+      "material": "Material",
+      "pame": "PAME",
+      "supplier": "Fornecedor",
+      "lot": "Lote",
+      "lotStatus": "Receção",
+      "ce": "CE",
+      "test": "Ensaio",
+      "testResult": "Resultado",
+      "ppi": "PPI",
+      "workItem": "Atividade"
+    }
+  },
+  "meetingActions": {
+    "title": "Ações de Reuniões (ATA-Q)",
+    "col": {
+      "ata": "Ata",
+      "date": "Data",
+      "action": "Ação",
+      "responsible": "Responsável",
+      "dueDate": "Prazo"
+    },
+    "createDeadline": "Criar prazo",
+    "created": "Criado",
+    "deadlineCreated": "Prazo criado com sucesso a partir da ação da ata.",
+    "deadlineError": "Erro ao criar prazo. Tente novamente."
   }
 }

@@ -9,7 +9,7 @@ import {
   ShieldCheck, ChevronLeft, ChevronRight, X, ChevronDown,
   Inbox, BookOpen, Map, HardHat, Construction, ClipboardCheck, Crosshair, CalendarClock,
   Clock, FileCheck, BarChart3, Building2, ClipboardList, Leaf, GraduationCap, FileBarChart2,
-  Users,
+  Users, Link2,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { cn } from "@/lib/utils";
@@ -82,6 +82,7 @@ const NAV_SECTIONS: SidebarSection[] = [
       { labelKey: "nav.deadlines",    url: "/deadlines",     icon: Clock },
       { labelKey: "nav.expirations",  url: "/expirations",   icon: AlertTriangle },
       { labelKey: "nav.sgqMatrix",    url: "/sgq-matrix",    icon: ShieldCheck },
+      { labelKey: "nav.traceability", url: "/traceability",  icon: Link2 },
     ],
   },
   {

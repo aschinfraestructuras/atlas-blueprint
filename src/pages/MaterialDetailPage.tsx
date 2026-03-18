@@ -28,6 +28,7 @@ import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { MaterialFormDialog } from "@/components/materials/MaterialFormDialog";
 import { MaterialReceptionDialog } from "@/components/materials/MaterialReceptionDialog";
 import { LinkedDocumentsPanel } from "@/components/documents/LinkedDocumentsPanel";
+import { TechnicalDossierTab } from "@/components/materials/TechnicalDossierTab";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -295,6 +296,7 @@ export default function MaterialDetailPage() {
           <TabsTrigger value="workItems">{t("materials.detail.tabs.workItems")}</TabsTrigger>
           <TabsTrigger value="usage">{t("materials.usageTab")}</TabsTrigger>
           <TabsTrigger value="recycled">{t("recycled.title", { defaultValue: "Reciclado" })}</TabsTrigger>
+          <TabsTrigger value="dossier">{t("materials.detail.tabs.dossier")}</TabsTrigger>
           <TabsTrigger value="audit">{t("materials.detail.tabs.audit")}</TabsTrigger>
         </TabsList>
 
@@ -693,6 +695,16 @@ export default function MaterialDetailPage() {
               </Button>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="dossier">
+          <TechnicalDossierTab
+            material={material}
+            lots={lots}
+            tests={tests}
+            docs={docs}
+            ncs={ncs}
+          />
         </TabsContent>
 
         <TabsContent value="audit">
