@@ -8,6 +8,7 @@ import { subcontractorDocService, DOC_TYPES, type SubcontractorDocument } from "
 import { auditService } from "@/lib/services/auditService";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
