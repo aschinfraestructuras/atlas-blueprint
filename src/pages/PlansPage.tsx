@@ -34,6 +34,7 @@ import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import { exportPlansCsv, exportPlansPdf } from "@/lib/services/planExportService";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import type { Plan } from "@/lib/services/planService";
 import type { ReportMeta } from "@/lib/services/reportService";
 
