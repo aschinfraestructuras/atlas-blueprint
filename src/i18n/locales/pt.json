@@ -303,6 +303,24 @@
       "hpPending": "HP Pendentes",
       "inspCompleted": "inspecções concluídas"
     },
+    "testStatus": {
+      "title": "Estado dos Ensaios",
+      "ncOpen": "NCs abertas",
+      "ppiInProgress": "PPIs em progresso",
+      "specimensOverdue": "Provetes 28d s/ resultado",
+      "weldsUsPending": "Soldaduras s/ US",
+      "testsOverdue": "Ensaios pendentes"
+    },
+    "concrete": {
+      "title": "Betão por Classe",
+      "noData": "Sem dados de betão",
+      "samples": "amostras"
+    },
+    "monthlyReport": {
+      "overdue": "Relatório Mensal SGQ em atraso — {{days}} dias",
+      "upcoming": "Relatório Mensal SGQ — entregar até {{date}}",
+      "create": "Criar Relatório"
+    },
     "hpPending": "HPs Sem Confirmação",
     "healthBreakdown": "Indicadores de Saúde",
     "recentActivity": "Atividade Recente",
