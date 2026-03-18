@@ -9,9 +9,10 @@ import { planService } from "@/lib/services/planService";
 import { auditService } from "@/lib/services/auditService";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import {
-  BookOpen, Plus, Pencil, Trash2, Search, Eye, Download,
-  FileCheck, FileClock, FileWarning, Archive, Send, PieChart as PieChartIcon,
+  BookOpen, Plus, Pencil, Trash2, Search, Eye, Download, Upload,
+  FileCheck, FileClock, FileWarning, Archive, Send, PieChart as PieChartIcon, Loader2,
 } from "lucide-react";
+import { importPF17APlans, removePF17APlans } from "@/lib/services/planSeedImportService";
 import { DistributionBar, StackedBar } from "@/components/dashboard/DistributionBar";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
