@@ -45,6 +45,7 @@ export default function MaterialsPage() {
   const { activeProject } = useProject();
   const { data: materials, kpis, loading, error, refetch } = useMaterials();
   const { canCreate, canEdit } = useProjectRole();
+  const { logoBase64 } = useProjectLogo();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingMaterial, setEditingMaterial] = useState<Material | null>(null);
   const [search, setSearch] = useState("");
