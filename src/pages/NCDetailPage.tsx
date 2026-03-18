@@ -139,6 +139,7 @@ export default function NCDetailPage() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const { user } = useAuth();
+  const { logoBase64 } = useProjectLogo();
 
   const loadNc = useCallback(async () => {
     if (!id) return;
