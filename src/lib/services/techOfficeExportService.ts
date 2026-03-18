@@ -106,7 +106,7 @@ export function exportTechOfficeDetailPdf(
        </table>`
     : "";
 
-  const bodyHtml = `${info}${descHtml}${msgsHtml}`;
+  const bodyHtml = `${info}${submittalMetaHtml}${descHtml}${msgsHtml}`;
 
   const html = `<!DOCTYPE html><html lang="${meta.locale}"><head><meta charset="UTF-8"/><title>${item.type} ${docCode} — Atlas QMS</title>
 <style>${sharedCss()}</style></head><body>

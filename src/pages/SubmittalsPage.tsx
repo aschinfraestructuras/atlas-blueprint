@@ -395,6 +395,9 @@ export default function SubmittalsPage() {
                 ? t("submittals.form.titleEdit", { defaultValue: "Editar Submittal" })
                 : t("submittals.new", { defaultValue: "Novo Submittal" })}
             </DialogTitle>
+            <DialogDescription className="sr-only">
+              {t("submittals.subtitle", { defaultValue: "Aprovações técnicas de materiais, desenhos e métodos" })}
+            </DialogDescription>
           </DialogHeader>
           <ScrollArea className="max-h-[72vh] pr-1">
             <div className="space-y-4 py-1">
