@@ -64,6 +64,20 @@ const SOURCE_ROUTES: Record<string, string> = {
   hp_notification: "/ppi",
 };
 
+const SOURCE_LIST_ROUTES: Record<string, string> = {
+  supplier_doc: "/suppliers",
+  material_doc: "/materials",
+  subcontractor_doc: "/subcontractors",
+  calibration: "/topography",
+  nc_due: "/non-conformities",
+  rfi_due: "/technical-office",
+  tech_office_due: "/technical-office",
+  planning_due: "/planning",
+  ppi_pending: "/ppi",
+  ppi_approval: "/ppi",
+  hp_notification: "/ppi",
+};
+
 const SEVERITY_COLORS: Record<string, string> = {
   critical: "bg-destructive/10 text-destructive",
   warning: "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400",
@@ -192,6 +206,7 @@ export default function DeadlinesPage() {
 
   const handleNavigate = (item: DeadlineItem) => {
     const base = SOURCE_ROUTES[item.source] ?? "/expirations";
+    const listRoute = SOURCE_LIST_ROUTES[item.source] ?? "/expirations";
     const id = item.entity_id;
     // Guard: only navigate to detail if we have a valid-looking UUID
     const isValidId = id && id !== "undefined" && id !== "null" && /^[0-9a-f-]{36}$/i.test(id);
@@ -199,7 +214,7 @@ export default function DeadlinesPage() {
       navigate(`${base}/${id}`);
     } else {
       // Navigate to list page instead
-      navigate(base);
+      navigate(listRoute);
       toast({ title: t("deadlines.noEntityLink"), variant: "default" });
     }
   };

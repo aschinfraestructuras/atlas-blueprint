@@ -4,10 +4,58 @@
  */
 
 import { fullPdfHeader } from "./pdfProjectHeader";
-import { printHtml, sharedCss, buildReportFilename } from "./reportService";
+import { printHtml, sharedCss, buildReportFilename, exportToCSV } from "./reportService";
 import { ATLAS_PDF } from "@/lib/atlas-pdf-theme";
 import { auditService } from "./auditService";
 import type { Material, MaterialDocument, MaterialDetailMetrics, WorkItemMaterial } from "./materialService";
+
+/** Export a filtered materials list as PDF */
+export function exportMaterialsListPdf(
+  materials: Material[],
+  projectCode: string,
+  logoBase64?: string | null,
+  t: (k: string, opts?: Record<string, unknown>) => string = (k) => k,
+) {
+  const today = new Date().toLocaleDateString("pt-PT");
+  const docCode = `MAT-${projectCode}-LISTA`;
+  const header = fullPdfHeader(logoBase64 ?? null, `LINHA DO SUL — ${projectCode}`, docCode, "0", today);
+
+  const columns = [
+    t("materials.table.code"),
+    t("common.name"),
+    t("materials.form.category"),
+    t("materials.form.specification"),
+    t("materials.form.unit"),
+    t("common.status"),
+    t("materials.approval.title", { defaultValue: "Aprovação" }),
+  ];
+
+  const rows = materials.map(m => [
+    m.code,
+    m.name,
+    t(`materials.categories.${m.category}`, { defaultValue: m.category }),
+    m.specification ?? "—",
+    m.unit ?? "—",
+    t(`materials.status.${m.status}`),
+    t(`materials.approval.statuses.${m.approval_status}`, { defaultValue: m.approval_status }),
+  ]);
+
+  const tableRows = rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join("")}</tr>`).join("");
+
+  const html = `<!DOCTYPE html>
+<html lang="pt"><head><meta charset="UTF-8"/><title>${docCode} — Atlas QMS</title>
+<style>${sharedCss()}</style></head><body>
+${header}
+<table class="atlas-table">
+  <thead><tr>${columns.map(c => `<th>${c}</th>`).join("")}</tr></thead>
+  <tbody>${tableRows}</tbody>
+</table>
+<div style="margin-top:8px;font-size:9px;color:#6B7280;">${rows.length} registo(s)</div>
+<div class="atlas-footer"><span>Atlas QMS</span><span>${docCode}</span></div>
+</body></html>`;
+
+  printHtml(html, buildReportFilename("MAT", projectCode, "lista"));
+}
 
 interface ExportData {
   material: Material;

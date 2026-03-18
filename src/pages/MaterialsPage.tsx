@@ -4,7 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { useProject } from "@/contexts/ProjectContext";
 import { useMaterials } from "@/hooks/useMaterials";
 import { useProjectRole } from "@/hooks/useProjectRole";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { materialService } from "@/lib/services/materialService";
+import { exportMaterialsListPdf } from "@/lib/services/materialExportService";
 import { Package, Plus, Pencil, Search, Archive, RotateCcw, Eye, Trash2, PieChart as PieChartIcon } from "lucide-react";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -43,6 +45,7 @@ export default function MaterialsPage() {
   const { activeProject } = useProject();
   const { data: materials, kpis, loading, error, refetch } = useMaterials();
   const { canCreate, canEdit } = useProjectRole();
+  const { logoBase64 } = useProjectLogo();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingMaterial, setEditingMaterial] = useState<Material | null>(null);
   const [search, setSearch] = useState("");
@@ -114,15 +117,23 @@ export default function MaterialsPage() {
         <TabsContent value="materials" className="space-y-6 mt-4">
           <div className="flex items-center justify-end gap-2">
             <ReportExportMenu
-              options={[{
-                label: "CSV", icon: "csv" as const,
-                action: () => {
-                  const csv = [exportHeaders.join(";"), ...exportRows.map(r => r.join(";"))].join("\n");
-                  const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" });
-                  const url = URL.createObjectURL(blob);
-                  const a = document.createElement("a"); a.href = url; a.download = `MAT_${activeProject.code ?? "PROJ"}.csv`; a.click(); URL.revokeObjectURL(url);
+              options={[
+                {
+                  label: "CSV", icon: "csv" as const,
+                  action: () => {
+                    const csv = [exportHeaders.join(";"), ...exportRows.map(r => r.join(";"))].join("\n");
+                    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a"); a.href = url; a.download = `MAT_${activeProject.code ?? "PROJ"}.csv`; a.click(); URL.revokeObjectURL(url);
+                  },
                 },
-              }]}
+                {
+                  label: "PDF", icon: "pdf" as const,
+                  action: () => {
+                    exportMaterialsListPdf(filtered, activeProject.code ?? "PROJ", logoBase64, t);
+                  },
+                },
+              ]}
             />
             {canCreate && (
               <Button onClick={handleNew} size="sm" className="gap-1.5">
