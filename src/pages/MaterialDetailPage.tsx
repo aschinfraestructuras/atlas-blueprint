@@ -88,6 +88,7 @@ export default function MaterialDetailPage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
   const { canEdit, canCreate, canValidate } = useProjectRole();
+  const { logoBase64 } = useProjectLogo();
 
   useEffect(() => {
     if (!id || id === "undefined" || id.trim() === "") {
