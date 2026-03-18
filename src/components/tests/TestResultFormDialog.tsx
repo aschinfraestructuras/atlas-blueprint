@@ -10,6 +10,7 @@ import {
 } from "@/lib/services/testService";
 import type { TestResult, TestCatalogEntry, TestResultInput, TestWorkflowStatus, TestResultValue } from "@/lib/services/testService";
 import { toast } from "@/hooks/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
