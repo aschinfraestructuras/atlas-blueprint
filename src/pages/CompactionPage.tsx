@@ -33,6 +33,7 @@ function ResultBadge({ result }: { result: string }) {
 export default function CompactionPage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
+  const { logoBase64 } = useProjectLogo();
   const { data: workItems } = useWorkItems();
   const { data: ppis } = usePPIInstances();
   const [zones, setZones] = useState<CompactionZoneWithCounts[]>([]);

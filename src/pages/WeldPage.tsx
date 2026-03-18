@@ -39,6 +39,7 @@ function resultColor(r: string) {
 export default function WeldPage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
+  const { logoBase64 } = useProjectLogo();
   const [records, setRecords] = useState<WeldRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");

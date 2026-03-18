@@ -33,6 +33,7 @@ function SoilResultBadge({ result }: { result: string }) {
 export default function SoilPage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
+  const { logoBase64 } = useProjectLogo();
   const { data: workItems } = useWorkItems();
   const [samples, setSamples] = useState<SoilSample[]>([]);
   const [loading, setLoading] = useState(true);
