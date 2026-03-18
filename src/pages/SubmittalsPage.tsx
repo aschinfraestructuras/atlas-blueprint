@@ -449,7 +449,7 @@ export default function SubmittalsPage() {
                   <Select value={formSubcontractor} onValueChange={setFormSubcontractor}>
                     <SelectTrigger><SelectValue placeholder="—" /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">—</SelectItem>
+                      <SelectItem value="__none__">—</SelectItem>
                       {subcontractors.map(s => (
                         <SelectItem key={s.id} value={s.name}>{s.name}</SelectItem>
                       ))}
