@@ -37,6 +37,12 @@ const schema = z.object({
   assigned_to: z.string().optional(),
   work_item_id: z.string().optional(),
   nc_id: z.string().optional(),
+  // Transmittal-specific fields (stored in description as structured text)
+  emitter_entity: z.string().optional(),
+  receiver_entity: z.string().optional(),
+  transmittal_reason: z.string().optional(),
+  response_status: z.string().optional(),
+  docs_sent: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof schema>;
