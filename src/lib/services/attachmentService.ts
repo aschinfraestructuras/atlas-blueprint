@@ -22,7 +22,11 @@ export type EntityType =
   | "equipment_calibrations"
   | "planning_wbs"
   | "planning_activities"
-  | "rfis";
+  | "rfis"
+  | "concrete_batches"
+  | "weld_records"
+  | "soil_samples"
+  | "compaction_tests";
 
 export interface Attachment {
   id: string;

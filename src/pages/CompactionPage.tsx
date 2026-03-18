@@ -4,6 +4,7 @@ import {
   Gauge, Plus, FileDown, Trash2, Eye, CheckCircle2, XCircle, Clock, Loader2,
 } from "lucide-react";
 import { compactionService, type CompactionZoneWithCounts, type CompactionZone, type NuclearPoint, type PlateTest } from "@/lib/services/compactionService";
+import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { useProject } from "@/contexts/ProjectContext";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { useWorkItems } from "@/hooks/useWorkItems";
@@ -354,6 +355,13 @@ export default function CompactionPage() {
                   </>
                 )}
               </div>
+
+              {/* Attachments */}
+              <AttachmentsPanel
+                projectId={activeProject?.id ?? ""}
+                entityType="compaction_tests"
+                entityId={detailData.zone.id}
+              />
 
               <DialogFooter>
                 <Button variant="outline" onClick={() => {
