@@ -222,7 +222,7 @@ export default function RfiDetailPage() {
   };
 
   const handleExportPdf = () => {
-    exportRfiDetailPdf(rfi, messages, meta);
+    exportRfiDetailPdf(rfi, messages, meta, logoBase64);
   };
 
   return (
