@@ -147,7 +147,9 @@
     "welding": "Soldadura — Vía Férrea",
     "orgChart": "Organigrama",
     "testSchedule": "Programación Ensayos",
-    "traceability": "Trazabilidad"
+    "traceability": "Trazabilidad",
+    "actionPlan": "Plan de Acciones",
+    "submittals": "Submittals"
   },
   "topbar": {
     "language": "Idioma",
