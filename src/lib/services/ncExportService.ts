@@ -330,6 +330,7 @@ export async function exportNCBulkPdf(
   ncs: NonConformity[],
   labels: NCExportLabels,
   projectName: string,
+  logoBase64?: string | null,
 ): Promise<void> {
   if (ncs.length === 0) return;
 
@@ -338,7 +339,7 @@ export async function exportNCBulkPdf(
 
   ncs.forEach((nc, idx) => {
     if (idx > 0) doc.addPage();
-    drawPageFrame(doc, idx + 1, total, projectName, labels);
+    drawPageFrame(doc, idx + 1, total, projectName, labels, logoBase64);
     let y = 24;
     doc.setFontSize(9).setFont("helvetica", "bold").setTextColor(C.text);
     doc.text(`${labels.bulkTitle} (${idx + 1}/${total})`, ML, y);
