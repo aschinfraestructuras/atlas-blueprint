@@ -108,6 +108,30 @@ export default function DailyReportsPage() {
         <ModuleKPICard label={t("dailyReports.status.validated")} value={kpis.validated} icon={CheckCircle} />
       </div>
 
+      {/* Distribution Charts */}
+      {data.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <StackedBar
+            title={t("common.status")}
+            icon={ClipboardList}
+            segments={[
+              { key: "draft", label: t("dailyReports.status.draft"), value: kpis.draft, color: "hsl(var(--muted-foreground))" },
+              { key: "submitted", label: t("dailyReports.status.submitted"), value: kpis.submitted, color: "hsl(var(--primary))" },
+              { key: "validated", label: t("dailyReports.status.validated"), value: kpis.validated, color: "hsl(var(--chart-2))" },
+            ]}
+          />
+          <DistributionBar
+            title={t("dailyReports.fields.weather")}
+            icon={Cloud}
+            entries={(() => {
+              const map: Record<string, number> = {};
+              data.forEach(r => { const w = r.weather ?? "—"; map[w] = (map[w] ?? 0) + 1; });
+              return Object.entries(map).map(([k, v]) => ({ key: k, label: k, value: v }));
+            })()}
+          />
+        </div>
+      )}
+
       {/* Filters */}
       <FilterBar>
         <div className="relative flex-1 min-w-[180px] max-w-sm">
