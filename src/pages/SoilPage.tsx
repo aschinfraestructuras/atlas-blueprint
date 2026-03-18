@@ -4,6 +4,7 @@ import {
   Mountain, Plus, FileDown, Trash2, Eye, CheckCircle2, XCircle, Clock, Loader2, AlertTriangle,
 } from "lucide-react";
 import { soilService, computeOverallResult, computeAashtoClass, type SoilSample, type CreateSoilInput } from "@/lib/services/soilService";
+import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { useProject } from "@/contexts/ProjectContext";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { useWorkItems } from "@/hooks/useWorkItems";

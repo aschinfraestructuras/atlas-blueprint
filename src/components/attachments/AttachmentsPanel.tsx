@@ -24,9 +24,58 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Paperclip, Upload, Download, Trash2, Loader2, FileText } from "lucide-react";
+import {
+  Paperclip, Upload, Download, Trash2, Loader2,
+  FileText, FileSpreadsheet, FileImage, FileArchive, File,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Attachment } from "@/lib/services/attachmentService";
+
+// ─── Accepted file types ─────────────────────────────────────────────────────
+
+const ACCEPTED_EXTENSIONS = ".pdf,.doc,.docx,.xls,.xlsx,.csv,.txt,.dwg,.dxf,.jpg,.jpeg,.png,.gif,.bmp,.tiff,.mp4,.zip,.7z";
+
+const ALLOWED_SET = new Set([
+  "pdf", "doc", "docx", "xls", "xlsx", "csv", "txt",
+  "dwg", "dxf", "jpg", "jpeg", "png", "gif", "bmp", "tiff",
+  "mp4", "zip", "7z",
+]);
+
+function isFileAllowed(fileName: string): boolean {
+  const ext = fileName.split(".").pop()?.toLowerCase() ?? "";
+  return ALLOWED_SET.has(ext);
+}
+
+// ─── File icon helpers ───────────────────────────────────────────────────────
+
+function getExt(name: string): string {
+  const parts = name.split(".");
+  return parts.length > 1 ? parts[parts.length - 1].toUpperCase() : "—";
+}
+
+function getFileIcon(name: string) {
+  const ext = name.split(".").pop()?.toLowerCase() ?? "";
+  const cls = "h-4 w-4 flex-shrink-0";
+
+  if (ext === "pdf")
+    return <FileText className={cls} style={{ color: "hsl(0, 65%, 48%)" }} />;
+  if (ext === "doc" || ext === "docx")
+    return <FileText className={cls} style={{ color: "hsl(215, 70%, 50%)" }} />;
+  if (ext === "xls" || ext === "xlsx" || ext === "csv")
+    return <FileSpreadsheet className={cls} style={{ color: "hsl(142, 55%, 38%)" }} />;
+  if (ext === "dwg" || ext === "dxf")
+    return <File className={cls} style={{ color: "hsl(30, 80%, 50%)" }} />;
+  if (["jpg", "jpeg", "png", "gif", "bmp", "tiff"].includes(ext))
+    return <FileImage className={cls} style={{ color: "hsl(270, 55%, 55%)" }} />;
+  if (ext === "zip" || ext === "7z")
+    return <FileArchive className={cls} style={{ color: "hsl(45, 75%, 45%)" }} />;
+  return <FileText className={cls + " text-muted-foreground"} />;
+}
+
+function isImageFile(name: string): boolean {
+  const ext = name.split(".").pop()?.toLowerCase() ?? "";
+  return ["jpg", "jpeg", "png", "gif", "bmp", "tiff"].includes(ext);
+}
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -37,22 +86,12 @@ function formatBytes(b: number | null | undefined): string {
   return `${(b / 1024 / 1024).toFixed(1)} MB`;
 }
 
-function getExt(name: string): string {
-  const parts = name.split(".");
-  return parts.length > 1 ? parts[parts.length - 1].toUpperCase() : "—";
-}
-
 // ─── Props ────────────────────────────────────────────────────────────────────
 
 interface AttachmentsPanelProps {
   projectId: string;
   entityType: EntityType;
-  /**
-   * UUID da entidade.
-   * Se null/undefined mostra a nota "guarde o registo primeiro".
-   */
   entityId: string | null | undefined;
-  /** Impede upload/delete (ex: documento aprovado) */
   readOnly?: boolean;
   className?: string;
 }
@@ -73,6 +112,19 @@ export function AttachmentsPanel({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
+  const [thumbnails, setThumbnails] = useState<Record<string, string>>({});
+
+  // ── Thumbnail loader ──────────────────────────────────────────────────────
+
+  const loadThumbnail = async (att: Attachment) => {
+    if (thumbnails[att.id] || !isImageFile(att.file_name)) return;
+    try {
+      const url = await attachmentService.getSignedUrl(att.file_path);
+      setThumbnails((prev) => ({ ...prev, [att.id]: url }));
+    } catch {
+      // silent
+    }
+  };
 
   // ── Upload ────────────────────────────────────────────────────────────────
 
@@ -80,6 +132,15 @@ export function AttachmentsPanel({
     const file = e.target.files?.[0];
     e.target.value = "";
     if (!file || !entityId || !user) return;
+
+    if (!isFileAllowed(file.name)) {
+      toast({
+        title: "Tipo de ficheiro não permitido",
+        description: `Extensão ".${file.name.split(".").pop()}" não é aceite. Tipos permitidos: PDF, DOC, XLS, DWG, imagens, ZIP, etc.`,
+        variant: "destructive",
+      });
+      return;
+    }
 
     setUploading(true);
     try {
@@ -167,7 +228,7 @@ export function AttachmentsPanel({
               <input
                 ref={fileInputRef}
                 type="file"
-                accept="*/*"
+                accept={ACCEPTED_EXTENSIONS}
                 className="hidden"
                 onChange={handleFileChange}
               />
@@ -208,13 +269,26 @@ export function AttachmentsPanel({
           <ul className="space-y-1.5">
             {attachments.map((att) => {
               const isDownloading = downloadingId === att.id;
+              const isImg = isImageFile(att.file_name);
+              // Lazy load thumbnail
+              if (isImg && !thumbnails[att.id]) {
+                loadThumbnail(att);
+              }
               return (
                 <li
                   key={att.id}
                   className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-sm"
                 >
-                  {/* Icon + name */}
-                  <FileText className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
+                  {/* Icon or thumbnail */}
+                  {isImg && thumbnails[att.id] ? (
+                    <img
+                      src={thumbnails[att.id]}
+                      alt={att.file_name}
+                      className="h-12 w-12 rounded object-cover flex-shrink-0 border border-border"
+                    />
+                  ) : (
+                    getFileIcon(att.file_name)
+                  )}
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-xs font-medium text-foreground" title={att.file_name}>
                       {att.file_name}
@@ -229,7 +303,6 @@ export function AttachmentsPanel({
 
                   {/* Actions */}
                   <div className="flex items-center gap-0.5 flex-shrink-0">
-                    {/* Download */}
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Button
@@ -248,7 +321,6 @@ export function AttachmentsPanel({
                       <TooltipContent side="top">{t("attachments.download")}</TooltipContent>
                     </Tooltip>
 
-                    {/* Delete with confirmation (only if not readOnly) */}
                     {!readOnly && (
                       <AlertDialog>
                         <Tooltip>
