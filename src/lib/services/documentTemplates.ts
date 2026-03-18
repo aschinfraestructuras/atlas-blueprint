@@ -118,3 +118,45 @@ export function getTemplateById(id: string): DocumentTemplate | undefined {
 export function getTemplateByCode(code: string): DocumentTemplate | undefined {
   return DOCUMENT_TEMPLATES.find((t) => t.code === code);
 }
+
+// ─── Meeting Minutes Template (ATA-Q) ─────────────────────────────────────
+
+export const ATA_TEMPLATE: DocumentTemplate = {
+  id: "tpl-ata-q",
+  code: "ATA-Q",
+  title_pt: "ATA-Q — Ata de Reunião de Qualidade",
+  title_es: "ATA-Q — Acta de Reunión de Calidad",
+  doc_type: "record",
+  disciplina: "geral",
+  description_pt: "Registo formal de reuniões de qualidade com participantes, decisões e ações",
+  description_es: "Registro formal de reuniones de calidad con participantes, decisiones y acciones",
+  form_schema: {
+    title_pt: "Ata de Reunião de Qualidade",
+    title_es: "Acta de Reunión de Calidad",
+    fields: [
+      { key: "numero_ata", label_pt: "N.º da Ata", label_es: "N.º del Acta", type: "text", required: true, placeholder_pt: "ATA-Q-001", placeholder_es: "ATA-Q-001" },
+      { key: "data_reuniao", label_pt: "Data da Reunião", label_es: "Fecha de la Reunión", type: "date", required: true },
+      { key: "hora_inicio", label_pt: "Hora de Início", label_es: "Hora de Inicio", type: "text", placeholder_pt: "10:00", placeholder_es: "10:00" },
+      { key: "hora_fim", label_pt: "Hora de Fim", label_es: "Hora de Fin", type: "text", placeholder_pt: "11:30", placeholder_es: "11:30" },
+      { key: "local", label_pt: "Local", label_es: "Lugar", type: "text", required: true, placeholder_pt: "Sala de reuniões — Estaleiro PF17A", placeholder_es: "Sala de reuniones — Obra PF17A" },
+      { key: "tipo_reuniao", label_pt: "Tipo de Reunião", label_es: "Tipo de Reunión", type: "select", options: ["Ordinária", "Extraordinária", "Kick-off", "Encerramento", "Auditoria", "Outra"], required: true },
+      { key: "convocada_por", label_pt: "Convocada por", label_es: "Convocada por", type: "text", required: true },
+      { key: "participantes_empreiteiro", label_pt: "Participantes — Empreiteiro", label_es: "Participantes — Contratista", type: "textarea", required: true, placeholder_pt: "Nome · Função (um por linha)", placeholder_es: "Nombre · Función (uno por línea)" },
+      { key: "participantes_fiscalizacao", label_pt: "Participantes — Fiscalização", label_es: "Participantes — Fiscalización", type: "textarea", placeholder_pt: "Nome · Função (um por linha)", placeholder_es: "Nombre · Función (uno por línea)" },
+      { key: "participantes_dono_obra", label_pt: "Participantes — Dono de Obra", label_es: "Participantes — Propietario", type: "textarea", placeholder_pt: "Nome · Função (um por linha)", placeholder_es: "Nombre · Función (uno por línea)" },
+      { key: "participantes_outros", label_pt: "Outros Participantes", label_es: "Otros Participantes", type: "textarea" },
+      { key: "ordem_trabalhos", label_pt: "Ordem de Trabalhos", label_es: "Orden del Día", type: "textarea", required: true, placeholder_pt: "1. Ponto de situação\n2. NC em aberto\n3. Resultados de ensaios\n4. Planeamento próxima semana\n5. Outros assuntos", placeholder_es: "1. Situación actual\n2. NC abiertas\n3. Resultados de ensayos\n4. Planificación próxima semana\n5. Otros asuntos" },
+      { key: "assuntos_tratados", label_pt: "Assuntos Tratados / Deliberações", label_es: "Asuntos Tratados / Deliberaciones", type: "textarea", required: true, placeholder_pt: "Descreva os pontos discutidos e as deliberações tomadas…", placeholder_es: "Describa los puntos discutidos y las deliberaciones tomadas…" },
+      { key: "decisoes", label_pt: "Decisões Tomadas", label_es: "Decisiones Tomadas", type: "textarea", required: true, placeholder_pt: "1. Decisão A — Responsável: X — Prazo: dd/mm/aaaa\n2. Decisão B — …", placeholder_es: "1. Decisión A — Responsable: X — Plazo: dd/mm/aaaa\n2. Decisión B — …" },
+      { key: "acoes_pendentes", label_pt: "Ações Pendentes de Reuniões Anteriores", label_es: "Acciones Pendientes de Reuniones Anteriores", type: "textarea" },
+      { key: "proxima_reuniao", label_pt: "Data da Próxima Reunião", label_es: "Fecha de la Próxima Reunión", type: "date" },
+      { key: "observacoes", label_pt: "Observações", label_es: "Observaciones", type: "textarea" },
+      { key: "elaborado_por", label_pt: "Elaborado por", label_es: "Elaborado por", type: "text", required: true },
+      { key: "verificado_por", label_pt: "Verificado / Aprovado por", label_es: "Verificado / Aprobado por", type: "text" },
+    ],
+  },
+};
+
+// Add ATA-Q to main list
+DOCUMENT_TEMPLATES.push(ATA_TEMPLATE);
+

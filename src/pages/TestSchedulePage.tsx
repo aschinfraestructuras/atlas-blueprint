@@ -136,7 +136,7 @@ export default function TestSchedulePage() {
     <div className="space-y-6">
       <PageHeader
         title={isEs ? "Programación Semanal de Ensayos" : "Programação Semanal de Ensaios"}
-        description={isEs ? "Calendario semanal con ensayos programados" : "Calendário semanal com ensaios programados"}
+        subtitle={isEs ? "Calendario semanal con ensayos programados" : "Calendário semanal com ensaios programados"}
         icon={CalendarClock}
         actions={
           <Button variant="outline" size="sm" onClick={handleExportPdf}>
