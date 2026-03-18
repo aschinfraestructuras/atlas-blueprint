@@ -10,6 +10,7 @@ interface ExportData {
   projectName: string;
   projectCode: string;
   t: (k: string, opts?: Record<string, unknown>) => string;
+  logoBase64?: string | null;
 }
 
 export function exportSupplierPdf(data: ExportData) {
