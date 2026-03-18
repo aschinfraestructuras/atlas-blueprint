@@ -177,14 +177,15 @@ function LabDetailDialog({ open, onOpenChange, lab }: {
     if (!open || !lab || !activeProject) return;
     laboratoryService.getLabStats(activeProject.id, lab.supplier_id).then(setStats).catch(() => {});
     // Recent tests
-    supabase.from("test_results")
-      .select("code, test_type, result_status, test_date")
+    // Recent tests
+    (supabase as any).from("test_results")
+      .select("code, material, result_status, date")
       .eq("project_id", activeProject.id)
       .eq("supplier_id", lab.supplier_id)
       .eq("is_deleted", false)
-      .order("test_date", { ascending: false })
+      .order("date", { ascending: false })
       .limit(20)
-      .then(({ data }) => setTests((data ?? []) as LabTestRow[]));
+      .then(({ data }: any) => setTests((data ?? []) as LabTestRow[]));
     // Catalog types (lab_required)
     (supabase as any).from("tests_catalog")
       .select("test_name, discipline")
