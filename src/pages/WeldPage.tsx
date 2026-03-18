@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
@@ -6,7 +6,7 @@ import { weldService, type WeldRecord, type WeldInput, computeOverallResult } fr
 import { toast } from "@/hooks/use-toast";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import {
-  Flame, Plus, Search, Trash2, FileDown, CheckCircle2, XCircle, Wrench, Clock,
+  Flame, Plus, Search, Trash2, FileDown, CheckCircle2, XCircle, Wrench, Clock, AlertTriangle, ShieldAlert,
 } from "lucide-react";
 import { ModuleKPICard } from "@/components/ModuleKPICard";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -19,6 +19,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { EmptyState } from "@/components/EmptyState";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { PageHeader } from "@/components/ui/page-header";
@@ -34,6 +35,16 @@ function resultColor(r: string) {
   if (r === "fail") return "bg-destructive/10 text-destructive";
   if (r === "repair_needed") return "bg-orange-500/10 text-orange-600";
   return "bg-muted text-muted-foreground";
+}
+
+function CertExpiryBadge({ date }: { date: string | null | undefined }) {
+  if (!date) return null;
+  const today = new Date();
+  const expiry = new Date(date);
+  const diff = Math.ceil((expiry.getTime() - today.getTime()) / 86400000);
+  if (diff < 0) return <Badge variant="destructive" className="text-[10px] ml-1">Cert. expirado</Badge>;
+  if (diff <= 30) return <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border-0 text-[10px] ml-1">Cert. expira em {diff}d</Badge>;
+  return null;
 }
 
 export default function WeldPage() {
@@ -70,6 +81,13 @@ export default function WeldPage() {
   useEffect(() => { load(); }, [load]);
 
   if (!activeProject) return <NoProjectBanner />;
+
+  // US pending > 7 days banner
+  const pendingUtCount = useMemo(() => {
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    return records.filter(w => !w.has_ut && new Date(w.weld_date) < sevenDaysAgo).length;
+  }, [records]);
 
   const filtered = records.filter(r => {
     const q = search.toLowerCase();
@@ -122,6 +140,16 @@ export default function WeldPage() {
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
       <PageHeader title={t("welding.title")} subtitle={t("welding.subtitle")} icon={Flame} backHref="/tests" backLabel="Ensaios" module="Ensaios" />
+
+      {/* AE.3 — US pending banner */}
+      {pendingUtCount > 0 && (
+        <div className="flex items-center gap-3 px-4 py-3 rounded-lg border bg-amber-500/5 border-amber-500/30 text-amber-700 dark:text-amber-400 animate-fade-in">
+          <ShieldAlert className="h-4 w-4 flex-shrink-0" />
+          <span className="text-sm flex-1">
+            <strong>{pendingUtCount}</strong> soldadura{pendingUtCount > 1 ? "s" : ""} pendente{pendingUtCount > 1 ? "s" : ""} de inspecção US há mais de 7 dias
+          </span>
+        </div>
+      )}
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         <ModuleKPICard label={t("welding.kpi.total")} value={records.length} icon={Flame} />
@@ -177,7 +205,10 @@ export default function WeldPage() {
                   <TableCell className="text-xs">{w.pk_location}</TableCell>
                   <TableCell className="text-xs">{w.weld_date}</TableCell>
                   <TableCell className="text-xs font-mono">{w.rail_profile}</TableCell>
-                  <TableCell className="text-xs">{w.operator_name ?? "—"}</TableCell>
+                  <TableCell className="text-xs">
+                    {w.operator_name ?? "—"}
+                    <CertExpiryBadge date={(w as any).operator_cert_expiry} />
+                  </TableCell>
                   <TableCell>{w.visual_pass === true ? <CheckCircle2 className="h-3.5 w-3.5 text-primary" /> : w.visual_pass === false ? <XCircle className="h-3.5 w-3.5 text-destructive" /> : <Clock className="h-3.5 w-3.5 text-muted-foreground" />}</TableCell>
                   <TableCell>{!w.has_ut ? "—" : w.ut_result === "aceite" ? <CheckCircle2 className="h-3.5 w-3.5 text-primary" /> : w.ut_result === "rejeitado" ? <XCircle className="h-3.5 w-3.5 text-destructive" /> : <Clock className="h-3.5 w-3.5 text-muted-foreground" />}</TableCell>
                   <TableCell>{!w.has_hardness ? "—" : w.hv_pass === true ? <CheckCircle2 className="h-3.5 w-3.5 text-primary" /> : w.hv_pass === false ? <XCircle className="h-3.5 w-3.5 text-destructive" /> : <Clock className="h-3.5 w-3.5 text-muted-foreground" />}</TableCell>
@@ -209,7 +240,14 @@ export default function WeldPage() {
 
             <TabsContent value="id" className="space-y-3 mt-3">
               <div className="grid grid-cols-2 gap-3">
-                <div><Label>{t("welding.fields.pk")}</Label><Input value={form.pk_location ?? ""} onChange={e => setField("pk_location", e.target.value)} placeholder="PK 30+500" /></div>
+                <div>
+                  <Label>{t("welding.fields.pk")} Início</Label>
+                  <Input value={form.pk_location ?? ""} onChange={e => setField("pk_location", e.target.value)} placeholder="PK 30+500" />
+                </div>
+                <div>
+                  <Label>PK Fim</Label>
+                  <Input value={(form as any).pk_end ?? ""} onChange={e => setField("pk_end", e.target.value)} placeholder="PK 30+520" />
+                </div>
                 <div><Label>{t("common.date")}</Label><Input type="date" value={form.weld_date ?? new Date().toISOString().split("T")[0]} onChange={e => setField("weld_date", e.target.value)} /></div>
                 <div><Label>{t("welding.fields.railProfile")}</Label>
                   <Select value={form.rail_profile ?? "60E1"} onValueChange={v => setField("rail_profile", v)}>
@@ -236,6 +274,15 @@ export default function WeldPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div><Label>{t("welding.fields.operator")}</Label><Input value={form.operator_name ?? ""} onChange={e => setField("operator_name", e.target.value)} /></div>
                 <div><Label>{t("welding.fields.certRef")}</Label><Input value={form.operator_cert_ref ?? ""} onChange={e => setField("operator_cert_ref", e.target.value)} /></div>
+                <div>
+                  <Label>Validade Cert. EN ISO 9712</Label>
+                  <Input type="date" value={(form as any).operator_cert_expiry ?? ""} onChange={e => setField("operator_cert_expiry", e.target.value)} />
+                  <CertExpiryBadge date={(form as any).operator_cert_expiry} />
+                </div>
+                <div>
+                  <Label>Bloco calibração (ref.)</Label>
+                  <Input value={(form as any).bloco_calibracao_ref ?? ""} onChange={e => setField("bloco_calibracao_ref", e.target.value)} placeholder="V1, V2, IIW..." />
+                </div>
                 <div><Label>{t("welding.fields.portionBrand")}</Label><Input value={form.portion_brand ?? ""} onChange={e => setField("portion_brand", e.target.value)} /></div>
                 <div><Label>{t("welding.fields.portionLot")}</Label><Input value={form.portion_lot ?? ""} onChange={e => setField("portion_lot", e.target.value)} /></div>
                 <div><Label>Tipo de molde</Label><Input value={form.mold_type ?? ""} onChange={e => setField("mold_type", e.target.value)} /></div>

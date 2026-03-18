@@ -24,6 +24,21 @@ import { EmptyState } from "@/components/EmptyState";
 import { ModuleKPICard } from "@/components/ModuleKPICard";
 import { toast } from "@/hooks/use-toast";
 
+const MATERIAL_TYPES = [
+  "Solo argiloso",
+  "Solo arenoso",
+  "Tout-venant",
+  "Brita",
+  "Aterro seleccionado",
+  "Outro",
+];
+
+// PK validation: PK NNN+NNN
+function validatePK(val: string): boolean {
+  if (!val) return true; // optional
+  return /^PK\s*\d{1,4}\+\d{1,3}$/i.test(val.trim());
+}
+
 function SoilResultBadge({ result }: { result: string }) {
   if (result === "apto") return <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-0">Apto</Badge>;
   if (result === "inapto") return <Badge variant="destructive">Inapto</Badge>;
@@ -96,6 +111,13 @@ export default function SoilPage() {
 
   async function handleCreate() {
     if (!activeProject || !form.sample_ref.trim()) return;
+
+    // PK validation
+    if (form.pk_location && !validatePK(form.pk_location)) {
+      toast({ title: "Formato PK inválido", description: "Use o formato PK NNN+NNN (ex: PK 30+500)", variant: "destructive" });
+      return;
+    }
+
     setSaving(true);
     try {
       const input: CreateSoilInput = {
@@ -131,7 +153,6 @@ export default function SoilPage() {
       if (form.has_atterberg) {
         input.ll_pct = form.ll_pct ? parseFloat(form.ll_pct) : null;
         input.lp_pct = form.lp_pct ? parseFloat(form.lp_pct) : null;
-        // Auto-classify AASHTO
         const aashto = computeAashtoClass({
           grading_p0075: input.grading_p0075 as any,
           ip_pct: input.ll_pct && input.lp_pct ? input.ll_pct - input.lp_pct : null,
@@ -166,7 +187,6 @@ export default function SoilPage() {
         input.sulfate_pass = input.sulfate_pct != null ? input.sulfate_pct <= input.sulfate_limit : null;
       }
 
-      // Compute overall
       input.overall_result = computeOverallResult(input as any);
 
       await soilService.create(input);
@@ -189,7 +209,6 @@ export default function SoilPage() {
     }
   }
 
-  // Section badges for list
   function SectionBadges({ s }: { s: SoilSample }) {
     const badges: string[] = [];
     if (s.has_grading) badges.push("Gran.");
@@ -251,6 +270,7 @@ export default function SoilPage() {
                   <TableHead>Ref. Amostra</TableHead>
                   <TableHead>PK</TableHead>
                   <TableHead>Prof.</TableHead>
+                  <TableHead>Material</TableHead>
                   <TableHead>Secções</TableHead>
                   <TableHead>{t("concrete.fields.result")}</TableHead>
                   <TableHead className="w-10" />
@@ -263,6 +283,7 @@ export default function SoilPage() {
                     <TableCell>{s.sample_ref}</TableCell>
                     <TableCell className="text-xs">{s.pk_location ?? "—"}</TableCell>
                     <TableCell className="text-xs">{s.depth_from ?? "—"}–{s.depth_to ?? "—"} m</TableCell>
+                    <TableCell className="text-xs">{s.material_type ?? "—"}</TableCell>
                     <TableCell><SectionBadges s={s} /></TableCell>
                     <TableCell><SoilResultBadge result={s.overall_result} /></TableCell>
                     <TableCell onClick={(e) => e.stopPropagation()}>
@@ -302,12 +323,31 @@ export default function SoilPage() {
               <div><Label>Ref. Amostra *</Label><Input value={form.sample_ref} onChange={(e) => setForm((f) => ({ ...f, sample_ref: e.target.value }))} placeholder="S1-C2" /></div>
             </div>
             <div className="grid grid-cols-4 gap-3">
-              <div><Label>PK</Label><Input value={form.pk_location} onChange={(e) => setForm((f) => ({ ...f, pk_location: e.target.value }))} /></div>
+              <div>
+                <Label>PK (PK NNN+NNN)</Label>
+                <Input
+                  value={form.pk_location}
+                  onChange={(e) => setForm((f) => ({ ...f, pk_location: e.target.value }))}
+                  placeholder="PK 30+500"
+                  className={form.pk_location && !validatePK(form.pk_location) ? "border-destructive" : ""}
+                />
+                {form.pk_location && !validatePK(form.pk_location) && (
+                  <p className="text-[10px] text-destructive mt-0.5">Formato: PK NNN+NNN</p>
+                )}
+              </div>
               <div><Label>Prof. De (m)</Label><Input type="number" value={form.depth_from} onChange={(e) => setForm((f) => ({ ...f, depth_from: e.target.value }))} /></div>
               <div><Label>Prof. Até (m)</Label><Input type="number" value={form.depth_to} onChange={(e) => setForm((f) => ({ ...f, depth_to: e.target.value }))} /></div>
               <div><Label>Data</Label><Input type="date" value={form.sample_date} onChange={(e) => setForm((f) => ({ ...f, sample_date: e.target.value }))} /></div>
             </div>
-            <div><Label>Tipo Material</Label><Input value={form.material_type} onChange={(e) => setForm((f) => ({ ...f, material_type: e.target.value }))} placeholder="solo selecionado" /></div>
+            <div>
+              <Label>Tipo Material</Label>
+              <Select value={form.material_type} onValueChange={(v) => setForm((f) => ({ ...f, material_type: v }))}>
+                <SelectTrigger><SelectValue placeholder="Selecionar tipo..." /></SelectTrigger>
+                <SelectContent>
+                  {MATERIAL_TYPES.map((mt) => <SelectItem key={mt} value={mt}>{mt}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
 
             {/* Section toggles */}
             <div className="flex flex-wrap gap-4 py-2 border-y border-border">
@@ -353,9 +393,6 @@ export default function SoilPage() {
                   <div><Label className="text-xs">LL (%)</Label><Input type="number" className="h-8" value={form.ll_pct} onChange={(e) => setForm((f) => ({ ...f, ll_pct: e.target.value }))} /></div>
                   <div><Label className="text-xs">LP (%)</Label><Input type="number" className="h-8" value={form.lp_pct} onChange={(e) => setForm((f) => ({ ...f, lp_pct: e.target.value }))} /></div>
                 </div>
-                {form.ll_pct && form.lp_pct && (
-                  <p className="text-xs text-muted-foreground">IP = {(parseFloat(form.ll_pct) - parseFloat(form.lp_pct)).toFixed(1)}%</p>
-                )}
               </div>
             )}
 
@@ -372,7 +409,7 @@ export default function SoilPage() {
             {form.has_cbr && (
               <div className="space-y-2 p-3 border border-border rounded-lg">
                 <h4 className="text-xs font-bold uppercase text-muted-foreground">CBR</h4>
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-2 gap-2">
                   <div><Label className="text-xs">CBR 95%</Label><Input type="number" className="h-8" value={form.cbr_95} onChange={(e) => setForm((f) => ({ ...f, cbr_95: e.target.value }))} /></div>
                   <div><Label className="text-xs">CBR 98%</Label><Input type="number" className="h-8" value={form.cbr_98} onChange={(e) => setForm((f) => ({ ...f, cbr_98: e.target.value }))} /></div>
                   <div><Label className="text-xs">Expansão (%)</Label><Input type="number" className="h-8" value={form.cbr_expansion} onChange={(e) => setForm((f) => ({ ...f, cbr_expansion: e.target.value }))} /></div>
@@ -393,7 +430,7 @@ export default function SoilPage() {
 
             {form.has_sulfates && (
               <div className="space-y-2 p-3 border border-border rounded-lg">
-                <h4 className="text-xs font-bold uppercase text-muted-foreground">Sulfatos e Sais</h4>
+                <h4 className="text-xs font-bold uppercase text-muted-foreground">Sulfatos e Sais Solúveis</h4>
                 <div className="grid grid-cols-3 gap-2">
                   <div><Label className="text-xs">SO4 (%)</Label><Input type="number" className="h-8" value={form.sulfate_pct} onChange={(e) => setForm((f) => ({ ...f, sulfate_pct: e.target.value }))} /></div>
                   <div><Label className="text-xs">Cl (%)</Label><Input type="number" className="h-8" value={form.chloride_pct} onChange={(e) => setForm((f) => ({ ...f, chloride_pct: e.target.value }))} /></div>
@@ -401,6 +438,8 @@ export default function SoilPage() {
                 </div>
               </div>
             )}
+
+            <div><Label>Notas</Label><Input value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} /></div>
           </div>
 
           <DialogFooter className="mt-4">
@@ -432,30 +471,57 @@ export default function SoilPage() {
                   <div><span className="text-muted-foreground text-xs font-semibold uppercase">PK</span><p>{detailData.pk_location ?? "—"}</p></div>
                   <div><span className="text-muted-foreground text-xs font-semibold uppercase">Profundidade</span><p>{detailData.depth_from ?? "—"} a {detailData.depth_to ?? "—"} m</p></div>
                   <div><span className="text-muted-foreground text-xs font-semibold uppercase">Material</span><p>{detailData.material_type ?? "—"}</p></div>
+                  <div><span className="text-muted-foreground text-xs font-semibold uppercase">Data</span><p>{detailData.sample_date}</p></div>
                 </div>
 
                 {detailData.has_grading && (
-                  <div className="p-3 bg-muted/20 rounded-lg">
+                  <div className="p-3 border border-border rounded-lg">
                     <h4 className="text-xs font-bold uppercase text-muted-foreground mb-2">Granulometria</h4>
-                    <p className="text-xs">Cu = {detailData.grading_cu ?? "—"} · Cc = {detailData.grading_cc ?? "—"}</p>
+                    <div className="grid grid-cols-3 gap-x-4 gap-y-0.5 text-xs">
+                      <div>P50: {detailData.grading_p50 ?? "—"}%</div>
+                      <div>P20: {detailData.grading_p20 ?? "—"}%</div>
+                      <div>P10: {detailData.grading_p10 ?? "—"}%</div>
+                      <div>P2: {detailData.grading_p2 ?? "—"}%</div>
+                      <div>P0.425: {detailData.grading_p0425 ?? "—"}%</div>
+                      <div>P0.075: {detailData.grading_p0075 ?? "—"}%</div>
+                    </div>
+                    <p className="text-xs mt-1 text-muted-foreground">Cu={detailData.grading_cu ?? "—"} · Cc={detailData.grading_cc ?? "—"}</p>
                   </div>
                 )}
+
                 {detailData.has_atterberg && (
-                  <div className="p-3 bg-muted/20 rounded-lg">
-                    <h4 className="text-xs font-bold uppercase text-muted-foreground mb-2">Limites de Atterberg</h4>
-                    <p className="text-xs">LL = {detailData.ll_pct ?? "—"}% · LP = {detailData.lp_pct ?? "—"}% · IP = {detailData.ip_pct ?? "—"}% · AASHTO: {detailData.aashto_class ?? "—"}</p>
+                  <div className="p-3 border border-border rounded-lg">
+                    <h4 className="text-xs font-bold uppercase text-muted-foreground mb-2">Atterberg</h4>
+                    <div className="grid grid-cols-4 gap-2 text-xs">
+                      <div>LL: {detailData.ll_pct ?? "—"}%</div>
+                      <div>LP: {detailData.lp_pct ?? "—"}%</div>
+                      <div>IP: {detailData.ip_pct ?? "—"}%</div>
+                      <div>AASHTO: {detailData.aashto_class ?? "—"}</div>
+                    </div>
                   </div>
                 )}
+
                 {detailData.has_proctor && (
-                  <div className="p-3 bg-muted/20 rounded-lg">
-                    <h4 className="text-xs font-bold uppercase text-muted-foreground mb-2">Proctor Modificado</h4>
-                    <p className="text-xs">γd máx = {detailData.proctor_gamma_max ?? "—"} kN/m³ · w ópt. = {detailData.proctor_wopt ?? "—"}%</p>
+                  <div className="p-3 border border-border rounded-lg">
+                    <h4 className="text-xs font-bold uppercase text-muted-foreground mb-2">Proctor</h4>
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      <div>γd máx: {detailData.proctor_gamma_max ?? "—"} kN/m³</div>
+                      <div>w óptimo: {detailData.proctor_wopt ?? "—"} %</div>
+                    </div>
                   </div>
                 )}
+
                 {detailData.has_cbr && (
-                  <div className="p-3 bg-muted/20 rounded-lg">
+                  <div className="p-3 border border-border rounded-lg">
                     <h4 className="text-xs font-bold uppercase text-muted-foreground mb-2">CBR</h4>
-                    <p className="text-xs">95% = {detailData.cbr_95 ?? "—"} · 98% = {detailData.cbr_98 ?? "—"} · Exp. = {detailData.cbr_expansion ?? "—"}% · {detailData.cbr_pass ? "✅ OK" : "❌ NOK"}</p>
+                    <div className="grid grid-cols-3 gap-2 text-xs">
+                      <div>CBR 95%: {detailData.cbr_95 ?? "—"}</div>
+                      <div>CBR 98%: {detailData.cbr_98 ?? "—"}</div>
+                      <div>Expansão: {detailData.cbr_expansion ?? "—"}%</div>
+                    </div>
+                    <div className="mt-1 text-xs">
+                      Critério: ≥ {detailData.cbr_criteria ?? "—"} → {detailData.cbr_pass ? <span className="text-primary font-semibold">OK</span> : <span className="text-destructive font-semibold">NOK</span>}
+                    </div>
                   </div>
                 )}
               </div>
@@ -468,7 +534,7 @@ export default function SoilPage() {
               />
 
               <DialogFooter>
-                <Button variant="outline" onClick={() => { if (detailData) soilService.exportPdf(detailData, activeProject?.name ?? "PF17A", logoBase64); }}>
+                <Button variant="outline" onClick={() => soilService.exportPdf(detailData, activeProject?.name ?? "PF17A", logoBase64)}>
                   <FileDown className="h-4 w-4 mr-1.5" /> {t("common.exportPdf")}
                 </Button>
                 <DialogClose asChild><Button>{t("common.close")}</Button></DialogClose>
