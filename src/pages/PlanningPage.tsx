@@ -15,8 +15,9 @@ import { RoleGate } from "@/components/RoleGate";
 import {
   Plus, Pencil, Network, ListChecks, ShieldCheck, Trash2, Search, Eye,
   ChevronRight, ChevronDown, FolderPlus, ChevronsUpDown, AlertTriangle,
-  CheckCircle2, Clock, Ban,
+  CheckCircle2, Clock, Ban, PieChart as PieChartIcon,
 } from "lucide-react";
+import { StackedBar } from "@/components/dashboard/DistributionBar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -250,6 +251,23 @@ export default function PlanningPage() {
           </div>
         </CardContent></Card>
       </div>
+
+      {/* Activity Status Distribution */}
+      {activities.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <StackedBar
+            title={t("planning.kpi.activityStatus", { defaultValue: "Estado das Atividades" })}
+            icon={PieChartIcon}
+            segments={[
+              { key: "planned", label: t("planning.status.planned"), value: activities.filter(a => a.status === "planned").length, color: "hsl(var(--muted-foreground))" },
+              { key: "in_progress", label: t("planning.status.in_progress"), value: kpis.inProgress, color: "hsl(var(--primary))" },
+              { key: "completed", label: t("planning.status.completed"), value: kpis.completed, color: "hsl(var(--chart-2))" },
+              { key: "blocked", label: t("planning.status.blocked"), value: kpis.blocked, color: "hsl(var(--destructive))" },
+              { key: "cancelled", label: t("planning.status.cancelled", { defaultValue: "Cancelada" }), value: activities.filter(a => a.status === "cancelled").length, color: "hsl(var(--chart-4))" },
+            ]}
+          />
+        </div>
+      )}
 
       {error && <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">{error}</div>}
 

@@ -8,6 +8,7 @@ import { useProjectRole } from "@/hooks/useProjectRole";
 import { subcontractorService } from "@/lib/services/subcontractorService";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { useToast } from "@/hooks/use-toast";
+import { DistributionBar, StackedBar } from "@/components/dashboard/DistributionBar";
 import { HardHat, Plus, Pencil, Trash2, Search, Eye, Users, AlertTriangle, CheckCircle, Clock } from "lucide-react";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -199,6 +200,30 @@ export default function SubcontractorsPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Distribution Charts */}
+      {subcontractors.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <DistributionBar
+            title={t("subcontractors.table.specialty")}
+            icon={HardHat}
+            entries={(() => {
+              const map: Record<string, number> = {};
+              subcontractors.forEach(s => { if (s.trade) map[s.trade] = (map[s.trade] ?? 0) + 1; });
+              return Object.entries(map).map(([k, v]) => ({ key: k, label: TRADE_BADGES[k]?.label ?? k, value: v }));
+            })()}
+          />
+          <StackedBar
+            title={t("subcontractors.table.docStatus")}
+            icon={AlertTriangle}
+            segments={[
+              { key: "valid", label: t("subcontractors.docStatus.valid"), value: subcontractors.filter(s => s.documentation_status === "valid").length, color: "hsl(var(--primary))" },
+              { key: "pending", label: t("subcontractors.docStatus.pending"), value: subcontractors.filter(s => s.documentation_status === "pending").length, color: "hsl(var(--chart-4))" },
+              { key: "expired", label: t("subcontractors.docStatus.expired"), value: subcontractors.filter(s => s.documentation_status === "expired").length, color: "hsl(var(--destructive))" },
+            ]}
+          />
+        </div>
+      )}
 
       <FilterBar>
         <div className="relative flex-1 min-w-[180px]">

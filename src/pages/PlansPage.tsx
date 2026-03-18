@@ -10,8 +10,9 @@ import { auditService } from "@/lib/services/auditService";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import {
   BookOpen, Plus, Pencil, Trash2, Search, Eye, Download,
-  FileCheck, FileClock, FileWarning, Archive, Send,
+  FileCheck, FileClock, FileWarning, Archive, Send, PieChart as PieChartIcon,
 } from "lucide-react";
+import { DistributionBar, StackedBar } from "@/components/dashboard/DistributionBar";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
@@ -186,6 +187,31 @@ export default function PlansPage() {
           <p className="text-2xl font-bold text-muted-foreground">{kpis.obsoleteArchived}</p>
         </CardContent></Card>
       </div>
+
+      {/* Distribution Charts */}
+      {plans.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <DistributionBar
+            title={t("plans.form.type")}
+            icon={PieChartIcon}
+            entries={(() => {
+              const map: Record<string, number> = {};
+              plans.forEach(p => { map[p.plan_type] = (map[p.plan_type] ?? 0) + 1; });
+              return Object.entries(map).map(([k, v]) => ({ key: k, label: t(`plans.types.${k}`, { defaultValue: k }), value: v }));
+            })()}
+          />
+          <StackedBar
+            title={t("common.status")}
+            icon={FileCheck}
+            segments={[
+              { key: "draft", label: t("plans.status.draft"), value: kpis.draft, color: "hsl(var(--muted-foreground))" },
+              { key: "under_review", label: t("plans.status.under_review"), value: kpis.inReview, color: "hsl(var(--primary))" },
+              { key: "approved", label: t("plans.status.approved"), value: kpis.approved, color: "hsl(var(--chart-2))" },
+              { key: "obsolete", label: t("plans.status.obsolete", { defaultValue: "Obsoleto/Arquivo" }), value: kpis.obsoleteArchived, color: "hsl(var(--chart-4))" },
+            ]}
+          />
+        </div>
+      )}
 
       <FilterBar>
         <div className="relative flex-1 min-w-[180px]">

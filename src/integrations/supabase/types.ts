@@ -7302,9 +7302,9 @@ export type Database = {
           disciplina?: string | null
           frequency?: string | null
           id?: string | null
-          material_scope?: never
+          material_scope?: string | null
           project_id?: string | null
-          requires_lab?: never
+          requires_lab?: boolean | null
           standards?: string[] | null
           test_code?: string | null
           test_name?: string | null
@@ -7317,9 +7317,9 @@ export type Database = {
           disciplina?: string | null
           frequency?: string | null
           id?: string | null
-          material_scope?: never
+          material_scope?: string | null
           project_id?: string | null
-          requires_lab?: never
+          requires_lab?: boolean | null
           standards?: string[] | null
           test_code?: string | null
           test_name?: string | null

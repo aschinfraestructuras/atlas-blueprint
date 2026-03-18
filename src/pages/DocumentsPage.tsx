@@ -44,6 +44,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { DocumentFormDialog } from "@/components/documents/DocumentFormDialog";
 import { cn } from "@/lib/utils";
+import { DistributionBar, StackedBar } from "@/components/dashboard/DistributionBar";
 import { ShareButton } from "@/components/ui/share-button";
 import { CopyableCode } from "@/components/ui/copyable-code";
 import { RowActionMenu } from "@/components/ui/row-action-menu";
@@ -214,6 +215,31 @@ export default function DocumentsPage() {
             <ModuleKPICard label={t("moduleKpi.obsolete")} value={obsoleteCount} icon={Archive} active={statusFilter === "obsolete"} onClick={() => setStatusFilter(statusFilter === "obsolete" ? "all" : "obsolete")} />
             <ModuleKPICard label={t("moduleKpi.recentlyUpdated")} value={recentCount} icon={Clock} />
             <ModuleKPICard label={t("moduleKpi.total")} value={`${approvedCount}/${totalDocs}`} icon={CheckCircle2} />
+          </div>
+        )}
+
+        {/* ── Distribution Charts ────────────────────────────────────────── */}
+        {!loading && documents.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <DistributionBar
+              title={t("documents.form.type")}
+              icon={FileText}
+              entries={(() => {
+                const map: Record<string, number> = {};
+                documents.forEach(d => { map[d.doc_type] = (map[d.doc_type] ?? 0) + 1; });
+                return Object.entries(map).map(([k, v]) => ({ key: k, label: t(`documents.docTypes.${k}`, { defaultValue: k }), value: v }));
+              })()}
+            />
+            <StackedBar
+              title={t("common.status")}
+              icon={CheckCircle2}
+              segments={[
+                { key: "draft", label: t("documents.status.draft"), value: draftCount, color: "hsl(var(--muted-foreground))" },
+                { key: "in_review", label: t("documents.status.in_review"), value: reviewCount, color: "hsl(var(--primary))" },
+                { key: "approved", label: t("documents.status.approved"), value: approvedCount, color: "hsl(var(--chart-2))" },
+                { key: "obsolete", label: t("documents.status.obsolete"), value: obsoleteCount, color: "hsl(var(--chart-4))" },
+              ]}
+            />
           </div>
         )}
 

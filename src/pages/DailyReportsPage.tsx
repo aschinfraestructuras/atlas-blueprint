@@ -1,7 +1,8 @@
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { ClipboardList, Plus, Search, FileText, Send, CheckCircle, Hash, Eye, Calendar, Trash2 } from "lucide-react";
+import { ClipboardList, Plus, Search, FileText, Send, CheckCircle, Hash, Eye, Calendar, Trash2, Cloud, Sun, CloudRain } from "lucide-react";
+import { StackedBar, DistributionBar } from "@/components/dashboard/DistributionBar";
 import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -106,6 +107,30 @@ export default function DailyReportsPage() {
         <ModuleKPICard label={t("dailyReports.status.submitted")} value={kpis.submitted} icon={Send} />
         <ModuleKPICard label={t("dailyReports.status.validated")} value={kpis.validated} icon={CheckCircle} />
       </div>
+
+      {/* Distribution Charts */}
+      {data.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <StackedBar
+            title={t("common.status")}
+            icon={ClipboardList}
+            segments={[
+              { key: "draft", label: t("dailyReports.status.draft"), value: kpis.draft, color: "hsl(var(--muted-foreground))" },
+              { key: "submitted", label: t("dailyReports.status.submitted"), value: kpis.submitted, color: "hsl(var(--primary))" },
+              { key: "validated", label: t("dailyReports.status.validated"), value: kpis.validated, color: "hsl(var(--chart-2))" },
+            ]}
+          />
+          <DistributionBar
+            title={t("dailyReports.fields.weather")}
+            icon={Cloud}
+            entries={(() => {
+              const map: Record<string, number> = {};
+              data.forEach(r => { const w = r.weather ?? "—"; map[w] = (map[w] ?? 0) + 1; });
+              return Object.entries(map).map(([k, v]) => ({ key: k, label: k, value: v }));
+            })()}
+          />
+        </div>
+      )}
 
       {/* Filters */}
       <FilterBar>
