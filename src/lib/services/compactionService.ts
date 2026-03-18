@@ -236,9 +236,13 @@ export const compactionService = {
     if (error) throw error;
   },
 
-  exportPdf(zone: CompactionZone, nuclear: NuclearPoint[], plates: PlateTest[], projectName: string): void {
+  exportPdf(zone: CompactionZone, nuclear: NuclearPoint[], plates: PlateTest[], projectName: string, logoBase64?: string | null): void {
     const overall = compactionService.computeZoneResult(nuclear, plates);
     const isPass = overall === "pass";
+
+    const logoHtml = logoBase64
+      ? `<img src="${logoBase64}" style="height:45px;max-width:150px;object-fit:contain;" />`
+      : "";
 
     const nuclearRows = nuclear.map((n) => `
       <tr>
@@ -275,9 +279,13 @@ export const compactionService = {
       .info-grid dt{color:${ATLAS_PDF.colors.muted};font-weight:600;text-transform:uppercase;font-size:7pt;}
       .sig-block{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:40px;font-size:8pt;}
       .sig-line{border-top:1px solid ${ATLAS_PDF.colors.rule};padding-top:4px;margin-top:40px;}
+      .pdf-header{display:flex;align-items:center;gap:16px;margin-bottom:4px;}
       @media print{body{margin:0;}}
       </style></head><body>
-      <h2>ATLAS QMS — Controlo de Compactação</h2>
+      <div class="pdf-header">
+        ${logoHtml}
+        <h2>ATLAS QMS — Controlo de Compactação</h2>
+      </div>
       ${projectInfoStripHtml()}
       <h3>1. Identificação da Zona</h3>
       <dl class="info-grid">

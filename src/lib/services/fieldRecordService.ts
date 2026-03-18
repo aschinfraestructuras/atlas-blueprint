@@ -167,7 +167,7 @@ export const fieldRecordService = {
     };
   },
 
-  exportPdf(record: FieldRecord & { materials?: FieldRecordMaterial[]; checks?: FieldRecordCheck[] }, projectName: string) {
+  exportPdf(record: FieldRecord & { materials?: FieldRecordMaterial[]; checks?: FieldRecordCheck[] }, projectName: string, logoBase64?: string | null) {
     const w = window.open("", "_blank");
     if (!w) return;
 
@@ -219,6 +219,10 @@ export const fieldRecordService = {
 
     const resColor = resultColor[record.result] ?? "#333";
 
+    const logoHtml = logoBase64
+      ? `<img src="${logoBase64}" style="height:45px;max-width:150px;object-fit:contain;" />`
+      : "";
+
     w.document.write(`<!DOCTYPE html><html><head><title>${record.code}</title>
       <style>
         body{font-family:Arial,sans-serif;margin:30px;font-size:11px}
@@ -243,9 +247,12 @@ export const fieldRecordService = {
       </style>
     </head><body>
       <div class="header">
-        <div>
-          <h2 style="color:#2F4F75;font-size:18px;font-weight:900">ATLAS QMS</h2>
-          <p style="color:#777;margin:2px 0 0;font-size:10px">${projectName}</p>
+        <div style="display:flex;align-items:center;gap:12px">
+          ${logoHtml}
+          <div>
+            <h2 style="color:#2F4F75;font-size:18px;font-weight:900">ATLAS QMS</h2>
+            <p style="color:#777;margin:2px 0 0;font-size:10px">${projectName}</p>
+          </div>
         </div>
         <div style="text-align:right">
           <h2 style="font-size:16px;color:#2F4F75;font-weight:900">${record.code}</h2>

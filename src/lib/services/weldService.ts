@@ -172,7 +172,7 @@ export const weldService = {
     if (error) throw error;
   },
 
-  exportPdf(record: WeldRecord, projectName: string) {
+  exportPdf(record: WeldRecord, projectName: string, logoBase64?: string | null) {
     const passBadge = (v: boolean | null | undefined, passLabel = "OK", failLabel = "NC") =>
       v === true
         ? `<span style="color:${ATLAS_PDF.colors.ok_fg};font-weight:700">${passLabel}</span>`
@@ -188,6 +188,10 @@ export const weldService = {
     };
     const res = resultMap[record.overall_result] ?? resultMap.pending;
 
+    const logoHtml = logoBase64
+      ? `<img src="${logoBase64}" style="height:45px;max-width:150px;object-fit:contain;" />`
+      : "";
+
     const html = `<html><head><style>
       body{font-family:Arial,sans-serif;font-size:11px;color:${ATLAS_PDF.colors.navy};margin:20px 30px}
       h2{font-size:14px;margin:18px 0 8px;border-bottom:2px solid ${ATLAS_PDF.colors.navym};padding-bottom:4px}
@@ -198,8 +202,10 @@ export const weldService = {
       .result-box span{font-size:20px;font-weight:900;color:${res.color}}
       .sig-row{display:flex;justify-content:space-between;margin-top:40px}
       .sig-block{width:45%;text-align:center;border-top:1px solid #333;padding-top:6px;font-size:10px}
+      .pdf-header{display:flex;align-items:center;gap:16px;margin-bottom:6px;text-align:center}
     </style></head><body>
-      <div style="text-align:center;margin-bottom:6px">
+      <div class="pdf-header">
+        ${logoHtml}
         <strong style="font-size:16px;letter-spacing:2px;color:${ATLAS_PDF.colors.navy}">ATLAS QMS</strong>
       </div>
       ${projectInfoStripHtml()}

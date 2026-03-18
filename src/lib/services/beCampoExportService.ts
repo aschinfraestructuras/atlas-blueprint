@@ -27,6 +27,7 @@ const TEST_TYPE_LABELS: Record<string, string> = {
 export function exportBeCampoPdf(
   result: TestResult & { be_campo_code?: string | null; eme_code?: string | null; eme_calibration_date?: string | null; location_pk?: string | null; weather?: string | null; ambient_temperature?: number | null; gr_id?: string | null; gr_code?: string | null },
   projectName: string,
+  logoBase64?: string | null,
 ) {
   const code = result.be_campo_code ?? result.code ?? "BE-CAMPO";
   const tc = result.tests_catalog as any;
