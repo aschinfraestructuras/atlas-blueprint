@@ -389,8 +389,14 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-      {/* ══ ROW 5 — Conformity by Frente ═══════════════════ */}
-      <div className="animate-fade-in" style={{ animationDelay: "200ms", animationFillMode: "both" }}>
+      {/* ══ ROW 5 — Test Status + Concrete by Class ═══════ */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-fade-in" style={{ animationDelay: "200ms", animationFillMode: "both" }}>
+        <TestStatusCard />
+        <ConcreteByClassCard />
+      </div>
+
+      {/* ══ ROW 5a — Conformity by Frente ═══════════════════ */}
+      <div className="animate-fade-in" style={{ animationDelay: "210ms", animationFillMode: "both" }}>
         <ConformityByFrenteChart />
       </div>
 
