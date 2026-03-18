@@ -256,7 +256,62 @@ export default function TechOfficeDetailPage() {
         </CardContent>
       </Card>
 
-      {/* Workflow actions */}
+      {/* Submittal-specific metadata card */}
+      {isSubmittal && sMeta && (
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-semibold">{t("submittals.detail.techData", { defaultValue: "Dados Técnicos do Submittal" })}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+              <div>
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t("submittals.col.discipline", { defaultValue: "Disciplina" })}</span>
+                <p className="mt-0.5">{sMeta.discipline ? t(`submittals.discipline.${sMeta.discipline}`, { defaultValue: sMeta.discipline }) : "—"}</p>
+              </div>
+              <div>
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t("submittals.col.subtype", { defaultValue: "Tipo" })}</span>
+                <p className="mt-0.5">{sMeta.subtype ? t(`submittals.subtype.${sMeta.subtype}`, { defaultValue: sMeta.subtype }) : "—"}</p>
+              </div>
+              <div>
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t("submittals.form.supplier", { defaultValue: "Fornecedor" })}</span>
+                <p className="mt-0.5">{sMeta.supplier_name || "—"}</p>
+              </div>
+              <div>
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t("submittals.form.subcontractor", { defaultValue: "Subempreiteiro" })}</span>
+                <p className="mt-0.5">{sMeta.subcontractor_name || "—"}</p>
+              </div>
+              <div>
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t("submittals.form.specRef", { defaultValue: "Ref. Normativa" })}</span>
+                <p className="mt-0.5 font-mono text-xs">{sMeta.spec_reference || "—"}</p>
+              </div>
+              <div>
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t("submittals.form.revision", { defaultValue: "Revisão" })}</span>
+                <p className="mt-0.5 font-mono">Rev. {sMeta.revision || "0"}</p>
+              </div>
+              <div>
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t("submittals.col.approval", { defaultValue: "Aprovação" })}</span>
+                <div className="mt-0.5">
+                  {(() => {
+                    const appr = APPROVAL_DISPLAY[sMeta.approval_result] ?? APPROVAL_DISPLAY.pending;
+                    const ApprIcon = appr.icon;
+                    return (
+                      <span className={cn("inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium", appr.className)}>
+                        <ApprIcon className="h-3 w-3" />
+                        {appr.label}
+                      </span>
+                    );
+                  })()}
+                </div>
+              </div>
+              <div>
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t("submittals.detail.submittedAt", { defaultValue: "Submetido em" })}</span>
+                <p className="mt-0.5">{sMeta.submitted_at ? new Date(sMeta.submitted_at).toLocaleDateString() : "—"}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <div className="flex items-center gap-3 flex-wrap">
         <span className="text-sm font-medium text-muted-foreground">{t("technicalOffice.rfi.changeStatus", { defaultValue: "Alterar estado:" })}</span>
         {WORKFLOW_STATUSES.map(s => (
