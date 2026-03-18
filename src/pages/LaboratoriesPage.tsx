@@ -355,12 +355,12 @@ export default function LaboratoriesPage() {
 
   const handleExportSingle = async (lab: Laboratory) => {
     const stats = await laboratoryService.getLabStats(activeProject.id, lab.supplier_id);
-    const { data: testsData } = await supabase.from("test_results")
-      .select("code, test_type, result_status, test_date")
+    const { data: testsData } = await (supabase as any).from("test_results")
+      .select("code, material, result_status, date")
       .eq("project_id", activeProject.id)
       .eq("supplier_id", lab.supplier_id)
       .eq("is_deleted", false)
-      .order("test_date", { ascending: false })
+      .order("date", { ascending: false })
       .limit(20);
     exportLaboratoryPdf(lab, stats, (testsData ?? []) as LabTestRow[], logoBase64, activeProject.name);
   };

@@ -45,10 +45,10 @@ export function exportLaboratoryPdf(
     `<div class="info-row"><label>${label}</label><div class="val">${value ?? "—"}</div></div>`;
 
   const testRows = recentTests.map(t => `<tr>
-    <td>${t.code}</td>
-    <td>${t.test_type}</td>
-    <td>${t.result_status}</td>
-    <td>${t.test_date ?? "—"}</td>
+    <td>${t.code ?? "—"}</td>
+    <td>${t.material ?? "—"}</td>
+    <td>${t.result_status ?? "—"}</td>
+    <td>${t.date ?? "—"}</td>
   </tr>`).join("");
 
   const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${docCode}</title>
