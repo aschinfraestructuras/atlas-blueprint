@@ -308,9 +308,10 @@ export async function exportNCPdf(
   nc: NonConformity,
   labels: NCExportLabels,
   projectName: string,
+  logoBase64?: string | null,
 ): Promise<void> {
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-  drawPageFrame(doc, 1, 1, projectName, labels);
+  drawPageFrame(doc, 1, 1, projectName, labels, logoBase64);
 
   let y = 24;
   doc.setFontSize(12).setFont("helvetica", "bold").setTextColor(C.text);
