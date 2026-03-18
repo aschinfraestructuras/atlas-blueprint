@@ -43,6 +43,7 @@ export default function DailyReportDetailPage() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const meta = useReportMeta();
+  const { logoBase64 } = useProjectLogo();
   const { activeProject } = useProject();
 
   const [report, setReport] = useState<DailyReport | null>(null);
