@@ -697,6 +697,16 @@ export default function MaterialDetailPage() {
           </Card>
         </TabsContent>
 
+        <TabsContent value="dossier">
+          <TechnicalDossierTab
+            material={material}
+            lots={lots}
+            tests={tests}
+            docs={docs}
+            ncs={ncs}
+          />
+        </TabsContent>
+
         <TabsContent value="audit">
           <Card className="border-0 shadow-card">
             <CardContent className="p-6">
