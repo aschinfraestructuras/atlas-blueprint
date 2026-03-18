@@ -120,6 +120,10 @@ export const rfiService = {
         recipient: input.recipient ?? null,
         priority: input.priority ?? "normal",
         deadline: input.deadline ?? null,
+        response_deadline: input.response_deadline ?? null,
+        discipline: input.discipline ?? null,
+        ppi_ref: input.ppi_ref ?? null,
+        doc_reference: input.doc_reference ?? null,
         created_by: input.created_by,
       })
       .select()

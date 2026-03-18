@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useProject } from "@/contexts/ProjectContext";
 import { useReportMeta } from "@/hooks/useReportMeta";
 import { useProjectRole } from "@/hooks/useProjectRole";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { useWorkItems } from "@/hooks/useWorkItems";
 import { rfiService, type Rfi, type RfiMessage } from "@/lib/services/rfiService";
 import { useRfiMessages } from "@/hooks/useRfis";
@@ -56,6 +57,7 @@ export default function RfiDetailPage() {
   const { isAdmin } = useProjectRole();
   const { toast } = useToast();
   const reportMeta = useReportMeta();
+  const { logoBase64 } = useProjectLogo();
 
   useEffect(() => {
     if (!id || id === "undefined" || id.trim() === "") {
@@ -220,7 +222,7 @@ export default function RfiDetailPage() {
   };
 
   const handleExportPdf = () => {
-    exportRfiDetailPdf(rfi, messages, meta);
+    exportRfiDetailPdf(rfi, messages, meta, logoBase64);
   };
 
   return (
@@ -436,6 +438,11 @@ export default function RfiDetailPage() {
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
               <div className="flex justify-between">
+                <span className="text-muted-foreground">{t("rfis.form.recipient", { defaultValue: "Destinatário" })}</span>
+                <span className="text-right max-w-[160px] truncate">{rfi.recipient || "—"}</span>
+              </div>
+              <Separator />
+              <div className="flex justify-between">
                 <span className="text-muted-foreground">{t("nc.form.discipline", { defaultValue: "Disciplina" })}</span>
                 <span>{discipline ? t(`nc.discipline.${discipline}`, { defaultValue: discipline }) : "—"}</span>
               </div>
@@ -458,6 +465,43 @@ export default function RfiDetailPage() {
               <div className="flex justify-between">
                 <span className="text-muted-foreground">{t("common.date")}</span>
                 <span>{new Date(rfi.created_at).toLocaleDateString()}</span>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Status timeline */}
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-semibold">{t("rfi.detail.timeline", { defaultValue: "Cronologia" })}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3 relative before:absolute before:left-[7px] before:top-2 before:bottom-2 before:w-px before:bg-border">
+                <div className="flex items-start gap-3 relative">
+                  <div className="h-4 w-4 rounded-full bg-primary/20 border-2 border-primary flex-shrink-0 mt-0.5 z-10" />
+                  <div>
+                    <p className="text-xs font-medium">{t("rfi.timeline.created", { defaultValue: "Criado" })}</p>
+                    <p className="text-[10px] text-muted-foreground">{new Date(rfi.created_at).toLocaleString()}</p>
+                  </div>
+                </div>
+                {respondedAt && (
+                  <div className="flex items-start gap-3 relative">
+                    <div className="h-4 w-4 rounded-full bg-emerald-500/20 border-2 border-emerald-500 flex-shrink-0 mt-0.5 z-10" />
+                    <div>
+                      <p className="text-xs font-medium">{t("rfi.timeline.responded", { defaultValue: "Respondido" })}</p>
+                      <p className="text-[10px] text-muted-foreground">{new Date(respondedAt).toLocaleString()}</p>
+                      {(rfi as any).responded_by && <p className="text-[10px] text-muted-foreground">{(rfi as any).responded_by}</p>}
+                    </div>
+                  </div>
+                )}
+                {rfi.status === "closed" && (
+                  <div className="flex items-start gap-3 relative">
+                    <div className="h-4 w-4 rounded-full bg-muted border-2 border-muted-foreground/40 flex-shrink-0 mt-0.5 z-10" />
+                    <div>
+                      <p className="text-xs font-medium">{t("rfi.timeline.closed", { defaultValue: "Encerrado" })}</p>
+                      <p className="text-[10px] text-muted-foreground">{new Date(rfi.updated_at).toLocaleString()}</p>
+                    </div>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>

@@ -8,6 +8,7 @@ import { useNonConformities } from "@/hooks/useNonConformities";
 import { ncService } from "@/lib/services/ncService";
 
 import { exportNCBulkPdf, type NCExportLabels } from "@/lib/services/ncExportService";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import { exportToCSV, generateListPdf, buildReportFilename } from "@/lib/services/reportService";
 import { exportLNC } from "@/lib/services/sgqListExportService";
@@ -115,7 +116,7 @@ export default function NonConformitiesPage() {
   const { data: ncs, loading, error, refetch } = useNonConformities();
   const reportMeta = useReportMeta();
   const { canCreate, canEdit, canValidate } = usePermissions();
-
+  const { logoBase64 } = useProjectLogo();
   // Filters
   const [search, setSearch]             = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
@@ -251,7 +252,7 @@ export default function NonConformitiesPage() {
       origin_document: t("nc.origin.document"), origin_audit: t("nc.origin.audit"),
     };
     try {
-      await exportNCBulkPdf(items, labels, activeProject?.name ?? "Atlas");
+      await exportNCBulkPdf(items, labels, activeProject?.name ?? "Atlas", logoBase64);
     } catch {
       toast({ title: t("nc.export.noData", { defaultValue: "Erro ao exportar" }), variant: "destructive" });
     }

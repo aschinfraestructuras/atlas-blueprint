@@ -7,6 +7,7 @@ import { useTechnicalOffice } from "@/hooks/useTechnicalOffice";
 import { useRfis } from "@/hooks/useRfis";
 import { useDocuments } from "@/hooks/useDocuments";
 import { useProjectRole } from "@/hooks/useProjectRole";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { technicalOfficeService, TECH_OFFICE_TYPES, TECH_OFFICE_STATUSES, PRIORITIES } from "@/lib/services/technicalOfficeService";
 import { rfiService } from "@/lib/services/rfiService";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
@@ -144,6 +145,7 @@ export default function TechnicalOfficePage() {
   const { data: allDocuments } = useDocuments();
   const { canCreate, isAdmin } = useProjectRole();
   const reportMeta = useReportMeta();
+  const { logoBase64 } = useProjectLogo();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("all");
 
@@ -268,7 +270,7 @@ export default function TechnicalOfficePage() {
   const handleExport = (fmt: "csv" | "pdf") => {
     if (isRfiTab) {
       if (fmt === "csv") exportRfisCsv(rfis, meta);
-      else exportRfisPdf(rfis, meta);
+      else exportRfisPdf(rfis, meta, logoBase64);
     } else {
       if (fmt === "csv") exportTechOfficeCsv(items, meta);
       else exportTechOfficePdf(items, meta);

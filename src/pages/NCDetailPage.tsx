@@ -13,6 +13,7 @@ import {
   exportNCPdf,
   type NCExportLabels,
 } from "@/lib/services/ncExportService";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { NCFormDialog } from "@/components/nc/NCFormDialog";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { LinkedDocumentsPanel } from "@/components/documents/LinkedDocumentsPanel";
@@ -138,6 +139,7 @@ export default function NCDetailPage() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const { user } = useAuth();
+  const { logoBase64 } = useProjectLogo();
 
   const loadNc = useCallback(async () => {
     if (!id) return;
@@ -213,7 +215,7 @@ export default function NCDetailPage() {
         origin_manual: t("nc.origin.manual"), origin_ppi: t("nc.origin.ppi"), origin_test: t("nc.origin.test"),
         origin_document: t("nc.origin.document"), origin_audit: t("nc.origin.audit"),
       };
-      await exportNCPdf(nc, labels, activeProject.name);
+      await exportNCPdf(nc, labels, activeProject.name, logoBase64);
     } catch {
       toast({ title: t("nc.export.noData", { defaultValue: "Erro ao exportar" }), variant: "destructive" });
     } finally {

@@ -1,8 +1,9 @@
 import {
-  exportToCSV, generatePdfDocument, printHtml,
-  buildReportFilename, infoGridHtml,
+  exportToCSV, printHtml,
+  buildReportFilename, infoGridHtml, sharedCss,
   type ReportMeta, type ReportLabels,
 } from "./reportService";
+import { fullPdfHeader } from "./pdfProjectHeader";
 import type { Rfi, RfiMessage } from "./rfiService";
 
 const labels = (locale: string): ReportLabels => ({
@@ -12,15 +13,18 @@ const labels = (locale: string): ReportLabels => ({
 });
 
 export function exportRfisCsv(data: Rfi[], meta: ReportMeta) {
-  const headers = ["Código", "Assunto", "Prioridade", "Estado", "Prazo", "Zona", "Data Criação"];
-  const rows = data.map(r => [r.code ?? "", r.subject, r.priority, r.status, r.deadline ?? "", r.zone ?? "", r.created_at?.slice(0, 10) ?? ""]);
+  const headers = ["Código", "Assunto", "Prioridade", "Estado", "Prazo", "Zona", "Destinatário", "Data Criação"];
+  const rows = data.map(r => [r.code ?? "", r.subject, r.priority, r.status, r.deadline ?? "", r.zone ?? "", r.recipient ?? "", r.created_at?.slice(0, 10) ?? ""]);
   exportToCSV(headers, rows, buildReportFilename("RFI", meta.projectCode, "lista", "csv"));
 }
 
-export function exportRfisPdf(data: Rfi[], meta: ReportMeta) {
+export function exportRfisPdf(data: Rfi[], meta: ReportMeta, logoBase64?: string | null) {
   const l = labels(meta.locale);
-  const columns = ["Código", "Assunto", "Prioridade", "Estado", "Prazo", "Data"];
-  const rows = data.map(r => [r.code ?? "—", r.subject, r.priority, r.status, r.deadline ?? "—", r.created_at?.slice(0, 10) ?? "—"]);
+  const today = new Date().toLocaleDateString("pt-PT");
+  const header = fullPdfHeader(logoBase64 ?? null, `LINHA DO SUL — ${meta.projectCode}`, "RFI-LISTA", "0", today);
+
+  const columns = ["Código", "Assunto", "Destinatário", "Prioridade", "Estado", "Prazo", "Data"];
+  const rows = data.map(r => [r.code ?? "—", r.subject, r.recipient ?? "—", r.priority, r.status, r.deadline ?? "—", r.created_at?.slice(0, 10) ?? "—"]);
   const tableRows = rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join("")}</tr>`).join("");
   const bodyHtml = `
     <table class="atlas-table">
@@ -28,19 +32,36 @@ export function exportRfisPdf(data: Rfi[], meta: ReportMeta) {
       <tbody>${tableRows}</tbody>
     </table>
     <div style="margin-top:8px;font-size:9px;color:#6B7280;">${rows.length} registo(s)</div>`;
-  const html = generatePdfDocument({ title: l.reportTitle, labels: l, meta, bodyHtml, footerRef: `RFI-${meta.projectCode}` });
+
+  const html = `<!DOCTYPE html>
+<html lang="${meta.locale}">
+<head><meta charset="UTF-8"/><title>RFI Lista — Atlas QMS</title>
+<style>${sharedCss()}</style></head>
+<body>
+${header}
+${bodyHtml}
+<div class="atlas-footer"><span>Atlas QMS</span><span>RFI-${meta.projectCode}</span></div>
+</body></html>`;
   printHtml(html, buildReportFilename("RFI", meta.projectCode, "lista"));
 }
 
 /** Export a single RFI detail with messages thread and attachments list */
-export function exportRfiDetailPdf(rfi: Rfi, messages: RfiMessage[], meta: ReportMeta) {
-  const l: ReportLabels = { ...labels(meta.locale), reportTitle: `RFI — ${rfi.code ?? rfi.subject}` };
+export function exportRfiDetailPdf(rfi: Rfi, messages: RfiMessage[], meta: ReportMeta, logoBase64?: string | null) {
+  const today = new Date().toLocaleDateString("pt-PT");
+  const header = fullPdfHeader(
+    logoBase64 ?? null,
+    `LINHA DO SUL — ${meta.projectCode}`,
+    rfi.code ?? "RFI",
+    "0",
+    today,
+  );
 
   const fmtDate = (d: string | null) => d ? new Date(d).toLocaleDateString("pt-PT") : "—";
 
   const info = infoGridHtml([
     ["Código", rfi.code ?? "—"],
     ["Assunto", rfi.subject],
+    ["Destinatário", rfi.recipient ?? "—"],
     ["Prioridade", rfi.priority],
     ["Estado", rfi.status],
     ["Zona", rfi.zone ?? "—"],
@@ -66,6 +87,16 @@ export function exportRfiDetailPdf(rfi: Rfi, messages: RfiMessage[], meta: Repor
     : `<div class="atlas-section">Mensagens</div><p style="font-size:10px;color:#6B7280;">Sem mensagens.</p>`;
 
   const bodyHtml = `${info}${descHtml}${msgsHtml}`;
-  const html = generatePdfDocument({ title: l.reportTitle, labels: l, meta, bodyHtml, footerRef: `RFI-${meta.projectCode}-${rfi.code ?? ""}` });
+
+  const html = `<!DOCTYPE html>
+<html lang="${meta.locale}">
+<head><meta charset="UTF-8"/><title>RFI ${rfi.code ?? ""} — Atlas QMS</title>
+<style>${sharedCss()}</style></head>
+<body>
+${header}
+${bodyHtml}
+<div class="atlas-footer"><span>Atlas QMS</span><span>RFI-${meta.projectCode}-${rfi.code ?? ""}</span></div>
+</body></html>`;
+
   printHtml(html, buildReportFilename("RFI", meta.projectCode, rfi.code ?? "detail"));
 }
