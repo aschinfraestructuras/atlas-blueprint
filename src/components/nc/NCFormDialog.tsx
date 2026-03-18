@@ -258,24 +258,24 @@ export function NCFormDialog({
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-0 pt-1">
             <Tabs defaultValue="identification" className="w-full">
               <TabsList className="w-full mb-4 flex-wrap h-auto gap-1">
-                <TabsTrigger value="identification" className="text-xs">
-                  1. {t("nc.form.tabs.identification", { defaultValue: "Identificação" })}
+                <TabsTrigger value="identification" className="text-xs gap-1">
+                  {watchedClassification ? "✓" : "○"} 1. {t("nc.form.tabs.identification", { defaultValue: "Identificação" })}
                 </TabsTrigger>
-                <TabsTrigger value="description" className="text-xs">
-                  2. {t("nc.form.tabs.description", { defaultValue: "Descrição" })}
+                <TabsTrigger value="description" className="text-xs gap-1">
+                  {form.watch("description") ? "✓" : "○"} 2. {t("nc.form.tabs.description", { defaultValue: "Descrição" })}
                 </TabsTrigger>
-                <TabsTrigger value="correction" className="text-xs">
-                  3. {t("nc.form.tabs.correction", { defaultValue: "Correcção" })}
+                <TabsTrigger value="correction" className="text-xs gap-1">
+                  {form.watch("correction_type") ? "✓" : "○"} 3. {t("nc.form.tabs.correction", { defaultValue: "Correcção" })}
                 </TabsTrigger>
-                <TabsTrigger value="rootcause" className="text-xs">
-                  4. {t("nc.form.tabs.rootCause", { defaultValue: "Causa Raiz" })}
+                <TabsTrigger value="rootcause" className="text-xs gap-1">
+                  {form.watch("root_cause") ? "✓" : isMaior ? "⚠" : "○"} 4. {t("nc.form.tabs.rootCause", { defaultValue: "Causa Raiz" })}
                 </TabsTrigger>
-                <TabsTrigger value="capa" className="text-xs">
-                  5. {t("nc.form.tabs.capa", { defaultValue: "Acção Corretiva" })}
+                <TabsTrigger value="capa" className="text-xs gap-1">
+                  {form.watch("corrective_action") ? "✓" : "○"} 5. {t("nc.form.tabs.capa", { defaultValue: "Acção Corretiva" })}
                 </TabsTrigger>
                 {showClosure && (
-                  <TabsTrigger value="closure" className="text-xs">
-                    6. {t("nc.form.tabs.closure", { defaultValue: "Fecho" })}
+                  <TabsTrigger value="closure" className="text-xs gap-1">
+                    {form.watch("verification_result") ? "✓" : "○"} 6. {t("nc.form.tabs.closure", { defaultValue: "Fecho" })}
                   </TabsTrigger>
                 )}
                 {isEdit && (
