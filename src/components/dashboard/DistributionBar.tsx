@@ -33,7 +33,7 @@ export function DistributionBar({ title, icon: Icon, entries, maxItems = 8 }: Di
         <div className="space-y-2">
           {top.map(({ key, label, value }, i) => (
             <div key={key} className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground w-24 truncate text-right">{label}</span>
+              <span className="text-xs text-muted-foreground w-36 min-w-[9rem] truncate text-right" title={label}>{label}</span>
               <div className="flex-1 h-5 bg-muted/30 rounded-full overflow-hidden">
                 <div
                   className="h-full rounded-full transition-all duration-500 ease-out"
