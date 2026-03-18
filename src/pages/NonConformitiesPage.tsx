@@ -116,7 +116,7 @@ export default function NonConformitiesPage() {
   const { data: ncs, loading, error, refetch } = useNonConformities();
   const reportMeta = useReportMeta();
   const { canCreate, canEdit, canValidate } = usePermissions();
-
+  const { logoBase64 } = useProjectLogo();
   // Filters
   const [search, setSearch]             = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
