@@ -1,14 +1,14 @@
 import { useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
 import {
   Layers, Plus, FileDown, Trash2, Eye, CheckCircle2, XCircle, Clock,
-  FlaskConical, Loader2,
+  FlaskConical, Loader2, X, Info,
 } from "lucide-react";
 import { concreteService, computeBatchResult, type ConcreteBatchWithCounts, type ConcreteBatch, type ConcreteSpecimen } from "@/lib/services/concreteService";
 import { useProject } from "@/contexts/ProjectContext";
 import { useWorkItems } from "@/hooks/useWorkItems";
 import { usePPIInstances } from "@/hooks/usePPI";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { PageHeader } from "@/components/ui/page-header";
 import { FilterBar } from "@/components/ui/filter-bar";
 import { Card, CardContent } from "@/components/ui/card";
@@ -20,6 +20,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { RowActionMenu } from "@/components/ui/row-action-menu";
 import { EmptyState } from "@/components/EmptyState";
 import { ModuleKPICard } from "@/components/ModuleKPICard";
@@ -28,7 +29,30 @@ import { cn } from "@/lib/utils";
 
 const CONCRETE_CLASSES = ["C16/20", "C20/25", "C25/30", "C30/37", "C35/45", "C40/50"];
 const CONSISTENCY_CLASSES = ["S1", "S2", "S3", "S4", "S5"];
-const CURE_DAYS_OPTIONS = [7, 14, 28, 56];
+const CURE_DAYS_OPTIONS = [7, 14, 28, 56, 90];
+const EXC_CLASSES = ["EXC1", "EXC2", "EXC3"];
+const EXPOSURE_CLASSES = ["XC1", "XC2", "XC3", "XC4", "XS1", "XS2", "XD1"];
+const FRACTURE_TYPES = ["cônica", "cónica-cilíndrica", "frágil", "irregular", "—"];
+
+function excFrequency(exc: string): string {
+  if (exc === "EXC1") return "1 amostra por 150 m³";
+  if (exc === "EXC3") return "1 amostra por 50 m³";
+  return "1 amostra por 75 m³"; // EXC2 default
+}
+
+function makeDefaultSpecimen(no: number) {
+  return {
+    specimen_no: no,
+    mold_date: new Date().toISOString().slice(0, 10),
+    cure_days: 28,
+    test_date: "",
+    lab_ref: "",
+    break_load_kn: "",
+    dimension_mm: 150,
+    shape: "cube",
+    fracture_type: "",
+  };
+}
 
 function ResultBadge({ result }: { result: string }) {
   if (result === "pass") return <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-0">Conforme</Badge>;
@@ -41,6 +65,7 @@ export default function ConcretePage() {
   const { activeProject } = useProject();
   const { data: workItems } = useWorkItems();
   const { data: ppis } = usePPIInstances();
+  const { logoBase64 } = useProjectLogo();
   const [batches, setBatches] = useState<ConcreteBatchWithCounts[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -74,11 +99,11 @@ export default function ConcretePage() {
     lab_name: "",
     technician_name: "",
     notes: "",
-    specimens: [
-      { specimen_no: 1, mold_date: new Date().toISOString().slice(0, 10), cure_days: 28, test_date: "", lab_ref: "", break_load_kn: "", dimension_mm: 150, shape: "cube" },
-      { specimen_no: 2, mold_date: new Date().toISOString().slice(0, 10), cure_days: 28, test_date: "", lab_ref: "", break_load_kn: "", dimension_mm: 150, shape: "cube" },
-      { specimen_no: 3, mold_date: new Date().toISOString().slice(0, 10), cure_days: 28, test_date: "", lab_ref: "", break_load_kn: "", dimension_mm: 150, shape: "cube" },
-    ],
+    exc_class: "EXC2",
+    fab_ref: "",
+    exposure_class: "XC2",
+    structural_element_mqt_code: "",
+    specimens: [makeDefaultSpecimen(1), makeDefaultSpecimen(2), makeDefaultSpecimen(3)],
   });
 
   const fetchBatches = useCallback(async () => {
@@ -113,6 +138,22 @@ export default function ConcretePage() {
     ? ppis.filter((p) => (p as any).work_item_id === form.work_item_id)
     : ppis;
 
+  // Specimen management
+  function addSpecimen() {
+    setForm((f) => ({
+      ...f,
+      specimens: [...f.specimens, makeDefaultSpecimen(f.specimens.length + 1)],
+    }));
+  }
+
+  function removeSpecimen(idx: number) {
+    if (form.specimens.length <= 1) return;
+    setForm((f) => ({
+      ...f,
+      specimens: f.specimens.filter((_, i) => i !== idx).map((s, i) => ({ ...s, specimen_no: i + 1 })),
+    }));
+  }
+
   async function handleCreate() {
     if (!activeProject || !form.element_betonado.trim()) return;
     setSaving(true);
@@ -140,9 +181,12 @@ export default function ConcretePage() {
         lab_name: form.lab_name || null,
         technician_name: form.technician_name || null,
         notes: form.notes || null,
+        exc_class: form.exc_class || null,
+        fab_ref: form.fab_ref || null,
+        exposure_class: form.exposure_class || null,
+        structural_element_mqt_code: form.structural_element_mqt_code || null,
       });
 
-      // Add specimens
       for (const spec of form.specimens) {
         await concreteService.addSpecimen(batch.id, activeProject.id, {
           specimen_no: spec.specimen_no,
@@ -153,7 +197,7 @@ export default function ConcretePage() {
           dimension_mm: spec.dimension_mm,
           shape: spec.shape,
           break_load_kn: spec.break_load_kn ? parseFloat(spec.break_load_kn) : null,
-          fracture_type: null,
+          fracture_type: spec.fracture_type || null,
           pass_fail: "pending",
           notes: null,
         });
@@ -180,11 +224,59 @@ export default function ConcretePage() {
 
   function handleExport(batch: ConcreteBatchWithCounts) {
     concreteService.getById(batch.id).then((d) => {
-      if (d) concreteService.exportPdf(d.batch, d.specimens, activeProject?.name ?? "PF17A");
+      if (d) concreteService.exportPdf(d.batch, d.specimens, activeProject?.name ?? "PF17A", logoBase64);
     });
   }
 
-  // Detail dialog
+  // ─── Detail: inline editing ────────────────────────────────────────────────
+  async function handleSpecimenBlur(specimen: ConcreteSpecimen, field: string, value: string) {
+    try {
+      const update: Record<string, any> = {};
+      if (field === "test_date") update.test_date = value || null;
+      else if (field === "break_load_kn") update.break_load_kn = value ? parseFloat(value) : null;
+      else if (field === "fracture_type") update.fracture_type = value || null;
+      else return;
+      await concreteService.updateSpecimen(specimen.id, update);
+      // Refresh detail
+      if (detailId) concreteService.getById(detailId).then(setDetailData);
+    } catch (err: any) {
+      toast({ title: "Erro", description: err.message, variant: "destructive" });
+    }
+  }
+
+  async function handleAddDetailSpecimen() {
+    if (!detailData || !activeProject) return;
+    const nextNo = detailData.specimens.length + 1;
+    try {
+      await concreteService.addSpecimen(detailData.batch.id, activeProject.id, {
+        specimen_no: nextNo,
+        mold_date: new Date().toISOString().slice(0, 10),
+        cure_days: 28,
+        test_date: null,
+        lab_ref: null,
+        dimension_mm: 150,
+        shape: "cube",
+        break_load_kn: null,
+        fracture_type: null,
+        pass_fail: "pending",
+        notes: null,
+      });
+      concreteService.getById(detailData.batch.id).then(setDetailData);
+    } catch (err: any) {
+      toast({ title: "Erro", description: err.message, variant: "destructive" });
+    }
+  }
+
+  async function handleDeleteDetailSpecimen(specId: string) {
+    if (!detailData || detailData.specimens.length <= 1) return;
+    try {
+      await concreteService.deleteSpecimen(specId);
+      concreteService.getById(detailData.batch.id).then(setDetailData);
+    } catch (err: any) {
+      toast({ title: "Erro", description: err.message, variant: "destructive" });
+    }
+  }
+
   const detailResult = detailData ? computeBatchResult(detailData.batch.concrete_class, detailData.specimens) : null;
 
   return (
@@ -282,7 +374,7 @@ export default function ConcretePage() {
         </CardContent>
       </Card>
 
-      {/* Create Dialog */}
+      {/* ────── Create Dialog ────── */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
@@ -332,6 +424,49 @@ export default function ConcretePage() {
                 <div><Label>Matrícula</Label><Input value={form.truck_plate} onChange={(e) => setForm((f) => ({ ...f, truck_plate: e.target.value }))} /></div>
                 <div><Label>Central / Lab</Label><Input value={form.lab_name} onChange={(e) => setForm((f) => ({ ...f, lab_name: e.target.value }))} /></div>
               </div>
+              {/* New fields: EXC, FAB, exposure, MQT */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <div className="flex items-center gap-1.5">
+                    <Label>Classe de Execução</Label>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild><Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" /></TooltipTrigger>
+                        <TooltipContent className="max-w-xs text-xs">
+                          Classe de Execução NP EN 13670 AN-PT — determina frequência de amostragem: EXC1=1/150m³ | EXC2=1/75m³ | EXC3=1/50m³
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                  <Select value={form.exc_class} onValueChange={(v) => setForm((f) => ({ ...f, exc_class: v }))}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>{EXC_CLASSES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground mt-0.5">{excFrequency(form.exc_class)}</p>
+                </div>
+                <div>
+                  <div className="flex items-center gap-1.5">
+                    <Label>Ref. FAB</Label>
+                    {(form.exc_class === "EXC2" || form.exc_class === "EXC3") && (
+                      <span className="text-xs text-destructive font-medium">(obrigatório EXC2/EXC3)</span>
+                    )}
+                  </div>
+                  <Input value={form.fab_ref} onChange={(e) => setForm((f) => ({ ...f, fab_ref: e.target.value }))} placeholder="Folha de Aprovação de Betonagem" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label>Classe de Exposição</Label>
+                  <Select value={form.exposure_class} onValueChange={(v) => setForm((f) => ({ ...f, exposure_class: v }))}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>{EXPOSURE_CLASSES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Código MQT</Label>
+                  <Input value={form.structural_element_mqt_code} onChange={(e) => setForm((f) => ({ ...f, structural_element_mqt_code: e.target.value }))} placeholder="F-02.05.03.03.07" />
+                </div>
+              </div>
             </TabsContent>
 
             <TabsContent value="fresh" className="space-y-3 mt-4">
@@ -362,16 +497,18 @@ export default function ConcretePage() {
               </div>
             </TabsContent>
 
-            <TabsContent value="specimens" className="mt-4">
+            <TabsContent value="specimens" className="mt-4 space-y-3">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>#</TableHead>
+                    <TableHead className="w-10">#</TableHead>
                     <TableHead>Moldagem</TableHead>
                     <TableHead>Cura (dias)</TableHead>
                     <TableHead>Data Ensaio</TableHead>
                     <TableHead>Ref. Lab</TableHead>
                     <TableHead>Carga (kN)</TableHead>
+                    <TableHead>Rotura</TableHead>
+                    <TableHead className="w-10" />
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -408,10 +545,34 @@ export default function ConcretePage() {
                         updated[idx] = { ...updated[idx], break_load_kn: e.target.value };
                         setForm((f) => ({ ...f, specimens: updated }));
                       }} className="h-8 w-24" /></TableCell>
+                      <TableCell>
+                        <Select value={spec.fracture_type || "—"} onValueChange={(v) => {
+                          const updated = [...form.specimens];
+                          updated[idx] = { ...updated[idx], fracture_type: v === "—" ? "" : v };
+                          setForm((f) => ({ ...f, specimens: updated }));
+                        }}>
+                          <SelectTrigger className="h-8 w-28"><SelectValue /></SelectTrigger>
+                          <SelectContent>{FRACTURE_TYPES.map((ft) => <SelectItem key={ft} value={ft}>{ft}</SelectItem>)}</SelectContent>
+                        </Select>
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7"
+                          onClick={() => removeSpecimen(idx)}
+                          disabled={form.specimens.length <= 1}
+                        >
+                          <X className="h-3.5 w-3.5 text-muted-foreground" />
+                        </Button>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
+              <Button variant="outline" size="sm" onClick={addSpecimen} className="gap-1.5">
+                <Plus className="h-3.5 w-3.5" /> Adicionar Provete
+              </Button>
             </TabsContent>
           </Tabs>
 
@@ -425,7 +586,7 @@ export default function ConcretePage() {
         </DialogContent>
       </Dialog>
 
-      {/* Detail Dialog */}
+      {/* ────── Detail Dialog ────── */}
       <Dialog open={!!detailId} onOpenChange={(open) => { if (!open) setDetailId(null); }}>
         <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
           {detailData && (
@@ -446,9 +607,18 @@ export default function ConcretePage() {
                   <div><span className="text-muted-foreground text-xs font-semibold uppercase">Consistência</span><p>{detailData.batch.consistency_class ?? "—"}</p></div>
                   <div><span className="text-muted-foreground text-xs font-semibold uppercase">Slump</span><p>{detailData.batch.slump_mm ?? "—"} mm</p></div>
                   <div><span className="text-muted-foreground text-xs font-semibold uppercase">Temp. Betão</span><p>{detailData.batch.temp_concrete ?? "—"} °C</p></div>
+                  <div><span className="text-muted-foreground text-xs font-semibold uppercase">Classe Execução</span><p>{detailData.batch.exc_class ?? "—"}</p></div>
+                  <div><span className="text-muted-foreground text-xs font-semibold uppercase">Ref. FAB</span><p>{detailData.batch.fab_ref ?? "—"}</p></div>
+                  <div><span className="text-muted-foreground text-xs font-semibold uppercase">Exposição</span><p>{detailData.batch.exposure_class ?? "—"}</p></div>
+                  <div><span className="text-muted-foreground text-xs font-semibold uppercase">Código MQT</span><p>{detailData.batch.structural_element_mqt_code ?? "—"}</p></div>
                 </div>
 
-                <h4 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mt-4">{t("concrete.tabs.specimens")}</h4>
+                <div className="flex items-center justify-between">
+                  <h4 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">{t("concrete.tabs.specimens")}</h4>
+                  <Button variant="outline" size="sm" className="gap-1.5" onClick={handleAddDetailSpecimen}>
+                    <Plus className="h-3.5 w-3.5" /> Provete
+                  </Button>
+                </div>
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -458,6 +628,8 @@ export default function ConcretePage() {
                       <TableHead>Ensaio</TableHead>
                       <TableHead>Carga (kN)</TableHead>
                       <TableHead>fc (MPa)</TableHead>
+                      <TableHead>Rotura</TableHead>
+                      <TableHead className="w-10" />
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -466,29 +638,61 @@ export default function ConcretePage() {
                         <TableCell>{s.specimen_no}</TableCell>
                         <TableCell className="text-xs">{s.mold_date}</TableCell>
                         <TableCell>{s.cure_days}d</TableCell>
-                        <TableCell className="text-xs">{s.test_date ?? "—"}</TableCell>
-                        <TableCell>{s.break_load_kn ?? "—"}</TableCell>
+                        <TableCell>
+                          <Input
+                            type="date"
+                            defaultValue={s.test_date ?? ""}
+                            onBlur={(e) => handleSpecimenBlur(s, "test_date", e.target.value)}
+                            className="h-7 w-32 text-xs"
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Input
+                            type="number"
+                            defaultValue={s.break_load_kn ?? ""}
+                            onBlur={(e) => handleSpecimenBlur(s, "break_load_kn", e.target.value)}
+                            className="h-7 w-20 text-xs"
+                          />
+                        </TableCell>
                         <TableCell className="font-semibold">{s.strength_mpa ?? "—"}</TableCell>
+                        <TableCell>
+                          <Select defaultValue={s.fracture_type ?? "—"} onValueChange={(v) => handleSpecimenBlur(s, "fracture_type", v === "—" ? "" : v)}>
+                            <SelectTrigger className="h-7 w-28 text-xs"><SelectValue /></SelectTrigger>
+                            <SelectContent>{FRACTURE_TYPES.map((ft) => <SelectItem key={ft} value={ft}>{ft}</SelectItem>)}</SelectContent>
+                          </Select>
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7"
+                            onClick={() => handleDeleteDetailSpecimen(s.id)}
+                            disabled={detailData.specimens.length <= 1}
+                          >
+                            <X className="h-3.5 w-3.5 text-muted-foreground" />
+                          </Button>
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
                 </Table>
 
-                {detailResult && detailResult.mean != null && (
+                {detailResult && (
                   <div className="bg-muted/30 rounded-lg p-4 space-y-1 text-sm">
                     <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Análise Estatística</h4>
                     <div className="grid grid-cols-3 gap-2">
-                      <div><span className="text-muted-foreground text-xs">Média fc:</span> <strong>{detailResult.mean} MPa</strong></div>
-                      <div><span className="text-muted-foreground text-xs">Mín. fc:</span> <strong>{detailResult.min} MPa</strong></div>
-                      <div><span className="text-muted-foreground text-xs">Desvio:</span> <strong>{detailResult.stdDev} MPa</strong></div>
+                      <div><span className="text-muted-foreground text-xs">Média fc:</span> <strong>{detailResult.mean ?? "—"} MPa</strong></div>
+                      <div><span className="text-muted-foreground text-xs">Mín. fc:</span> <strong>{detailResult.min ?? "—"} MPa</strong></div>
+                      <div><span className="text-muted-foreground text-xs">Desvio:</span> <strong>{detailResult.stdDev ?? "—"} MPa</strong></div>
                     </div>
+                    <p className="text-xs text-muted-foreground italic mt-2">{detailResult.criterionApplied}</p>
                   </div>
                 )}
               </div>
 
               <DialogFooter>
                 <Button variant="outline" onClick={() => {
-                  if (detailData) concreteService.exportPdf(detailData.batch, detailData.specimens, activeProject?.name ?? "PF17A");
+                  if (detailData) concreteService.exportPdf(detailData.batch, detailData.specimens, activeProject?.name ?? "PF17A", logoBase64);
                 }}>
                   <FileDown className="h-4 w-4 mr-1.5" /> {t("common.exportPdf")}
                 </Button>
