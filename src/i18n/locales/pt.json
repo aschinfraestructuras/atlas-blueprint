@@ -2883,7 +2883,32 @@
       "workItem": "Atividade",
       "total": "Total acumulado"
     },
-    "export": { "reportTitle": "Ficha de Material" },
+    "dossier": {
+      "fitForUse": "Material apto para uso em obra",
+      "notFitForUse": "Material NÃO apto para uso em obra",
+      "fitDescription": "Aprovação PAME válida, sem lotes em quarentena, sem ensaios não conformes e sem NC abertas.",
+      "notFitDescription": "Existem pendências que impedem a utilização deste material em obra.",
+      "identification": "Identificação e Aprovação",
+      "pameCode": "Código PAME",
+      "approvalStatus": "Estado de Aprovação",
+      "specification": "Especificação",
+      "normativeRefs": "Referências Normativas",
+      "acceptanceCriteria": "Critérios de Aceitação",
+      "receptionSummary": "Resumo de Receção",
+      "totalLots": "Total de Lotes",
+      "lotsApproved": "Lotes Aceites",
+      "lotsQuarantine": "Lotes em Quarentena",
+      "ceMarking": "Marcação CE",
+      "testsSummary": "Resumo de Ensaios",
+      "totalTests": "Total de Ensaios",
+      "testsPassed": "Ensaios Conformes",
+      "testsFailed": "Ensaios Não Conformes",
+      "documentation": "Documentação e NCs",
+      "docsValid": "Documentos Válidos",
+      "docsExpired": "Documentos Expirados",
+      "openNCs": "NCs Abertas"
+    }
+  },
     "toast": {
       "created": "Material criado com sucesso.",
       "updated": "Material atualizado.",
