@@ -44,6 +44,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { DocumentFormDialog } from "@/components/documents/DocumentFormDialog";
 import { cn } from "@/lib/utils";
+import { DistributionBar, StackedBar } from "@/components/dashboard/DistributionBar";
 import { ShareButton } from "@/components/ui/share-button";
 import { CopyableCode } from "@/components/ui/copyable-code";
 import { RowActionMenu } from "@/components/ui/row-action-menu";
