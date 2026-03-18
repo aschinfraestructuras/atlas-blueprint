@@ -3,9 +3,16 @@ import { useTranslation } from "react-i18next";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Pencil } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { Pencil, Download, ExternalLink, FileDown } from "lucide-react";
 import { recycledMaterialService, type RecycledMaterial, type RecycledMaterialDocument } from "@/lib/services/recycledMaterialService";
+import { getSignedUrlForPath } from "@/lib/services/attachmentService";
+import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { RecycledMaterialFormDialog } from "./RecycledMaterialFormDialog";
+import { exportRecycledMaterialPdf } from "@/lib/services/recycledMaterialExportService";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
+import { useProject } from "@/contexts/ProjectContext";
+import { toast } from "@/hooks/use-toast";
 
 const STATUS_COLORS: Record<string, string> = {
   pending: "bg-muted text-muted-foreground",
@@ -23,6 +30,8 @@ interface Props {
 
 export function RecycledMaterialDetailSheet({ open, onOpenChange, materialId, onUpdated }: Props) {
   const { t } = useTranslation();
+  const { activeProject } = useProject();
+  const { logoBase64 } = useProjectLogo();
   const [item, setItem] = useState<RecycledMaterial | null>(null);
   const [docs, setDocs] = useState<RecycledMaterialDocument[]>([]);
   const [editOpen, setEditOpen] = useState(false);
@@ -35,6 +44,42 @@ export function RecycledMaterialDetailSheet({ open, onOpenChange, materialId, on
   }, [open, materialId]);
 
   if (!item) return null;
+
+  const handleDocDownload = async (doc: RecycledMaterialDocument) => {
+    if (!doc.document_url) {
+      toast({ title: "Ficheiro não disponível", variant: "destructive" });
+      return;
+    }
+    try {
+      const url = await getSignedUrlForPath(doc.document_url);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = doc.document_name;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.click();
+    } catch (err) {
+      toast({ title: "Erro ao descarregar", description: err instanceof Error ? err.message : String(err), variant: "destructive" });
+    }
+  };
+
+  const handleDocView = async (doc: RecycledMaterialDocument) => {
+    if (!doc.document_url) {
+      toast({ title: "Ficheiro não disponível", variant: "destructive" });
+      return;
+    }
+    try {
+      const url = await getSignedUrlForPath(doc.document_url);
+      window.open(url, "_blank");
+    } catch (err) {
+      toast({ title: "Erro ao abrir", description: err instanceof Error ? err.message : String(err), variant: "destructive" });
+    }
+  };
+
+  const isViewable = (name: string) => {
+    const ext = name.split(".").pop()?.toLowerCase() ?? "";
+    return ["pdf", "jpg", "jpeg", "png", "gif", "bmp", "tiff"].includes(ext);
+  };
 
   const InfoRow = ({ label, value }: { label: string; value: React.ReactNode }) => (
     <div className="py-1.5">
@@ -53,6 +98,9 @@ export function RecycledMaterialDetailSheet({ open, onOpenChange, materialId, on
               <Badge className={STATUS_COLORS[item.status]} variant="secondary">
                 {t(`recycled.status.${item.status}`)}
               </Badge>
+              <Button variant="outline" size="sm" onClick={() => exportRecycledMaterialPdf(item, logoBase64, activeProject?.name ?? "")}>
+                <FileDown className="h-3.5 w-3.5 mr-1" /> PDF
+              </Button>
               <Button variant="outline" size="sm" onClick={() => setEditOpen(true)}>
                 <Pencil className="h-3.5 w-3.5 mr-1" /> {t("common.edit")}
               </Button>
@@ -82,22 +130,43 @@ export function RecycledMaterialDetailSheet({ open, onOpenChange, materialId, on
               </div>
             )}
 
-            {/* Documents */}
+            {/* Legacy documents with download/view */}
             <div>
               <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">{t("recycled.documents.title")}</p>
               {docs.length === 0 ? (
                 <p className="text-sm text-muted-foreground">{t("common.noData")}</p>
               ) : (
-                <ul className="space-y-1">
+                <ul className="space-y-1.5">
                   {docs.map(d => (
-                    <li key={d.id} className="text-sm flex items-center gap-2">
+                    <li key={d.id} className="text-sm flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2">
                       <Badge variant="outline" className="text-[9px]">{d.document_type}</Badge>
-                      <span>{d.document_name}</span>
+                      <span className="flex-1 truncate">{d.document_name}</span>
+                      <div className="flex items-center gap-0.5">
+                        {isViewable(d.document_name) && (
+                          <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-primary" onClick={() => handleDocView(d)}>
+                            <ExternalLink className="h-3.5 w-3.5" />
+                          </Button>
+                        )}
+                        <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-primary" onClick={() => handleDocDownload(d)}>
+                          <Download className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
                     </li>
                   ))}
                 </ul>
               )}
             </div>
+
+            <Separator />
+
+            {/* Universal Attachments Panel */}
+            {activeProject && (
+              <AttachmentsPanel
+                projectId={activeProject.id}
+                entityType="recycled_materials"
+                entityId={materialId}
+              />
+            )}
 
             {/* Audit trail */}
             <div className="border-t pt-3 text-xs text-muted-foreground space-y-0.5">
