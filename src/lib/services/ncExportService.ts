@@ -135,15 +135,21 @@ function drawPageFrame(
   total: number,
   projectName: string,
   labels: NCExportLabels,
+  logoBase64?: string | null,
 ) {
   doc.setFillColor(C.headerBg);
   doc.rect(0, 0, W, 18, "F");
 
+  let logoEndX = ML;
+  if (logoBase64) {
+    try { doc.addImage(logoBase64, "PNG", ML, 2, 14, 14); logoEndX = ML + 16; } catch { /* ignore */ }
+  }
+
   doc.setFontSize(9).setFont("helvetica", "bold").setTextColor(C.white);
-  doc.text(labels.appName, ML, 8);
+  doc.text(labels.appName, logoEndX, 8);
 
   doc.setFontSize(7).setFont("helvetica", "normal").setTextColor("#93c5fd");
-  doc.text(projectName, ML, 13.5);
+  doc.text(projectName, logoEndX, 13.5);
 
   doc.setFontSize(7).setTextColor(C.white);
   doc.text(`${labels.page} ${page} ${labels.of} ${total}`, W - MR, 13.5, { align: "right" });
@@ -302,9 +308,10 @@ export async function exportNCPdf(
   nc: NonConformity,
   labels: NCExportLabels,
   projectName: string,
+  logoBase64?: string | null,
 ): Promise<void> {
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-  drawPageFrame(doc, 1, 1, projectName, labels);
+  drawPageFrame(doc, 1, 1, projectName, labels, logoBase64);
 
   let y = 24;
   doc.setFontSize(12).setFont("helvetica", "bold").setTextColor(C.text);
@@ -323,6 +330,7 @@ export async function exportNCBulkPdf(
   ncs: NonConformity[],
   labels: NCExportLabels,
   projectName: string,
+  logoBase64?: string | null,
 ): Promise<void> {
   if (ncs.length === 0) return;
 
@@ -331,7 +339,7 @@ export async function exportNCBulkPdf(
 
   ncs.forEach((nc, idx) => {
     if (idx > 0) doc.addPage();
-    drawPageFrame(doc, idx + 1, total, projectName, labels);
+    drawPageFrame(doc, idx + 1, total, projectName, labels, logoBase64);
     let y = 24;
     doc.setFontSize(9).setFont("helvetica", "bold").setTextColor(C.text);
     doc.text(`${labels.bulkTitle} (${idx + 1}/${total})`, ML, y);
@@ -349,12 +357,13 @@ export async function exportNCWorkItemSummaryPdf(
   labels: NCExportLabels,
   projectName: string,
   workItemSector: string,
+  logoBase64?: string | null,
 ): Promise<void> {
   if (ncs.length === 0) return;
 
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
   let totalPages = 1;
-  drawPageFrame(doc, 1, totalPages, projectName, labels);
+  drawPageFrame(doc, 1, totalPages, projectName, labels, logoBase64);
 
   let y = 24;
 

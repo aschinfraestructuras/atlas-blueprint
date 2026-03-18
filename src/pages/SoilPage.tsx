@@ -5,6 +5,7 @@ import {
 } from "lucide-react";
 import { soilService, computeOverallResult, computeAashtoClass, type SoilSample, type CreateSoilInput } from "@/lib/services/soilService";
 import { useProject } from "@/contexts/ProjectContext";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { useWorkItems } from "@/hooks/useWorkItems";
 import { PageHeader } from "@/components/ui/page-header";
 import { FilterBar } from "@/components/ui/filter-bar";
@@ -32,6 +33,7 @@ function SoilResultBadge({ result }: { result: string }) {
 export default function SoilPage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
+  const { logoBase64 } = useProjectLogo();
   const { data: workItems } = useWorkItems();
   const [samples, setSamples] = useState<SoilSample[]>([]);
   const [loading, setLoading] = useState(true);
@@ -207,6 +209,9 @@ export default function SoilPage() {
       <PageHeader
         title={t("soils.title")}
         subtitle={t("soils.subtitle")}
+        backHref="/tests"
+        backLabel="Ensaios"
+        module="Ensaios"
         icon={Mountain}
         actions={<Button onClick={() => setDialogOpen(true)} className="gap-1.5"><Plus className="h-4 w-4" /> {t("soils.newSample")}</Button>}
       />
@@ -262,7 +267,7 @@ export default function SoilPage() {
                     <TableCell onClick={(e) => e.stopPropagation()}>
                       <RowActionMenu actions={[
                         { key: "view", label: t("common.view"), icon: Eye, onClick: () => setDetailId(s.id) },
-                        { key: "pdf", label: t("common.exportPdf"), icon: FileDown, onClick: () => soilService.exportPdf(s, activeProject?.name ?? "PF17A") },
+                        { key: "pdf", label: t("common.exportPdf"), icon: FileDown, onClick: () => soilService.exportPdf(s, activeProject?.name ?? "PF17A", logoBase64) },
                         { key: "delete", label: t("common.delete"), icon: Trash2, onClick: () => handleDelete(s.id), variant: "destructive" as const },
                       ]} />
                     </TableCell>
@@ -455,7 +460,7 @@ export default function SoilPage() {
               </div>
 
               <DialogFooter>
-                <Button variant="outline" onClick={() => { if (detailData) soilService.exportPdf(detailData, activeProject?.name ?? "PF17A"); }}>
+                <Button variant="outline" onClick={() => { if (detailData) soilService.exportPdf(detailData, activeProject?.name ?? "PF17A", logoBase64); }}>
                   <FileDown className="h-4 w-4 mr-1.5" /> {t("common.exportPdf")}
                 </Button>
                 <DialogClose asChild><Button>{t("common.close")}</Button></DialogClose>

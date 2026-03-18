@@ -285,6 +285,9 @@ export default function ConcretePage() {
         title={t("concrete.title")}
         subtitle={t("concrete.subtitle")}
         icon={Layers}
+        backHref="/tests"
+        backLabel="Ensaios"
+        module="Ensaios"
         actions={
           <Button onClick={() => setDialogOpen(true)} className="gap-1.5">
             <Plus className="h-4 w-4" /> {t("concrete.newBatch")}

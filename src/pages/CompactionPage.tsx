@@ -5,6 +5,7 @@ import {
 } from "lucide-react";
 import { compactionService, type CompactionZoneWithCounts, type CompactionZone, type NuclearPoint, type PlateTest } from "@/lib/services/compactionService";
 import { useProject } from "@/contexts/ProjectContext";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { useWorkItems } from "@/hooks/useWorkItems";
 import { usePPIInstances } from "@/hooks/usePPI";
 import { PageHeader } from "@/components/ui/page-header";
@@ -32,6 +33,7 @@ function ResultBadge({ result }: { result: string }) {
 export default function CompactionPage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
+  const { logoBase64 } = useProjectLogo();
   const { data: workItems } = useWorkItems();
   const { data: ppis } = usePPIInstances();
   const [zones, setZones] = useState<CompactionZoneWithCounts[]>([]);
@@ -139,6 +141,9 @@ export default function CompactionPage() {
       <PageHeader
         title={t("compaction.title")}
         subtitle={t("compaction.subtitle")}
+        backHref="/tests"
+        backLabel="Ensaios"
+        module="Ensaios"
         icon={Gauge}
         actions={<Button onClick={() => setDialogOpen(true)} className="gap-1.5"><Plus className="h-4 w-4" /> {t("compaction.newZone")}</Button>}
       />
@@ -197,7 +202,7 @@ export default function CompactionPage() {
                         { key: "view", label: t("common.view"), icon: Eye, onClick: () => setDetailId(z.id) },
                         { key: "pdf", label: t("common.exportPdf"), icon: FileDown, onClick: () => {
                           compactionService.getById(z.id).then((d) => {
-                            if (d) compactionService.exportPdf(d.zone, d.nuclear, d.plates, activeProject?.name ?? "PF17A");
+                            if (d) compactionService.exportPdf(d.zone, d.nuclear, d.plates, activeProject?.name ?? "PF17A", logoBase64);
                           });
                         }},
                         { key: "delete", label: t("common.delete"), icon: Trash2, onClick: () => handleDelete(z.id), variant: "destructive" as const },
@@ -352,7 +357,7 @@ export default function CompactionPage() {
 
               <DialogFooter>
                 <Button variant="outline" onClick={() => {
-                  if (detailData) compactionService.exportPdf(detailData.zone, detailData.nuclear, detailData.plates, activeProject?.name ?? "PF17A");
+                  if (detailData) compactionService.exportPdf(detailData.zone, detailData.nuclear, detailData.plates, activeProject?.name ?? "PF17A", logoBase64);
                 }}>
                   <FileDown className="h-4 w-4 mr-1.5" /> {t("common.exportPdf")}
                 </Button>
