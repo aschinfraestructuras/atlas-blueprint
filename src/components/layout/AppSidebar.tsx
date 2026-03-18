@@ -88,6 +88,8 @@ const NAV_SECTIONS: SidebarSection[] = [
     sectionKey: "system",
     collapsible: true,
     items: [
+      { labelKey: "nav.orgChart",     url: "/org-chart",     icon: Users },
+      { labelKey: "nav.testSchedule", url: "/tests/schedule", icon: CalendarClock },
       { labelKey: "nav.dfo",          url: "/dfo",           icon: FolderKanban },
       { labelKey: "nav.auditLog",     url: "/audit-log",     icon: ScrollText,  requiredAction: "viewAudit" },
       { labelKey: "nav.health",       url: "/admin/health",  icon: ShieldCheck, adminOnly: true },
