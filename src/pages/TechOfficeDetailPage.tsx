@@ -9,6 +9,7 @@ import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { useWorkItems } from "@/hooks/useWorkItems";
 import { technicalOfficeService, type TechnicalOfficeItem, type TechOfficeMessage, TECH_OFFICE_STATUSES } from "@/lib/services/technicalOfficeService";
 import { useTechOfficeMessages } from "@/hooks/useTechnicalOffice";
+import { parseSubmittalMeta, APPROVAL_RESULTS } from "@/lib/services/submittalMeta";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { exportTechOfficeDetailPdf } from "@/lib/services/techOfficeExportService";
 import { Badge } from "@/components/ui/badge";
@@ -29,6 +30,7 @@ import { useToast } from "@/hooks/use-toast";
 import {
   ArrowLeft, Send, Trash2, AlertTriangle, MessageSquare,
   ExternalLink, LinkIcon, Download, FileText, Paperclip,
+  ShieldCheck, ShieldAlert, RotateCcw, Clock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -96,6 +98,18 @@ export default function TechOfficeDetailPage() {
     </div>
   );
   if (!item || !user) return null;
+
+  const isSubmittal = item.type === "SUBMITTAL";
+  const submittalParsed = isSubmittal ? parseSubmittalMeta(item.description) : null;
+  const sMeta = submittalParsed?.meta;
+
+  const APPROVAL_DISPLAY: Record<string, { label: string; icon: typeof ShieldCheck; className: string }> = {
+    pending: { label: t("submittals.approval.pending", { defaultValue: "Pendente" }), icon: Clock, className: "bg-muted/60 text-muted-foreground" },
+    approved: { label: t("submittals.approval.approved", { defaultValue: "Aprovado" }), icon: ShieldCheck, className: "bg-green-500/10 text-green-700 dark:text-green-400" },
+    approved_as_noted: { label: t("submittals.approval.approved_as_noted", { defaultValue: "Aprovado c/ Obs." }), icon: ShieldCheck, className: "bg-amber-500/10 text-amber-700 dark:text-amber-400" },
+    rejected: { label: t("submittals.approval.rejected", { defaultValue: "Rejeitado" }), icon: ShieldAlert, className: "bg-destructive/10 text-destructive" },
+    revise_resubmit: { label: t("submittals.approval.revise_resubmit", { defaultValue: "Rever e Resubmeter" }), icon: RotateCcw, className: "bg-primary/10 text-primary" },
+  };
 
   const isOpen = !["closed", "cancelled", "archived"].includes(item.status);
   const effectiveDeadline = item.deadline ?? item.due_date;
@@ -242,7 +256,62 @@ export default function TechOfficeDetailPage() {
         </CardContent>
       </Card>
 
-      {/* Workflow actions */}
+      {/* Submittal-specific metadata card */}
+      {isSubmittal && sMeta && (
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-semibold">{t("submittals.detail.techData", { defaultValue: "Dados Técnicos do Submittal" })}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+              <div>
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t("submittals.col.discipline", { defaultValue: "Disciplina" })}</span>
+                <p className="mt-0.5">{sMeta.discipline ? t(`submittals.discipline.${sMeta.discipline}`, { defaultValue: sMeta.discipline }) : "—"}</p>
+              </div>
+              <div>
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t("submittals.col.subtype", { defaultValue: "Tipo" })}</span>
+                <p className="mt-0.5">{sMeta.subtype ? t(`submittals.subtype.${sMeta.subtype}`, { defaultValue: sMeta.subtype }) : "—"}</p>
+              </div>
+              <div>
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t("submittals.form.supplier", { defaultValue: "Fornecedor" })}</span>
+                <p className="mt-0.5">{sMeta.supplier_name || "—"}</p>
+              </div>
+              <div>
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t("submittals.form.subcontractor", { defaultValue: "Subempreiteiro" })}</span>
+                <p className="mt-0.5">{sMeta.subcontractor_name || "—"}</p>
+              </div>
+              <div>
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t("submittals.form.specRef", { defaultValue: "Ref. Normativa" })}</span>
+                <p className="mt-0.5 font-mono text-xs">{sMeta.spec_reference || "—"}</p>
+              </div>
+              <div>
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t("submittals.form.revision", { defaultValue: "Revisão" })}</span>
+                <p className="mt-0.5 font-mono">Rev. {sMeta.revision || "0"}</p>
+              </div>
+              <div>
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t("submittals.col.approval", { defaultValue: "Aprovação" })}</span>
+                <div className="mt-0.5">
+                  {(() => {
+                    const appr = APPROVAL_DISPLAY[sMeta.approval_result] ?? APPROVAL_DISPLAY.pending;
+                    const ApprIcon = appr.icon;
+                    return (
+                      <span className={cn("inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium", appr.className)}>
+                        <ApprIcon className="h-3 w-3" />
+                        {appr.label}
+                      </span>
+                    );
+                  })()}
+                </div>
+              </div>
+              <div>
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t("submittals.detail.submittedAt", { defaultValue: "Submetido em" })}</span>
+                <p className="mt-0.5">{sMeta.submitted_at ? new Date(sMeta.submitted_at).toLocaleDateString() : "—"}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <div className="flex items-center gap-3 flex-wrap">
         <span className="text-sm font-medium text-muted-foreground">{t("technicalOffice.rfi.changeStatus", { defaultValue: "Alterar estado:" })}</span>
         {WORKFLOW_STATUSES.map(s => (
@@ -269,14 +338,17 @@ export default function TechOfficeDetailPage() {
         </TabsList>
 
         <TabsContent value="details" className="space-y-4">
-          {item.description ? (
-            <Card>
-              <CardHeader className="pb-2"><CardTitle className="text-sm font-semibold">{t("common.description")}</CardTitle></CardHeader>
-              <CardContent><p className="text-sm text-muted-foreground whitespace-pre-wrap">{item.description}</p></CardContent>
-            </Card>
-          ) : (
-            <p className="text-sm text-muted-foreground">{t("technicalOffice.detail.noDescription", { defaultValue: "Sem descrição." })}</p>
-          )}
+          {(() => {
+            const displayDesc = isSubmittal && submittalParsed ? submittalParsed.visibleDescription : item.description;
+            return displayDesc ? (
+              <Card>
+                <CardHeader className="pb-2"><CardTitle className="text-sm font-semibold">{t("common.description")}</CardTitle></CardHeader>
+                <CardContent><p className="text-sm text-muted-foreground whitespace-pre-wrap">{displayDesc}</p></CardContent>
+              </Card>
+            ) : (
+              <p className="text-sm text-muted-foreground">{t("technicalOffice.detail.noDescription", { defaultValue: "Sem descrição." })}</p>
+            );
+          })()}
           {item.recipient && (
             <div className="text-sm"><span className="text-muted-foreground font-medium">{t("technicalOffice.detail.recipient", { defaultValue: "Destinatário:" })}</span> {item.recipient}</div>
           )}

@@ -3888,5 +3888,90 @@
     "created": "Creado",
     "deadlineCreated": "Plazo creado con éxito a partir de la acción del acta.",
     "deadlineError": "Error al crear plazo. Intente de nuevo."
+  },
+  "submittals": {
+    "module": "Documentación",
+    "title": "Submittals",
+    "subtitle": "Aprobaciones técnicas de materiales, planos y métodos",
+    "new": "Nuevo Submittal",
+    "empty": "Sin submittals registrados",
+    "kpi": {
+      "open": "Abiertos",
+      "inReview": "En Revisión",
+      "approved": "Aprobados",
+      "rejected": "Rechazados"
+    },
+    "col": {
+      "code": "Código",
+      "title": "Título",
+      "discipline": "Disciplina",
+      "subtype": "Tipo",
+      "approval": "Aprobación"
+    },
+    "filter": {
+      "allStatuses": "Todos los estados",
+      "allDisciplines": "Disciplinas",
+      "allApprovals": "Aprobación"
+    },
+    "discipline": {
+      "geral": "General",
+      "terras": "Tierras",
+      "betao": "Hormigón",
+      "estruturas": "Estructuras",
+      "drenagem": "Drenaje",
+      "ferrovia": "Ferrocarril",
+      "catenaria": "Catenaria",
+      "firmes": "Firmes",
+      "instalacoes": "Instalaciones",
+      "ambiente": "Medio Ambiente",
+      "seguranca": "Seguridad",
+      "outros": "Otros"
+    },
+    "subtype": {
+      "ficha_tecnica": "Ficha Técnica",
+      "certificado": "Certificado",
+      "desenho": "Plano",
+      "metodo_trabalho": "Método de Trabajo",
+      "plano_qualidade": "Plan de Calidad",
+      "amostra": "Muestra",
+      "calculo": "Cálculo",
+      "ensaio_tipo": "Ensayo Tipo",
+      "outros": "Otros"
+    },
+    "approval": {
+      "pending": "Pendiente",
+      "approved": "Aprobado",
+      "approved_as_noted": "Aprobado c/ Obs.",
+      "rejected": "Rechazado",
+      "revise_resubmit": "Revisar y Reenviar"
+    },
+    "form": {
+      "title": "Título / Asunto",
+      "titlePlaceholder": "Ej: Aprobación de acero B500SD — Lote 12",
+      "titleEdit": "Editar Submittal",
+      "discipline": "Disciplina",
+      "subtype": "Tipo de Submittal",
+      "technicalSection": "Caracterización Técnica",
+      "supplier": "Proveedor",
+      "subcontractor": "Subcontratista",
+      "specRef": "Referencia Normativa",
+      "revision": "Revisión",
+      "workflowSection": "Workflow",
+      "priority": "Prioridad",
+      "deadline": "Plazo de Respuesta",
+      "recipient": "Destinatario",
+      "workItem": "Actividad",
+      "approvalResult": "Resultado de Aprobación",
+      "descPlaceholder": "Observaciones, justificación técnica..."
+    },
+    "detail": {
+      "techData": "Datos Técnicos del Submittal",
+      "submittedAt": "Sometido en"
+    },
+    "toast": {
+      "created": "Submittal creado con éxito",
+      "updated": "Submittal actualizado",
+      "deleted": "Submittal eliminado"
+    }
   }
 }
