@@ -214,7 +214,7 @@ export default function NCDetailPage() {
         origin_manual: t("nc.origin.manual"), origin_ppi: t("nc.origin.ppi"), origin_test: t("nc.origin.test"),
         origin_document: t("nc.origin.document"), origin_audit: t("nc.origin.audit"),
       };
-      await exportNCPdf(nc, labels, activeProject.name);
+      await exportNCPdf(nc, labels, activeProject.name, logoBase64);
     } catch {
       toast({ title: t("nc.export.noData", { defaultValue: "Erro ao exportar" }), variant: "destructive" });
     } finally {
