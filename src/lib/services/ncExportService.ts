@@ -135,15 +135,21 @@ function drawPageFrame(
   total: number,
   projectName: string,
   labels: NCExportLabels,
+  logoBase64?: string | null,
 ) {
   doc.setFillColor(C.headerBg);
   doc.rect(0, 0, W, 18, "F");
 
+  let logoEndX = ML;
+  if (logoBase64) {
+    try { doc.addImage(logoBase64, "PNG", ML, 2, 14, 14); logoEndX = ML + 16; } catch { /* ignore */ }
+  }
+
   doc.setFontSize(9).setFont("helvetica", "bold").setTextColor(C.white);
-  doc.text(labels.appName, ML, 8);
+  doc.text(labels.appName, logoEndX, 8);
 
   doc.setFontSize(7).setFont("helvetica", "normal").setTextColor("#93c5fd");
-  doc.text(projectName, ML, 13.5);
+  doc.text(projectName, logoEndX, 13.5);
 
   doc.setFontSize(7).setTextColor(C.white);
   doc.text(`${labels.page} ${page} ${labels.of} ${total}`, W - MR, 13.5, { align: "right" });
