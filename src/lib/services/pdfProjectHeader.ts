@@ -16,3 +16,46 @@ export function projectInfoStripHtml(): string {
     <div><span style="color:#6b7280;font-weight:600;">CONTRATO</span><br>Nº CE/2024/PF17A</div>
   </div>`;
 }
+
+/**
+ * Full institutional PDF header with logo, project name, doc code, and contractor info.
+ * Used for all formal PDF exports (BE-CAMPO, RNC, PPI, etc.).
+ *
+ * Layout:
+ * ┌──────────────────────────────────────────────────────────────────────┐
+ * │ [LOGO]  LINHA DO SUL — PF17A                 [CÓDIGO]  Rev.X       │
+ * │         ACE ASCH Infraestructuras + Cimontubo       [DATA]         │
+ * │         IP — Infraestruturas de Portugal, S.A.                     │
+ * ├──────────────────────────────────────────────────────────────────────┤
+ */
+export function fullPdfHeader(
+  logoBase64: string | null,
+  projectName: string,
+  docCode: string,
+  revision: string,
+  date: string,
+  empreiteiro = "ACE ASCH Infraestructuras + Cimontubo",
+  donoObra = "IP — Infraestruturas de Portugal, S.A.",
+): string {
+  const logoHtml = logoBase64
+    ? `<img src="${logoBase64}" style="height:12mm;max-width:40mm;object-fit:contain;" />`
+    : `<div style="width:40mm;height:12mm;background:#192F48;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:900;letter-spacing:-0.5px;">ATLAS</div>`;
+
+  return `
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;padding:10px 0 10px 0;border-bottom:3px solid #192F48;margin-bottom:0;">
+    <div style="display:flex;align-items:center;gap:14px;">
+      ${logoHtml}
+      <div>
+        <div style="font-size:14px;font-weight:800;color:#192F48;line-height:1.2;">${projectName}</div>
+        <div style="font-size:9px;color:#6B7280;margin-top:2px;">${empreiteiro}</div>
+        <div style="font-size:9px;color:#6B7280;">${donoObra}</div>
+      </div>
+    </div>
+    <div style="text-align:right;">
+      <div style="font-size:11px;font-weight:700;color:#192F48;font-family:monospace;">${docCode}</div>
+      <div style="font-size:9px;color:#6B7280;margin-top:2px;">Rev. ${revision}</div>
+      <div style="font-size:9px;color:#6B7280;">${date}</div>
+    </div>
+  </div>
+  ${projectInfoStripHtml()}`;
+}

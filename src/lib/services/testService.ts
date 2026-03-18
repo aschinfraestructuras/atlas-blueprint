@@ -40,6 +40,7 @@ export const TEST_RESULT_STATUS_LABELS: Record<string, string> = {
 export const TEST_DISCIPLINES = [
   "geral", "terras", "firmes", "betao", "estruturas", "drenagem",
   "ferrovia", "instalacoes", "outros",
+  "aco_pre_esforco", "catenaria_rct", "sst_pn", "telecomunicacoes", "pavimentos", "reposicao_servicos",
 ] as const;
 export type TestDiscipline = typeof TEST_DISCIPLINES[number];
 

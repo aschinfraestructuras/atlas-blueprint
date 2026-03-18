@@ -97,10 +97,12 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
       testService.getCatalogByProject(activeProject.id),
       supabase.from("work_items").select("id, sector").eq("project_id", activeProject.id).order("sector"),
       supabase.from("suppliers").select("id, name").eq("project_id", activeProject.id).eq("status", "active").order("name"),
-    ]).then(([cats, wi, sup]) => {
+      supabase.from("equipment_calibrations").select("id, certificate_number, certifying_entity, valid_until, equipment_id, topography_equipment(id, serial_number)").eq("project_id", activeProject.id).eq("status", "active"),
+    ]).then(([cats, wi, sup, cals]) => {
       setCatalog(cats);
       setWorkItems((wi.data ?? []) as { id: string; sector: string }[]);
       setSuppliers((sup.data ?? []) as { id: string; name: string }[]);
+      setEquipmentCals((cals.data ?? []).map((c: any) => ({ ...c, equipment: c.topography_equipment })));
     }).catch((err) => console.error("[TestResultFormDialog] load error:", err))
       .finally(() => setLoadingCatalog(false));
   }, [open, activeProject]);
