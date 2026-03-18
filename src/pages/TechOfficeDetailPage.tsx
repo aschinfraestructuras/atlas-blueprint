@@ -9,6 +9,7 @@ import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { useWorkItems } from "@/hooks/useWorkItems";
 import { technicalOfficeService, type TechnicalOfficeItem, type TechOfficeMessage, TECH_OFFICE_STATUSES } from "@/lib/services/technicalOfficeService";
 import { useTechOfficeMessages } from "@/hooks/useTechnicalOffice";
+import { parseSubmittalMeta, APPROVAL_RESULTS } from "@/lib/services/submittalMeta";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { exportTechOfficeDetailPdf } from "@/lib/services/techOfficeExportService";
 import { Badge } from "@/components/ui/badge";
