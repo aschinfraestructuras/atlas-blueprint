@@ -99,6 +99,18 @@ export default function TechOfficeDetailPage() {
   );
   if (!item || !user) return null;
 
+  const isSubmittal = item.type === "SUBMITTAL";
+  const submittalParsed = isSubmittal ? parseSubmittalMeta(item.description) : null;
+  const sMeta = submittalParsed?.meta;
+
+  const APPROVAL_DISPLAY: Record<string, { label: string; icon: typeof ShieldCheck; className: string }> = {
+    pending: { label: t("submittals.approval.pending", { defaultValue: "Pendente" }), icon: Clock, className: "bg-muted/60 text-muted-foreground" },
+    approved: { label: t("submittals.approval.approved", { defaultValue: "Aprovado" }), icon: ShieldCheck, className: "bg-green-500/10 text-green-700 dark:text-green-400" },
+    approved_as_noted: { label: t("submittals.approval.approved_as_noted", { defaultValue: "Aprovado c/ Obs." }), icon: ShieldCheck, className: "bg-amber-500/10 text-amber-700 dark:text-amber-400" },
+    rejected: { label: t("submittals.approval.rejected", { defaultValue: "Rejeitado" }), icon: ShieldAlert, className: "bg-destructive/10 text-destructive" },
+    revise_resubmit: { label: t("submittals.approval.revise_resubmit", { defaultValue: "Rever e Resubmeter" }), icon: RotateCcw, className: "bg-primary/10 text-primary" },
+  };
+
   const isOpen = !["closed", "cancelled", "archived"].includes(item.status);
   const effectiveDeadline = item.deadline ?? item.due_date;
   const isOverdue = effectiveDeadline && new Date(effectiveDeadline) < new Date() && isOpen;
