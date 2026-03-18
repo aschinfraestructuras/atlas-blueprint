@@ -434,7 +434,7 @@ export default function SubmittalsPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
                   <Label>{t("submittals.form.supplier", { defaultValue: "Fornecedor" })}</Label>
-                  <Select value={formSupplier} onValueChange={setFormSupplier}>
+                  <Select value={formSupplier || "__none__"} onValueChange={v => setFormSupplier(v === "__none__" ? "" : v)}>
                     <SelectTrigger><SelectValue placeholder="—" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="__none__">—</SelectItem>
