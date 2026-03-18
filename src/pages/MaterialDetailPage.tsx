@@ -210,6 +210,7 @@ export default function MaterialDetailPage() {
       tests: tests.map(tr => ({ code: tr.code ?? "", date: tr.date, pass_fail: tr.pass_fail ?? "", status: tr.status ?? "" })),
       projectName: activeProject.name,
       projectCode: activeProject.code,
+      logoBase64,
       t,
     });
   };
