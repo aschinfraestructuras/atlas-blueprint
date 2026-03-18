@@ -225,6 +225,7 @@ export default function DailyReportDetailPage() {
       meta,
       bodyHtml: body,
       footerRef: `IP.MOD.102 · ${report.report_number}`,
+      logoBase64,
     });
     printHtml(html, buildReportFilename("PD", meta.projectCode, report.report_number));
   };

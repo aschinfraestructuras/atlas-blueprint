@@ -16,6 +16,7 @@ import { useWorkItems } from "@/hooks/useWorkItems";
 import { useProject } from "@/contexts/ProjectContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useReportMeta } from "@/hooks/useReportMeta";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import { RoleGate, RoleGateAdmin } from "@/components/RoleGate";
 import {
