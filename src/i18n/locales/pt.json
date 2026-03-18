@@ -144,7 +144,9 @@
     "concrete": "Controlo de Betão",
     "compaction": "Controlo de Compactação",
     "soils": "Caracterização de Solos",
-    "welding": "Soldadura — Via-Férrea"
+    "welding": "Soldadura — Via-Férrea",
+    "orgChart": "Organigrama",
+    "testSchedule": "Programação Ensaios"
   },
   "topbar": {
     "language": "Idioma",

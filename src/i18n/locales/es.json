@@ -144,7 +144,9 @@
     "concrete": "Control de Hormigón",
     "compaction": "Control de Compactación",
     "soils": "Caracterización de Suelos",
-    "welding": "Soldadura — Vía Férrea"
+    "welding": "Soldadura — Vía Férrea",
+    "orgChart": "Organigrama",
+    "testSchedule": "Programación Ensayos"
   },
   "topbar": {
     "language": "Idioma",
