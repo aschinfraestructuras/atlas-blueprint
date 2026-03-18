@@ -8,6 +8,7 @@ import { useProjectRole } from "@/hooks/useProjectRole";
 import { subcontractorService } from "@/lib/services/subcontractorService";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { useToast } from "@/hooks/use-toast";
+import { DistributionBar, StackedBar } from "@/components/dashboard/DistributionBar";
 import { HardHat, Plus, Pencil, Trash2, Search, Eye, Users, AlertTriangle, CheckCircle, Clock } from "lucide-react";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
