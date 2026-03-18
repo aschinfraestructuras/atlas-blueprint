@@ -1247,6 +1247,18 @@ export default function WorkItemDetailPage() {
             <Crosshair className="h-3.5 w-3.5" />
             {t("topography.title")}
           </TabsTrigger>
+          <TabsTrigger value="concrete" className="gap-1.5">
+            <Layers className="h-3.5 w-3.5" />
+            Betão
+          </TabsTrigger>
+          <TabsTrigger value="welds" className="gap-1.5">
+            <Flame className="h-3.5 w-3.5" />
+            Soldaduras
+          </TabsTrigger>
+          <TabsTrigger value="soils" className="gap-1.5">
+            <Mountain className="h-3.5 w-3.5" />
+            Solos
+          </TabsTrigger>
           <TabsTrigger value="attachments" className="gap-1.5">
             <Paperclip className="h-3.5 w-3.5" />
             {t("workItems.detail.tabs.attachments")}
