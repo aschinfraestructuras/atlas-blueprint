@@ -562,9 +562,15 @@ export function NCFormDialog({
 
               {/* ── SECÇÃO 4: CAUSA RAIZ (visível sempre, destaque se maior) ── */}
               <TabsContent value="rootcause" className="space-y-4 mt-0">
+                {isMaior && !form.watch("root_cause") && (
+                  <div className="rounded-lg border border-destructive/40 bg-destructive/5 px-4 py-2 text-sm text-destructive flex items-center gap-2">
+                    <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                    <span>{t("nc.form.rootCauseRequired", { defaultValue: "Análise de causa raiz é OBRIGATÓRIA para NC MAIOR. Preencha antes de submeter para fecho." })}</span>
+                  </div>
+                )}
                 {!isMaior && (
                   <div className="rounded-lg bg-muted/40 border border-border px-4 py-2 text-xs text-muted-foreground">
-                    Secção obrigatória apenas para NC MAIOR. Pode preencher opcionalmente.
+                    {t("nc.form.rootCauseOptional", { defaultValue: "Secção obrigatória apenas para NC MAIOR. Pode preencher opcionalmente." })}
                   </div>
                 )}
                 <FormField control={form.control} name="root_cause_method" render={({ field }) => (
