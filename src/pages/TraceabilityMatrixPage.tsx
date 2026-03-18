@@ -203,7 +203,7 @@ export default function TraceabilityMatrixPage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="__all__">{t("traceability.filter.allPame", { defaultValue: "Todos PAME" })}</SelectItem>
-              {pameStatuses.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+              {pameStatuses.map(s => <SelectItem key={s} value={s}>{t(`materials.approval.statuses.${s}`, { defaultValue: s })}</SelectItem>)}
             </SelectContent>
           </Select>
         )}
