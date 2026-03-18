@@ -116,7 +116,7 @@ export default function TraceabilityMatrixPage() {
       {loading ? (
         <div className="space-y-2">{Array.from({ length: 8 }).map((_, i) => <Skeleton key={i} className="h-10" />)}</div>
       ) : filtered.length === 0 ? (
-        <EmptyState icon={Link2} message={t("traceability.empty")} />
+        <EmptyState icon={Link2} subtitleKey="traceability.empty" />
       ) : (
         <Card className="border-0 shadow-card overflow-hidden">
           <div className="overflow-x-auto">
