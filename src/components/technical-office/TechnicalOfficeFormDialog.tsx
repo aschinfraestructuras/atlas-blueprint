@@ -65,15 +65,33 @@ export function TechnicalOfficeFormDialog({ open, onOpenChange, item, onSuccess 
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { type: "SUBMITTAL", title: "", description: "", status: "open", priority: "normal", deadline: "", recipient: "", assigned_to: "", work_item_id: "", nc_id: "" },
+    defaultValues: { type: "SUBMITTAL", title: "", description: "", status: "open", priority: "normal", deadline: "", recipient: "", assigned_to: "", work_item_id: "", nc_id: "", emitter_entity: "", receiver_entity: "", transmittal_reason: "", response_status: "", docs_sent: "" },
   });
+
+  const watchedType = form.watch("type");
+  const isTransmittal = watchedType === "TRANSMITTAL";
 
   useEffect(() => {
     if (item) {
+      // Parse transmittal metadata from description if exists
+      let desc = item.description ?? "";
+      let emitter = "", receiver = "", reason = "", respStatus = "", docsSent = "";
+      if (item.type === "TRANSMITTAL" && desc.includes("{{TRANSMITTAL_META}}")) {
+        const metaPart = desc.split("{{TRANSMITTAL_META}}")[1] ?? "";
+        const lines = metaPart.split("\n").filter(Boolean);
+        lines.forEach(l => {
+          if (l.startsWith("EMITTER:")) emitter = l.replace("EMITTER:", "").trim();
+          if (l.startsWith("RECEIVER:")) receiver = l.replace("RECEIVER:", "").trim();
+          if (l.startsWith("REASON:")) reason = l.replace("REASON:", "").trim();
+          if (l.startsWith("RESPONSE:")) respStatus = l.replace("RESPONSE:", "").trim();
+          if (l.startsWith("DOCS:")) docsSent = l.replace("DOCS:", "").trim();
+        });
+        desc = desc.split("{{TRANSMITTAL_META}}")[0].trim();
+      }
       form.reset({
         type: (item.type as typeof TECH_OFFICE_TYPES[number]) ?? "SUBMITTAL",
         title: item.title,
-        description: item.description ?? "",
+        description: desc,
         status: (item.status as typeof TECH_OFFICE_STATUSES[number]) ?? "open",
         priority: (item.priority as typeof PRIORITIES[number]) ?? "normal",
         deadline: item.deadline ?? item.due_date ?? "",
@@ -81,9 +99,14 @@ export function TechnicalOfficeFormDialog({ open, onOpenChange, item, onSuccess 
         assigned_to: item.assigned_to ?? "",
         work_item_id: item.work_item_id ?? "",
         nc_id: item.nc_id ?? "",
+        emitter_entity: emitter,
+        receiver_entity: receiver,
+        transmittal_reason: reason,
+        response_status: respStatus,
+        docs_sent: docsSent,
       });
     } else {
-      form.reset({ type: "SUBMITTAL", title: "", description: "", status: "open", priority: "normal", deadline: "", recipient: "", assigned_to: "", work_item_id: "", nc_id: "" });
+      form.reset({ type: "SUBMITTAL", title: "", description: "", status: "open", priority: "normal", deadline: "", recipient: "", assigned_to: "", work_item_id: "", nc_id: "", emitter_entity: "", receiver_entity: "", transmittal_reason: "", response_status: "", docs_sent: "" });
     }
   }, [item, open, form]);
 
