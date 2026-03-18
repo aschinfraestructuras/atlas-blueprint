@@ -119,7 +119,7 @@ export default function WeldPage() {
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
-      <PageHeader title={t("welding.title")} subtitle={t("welding.subtitle")} icon={Flame} />
+      <PageHeader title={t("welding.title")} subtitle={t("welding.subtitle")} icon={Flame} backHref="/tests" backLabel="Ensaios" module="Ensaios" />
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         <ModuleKPICard label={t("welding.kpi.total")} value={records.length} icon={Flame} />

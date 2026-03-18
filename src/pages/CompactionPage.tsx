@@ -139,6 +139,9 @@ export default function CompactionPage() {
       <PageHeader
         title={t("compaction.title")}
         subtitle={t("compaction.subtitle")}
+        backHref="/tests"
+        backLabel="Ensaios"
+        module="Ensaios"
         icon={Gauge}
         actions={<Button onClick={() => setDialogOpen(true)} className="gap-1.5"><Plus className="h-4 w-4" /> {t("compaction.newZone")}</Button>}
       />

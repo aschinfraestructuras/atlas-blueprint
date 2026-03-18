@@ -207,6 +207,9 @@ export default function SoilPage() {
       <PageHeader
         title={t("soils.title")}
         subtitle={t("soils.subtitle")}
+        backHref="/tests"
+        backLabel="Ensaios"
+        module="Ensaios"
         icon={Mountain}
         actions={<Button onClick={() => setDialogOpen(true)} className="gap-1.5"><Plus className="h-4 w-4" /> {t("soils.newSample")}</Button>}
       />
