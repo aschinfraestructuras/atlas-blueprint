@@ -12,6 +12,7 @@ import type { DocumentVersion } from "@/lib/services/documentService";
 import { exportPlanDetailPdf } from "@/lib/services/planExportService";
 import { attachmentService, getSignedUrlForPath } from "@/lib/services/attachmentService";
 import { useProject } from "@/contexts/ProjectContext";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
