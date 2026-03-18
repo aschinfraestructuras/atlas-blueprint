@@ -197,16 +197,14 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
           title: "Resultado não conforme",
           description: `${testName} (${testCode}) — Deseja abrir uma Não Conformidade?`,
           action: (
-            <Button
-              size="sm"
-              variant="destructive"
-              className="ml-2 text-xs"
+            <ToastAction
+              altText="Abrir RNC"
               onClick={() => {
                 navigate(`/non-conformities?new=1&test_result_id=${savedId}&description=${encodeURIComponent(`Resultado não conforme: ${testName} — ${testCode}`)}&category=qualidade`);
               }}
             >
               Abrir RNC
-            </Button>
+            </ToastAction>
           ),
           duration: 10000,
         });
