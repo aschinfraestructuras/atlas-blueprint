@@ -368,9 +368,9 @@ export default function SubmittalsPage() {
                     <TableCell onClick={e => e.stopPropagation()}>
                       <RowActionMenu
                         actions={[
-                          { label: t("common.view"), icon: Eye, onClick: () => navigate(`/technical-office/items/${item.id}`) },
+                          { key: "view", label: t("common.view"), icon: Eye, onClick: () => navigate(`/technical-office/items/${item.id}`) },
                           ...(canCreate ? [
-                            { label: t("common.edit"), icon: Pencil, onClick: () => openEditDialog({ item, desc: "", meta }) },
+                            { key: "edit", label: t("common.edit"), icon: Pencil, onClick: () => openEditDialog({ item, desc: "", meta }) },
                           ] : []),
                         ]}
                       />
