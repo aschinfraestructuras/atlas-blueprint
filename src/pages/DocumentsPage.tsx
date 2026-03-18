@@ -15,6 +15,7 @@ import { useReportMeta } from "@/hooks/useReportMeta";
 import { auditService } from "@/lib/services/auditService";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { MeetingActionsPanel } from "@/components/documents/MeetingActionsPanel";
 import { ModuleKPICard } from "@/components/ModuleKPICard";
 import {
   FileText, Download, ExternalLink, Loader2, Search,
