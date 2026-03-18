@@ -338,14 +338,17 @@ export default function TechOfficeDetailPage() {
         </TabsList>
 
         <TabsContent value="details" className="space-y-4">
-          {item.description ? (
-            <Card>
-              <CardHeader className="pb-2"><CardTitle className="text-sm font-semibold">{t("common.description")}</CardTitle></CardHeader>
-              <CardContent><p className="text-sm text-muted-foreground whitespace-pre-wrap">{item.description}</p></CardContent>
-            </Card>
-          ) : (
-            <p className="text-sm text-muted-foreground">{t("technicalOffice.detail.noDescription", { defaultValue: "Sem descrição." })}</p>
-          )}
+          {(() => {
+            const displayDesc = isSubmittal && submittalParsed ? submittalParsed.visibleDescription : item.description;
+            return displayDesc ? (
+              <Card>
+                <CardHeader className="pb-2"><CardTitle className="text-sm font-semibold">{t("common.description")}</CardTitle></CardHeader>
+                <CardContent><p className="text-sm text-muted-foreground whitespace-pre-wrap">{displayDesc}</p></CardContent>
+              </Card>
+            ) : (
+              <p className="text-sm text-muted-foreground">{t("technicalOffice.detail.noDescription", { defaultValue: "Sem descrição." })}</p>
+            );
+          })()}
           {item.recipient && (
             <div className="text-sm"><span className="text-muted-foreground font-medium">{t("technicalOffice.detail.recipient", { defaultValue: "Destinatário:" })}</span> {item.recipient}</div>
           )}
