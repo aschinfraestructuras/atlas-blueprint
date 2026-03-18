@@ -73,6 +73,13 @@ export type Database = {
             foreignKeyName: "attachments_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "attachments_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -131,6 +138,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "audit_log_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
             referencedColumns: ["project_id"]
           },
           {
@@ -210,6 +224,13 @@ export type Database = {
             foreignKeyName: "compaction_nuclear_points_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "compaction_nuclear_points_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -275,6 +296,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "compaction_plate_tests_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
             referencedColumns: ["project_id"]
           },
           {
@@ -395,6 +423,13 @@ export type Database = {
             foreignKeyName: "compaction_zones_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "compaction_zones_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -412,6 +447,7 @@ export type Database = {
           air_content: number | null
           batch_date: string
           batch_time: string | null
+          cement_class: string | null
           cement_type: string | null
           code: string
           concrete_class: string
@@ -420,8 +456,12 @@ export type Database = {
           created_by: string | null
           delivery_note_ref: string | null
           element_betonado: string
+          exc_class: string | null
+          exposure_class: string | null
+          fab_ref: string | null
           id: string
           lab_name: string | null
+          lot_id: string | null
           max_aggregate: number | null
           notes: string | null
           pk_location: string | null
@@ -430,6 +470,7 @@ export type Database = {
           slump_mm: number | null
           slump_pass: boolean | null
           status: string
+          structural_element_mqt_code: string | null
           supplier_id: string | null
           technician_name: string | null
           temp_ambient: number | null
@@ -443,6 +484,7 @@ export type Database = {
           air_content?: number | null
           batch_date?: string
           batch_time?: string | null
+          cement_class?: string | null
           cement_type?: string | null
           code: string
           concrete_class?: string
@@ -451,8 +493,12 @@ export type Database = {
           created_by?: string | null
           delivery_note_ref?: string | null
           element_betonado: string
+          exc_class?: string | null
+          exposure_class?: string | null
+          fab_ref?: string | null
           id?: string
           lab_name?: string | null
+          lot_id?: string | null
           max_aggregate?: number | null
           notes?: string | null
           pk_location?: string | null
@@ -461,6 +507,7 @@ export type Database = {
           slump_mm?: number | null
           slump_pass?: boolean | null
           status?: string
+          structural_element_mqt_code?: string | null
           supplier_id?: string | null
           technician_name?: string | null
           temp_ambient?: number | null
@@ -474,6 +521,7 @@ export type Database = {
           air_content?: number | null
           batch_date?: string
           batch_time?: string | null
+          cement_class?: string | null
           cement_type?: string | null
           code?: string
           concrete_class?: string
@@ -482,8 +530,12 @@ export type Database = {
           created_by?: string | null
           delivery_note_ref?: string | null
           element_betonado?: string
+          exc_class?: string | null
+          exposure_class?: string | null
+          fab_ref?: string | null
           id?: string
           lab_name?: string | null
+          lot_id?: string | null
           max_aggregate?: number | null
           notes?: string | null
           pk_location?: string | null
@@ -492,6 +544,7 @@ export type Database = {
           slump_mm?: number | null
           slump_pass?: boolean | null
           status?: string
+          structural_element_mqt_code?: string | null
           supplier_id?: string | null
           technician_name?: string | null
           temp_ambient?: number | null
@@ -502,6 +555,20 @@ export type Database = {
           work_item_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "concrete_batches_lot_id_fkey"
+            columns: ["lot_id"]
+            isOneToOne: false
+            referencedRelation: "concrete_lots"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concrete_batches_lot_id_fkey"
+            columns: ["lot_id"]
+            isOneToOne: false
+            referencedRelation: "view_concrete_lot_conformity"
+            referencedColumns: ["lot_id"]
+          },
           {
             foreignKeyName: "concrete_batches_ppi_instance_id_fkey"
             columns: ["ppi_instance_id"]
@@ -521,6 +588,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "concrete_batches_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
             referencedColumns: ["project_id"]
           },
           {
@@ -550,6 +624,98 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "work_items"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      concrete_lots: {
+        Row: {
+          concrete_class: string
+          created_at: string
+          created_by: string | null
+          date_end: string | null
+          date_start: string | null
+          element_code: string | null
+          element_desc: string
+          exc_class: string
+          fab_ref: string | null
+          id: string
+          is_deleted: boolean
+          lot_code: string
+          notes: string | null
+          ppi_instance_id: string | null
+          project_id: string
+          updated_at: string
+          volume_total_m3: number | null
+          work_item_id: string | null
+        }
+        Insert: {
+          concrete_class?: string
+          created_at?: string
+          created_by?: string | null
+          date_end?: string | null
+          date_start?: string | null
+          element_code?: string | null
+          element_desc?: string
+          exc_class?: string
+          fab_ref?: string | null
+          id?: string
+          is_deleted?: boolean
+          lot_code: string
+          notes?: string | null
+          ppi_instance_id?: string | null
+          project_id: string
+          updated_at?: string
+          volume_total_m3?: number | null
+          work_item_id?: string | null
+        }
+        Update: {
+          concrete_class?: string
+          created_at?: string
+          created_by?: string | null
+          date_end?: string | null
+          date_start?: string | null
+          element_code?: string | null
+          element_desc?: string
+          exc_class?: string
+          fab_ref?: string | null
+          id?: string
+          is_deleted?: boolean
+          lot_code?: string
+          notes?: string | null
+          ppi_instance_id?: string | null
+          project_id?: string
+          updated_at?: string
+          volume_total_m3?: number | null
+          work_item_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "concrete_lots_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concrete_lots_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "concrete_lots_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "concrete_lots_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
           },
         ]
       }
@@ -628,6 +794,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "concrete_specimens_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
             referencedColumns: ["project_id"]
           },
           {
@@ -950,6 +1123,13 @@ export type Database = {
             foreignKeyName: "daily_reports_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "daily_reports_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -1025,6 +1205,13 @@ export type Database = {
             foreignKeyName: "dfo_items_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "dfo_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -1075,6 +1262,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "dfo_volumes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
             referencedColumns: ["project_id"]
           },
           {
@@ -1146,6 +1340,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "document_files_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
             referencedColumns: ["project_id"]
           },
           {
@@ -1359,6 +1560,13 @@ export type Database = {
             foreignKeyName: "documents_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "documents_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -1440,6 +1648,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "equipment_calibrations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
             referencedColumns: ["project_id"]
           },
           {
@@ -1608,6 +1823,13 @@ export type Database = {
             foreignKeyName: "field_records_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "field_records_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -1707,6 +1929,13 @@ export type Database = {
             foreignKeyName: "hp_notifications_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "hp_notifications_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -1777,6 +2006,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "laboratories_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
             referencedColumns: ["project_id"]
           },
           {
@@ -1870,6 +2106,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "material_documents_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
             referencedColumns: ["project_id"]
           },
           {
@@ -2000,6 +2243,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "material_lots_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
             referencedColumns: ["project_id"]
           },
           {
@@ -2165,6 +2415,13 @@ export type Database = {
             foreignKeyName: "materials_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "materials_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -2259,6 +2516,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "monthly_quality_reports_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
             referencedColumns: ["project_id"]
           },
           {
@@ -2511,6 +2775,13 @@ export type Database = {
             foreignKeyName: "non_conformities_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "non_conformities_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -2607,6 +2878,13 @@ export type Database = {
             foreignKeyName: "notifications_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "notifications_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -2692,6 +2970,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "planning_activities_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
             referencedColumns: ["project_id"]
           },
           {
@@ -2793,6 +3078,13 @@ export type Database = {
             foreignKeyName: "planning_wbs_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "planning_wbs_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -2876,6 +3168,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "plans_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
             referencedColumns: ["project_id"]
           },
           {
@@ -3082,6 +3381,13 @@ export type Database = {
             foreignKeyName: "ppi_instances_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "ppi_instances_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -3249,6 +3555,13 @@ export type Database = {
             foreignKeyName: "ppi_templates_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "ppi_templates_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -3351,6 +3664,13 @@ export type Database = {
             foreignKeyName: "project_invites_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_invites_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -3391,6 +3711,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_members_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
             referencedColumns: ["project_id"]
           },
           {
@@ -3539,6 +3866,13 @@ export type Database = {
             foreignKeyName: "quality_audits_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "quality_audits_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -3677,6 +4011,13 @@ export type Database = {
             foreignKeyName: "recycled_materials_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "recycled_materials_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -3750,6 +4091,7 @@ export type Database = {
           project_id: string
           pt_code: string | null
           recipient: string | null
+          recipient_name: string | null
           responded_at: string | null
           responded_by: string | null
           response_deadline: string | null
@@ -3779,6 +4121,7 @@ export type Database = {
           project_id: string
           pt_code?: string | null
           recipient?: string | null
+          recipient_name?: string | null
           responded_at?: string | null
           responded_by?: string | null
           response_deadline?: string | null
@@ -3808,6 +4151,7 @@ export type Database = {
           project_id?: string
           pt_code?: string | null
           recipient?: string | null
+          recipient_name?: string | null
           responded_at?: string | null
           responded_by?: string | null
           response_deadline?: string | null
@@ -3839,6 +4183,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "rfis_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
             referencedColumns: ["project_id"]
           },
           {
@@ -4060,6 +4411,13 @@ export type Database = {
             foreignKeyName: "soil_samples_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "soil_samples_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -4146,6 +4504,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "subcontractor_documents_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
             referencedColumns: ["project_id"]
           },
           {
@@ -4247,6 +4612,13 @@ export type Database = {
             foreignKeyName: "subcontractors_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "subcontractors_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -4326,6 +4698,13 @@ export type Database = {
             foreignKeyName: "supplier_documents_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "supplier_documents_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -4395,6 +4774,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "supplier_evaluations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
             referencedColumns: ["project_id"]
           },
           {
@@ -4484,6 +4870,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "supplier_materials_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
             referencedColumns: ["project_id"]
           },
           {
@@ -4607,6 +5000,13 @@ export type Database = {
             foreignKeyName: "suppliers_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "suppliers_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -4662,6 +5062,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "survey_records_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
             referencedColumns: ["project_id"]
           },
           {
@@ -4773,6 +5180,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "technical_office_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
             referencedColumns: ["project_id"]
           },
           {
@@ -4961,6 +5375,13 @@ export type Database = {
             foreignKeyName: "test_due_items_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "test_due_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -4985,17 +5406,22 @@ export type Database = {
           acceptance_criteria_override: string | null
           activity_filter: Json | null
           applies_to: string
+          base_normativa: string | null
           created_at: string
           created_by: string | null
           default_lab_supplier_id: string | null
           disciplina: string | null
+          elem_description: string | null
           event_triggers: string[] | null
+          exc_class: string | null
           frequency_type: string
           frequency_unit: string | null
           frequency_value: number | null
           id: string
           is_active: boolean
+          pe_section: string | null
           plan_id: string
+          qty_mqt_indicative: number | null
           requires_photos: boolean
           requires_report: boolean
           requires_witness: boolean
@@ -5008,17 +5434,22 @@ export type Database = {
           acceptance_criteria_override?: string | null
           activity_filter?: Json | null
           applies_to?: string
+          base_normativa?: string | null
           created_at?: string
           created_by?: string | null
           default_lab_supplier_id?: string | null
           disciplina?: string | null
+          elem_description?: string | null
           event_triggers?: string[] | null
+          exc_class?: string | null
           frequency_type?: string
           frequency_unit?: string | null
           frequency_value?: number | null
           id?: string
           is_active?: boolean
+          pe_section?: string | null
           plan_id: string
+          qty_mqt_indicative?: number | null
           requires_photos?: boolean
           requires_report?: boolean
           requires_witness?: boolean
@@ -5031,17 +5462,22 @@ export type Database = {
           acceptance_criteria_override?: string | null
           activity_filter?: Json | null
           applies_to?: string
+          base_normativa?: string | null
           created_at?: string
           created_by?: string | null
           default_lab_supplier_id?: string | null
           disciplina?: string | null
+          elem_description?: string | null
           event_triggers?: string[] | null
+          exc_class?: string | null
           frequency_type?: string
           frequency_unit?: string | null
           frequency_value?: number | null
           id?: string
           is_active?: boolean
+          pe_section?: string | null
           plan_id?: string
+          qty_mqt_indicative?: number | null
           requires_photos?: boolean
           requires_report?: boolean
           requires_witness?: boolean
@@ -5153,6 +5589,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "test_plans_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
             referencedColumns: ["project_id"]
           },
           {
@@ -5350,6 +5793,13 @@ export type Database = {
             foreignKeyName: "test_results_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "test_results_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -5454,6 +5904,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "test_templates_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
             referencedColumns: ["project_id"]
           },
           {
@@ -5589,6 +6046,13 @@ export type Database = {
             foreignKeyName: "tests_catalog_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "tests_catalog_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -5698,6 +6162,13 @@ export type Database = {
             foreignKeyName: "topography_controls_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "topography_controls_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -5788,6 +6259,13 @@ export type Database = {
             foreignKeyName: "topography_equipment_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "topography_equipment_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -5855,6 +6333,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "topography_requests_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
             referencedColumns: ["project_id"]
           },
           {
@@ -5970,6 +6455,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "training_sessions_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
             referencedColumns: ["project_id"]
           },
           {
@@ -6164,6 +6656,13 @@ export type Database = {
             foreignKeyName: "weld_records_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "weld_records_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -6237,6 +6736,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "work_item_materials_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
             referencedColumns: ["project_id"]
           },
           {
@@ -6364,6 +6870,13 @@ export type Database = {
             foreignKeyName: "work_items_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "work_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -6409,6 +6922,113 @@ export type Database = {
           },
           {
             foreignKeyName: "test_results_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "test_results_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
+      view_concrete_lot_conformity: {
+        Row: {
+          concrete_class: string | null
+          criterion_applied: string | null
+          date_end: string | null
+          date_start: string | null
+          element_desc: string | null
+          exc_class: string | null
+          fck_mpa: number | null
+          freq_m3_per_sample: number | null
+          lot_code: string | null
+          lot_id: string | null
+          mean_fc_28d: number | null
+          min_fc_28d: number | null
+          n_batches: number | null
+          n_required_min: number | null
+          n_tested_28d: number | null
+          na_m_result: string | null
+          project_id: string | null
+          stddev_fc_28d: number | null
+          volume_total_m3: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "concrete_lots_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concrete_lots_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "concrete_lots_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "concrete_lots_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
+      view_concrete_summary: {
+        Row: {
+          concrete_class: string | null
+          exc_class: string | null
+          fck_mpa: number | null
+          freq_norm_m3: number | null
+          max_fc_28d: number | null
+          mean_fc_28d: number | null
+          min_fc_28d: number | null
+          n_batches: number | null
+          n_lots: number | null
+          n_overdue_specimens: number | null
+          n_specimens_28d: number | null
+          n_tested_28d: number | null
+          project_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "concrete_batches_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concrete_batches_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "concrete_batches_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "concrete_batches_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "vw_project_health"
@@ -6465,6 +7085,54 @@ export type Database = {
           },
           {
             foreignKeyName: "documents_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "documents_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
+      view_due_tests_by_discipline: {
+        Row: {
+          disciplina: string | null
+          done: number | null
+          due_next_30d: number | null
+          due_next_7d: number | null
+          overdue: number | null
+          project_id: string | null
+          total: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_due_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_due_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "test_due_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "test_due_items_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "vw_project_health"
@@ -6525,6 +7193,13 @@ export type Database = {
             foreignKeyName: "materials_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "materials_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -6559,6 +7234,13 @@ export type Database = {
             foreignKeyName: "materials_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "materials_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -6570,6 +7252,38 @@ export type Database = {
           month: string | null
           opened: number | null
           project_id: string | null
+        }
+        Relationships: []
+      }
+      view_pe_annexb_pf17a: {
+        Row: {
+          base: string | null
+          criterio: string | null
+          disciplina: string | null
+          elemento: string | null
+          ensaio: string | null
+          exc: string | null
+          freq_unidade: string | null
+          freq_valor: number | null
+          laboratorio: boolean | null
+          linha: number | null
+          norma: string | null
+          pe_code: string | null
+          qtd_mqt: number | null
+          seccao_pe: string | null
+        }
+        Relationships: []
+      }
+      view_quality_dashboard: {
+        Row: {
+          concrete_overdue_specimens: number | null
+          nc_major_open: number | null
+          nc_open: number | null
+          ppi_in_progress: number | null
+          project_id: string | null
+          project_name: string | null
+          tests_overdue: number | null
+          welds_pending_ut: number | null
         }
         Relationships: []
       }
@@ -6635,6 +7349,13 @@ export type Database = {
             foreignKeyName: "suppliers_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "suppliers_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -6671,6 +7392,13 @@ export type Database = {
             foreignKeyName: "suppliers_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "suppliers_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -6696,6 +7424,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "test_results_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
             referencedColumns: ["project_id"]
           },
           {
@@ -6735,6 +7470,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "audit_log_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
             referencedColumns: ["project_id"]
           },
           {
@@ -6794,6 +7536,13 @@ export type Database = {
             foreignKeyName: "ppi_instances_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "ppi_instances_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -6843,6 +7592,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "work_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
             referencedColumns: ["project_id"]
           },
           {
@@ -6992,97 +7748,204 @@ export type Database = {
           isSetofReturn: false
         }
       }
-      fn_create_nc: {
-        Args: {
-          p_assigned_to?: string
-          p_category?: string
-          p_category_outro?: string
-          p_description: string
-          p_detected_at?: string
-          p_document_id?: string
-          p_due_date?: string
-          p_origin?: string
-          p_ppi_instance_id?: string
-          p_ppi_instance_item_id?: string
-          p_project_id: string
-          p_reference?: string
-          p_responsible?: string
-          p_severity?: string
-          p_subcontractor_id?: string
-          p_supplier_id?: string
-          p_test_result_id?: string
-          p_title: string
-          p_work_item_id?: string
-        }
-        Returns: {
-          ac_efficacy_indicator: string | null
-          actual_completion_date: string | null
-          approver: string | null
-          assigned_to: string | null
-          audit_origin_type: string | null
-          category: string
-          category_outro: string | null
-          classification: string | null
-          closure_date: string | null
-          code: string | null
-          correction: string | null
-          correction_type: string | null
-          corrective_action: string | null
-          created_at: string
-          created_by: string | null
-          deleted_at: string | null
-          deleted_by: string | null
-          description: string
-          detected_at: string
-          deviation_justification: string | null
-          discipline: string | null
-          discipline_outro: string | null
-          document_id: string | null
-          due_date: string | null
-          efficacy_analysis: string | null
-          fip_validated_at: string | null
-          fip_validated_by: string | null
-          fip_validation_required: boolean
-          id: string
-          is_deleted: boolean
-          location_pk: string | null
-          material_id: string | null
-          nc_sequence: number | null
-          origin: string
-          origin_entity_id: string | null
-          origin_entity_type: string | null
-          owner: string | null
-          ppi_instance_id: string | null
-          ppi_instance_item_id: string | null
-          preventive_action: string | null
-          project_id: string
-          reference: string | null
-          responsible: string | null
-          root_cause: string | null
-          root_cause_method: string | null
-          severity: string
-          status: string
-          subcontractor_id: string | null
-          supplier_id: string | null
-          test_result_id: string | null
-          title: string | null
-          updated_at: string
-          updated_by: string | null
-          validation_deadline: string | null
-          verification_method: string | null
-          verification_result: string | null
-          verified_at: string | null
-          verified_by: string | null
-          violated_requirement: string | null
-          work_item_id: string | null
-        }
-        SetofOptions: {
-          from: "*"
-          to: "non_conformities"
-          isOneToOne: true
-          isSetofReturn: false
-        }
-      }
+      fn_create_nc:
+        | {
+            Args: {
+              p_assigned_to?: string
+              p_category?: string
+              p_category_outro?: string
+              p_description: string
+              p_detected_at?: string
+              p_document_id?: string
+              p_due_date?: string
+              p_origin?: string
+              p_ppi_instance_id?: string
+              p_ppi_instance_item_id?: string
+              p_project_id: string
+              p_reference?: string
+              p_responsible?: string
+              p_severity?: string
+              p_subcontractor_id?: string
+              p_supplier_id?: string
+              p_test_result_id?: string
+              p_title: string
+              p_work_item_id?: string
+            }
+            Returns: {
+              ac_efficacy_indicator: string | null
+              actual_completion_date: string | null
+              approver: string | null
+              assigned_to: string | null
+              audit_origin_type: string | null
+              category: string
+              category_outro: string | null
+              classification: string | null
+              closure_date: string | null
+              code: string | null
+              correction: string | null
+              correction_type: string | null
+              corrective_action: string | null
+              created_at: string
+              created_by: string | null
+              deleted_at: string | null
+              deleted_by: string | null
+              description: string
+              detected_at: string
+              deviation_justification: string | null
+              discipline: string | null
+              discipline_outro: string | null
+              document_id: string | null
+              due_date: string | null
+              efficacy_analysis: string | null
+              fip_validated_at: string | null
+              fip_validated_by: string | null
+              fip_validation_required: boolean
+              id: string
+              is_deleted: boolean
+              location_pk: string | null
+              material_id: string | null
+              nc_sequence: number | null
+              origin: string
+              origin_entity_id: string | null
+              origin_entity_type: string | null
+              owner: string | null
+              ppi_instance_id: string | null
+              ppi_instance_item_id: string | null
+              preventive_action: string | null
+              project_id: string
+              reference: string | null
+              responsible: string | null
+              root_cause: string | null
+              root_cause_method: string | null
+              severity: string
+              status: string
+              subcontractor_id: string | null
+              supplier_id: string | null
+              test_result_id: string | null
+              title: string | null
+              updated_at: string
+              updated_by: string | null
+              validation_deadline: string | null
+              verification_method: string | null
+              verification_result: string | null
+              verified_at: string | null
+              verified_by: string | null
+              violated_requirement: string | null
+              work_item_id: string | null
+            }
+            SetofOptions: {
+              from: "*"
+              to: "non_conformities"
+              isOneToOne: true
+              isSetofReturn: false
+            }
+          }
+        | {
+            Args: {
+              p_ac_efficacy_indicator?: string
+              p_assigned_to?: string
+              p_audit_origin_type?: string
+              p_category?: string
+              p_category_outro?: string
+              p_classification?: string
+              p_correction?: string
+              p_correction_type?: string
+              p_corrective_action?: string
+              p_description: string
+              p_detected_at?: string
+              p_deviation_justification?: string
+              p_discipline?: string
+              p_discipline_outro?: string
+              p_document_id?: string
+              p_due_date?: string
+              p_efficacy_analysis?: string
+              p_location_pk?: string
+              p_origin?: string
+              p_ppi_instance_id?: string
+              p_ppi_instance_item_id?: string
+              p_preventive_action?: string
+              p_project_id: string
+              p_reference?: string
+              p_responsible?: string
+              p_root_cause?: string
+              p_root_cause_method?: string
+              p_severity?: string
+              p_subcontractor_id?: string
+              p_supplier_id?: string
+              p_test_result_id?: string
+              p_title: string
+              p_violated_requirement?: string
+              p_work_item_id?: string
+            }
+            Returns: {
+              ac_efficacy_indicator: string | null
+              actual_completion_date: string | null
+              approver: string | null
+              assigned_to: string | null
+              audit_origin_type: string | null
+              category: string
+              category_outro: string | null
+              classification: string | null
+              closure_date: string | null
+              code: string | null
+              correction: string | null
+              correction_type: string | null
+              corrective_action: string | null
+              created_at: string
+              created_by: string | null
+              deleted_at: string | null
+              deleted_by: string | null
+              description: string
+              detected_at: string
+              deviation_justification: string | null
+              discipline: string | null
+              discipline_outro: string | null
+              document_id: string | null
+              due_date: string | null
+              efficacy_analysis: string | null
+              fip_validated_at: string | null
+              fip_validated_by: string | null
+              fip_validation_required: boolean
+              id: string
+              is_deleted: boolean
+              location_pk: string | null
+              material_id: string | null
+              nc_sequence: number | null
+              origin: string
+              origin_entity_id: string | null
+              origin_entity_type: string | null
+              owner: string | null
+              ppi_instance_id: string | null
+              ppi_instance_item_id: string | null
+              preventive_action: string | null
+              project_id: string
+              reference: string | null
+              responsible: string | null
+              root_cause: string | null
+              root_cause_method: string | null
+              severity: string
+              status: string
+              subcontractor_id: string | null
+              supplier_id: string | null
+              test_result_id: string | null
+              title: string | null
+              updated_at: string
+              updated_by: string | null
+              validation_deadline: string | null
+              verification_method: string | null
+              verification_result: string | null
+              verified_at: string | null
+              verified_by: string | null
+              violated_requirement: string | null
+              work_item_id: string | null
+            }
+            SetofOptions: {
+              from: "*"
+              to: "non_conformities"
+              isOneToOne: true
+              isSetofReturn: false
+            }
+          }
       fn_create_nc_from_ppi_item: {
         Args: {
           p_due_date?: string
@@ -7451,6 +8314,10 @@ export type Database = {
         Returns: string
       }
       fn_next_concrete_batch_code: {
+        Args: { p_project_id: string }
+        Returns: string
+      }
+      fn_next_concrete_lot_code: {
         Args: { p_project_id: string }
         Returns: string
       }

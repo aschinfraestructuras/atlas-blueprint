@@ -31,6 +31,12 @@ export interface ConcreteBatch {
   lab_name: string | null;
   technician_name: string | null;
   notes: string | null;
+  exc_class: string | null;
+  fab_ref: string | null;
+  exposure_class: string | null;
+  structural_element_mqt_code: string | null;
+  lot_id: string | null;
+  cement_class: string | null;
   created_by: string | null;
   created_at: string;
   updated_at: string;
@@ -85,6 +91,10 @@ export interface CreateBatchInput {
   lab_name?: string | null;
   technician_name?: string | null;
   notes?: string | null;
+  exc_class?: string | null;
+  fab_ref?: string | null;
+  exposure_class?: string | null;
+  structural_element_mqt_code?: string | null;
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -94,25 +104,57 @@ function parseFck(concreteClass: string): number {
   return m ? parseInt(m[1], 10) : 25;
 }
 
+/**
+ * NP EN 13670 AN-PT, Quadro NA.M — Critérios de conformidade
+ * Filtra apenas provetes com cure_days === 28.
+ */
 export function computeBatchResult(
   concreteClass: string,
   specimens: ConcreteSpecimen[],
-): { overall: "pass" | "fail" | "pending"; mean: number | null; min: number | null; stdDev: number | null } {
-  const tested = specimens.filter((s) => s.strength_mpa != null);
-  if (tested.length < 3) return { overall: "pending", mean: null, min: null, stdDev: null };
-
-  const values = tested.map((s) => s.strength_mpa!);
-  const mean = values.reduce((a, b) => a + b, 0) / values.length;
-  const min = Math.min(...values);
-  const stdDev = Math.sqrt(values.reduce((sum, v) => sum + (v - mean) ** 2, 0) / values.length);
+): {
+  overall: "pass" | "fail" | "pending";
+  mean: number | null;
+  min: number | null;
+  stdDev: number | null;
+  n: number;
+  criterionApplied: string;
+} {
+  const tested = specimens.filter((s) => s.cure_days === 28 && s.strength_mpa != null);
+  const n = tested.length;
   const fck = parseFck(concreteClass);
 
-  const pass = mean >= fck + 4 && min >= fck - 4;
+  if (n === 0) return { overall: "pending", mean: null, min: null, stdDev: null, n: 0, criterionApplied: "n=0 — sem ensaios 28d" };
+
+  const values = tested.map((s) => s.strength_mpa!);
+  const mean = values.reduce((a, b) => a + b, 0) / n;
+  const min = Math.min(...values);
+  const stdDev = n > 1 ? Math.sqrt(values.reduce((sum, v) => sum + (v - mean) ** 2, 0) / n) : 0;
+
+  let pass: boolean;
+  let criterionApplied: string;
+
+  if (n === 1) {
+    pass = min >= fck - 4;
+    criterionApplied = "NA.M n=1: fc ≥ fck−4";
+  } else if (n === 2) {
+    pass = mean >= fck && min >= fck - 4;
+    criterionApplied = "NA.M n=2: fcm ≥ fck E fc_i ≥ fck−4";
+  } else if (n <= 4) {
+    pass = mean >= fck + 1 && min >= fck - 4;
+    criterionApplied = "NA.M n=3-4: fcm ≥ fck+1 E fc_i ≥ fck−4";
+  } else {
+    // NP EN 206 §8.3 Método A
+    pass = mean >= fck + 1.48 * stdDev && min >= fck - 4;
+    criterionApplied = `NP EN 206 §8.3 (n=${n}): fcm ≥ fck+1,48s E fc_i ≥ fck−4`;
+  }
+
   return {
     overall: pass ? "pass" : "fail",
     mean: Math.round(mean * 100) / 100,
     min: Math.round(min * 100) / 100,
     stdDev: Math.round(stdDev * 100) / 100,
+    n,
+    criterionApplied,
   };
 }
 
@@ -279,15 +321,24 @@ export const concreteService = {
     if (error) throw error;
   },
 
+  async deleteSpecimen(id: string): Promise<void> {
+    const { error } = await supabase.from("concrete_specimens" as any).delete().eq("id", id);
+    if (error) throw error;
+  },
+
   async deleteBatch(id: string): Promise<void> {
     const { error } = await supabase.from("concrete_batches" as any).delete().eq("id", id);
     if (error) throw error;
   },
 
-  exportPdf(batch: ConcreteBatch, specimens: ConcreteSpecimen[], projectName: string): void {
+  exportPdf(batch: ConcreteBatch, specimens: ConcreteSpecimen[], projectName: string, logoBase64?: string | null): void {
     const fck = parseFck(batch.concrete_class);
     const result = computeBatchResult(batch.concrete_class, specimens);
     const isPass = result.overall === "pass";
+
+    const logoHtml = logoBase64
+      ? `<img src="${logoBase64}" style="height:45px;max-width:150px;object-fit:contain;" />`
+      : "";
 
     const specRows = specimens
       .map(
@@ -317,9 +368,14 @@ export const concreteService = {
       .info-grid dt{color:${ATLAS_PDF.colors.muted};font-weight:600;text-transform:uppercase;font-size:7pt;}
       .sig-block{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:40px;font-size:8pt;}
       .sig-line{border-top:1px solid ${ATLAS_PDF.colors.rule};padding-top:4px;margin-top:40px;}
+      .pdf-header{display:flex;align-items:center;gap:16px;margin-bottom:4px;}
+      .criterion-text{font-size:7pt;color:${ATLAS_PDF.colors.muted};margin-top:6px;font-style:italic;}
       @media print{body{margin:0;}}
       </style></head><body>
-      <h2>ATLAS QMS — Ficha de Betonagem</h2>
+      <div class="pdf-header">
+        ${logoHtml}
+        <h2>ATLAS QMS — Ficha de Betonagem</h2>
+      </div>
       ${projectInfoStripHtml()}
       <h3>1. Identificação</h3>
       <dl class="info-grid">
@@ -332,6 +388,10 @@ export const concreteService = {
         <dt>Matrícula</dt><dd>${batch.truck_plate ?? "—"}</dd>
         <dt>Classe</dt><dd>${batch.concrete_class}</dd>
         <dt>Consistência</dt><dd>${batch.consistency_class ?? "—"}</dd>
+        <dt>Classe Execução</dt><dd>${batch.exc_class ?? "—"}</dd>
+        <dt>Classe Exposição</dt><dd>${batch.exposure_class ?? "—"}</dd>
+        <dt>Ref. FAB</dt><dd>${batch.fab_ref ?? "—"}</dd>
+        <dt>Código MQT</dt><dd>${batch.structural_element_mqt_code ?? "—"}</dd>
       </dl>
       <h3>2. Resultados Frescos</h3>
       <table>
@@ -357,9 +417,9 @@ export const concreteService = {
         <dt>Média fc</dt><dd>${result.mean ?? "—"} MPa</dd>
         <dt>Mínimo fc</dt><dd>${result.min ?? "—"} MPa</dd>
         <dt>Desvio padrão</dt><dd>${result.stdDev ?? "—"} MPa</dd>
-        <dt>Critério média</dt><dd>≥ ${fck + 4} MPa</dd>
-        <dt>Critério mín.</dt><dd>≥ ${fck - 4} MPa</dd>
+        <dt>Provetes 28d avaliados</dt><dd>${result.n}</dd>
       </dl>
+      <p class="criterion-text">Critério aplicado: ${result.criterionApplied}</p>
       <h3>5. Resultado</h3>
       <div style="text-align:center;margin:16px 0;">
         <span class="badge ${isPass ? "pass" : "fail"}" style="font-size:14pt;">
