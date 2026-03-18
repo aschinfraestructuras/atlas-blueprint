@@ -500,7 +500,7 @@ export default function SubmittalsPage() {
                 </div>
                 <div className="space-y-2">
                   <Label>{t("submittals.form.workItem", { defaultValue: "Atividade" })}</Label>
-                  <Select value={formWorkItemId} onValueChange={setFormWorkItemId}>
+                  <Select value={formWorkItemId || "__none__"} onValueChange={v => setFormWorkItemId(v === "__none__" ? "" : v)}>
                     <SelectTrigger><SelectValue placeholder="—" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="__none__">—</SelectItem>
