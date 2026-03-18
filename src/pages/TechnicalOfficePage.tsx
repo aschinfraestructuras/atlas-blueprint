@@ -144,6 +144,7 @@ export default function TechnicalOfficePage() {
   const { data: allDocuments } = useDocuments();
   const { canCreate, isAdmin } = useProjectRole();
   const reportMeta = useReportMeta();
+  const { logoBase64 } = useProjectLogo();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("all");
 
