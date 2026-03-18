@@ -595,6 +595,168 @@ function WorkItemPlanningTab({ workItemId, projectId }: { workItemId: string; pr
   );
 }
 
+// ─── Concrete (Betão) tab ─────────────────────────────────────────────────────
+
+function WorkItemConcreteTab({ workItemId, projectId }: { workItemId: string; projectId: string }) {
+  const navigate = useNavigate();
+  const [batches, setBatches] = useState<ConcreteBatch[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      setLoading(true);
+      try {
+        const data = await concreteService.getByWorkItem(workItemId);
+        setBatches(data);
+      } catch { /* */ } finally { setLoading(false); }
+    })();
+  }, [workItemId]);
+
+  if (loading) return <Card className="shadow-card"><CardContent className="p-5"><Skeleton className="h-20 w-full" /></CardContent></Card>;
+  if (batches.length === 0) return null;
+
+  return (
+    <Card className="shadow-card">
+      <CardHeader className="pb-3 pt-4 px-5 flex flex-row items-center justify-between">
+        <CardTitle className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+          Betão
+          <span className="ml-2 rounded-full bg-primary/10 px-1.5 py-px text-[10px] font-bold text-primary">{batches.length}</span>
+        </CardTitle>
+        <Button size="sm" variant="ghost" className="h-7 text-xs gap-1" onClick={() => navigate(`/tests/concrete?wi=${workItemId}`)}>
+          Ver todos <Eye className="h-3 w-3" />
+        </Button>
+      </CardHeader>
+      <CardContent className="p-0">
+        <ul className="divide-y divide-border">
+          {batches.map((b) => {
+            const result = computeBatchResult(b.concrete_class, []);
+            return (
+              <li key={b.id} className="flex items-center gap-3 px-5 py-3 hover:bg-muted/20 cursor-pointer" onClick={() => navigate(`/tests/concrete`)}>
+                <Layers className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-mono font-semibold">{b.code}</p>
+                  <p className="text-xs text-muted-foreground truncate">{b.element_betonado} · {b.concrete_class}</p>
+                </div>
+                <Badge variant={b.status === "pass" ? "default" : b.status === "fail" ? "destructive" : "outline"} className="text-[10px]">
+                  {b.status === "pass" ? "Conforme" : b.status === "fail" ? "Não Conforme" : "Pendente"}
+                </Badge>
+              </li>
+            );
+          })}
+        </ul>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ─── Weld (Soldaduras) tab ────────────────────────────────────────────────────
+
+function WorkItemWeldTab({ workItemId }: { workItemId: string }) {
+  const navigate = useNavigate();
+  const [welds, setWelds] = useState<WeldRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      setLoading(true);
+      try {
+        const data = await weldService.getByWorkItem(workItemId);
+        setWelds(data);
+      } catch { /* */ } finally { setLoading(false); }
+    })();
+  }, [workItemId]);
+
+  if (loading) return <Card className="shadow-card"><CardContent className="p-5"><Skeleton className="h-20 w-full" /></CardContent></Card>;
+  if (welds.length === 0) return null;
+
+  return (
+    <Card className="shadow-card">
+      <CardHeader className="pb-3 pt-4 px-5 flex flex-row items-center justify-between">
+        <CardTitle className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+          Soldaduras
+          <span className="ml-2 rounded-full bg-primary/10 px-1.5 py-px text-[10px] font-bold text-primary">{welds.length}</span>
+        </CardTitle>
+        <Button size="sm" variant="ghost" className="h-7 text-xs gap-1" onClick={() => navigate(`/tests/welding?wi=${workItemId}`)}>
+          Ver todas <Eye className="h-3 w-3" />
+        </Button>
+      </CardHeader>
+      <CardContent className="p-0">
+        <ul className="divide-y divide-border">
+          {welds.map((w) => (
+            <li key={w.id} className="flex items-center gap-3 px-5 py-3 hover:bg-muted/20">
+              <Flame className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-mono font-semibold">{w.code}</p>
+                <p className="text-xs text-muted-foreground">{w.pk_location} · {w.rail_profile}</p>
+              </div>
+              <Badge
+                variant={w.overall_result === "pass" ? "default" : w.overall_result === "fail" ? "destructive" : "outline"}
+                className="text-[10px]"
+              >
+                {w.overall_result === "pass" ? "OK" : w.overall_result === "fail" ? "NOK" : "Pendente"}
+              </Badge>
+            </li>
+          ))}
+        </ul>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ─── Soil (Solos) tab ─────────────────────────────────────────────────────────
+
+function WorkItemSoilTab({ workItemId }: { workItemId: string }) {
+  const navigate = useNavigate();
+  const [samples, setSamples] = useState<SoilSample[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      setLoading(true);
+      try {
+        const data = await soilService.getByWorkItem(workItemId);
+        setSamples(data);
+      } catch { /* */ } finally { setLoading(false); }
+    })();
+  }, [workItemId]);
+
+  if (loading) return <Card className="shadow-card"><CardContent className="p-5"><Skeleton className="h-20 w-full" /></CardContent></Card>;
+  if (samples.length === 0) return null;
+
+  return (
+    <Card className="shadow-card">
+      <CardHeader className="pb-3 pt-4 px-5 flex flex-row items-center justify-between">
+        <CardTitle className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+          Solos
+          <span className="ml-2 rounded-full bg-primary/10 px-1.5 py-px text-[10px] font-bold text-primary">{samples.length}</span>
+        </CardTitle>
+        <Button size="sm" variant="ghost" className="h-7 text-xs gap-1" onClick={() => navigate(`/tests/soils?wi=${workItemId}`)}>
+          Ver todas <Eye className="h-3 w-3" />
+        </Button>
+      </CardHeader>
+      <CardContent className="p-0">
+        <ul className="divide-y divide-border">
+          {samples.map((s) => (
+            <li key={s.id} className="flex items-center gap-3 px-5 py-3 hover:bg-muted/20">
+              <Mountain className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-mono font-semibold">{s.code}</p>
+                <p className="text-xs text-muted-foreground truncate">{s.sample_ref} · {s.material_type ?? "—"}</p>
+              </div>
+              <Badge
+                variant={s.overall_result === "apto" ? "default" : s.overall_result === "inapto" ? "destructive" : "outline"}
+                className="text-[10px]"
+              >
+                {s.overall_result === "apto" ? "Apto" : s.overall_result === "inapto" ? "Inapto" : "Pendente"}
+              </Badge>
+            </li>
+          ))}
+        </ul>
+      </CardContent>
+    </Card>
+  );
+}
+
 // ─── Topography tab ───────────────────────────────────────────────────────────
 
 function WorkItemTopoTab({ workItemId, projectId }: { workItemId: string; projectId: string }) {
