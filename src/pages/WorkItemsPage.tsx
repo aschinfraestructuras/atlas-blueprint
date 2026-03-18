@@ -362,6 +362,7 @@ export default function WorkItemsPage() {
       rows,
       footerRef: `${filtered.length} work items`,
       filename: buildReportFilename("WI", activeProject.code, "list"),
+      logoBase64,
     });
   }
 
