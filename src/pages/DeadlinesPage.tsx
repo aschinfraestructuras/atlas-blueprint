@@ -64,6 +64,20 @@ const SOURCE_ROUTES: Record<string, string> = {
   hp_notification: "/ppi",
 };
 
+const SOURCE_LIST_ROUTES: Record<string, string> = {
+  supplier_doc: "/suppliers",
+  material_doc: "/materials",
+  subcontractor_doc: "/subcontractors",
+  calibration: "/topography",
+  nc_due: "/non-conformities",
+  rfi_due: "/technical-office",
+  tech_office_due: "/technical-office",
+  planning_due: "/planning",
+  ppi_pending: "/ppi",
+  ppi_approval: "/ppi",
+  hp_notification: "/ppi",
+};
+
 const SEVERITY_COLORS: Record<string, string> = {
   critical: "bg-destructive/10 text-destructive",
   warning: "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400",

@@ -303,7 +303,7 @@ function LotsTab({
               <Select value={lotForm.work_item_id} onValueChange={(v) => setLotForm((f) => ({ ...f, work_item_id: v }))}>
                 <SelectTrigger><SelectValue placeholder="Selecionar..." /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">—</SelectItem>
+                  <SelectItem value="__none__">—</SelectItem>
                   {workItems.map((wi) => <SelectItem key={wi.id} value={wi.id}>{wi.sector} — {wi.elemento ?? wi.obra ?? wi.disciplina}</SelectItem>)}
                 </SelectContent>
               </Select>
