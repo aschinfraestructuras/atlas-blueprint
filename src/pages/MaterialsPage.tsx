@@ -4,7 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { useProject } from "@/contexts/ProjectContext";
 import { useMaterials } from "@/hooks/useMaterials";
 import { useProjectRole } from "@/hooks/useProjectRole";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { materialService } from "@/lib/services/materialService";
+import { exportMaterialsListPdf } from "@/lib/services/materialExportService";
 import { Package, Plus, Pencil, Search, Archive, RotateCcw, Eye, Trash2, PieChart as PieChartIcon } from "lucide-react";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
