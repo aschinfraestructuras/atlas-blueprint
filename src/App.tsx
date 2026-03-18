@@ -151,6 +151,8 @@ const App = () => (
                 <Route path="/tests/compaction" element={<ProtectedLayout><CompactionPage /></ProtectedLayout>} />
                 <Route path="/tests/soils" element={<ProtectedLayout><SoilPage /></ProtectedLayout>} />
                 <Route path="/tests/welding" element={<ProtectedLayout><WeldPage /></ProtectedLayout>} />
+                <Route path="/org-chart" element={<ProtectedLayout><OrgChartPage /></ProtectedLayout>} />
+                <Route path="/tests/schedule" element={<ProtectedLayout><TestSchedulePage /></ProtectedLayout>} />
 
                 {/* Catch-all */}
                 <Route path="*" element={<NotFound />} />
