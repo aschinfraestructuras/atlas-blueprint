@@ -294,15 +294,15 @@ function LabDetailDialog({ open, onOpenChange, lab }: {
                   <TableBody>
                     {tests.slice(0, 10).map((t, i) => (
                       <TableRow key={i}>
-                        <TableCell className="text-xs font-mono">{t.code}</TableCell>
-                        <TableCell className="text-xs">{t.test_type}</TableCell>
+                      <TableCell className="text-xs font-mono">{t.code ?? "—"}</TableCell>
+                        <TableCell className="text-xs">{t.material ?? "—"}</TableCell>
                         <TableCell>
                           <Badge variant="outline" className={cn("text-[9px]",
                             t.result_status === "pass" && "border-green-500 text-green-700",
                             t.result_status === "fail" && "border-red-500 text-red-700",
-                          )}>{t.result_status}</Badge>
+                          )}>{t.result_status ?? "—"}</Badge>
                         </TableCell>
-                        <TableCell className="text-xs">{t.test_date ?? "—"}</TableCell>
+                        <TableCell className="text-xs">{t.date ?? "—"}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
