@@ -117,15 +117,23 @@ export default function MaterialsPage() {
         <TabsContent value="materials" className="space-y-6 mt-4">
           <div className="flex items-center justify-end gap-2">
             <ReportExportMenu
-              options={[{
-                label: "CSV", icon: "csv" as const,
-                action: () => {
-                  const csv = [exportHeaders.join(";"), ...exportRows.map(r => r.join(";"))].join("\n");
-                  const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" });
-                  const url = URL.createObjectURL(blob);
-                  const a = document.createElement("a"); a.href = url; a.download = `MAT_${activeProject.code ?? "PROJ"}.csv`; a.click(); URL.revokeObjectURL(url);
+              options={[
+                {
+                  label: "CSV", icon: "csv" as const,
+                  action: () => {
+                    const csv = [exportHeaders.join(";"), ...exportRows.map(r => r.join(";"))].join("\n");
+                    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a"); a.href = url; a.download = `MAT_${activeProject.code ?? "PROJ"}.csv`; a.click(); URL.revokeObjectURL(url);
+                  },
                 },
-              }]}
+                {
+                  label: "PDF", icon: "pdf" as const,
+                  action: () => {
+                    exportMaterialsListPdf(filtered, activeProject.code ?? "PROJ", logoBase64, t);
+                  },
+                },
+              ]}
             />
             {canCreate && (
               <Button onClick={handleNew} size="sm" className="gap-1.5">
