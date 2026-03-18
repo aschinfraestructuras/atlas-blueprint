@@ -714,7 +714,7 @@ function WorkItemSoilTab({ workItemId }: { workItemId: string }) {
     (async () => {
       setLoading(true);
       try {
-        const data = await soilService.getByWorkItem(workItemId);
+        const data = await soilService.listByWorkItem(workItemId);
         setSamples(data);
       } catch { /* */ } finally { setLoading(false); }
     })();
