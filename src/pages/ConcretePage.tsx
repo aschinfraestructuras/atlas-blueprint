@@ -2,9 +2,10 @@ import { useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Layers, Plus, FileDown, Trash2, Eye, CheckCircle2, XCircle, Clock,
-  FlaskConical, Loader2, X, Info,
+  FlaskConical, Loader2, X, Info, Package,
 } from "lucide-react";
 import { concreteService, computeBatchResult, type ConcreteBatchWithCounts, type ConcreteBatch, type ConcreteSpecimen } from "@/lib/services/concreteService";
+import { concreteLotService, type ConcreteLotConformity } from "@/lib/services/concreteLotService";
 import { useProject } from "@/contexts/ProjectContext";
 import { useWorkItems } from "@/hooks/useWorkItems";
 import { usePPIInstances } from "@/hooks/usePPI";
@@ -16,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
@@ -37,7 +39,7 @@ const FRACTURE_TYPES = ["cônica", "cónica-cilíndrica", "frágil", "irregular"
 function excFrequency(exc: string): string {
   if (exc === "EXC1") return "1 amostra por 150 m³";
   if (exc === "EXC3") return "1 amostra por 50 m³";
-  return "1 amostra por 75 m³"; // EXC2 default
+  return "1 amostra por 75 m³";
 }
 
 function makeDefaultSpecimen(no: number) {
@@ -60,6 +62,315 @@ function ResultBadge({ result }: { result: string }) {
   return <Badge variant="outline" className="text-amber-600">Pendente</Badge>;
 }
 
+function LotResultBadge({ result, criterion }: { result: string; criterion: string }) {
+  const badge = result === "pass"
+    ? <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-0">Conforme (NA.M)</Badge>
+    : result === "fail"
+    ? <Badge variant="destructive">Não Conforme</Badge>
+    : <Badge variant="outline" className="text-amber-600">Pendente</Badge>;
+
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>{badge}</TooltipTrigger>
+        <TooltipContent className="max-w-xs text-xs">{criterion}</TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
+
+// ─── Lots Tab ─────────────────────────────────────────────────────────────────
+
+function LotsTab({
+  projectId,
+  batches,
+  onRefreshBatches,
+}: {
+  projectId: string;
+  batches: ConcreteBatchWithCounts[];
+  onRefreshBatches: () => void;
+}) {
+  const { t } = useTranslation();
+  const { data: workItems } = useWorkItems();
+  const [lots, setLots] = useState<ConcreteLotConformity[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [unassigned, setUnassigned] = useState<{ id: string; code: string; element_betonado: string; concrete_class: string; batch_date: string }[]>([]);
+  const [selectedBatches, setSelectedBatches] = useState<Set<string>>(new Set());
+
+  const [lotForm, setLotForm] = useState({
+    element_desc: "",
+    concrete_class: "C25/30",
+    exc_class: "EXC2",
+    volume_total_m3: "",
+    date_start: "",
+    date_end: "",
+    work_item_id: "",
+    notes: "",
+  });
+
+  const fetchLots = useCallback(async () => {
+    if (!projectId) return;
+    setLoading(true);
+    try {
+      const data = await concreteLotService.listConformity(projectId);
+      setLots(data);
+    } catch { /* ignore */ } finally { setLoading(false); }
+  }, [projectId]);
+
+  useEffect(() => { fetchLots(); }, [fetchLots]);
+
+  const openCreateDialog = async () => {
+    try {
+      const ub = await concreteLotService.getUnassignedBatches(projectId);
+      setUnassigned(ub);
+    } catch { /* ignore */ }
+    setSelectedBatches(new Set());
+    setLotForm({
+      element_desc: "",
+      concrete_class: "C25/30",
+      exc_class: "EXC2",
+      volume_total_m3: "",
+      date_start: "",
+      date_end: "",
+      work_item_id: "",
+      notes: "",
+    });
+    setDialogOpen(true);
+  };
+
+  async function handleCreateLot() {
+    if (!projectId || !lotForm.element_desc.trim()) return;
+    setSaving(true);
+    try {
+      const lot = await concreteLotService.create({
+        project_id: projectId,
+        element_desc: lotForm.element_desc,
+        concrete_class: lotForm.concrete_class,
+        exc_class: lotForm.exc_class,
+        volume_total_m3: lotForm.volume_total_m3 ? parseFloat(lotForm.volume_total_m3) : null,
+        date_start: lotForm.date_start || null,
+        date_end: lotForm.date_end || null,
+        work_item_id: lotForm.work_item_id || null,
+        notes: lotForm.notes || null,
+      });
+
+      // Assign selected batches
+      for (const batchId of selectedBatches) {
+        await concreteLotService.assignBatchToLot(batchId, lot.id);
+      }
+
+      toast({ title: t("common.save"), description: lot.lot_code });
+      setDialogOpen(false);
+      fetchLots();
+      onRefreshBatches();
+    } catch (err: any) {
+      toast({ title: "Erro", description: err.message, variant: "destructive" });
+    } finally { setSaving(false); }
+  }
+
+  async function handleDeleteLot(id: string) {
+    if (!confirm(t("common.confirmDelete"))) return;
+    try {
+      await concreteLotService.deleteLot(id);
+      toast({ title: t("common.delete") });
+      fetchLots();
+    } catch (err: any) {
+      toast({ title: "Erro", description: err.message, variant: "destructive" });
+    }
+  }
+
+  const conformes = lots.filter((l) => l.na_m_result === "pass").length;
+  const total = lots.length;
+
+  return (
+    <div className="space-y-4">
+      {/* KPI */}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+        <ModuleKPICard label="Total Lotes" value={total} icon={Package} />
+        <ModuleKPICard label="Conformes (NA.M)" value={conformes} icon={CheckCircle2} color="hsl(158,45%,32%)" />
+        <ModuleKPICard label="Lotes avaliados" value={`${conformes}/${total}`} icon={FlaskConical} />
+      </div>
+
+      <div className="flex justify-end">
+        <Button onClick={openCreateDialog} className="gap-1.5">
+          <Plus className="h-4 w-4" /> Novo Lote
+        </Button>
+      </div>
+
+      <Card>
+        <CardContent className="p-0">
+          {loading ? (
+            <div className="flex items-center justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
+          ) : lots.length === 0 ? (
+            <EmptyState icon={Package} titleKey="concrete.empty" subtitleKey="concrete.emptySubtitle" />
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Código</TableHead>
+                  <TableHead>Elemento</TableHead>
+                  <TableHead>Classe</TableHead>
+                  <TableHead>EXC</TableHead>
+                  <TableHead>Vol. (m³)</TableHead>
+                  <TableHead>n amostras</TableHead>
+                  <TableHead>fcm (MPa)</TableHead>
+                  <TableHead>fc_min (MPa)</TableHead>
+                  <TableHead>Critério NA.M</TableHead>
+                  <TableHead>Resultado</TableHead>
+                  <TableHead className="w-10" />
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {lots.map((lot) => (
+                  <TableRow key={lot.lot_id}>
+                    <TableCell className="font-mono text-xs font-semibold">{lot.lot_code}</TableCell>
+                    <TableCell className="max-w-[180px] truncate text-sm">{lot.element_desc}</TableCell>
+                    <TableCell><Badge variant="outline">{lot.concrete_class}</Badge></TableCell>
+                    <TableCell className="text-xs">{lot.exc_class}</TableCell>
+                    <TableCell className="text-xs">{lot.volume_total_m3 ?? "—"}</TableCell>
+                    <TableCell className="text-xs">
+                      {lot.n_tested_28d}
+                      {lot.n_required_min != null && (
+                        <span className="text-muted-foreground"> / {lot.n_required_min} req.</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="font-semibold text-xs">{lot.mean_fc_28d ?? "—"}</TableCell>
+                    <TableCell className="text-xs">{lot.min_fc_28d ?? "—"}</TableCell>
+                    <TableCell className="text-xs text-muted-foreground max-w-[150px] truncate">{lot.criterion_applied}</TableCell>
+                    <TableCell>
+                      <LotResultBadge result={lot.na_m_result} criterion={lot.criterion_applied} />
+                    </TableCell>
+                    <TableCell>
+                      <RowActionMenu actions={[
+                        { key: "delete", label: t("common.delete"), icon: Trash2, onClick: () => handleDeleteLot(lot.lot_id), variant: "destructive" as const },
+                      ]} />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Create Lot Dialog */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Package className="h-5 w-5" /> Novo Lote de Betão
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <Label>Elemento estrutural *</Label>
+              <Input
+                value={lotForm.element_desc}
+                onChange={(e) => setLotForm((f) => ({ ...f, element_desc: e.target.value }))}
+                placeholder="PSR Cachofarra — tabuleiro pré-esforço"
+              />
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              <div>
+                <Label>Classe de Betão</Label>
+                <Select value={lotForm.concrete_class} onValueChange={(v) => setLotForm((f) => ({ ...f, concrete_class: v }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>{CONCRETE_CLASSES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Classe de Execução</Label>
+                <Select value={lotForm.exc_class} onValueChange={(v) => setLotForm((f) => ({ ...f, exc_class: v }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>{EXC_CLASSES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground mt-0.5">{excFrequency(lotForm.exc_class)}</p>
+              </div>
+              <div>
+                <Label>Volume total (m³)</Label>
+                <Input type="number" value={lotForm.volume_total_m3} onChange={(e) => setLotForm((f) => ({ ...f, volume_total_m3: e.target.value }))} />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div><Label>Data início</Label><Input type="date" value={lotForm.date_start} onChange={(e) => setLotForm((f) => ({ ...f, date_start: e.target.value }))} /></div>
+              <div><Label>Data fim</Label><Input type="date" value={lotForm.date_end} onChange={(e) => setLotForm((f) => ({ ...f, date_end: e.target.value }))} /></div>
+            </div>
+            <div>
+              <Label>Atividade</Label>
+              <Select value={lotForm.work_item_id} onValueChange={(v) => setLotForm((f) => ({ ...f, work_item_id: v }))}>
+                <SelectTrigger><SelectValue placeholder="Selecionar..." /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">—</SelectItem>
+                  {workItems.map((wi) => <SelectItem key={wi.id} value={wi.id}>{wi.sector} — {wi.elemento ?? wi.obra ?? wi.disciplina}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Notas</Label>
+              <Input value={lotForm.notes} onChange={(e) => setLotForm((f) => ({ ...f, notes: e.target.value }))} />
+            </div>
+
+            {/* Batch selector */}
+            <div className="space-y-2">
+              <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                Amassadas a incluir ({selectedBatches.size} selecionadas)
+              </Label>
+              {unassigned.length === 0 ? (
+                <p className="text-xs text-muted-foreground italic">Todas as amassadas já estão atribuídas a lotes.</p>
+              ) : (
+                <div className="max-h-48 overflow-y-auto border rounded-md">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-10" />
+                        <TableHead>Código</TableHead>
+                        <TableHead>Elemento</TableHead>
+                        <TableHead>Classe</TableHead>
+                        <TableHead>Data</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {unassigned.map((b) => (
+                        <TableRow key={b.id} className="cursor-pointer" onClick={() => {
+                          setSelectedBatches((prev) => {
+                            const next = new Set(prev);
+                            if (next.has(b.id)) next.delete(b.id); else next.add(b.id);
+                            return next;
+                          });
+                        }}>
+                          <TableCell>
+                            <Checkbox checked={selectedBatches.has(b.id)} />
+                          </TableCell>
+                          <TableCell className="font-mono text-xs">{b.code}</TableCell>
+                          <TableCell className="text-xs truncate max-w-[150px]">{b.element_betonado}</TableCell>
+                          <TableCell className="text-xs">{b.concrete_class}</TableCell>
+                          <TableCell className="text-xs">{new Date(b.batch_date).toLocaleDateString()}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <DialogFooter className="mt-4">
+            <DialogClose asChild><Button variant="outline">{t("common.cancel")}</Button></DialogClose>
+            <Button onClick={handleCreateLot} disabled={saving || !lotForm.element_desc.trim()}>
+              {saving && <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />}
+              {t("common.save")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+// ─── Main Page ────────────────────────────────────────────────────────────────
+
 export default function ConcretePage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
@@ -74,6 +385,7 @@ export default function ConcretePage() {
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterWI, setFilterWI] = useState("all");
   const [saving, setSaving] = useState(false);
+  const [pageTab, setPageTab] = useState("batches");
 
   // Form state
   const [form, setForm] = useState({
@@ -237,7 +549,6 @@ export default function ConcretePage() {
       else if (field === "fracture_type") update.fracture_type = value || null;
       else return;
       await concreteService.updateSpecimen(specimen.id, update);
-      // Refresh detail
       if (detailId) concreteService.getById(detailId).then(setDetailData);
     } catch (err: any) {
       toast({ title: "Erro", description: err.message, variant: "destructive" });
@@ -289,95 +600,121 @@ export default function ConcretePage() {
         backLabel="Ensaios"
         module="Ensaios"
         actions={
-          <Button onClick={() => setDialogOpen(true)} className="gap-1.5">
-            <Plus className="h-4 w-4" /> {t("concrete.newBatch")}
-          </Button>
+          pageTab === "batches" ? (
+            <Button onClick={() => setDialogOpen(true)} className="gap-1.5">
+              <Plus className="h-4 w-4" /> {t("concrete.newBatch")}
+            </Button>
+          ) : undefined
         }
       />
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <ModuleKPICard label={t("concrete.kpi.total")} value={totalBatches} icon={Layers} />
-        <ModuleKPICard label={t("concrete.kpi.pass")} value={passBatches} icon={CheckCircle2} color="hsl(158,45%,32%)" />
-        <ModuleKPICard label={t("concrete.kpi.fail")} value={failBatches} icon={XCircle} color="hsl(2,60%,44%)" />
-        <ModuleKPICard label={t("concrete.kpi.pendingSpecimens")} value={pendingSpecimens} icon={Clock} color="hsl(33,75%,38%)" />
-      </div>
+      {/* Top-level page tabs: Amassadas | Lotes */}
+      <Tabs value={pageTab} onValueChange={setPageTab}>
+        <TabsList>
+          <TabsTrigger value="batches" className="gap-1.5">
+            <Layers className="h-3.5 w-3.5" /> Amassadas
+          </TabsTrigger>
+          <TabsTrigger value="lots" className="gap-1.5">
+            <Package className="h-3.5 w-3.5" /> Lotes (NA.M)
+          </TabsTrigger>
+        </TabsList>
 
-      {/* Filters */}
-      <FilterBar>
-        <Select value={filterStatus} onValueChange={setFilterStatus}>
-          <SelectTrigger className="w-[160px] h-9"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{t("common.status")}: Todos</SelectItem>
-            <SelectItem value="pass">Conforme</SelectItem>
-            <SelectItem value="fail">Não Conforme</SelectItem>
-            <SelectItem value="pending">Pendente</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select value={filterWI} onValueChange={setFilterWI}>
-          <SelectTrigger className="w-[200px] h-9"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Atividade: Todas</SelectItem>
-            {workItems.map((wi) => (
-              <SelectItem key={wi.id} value={wi.id}>{wi.sector} — {wi.elemento ?? wi.obra ?? wi.disciplina}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </FilterBar>
+        <TabsContent value="batches" className="mt-5 space-y-4">
+          {/* KPI Cards */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <ModuleKPICard label={t("concrete.kpi.total")} value={totalBatches} icon={Layers} />
+            <ModuleKPICard label={t("concrete.kpi.pass")} value={passBatches} icon={CheckCircle2} color="hsl(158,45%,32%)" />
+            <ModuleKPICard label={t("concrete.kpi.fail")} value={failBatches} icon={XCircle} color="hsl(2,60%,44%)" />
+            <ModuleKPICard label={t("concrete.kpi.pendingSpecimens")} value={pendingSpecimens} icon={Clock} color="hsl(33,75%,38%)" />
+          </div>
 
-      {/* Table */}
-      <Card>
-        <CardContent className="p-0">
-          {loading ? (
-            <div className="flex items-center justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
-          ) : filtered.length === 0 ? (
-            <EmptyState icon={Layers} titleKey="concrete.empty" subtitleKey="concrete.emptySubtitle" />
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>{t("concrete.fields.code")}</TableHead>
-                  <TableHead>{t("concrete.fields.element")}</TableHead>
-                  <TableHead>{t("common.date")}</TableHead>
-                  <TableHead>{t("concrete.fields.class")}</TableHead>
-                  <TableHead>Slump</TableHead>
-                  <TableHead>{t("concrete.fields.specimens")}</TableHead>
-                  <TableHead>{t("concrete.fields.result")}</TableHead>
-                  <TableHead className="w-10" />
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filtered.map((b) => (
-                  <TableRow key={b.id} className="cursor-pointer hover:bg-muted/30" onClick={() => setDetailId(b.id)}>
-                    <TableCell className="font-mono text-xs font-semibold">{b.code}</TableCell>
-                    <TableCell className="max-w-[200px] truncate">{b.element_betonado}</TableCell>
-                    <TableCell className="text-xs">{new Date(b.batch_date).toLocaleDateString()}</TableCell>
-                    <TableCell><Badge variant="outline">{b.concrete_class}</Badge></TableCell>
-                    <TableCell>
-                      {b.slump_mm != null ? (
-                        <span className={cn("text-xs font-medium", b.slump_pass ? "text-emerald-600" : "text-destructive")}>
-                          {b.slump_mm} mm
-                        </span>
-                      ) : "—"}
-                    </TableCell>
-                    <TableCell className="text-xs">{b.specimens_tested}/{b.specimen_count}</TableCell>
-                    <TableCell><ResultBadge result={b.overall_result} /></TableCell>
-                    <TableCell onClick={(e) => e.stopPropagation()}>
-                      <RowActionMenu actions={[
-                        { key: "view", label: t("common.view"), icon: Eye, onClick: () => setDetailId(b.id) },
-                        { key: "pdf", label: t("common.exportPdf"), icon: FileDown, onClick: () => handleExport(b) },
-                        { key: "delete", label: t("common.delete"), icon: Trash2, onClick: () => handleDelete(b.id), variant: "destructive" as const },
-                      ]} />
-                    </TableCell>
-                  </TableRow>
+          {/* Filters */}
+          <FilterBar>
+            <Select value={filterStatus} onValueChange={setFilterStatus}>
+              <SelectTrigger className="w-[160px] h-9"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t("common.status")}: Todos</SelectItem>
+                <SelectItem value="pass">Conforme</SelectItem>
+                <SelectItem value="fail">Não Conforme</SelectItem>
+                <SelectItem value="pending">Pendente</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={filterWI} onValueChange={setFilterWI}>
+              <SelectTrigger className="w-[200px] h-9"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Atividade: Todas</SelectItem>
+                {workItems.map((wi) => (
+                  <SelectItem key={wi.id} value={wi.id}>{wi.sector} — {wi.elemento ?? wi.obra ?? wi.disciplina}</SelectItem>
                 ))}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
+              </SelectContent>
+            </Select>
+          </FilterBar>
 
-      {/* ────── Create Dialog ────── */}
+          {/* Table */}
+          <Card>
+            <CardContent className="p-0">
+              {loading ? (
+                <div className="flex items-center justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
+              ) : filtered.length === 0 ? (
+                <EmptyState icon={Layers} titleKey="concrete.empty" subtitleKey="concrete.emptySubtitle" />
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>{t("concrete.fields.code")}</TableHead>
+                      <TableHead>{t("concrete.fields.element")}</TableHead>
+                      <TableHead>{t("common.date")}</TableHead>
+                      <TableHead>{t("concrete.fields.class")}</TableHead>
+                      <TableHead>Slump</TableHead>
+                      <TableHead>{t("concrete.fields.specimens")}</TableHead>
+                      <TableHead>{t("concrete.fields.result")}</TableHead>
+                      <TableHead className="w-10" />
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filtered.map((b) => (
+                      <TableRow key={b.id} className="cursor-pointer hover:bg-muted/30" onClick={() => setDetailId(b.id)}>
+                        <TableCell className="font-mono text-xs font-semibold">{b.code}</TableCell>
+                        <TableCell className="max-w-[200px] truncate">{b.element_betonado}</TableCell>
+                        <TableCell className="text-xs">{new Date(b.batch_date).toLocaleDateString()}</TableCell>
+                        <TableCell><Badge variant="outline">{b.concrete_class}</Badge></TableCell>
+                        <TableCell>
+                          {b.slump_mm != null ? (
+                            <span className={cn("text-xs font-medium", b.slump_pass ? "text-emerald-600" : "text-destructive")}>
+                              {b.slump_mm} mm
+                            </span>
+                          ) : "—"}
+                        </TableCell>
+                        <TableCell className="text-xs">{b.specimens_tested}/{b.specimen_count}</TableCell>
+                        <TableCell><ResultBadge result={b.overall_result} /></TableCell>
+                        <TableCell onClick={(e) => e.stopPropagation()}>
+                          <RowActionMenu actions={[
+                            { key: "view", label: t("common.view"), icon: Eye, onClick: () => setDetailId(b.id) },
+                            { key: "pdf", label: t("common.exportPdf"), icon: FileDown, onClick: () => handleExport(b) },
+                            { key: "delete", label: t("common.delete"), icon: Trash2, onClick: () => handleDelete(b.id), variant: "destructive" as const },
+                          ]} />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="lots" className="mt-5">
+          {activeProject && (
+            <LotsTab
+              projectId={activeProject.id}
+              batches={batches}
+              onRefreshBatches={fetchBatches}
+            />
+          )}
+        </TabsContent>
+      </Tabs>
+
+      {/* ────── Create Batch Dialog ────── */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
@@ -427,7 +764,7 @@ export default function ConcretePage() {
                 <div><Label>Matrícula</Label><Input value={form.truck_plate} onChange={(e) => setForm((f) => ({ ...f, truck_plate: e.target.value }))} /></div>
                 <div><Label>Central / Lab</Label><Input value={form.lab_name} onChange={(e) => setForm((f) => ({ ...f, lab_name: e.target.value }))} /></div>
               </div>
-              {/* New fields: EXC, FAB, exposure, MQT */}
+              {/* EXC, FAB, exposure, MQT */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <div className="flex items-center gap-1.5">
@@ -559,13 +896,7 @@ export default function ConcretePage() {
                         </Select>
                       </TableCell>
                       <TableCell>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7"
-                          onClick={() => removeSpecimen(idx)}
-                          disabled={form.specimens.length <= 1}
-                        >
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => removeSpecimen(idx)} disabled={form.specimens.length <= 1}>
                           <X className="h-3.5 w-3.5 text-muted-foreground" />
                         </Button>
                       </TableCell>
@@ -642,20 +973,10 @@ export default function ConcretePage() {
                         <TableCell className="text-xs">{s.mold_date}</TableCell>
                         <TableCell>{s.cure_days}d</TableCell>
                         <TableCell>
-                          <Input
-                            type="date"
-                            defaultValue={s.test_date ?? ""}
-                            onBlur={(e) => handleSpecimenBlur(s, "test_date", e.target.value)}
-                            className="h-7 w-32 text-xs"
-                          />
+                          <Input type="date" defaultValue={s.test_date ?? ""} onBlur={(e) => handleSpecimenBlur(s, "test_date", e.target.value)} className="h-7 w-32 text-xs" />
                         </TableCell>
                         <TableCell>
-                          <Input
-                            type="number"
-                            defaultValue={s.break_load_kn ?? ""}
-                            onBlur={(e) => handleSpecimenBlur(s, "break_load_kn", e.target.value)}
-                            className="h-7 w-20 text-xs"
-                          />
+                          <Input type="number" defaultValue={s.break_load_kn ?? ""} onBlur={(e) => handleSpecimenBlur(s, "break_load_kn", e.target.value)} className="h-7 w-20 text-xs" />
                         </TableCell>
                         <TableCell className="font-semibold">{s.strength_mpa ?? "—"}</TableCell>
                         <TableCell>
@@ -665,13 +986,7 @@ export default function ConcretePage() {
                           </Select>
                         </TableCell>
                         <TableCell>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-7 w-7"
-                            onClick={() => handleDeleteDetailSpecimen(s.id)}
-                            disabled={detailData.specimens.length <= 1}
-                          >
+                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleDeleteDetailSpecimen(s.id)} disabled={detailData.specimens.length <= 1}>
                             <X className="h-3.5 w-3.5 text-muted-foreground" />
                           </Button>
                         </TableCell>
