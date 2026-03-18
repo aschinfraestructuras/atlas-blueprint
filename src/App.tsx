@@ -68,6 +68,8 @@ const WeldPage = lazy(() => import("./pages/WeldPage"));
 const OrgChartPage = lazy(() => import("./pages/OrgChartPage"));
 const TestSchedulePage = lazy(() => import("./pages/TestSchedulePage"));
 const TraceabilityMatrixPage = lazy(() => import("./pages/TraceabilityMatrixPage"));
+const ActionPlanPage = lazy(() => import("./pages/ActionPlanPage"));
+const SubmittalsPage = lazy(() => import("./pages/SubmittalsPage"));
 
 function ProtectedLayout({ children }: { children: React.ReactNode }) {
   return (

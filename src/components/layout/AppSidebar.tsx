@@ -83,6 +83,7 @@ const NAV_SECTIONS: SidebarSection[] = [
     collapsible: true,
     items: [
       { labelKey: "nav.documents",       url: "/documents",        icon: FileText },
+      { labelKey: "nav.submittals",      url: "/submittals",       icon: FileCheck },
       { labelKey: "nav.technicalOffice", url: "/technical-office", icon: Inbox },
       { labelKey: "nav.plans",           url: "/plans",            icon: BookOpen },
       { labelKey: "nav.dfo",             url: "/dfo",              icon: FolderKanban },
