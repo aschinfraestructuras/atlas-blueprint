@@ -1945,6 +1945,7 @@ export type Database = {
         Row: {
           accreditation_body: string | null
           accreditation_code: string | null
+          accreditation_valid_until: string | null
           contact_email: string | null
           contact_name: string | null
           contact_phone: string | null
@@ -1962,6 +1963,7 @@ export type Database = {
         Insert: {
           accreditation_body?: string | null
           accreditation_code?: string | null
+          accreditation_valid_until?: string | null
           contact_email?: string | null
           contact_name?: string | null
           contact_phone?: string | null
@@ -1979,6 +1981,7 @@ export type Database = {
         Update: {
           accreditation_body?: string | null
           accreditation_code?: string | null
+          accreditation_valid_until?: string | null
           contact_email?: string | null
           contact_name?: string | null
           contact_phone?: string | null
