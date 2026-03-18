@@ -7,6 +7,7 @@ import {
   Pencil, Calendar, MapPin, ClipboardCheck, Plus, Eye, FileDown, FileText, Loader2,
   CheckCircle2, XCircle, Clock, Crosshair, Target, Map, ListTodo,
   ShieldCheck, ShieldAlert, Copy, Package, Trash2,
+  Layers, Flame, Mountain,
 } from "lucide-react";
 import {
   exportWorkItemTestsPdf,
@@ -16,6 +17,9 @@ import { workItemService, formatPk, type WorkItem } from "@/lib/services/workIte
 import { ppiService, type PpiInstanceStatus } from "@/lib/services/ppiService";
 import { exportWorkItemConsolidatedPdf, type WorkItemForExport, type ConsolidatedExportData } from "@/lib/services/workItemExportService";
 import { testService, type TestResult } from "@/lib/services/testService";
+import { concreteService, computeBatchResult, type ConcreteBatch } from "@/lib/services/concreteService";
+import { weldService, type WeldRecord } from "@/lib/services/weldService";
+import { soilService, type SoilSample } from "@/lib/services/soilService";
 import { WorkItemFormDialog } from "@/components/work-items/WorkItemFormDialog";
 import { WorkItemReportPreview } from "@/components/work-items/WorkItemReportPreview";
 import type { WorkItemReportData } from "@/components/work-items/WorkItemReportPreview";
