@@ -2867,7 +2867,8 @@
         "ncs": "No Conformidades",
         "workItems": "Aplicación en Obra",
         "audit": "Auditoría",
-        "reception": "Recepción"
+        "reception": "Recepción",
+        "dossier": "Dosier Técnico"
       },
       "noSuppliers": "Sin proveedores asociados.",
       "noTests": "Sin ensayos registrados.",
