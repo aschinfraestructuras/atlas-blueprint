@@ -24,7 +24,8 @@ export function exportSubcontractorDetailPdf(
   sub: Subcontractor,
   docs: Array<{ title: string; doc_type: string; valid_from?: string | null; valid_to?: string | null; status: string; computedStatus?: string }>,
   activities: Array<{ description: string; status: string; zone?: string | null; progress_pct?: number }>,
-  meta: ReportMeta
+  meta: ReportMeta,
+  logoBase64?: string | null,
 ) {
   const l = {
     ...labels(meta.locale),
