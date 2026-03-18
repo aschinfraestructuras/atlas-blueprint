@@ -1408,6 +1408,20 @@ export default function WorkItemDetailPage() {
           <WorkItemTopoTab workItemId={item.id} projectId={activeProject?.id ?? ""} />
         </TabsContent>
 
+        {/* Concrete tab */}
+        <TabsContent value="concrete" className="mt-4">
+          <WorkItemConcreteTab workItemId={item.id} projectId={activeProject?.id ?? ""} />
+        </TabsContent>
+
+        {/* Welds tab */}
+        <TabsContent value="welds" className="mt-4">
+          <WorkItemWeldTab workItemId={item.id} />
+        </TabsContent>
+
+        {/* Soils tab */}
+        <TabsContent value="soils" className="mt-4">
+          <WorkItemSoilTab workItemId={item.id} />
+
         {/* Attachments tab */}
         <TabsContent value="attachments" className="mt-4">
           <AttachmentsPanel
