@@ -357,12 +357,13 @@ export async function exportNCWorkItemSummaryPdf(
   labels: NCExportLabels,
   projectName: string,
   workItemSector: string,
+  logoBase64?: string | null,
 ): Promise<void> {
   if (ncs.length === 0) return;
 
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
   let totalPages = 1;
-  drawPageFrame(doc, 1, totalPages, projectName, labels);
+  drawPageFrame(doc, 1, totalPages, projectName, labels, logoBase64);
 
   let y = 24;
 

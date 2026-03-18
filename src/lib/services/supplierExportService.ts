@@ -14,7 +14,7 @@ interface ExportData {
 }
 
 export function exportSupplierPdf(data: ExportData) {
-  const { supplier, metrics, docs, materials, ncs, projectName, projectCode, t } = data;
+  const { supplier, metrics, docs, materials, ncs, projectName, projectCode, t, logoBase64 } = data;
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
   const W = doc.internal.pageSize.getWidth();
   const margin = 15;
@@ -26,10 +26,16 @@ export function exportSupplierPdf(data: ExportData) {
   function drawHeader() {
     doc.setFillColor(15, 30, 55);
     doc.rect(0, 0, W, 12, "F");
+
+    let logoEndX = margin;
+    if (logoBase64) {
+      try { doc.addImage(logoBase64, "PNG", margin, 1, 10, 10); logoEndX = margin + 12; } catch { /* ignore */ }
+    }
+
     doc.setFont("helvetica", "bold");
     doc.setFontSize(8);
     doc.setTextColor(255, 255, 255);
-    doc.text("ATLAS QMS", margin, 8);
+    doc.text("ATLAS QMS", logoEndX, 8);
     doc.setFontSize(7);
     doc.text(t("suppliers.export.reportTitle", { defaultValue: "Ficha de Fornecedor" }), W - margin, 8, { align: "right" });
     y = 18;
