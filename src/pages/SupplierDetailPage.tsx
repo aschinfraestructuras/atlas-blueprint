@@ -12,6 +12,7 @@ import {
   type SupplierEvaluation,
 } from "@/lib/services/supplierService";
 import { exportSupplierPdf } from "@/lib/services/supplierExportService";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, Truck, FileText, Package, FlaskConical, AlertTriangle, History, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
