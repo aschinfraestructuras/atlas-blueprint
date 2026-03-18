@@ -145,7 +145,7 @@ export default function TechOfficeDetailPage() {
   };
 
   const handleExportPdf = () => {
-    exportTechOfficeDetailPdf(item, messages, meta);
+    exportTechOfficeDetailPdf(item, messages, meta, logoBase64);
   };
 
   const WORKFLOW_STATUSES = TECH_OFFICE_STATUSES.filter(s => s !== "cancelled");

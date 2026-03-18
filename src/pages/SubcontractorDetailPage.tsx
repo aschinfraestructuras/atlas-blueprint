@@ -299,7 +299,7 @@ export default function SubcontractorDetailPage() {
           </div>
         </div>
         <ReportExportMenu options={[
-          { label: "PDF", icon: "pdf", action: () => exportSubcontractorDetailPdf(sub, docsWithStatus, activities, meta) },
+          { label: "PDF", icon: "pdf", action: () => exportSubcontractorDetailPdf(sub, docsWithStatus, activities, meta, logoBase64) },
         ]} />
       </div>
 
