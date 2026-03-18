@@ -82,6 +82,7 @@ function HPPendingAlert({ projectId }: { projectId: string }) {
 
 // ── Monthly Report Deadline Alert ─────────────────────────────────
 function MonthlyReportAlert({ projectId }: { projectId: string }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [show, setShow] = useState<{ overdue: boolean; days: number; deadline: Date } | null>(null);
 
