@@ -3838,5 +3838,44 @@
       "preheat": "Pré-aquecimento", "visual": "Inspecção visual", "alignment": "Desalinhamento (mm)",
       "ut": "Ensaio Ultrassónico (UT)", "hardness": "Dureza (HV)"
     }
+  },
+  "traceability": {
+    "title": "Matriz de Rastreabilidade",
+    "subtitle": "Vista integrada: Fornecedor → Material → Lote → Ensaio → PPI → Atividade",
+    "searchPlaceholder": "Pesquisar material, fornecedor, lote…",
+    "empty": "Sem dados de rastreabilidade para este projeto.",
+    "kpi": {
+      "materials": "Materiais",
+      "withLot": "Com Lote",
+      "withTest": "Com Ensaio",
+      "withPPI": "Com PPI",
+      "fullyTraced": "Totalmente Rastreados"
+    },
+    "col": {
+      "material": "Material",
+      "pame": "PAME",
+      "supplier": "Fornecedor",
+      "lot": "Lote",
+      "lotStatus": "Receção",
+      "ce": "CE",
+      "test": "Ensaio",
+      "testResult": "Resultado",
+      "ppi": "PPI",
+      "workItem": "Atividade"
+    }
+  },
+  "meetingActions": {
+    "title": "Ações de Reuniões (ATA-Q)",
+    "col": {
+      "ata": "Ata",
+      "date": "Data",
+      "action": "Ação",
+      "responsible": "Responsável",
+      "dueDate": "Prazo"
+    },
+    "createDeadline": "Criar prazo",
+    "created": "Criado",
+    "deadlineCreated": "Prazo criado com sucesso a partir da ação da ata.",
+    "deadlineError": "Erro ao criar prazo. Tente novamente."
   }
 }
