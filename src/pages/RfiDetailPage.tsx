@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useProject } from "@/contexts/ProjectContext";
 import { useReportMeta } from "@/hooks/useReportMeta";
 import { useProjectRole } from "@/hooks/useProjectRole";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { useWorkItems } from "@/hooks/useWorkItems";
 import { rfiService, type Rfi, type RfiMessage } from "@/lib/services/rfiService";
 import { useRfiMessages } from "@/hooks/useRfis";
