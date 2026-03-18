@@ -236,7 +236,7 @@ export default function MaterialDetailPage() {
           <ReportExportMenu options={[{ label: "PDF", icon: "pdf" as const, action: handleExportPdf }]} />
           {/* FAV Export */}
           {material.pame_code && (
-            <Button size="sm" variant="outline" className="gap-1.5" onClick={() => exportFavPdf(material, ncs, activeProject.name, activeProject.code)}>
+            <Button size="sm" variant="outline" className="gap-1.5" onClick={() => exportFavPdf(material, ncs, activeProject.name, activeProject.code, logoBase64)}>
               <FileDown className="h-3.5 w-3.5" />
               {t("materials.fav.exportFav", { defaultValue: "Exportar FAV" })}
             </Button>
