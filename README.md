@@ -86,6 +86,38 @@ O sistema cobre ou prevê os seguintes domínios funcionais:
 
 ---
 
+## Quick Start (desenvolvimento local)
+
+```bash
+# 1. Clonar e instalar
+git clone <repo-url>
+cd atlas-blueprint
+npm install
+
+# 2. Configurar variáveis de ambiente
+cp .env.example .env
+# Preencher .env com as credenciais do projeto Supabase
+
+# 3. Desenvolvimento
+npm run dev          # Servidor local (Vite)
+npm run lint         # ESLint
+npm run typecheck    # Verificação de tipos TypeScript
+npm run test         # Testes (Vitest)
+npm run build        # Build de produção
+```
+
+### Variáveis de ambiente
+
+| Variável | Descrição |
+| --- | --- |
+| `VITE_SUPABASE_PROJECT_ID` | ID do projeto Supabase |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | Chave anon/publishable do Supabase |
+| `VITE_SUPABASE_URL` | URL da API Supabase |
+
+Ver `.env.example` para referência completa.
+
+---
+
 ## Estrutura do Repositório
 
 ```text
@@ -106,65 +138,35 @@ O sistema cobre ou prevê os seguintes domínios funcionais:
 │   ├── functions/         # Edge Functions
 │   └── config.toml        # Configuração Supabase
 └── ...
+```
+
+---
+
+## Estado do Projeto
 
 O projeto encontra-se em evolução contínua, com uma base funcional alargada e documentação técnica estruturada.
 
-Trata-se de uma base aplicacional já organizada e operacional, embora existam ainda áreas em consolidação, nomeadamente:
+Áreas em consolidação:
 
-otimização de políticas RLS
+- Otimização de políticas RLS
+- Performance de queries e índices
+- Uniformização transversal entre módulos
+- Reforço do audit trail
+- Redução de dívida técnica
 
-performance de queries e índices
+## Roadmap Técnico
 
-uniformização transversal entre módulos
+- Consolidação de permissões e políticas RLS
+- Otimização de índices e performance SQL
+- Reforço da auditoria automática
+- Melhoria dos dashboards operacionais
+- Workflows de aprovação e validação
+- Reforço da consistência funcional e técnica entre módulos
 
-reforço do audit trail
+## Contribuição
 
-redução de dívida técnica
+Ver [CONTRIBUTING.md](./CONTRIBUTING.md).
 
-melhoria da documentação pública do repositório
+## Licença
 
-Roadmap Técnico
-
-Linhas de evolução prioritárias:
-
-consolidação de permissões e políticas RLS
-
-otimização de índices e performance SQL
-
-reforço da auditoria automática
-
-melhoria dos dashboards operacionais
-
-workflows de aprovação e validação
-
-reforço da consistência funcional e técnica entre módulos
-
-Contribuição
-
-Este repositório suporta a evolução do ecossistema ATLAS.
-
-Antes de introduzir alterações estruturais relevantes, recomenda-se:
-
-rever a documentação existente em docs/
-
-validar impacto no modelo de dados
-
-confirmar impacto em permissões, RLS e auditoria
-
-manter coerência com os princípios funcionais e arquiteturais do sistema
-
-Licença
-
-Definir de acordo com o enquadramento pretendido para o projeto.
-
-Exemplos possíveis:
-
-Proprietary
-
-Internal Use Only
-
-MIT
-
-Apache-2.0
-
-Até definição formal, recomenda-se não assumir utilização livre por terceiros.
+Ver [LICENSE](./LICENSE).
