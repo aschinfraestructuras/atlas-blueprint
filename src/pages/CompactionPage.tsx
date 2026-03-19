@@ -46,6 +46,7 @@ export default function CompactionPage() {
   const [detailId, setDetailId] = useState<string | null>(null);
   const [detailData, setDetailData] = useState<{ zone: CompactionZone; nuclear: NuclearPoint[]; plates: PlateTest[] } | null>(null);
   const [saving, setSaving] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [filterResult, setFilterResult] = useState("all");
 
   // Linked concrete lots
