@@ -446,18 +446,18 @@ export default function PPIDetailPage() {
   return (
     <div className="space-y-6 max-w-5xl mx-auto animate-fade-in">
       {/* ── Back + Header ────────────────────────────────────────────── */}
-      <div className="flex items-start justify-between gap-4 flex-wrap">
-        <div className="flex items-start gap-3">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/ppi")} className="mt-0.5">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div className="flex items-start gap-3 min-w-0">
+          <Button variant="ghost" size="icon" onClick={() => navigate("/ppi")} className="mt-0.5 flex-shrink-0">
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <div>
+          <div className="min-w-0">
             <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground mb-1">
               {t("ppi.instances.detail.title")}
             </p>
             <h1 className="text-xl font-extrabold tracking-tight text-foreground flex items-center gap-2">
-              <ClipboardCheck className="h-5 w-5 text-muted-foreground" />
-              <span className="font-mono">{instance.code}</span>
+              <ClipboardCheck className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+              <span className="font-mono truncate">{instance.code}</span>
             </h1>
             <div className="flex items-center gap-2 mt-1.5 flex-wrap">
               <PPIStatusBadge status={instance.status} />
@@ -470,8 +470,8 @@ export default function PPIDetailPage() {
           </div>
         </div>
 
-        {/* Action buttons area */}
-        <div className="flex items-center gap-2 flex-wrap">
+        {/* Action buttons — scrollable on mobile */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 -mb-1 sm:pb-0 sm:mb-0 sm:flex-wrap flex-shrink-0">
           {/* Export */}
           {exportInst && (
             <PPIExportMenu instances={[exportInst]} projectName={activeProject?.name ?? ""} variant="single" />
@@ -480,9 +480,9 @@ export default function PPIDetailPage() {
           {!isReadOnly && items.length > 0 && (
             <>
               {dirtyItems.size > 0 && (
-                <Button variant="default" size="sm" onClick={handleBulkSave} disabled={bulkSaving} className="gap-1.5">
+                <Button variant="default" size="sm" onClick={handleBulkSave} disabled={bulkSaving} className="gap-1.5 flex-shrink-0">
                   {bulkSaving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
-                  {t("ppi.instances.detail.bulkSave")}
+                  <span className="hidden sm:inline">{t("ppi.instances.detail.bulkSave")}</span>
                   <Badge variant="secondary" className="ml-1 text-[10px] px-1.5 py-px">
                     {dirtyItems.size}
                   </Badge>
@@ -493,10 +493,11 @@ export default function PPIDetailPage() {
                 size="sm"
                 onClick={handleMarkAllOk}
                 disabled={bulkSaving || pendingCount === 0}
-                className="gap-1.5"
+                className="gap-1.5 flex-shrink-0"
               >
                 {bulkSaving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CheckCheck className="h-3.5 w-3.5" />}
-                {t("ppi.instances.detail.markAllOk")}
+                <span className="hidden sm:inline">{t("ppi.instances.detail.markAllOk")}</span>
+                <span className="sm:hidden">✓ OK</span>
               </Button>
             </>
           )}
@@ -508,7 +509,7 @@ export default function PPIDetailPage() {
               variant={tr.variant}
               size="sm"
               onClick={() => setPendingTransition(tr)}
-              className="gap-1.5"
+              className="gap-1.5 flex-shrink-0"
             >
               {tr.to === "approved" && <CheckCircle2 className="h-3.5 w-3.5" />}
               {tr.to === "rejected" && <XCircle className="h-3.5 w-3.5" />}
@@ -523,10 +524,10 @@ export default function PPIDetailPage() {
               variant="ghost"
               size="sm"
               onClick={() => setDeleteDialogOpen(true)}
-              className="gap-1.5 text-destructive hover:text-destructive hover:bg-destructive/10"
+              className="gap-1.5 text-destructive hover:text-destructive hover:bg-destructive/10 flex-shrink-0"
             >
               <Trash2 className="h-3.5 w-3.5" />
-              {t("ppi.instances.detail.deleteDraft", { defaultValue: "Eliminar rascunho" })}
+              <span className="hidden sm:inline">{t("ppi.instances.detail.deleteDraft", { defaultValue: "Eliminar rascunho" })}</span>
             </Button>
           )}
         </div>
