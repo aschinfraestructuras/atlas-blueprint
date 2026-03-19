@@ -344,6 +344,7 @@ export default function SoilPage() {
                     <TableCell onClick={(e) => e.stopPropagation()}>
                       <RowActionMenu actions={[
                         { key: "view", label: t("common.view"), icon: Eye, onClick: () => setDetailId(s.id) },
+                        { key: "edit", label: t("common.edit"), icon: Pencil, onClick: () => openEdit(s) },
                         { key: "pdf", label: t("common.exportPdf"), icon: FileDown, onClick: () => soilService.exportPdf(s, activeProject?.name ?? "PF17A", logoBase64) },
                         { key: "delete", label: t("common.delete"), icon: Trash2, onClick: () => handleDelete(s.id), variant: "destructive" as const },
                       ]} />
