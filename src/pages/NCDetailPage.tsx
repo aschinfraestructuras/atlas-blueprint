@@ -72,8 +72,8 @@ const ORIGIN_ICON: Record<string, typeof AlertTriangle> = {
 function InfoRow({ label, value, mono = false }: { label: string; value?: React.ReactNode; mono?: boolean }) {
   if (!value && value !== 0) return null;
   return (
-    <div className="flex items-start gap-3 py-2.5 border-b border-border/40 last:border-0">
-      <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground w-40 flex-shrink-0 mt-0.5">
+    <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-3 py-2.5 border-b border-border/40 last:border-0">
+      <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground sm:w-40 flex-shrink-0 sm:mt-0.5">
         {label}
       </span>
       <span className={cn("text-sm text-foreground flex-1", mono && "font-mono text-xs")}>
