@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
-  Gauge, Plus, FileDown, Trash2, Eye, CheckCircle2, XCircle, Clock, Loader2, AlertTriangle, Link2,
+  Gauge, Plus, FileDown, Trash2, Eye, Pencil, CheckCircle2, XCircle, Clock, Loader2, AlertTriangle, Link2,
 } from "lucide-react";
 import { compactionService, type CompactionZoneWithCounts, type CompactionZone, type NuclearPoint, type PlateTest } from "@/lib/services/compactionService";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
