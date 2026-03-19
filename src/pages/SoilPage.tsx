@@ -361,7 +361,7 @@ export default function SoilPage() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2"><Mountain className="h-5 w-5" /> {t("soils.newSample")}</DialogTitle>
+            <DialogTitle className="flex items-center gap-2"><Mountain className="h-5 w-5" /> {editingId ? t("common.edit") : t("soils.newSample")}</DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4">
