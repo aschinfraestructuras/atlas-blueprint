@@ -288,7 +288,7 @@ export default function SoilPage() {
         backLabel="Ensaios"
         module="Ensaios"
         icon={Mountain}
-        actions={<Button onClick={() => setDialogOpen(true)} className="gap-1.5"><Plus className="h-4 w-4" /> {t("soils.newSample")}</Button>}
+        actions={<Button onClick={() => { resetForm(); setDialogOpen(true); }} className="gap-1.5"><Plus className="h-4 w-4" /> {t("soils.newSample")}</Button>}
       />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
