@@ -57,6 +57,7 @@ export default function SoilPage() {
   const [detailId, setDetailId] = useState<string | null>(null);
   const [detailData, setDetailData] = useState<SoilSample | null>(null);
   const [saving, setSaving] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [filterResult, setFilterResult] = useState("all");
 
   const [form, setForm] = useState({
