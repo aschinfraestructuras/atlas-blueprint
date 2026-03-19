@@ -257,9 +257,9 @@ export default function WeldPage() {
       )}
 
       {/* Creation Dialog */}
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) { setEditingId(null); setForm(defaultForm); } }}>
         <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>Nova Soldadura</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{editingId ? "Editar Soldadura" : "Nova Soldadura"}</DialogTitle></DialogHeader>
           <Tabs defaultValue="id">
             <TabsList className="w-full">
               <TabsTrigger value="id">Identificação</TabsTrigger>
