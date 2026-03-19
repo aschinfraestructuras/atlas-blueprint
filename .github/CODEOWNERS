@@ -1,0 +1,10 @@
+# ─── ATLAS Blueprint — Code Owners ─────────────────────────────────────────────
+# Default: project leads review all changes
+*                       @atlas-leads
+
+# Database / migrations require explicit review
+supabase/               @atlas-leads
+docs/                   @atlas-leads
+
+# Edge functions
+supabase/functions/     @atlas-leads
