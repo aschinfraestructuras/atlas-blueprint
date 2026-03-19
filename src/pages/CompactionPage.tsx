@@ -282,6 +282,7 @@ export default function CompactionPage() {
                     <TableCell onClick={(e) => e.stopPropagation()}>
                       <RowActionMenu actions={[
                         { key: "view", label: t("common.view"), icon: Eye, onClick: () => setDetailId(z.id) },
+                        { key: "edit", label: t("common.edit"), icon: Pencil, onClick: () => openEdit(z) },
                         { key: "pdf", label: t("common.exportPdf"), icon: FileDown, onClick: () => {
                           compactionService.getById(z.id).then((d) => {
                             if (d) compactionService.exportPdf(d.zone, d.nuclear, d.plates, activeProject?.name ?? "PF17A", logoBase64);
