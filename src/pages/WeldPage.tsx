@@ -203,7 +203,7 @@ export default function WeldPage() {
             <SelectItem value="pending">{t("welding.result.pending")}</SelectItem>
           </SelectContent>
         </Select>
-        <Button size="sm" className="h-8 gap-1.5 ml-auto" onClick={() => setDialogOpen(true)}>
+        <Button size="sm" className="h-8 gap-1.5 ml-auto" onClick={() => { setEditingId(null); setForm(defaultForm); setDialogOpen(true); }}>
           <Plus className="h-3.5 w-3.5" />Nova Soldadura
         </Button>
       </FilterBar>
