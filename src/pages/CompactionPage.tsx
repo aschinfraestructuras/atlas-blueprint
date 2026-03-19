@@ -128,12 +128,39 @@ export default function CompactionPage() {
     ? ppis.filter((p) => (p as any).work_item_id === form.work_item_id)
     : ppis;
 
-  async function handleCreate() {
+  function resetForm() {
+    setForm({ work_item_id: "", ppi_instance_id: "", zone_description: "", pk_start: "", pk_end: "", layer_no: "", material_type: "", material_ref: "", test_date: new Date().toISOString().slice(0, 10), proctor_gamma_max: "", proctor_wopt: "", compaction_criteria: "95", ev2_criteria: "80", ev2_ev1_criteria: "2.2", technician_name: "", notes: "" });
+    setEditingId(null);
+  }
+
+  function openEdit(z: CompactionZoneWithCounts) {
+    setForm({
+      work_item_id: z.work_item_id ?? "",
+      ppi_instance_id: z.ppi_instance_id ?? "",
+      zone_description: z.zone_description,
+      pk_start: z.pk_start ?? "",
+      pk_end: z.pk_end ?? "",
+      layer_no: z.layer_no != null ? String(z.layer_no) : "",
+      material_type: z.material_type ?? "",
+      material_ref: z.material_ref ?? "",
+      test_date: z.test_date,
+      proctor_gamma_max: z.proctor_gamma_max != null ? String(z.proctor_gamma_max) : "",
+      proctor_wopt: z.proctor_wopt != null ? String(z.proctor_wopt) : "",
+      compaction_criteria: String(z.compaction_criteria ?? 95),
+      ev2_criteria: String(z.ev2_criteria ?? 80),
+      ev2_ev1_criteria: String(z.ev2_ev1_criteria ?? 2.2),
+      technician_name: z.technician_name ?? "",
+      notes: z.notes ?? "",
+    });
+    setEditingId(z.id);
+    setDialogOpen(true);
+  }
+
+  async function handleSave() {
     if (!activeProject || !form.zone_description.trim()) return;
     setSaving(true);
     try {
-      await compactionService.create({
-        project_id: activeProject.id,
+      const payload = {
         work_item_id: form.work_item_id || null,
         ppi_instance_id: form.ppi_instance_id || null,
         zone_description: form.zone_description,
@@ -150,10 +177,17 @@ export default function CompactionPage() {
         ev2_ev1_criteria: parseFloat(form.ev2_ev1_criteria) || 2.2,
         technician_name: form.technician_name || null,
         notes: form.notes || null,
-      });
+      };
+
+      if (editingId) {
+        await compactionService.updateZone(editingId, payload);
+      } else {
+        await compactionService.create({ ...payload, project_id: activeProject.id });
+      }
 
       toast({ title: t("common.save") });
       setDialogOpen(false);
+      resetForm();
       fetchZones();
     } catch (err: any) {
       toast({ title: "Erro", description: err.message, variant: "destructive" });
