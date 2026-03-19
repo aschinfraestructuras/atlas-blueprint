@@ -268,18 +268,18 @@ export default function NCDetailPage() {
     <div className="space-y-6 max-w-5xl mx-auto animate-fade-in">
 
       {/* ── Header ──────────────────────────────────────────────────────── */}
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex items-start gap-3">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/non-conformities")} className="mt-0.5">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div className="flex items-start gap-3 min-w-0">
+          <Button variant="ghost" size="icon" onClick={() => navigate("/non-conformities")} className="mt-0.5 flex-shrink-0">
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <div>
+          <div className="min-w-0">
             <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground mb-1">
               {t("pages.nonConformities.title")}
             </p>
             <h1 className="text-xl font-extrabold tracking-tight text-foreground flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-muted-foreground" />
-              {nc.code ?? nc.reference ?? nc.id.slice(0, 8)}
+              <AlertTriangle className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+              <span className="truncate">{nc.code ?? nc.reference ?? nc.id.slice(0, 8)}</span>
             </h1>
             <p className="text-sm text-muted-foreground mt-1 max-w-xl line-clamp-2">
               {nc.title ?? nc.description}
@@ -287,12 +287,12 @@ export default function NCDetailPage() {
           </div>
         </div>
 
-        {/* Actions */}
-        <div className="flex items-center gap-2 flex-shrink-0 flex-wrap">
+        {/* Actions — scrollable on mobile */}
+        <div className="flex items-center gap-2 flex-shrink-0 overflow-x-auto pb-1 -mb-1 sm:pb-0 sm:mb-0 sm:flex-wrap">
           {transitions.length > 0 && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button size="sm" variant="outline" disabled={transitioning} className="gap-1.5">
+                <Button size="sm" variant="outline" disabled={transitioning} className="gap-1.5 flex-shrink-0">
                   {transitioning ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ChevronDown className="h-3.5 w-3.5" />}
                   {t("nc.transitions.label")}
                 </Button>
@@ -313,22 +313,23 @@ export default function NCDetailPage() {
           <Button
             size="sm" variant="outline"
             onClick={() => handleExportPdf()}
-            className="gap-1.5"
+            className="gap-1.5 flex-shrink-0"
             disabled={exporting}
           >
             {exporting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FileDown className="h-3.5 w-3.5" />}
-            {t("common.exportPdf", { defaultValue: "Exportar PDF" })}
+            <span className="hidden sm:inline">{t("common.exportPdf", { defaultValue: "Exportar PDF" })}</span>
+            <span className="sm:hidden">PDF</span>
           </Button>
           {canEdit && (
-            <Button size="sm" variant="outline" onClick={() => setEditOpen(true)} className="gap-1.5">
+            <Button size="sm" variant="outline" onClick={() => setEditOpen(true)} className="gap-1.5 flex-shrink-0">
               <Pencil className="h-3.5 w-3.5" />
-              {t("common.edit")}
+              <span className="hidden sm:inline">{t("common.edit")}</span>
             </Button>
           )}
           {canDelete && (
-            <Button size="sm" variant="destructive" onClick={() => setDeleteDialogOpen(true)} className="gap-1.5">
+            <Button size="sm" variant="destructive" onClick={() => setDeleteDialogOpen(true)} className="gap-1.5 flex-shrink-0">
               <Trash2 className="h-3.5 w-3.5" />
-              {t("common.delete")}
+              <span className="hidden sm:inline">{t("common.delete")}</span>
             </Button>
           )}
         </div>
