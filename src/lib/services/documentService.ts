@@ -213,26 +213,35 @@ export const documentService = {
     return data as unknown as Document;
   },
 
-  /** Transition document status */
+  /** Transition document status — fetches real current status to prevent stale-state races */
   async changeStatus(
     id: string,
     projectId: string,
-    fromStatus: string,
+    _fromStatusHint: string,
     toStatus: DocumentStatus
   ): Promise<Document> {
-    const allowed = getDocumentTransitions(fromStatus);
+    // Defensive: always fetch the real current status from DB
+    const { data: current, error: fetchErr } = await supabase
+      .from("documents")
+      .select("status")
+      .eq("id", id)
+      .single();
+    if (fetchErr) throw new Error(`Falha ao verificar estado atual: ${fetchErr.message}`);
+
+    const realFromStatus = (current as { status: string }).status;
+    const allowed = getDocumentTransitions(realFromStatus);
     if (!allowed.includes(toStatus)) {
-      throw new Error(`Transição inválida: ${fromStatus} → ${toStatus}. Permitidas: ${allowed.join(", ")}`);
+      throw new Error(`Transição inválida: ${realFromStatus} → ${toStatus}. Permitidas: ${allowed.join(", ")}`);
     }
 
+    const userId = (await supabase.auth.getUser()).data.user?.id;
     const updatePayload: Record<string, unknown> = {
       status: toStatus,
-      updated_by: (await supabase.auth.getUser()).data.user?.id,
+      updated_by: userId,
     };
 
     if (toStatus === "approved") {
-      const user = (await supabase.auth.getUser()).data.user;
-      updatePayload.approved_by = user?.id;
+      updatePayload.approved_by = userId;
       updatePayload.approved_at = new Date().toISOString();
     }
 
@@ -250,8 +259,8 @@ export const documentService = {
       entityId: id,
       action: "STATUS_CHANGE",
       module: "documents",
-      description: `Document status: ${fromStatus} → ${toStatus}`,
-      diff: { from: fromStatus, to: toStatus },
+      description: `Document status: ${realFromStatus} → ${toStatus}`,
+      diff: { from: realFromStatus, to: toStatus },
     });
 
     return data as unknown as Document;

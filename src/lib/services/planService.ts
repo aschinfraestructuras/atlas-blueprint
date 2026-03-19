@@ -129,10 +129,19 @@ export const planService = {
     return data as Plan;
   },
 
-  async changeStatus(id: string, projectId: string, fromStatus: string, toStatus: string): Promise<Plan> {
-    const allowed = PLAN_STATUS_TRANSITIONS[fromStatus] ?? [];
+  async changeStatus(id: string, projectId: string, _fromStatusHint: string, toStatus: string): Promise<Plan> {
+    // Defensive: fetch real current status to prevent stale-state races
+    const { data: current, error: fetchErr } = await supabase
+      .from("plans")
+      .select("status")
+      .eq("id", id)
+      .single();
+    if (fetchErr) throw new Error(`Falha ao verificar estado atual: ${fetchErr.message}`);
+
+    const realFromStatus = (current as { status: string }).status;
+    const allowed = PLAN_STATUS_TRANSITIONS[realFromStatus] ?? [];
     if (!allowed.includes(toStatus)) {
-      throw new Error(`Transição inválida: ${fromStatus} → ${toStatus}`);
+      throw new Error(`Transição inválida: ${realFromStatus} → ${toStatus}`);
     }
     const { data, error } = await supabase
       .from("plans")
@@ -147,8 +156,8 @@ export const planService = {
       entityId: id,
       action: "STATUS_CHANGE",
       module: "plans",
-      description: `Plan status: ${fromStatus} → ${toStatus}`,
-      diff: { from: fromStatus, to: toStatus },
+      description: `Plan status: ${realFromStatus} → ${toStatus}`,
+      diff: { from: realFromStatus, to: toStatus },
     });
     return data as Plan;
   },

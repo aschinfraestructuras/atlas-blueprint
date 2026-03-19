@@ -127,6 +127,11 @@ export const attachmentService = {
     entityId: string,
     uploadedBy: string
   ): Promise<Attachment> {
+    // Defensive: prefer authenticated user; fall back to caller-provided ID
+    // TODO(tech-debt): remove uploadedBy param once all callers use auth context
+    const authUser = (await supabase.auth.getUser()).data.user;
+    const resolvedUser = authUser?.id ?? uploadedBy;
+
     const storagePath = buildAttachmentPath(projectId, entityType, entityId, file.name);
 
     // 1. Storage upload
@@ -152,8 +157,8 @@ export const attachmentService = {
         file_name: file.name,
         file_size: file.size,
         mime_type: file.type || null,
-        uploaded_by: uploadedBy,
-        created_by: uploadedBy,
+        uploaded_by: resolvedUser,
+        created_by: resolvedUser,
       })
       .select()
       .single();
