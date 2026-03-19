@@ -81,14 +81,14 @@ export default function WeldPage() {
 
   useEffect(() => { load(); }, [load]);
 
-  if (!activeProject) return <NoProjectBanner />;
-
   // US pending > 7 days banner
   const pendingUtCount = useMemo(() => {
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
     return records.filter(w => !w.has_ut && new Date(w.weld_date) < sevenDaysAgo).length;
   }, [records]);
+
+  if (!activeProject) return <NoProjectBanner />;
 
   const filtered = records.filter(r => {
     const q = search.toLowerCase();
