@@ -10,7 +10,9 @@ import { useRealtimeProject } from "@/hooks/useRealtimeProject";
 import {
   AlertTriangle, Package, Crosshair, CalendarClock,
   ClipboardCheck, FlaskConical, Clock, ArrowRight, Leaf, FileBarChart2, Bell,
+  Calendar,
 } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -150,15 +152,36 @@ export default function DashboardPage() {
   const { summary, ncMonthly, testsMonthly, loading: viewsLoading } = useDashboardViews();
   const { health, loading: healthLoading } = useProjectHealth(activeProject?.id);
 
+  // Period filter state
+  const [period, setPeriod] = useState<string>("all");
+
   // Realtime subscriptions
   const refetchAll = useCallback(() => { refetch(); }, [refetch]);
   useRealtimeProject("non_conformities", refetchAll);
   useRealtimeProject("materials", refetchAll);
   useRealtimeProject("ppi_instances", refetchAll);
 
+  // Filter monthly data by period
+  const filterByPeriod = useCallback(<T extends { month: string }>(data: T[]): T[] => {
+    if (period === "all") return data;
+    const now = new Date();
+    let cutoff: Date;
+    switch (period) {
+      case "3m": cutoff = new Date(now.getFullYear(), now.getMonth() - 3, 1); break;
+      case "6m": cutoff = new Date(now.getFullYear(), now.getMonth() - 6, 1); break;
+      case "12m": cutoff = new Date(now.getFullYear(), now.getMonth() - 12, 1); break;
+      case "ytd": cutoff = new Date(now.getFullYear(), 0, 1); break;
+      default: return data;
+    }
+    return data.filter(d => new Date(d.month) >= cutoff);
+  }, [period]);
+
+  const filteredNcMonthly = useMemo(() => filterByPeriod(ncMonthly), [ncMonthly, filterByPeriod]);
+  const filteredTestsMonthly = useMemo(() => filterByPeriod(testsMonthly), [testsMonthly, filterByPeriod]);
+
   // Sparkline data from monthly views
-  const ncSpark = useMemo(() => ncMonthly.slice(-6).map(m => ({ v: m.opened })), [ncMonthly]);
-  const testsSpark = useMemo(() => testsMonthly.slice(-6).map(m => ({ v: m.conform + m.non_conform })), [testsMonthly]);
+  const ncSpark = useMemo(() => filteredNcMonthly.slice(-6).map(m => ({ v: m.opened })), [filteredNcMonthly]);
+  const testsSpark = useMemo(() => filteredTestsMonthly.slice(-6).map(m => ({ v: m.conform + m.non_conform })), [filteredTestsMonthly]);
 
   const displayName = user?.email?.split("@")[0] ?? "—";
   const auditDays = daysUntilDate(kpis.nextAudit?.planned_start ?? null);
@@ -169,7 +192,7 @@ export default function DashboardPage() {
     <div className="space-y-5 max-w-[1180px] mx-auto">
 
       {/* ── Header ────────────────────────────────────────── */}
-      <div className="flex items-end justify-between gap-4 animate-fade-in" style={{ animationDelay: "0ms", animationFillMode: "both" }}>
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 animate-fade-in" style={{ animationDelay: "0ms", animationFillMode: "both" }}>
         <div className="space-y-0.5">
           <p className="text-[10px] font-extrabold uppercase tracking-[0.20em] text-muted-foreground/60">
             {t("dashboard.welcome")}
@@ -178,6 +201,23 @@ export default function DashboardPage() {
           <p className="text-xs text-muted-foreground">
             {t("dashboard.subtitleProject", { project: activeProject.name })}
           </p>
+        </div>
+
+        {/* Period filter */}
+        <div className="flex items-center gap-2">
+          <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
+          <Select value={period} onValueChange={setPeriod}>
+            <SelectTrigger className="h-8 w-[140px] text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t("dashboard.period.all", { defaultValue: "Todo o período" })}</SelectItem>
+              <SelectItem value="3m">{t("dashboard.period.3m", { defaultValue: "Últimos 3 meses" })}</SelectItem>
+              <SelectItem value="6m">{t("dashboard.period.6m", { defaultValue: "Últimos 6 meses" })}</SelectItem>
+              <SelectItem value="12m">{t("dashboard.period.12m", { defaultValue: "Últimos 12 meses" })}</SelectItem>
+              <SelectItem value="ytd">{t("dashboard.period.ytd", { defaultValue: "Ano corrente" })}</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
@@ -254,7 +294,7 @@ export default function DashboardPage() {
 
       {/* ══ ROW 3 — 3 Main Charts ═══════════════════════════ */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 animate-fade-in" style={{ animationDelay: "120ms", animationFillMode: "both" }}>
-        <NCTrendChart data={ncMonthly} loading={viewsLoading} />
+        <NCTrendChart data={filteredNcMonthly} loading={viewsLoading} />
         <WorkProgressChart />
         <PPIProgressChart />
       </div>
