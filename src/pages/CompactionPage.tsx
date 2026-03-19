@@ -214,7 +214,7 @@ export default function CompactionPage() {
         backLabel="Ensaios"
         module="Ensaios"
         icon={Gauge}
-        actions={<Button onClick={() => setDialogOpen(true)} className="gap-1.5"><Plus className="h-4 w-4" /> {t("compaction.newZone")}</Button>}
+        actions={<Button onClick={() => { resetForm(); setDialogOpen(true); }} className="gap-1.5"><Plus className="h-4 w-4" /> {t("compaction.newZone")}</Button>}
       />
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
