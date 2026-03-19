@@ -500,7 +500,7 @@ export default function SoilPage() {
 
           <DialogFooter className="mt-4">
             <DialogClose asChild><Button variant="outline">{t("common.cancel")}</Button></DialogClose>
-            <Button onClick={handleCreate} disabled={saving || !form.sample_ref.trim()}>
+            <Button onClick={handleSave} disabled={saving || !form.sample_ref.trim()}>
               {saving && <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />}
               {t("common.save")}
             </Button>
