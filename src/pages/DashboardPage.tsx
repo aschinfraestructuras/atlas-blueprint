@@ -294,7 +294,7 @@ export default function DashboardPage() {
 
       {/* ══ ROW 3 — 3 Main Charts ═══════════════════════════ */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 animate-fade-in" style={{ animationDelay: "120ms", animationFillMode: "both" }}>
-        <NCTrendChart data={ncMonthly} loading={viewsLoading} />
+        <NCTrendChart data={filteredNcMonthly} loading={viewsLoading} />
         <WorkProgressChart />
         <PPIProgressChart />
       </div>
