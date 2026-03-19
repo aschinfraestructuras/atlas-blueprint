@@ -823,42 +823,32 @@ export default function TestsPage() {
         </div>
       </div>
 
-      {/* Tabs — PRO tabs + specialized modules */}
+      {/* Tabs — core + control modules grouped */}
       <Tabs defaultValue="due">
-        <TabsList className="h-auto gap-1 p-1 flex-wrap sm:flex-nowrap sm:overflow-x-auto sm:justify-start">
-          <TabsTrigger value="due" className="gap-1.5">
-            <Clock className="h-3.5 w-3.5" />
-            {t("tests.tabs.due")}
-          </TabsTrigger>
-          <TabsTrigger value="results" className="gap-1.5">
-            <FlaskConical className="h-3.5 w-3.5" />
-            {t("tests.tabs.results")}
-          </TabsTrigger>
-          <TabsTrigger value="plan" className="gap-1.5">
-            <BookOpen className="h-3.5 w-3.5" />
-            {t("tests.tabs.plan")}
-          </TabsTrigger>
-          <TabsTrigger value="catalog" className="gap-1.5">
-            <BookOpen className="h-3.5 w-3.5" />
-            {t("tests.tabs.catalog")}
-          </TabsTrigger>
-          <TabsTrigger value="concrete" className="gap-1.5">
-            <Layers className="h-3.5 w-3.5" />
-            {t("nav.concrete")}
-          </TabsTrigger>
-          <TabsTrigger value="compaction" className="gap-1.5">
-            <Gauge className="h-3.5 w-3.5" />
-            {t("nav.compaction")}
-          </TabsTrigger>
-          <TabsTrigger value="soils" className="gap-1.5">
-            <Mountain className="h-3.5 w-3.5" />
-            {t("nav.soils")}
-          </TabsTrigger>
-          <TabsTrigger value="welding" className="gap-1.5">
-            <Flame className="h-3.5 w-3.5" />
-            {t("nav.welding")}
-          </TabsTrigger>
-        </TabsList>
+        <div className="overflow-x-auto -mx-1 px-1">
+          <TabsList className="h-auto gap-1 p-1 inline-flex w-max min-w-full sm:w-auto">
+            <TabsTrigger value="due" className="gap-1.5 text-xs sm:text-sm">
+              <Clock className="h-3.5 w-3.5 flex-shrink-0" />
+              <span className="truncate">{t("tests.tabs.due")}</span>
+            </TabsTrigger>
+            <TabsTrigger value="results" className="gap-1.5 text-xs sm:text-sm">
+              <FlaskConical className="h-3.5 w-3.5 flex-shrink-0" />
+              <span className="truncate">{t("tests.tabs.results")}</span>
+            </TabsTrigger>
+            <TabsTrigger value="plan" className="gap-1.5 text-xs sm:text-sm">
+              <BookOpen className="h-3.5 w-3.5 flex-shrink-0" />
+              <span className="truncate">{t("tests.tabs.plan")}</span>
+            </TabsTrigger>
+            <TabsTrigger value="catalog" className="gap-1.5 text-xs sm:text-sm">
+              <BookOpen className="h-3.5 w-3.5 flex-shrink-0" />
+              <span className="truncate">{t("tests.tabs.catalog")}</span>
+            </TabsTrigger>
+            <TabsTrigger value="controls" className="gap-1.5 text-xs sm:text-sm">
+              <Gauge className="h-3.5 w-3.5 flex-shrink-0" />
+              <span className="truncate">{t("tests.tabs.controls", "Controlo")}</span>
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="due" className="mt-5">
           <DueTab />
@@ -872,19 +862,46 @@ export default function TestsPage() {
         <TabsContent value="catalog" className="mt-5">
           <CatalogTab />
         </TabsContent>
-        <TabsContent value="concrete" className="mt-5">
-          <ConcreteTab projectId={activeProject?.id ?? ""} />
-        </TabsContent>
-        <TabsContent value="compaction" className="mt-5">
-          <CompactionTab projectId={activeProject?.id ?? ""} />
-        </TabsContent>
-        <TabsContent value="soils" className="mt-5">
-          <SoilsTab projectId={activeProject?.id ?? ""} />
-        </TabsContent>
-        <TabsContent value="welding" className="mt-5">
-          <WeldTab projectId={activeProject?.id ?? ""} />
+        <TabsContent value="controls" className="mt-5">
+          <ControlModulesTabs projectId={activeProject?.id ?? ""} />
         </TabsContent>
       </Tabs>
+    </div>
+  );
+}
+
+/* ─── Nested control-modules sub-tabs ──────────────────────────────────────── */
+
+function ControlModulesTabs({ projectId }: { projectId: string }) {
+  const { t } = useTranslation();
+  const [sub, setSub] = useState("concrete");
+
+  return (
+    <div className="space-y-4">
+      <div className="flex gap-2 flex-wrap">
+        {[
+          { value: "concrete", icon: Layers, label: t("nav.concrete") },
+          { value: "compaction", icon: Gauge, label: t("nav.compaction") },
+          { value: "soils", icon: Mountain, label: t("nav.soils") },
+          { value: "welding", icon: Flame, label: t("nav.welding") },
+        ].map(({ value, icon: Icon, label }) => (
+          <Button
+            key={value}
+            size="sm"
+            variant={sub === value ? "default" : "outline"}
+            onClick={() => setSub(value)}
+            className="gap-1.5"
+          >
+            <Icon className="h-3.5 w-3.5" />
+            {label}
+          </Button>
+        ))}
+      </div>
+
+      {sub === "concrete" && <ConcreteTab projectId={projectId} />}
+      {sub === "compaction" && <CompactionTab projectId={projectId} />}
+      {sub === "soils" && <SoilsTab projectId={projectId} />}
+      {sub === "welding" && <WeldTab projectId={projectId} />}
     </div>
   );
 }
