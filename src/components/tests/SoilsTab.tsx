@@ -60,19 +60,23 @@ export function SoilsTab({ projectId }: Props) {
               <TableHead className="text-xs font-semibold uppercase">{t("concrete.fields.result")}</TableHead>
             </TableRow></TableHeader>
             <TableBody>
-              {data.slice(0, 20).map(s => (
+              {data.slice(0, 20).map(s => {
+                const resultLabel = s.overall_result === "apto" ? "Apto" : s.overall_result === "inapto" ? "Inapto" : s.overall_result === "conditional" ? "Condicional" : "Pendente";
+                const resultClass = s.overall_result === "apto" ? "bg-primary/15 text-primary" : s.overall_result === "inapto" ? "bg-destructive/10 text-destructive" : s.overall_result === "conditional" ? "bg-amber-500/10 text-amber-600" : "bg-muted text-muted-foreground";
+                return (
                 <TableRow key={s.id} className="hover:bg-muted/20 cursor-pointer" onClick={() => navigate("/tests/soils")}>
                   <TableCell className="font-mono text-xs font-semibold">{s.code}</TableCell>
                   <TableCell className="text-xs">{s.sample_ref}</TableCell>
                   <TableCell className="text-xs">{s.pk_location ?? "—"}</TableCell>
                   <TableCell className="text-xs">{s.depth_from != null ? `${s.depth_from}–${s.depth_to ?? "?"}m` : "—"}</TableCell>
                   <TableCell>
-                    <Badge variant="secondary" className={s.overall_result === "apto" ? "bg-primary/15 text-primary" : s.overall_result === "inapto" ? "bg-destructive/10 text-destructive" : "bg-muted text-muted-foreground"}>
-                      {s.overall_result ?? "pending"}
+                    <Badge variant="secondary" className={resultClass}>
+                      {resultLabel}
                     </Badge>
                   </TableCell>
                 </TableRow>
-              ))}
+                );
+              })}
             </TableBody>
           </Table>
         </div>
