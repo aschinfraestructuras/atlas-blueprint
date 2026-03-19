@@ -384,26 +384,30 @@ export default function NCDetailPage() {
 
       {/* ── Tabs ─────────────────────────────────────────────────────────── */}
       <Tabs defaultValue="description">
-        <TabsList>
-          <TabsTrigger value="description" className="gap-1.5">
+        <TabsList className="w-full overflow-x-auto flex-nowrap justify-start sm:justify-center">
+          <TabsTrigger value="description" className="gap-1.5 flex-shrink-0">
             <FileText className="h-3.5 w-3.5" />
-            {t("nc.detail.tabs.description")}
+            <span className="hidden sm:inline">{t("nc.detail.tabs.description")}</span>
+            <span className="sm:hidden">Info</span>
           </TabsTrigger>
-          <TabsTrigger value="capa" className="gap-1.5">
+          <TabsTrigger value="capa" className="gap-1.5 flex-shrink-0">
             <Shield className="h-3.5 w-3.5" />
-            {t("nc.detail.tabs.capa")}
+            CAPA
           </TabsTrigger>
-          <TabsTrigger value="documents" className="gap-1.5">
+          <TabsTrigger value="documents" className="gap-1.5 flex-shrink-0">
             <FileText className="h-3.5 w-3.5" />
-            {t("documents.linkedPanel.title")}
+            <span className="hidden sm:inline">{t("documents.linkedPanel.title")}</span>
+            <span className="sm:hidden">Docs</span>
           </TabsTrigger>
-          <TabsTrigger value="attachments" className="gap-1.5">
+          <TabsTrigger value="attachments" className="gap-1.5 flex-shrink-0">
             <ClipboardList className="h-3.5 w-3.5" />
-            {t("nc.detail.tabs.attachments")}
+            <span className="hidden sm:inline">{t("nc.detail.tabs.attachments")}</span>
+            <span className="sm:hidden">Anexos</span>
           </TabsTrigger>
-          <TabsTrigger value="history" className="gap-1.5">
+          <TabsTrigger value="history" className="gap-1.5 flex-shrink-0">
             <Clock className="h-3.5 w-3.5" />
-            {t("nc.detail.tabs.history")}
+            <span className="hidden sm:inline">{t("nc.detail.tabs.history")}</span>
+            <span className="sm:hidden">Hist.</span>
           </TabsTrigger>
         </TabsList>
 

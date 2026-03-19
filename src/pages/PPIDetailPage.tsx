@@ -703,16 +703,17 @@ export default function PPIDetailPage() {
 
       {/* ── Tabs: Checklist / NOT-HP / Attachments ────────────────────── */}
       <Tabs defaultValue="checklist">
-        <TabsList>
-          <TabsTrigger value="checklist" className="gap-1.5">
+        <TabsList className="w-full overflow-x-auto flex-nowrap justify-start sm:justify-center">
+          <TabsTrigger value="checklist" className="gap-1.5 flex-shrink-0">
             <ClipboardCheck className="h-3.5 w-3.5" />
-            {t("ppi.instances.detail.checklistTitle")}
+            <span className="hidden sm:inline">{t("ppi.instances.detail.checklistTitle")}</span>
+            <span className="sm:hidden">Check</span>
             <span className="ml-1 rounded-full bg-primary/10 px-1.5 py-px text-[10px] font-bold text-primary">
               {items.length}
             </span>
           </TabsTrigger>
           {hasHpItems && (
-            <TabsTrigger value="not-hp" className="gap-1.5">
+            <TabsTrigger value="not-hp" className="gap-1.5 flex-shrink-0">
               <Bell className="h-3.5 w-3.5" />
               NOT-HP
               {hpPendingResult > 0 && (
@@ -722,18 +723,23 @@ export default function PPIDetailPage() {
               )}
             </TabsTrigger>
           )}
-          <TabsTrigger value="field-records" className="gap-1.5">
+          <TabsTrigger value="field-records" className="gap-1.5 flex-shrink-0">
             <FileText className="h-3.5 w-3.5" />
             GRs
           </TabsTrigger>
-          <TabsTrigger value="tests" className="gap-1.5">
+          <TabsTrigger value="tests" className="gap-1.5 flex-shrink-0">
             <FlaskConical className="h-3.5 w-3.5" />
-            {t("ppi.tabs.tests")}
+            <span className="hidden sm:inline">{t("ppi.tabs.tests")}</span>
+            <span className="sm:hidden">Ens.</span>
           </TabsTrigger>
-          <TabsTrigger value="attachments">{t("ppi.templates.items.evidenceRequired")}</TabsTrigger>
-          <TabsTrigger value="documents" className="gap-1.5">
+          <TabsTrigger value="attachments" className="flex-shrink-0">
+            <span className="hidden sm:inline">{t("ppi.templates.items.evidenceRequired")}</span>
+            <span className="sm:hidden">Anexos</span>
+          </TabsTrigger>
+          <TabsTrigger value="documents" className="gap-1.5 flex-shrink-0">
             <FileText className="h-3.5 w-3.5" />
-            {t("documents.linkedPanel.title")}
+            <span className="hidden sm:inline">{t("documents.linkedPanel.title")}</span>
+            <span className="sm:hidden">Docs</span>
           </TabsTrigger>
         </TabsList>
 
