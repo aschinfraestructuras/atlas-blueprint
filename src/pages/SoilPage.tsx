@@ -110,7 +110,55 @@ export default function SoilPage() {
   const conditionalCount = samples.filter((s) => s.overall_result === "conditional").length;
   const inaptoCount = samples.filter((s) => s.overall_result === "inapto").length;
 
-  async function handleCreate() {
+  function resetForm() {
+    setForm({ work_item_id: "", sample_ref: "", pk_location: "", depth_from: "", depth_to: "", sample_date: new Date().toISOString().slice(0, 10), material_type: "", has_grading: false, grading_p0075: "", grading_p0425: "", grading_p2: "", grading_p10: "", grading_p20: "", grading_p50: "", grading_d10: "", grading_d30: "", grading_d60: "", has_atterberg: false, ll_pct: "", lp_pct: "", has_proctor: false, proctor_gamma_max: "", proctor_wopt: "", has_cbr: false, cbr_95: "", cbr_98: "", cbr_expansion: "", cbr_criteria: "", has_organic: false, organic_pct: "", organic_limit: "2.0", has_sulfates: false, sulfate_pct: "", chloride_pct: "", sulfate_limit: "0.5", notes: "" });
+    setEditingId(null);
+  }
+
+  function openEdit(s: SoilSample) {
+    setForm({
+      work_item_id: s.work_item_id ?? "",
+      sample_ref: s.sample_ref,
+      pk_location: s.pk_location ?? "",
+      depth_from: s.depth_from != null ? String(s.depth_from) : "",
+      depth_to: s.depth_to != null ? String(s.depth_to) : "",
+      sample_date: s.sample_date,
+      material_type: s.material_type ?? "",
+      has_grading: s.has_grading,
+      grading_p0075: s.grading_p0075 != null ? String(s.grading_p0075) : "",
+      grading_p0425: s.grading_p0425 != null ? String(s.grading_p0425) : "",
+      grading_p2: s.grading_p2 != null ? String(s.grading_p2) : "",
+      grading_p10: s.grading_p10 != null ? String(s.grading_p10) : "",
+      grading_p20: s.grading_p20 != null ? String(s.grading_p20) : "",
+      grading_p50: s.grading_p50 != null ? String(s.grading_p50) : "",
+      grading_d10: s.grading_d10 != null ? String(s.grading_d10) : "",
+      grading_d30: s.grading_d30 != null ? String(s.grading_d30) : "",
+      grading_d60: s.grading_d60 != null ? String(s.grading_d60) : "",
+      has_atterberg: s.has_atterberg,
+      ll_pct: s.ll_pct != null ? String(s.ll_pct) : "",
+      lp_pct: s.lp_pct != null ? String(s.lp_pct) : "",
+      has_proctor: s.has_proctor,
+      proctor_gamma_max: s.proctor_gamma_max != null ? String(s.proctor_gamma_max) : "",
+      proctor_wopt: s.proctor_wopt != null ? String(s.proctor_wopt) : "",
+      has_cbr: s.has_cbr,
+      cbr_95: s.cbr_95 != null ? String(s.cbr_95) : "",
+      cbr_98: s.cbr_98 != null ? String(s.cbr_98) : "",
+      cbr_expansion: s.cbr_expansion != null ? String(s.cbr_expansion) : "",
+      cbr_criteria: s.cbr_criteria != null ? String(s.cbr_criteria) : "",
+      has_organic: s.has_organic,
+      organic_pct: s.organic_pct != null ? String(s.organic_pct) : "",
+      organic_limit: s.organic_limit != null ? String(s.organic_limit) : "2.0",
+      has_sulfates: s.has_sulfates,
+      sulfate_pct: s.sulfate_pct != null ? String(s.sulfate_pct) : "",
+      chloride_pct: s.chloride_pct != null ? String(s.chloride_pct) : "",
+      sulfate_limit: s.sulfate_limit != null ? String(s.sulfate_limit) : "0.5",
+      notes: s.notes ?? "",
+    });
+    setEditingId(s.id);
+    setDialogOpen(true);
+  }
+
+  async function handleSave() {
     if (!activeProject || !form.sample_ref.trim()) return;
 
     // PK validation
@@ -190,9 +238,15 @@ export default function SoilPage() {
 
       input.overall_result = computeOverallResult(input as any);
 
-      await soilService.create(input);
+      if (editingId) {
+        const { project_id, ...updateData } = input;
+        await soilService.update(editingId, updateData as any);
+      } else {
+        await soilService.create(input);
+      }
       toast({ title: t("common.save") });
       setDialogOpen(false);
+      resetForm();
       fetchSamples();
     } catch (err: any) {
       toast({ title: "Erro", description: err.message, variant: "destructive" });
