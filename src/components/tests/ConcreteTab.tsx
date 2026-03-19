@@ -60,19 +60,24 @@ export function ConcreteTab({ projectId }: Props) {
               <TableHead className="text-xs font-semibold uppercase">{t("concrete.fields.result")}</TableHead>
             </TableRow></TableHeader>
             <TableBody>
-              {data.slice(0, 20).map(b => (
+              {data.slice(0, 20).map(b => {
+                const result = (b as any).overall_result ?? b.status;
+                const resultLabel = result === "pass" ? "Conforme" : result === "fail" ? "Não Conforme" : result === "approved" ? "Conforme" : result === "rejected" ? "Não Conforme" : "Pendente";
+                const resultClass = result === "pass" || result === "approved" ? "bg-primary/15 text-primary" : result === "fail" || result === "rejected" ? "bg-destructive/10 text-destructive" : "bg-muted text-muted-foreground";
+                return (
                 <TableRow key={b.id} className="hover:bg-muted/20 cursor-pointer" onClick={() => navigate("/tests/concrete")}>
                   <TableCell className="font-mono text-xs font-semibold">{b.code}</TableCell>
                   <TableCell className="text-xs">{b.batch_date}</TableCell>
                   <TableCell className="text-sm max-w-[200px] truncate">{b.element_betonado}</TableCell>
                   <TableCell className="text-xs font-mono">{b.concrete_class}</TableCell>
                   <TableCell>
-                    <Badge variant="secondary" className={b.status === "approved" ? "bg-primary/15 text-primary" : b.status === "rejected" ? "bg-destructive/10 text-destructive" : "bg-muted text-muted-foreground"}>
-                      {b.status}
+                    <Badge variant="secondary" className={resultClass}>
+                      {resultLabel}
                     </Badge>
                   </TableCell>
                 </TableRow>
-              ))}
+                );
+              })}
             </TableBody>
           </Table>
         </div>

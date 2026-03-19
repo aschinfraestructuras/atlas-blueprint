@@ -825,7 +825,7 @@ export default function TestsPage() {
 
       {/* Tabs — PRO tabs + specialized modules */}
       <Tabs defaultValue="due">
-        <TabsList className="flex-wrap">
+        <TabsList className="h-auto gap-1 p-1 flex-wrap sm:flex-nowrap sm:overflow-x-auto sm:justify-start">
           <TabsTrigger value="due" className="gap-1.5">
             <Clock className="h-3.5 w-3.5" />
             {t("tests.tabs.due")}

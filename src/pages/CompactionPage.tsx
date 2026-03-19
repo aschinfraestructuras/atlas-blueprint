@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
-  Gauge, Plus, FileDown, Trash2, Eye, CheckCircle2, XCircle, Clock, Loader2, AlertTriangle, Link2,
+  Gauge, Plus, FileDown, Trash2, Eye, Pencil, CheckCircle2, XCircle, Clock, Loader2, AlertTriangle, Link2,
 } from "lucide-react";
 import { compactionService, type CompactionZoneWithCounts, type CompactionZone, type NuclearPoint, type PlateTest } from "@/lib/services/compactionService";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
@@ -46,6 +46,7 @@ export default function CompactionPage() {
   const [detailId, setDetailId] = useState<string | null>(null);
   const [detailData, setDetailData] = useState<{ zone: CompactionZone; nuclear: NuclearPoint[]; plates: PlateTest[] } | null>(null);
   const [saving, setSaving] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [filterResult, setFilterResult] = useState("all");
 
   // Linked concrete lots
@@ -127,12 +128,39 @@ export default function CompactionPage() {
     ? ppis.filter((p) => (p as any).work_item_id === form.work_item_id)
     : ppis;
 
-  async function handleCreate() {
+  function resetForm() {
+    setForm({ work_item_id: "", ppi_instance_id: "", zone_description: "", pk_start: "", pk_end: "", layer_no: "", material_type: "", material_ref: "", test_date: new Date().toISOString().slice(0, 10), proctor_gamma_max: "", proctor_wopt: "", compaction_criteria: "95", ev2_criteria: "80", ev2_ev1_criteria: "2.2", technician_name: "", notes: "" });
+    setEditingId(null);
+  }
+
+  function openEdit(z: CompactionZoneWithCounts) {
+    setForm({
+      work_item_id: z.work_item_id ?? "",
+      ppi_instance_id: z.ppi_instance_id ?? "",
+      zone_description: z.zone_description,
+      pk_start: z.pk_start ?? "",
+      pk_end: z.pk_end ?? "",
+      layer_no: z.layer_no != null ? String(z.layer_no) : "",
+      material_type: z.material_type ?? "",
+      material_ref: z.material_ref ?? "",
+      test_date: z.test_date,
+      proctor_gamma_max: z.proctor_gamma_max != null ? String(z.proctor_gamma_max) : "",
+      proctor_wopt: z.proctor_wopt != null ? String(z.proctor_wopt) : "",
+      compaction_criteria: String(z.compaction_criteria ?? 95),
+      ev2_criteria: String(z.ev2_criteria ?? 80),
+      ev2_ev1_criteria: String(z.ev2_ev1_criteria ?? 2.2),
+      technician_name: z.technician_name ?? "",
+      notes: z.notes ?? "",
+    });
+    setEditingId(z.id);
+    setDialogOpen(true);
+  }
+
+  async function handleSave() {
     if (!activeProject || !form.zone_description.trim()) return;
     setSaving(true);
     try {
-      await compactionService.create({
-        project_id: activeProject.id,
+      const payload = {
         work_item_id: form.work_item_id || null,
         ppi_instance_id: form.ppi_instance_id || null,
         zone_description: form.zone_description,
@@ -149,10 +177,17 @@ export default function CompactionPage() {
         ev2_ev1_criteria: parseFloat(form.ev2_ev1_criteria) || 2.2,
         technician_name: form.technician_name || null,
         notes: form.notes || null,
-      });
+      };
+
+      if (editingId) {
+        await compactionService.updateZone(editingId, payload);
+      } else {
+        await compactionService.create({ ...payload, project_id: activeProject.id });
+      }
 
       toast({ title: t("common.save") });
       setDialogOpen(false);
+      resetForm();
       fetchZones();
     } catch (err: any) {
       toast({ title: "Erro", description: err.message, variant: "destructive" });
@@ -179,7 +214,7 @@ export default function CompactionPage() {
         backLabel="Ensaios"
         module="Ensaios"
         icon={Gauge}
-        actions={<Button onClick={() => setDialogOpen(true)} className="gap-1.5"><Plus className="h-4 w-4" /> {t("compaction.newZone")}</Button>}
+        actions={<Button onClick={() => { resetForm(); setDialogOpen(true); }} className="gap-1.5"><Plus className="h-4 w-4" /> {t("compaction.newZone")}</Button>}
       />
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
@@ -247,6 +282,7 @@ export default function CompactionPage() {
                     <TableCell onClick={(e) => e.stopPropagation()}>
                       <RowActionMenu actions={[
                         { key: "view", label: t("common.view"), icon: Eye, onClick: () => setDetailId(z.id) },
+                        { key: "edit", label: t("common.edit"), icon: Pencil, onClick: () => openEdit(z) },
                         { key: "pdf", label: t("common.exportPdf"), icon: FileDown, onClick: () => {
                           compactionService.getById(z.id).then((d) => {
                             if (d) compactionService.exportPdf(d.zone, d.nuclear, d.plates, activeProject?.name ?? "PF17A", logoBase64);
@@ -267,7 +303,7 @@ export default function CompactionPage() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2"><Gauge className="h-5 w-5" /> {t("compaction.newZone")}</DialogTitle>
+            <DialogTitle className="flex items-center gap-2"><Gauge className="h-5 w-5" /> {editingId ? t("common.edit") : t("compaction.newZone")}</DialogTitle>
           </DialogHeader>
           <Tabs defaultValue="identification">
             <TabsList className="grid grid-cols-2 w-full">
@@ -324,7 +360,7 @@ export default function CompactionPage() {
 
           <DialogFooter className="mt-4">
             <DialogClose asChild><Button variant="outline">{t("common.cancel")}</Button></DialogClose>
-            <Button onClick={handleCreate} disabled={saving || !form.zone_description.trim()}>
+            <Button onClick={handleSave} disabled={saving || !form.zone_description.trim()}>
               {saving && <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />}
               {t("common.save")}
             </Button>

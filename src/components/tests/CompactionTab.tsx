@@ -60,19 +60,23 @@ export function CompactionTab({ projectId }: Props) {
               <TableHead className="text-xs font-semibold uppercase">{t("concrete.fields.result")}</TableHead>
             </TableRow></TableHeader>
             <TableBody>
-              {data.slice(0, 20).map(z => (
+              {data.slice(0, 20).map(z => {
+                const resultLabel = z.overall_result === "pass" ? "Conforme" : z.overall_result === "fail" ? "Não Conforme" : "Pendente";
+                const resultClass = z.overall_result === "pass" ? "bg-primary/15 text-primary" : z.overall_result === "fail" ? "bg-destructive/10 text-destructive" : "bg-muted text-muted-foreground";
+                return (
                 <TableRow key={z.id} className="hover:bg-muted/20 cursor-pointer" onClick={() => navigate("/tests/compaction")}>
                   <TableCell className="font-mono text-xs font-semibold">{z.code}</TableCell>
                   <TableCell className="text-xs">{z.test_date}</TableCell>
                   <TableCell className="text-sm max-w-[200px] truncate">{z.zone_description}</TableCell>
                   <TableCell className="text-xs">{z.material_type ?? "—"}</TableCell>
                   <TableCell>
-                    <Badge variant="secondary" className={z.overall_result === "pass" ? "bg-primary/15 text-primary" : z.overall_result === "fail" ? "bg-destructive/10 text-destructive" : "bg-muted text-muted-foreground"}>
-                      {z.overall_result}
+                    <Badge variant="secondary" className={resultClass}>
+                      {resultLabel}
                     </Badge>
                   </TableCell>
                 </TableRow>
-              ))}
+                );
+              })}
             </TableBody>
           </Table>
         </div>
