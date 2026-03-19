@@ -67,8 +67,8 @@ import { classifySupabaseError } from "@/lib/utils/supabaseError";
 
 function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <div className="flex items-start gap-2 py-2 border-b border-border/50 last:border-0">
-      <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground w-32 flex-shrink-0 mt-0.5">
+    <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-2 py-2 border-b border-border/50 last:border-0">
+      <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground sm:w-32 flex-shrink-0 sm:mt-0.5">
         {label}
       </span>
       <span className="text-sm text-foreground">{value || "—"}</span>
