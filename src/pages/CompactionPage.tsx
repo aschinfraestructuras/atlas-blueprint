@@ -303,7 +303,7 @@ export default function CompactionPage() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2"><Gauge className="h-5 w-5" /> {t("compaction.newZone")}</DialogTitle>
+            <DialogTitle className="flex items-center gap-2"><Gauge className="h-5 w-5" /> {editingId ? t("common.edit") : t("compaction.newZone")}</DialogTitle>
           </DialogHeader>
           <Tabs defaultValue="identification">
             <TabsList className="grid grid-cols-2 w-full">
