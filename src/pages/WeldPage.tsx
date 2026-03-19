@@ -102,28 +102,56 @@ export default function WeldPage() {
   const repair = records.filter(w => w.overall_result === "repair_needed").length;
   const withUt = records.filter(w => w.has_ut).length;
 
+  const defaultForm: Partial<WeldInput> = { rail_profile: "60E1", weld_type: "aluminotermica", track_side: "esquerda", alignment_criteria: 0.5, hv_criteria_min: 260, hv_criteria_max: 380, has_ut: false, has_hardness: false };
+
+  const openEdit = (w: WeldRecord) => {
+    setEditingId(w.id);
+    setForm({
+      pk_location: w.pk_location, weld_date: w.weld_date, rail_profile: w.rail_profile,
+      track_side: w.track_side ?? "esquerda", weld_type: w.weld_type,
+      operator_name: w.operator_name, operator_cert_ref: w.operator_cert_ref,
+      portion_brand: w.portion_brand, portion_lot: w.portion_lot, mold_type: w.mold_type,
+      preheat_temp_c: w.preheat_temp_c, preheat_duration_min: w.preheat_duration_min,
+      preheat_pass: w.preheat_pass, visual_pass: w.visual_pass, visual_notes: w.visual_notes,
+      excess_material_ok: w.excess_material_ok, alignment_mm: w.alignment_mm,
+      alignment_criteria: w.alignment_criteria, has_ut: w.has_ut,
+      ut_operator: w.ut_operator, ut_equipment_code: w.ut_equipment_code,
+      ut_calibration_date: w.ut_calibration_date, ut_result: w.ut_result, ut_defect_desc: w.ut_defect_desc,
+      has_hardness: w.has_hardness, hv_rail_left: w.hv_rail_left, hv_rail_right: w.hv_rail_right,
+      hv_weld_center: w.hv_weld_center, hv_criteria_min: w.hv_criteria_min, hv_criteria_max: w.hv_criteria_max,
+      notes: w.notes,
+    } as any);
+    setDialogOpen(true);
+  };
+
   const handleSave = async () => {
     if (!form.pk_location) { toast({ title: "PK obrigatório", variant: "destructive" }); return; }
     setSaving(true);
     try {
-      const { data: userData } = await supabase.auth.getUser();
-      await weldService.create({
-        ...form,
-        project_id: activeProject.id,
-        created_by: userData.user?.id ?? null,
-        weld_date: form.weld_date || new Date().toISOString().split("T")[0],
-        pk_location: form.pk_location!,
-        rail_profile: form.rail_profile || "60E1",
-        weld_type: form.weld_type || "aluminotermica",
-        alignment_criteria: form.alignment_criteria ?? 0.5,
-        hv_criteria_min: form.hv_criteria_min ?? 260,
-        hv_criteria_max: form.hv_criteria_max ?? 380,
-        has_ut: form.has_ut ?? false,
-        has_hardness: form.has_hardness ?? false,
-      } as WeldInput);
-      toast({ title: "Soldadura registada" });
+      if (editingId) {
+        await weldService.update(editingId, { ...form } as Partial<WeldRecord>);
+        toast({ title: "Soldadura atualizada" });
+      } else {
+        const { data: userData } = await supabase.auth.getUser();
+        await weldService.create({
+          ...form,
+          project_id: activeProject.id,
+          created_by: userData.user?.id ?? null,
+          weld_date: form.weld_date || new Date().toISOString().split("T")[0],
+          pk_location: form.pk_location!,
+          rail_profile: form.rail_profile || "60E1",
+          weld_type: form.weld_type || "aluminotermica",
+          alignment_criteria: form.alignment_criteria ?? 0.5,
+          hv_criteria_min: form.hv_criteria_min ?? 260,
+          hv_criteria_max: form.hv_criteria_max ?? 380,
+          has_ut: form.has_ut ?? false,
+          has_hardness: form.has_hardness ?? false,
+        } as WeldInput);
+        toast({ title: "Soldadura registada" });
+      }
       setDialogOpen(false);
-      setForm({ rail_profile: "60E1", weld_type: "aluminotermica", track_side: "esquerda", alignment_criteria: 0.5, hv_criteria_min: 260, hv_criteria_max: 380, has_ut: false, has_hardness: false });
+      setEditingId(null);
+      setForm(defaultForm);
       load();
     } catch (err: any) {
       const info = classifySupabaseError(err);
