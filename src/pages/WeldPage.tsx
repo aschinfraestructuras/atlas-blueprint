@@ -6,7 +6,7 @@ import { weldService, type WeldRecord, type WeldInput, computeOverallResult } fr
 import { toast } from "@/hooks/use-toast";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import {
-  Flame, Plus, Search, Trash2, FileDown, CheckCircle2, XCircle, Wrench, Clock, AlertTriangle, ShieldAlert,
+  Flame, Plus, Search, Trash2, FileDown, CheckCircle2, XCircle, Wrench, Clock, AlertTriangle, ShieldAlert, Pencil,
 } from "lucide-react";
 import { ModuleKPICard } from "@/components/ModuleKPICard";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
