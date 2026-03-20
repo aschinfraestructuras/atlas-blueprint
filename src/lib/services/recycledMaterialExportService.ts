@@ -53,7 +53,7 @@ export function exportRecycledMaterialPdf(
       ${row("Ref. Documental", item.document_ref)}
       ${row("Estado", item.status)}
     </div>
-    ${item.observations ? `<div class="section-title">Observações</div><p style="font-size:10px;white-space:pre-wrap;">${item.observations}</p>` : ""}
+    ${item.observations ? `<div class="section-title">Observações</div><p style="font-size:10px;white-space:pre-wrap;">${escapeHtml(item.observations)}</p>` : ""}
     <div style="margin-top:40px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;font-size:9px;text-align:center;">
       <div style="border-top:1px solid ${ATLAS_PDF.colors.rule};padding-top:6px;">Elaborado por</div>
       <div style="border-top:1px solid ${ATLAS_PDF.colors.rule};padding-top:6px;">Verificado por</div>

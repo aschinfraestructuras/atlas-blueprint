@@ -67,7 +67,7 @@ export function exportLaboratoryPdf(
       ${row("Email", lab.contact_email)}
       ${row("Telefone", lab.contact_phone)}
     </div>
-    ${lab.notes ? `<div class="section-title">Observações</div><p style="font-size:10px;white-space:pre-wrap;">${lab.notes}</p>` : ""}
+    ${lab.notes ? `<div class="section-title">Observações</div><p style="font-size:10px;white-space:pre-wrap;">${escapeHtml(lab.notes)}</p>` : ""}
     <div class="section-title">KPIs de Ensaios</div>
     <div class="info-grid">
       ${row("Total Ensaios", String(stats.total))}
