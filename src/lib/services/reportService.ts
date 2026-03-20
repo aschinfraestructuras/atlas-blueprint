@@ -296,8 +296,8 @@ export function footerHtml(ref: string, labels: ReportLabels, locale?: string): 
 export function infoGridHtml(rows: [string, string][]): string {
   return `<div class="atlas-info-grid">${rows.map(([lbl, val]) =>
     `<div class="atlas-info-row">
-       <span class="atlas-info-lbl">${lbl}</span>
-       <span class="atlas-info-val">${val || "—"}</span>
+       <span class="atlas-info-lbl">${escapeHtml(lbl)}</span>
+       <span class="atlas-info-val">${val ? escapeHtml(val) : "—"}</span>
      </div>`
   ).join("")}</div>`;
 }
