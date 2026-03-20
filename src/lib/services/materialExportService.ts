@@ -42,7 +42,7 @@ export function exportMaterialsListPdf(
     t(`materials.approval.statuses.${m.approval_status}`, { defaultValue: m.approval_status }),
   ]);
 
-  const tableRows = rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join("")}</tr>`).join("");
+  const tableRows = rows.map(r => `<tr>${r.map(c => `<td>${escapeHtml(c)}</td>`).join("")}</tr>`).join("");
 
   const html = `<!DOCTYPE html>
 <html lang="pt"><head><meta charset="UTF-8"/><title>${docCode} — Atlas QMS</title>
