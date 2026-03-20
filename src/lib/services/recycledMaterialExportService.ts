@@ -31,7 +31,7 @@ export function exportRecycledMaterialPdf(
   const header = fullPdfHeader(logoBase64, projectName, item.reference_number, "0", date);
 
   const row = (label: string, value: string | number | null | undefined) =>
-    `<div class="info-row"><label>${label}</label><div class="val">${value ?? "—"}</div></div>`;
+    `<div class="info-row"><label>${escapeHtml(label)}</label><div class="val">${esc(value)}</div></div>`;
 
   const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${item.reference_number}</title>
     <style>${sharedCss}</style></head><body>
