@@ -420,3 +420,4 @@ export function buildReportFilename(
 
 // Re-export helpers for use in components
 export { sanitize, fmtDate, fileDate, sharedCss };
+export { escapeHtml } from "@/lib/utils/escapeHtml";
