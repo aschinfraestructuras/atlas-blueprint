@@ -3,6 +3,8 @@
  * Renders a compact 2-row grid below the main header with project metadata.
  */
 
+import { escapeHtml } from "@/lib/utils/escapeHtml";
+
 export function projectInfoStripHtml(): string {
   return `
   <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:8px 20px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:10px;">
