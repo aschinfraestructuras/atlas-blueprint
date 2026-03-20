@@ -55,9 +55,9 @@ export function fullPdfHeader(
       </div>
     </div>
     <div style="text-align:right;">
-      <div style="font-size:11px;font-weight:700;color:#192F48;font-family:monospace;">${docCode}</div>
-      <div style="font-size:9px;color:#6B7280;margin-top:2px;">Rev. ${revision}</div>
-      <div style="font-size:9px;color:#6B7280;">${date}</div>
+      <div style="font-size:11px;font-weight:700;color:#192F48;font-family:monospace;">${escapeHtml(docCode)}</div>
+      <div style="font-size:9px;color:#6B7280;margin-top:2px;">Rev. ${escapeHtml(revision)}</div>
+      <div style="font-size:9px;color:#6B7280;">${escapeHtml(date)}</div>
     </div>
   </div>
   ${projectInfoStripHtml()}`;
