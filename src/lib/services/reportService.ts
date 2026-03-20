@@ -265,15 +265,15 @@ export function headerHtml(
   <div class="atlas-brand">
     ${logoBlock}
     <div>
-      <div class="atlas-brand-app">${labels.appName}</div>
+      <div class="atlas-brand-app">${escapeHtml(labels.appName)}</div>
       <div class="atlas-brand-sub">${meta.locale === "es" ? "Sistema de Gestión de Calidad" : "Sistema de Gestão da Qualidade"}</div>
     </div>
   </div>
   <div class="atlas-meta">
-    <div class="atlas-meta-title">${title}</div>
-    <div class="atlas-meta-gen">${labels.generatedOn}: ${fmtDate(new Date().toISOString(), meta.locale)}</div>
-    <div class="atlas-meta-gen">${meta.projectName} · ${meta.projectCode}</div>
-    ${meta.generatedBy ? `<div class="atlas-meta-user">${meta.generatedBy}</div>` : ""}
+    <div class="atlas-meta-title">${escapeHtml(title)}</div>
+    <div class="atlas-meta-gen">${escapeHtml(labels.generatedOn)}: ${fmtDate(new Date().toISOString(), meta.locale)}</div>
+    <div class="atlas-meta-gen">${escapeHtml(meta.projectName)} · ${escapeHtml(meta.projectCode)}</div>
+    ${meta.generatedBy ? `<div class="atlas-meta-user">${escapeHtml(meta.generatedBy)}</div>` : ""}
   </div>
 </div>`;
 }
