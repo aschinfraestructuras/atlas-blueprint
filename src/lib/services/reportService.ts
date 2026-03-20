@@ -8,6 +8,7 @@
  */
 
 import { projectInfoStripHtml, fullPdfHeader } from "./pdfProjectHeader";
+import { escapeHtml } from "@/lib/utils/escapeHtml";
 
 // ─── Atlas brand colours ──────────────────────────────────────────────────────
 
