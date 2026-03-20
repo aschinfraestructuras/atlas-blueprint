@@ -16,7 +16,7 @@ function buildLabelHtml(material: Material, nc?: QuarantineLabelProps["nc"]): st
         <table style="width:100%;margin-top:20px;border-collapse:collapse;font-size:13px;">
           <tr>
             <td style="padding:8px 4px;font-weight:700;width:140px;border-bottom:1px solid #e5e5e5;">N.º RNC</td>
-            <td style="padding:8px 4px;border-bottom:1px solid #e5e5e5;">${nc?.code ?? "—"}</td>
+             <td style="padding:8px 4px;border-bottom:1px solid #e5e5e5;">${escapeHtml(nc?.code ?? "—")}</td>
           </tr>
           <tr>
             <td style="padding:8px 4px;font-weight:700;border-bottom:1px solid #e5e5e5;">Data</td>
