@@ -51,8 +51,7 @@ export function fullPdfHeader(
         <div style="font-size:14px;font-weight:800;color:#192F48;line-height:1.2;">${escapeHtml(projectName)}</div>
         <div style="font-size:9px;color:#6B7280;margin-top:2px;">${escapeHtml(empreiteiro)}</div>
         <div style="font-size:9px;color:#6B7280;">${escapeHtml(donoObra)}</div>
-        <div style="font-size:9px;color:#6B7280;margin-top:2px;">${empreiteiro}</div>
-        <div style="font-size:9px;color:#6B7280;">${donoObra}</div>
+      
       </div>
     </div>
     <div style="text-align:right;">
