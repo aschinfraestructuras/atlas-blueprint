@@ -43,7 +43,7 @@ export function exportLaboratoryPdf(
   const header = fullPdfHeader(logoBase64, projectName, docCode, "0", date);
 
   const row = (label: string, value: string | null | undefined) =>
-    `<div class="info-row"><label>${label}</label><div class="val">${value ?? "—"}</div></div>`;
+    `<div class="info-row"><label>${escapeHtml(label)}</label><div class="val">${esc(value)}</div></div>`;
 
   const testRows = recentTests.map(t => `<tr>
     <td>${t.code ?? "—"}</td>
