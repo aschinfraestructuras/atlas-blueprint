@@ -1,5 +1,6 @@
 import { fullPdfHeader } from "./pdfProjectHeader";
 import { ATLAS_PDF } from "@/lib/atlas-pdf-theme";
+import { escapeHtml, esc } from "@/lib/utils/escapeHtml";
 import type { RecycledMaterial } from "./recycledMaterialService";
 
 const sharedCss = `
