@@ -32,7 +32,7 @@ function buildLabelHtml(material: Material, nc?: QuarantineLabelProps["nc"]): st
           </tr>
           <tr>
             <td style="padding:8px 4px;font-weight:700;border-bottom:1px solid #e5e5e5;">Razão</td>
-            <td style="padding:8px 4px;border-bottom:1px solid #e5e5e5;">${nc?.description ?? material.rejection_reason ?? "—"}</td>
+            <td style="padding:8px 4px;border-bottom:1px solid #e5e5e5;">${escapeHtml(nc?.description ?? material.rejection_reason ?? "—")}</td>
           </tr>
           <tr>
             <td style="padding:8px 4px;font-weight:700;border-bottom:1px solid #e5e5e5;">Acção</td>
