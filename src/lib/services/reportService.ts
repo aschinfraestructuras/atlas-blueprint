@@ -340,10 +340,11 @@ export function generatePdfDocument(opts: {
   footerRef: string;
   logoBase64?: string | null;
 }): string {
+  const logo = opts.logoBase64 || opts.meta.logoUrl || null;
   let headerBlock: string;
-  if (opts.logoBase64) {
+  if (logo) {
     headerBlock = fullPdfHeader(
-      opts.logoBase64,
+      logo,
       `LINHA DO SUL — ${opts.meta.projectCode}`,
       opts.footerRef,
       "0",
