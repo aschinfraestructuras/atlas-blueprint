@@ -3,6 +3,8 @@
  * Renders a compact 2-row grid below the main header with project metadata.
  */
 
+import { escapeHtml } from "@/lib/utils/escapeHtml";
+
 export function projectInfoStripHtml(): string {
   return `
   <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:8px 20px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:10px;">
@@ -46,15 +48,16 @@ export function fullPdfHeader(
     <div style="display:flex;align-items:center;gap:14px;">
       ${logoHtml}
       <div>
-        <div style="font-size:14px;font-weight:800;color:#192F48;line-height:1.2;">${projectName}</div>
-        <div style="font-size:9px;color:#6B7280;margin-top:2px;">${empreiteiro}</div>
-        <div style="font-size:9px;color:#6B7280;">${donoObra}</div>
+        <div style="font-size:14px;font-weight:800;color:#192F48;line-height:1.2;">${escapeHtml(projectName)}</div>
+        <div style="font-size:9px;color:#6B7280;margin-top:2px;">${escapeHtml(empreiteiro)}</div>
+        <div style="font-size:9px;color:#6B7280;">${escapeHtml(donoObra)}</div>
+      
       </div>
     </div>
     <div style="text-align:right;">
-      <div style="font-size:11px;font-weight:700;color:#192F48;font-family:monospace;">${docCode}</div>
-      <div style="font-size:9px;color:#6B7280;margin-top:2px;">Rev. ${revision}</div>
-      <div style="font-size:9px;color:#6B7280;">${date}</div>
+      <div style="font-size:11px;font-weight:700;color:#192F48;font-family:monospace;">${escapeHtml(docCode)}</div>
+      <div style="font-size:9px;color:#6B7280;margin-top:2px;">Rev. ${escapeHtml(revision)}</div>
+      <div style="font-size:9px;color:#6B7280;">${escapeHtml(date)}</div>
     </div>
   </div>
   ${projectInfoStripHtml()}`;

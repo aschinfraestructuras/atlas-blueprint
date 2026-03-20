@@ -8,6 +8,7 @@
  */
 
 import { projectInfoStripHtml, fullPdfHeader } from "./pdfProjectHeader";
+import { escapeHtml } from "@/lib/utils/escapeHtml";
 
 // ─── Atlas brand colours ──────────────────────────────────────────────────────
 
@@ -235,15 +236,15 @@ export async function headerHtmlAsync(
   <div class="atlas-brand">
     ${logoBlock}
     <div>
-      <div class="atlas-brand-app">${labels.appName}</div>
+      <div class="atlas-brand-app">${escapeHtml(labels.appName)}</div>
       <div class="atlas-brand-sub">${meta.locale === "es" ? "Sistema de Gestión de Calidad" : "Sistema de Gestão da Qualidade"}</div>
     </div>
   </div>
   <div class="atlas-meta">
-    <div class="atlas-meta-title">${title}</div>
-    <div class="atlas-meta-gen">${labels.generatedOn}: ${fmtDate(new Date().toISOString(), meta.locale)}</div>
-    <div class="atlas-meta-gen">${meta.projectName} · ${meta.projectCode}</div>
-    ${meta.generatedBy ? `<div class="atlas-meta-user">${meta.generatedBy}</div>` : ""}
+    <div class="atlas-meta-title">${escapeHtml(title)}</div>
+    <div class="atlas-meta-gen">${escapeHtml(labels.generatedOn)}: ${fmtDate(new Date().toISOString(), meta.locale)}</div>
+    <div class="atlas-meta-gen">${escapeHtml(meta.projectName)} · ${escapeHtml(meta.projectCode)}</div>
+    ${meta.generatedBy ? `<div class="atlas-meta-user">${escapeHtml(meta.generatedBy)}</div>` : ""}
   </div>
 </div>`;
 }
@@ -264,15 +265,15 @@ export function headerHtml(
   <div class="atlas-brand">
     ${logoBlock}
     <div>
-      <div class="atlas-brand-app">${labels.appName}</div>
+      <div class="atlas-brand-app">${escapeHtml(labels.appName)}</div>
       <div class="atlas-brand-sub">${meta.locale === "es" ? "Sistema de Gestión de Calidad" : "Sistema de Gestão da Qualidade"}</div>
     </div>
   </div>
   <div class="atlas-meta">
-    <div class="atlas-meta-title">${title}</div>
-    <div class="atlas-meta-gen">${labels.generatedOn}: ${fmtDate(new Date().toISOString(), meta.locale)}</div>
-    <div class="atlas-meta-gen">${meta.projectName} · ${meta.projectCode}</div>
-    ${meta.generatedBy ? `<div class="atlas-meta-user">${meta.generatedBy}</div>` : ""}
+    <div class="atlas-meta-title">${escapeHtml(title)}</div>
+    <div class="atlas-meta-gen">${escapeHtml(labels.generatedOn)}: ${fmtDate(new Date().toISOString(), meta.locale)}</div>
+    <div class="atlas-meta-gen">${escapeHtml(meta.projectName)} · ${escapeHtml(meta.projectCode)}</div>
+    ${meta.generatedBy ? `<div class="atlas-meta-user">${escapeHtml(meta.generatedBy)}</div>` : ""}
   </div>
 </div>`;
 }
@@ -295,8 +296,8 @@ export function footerHtml(ref: string, labels: ReportLabels, locale?: string): 
 export function infoGridHtml(rows: [string, string][]): string {
   return `<div class="atlas-info-grid">${rows.map(([lbl, val]) =>
     `<div class="atlas-info-row">
-       <span class="atlas-info-lbl">${lbl}</span>
-       <span class="atlas-info-val">${val || "—"}</span>
+       <span class="atlas-info-lbl">${escapeHtml(lbl)}</span>
+       <span class="atlas-info-val">${val ? escapeHtml(val) : "—"}</span>
      </div>`
   ).join("")}</div>`;
 }
@@ -382,7 +383,7 @@ export function generateListPdf(opts: {
   logoBase64?: string | null;
 }): void {
   const tableRows = opts.rows.map((r) =>
-    `<tr>${r.map((c) => `<td>${c}</td>`).join("")}</tr>`
+    `<tr>${r.map((c) => `<td>${escapeHtml(c)}</td>`).join("")}</tr>`
   ).join("");
 
   const bodyHtml = `
@@ -419,3 +420,4 @@ export function buildReportFilename(
 
 // Re-export helpers for use in components
 export { sanitize, fmtDate, fileDate, sharedCss };
+export { escapeHtml } from "@/lib/utils/escapeHtml";

@@ -42,7 +42,10 @@ export function useProjectLogo() {
     async function resolve() {
       let url: string;
       if (raw!.startsWith("http")) {
-        url = raw!;
+        // Block remote URLs to prevent privacy leaks and content injection
+        console.warn("[useProjectLogo] Remote URLs are not allowed for logo_url. Use storage paths only.");
+        if (!cancelled) { setLogoUrl(null); setLogoBase64(null); }
+        return;
       } else {
         // Use signed URL instead of public URL to keep bucket private
         const { data, error } = await supabase.storage

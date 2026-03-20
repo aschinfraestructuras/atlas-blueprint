@@ -6,6 +6,7 @@
 import { fullPdfHeader } from "./pdfProjectHeader";
 import { printHtml, sharedCss, buildReportFilename, exportToCSV } from "./reportService";
 import { ATLAS_PDF } from "@/lib/atlas-pdf-theme";
+import { escapeHtml, esc } from "@/lib/utils/escapeHtml";
 import { auditService } from "./auditService";
 import type { Material, MaterialDocument, MaterialDetailMetrics, WorkItemMaterial } from "./materialService";
 
@@ -40,7 +41,7 @@ export function exportMaterialsListPdf(
     t(`materials.approval.statuses.${m.approval_status}`, { defaultValue: m.approval_status }),
   ]);
 
-  const tableRows = rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join("")}</tr>`).join("");
+  const tableRows = rows.map(r => `<tr>${r.map(c => `<td>${escapeHtml(c)}</td>`).join("")}</tr>`).join("");
 
   const html = `<!DOCTYPE html>
 <html lang="pt"><head><meta charset="UTF-8"/><title>${docCode} — Atlas QMS</title>
@@ -70,10 +71,7 @@ interface ExportData {
   t: (k: string, opts?: Record<string, unknown>) => string;
 }
 
-function esc(s?: string | null): string {
-  if (!s) return "—";
-  return s.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
+// esc and escapeHtml imported from @/lib/utils/escapeHtml
 
 function fmtDate(d?: string | null): string {
   if (!d) return "—";
@@ -92,7 +90,7 @@ const localCss = `
 `;
 
 function infoRow(label: string, value: string): string {
-  return `<div class="mat-row"><label>${label}</label><div class="val">${value}</div></div>`;
+  return `<div class="mat-row"><label>${escapeHtml(label)}</label><div class="val">${escapeHtml(value)}</div></div>`;
 }
 
 export async function exportMaterialPdf(data: ExportData) {

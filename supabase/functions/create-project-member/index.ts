@@ -132,11 +132,20 @@ Deno.serve(async (req) => {
       }
 
       // New user — invite via Supabase built-in email
+      // Whitelist allowed origins to prevent open redirect attacks
+      const allowedOrigins = [
+        supabaseUrl,
+        "https://atlasquality.lovable.app",
+        "https://id-preview--6f0172f0-0e65-408d-8e26-8a8bcb9437cf.lovable.app",
+      ];
+      const requestOrigin = req.headers.get("origin") || "";
+      const safeOrigin = allowedOrigins.includes(requestOrigin) ? requestOrigin : supabaseUrl;
+
       const { data: inviteData, error: inviteError } = await adminClient.auth.admin.inviteUserByEmail(
         normalizedEmail,
         {
           data: { role, project_id, invited_by: caller.id },
-          redirectTo: `${req.headers.get("origin") || supabaseUrl}/invite/accept`,
+          redirectTo: `${safeOrigin}/invite/accept`,
         }
       );
 

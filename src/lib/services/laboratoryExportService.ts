@@ -1,5 +1,6 @@
 import { fullPdfHeader } from "./pdfProjectHeader";
 import { ATLAS_PDF } from "@/lib/atlas-pdf-theme";
+import { escapeHtml, esc } from "@/lib/utils/escapeHtml";
 import type { Laboratory } from "./laboratoryService";
 
 const sharedCss = `
@@ -42,13 +43,13 @@ export function exportLaboratoryPdf(
   const header = fullPdfHeader(logoBase64, projectName, docCode, "0", date);
 
   const row = (label: string, value: string | null | undefined) =>
-    `<div class="info-row"><label>${label}</label><div class="val">${value ?? "—"}</div></div>`;
+    `<div class="info-row"><label>${escapeHtml(label)}</label><div class="val">${esc(value)}</div></div>`;
 
   const testRows = recentTests.map(t => `<tr>
-    <td>${t.code ?? "—"}</td>
-    <td>${t.material ?? "—"}</td>
-    <td>${t.result_status ?? "—"}</td>
-    <td>${t.date ?? "—"}</td>
+    <td>${esc(t.code)}</td>
+    <td>${esc(t.material)}</td>
+    <td>${esc(t.result_status)}</td>
+    <td>${esc(t.date)}</td>
   </tr>`).join("");
 
   const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${docCode}</title>
@@ -66,7 +67,7 @@ export function exportLaboratoryPdf(
       ${row("Email", lab.contact_email)}
       ${row("Telefone", lab.contact_phone)}
     </div>
-    ${lab.notes ? `<div class="section-title">Observações</div><p style="font-size:10px;white-space:pre-wrap;">${lab.notes}</p>` : ""}
+    ${lab.notes ? `<div class="section-title">Observações</div><p style="font-size:10px;white-space:pre-wrap;">${escapeHtml(lab.notes)}</p>` : ""}
     <div class="section-title">KPIs de Ensaios</div>
     <div class="info-grid">
       ${row("Total Ensaios", String(stats.total))}

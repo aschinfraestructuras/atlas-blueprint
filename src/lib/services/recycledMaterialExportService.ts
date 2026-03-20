@@ -1,5 +1,6 @@
 import { fullPdfHeader } from "./pdfProjectHeader";
 import { ATLAS_PDF } from "@/lib/atlas-pdf-theme";
+import { escapeHtml, esc } from "@/lib/utils/escapeHtml";
 import type { RecycledMaterial } from "./recycledMaterialService";
 
 const sharedCss = `
@@ -30,7 +31,7 @@ export function exportRecycledMaterialPdf(
   const header = fullPdfHeader(logoBase64, projectName, item.reference_number, "0", date);
 
   const row = (label: string, value: string | number | null | undefined) =>
-    `<div class="info-row"><label>${label}</label><div class="val">${value ?? "—"}</div></div>`;
+    `<div class="info-row"><label>${escapeHtml(label)}</label><div class="val">${esc(value)}</div></div>`;
 
   const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${item.reference_number}</title>
     <style>${sharedCss}</style></head><body>
@@ -52,7 +53,7 @@ export function exportRecycledMaterialPdf(
       ${row("Ref. Documental", item.document_ref)}
       ${row("Estado", item.status)}
     </div>
-    ${item.observations ? `<div class="section-title">Observações</div><p style="font-size:10px;white-space:pre-wrap;">${item.observations}</p>` : ""}
+    ${item.observations ? `<div class="section-title">Observações</div><p style="font-size:10px;white-space:pre-wrap;">${escapeHtml(item.observations)}</p>` : ""}
     <div style="margin-top:40px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;font-size:9px;text-align:center;">
       <div style="border-top:1px solid ${ATLAS_PDF.colors.rule};padding-top:6px;">Elaborado por</div>
       <div style="border-top:1px solid ${ATLAS_PDF.colors.rule};padding-top:6px;">Verificado por</div>
