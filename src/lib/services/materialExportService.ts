@@ -6,7 +6,9 @@
 import { fullPdfHeader } from "./pdfProjectHeader";
 import { printHtml, sharedCss, buildReportFilename, exportToCSV } from "./reportService";
 import { ATLAS_PDF } from "@/lib/atlas-pdf-theme";
+import { escapeHtml, esc } from "@/lib/utils/escapeHtml";
 import { auditService } from "./auditService";
+import type { Material, MaterialDocument, MaterialDetailMetrics, WorkItemMaterial } from "./materialService";
 import type { Material, MaterialDocument, MaterialDetailMetrics, WorkItemMaterial } from "./materialService";
 
 /** Export a filtered materials list as PDF */
