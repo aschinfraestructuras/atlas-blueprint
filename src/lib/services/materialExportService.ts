@@ -72,10 +72,7 @@ interface ExportData {
   t: (k: string, opts?: Record<string, unknown>) => string;
 }
 
-function esc(s?: string | null): string {
-  if (!s) return "—";
-  return s.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
+// esc and escapeHtml imported from @/lib/utils/escapeHtml
 
 function fmtDate(d?: string | null): string {
   if (!d) return "—";
