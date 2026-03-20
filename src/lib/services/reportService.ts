@@ -383,7 +383,7 @@ export function generateListPdf(opts: {
   logoBase64?: string | null;
 }): void {
   const tableRows = opts.rows.map((r) =>
-    `<tr>${r.map((c) => `<td>${c}</td>`).join("")}</tr>`
+    `<tr>${r.map((c) => `<td>${escapeHtml(c)}</td>`).join("")}</tr>`
   ).join("");
 
   const bodyHtml = `
