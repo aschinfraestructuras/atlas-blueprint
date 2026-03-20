@@ -91,7 +91,7 @@ const localCss = `
 `;
 
 function infoRow(label: string, value: string): string {
-  return `<div class="mat-row"><label>${label}</label><div class="val">${value}</div></div>`;
+  return `<div class="mat-row"><label>${escapeHtml(label)}</label><div class="val">${escapeHtml(value)}</div></div>`;
 }
 
 export async function exportMaterialPdf(data: ExportData) {
