@@ -1,4 +1,5 @@
 import type { Material } from "@/lib/services/materialService";
+import { escapeHtml } from "@/lib/utils/escapeHtml";
 
 interface QuarantineLabelProps {
   material: Material;
