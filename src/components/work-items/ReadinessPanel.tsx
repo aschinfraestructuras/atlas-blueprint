@@ -83,18 +83,18 @@ export function ReadinessPanel() {
         .from("ppi_instances")
         .select("id, work_item_id, status")
         .eq("project_id", activeProject.id)
-        .eq("is_deleted", false),
+        .eq("is_deleted", false) as any,
       // PPI items
       supabase
         .from("ppi_instance_items")
         .select("instance_id, result")
-        .eq("project_id", activeProject.id),
+        .eq("project_id", activeProject.id) as any,
       // Tests
       supabase
         .from("test_results")
         .select("work_item_id, pass_fail, status")
         .eq("project_id", activeProject.id)
-        .not("work_item_id", "is", null),
+        .not("work_item_id", "is", null) as any,
       // NCs
       supabase
         .from("non_conformities")
@@ -102,8 +102,8 @@ export function ReadinessPanel() {
         .eq("project_id", activeProject.id)
         .eq("is_deleted", false)
         .not("work_item_id", "is", null)
-        .not("status", "in", '("closed","archived")'),
-    ]).then(([ppiRes, ppiItemsRes, testRes, ncRes]) => {
+        .not("status", "in", '("closed","archived")') as any,
+    ]).then(([ppiRes, ppiItemsRes, testRes, ncRes]: any[]) => {
       // PPI map
       const pm = new Map<string, { status: string; okCount: number; total: number }>();
       const ppiInstances = ppiRes.data ?? [];
