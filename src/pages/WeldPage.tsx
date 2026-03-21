@@ -56,6 +56,7 @@ export default function WeldPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filterResult, setFilterResult] = useState("all");
+  const [filterPendingUS, setFilterPendingUS] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
