@@ -28,8 +28,11 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   FlaskConical, Plus, Pencil, Trash2, Search, Loader2,
-  Building2, Award, CheckCircle2, XCircle, Clock, FileDown, Eye, AlertTriangle,
+  Building2, Award, CheckCircle2, XCircle, Clock, FileDown, Eye, AlertTriangle, MoreHorizontal,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { differenceInDays, parseISO } from "date-fns";
