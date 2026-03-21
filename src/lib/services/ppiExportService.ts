@@ -667,8 +667,8 @@ export function exportNotHpPdf(
   </div>
 
   <div class="footer">
-    <span>${labels.appName} · Quality Management System</span>
-    <span>${notification.code} · ${notification.ppi_ref}</span>
+    <span>${esc(labels.appName)} · Quality Management System</span>
+    <span>${esc(notification.code)} · ${esc(notification.ppi_ref)}</span>
   </div>
 </body>
 </html>`;
