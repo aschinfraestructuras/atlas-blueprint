@@ -2706,7 +2706,7 @@
     "healthy": "Saudável",
     "attention": "Atenção",
     "critical": "Crítico",
-    "score": "Índice de Saúde",
+    "score": "Health Score",
     "ncOpen": "NC Abertas",
     "ncOverdue": "NC em Atraso",
     "testsPending": "Ensaios Pendentes",
@@ -2897,7 +2897,13 @@
   },
   "recycled": {
     "exportPpgrcd": "Exportar Ficha PPGRCD",
-    "documentsSection": "Documentos e Evidências"
+    "documentsSection": "Documentos e Evidências",
+    "dashboard": {
+      "widget": "PPGRCD — Reciclados"
+    },
+    "kpi": {
+      "target": "Meta PPGRCD"
+    }
   },
   "onboarding": {
     "skip": "Saltar tour",
