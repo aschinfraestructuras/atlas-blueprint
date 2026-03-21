@@ -307,7 +307,7 @@ function buildSinglePdfHtml(
       </div>
     </div>
     <div class="meta">
-      <div class="report-title">${labels.reportTitle}</div>
+      <div class="report-title">${esc(labels.reportTitle)}</div>
       <div class="gen">${labels.generatedOn}: ${fmtDate(new Date().toISOString(), locale)}</div>
     </div>
   </div>
