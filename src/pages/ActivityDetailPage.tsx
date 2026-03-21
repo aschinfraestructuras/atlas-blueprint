@@ -94,6 +94,13 @@ export default function ActivityDetailPage() {
         subcontractor_name: data.subcontractors?.name ?? null,
       };
       setActivity(act);
+      // Load linked work item
+      if (act.work_item_id) {
+        try {
+          const wi = await workItemService.getById(act.work_item_id);
+          setLinkedWorkItem(wi);
+        } catch { setLinkedWorkItem(null); }
+      }
       await loadRequirements(act);
     } catch {
       setActivity(null);
