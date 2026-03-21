@@ -526,6 +526,26 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
                 className="text-sm"
               />
             </div>
+            {/* Early warning override section */}
+            {earlyOverride && (
+              <div className="rounded-lg border border-amber-400/40 bg-amber-50 dark:bg-amber-900/20 p-3 space-y-2">
+                <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400 text-xs font-medium">
+                  <AlertTriangle className="h-3.5 w-3.5" />
+                  {t("ppi.hpNotification.earlyWarning", {
+                    defaultValue: "Aviso com menos de 48h — exige justificação",
+                  })}
+                </div>
+                <Textarea
+                  value={earlyReason}
+                  onChange={(e) => setEarlyReason(e.target.value)}
+                  placeholder={t("ppi.hpNotification.earlyReason", {
+                    defaultValue: "Motivo do aviso antecipado (obrigatório)",
+                  })}
+                  rows={2}
+                  className="text-sm resize-none"
+                />
+              </div>
+            )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDialogOpen(false)}>
@@ -533,7 +553,7 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
             </Button>
             <Button
               onClick={handleCreate}
-              disabled={creating || !plannedDate || !plannedTime || !activity.trim()}
+              disabled={creating || !plannedDate || !plannedTime || !activity.trim() || (earlyOverride && !earlyReason.trim())}
               className="gap-1.5"
             >
               {creating ? (
