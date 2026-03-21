@@ -232,7 +232,7 @@ function buildSinglePdfHtml(
             ${rLabel}
           </span>
         </td>
-        <td style="padding:4px 5px;font-size:9px;color:${BRAND.textLight};vertical-align:top;">${it.notes ?? "—"}</td>
+        <td style="padding:4px 5px;font-size:9px;color:${BRAND.textLight};vertical-align:top;">${esc(it.notes) || "—"}</td>
         <td style="width:65px;padding:4px 3px;font-size:8px;color:${BRAND.textLight};vertical-align:top;">${fmtDate(it.checked_at, locale)}</td>
       </tr>`;
   }).join("");
