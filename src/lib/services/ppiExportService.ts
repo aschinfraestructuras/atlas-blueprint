@@ -627,7 +627,7 @@ export function exportNotHpPdf(
     </div>
     <div class="info-row">
       <span class="info-label">Referência PPI</span>
-      <span class="info-value" style="font-family:monospace;">${notification.ppi_ref}</span>
+      <span class="info-value" style="font-family:monospace;">${esc(notification.ppi_ref)}</span>
     </div>
     <div class="info-row">
       <span class="info-label">Ponto de Inspeção</span>
