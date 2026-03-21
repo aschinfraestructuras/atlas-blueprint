@@ -94,6 +94,20 @@ export interface NCCreateInput {
   document_id?: string;
   supplier_id?: string;
   subcontractor_id?: string;
+  // CAPA fields
+  location_pk?: string;
+  classification?: string;
+  violated_requirement?: string;
+  correction_type?: string;
+  correction?: string;
+  root_cause_method?: string;
+  root_cause?: string;
+  corrective_action?: string;
+  preventive_action?: string;
+  ac_efficacy_indicator?: string;
+  deviation_justification?: string;
+  efficacy_analysis?: string;
+  audit_origin_type?: string;
 }
 
 export interface NCUpdateInput {
