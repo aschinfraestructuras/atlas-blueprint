@@ -106,7 +106,7 @@ export function WorkItemReportPreview({ data, onClose }: { data: WorkItemReportD
             <div className="border rounded-lg p-4 space-y-3">
               <div className="text-center">
                 <h2 className="text-base font-bold uppercase tracking-wide text-foreground">FICHA DE FRENTE DE OBRA</h2>
-                <p className="text-xs text-muted-foreground">PF17A — Linha do Sul IP · UTE OHLA-ASCH</p>
+                <p className="text-xs text-muted-foreground">Atlas QMS</p>
               </div>
 
               <div className="grid grid-cols-2 gap-2 text-xs">

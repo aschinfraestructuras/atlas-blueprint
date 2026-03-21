@@ -345,7 +345,7 @@ export function generatePdfDocument(opts: {
   if (logo) {
     headerBlock = fullPdfHeader(
       logo,
-      `LINHA DO SUL — ${opts.meta.projectCode}`,
+      opts.meta.projectName ?? opts.meta.projectCode,
       opts.footerRef,
       "0",
       new Date().toLocaleDateString("pt-PT"),

@@ -1838,6 +1838,8 @@ export type Database = {
       hp_notifications: {
         Row: {
           activity: string
+          advance_notice_override: boolean
+          advance_notice_reason: string | null
           code: string
           confirmed_at: string | null
           confirmed_by: string | null
@@ -1858,6 +1860,8 @@ export type Database = {
         }
         Insert: {
           activity: string
+          advance_notice_override?: boolean
+          advance_notice_reason?: string | null
           code: string
           confirmed_at?: string | null
           confirmed_by?: string | null
@@ -1878,6 +1882,8 @@ export type Database = {
         }
         Update: {
           activity?: string
+          advance_notice_override?: boolean
+          advance_notice_reason?: string | null
           code?: string
           confirmed_at?: string | null
           confirmed_by?: string | null

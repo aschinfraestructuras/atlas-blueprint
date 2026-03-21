@@ -21,7 +21,7 @@ export function exportRfisCsv(data: Rfi[], meta: ReportMeta) {
 export function exportRfisPdf(data: Rfi[], meta: ReportMeta, logoBase64?: string | null) {
   const l = labels(meta.locale);
   const today = new Date().toLocaleDateString("pt-PT");
-  const header = fullPdfHeader(logoBase64 ?? null, `LINHA DO SUL — ${meta.projectCode}`, "RFI-LISTA", "0", today);
+  const header = fullPdfHeader(logoBase64 ?? null, meta.projectName ?? meta.projectCode, "RFI-LISTA", "0", today);
 
   const columns = ["Código", "Assunto", "Destinatário", "Prioridade", "Estado", "Prazo", "Data"];
   const rows = data.map(r => [r.code ?? "—", r.subject, r.recipient ?? "—", r.priority, r.status, r.deadline ?? "—", r.created_at?.slice(0, 10) ?? "—"]);
@@ -50,7 +50,7 @@ export function exportRfiDetailPdf(rfi: Rfi, messages: RfiMessage[], meta: Repor
   const today = new Date().toLocaleDateString("pt-PT");
   const header = fullPdfHeader(
     logoBase64 ?? null,
-    `LINHA DO SUL — ${meta.projectCode}`,
+    meta.projectName ?? meta.projectCode,
     rfi.code ?? "RFI",
     "0",
     today,

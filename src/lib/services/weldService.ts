@@ -252,7 +252,7 @@ export const weldService = {
         <div class="sig-block">Técnico de Qualidade</div>
       </div>
       <div style="text-align:center;margin-top:30px;font-size:9px;color:#999">
-        Atlas QMS · PF17A · ${record.code} · EN 14730
+        Atlas QMS · ${record.code} · EN 14730
       </div>
     </body></html>`;
 

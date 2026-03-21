@@ -22,7 +22,7 @@ export function exportPlansCsv(data: Plan[], meta: ReportMeta) {
 export function exportPlansPdf(data: Plan[], meta: ReportMeta, logoBase64?: string | null) {
   const l = labels(meta.locale);
   const today = new Date().toLocaleDateString("pt-PT");
-  const header = fullPdfHeader(logoBase64 ?? null, `LINHA DO SUL — ${meta.projectCode}`, "PLANS-LISTA", "0", today);
+  const header = fullPdfHeader(logoBase64 ?? null, meta.projectName ?? meta.projectCode, "PLANS-LISTA", "0", today);
 
   const columns = ["Tipo", "Título", "Revisão", "Estado", "Data"];
   const rows = data.map(p => [p.plan_type, p.title, p.revision ?? "—", p.status, p.created_at.slice(0, 10)]);
@@ -59,7 +59,7 @@ export function exportPlanDetailPdf(
   const isPt = meta.locale === "pt";
   const today = new Date().toLocaleDateString("pt-PT");
   const docCode = (plan as any).code ?? `PLAN-${plan.plan_type}`;
-  const header = fullPdfHeader(logoBase64 ?? null, `LINHA DO SUL — ${meta.projectCode}`, docCode, plan.revision ?? "0", today);
+  const header = fullPdfHeader(logoBase64 ?? null, meta.projectName ?? meta.projectCode, docCode, plan.revision ?? "0", today);
 
   const info = infoGridHtml([
     [isPt ? "Tipo" : "Tipo", typeLabels[plan.plan_type] ?? plan.plan_type],

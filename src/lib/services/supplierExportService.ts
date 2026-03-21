@@ -52,7 +52,7 @@ export function exportSupplierPdf(data: ExportData) {
 
   const header = fullPdfHeader(
     logoBase64 ?? null,
-    `LINHA DO SUL — ${projectCode}`,
+    projectName ?? projectCode,
     docCode,
     "0",
     today,

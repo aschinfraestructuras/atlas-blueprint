@@ -19,7 +19,7 @@ export function exportMaterialsListPdf(
 ) {
   const today = new Date().toLocaleDateString("pt-PT");
   const docCode = `MAT-${projectCode}-LISTA`;
-  const header = fullPdfHeader(logoBase64 ?? null, `LINHA DO SUL — ${projectCode}`, docCode, "0", today);
+  const header = fullPdfHeader(logoBase64 ?? null, projectCode || "Atlas QMS", docCode, "0", today);
 
   const columns = [
     t("materials.table.code"),
@@ -100,7 +100,7 @@ export async function exportMaterialPdf(data: ExportData) {
 
   const header = fullPdfHeader(
     logoBase64 ?? null,
-    `LINHA DO SUL — ${projectCode}`,
+    projectName ?? projectCode,
     docCode,
     "0",
     today,
@@ -251,12 +251,10 @@ export function exportFavPdf(
   const today = new Date().toLocaleDateString("pt-PT");
   const header = fullPdfHeader(
     logoBase64 ?? null,
-    `LINHA DO SUL — ${projectCode}`,
+    projectName ?? projectCode,
     material.pame_code ?? material.code,
     "0",
     today,
-    "ACE ASCH Infraestructuras + Cimontubo",
-    "IP — Infraestruturas de Portugal, S.A.",
   );
 
   const html = `<!DOCTYPE html>
@@ -342,7 +340,7 @@ export function exportFavPdf(
   </div>
 
   <div style="text-align:center;font-size:8px;color:#999;margin-top:20px;padding:8px;">
-    Atlas QMS · PF17A · Gerado em ${new Date().toLocaleString("pt-PT")}
+    Atlas QMS · ${escapeHtml(projectCode)} · Gerado em ${new Date().toLocaleString("pt-PT")}
   </div>
 </body></html>`;
 

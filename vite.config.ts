@@ -17,40 +17,60 @@ export default defineConfig(({ mode }) => ({
     react(),
     mode === "development" && componentTagger(),
     VitePWA({
-      registerType: "prompt",
-      includeAssets: ["favicon.ico", "placeholder.svg"],
+      registerType: "autoUpdate",
+      includeAssets: [
+        "favicon.ico",
+        "icon-64x64.png",
+        "icon-192x192.png",
+        "icon-512x512.png",
+        "icon-512x512-maskable.png",
+      ],
       manifest: {
         name: "Atlas QMS",
         short_name: "Atlas QMS",
         description: "Sistema de Gestão da Qualidade para obras de construção",
-        theme_color: "#0f172a",
-        background_color: "#0f172a",
+        theme_color: "#192F48",
+        background_color: "#192F48",
         display: "standalone",
         orientation: "any",
         scope: "/",
         start_url: "/",
         icons: [
           {
-            src: "/favicon.ico",
+            src: "/icon-64x64.png",
             sizes: "64x64",
-            type: "image/x-icon",
+            type: "image/png",
+          },
+          {
+            src: "/icon-192x192.png",
+            sizes: "192x192",
+            type: "image/png",
+          },
+          {
+            src: "/icon-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+          },
+          {
+            src: "/icon-512x512-maskable.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "maskable",
           },
         ],
         categories: ["business", "productivity"],
       },
       workbox: {
-        // Cache static assets and pages for offline reading
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
         runtimeCaching: [
           {
-            // Cache fonts
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
             handler: "CacheFirst",
             options: {
               cacheName: "google-fonts-cache",
               expiration: {
                 maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
+                maxAgeSeconds: 60 * 60 * 24 * 365,
               },
             },
           },

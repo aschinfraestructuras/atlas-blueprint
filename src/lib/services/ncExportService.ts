@@ -255,7 +255,7 @@ function buildNCDocument(
 
   const header = fullPdfHeader(
     logoBase64 ?? null,
-    `LINHA DO SUL — ${meta.projectCode}`,
+    meta.projectName ?? meta.projectCode,
     docCode,
     "0",
     today,
@@ -287,10 +287,11 @@ export async function exportNCPdf(
   labels: NCExportLabels,
   projectName: string,
   logoBase64?: string | null,
+  projectCode?: string,
 ): Promise<void> {
   const meta: ReportMeta = {
     projectName,
-    projectCode: "PF17A",
+    projectCode: projectCode ?? "—",
     locale: "pt",
   };
   const bodyHtml = renderNCHtml(nc, labels);
@@ -305,17 +306,18 @@ export async function exportNCBulkPdf(
   labels: NCExportLabels,
   projectName: string,
   logoBase64?: string | null,
+  projectCode?: string,
 ): Promise<void> {
   if (ncs.length === 0) return;
 
   const meta: ReportMeta = {
     projectName,
-    projectCode: "PF17A",
+    projectCode: projectCode ?? "—",
     locale: "pt",
   };
 
   const today = new Date().toLocaleDateString("pt-PT");
-  const header = fullPdfHeader(logoBase64 ?? null, `LINHA DO SUL — ${meta.projectCode}`, "RNC-CONSOLIDADO", "0", today);
+  const header = fullPdfHeader(logoBase64 ?? null, meta.projectName ?? meta.projectCode, "RNC-CONSOLIDADO", "0", today);
 
   const bodies = ncs.map((nc, idx) => {
     const ncHtml = renderNCHtml(nc, labels);
@@ -351,16 +353,17 @@ export async function exportNCWorkItemSummaryPdf(
   projectName: string,
   workItemSector: string,
   logoBase64?: string | null,
+  projectCode?: string,
 ): Promise<void> {
   if (ncs.length === 0) return;
 
   const meta: ReportMeta = {
     projectName,
-    projectCode: "PF17A",
+    projectCode: projectCode ?? "—",
     locale: "pt",
   };
   const today = new Date().toLocaleDateString("pt-PT");
-  const header = fullPdfHeader(logoBase64 ?? null, `LINHA DO SUL — ${meta.projectCode}`, "RNC-WI-RESUMO", "0", today);
+  const header = fullPdfHeader(logoBase64 ?? null, meta.projectName ?? meta.projectCode, "RNC-WI-RESUMO", "0", today);
 
   const severities = [
     { key: "critical", label: labels.severity_critical, color: "#DC2626" },
