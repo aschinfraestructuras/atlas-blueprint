@@ -129,6 +129,7 @@
     "subcontractors": "Subcontratistas",
     "workItems": "Actividades",
     "ppi": "Inspecciones PPI",
+    "ppiInstances": "Inspecciones PPI",
     "health": "Salud del Sistema",
     "mapMas": "Aprobación MAP/MAS",
     "expirations": "Vencimientos",
@@ -345,6 +346,14 @@
     },
     "noAudit": "Sin auditorías planificadas",
     "modules": "Módulos",
+    "hpPending": "HPs Sin Confirmación",
+    "expirations": {
+      "subtitle": "Documentos y calibraciones por expirar en los próximos 30 días"
+    },
+    "conformityByFrente": {
+      "title": "Conformidad por Frente de Obra",
+      "empty": "Sin frentes de obra activas"
+    },
     "alerts": {
       "title": "Alertas",
       "ncOpen": "NCs Abiertas",
@@ -2760,6 +2769,7 @@
       "pendingApproval": "Pendientes MAP/MAS"
     },
     "form": {
+      "code": "Código",
       "titleCreate": "Nuevo Material",
       "titleEdit": "Editar Material",
       "name": "Nombre",
@@ -3408,7 +3418,8 @@
       "planning_due": "Planificación (plazo)",
       "subcontractor_doc": "Doc. Subcontratista",
       "ppi_pending": "PPI Pendiente",
-      "ppi_approval": "PPI Pend. Aprobación"
+      "ppi_approval": "PPI Pend. Aprobación",
+      "hp_notification": "Notificación HP"
     },
     "table": {
       "date": "Fecha",
@@ -3973,5 +3984,8 @@
       "updated": "Submittal actualizado",
       "deleted": "Submittal eliminado"
     }
+  },
+  "fieldRecords": {
+    "empty": "Sin fichas de registro asociadas a esta inspección."
   }
 }

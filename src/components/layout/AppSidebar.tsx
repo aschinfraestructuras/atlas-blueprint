@@ -54,10 +54,10 @@ const NAV_SECTIONS: SidebarSection[] = [
     sectionIcon: Hammer,
     collapsible: true,
     items: [
+      { labelKey: "nav.planning",     url: "/planning",      icon: CalendarClock },
       { labelKey: "nav.workItems",    url: "/work-items",    icon: Construction },
       { labelKey: "nav.ppi",          url: "/ppi",           icon: ClipboardCheck },
       { labelKey: "nav.dailyReports", url: "/daily-reports", icon: ClipboardList },
-      { labelKey: "nav.planning",     url: "/planning",      icon: CalendarClock },
       { labelKey: "nav.topography",   url: "/topography",    icon: Crosshair },
     ],
   },
@@ -66,15 +66,15 @@ const NAV_SECTIONS: SidebarSection[] = [
     sectionIcon: CheckSquare,
     collapsible: true,
     items: [
-      { labelKey: "nav.nonConformities", url: "/non-conformities", icon: AlertTriangle },
-      { labelKey: "nav.actionPlan",      url: "/action-plan",      icon: ClipboardList },
-      { labelKey: "nav.tests",           url: "/tests",            icon: FlaskConical },
-      { labelKey: "nav.testSchedule",    url: "/tests/schedule",   icon: CalendarClock },
       { labelKey: "nav.materials",       url: "/materials",        icon: Package },
       { labelKey: "nav.recycledMaterials", url: "/recycled-materials", icon: Leaf },
-      { labelKey: "nav.subcontractors",  url: "/subcontractors",   icon: HardHat },
       { labelKey: "nav.suppliers",       url: "/suppliers",        icon: Truck },
+      { labelKey: "nav.subcontractors",  url: "/subcontractors",   icon: HardHat },
       { labelKey: "nav.laboratories",    url: "/laboratories",     icon: Building2 },
+      { labelKey: "nav.tests",           url: "/tests",            icon: FlaskConical },
+      { labelKey: "nav.testSchedule",    url: "/tests/schedule",   icon: CalendarClock },
+      { labelKey: "nav.nonConformities", url: "/non-conformities", icon: AlertTriangle },
+      { labelKey: "nav.actionPlan",      url: "/action-plan",      icon: ClipboardList },
     ],
   },
   {
@@ -82,11 +82,11 @@ const NAV_SECTIONS: SidebarSection[] = [
     sectionIcon: FileStack,
     collapsible: true,
     items: [
-      { labelKey: "nav.documents",       url: "/documents",        icon: FileText },
-      { labelKey: "nav.submittals",      url: "/submittals",       icon: FileCheck },
       { labelKey: "nav.technicalOffice", url: "/technical-office", icon: Inbox },
       { labelKey: "nav.plans",           url: "/plans",            icon: BookOpen },
       { labelKey: "nav.dfo",             url: "/dfo",              icon: FolderKanban },
+      { labelKey: "nav.documents",       url: "/documents",        icon: FileText },
+      { labelKey: "nav.submittals",      url: "/submittals",       icon: FileCheck },
       { labelKey: "nav.audits",          url: "/audits",           icon: FileCheck },
       { labelKey: "nav.training",        url: "/training",         icon: GraduationCap },
     ],
@@ -96,11 +96,11 @@ const NAV_SECTIONS: SidebarSection[] = [
     sectionIcon: PieChart,
     collapsible: true,
     items: [
-      { labelKey: "nav.qcReport",      url: "/reports/qc",     icon: BarChart3 },
-      { labelKey: "nav.monthlyReport",  url: "/reports/monthly", icon: FileBarChart2 },
       { labelKey: "nav.traceability",   url: "/traceability",   icon: Link2 },
       { labelKey: "nav.deadlines",      url: "/deadlines",      icon: Clock },
       { labelKey: "nav.expirations",    url: "/expirations",    icon: AlertTriangle },
+      { labelKey: "nav.qcReport",      url: "/reports/qc",     icon: BarChart3 },
+      { labelKey: "nav.monthlyReport",  url: "/reports/monthly", icon: FileBarChart2 },
       { labelKey: "nav.sgqMatrix",      url: "/sgq-matrix",     icon: ShieldCheck },
     ],
   },
@@ -110,14 +110,36 @@ const NAV_SECTIONS: SidebarSection[] = [
     collapsible: true,
     items: [
       { labelKey: "nav.orgChart",  url: "/org-chart",    icon: Users },
+      { labelKey: "nav.settings",  url: "/settings",      icon: Settings,    adminOnly: true },
       { labelKey: "nav.auditLog",  url: "/audit-log",    icon: ScrollText,  requiredAction: "viewAudit" },
       { labelKey: "nav.health",    url: "/admin/health",  icon: ShieldCheck, adminOnly: true },
-      { labelKey: "nav.settings",  url: "/settings",      icon: Settings,    adminOnly: true },
     ],
   },
 ];
 
-/* ── Section Header (accordion trigger) ──────────────────────── */
+/* ── localStorage persistence for open sections ──────────────── */
+
+const SIDEBAR_SECTIONS_KEY = "atlas_sidebar_sections";
+
+function loadOpenSections(): Set<string> {
+  try {
+    const raw = localStorage.getItem(SIDEBAR_SECTIONS_KEY);
+    if (raw) {
+      const arr = JSON.parse(raw);
+      if (Array.isArray(arr)) return new Set(arr);
+    }
+  } catch { /* ignore */ }
+  // Default: all sections open
+  return new Set(NAV_SECTIONS.filter(s => s.collapsible).map(s => s.sectionKey));
+}
+
+function saveOpenSections(sections: Set<string>) {
+  try {
+    localStorage.setItem(SIDEBAR_SECTIONS_KEY, JSON.stringify([...sections]));
+  } catch { /* ignore */ }
+}
+
+/* ── Section Header ──────────────────────────────────────────── */
 
 function SectionHeader({
   label, sectionIcon: Icon, collapsed, open, onToggle, hasActive, collapsible,
@@ -138,7 +160,7 @@ function SectionHeader({
         "flex items-center w-full rounded-lg transition-all duration-150 group/header",
         collapsed ? "justify-center mx-1.5 min-h-[40px]" : "gap-2.5 px-3 mx-1.5 min-h-[36px]",
         collapsible && "cursor-pointer",
-        hasActive && !open
+        hasActive
           ? "text-sidebar-primary"
           : "text-sidebar-foreground/45 hover:text-sidebar-foreground/75",
       )}
@@ -199,7 +221,7 @@ function NavItem({ item, active, collapsed, onClose }: {
         "transition-all duration-150",
         collapsed ? "justify-center px-0 mx-1.5 min-h-[38px]" : "px-3 mx-1.5 min-h-[34px] pl-9",
         active
-          ? "bg-sidebar-accent text-sidebar-accent-foreground"
+          ? "bg-sidebar-accent text-sidebar-accent-foreground font-semibold"
           : "text-sidebar-foreground/55 hover:text-sidebar-foreground/90 hover:bg-sidebar-accent/50"
       )}
     >
@@ -212,7 +234,10 @@ function NavItem({ item, active, collapsed, onClose }: {
         active ? "text-sidebar-primary" : "opacity-50 group-hover:opacity-75"
       )} />
       {!collapsed && (
-        <span className="truncate leading-none text-[12px] tracking-[0.01em]">{t(item.labelKey)}</span>
+        <span className={cn(
+          "truncate leading-none text-[12px] tracking-[0.01em]",
+          active && "text-sidebar-primary"
+        )}>{t(item.labelKey)}</span>
       )}
     </NavLink>
   );
@@ -256,16 +281,28 @@ function SidebarContent({ collapsed, onClose }: { collapsed: boolean; onClose?: 
     return "core";
   }, [isActive]);
 
-  // Accordion state: only one section open at a time
-  const [expandedSection, setExpandedSection] = useState<string | null>(activeSectionKey);
+  // Multi-open sections state (persisted in localStorage)
+  const [openSections, setOpenSections] = useState<Set<string>>(loadOpenSections);
 
-  // Auto-expand when route changes
+  // Ensure active section is always open
   useEffect(() => {
-    setExpandedSection(activeSectionKey);
+    setOpenSections(prev => {
+      if (prev.has(activeSectionKey)) return prev;
+      const next = new Set(prev);
+      next.add(activeSectionKey);
+      saveOpenSections(next);
+      return next;
+    });
   }, [activeSectionKey]);
 
   const toggleSection = useCallback((key: string) => {
-    setExpandedSection(prev => prev === key ? null : key);
+    setOpenSections(prev => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      saveOpenSections(next);
+      return next;
+    });
   }, []);
 
   return (
@@ -317,7 +354,7 @@ function SidebarContent({ collapsed, onClose }: { collapsed: boolean; onClose?: 
           if (filteredItems.length === 0) return null;
 
           const hasActive = filteredItems.some(item => isActive(item.url, item.exact));
-          const isOpen = expandedSection === section.sectionKey || !section.collapsible;
+          const isOpen = openSections.has(section.sectionKey) || !section.collapsible;
 
           // Core section: render items directly (Dashboard)
           if (!section.collapsible) {

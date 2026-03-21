@@ -45,6 +45,12 @@ const MODULES = [
   "survey",
   "technical_office",
   "plans",
+  "materials",
+  "ppi_instances",
+  "ppi_templates",
+  "work_items",
+  "planning",
+  "Reports",
 ];
 
 export default function AuditLogPage() {
@@ -55,8 +61,9 @@ export default function AuditLogPage() {
   const [dateFrom, setDateFrom]         = useState("");
   const [dateTo, setDateTo]             = useState("");
   const [applied, setApplied]           = useState<{ module?: string; dateFrom?: string; dateTo?: string }>({});
+  const [applyCount, setApplyCount]     = useState(0);
 
-  const { data: entries, loading, error } = useAuditLog(applied);
+  const { data: entries, loading, error, refetch } = useAuditLog(applied);
 
   if (!activeProject) return <NoProjectBanner />;
 
@@ -66,6 +73,8 @@ export default function AuditLogPage() {
       dateFrom: dateFrom || undefined,
       dateTo: dateTo || undefined,
     });
+    // Force refetch even if filters are the same
+    setTimeout(() => refetch(), 0);
   };
 
   const handleReset = () => {

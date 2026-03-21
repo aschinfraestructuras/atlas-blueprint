@@ -208,6 +208,14 @@ export default function DeadlinesPage() {
     const base = SOURCE_ROUTES[item.source] ?? "/expirations";
     const listRoute = SOURCE_LIST_ROUTES[item.source] ?? "/expirations";
     const id = item.entity_id;
+
+    // Sources that have no detail page — always navigate to list
+    const listOnlySources = new Set(["calibration", "planning_due", "hp_notification"]);
+    if (listOnlySources.has(item.source)) {
+      navigate(listRoute);
+      return;
+    }
+
     // Guard: only navigate to detail if we have a valid-looking UUID
     const isValidId = id && id !== "undefined" && id !== "null" && /^[0-9a-f-]{36}$/i.test(id);
     if (isValidId) {

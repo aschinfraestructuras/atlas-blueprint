@@ -104,6 +104,20 @@ export function MainLayout({ children }: MainLayoutProps) {
             {isArchived && <ArchivedBanner />}
             {children}
           </div>
+          {/* Discrete footer */}
+          <footer className="border-t border-border/30 bg-muted/10 py-3 px-4 sm:px-6 lg:px-8">
+            <div className="mx-auto max-w-7xl flex flex-col sm:flex-row items-center justify-between gap-1 text-[10px] text-muted-foreground/50">
+              <span>Atlas QMS · {t("auth.qmsLabel")}</span>
+              <a
+                href="https://www.linkedin.com/in/antunesmartins/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-muted-foreground/70 transition-colors"
+              >
+                linkedin.com/in/antunesmartins
+              </a>
+            </div>
+          </footer>
         </main>
       </div>
       <SessionTimeoutWarning open={showWarning} onExtend={extendSession} />
