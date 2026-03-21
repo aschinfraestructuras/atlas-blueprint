@@ -4026,5 +4026,8 @@
       "updated": "Submittal atualizado",
       "deleted": "Submittal eliminado"
     }
+  },
+  "fieldRecords": {
+    "empty": "Sem grelhas de registo associadas a esta inspeção."
   }
 }
