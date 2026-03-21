@@ -60,6 +60,8 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
   const [notes, setNotes] = useState("");
   const [rfiRef, setRfiRef] = useState("");
   const [creating, setCreating] = useState(false);
+  const [earlyOverride, setEarlyOverride] = useState(false);
+  const [earlyReason, setEarlyReason] = useState("");
 
   // Confirm dialog
   const [confirmingId, setConfirmingId] = useState<string | null>(null);
