@@ -606,7 +606,7 @@ export function exportNotHpPdf(
       </div>
     </div>
     <div class="meta">
-      <div class="code-title">${notification.code}</div>
+      <div class="code-title">${esc(notification.code)}</div>
       <div class="gen">Emitido: ${fmtDateTime(notification.notified_at, locale)}</div>
     </div>
   </div>
