@@ -143,7 +143,8 @@ export function ReadinessPanel() {
         nm.set(wiId, (nm.get(wiId) ?? 0) + 1);
       }
       setNcMap(nm);
-    }).finally(() => setSubLoading(false));
+    };
+    fetchData().finally(() => setSubLoading(false));
   }, [activeProject, workItems]);
 
   // Build readiness rows
