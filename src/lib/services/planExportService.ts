@@ -6,6 +6,7 @@ import {
 import { fullPdfHeader } from "./pdfProjectHeader";
 import type { Plan } from "./planService";
 import type { DocumentVersion } from "./documentService";
+import { esc } from "@/lib/utils/escapeHtml";
 
 const labels = (locale: string): ReportLabels => ({
   appName: "Atlas QMS",
