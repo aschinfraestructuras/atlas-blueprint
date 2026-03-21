@@ -219,7 +219,7 @@ function buildSinglePdfHtml(
           ${iptTypeBadge(it.inspection_point_type)}
         </td>
         <td style="padding:4px 5px;font-size:10px;vertical-align:top;">
-          <div>${it.label} ${ncBadge}</div>
+          <div>${esc(it.label)} ${ncBadge}</div>
           ${criteriaHtml}
           ${methodHtml}
         </td>
