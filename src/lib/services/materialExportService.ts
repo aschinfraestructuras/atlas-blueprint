@@ -251,12 +251,10 @@ export function exportFavPdf(
   const today = new Date().toLocaleDateString("pt-PT");
   const header = fullPdfHeader(
     logoBase64 ?? null,
-    `LINHA DO SUL — ${projectCode}`,
+    projectName ?? projectCode,
     material.pame_code ?? material.code,
     "0",
     today,
-    "ACE ASCH Infraestructuras + Cimontubo",
-    "IP — Infraestruturas de Portugal, S.A.",
   );
 
   const html = `<!DOCTYPE html>
