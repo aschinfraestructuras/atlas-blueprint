@@ -24,7 +24,7 @@ export function exportWbsPdf(data: WbsNode[], meta: ReportMeta, logoBase64?: str
   const header = fullPdfHeader(logoBase64 ?? null, meta.projectName ?? meta.projectCode, "WBS-LISTA", "0", today);
   const columns = ["Código", "Descrição", "Zona", "Início", "Fim", "Responsável"];
   const rows = data.map(w => [w.wbs_code, w.description, w.zone ?? "—", w.planned_start ?? "—", w.planned_end ?? "—", w.responsible ?? "—"]);
-  const tableRows = rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join("")}</tr>`).join("");
+  const tableRows = rows.map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join("")}</tr>`).join("");
 
   const html = `<!DOCTYPE html><html lang="${meta.locale}"><head><meta charset="UTF-8"/><title>WBS — Atlas QMS</title>
 <style>${sharedCss()}</style></head><body>
