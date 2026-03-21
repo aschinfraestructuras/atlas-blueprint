@@ -83,14 +83,14 @@ export function exportBeCampoPdf(
 
   ${projectInfoStripHtml()}
 
-  <h3>1. Identificação</h3>
+   <h3>1. Identificação</h3>
   <div class="info-grid">
-    <div><span class="label">Código BE</span><br/><span class="value">${code}</span></div>
+    <div><span class="label">Código BE</span><br/><span class="value">${esc(code)}</span></div>
     <div><span class="label">Data</span><br/><span class="value">${fmtDate(result.date)}</span></div>
-    <div><span class="label">GR Associada</span><br/><span class="value">${result.gr_code ?? (result.gr_id ? result.gr_id.slice(0, 8) + "…" : "—")}</span></div>
-    <div><span class="label">Ref. PPI</span><br/><span class="value">${tc?.code ?? "—"}</span></div>
-    <div><span class="label">PK / Localização</span><br/><span class="value">${result.location_pk ?? result.location ?? "—"}</span></div>
-    <div><span class="label">Responsável</span><br/><span class="value">${result.created_by ?? "—"}</span></div>
+    <div><span class="label">GR Associada</span><br/><span class="value">${esc(result.gr_code ?? (result.gr_id ? result.gr_id.slice(0, 8) + "…" : "—"))}</span></div>
+    <div><span class="label">Ref. PPI</span><br/><span class="value">${esc(tc?.code)}</span></div>
+    <div><span class="label">PK / Localização</span><br/><span class="value">${esc(result.location_pk ?? result.location)}</span></div>
+    <div><span class="label">Responsável</span><br/><span class="value">${esc(result.created_by)}</span></div>
   </div>
 
   <h3>2. Tipo de Ensaio</h3>
