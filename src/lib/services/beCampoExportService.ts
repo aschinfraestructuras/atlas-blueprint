@@ -121,7 +121,7 @@ export function exportBeCampoPdf(
   </div>
 
   <div class="result-box">${resultLabel}</div>
-  ${result.notes ? `<p style="margin-top:12px;font-size:10px"><strong>Observações:</strong> ${result.notes}</p>` : ""}
+  ${result.notes ? `<p style="margin-top:12px;font-size:10px"><strong>Observações:</strong> ${esc(result.notes)}</p>` : ""}
 
   <div class="sig-row">
     <div class="sig-block">

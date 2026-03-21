@@ -103,7 +103,7 @@ export function exportActivityDetailPdf(
   }
 
   const constraintHtml = activity.constraints_text
-    ? `<div class="atlas-section">${meta.locale === "pt" ? "Restrições" : "Restricciones"}</div><p style="font-size:10px">${activity.constraints_text}</p>`
+    ? `<div class="atlas-section">${meta.locale === "pt" ? "Restrições" : "Restricciones"}</div><p style="font-size:10px">${esc(activity.constraints_text)}</p>`
     : "";
 
   const html = `<!DOCTYPE html><html lang="${meta.locale}"><head><meta charset="UTF-8"/><title>${title} — Atlas QMS</title>

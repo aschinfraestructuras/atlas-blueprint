@@ -423,24 +423,24 @@ function buildBulkHtml(
     const pf      = r.pass_fail ?? r.status;
     const pfColor = verdictColor(r.pass_fail, r.status);
     const pfLabel = labels.passFailLabels[pf] ?? labels.statuses[pf] ?? pf;
-    const wi      = (r.work_items as { sector?: string } | null)?.sector ?? "—";
+    const wi      = esc((r.work_items as { sector?: string } | null)?.sector);
     return `
 <tr>
-  <td class="mono" style="font-size:10px;white-space:nowrap">${r.code ?? "—"}</td>
+  <td class="mono" style="font-size:10px;white-space:nowrap">${esc(r.code)}</td>
   <td>
-    <div style="font-weight:600;font-size:11px">${tc?.name ?? "—"}</div>
-    <div style="font-size:8.5px;color:${BRAND.muted};font-family:monospace">${tc?.code ?? ""}</div>
+    <div style="font-weight:600;font-size:11px">${esc(tc?.name)}</div>
+    <div style="font-size:8.5px;color:${BRAND.muted};font-family:monospace">${esc(tc?.code)}</div>
   </td>
   <td style="font-size:10px">${wi}</td>
-  <td style="font-size:10px">${r.sample_ref ?? "—"}</td>
-  <td style="font-size:10px">${r.location ?? (r.pk_inicio != null ? `PK ${r.pk_inicio}` : "—")}</td>
+  <td style="font-size:10px">${esc(r.sample_ref)}</td>
+  <td style="font-size:10px">${esc(r.location) !== "—" ? esc(r.location) : (r.pk_inicio != null ? `PK ${r.pk_inicio}` : "—")}</td>
   <td style="font-size:10px;white-space:nowrap">${fmtDate(r.date, locale)}</td>
   <td>
     <span class="badge" style="color:${pfColor};background:${pfColor}1A;border:1px solid ${pfColor}40">
-      ${pfLabel}
+      ${esc(pfLabel)}
     </span>
   </td>
-  <td style="font-size:10px;font-family:monospace">${r.report_number ?? "—"}</td>
+  <td style="font-size:10px;font-family:monospace">${esc(r.report_number)}</td>
 </tr>`;
   }).join("");
 

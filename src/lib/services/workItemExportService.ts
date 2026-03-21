@@ -159,10 +159,10 @@ function buildConsolidatedHtml(
   const pkStr = formatPk(item.pk_inicio, item.pk_fim);
 
   const infoRows = [
-    [labels.sector, item.sector], [labels.discipline, discLabel],
-    [labels.obra, item.obra ?? "—"], [labels.lote, item.lote ?? "—"],
-    [labels.elemento, item.elemento ?? "—"], [labels.parte, item.parte ?? "—"],
-    [labels.pk, pkStr], [labels.status, stLabel],
+    [labels.sector, esc(item.sector)], [labels.discipline, esc(discLabel)],
+    [labels.obra, esc(item.obra)], [labels.lote, esc(item.lote)],
+    [labels.elemento, esc(item.elemento)], [labels.parte, esc(item.parte)],
+    [labels.pk, pkStr], [labels.status, esc(stLabel)],
     [labels.createdAt, fmtDate(item.created_at, locale)],
   ].map(([l, v]) => `<div style="display:flex;flex-direction:column;"><span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:${BRAND.muted};margin-bottom:2px;">${l}</span><span style="font-size:11px;color:${BRAND.text};">${v}</span></div>`).join("");
 
