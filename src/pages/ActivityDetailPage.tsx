@@ -21,7 +21,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import {
   ArrowLeft, CheckCircle2, AlertTriangle, XCircle, ExternalLink,
-  ClipboardList, MapPin, Wrench, FlaskConical, ShieldCheck, HardHat
+  ClipboardList, MapPin, Wrench, FlaskConical, ShieldCheck, HardHat, Construction
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
