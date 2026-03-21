@@ -2141,6 +2141,8 @@
   "workItems": {
     "title": "Atividades",
     "subtitle": "Gestão de frentes de obra e sectores",
+    "linkedActivity": "Atividade de planeamento",
+    "viewInPlanning": "Ver no planeamento →",
     "module": "Módulo",
     "new": "Nova Atividade",
     "count_one": "{{count}} item",
