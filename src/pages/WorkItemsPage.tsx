@@ -5,6 +5,8 @@ import {
   Plus, Search, Construction, Pencil, Trash2, Eye, ClipboardCheck, Loader2,
   ShieldCheck, ShieldAlert, AlertTriangle, FlaskConical, Copy, ChevronDown, ChevronRight, Bell,
 } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ReadinessPanel } from "@/components/work-items/ReadinessPanel";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import {
   exportToCSV,
