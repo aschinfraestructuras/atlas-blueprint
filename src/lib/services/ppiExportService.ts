@@ -10,6 +10,7 @@
 import type { PpiInstance, PpiInstanceItem } from "./ppiService";
 import type { HpNotification } from "./hpNotificationService";
 import { projectInfoStripHtml } from "./pdfProjectHeader";
+import { esc } from "@/lib/utils/escapeHtml";
 
 // ─── Shared types ─────────────────────────────────────────────────────────────
 
@@ -153,7 +154,7 @@ function iptBadge(val: string | null | undefined): string {
   const v = val?.toUpperCase() ?? "N/A";
   const color = val === "hp" ? BRAND.hp : val === "wp" ? BRAND.wp : val === "rp" ? BRAND.rp : BRAND.muted;
   const bg = val === "hp" ? "#FEF2F2" : val === "wp" ? "#FFFBEB" : val === "rp" ? "#EFF6FF" : "#F3F4F6";
-  return `<span style="display:inline-block;padding:1px 5px;border-radius:3px;font-size:9px;font-weight:700;background:${bg};color:${color};">${v}</span>`;
+  return `<span style="display:inline-block;padding:1px 5px;border-radius:3px;font-size:9px;font-weight:700;background:${bg};color:${color};">${esc(v)}</span>`;
 }
 
 function iptTypeBadge(ipt: string | null | undefined): string {
@@ -205,10 +206,10 @@ function buildSinglePdfHtml(
 
     // Build item cell with acceptance_criteria and method
     const criteriaHtml = it.acceptance_criteria
-      ? `<div style="font-size:9px;color:${BRAND.textLight};font-style:italic;margin-top:2px;">${it.acceptance_criteria}</div>`
+      ? `<div style="font-size:9px;color:${BRAND.textLight};font-style:italic;margin-top:2px;">${esc(it.acceptance_criteria)}</div>`
       : "";
     const methodHtml = it.method
-      ? `<div style="font-size:8px;color:${BRAND.muted};margin-top:1px;">${it.method}</div>`
+      ? `<div style="font-size:8px;color:${BRAND.muted};margin-top:1px;">${esc(it.method)}</div>`
       : "";
 
     return `${phaseRow}
@@ -218,7 +219,7 @@ function buildSinglePdfHtml(
           ${iptTypeBadge(it.inspection_point_type)}
         </td>
         <td style="padding:4px 5px;font-size:10px;vertical-align:top;">
-          <div>${it.label} ${ncBadge}</div>
+          <div>${esc(it.label)} ${ncBadge}</div>
           ${criteriaHtml}
           ${methodHtml}
         </td>
@@ -231,7 +232,7 @@ function buildSinglePdfHtml(
             ${rLabel}
           </span>
         </td>
-        <td style="padding:4px 5px;font-size:9px;color:${BRAND.textLight};vertical-align:top;">${it.notes ?? "—"}</td>
+        <td style="padding:4px 5px;font-size:9px;color:${BRAND.textLight};vertical-align:top;">${esc(it.notes) || "—"}</td>
         <td style="width:65px;padding:4px 3px;font-size:8px;color:${BRAND.textLight};vertical-align:top;">${fmtDate(it.checked_at, locale)}</td>
       </tr>`;
   }).join("");
@@ -301,12 +302,12 @@ function buildSinglePdfHtml(
     <div class="brand">
       ${logoUrl ? `<img src="${logoUrl}" class="brand-logo" />` : `<div class="brand-bar"></div>`}
       <div class="brand-text">
-        <div class="app">${labels.appName}</div>
+        <div class="app">${esc(labels.appName)}</div>
         <div class="sub">Quality Management System</div>
       </div>
     </div>
     <div class="meta">
-      <div class="report-title">${labels.reportTitle}</div>
+      <div class="report-title">${esc(labels.reportTitle)}</div>
       <div class="gen">${labels.generatedOn}: ${fmtDate(new Date().toISOString(), locale)}</div>
     </div>
   </div>
@@ -317,27 +318,27 @@ function buildSinglePdfHtml(
   <div class="info-grid">
     <div class="info-row">
       <span class="info-label">${labels.project}</span>
-      <span class="info-value">${projectName}</span>
+      <span class="info-value">${esc(projectName)}</span>
     </div>
     <div class="info-row">
       <span class="info-label">${labels.code}</span>
-      <span class="info-value" style="font-family:monospace;font-weight:700;">${inst.code}</span>
+      <span class="info-value" style="font-family:monospace;font-weight:700;">${esc(inst.code)}</span>
     </div>
     <div class="info-row">
       <span class="info-label">${labels.template}</span>
-      <span class="info-value" style="font-family:monospace;font-size:9px;">${inst.template_code ?? "—"}</span>
+      <span class="info-value" style="font-family:monospace;font-size:9px;">${esc(inst.template_code) || "—"}</span>
     </div>
     <div class="info-row">
       <span class="info-label">${labels.workItem}</span>
-      <span class="info-value">${inst.work_item_sector ?? inst.work_item_id.slice(0, 8)}</span>
+      <span class="info-value">${esc(inst.work_item_sector ?? inst.work_item_id.slice(0, 8))}</span>
     </div>
     <div class="info-row">
       <span class="info-label">${labels.discipline}</span>
-      <span class="info-value">${disciplina}</span>
+      <span class="info-value">${esc(disciplina)}</span>
     </div>
     <div class="info-row">
       <span class="info-label">${labels.status}</span>
-      <span class="status-badge">${statusLabel}</span>
+      <span class="status-badge">${esc(statusLabel)}</span>
     </div>
     <div class="info-row">
       <span class="info-label">${labels.inspectionDate}</span>
@@ -408,8 +409,8 @@ function buildSinglePdfHtml(
 
   <!-- Footer -->
   <div class="footer">
-    <span>${labels.appName} · Quality Management System</span>
-    <span>${inst.code} · ${statusLabel}</span>
+    <span>${esc(labels.appName)} · Quality Management System</span>
+    <span>${esc(inst.code)} · ${esc(statusLabel)}</span>
   </div>
 </body>
 </html>`;
@@ -600,12 +601,12 @@ export function exportNotHpPdf(
     <div class="brand">
       <div class="brand-bar"></div>
       <div class="brand-text">
-        <div class="app">${labels.appName}</div>
+        <div class="app">${esc(labels.appName)}</div>
         <div class="sub">Notificação Hold Point (48h)</div>
       </div>
     </div>
     <div class="meta">
-      <div class="code-title">${notification.code}</div>
+      <div class="code-title">${esc(notification.code)}</div>
       <div class="gen">Emitido: ${fmtDateTime(notification.notified_at, locale)}</div>
     </div>
   </div>
@@ -618,33 +619,33 @@ export function exportNotHpPdf(
   <div class="info-grid">
     <div class="info-row">
       <span class="info-label">Projeto</span>
-      <span class="info-value">${projectName}</span>
+      <span class="info-value">${esc(projectName)}</span>
     </div>
     <div class="info-row">
       <span class="info-label">Código NOT-HP</span>
-      <span class="info-value" style="font-family:monospace;font-weight:700;">${notification.code}</span>
+      <span class="info-value" style="font-family:monospace;font-weight:700;">${esc(notification.code)}</span>
     </div>
     <div class="info-row">
       <span class="info-label">Referência PPI</span>
-      <span class="info-value" style="font-family:monospace;">${notification.ppi_ref}</span>
+      <span class="info-value" style="font-family:monospace;">${esc(notification.ppi_ref)}</span>
     </div>
     <div class="info-row">
       <span class="info-label">Ponto de Inspeção</span>
-      <span class="info-value" style="font-weight:700;">${notification.point_no}</span>
+      <span class="info-value" style="font-weight:700;">${esc(notification.point_no)}</span>
     </div>
     <div class="info-row" style="grid-column:span 2;">
       <span class="info-label">Actividade</span>
-      <span class="info-value">${notification.activity}</span>
+      <span class="info-value">${esc(notification.activity)}</span>
     </div>
     ${notification.location_pk ? `
     <div class="info-row">
       <span class="info-label">Localização / PK</span>
-      <span class="info-value">${notification.location_pk}</span>
+      <span class="info-value">${esc(notification.location_pk)}</span>
     </div>` : ""}
     ${notification.notes ? `
     <div class="info-row" style="grid-column:span 2;">
       <span class="info-label">Observações</span>
-      <span class="info-value">${notification.notes}</span>
+      <span class="info-value">${esc(notification.notes)}</span>
     </div>` : ""}
   </div>
 
@@ -666,8 +667,8 @@ export function exportNotHpPdf(
   </div>
 
   <div class="footer">
-    <span>${labels.appName} · Quality Management System</span>
-    <span>${notification.code} · ${notification.ppi_ref}</span>
+    <span>${esc(labels.appName)} · Quality Management System</span>
+    <span>${esc(notification.code)} · ${esc(notification.ppi_ref)}</span>
   </div>
 </body>
 </html>`;
