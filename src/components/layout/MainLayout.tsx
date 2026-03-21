@@ -106,6 +106,12 @@ export function MainLayout({ children }: MainLayoutProps) {
         <main className="flex-1 overflow-y-auto bg-muted/20">
           <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
             {isArchived && <ArchivedBanner />}
+            {isViewer && (
+              <div className="flex items-center gap-2 mb-4 px-4 py-2.5 rounded-lg border bg-primary/5 border-primary/20 text-primary">
+                <Eye className="h-4 w-4 flex-shrink-0" />
+                <span className="text-xs">{t("viewer.banner", { defaultValue: "Acesso de visualização — Fiscalização / IP · Apenas leitura e exportação" })}</span>
+              </div>
+            )}
             {children}
           </div>
           {/* Discrete footer */}
