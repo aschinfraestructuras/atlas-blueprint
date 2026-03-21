@@ -403,7 +403,20 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
+                  {(n as any).advance_notice_override && (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Badge variant="outline" className="text-[10px] border-amber-400/40 bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400 gap-0.5">
+                          <AlertTriangle className="h-2.5 w-2.5" />
+                          {t("ppi.hpNotification.earlyBadge", { defaultValue: "Antecipado" })}
+                        </Badge>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="max-w-xs text-xs">
+                        {(n as any).advance_notice_reason || "—"}
+                      </TooltipContent>
+                    </Tooltip>
+                  )}
                   {(n as any).rfi_ref && (
                     <span className="text-[10px] font-mono text-primary">RFI: {(n as any).rfi_ref}</span>
                   )}
