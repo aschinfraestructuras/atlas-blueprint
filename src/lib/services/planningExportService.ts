@@ -20,7 +20,7 @@ export function exportWbsCsv(data: WbsNode[], meta: ReportMeta) {
 
 export function exportWbsPdf(data: WbsNode[], meta: ReportMeta, logoBase64?: string | null) {
   const today = new Date().toLocaleDateString("pt-PT");
-  const header = fullPdfHeader(logoBase64 ?? null, `LINHA DO SUL — ${meta.projectCode}`, "WBS-LISTA", "0", today);
+  const header = fullPdfHeader(logoBase64 ?? null, meta.projectName ?? meta.projectCode, "WBS-LISTA", "0", today);
   const columns = ["Código", "Descrição", "Zona", "Início", "Fim", "Responsável"];
   const rows = data.map(w => [w.wbs_code, w.description, w.zone ?? "—", w.planned_start ?? "—", w.planned_end ?? "—", w.responsible ?? "—"]);
   const tableRows = rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join("")}</tr>`).join("");
