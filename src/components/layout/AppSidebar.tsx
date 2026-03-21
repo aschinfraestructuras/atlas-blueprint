@@ -9,7 +9,7 @@ import {
   ShieldCheck, ChevronLeft, ChevronRight, X, ChevronDown,
   Inbox, BookOpen, HardHat, Construction, ClipboardCheck, Crosshair, CalendarClock,
   Clock, FileCheck, BarChart3, Building2, ClipboardList, Leaf, GraduationCap, FileBarChart2,
-  Users, Link2, Hammer, CheckSquare, FileStack, PieChart, Cog,
+  Users, Link2, Hammer, CheckSquare, FileStack, PieChart, Cog, CalendarCheck,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { cn } from "@/lib/utils";
