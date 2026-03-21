@@ -276,6 +276,14 @@
     },
     "noAudit": "Sem auditorias planeadas",
     "modules": "Módulos",
+    "hpPending": "HPs Sem Confirmação",
+    "expirations": {
+      "subtitle": "Documentos e calibrações a expirar nos próximos 30 dias"
+    },
+    "conformityByFrente": {
+      "title": "Conformidade por Frente de Obra",
+      "empty": "Sem frentes de obra ativas"
+    },
     "alerts": {
       "title": "Alertas",
       "ncOpen": "NCs Abertas",
