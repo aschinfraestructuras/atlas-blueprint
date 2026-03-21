@@ -48,7 +48,7 @@ export function exportActivitiesPdf(data: Activity[], meta: ReportMeta, logoBase
   const header = fullPdfHeader(logoBase64 ?? null, meta.projectName ?? meta.projectCode, "ACT-LISTA", "0", today);
   const columns = ["Descrição", "WBS", "Zona", "Estado", "Progresso", "Datas"];
   const rows = data.map(a => [a.description, a.wbs_code ?? "—", a.zone ?? "—", a.status, `${a.progress_pct}%`, `${a.planned_start ?? "?"} → ${a.planned_end ?? "?"}`]);
-  const tableRows = rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join("")}</tr>`).join("");
+  const tableRows = rows.map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join("")}</tr>`).join("");
 
   const html = `<!DOCTYPE html><html lang="${meta.locale}"><head><meta charset="UTF-8"/><title>${title} — Atlas QMS</title>
 <style>${sharedCss()}</style></head><body>
