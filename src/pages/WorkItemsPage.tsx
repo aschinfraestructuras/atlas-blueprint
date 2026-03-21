@@ -454,6 +454,7 @@ export default function WorkItemsPage() {
     <div className="space-y-6 animate-fade-in">
 
       {/* ── Header ──────────────────────────────────────────────────── */}
+
       <PageHeader
         module={t("workItems.module")}
         title={t("workItems.title")}
