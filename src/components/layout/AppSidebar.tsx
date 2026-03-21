@@ -269,7 +269,10 @@ function SidebarContent({ collapsed, onClose }: { collapsed: boolean; onClose?: 
   const location = useLocation();
   const { can, isAdmin, role } = useProjectRole();
   const { logoUrl } = useProjectLogo();
+  const { activeProject } = useProject();
+  const { health, loading: healthLoading } = useProjectHealth(activeProject?.id);
   const isViewer = role === "viewer";
+  const [healthSheetOpen, setHealthSheetOpen] = useState(false);
 
   const isActive = useCallback(
     (url: string, exact?: boolean) =>
