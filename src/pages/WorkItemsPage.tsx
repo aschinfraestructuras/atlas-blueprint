@@ -5,6 +5,8 @@ import {
   Plus, Search, Construction, Pencil, Trash2, Eye, ClipboardCheck, Loader2,
   ShieldCheck, ShieldAlert, AlertTriangle, FlaskConical, Copy, ChevronDown, ChevronRight, Bell,
 } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ReadinessPanel } from "@/components/work-items/ReadinessPanel";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import {
   exportToCSV,
@@ -452,6 +454,7 @@ export default function WorkItemsPage() {
     <div className="space-y-6 animate-fade-in">
 
       {/* ── Header ──────────────────────────────────────────────────── */}
+
       <PageHeader
         module={t("workItems.module")}
         title={t("workItems.title")}
@@ -522,89 +525,109 @@ export default function WorkItemsPage() {
         </span>
       </FilterBar>
 
-      {/* ── Grouped content ─────────────────────────────────────────── */}
-      {loading ? (
-        <div className="space-y-2">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="h-12 w-full rounded-lg" />
-          ))}
-        </div>
-      ) : filtered.length === 0 ? (
-        <EmptyState
-          icon={Construction}
-          titleKey="emptyState.title"
-          subtitleKey={
-            !search && filterDiscipline === "all" && filterStatus === "all"
-              ? "workItems.emptyState.subtitle"
-              : "emptyState.noResults"
-          }
-          {...(!search && filterDiscipline === "all" && filterStatus === "all"
-            ? { ctaKey: "emptyState.cta", onCta: openCreate }
-            : {})}
-        />
-      ) : (
-        <div className="space-y-3">
-          {groups.map((sectorGroup) => {
-            const sectorOpen = effectiveExpandedSectors.has(sectorGroup.sector);
-            const totalItems = sectorGroup.obraGroups.reduce((sum, og) => sum + og.items.length, 0);
+      {/* ── Tabs: Lista + Prontidão ───────────────────────────── */}
+      <Tabs defaultValue="list">
+        <TabsList>
+          <TabsTrigger value="list" className="gap-1.5">
+            <Construction className="h-3.5 w-3.5" />
+            {t("workItems.title")}
+          </TabsTrigger>
+          <TabsTrigger value="readiness" className="gap-1.5">
+            <ShieldCheck className="h-3.5 w-3.5" />
+            {t("workItems.readiness.tab")}
+          </TabsTrigger>
+        </TabsList>
 
-            return (
-              <Collapsible key={sectorGroup.sector} open={sectorOpen} onOpenChange={() => toggleSector(sectorGroup.sector)}>
-                <CollapsibleTrigger className="w-full">
-                  <div className="flex items-center gap-2 px-4 py-3 rounded-xl border border-border bg-card shadow-card hover:bg-muted/30 transition-colors cursor-pointer">
-                    {sectorOpen ? <ChevronDown className="h-4 w-4 text-muted-foreground" /> : <ChevronRight className="h-4 w-4 text-muted-foreground" />}
-                    <span className="font-semibold text-sm text-foreground">{sectorGroup.sector}</span>
-                    <Badge variant="secondary" className="text-[10px] ml-1">{totalItems}</Badge>
-                    <span className="flex-1" />
-                    {sectorGroup.obraGroups.length > 1 && (
-                      <span className="text-[10px] text-muted-foreground">{sectorGroup.obraGroups.length} {t("workItems.groups.obras")}</span>
-                    )}
-                  </div>
-                </CollapsibleTrigger>
-                <CollapsibleContent>
-                  <div className="ml-4 mt-2 space-y-2">
-                    {sectorGroup.obraGroups.map((obraGroup) => {
-                      const obraKey = `${sectorGroup.sector}::${obraGroup.obra}`;
-                      const obraOpen = effectiveExpandedObras.has(obraKey);
+        <TabsContent value="list" className="mt-4">
+          {/* ── Grouped content ─────────────────────────────────────────── */}
+          {loading ? (
+            <div className="space-y-2">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <Skeleton key={i} className="h-12 w-full rounded-lg" />
+              ))}
+            </div>
+          ) : filtered.length === 0 ? (
+            <EmptyState
+              icon={Construction}
+              titleKey="emptyState.title"
+              subtitleKey={
+                !search && filterDiscipline === "all" && filterStatus === "all"
+                  ? "workItems.emptyState.subtitle"
+                  : "emptyState.noResults"
+              }
+              {...(!search && filterDiscipline === "all" && filterStatus === "all"
+                ? { ctaKey: "emptyState.cta", onCta: openCreate }
+                : {})}
+            />
+          ) : (
+            <div className="space-y-3">
+              {groups.map((sectorGroup) => {
+                const sectorOpen = effectiveExpandedSectors.has(sectorGroup.sector);
+                const totalItems = sectorGroup.obraGroups.reduce((sum, og) => sum + og.items.length, 0);
 
-                      return (
-                        <Collapsible key={obraKey} open={obraOpen} onOpenChange={() => toggleObra(obraKey)}>
-                          <CollapsibleTrigger className="w-full">
-                            <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border/60 bg-muted/20 hover:bg-muted/40 transition-colors cursor-pointer">
-                              {obraOpen ? <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />}
-                              <span className="text-sm font-medium text-foreground">{obraGroup.obra}</span>
-                              <GroupSummary items={obraGroup.items} t={t} />
-                            </div>
-                          </CollapsibleTrigger>
-                          <CollapsibleContent>
-                            <div className="rounded-lg border border-border/40 overflow-hidden mt-1.5 ml-2 bg-card">
-                              <Table>
-                                <TableHeader>
-                                  <TableRow className="bg-muted/30 hover:bg-muted/30">
-                                    <TableHead className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">{t("workItems.table.discipline")}</TableHead>
-                                    <TableHead className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">{t("workItems.table.element")}</TableHead>
-                                    <TableHead className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">{t("workItems.table.pk")}</TableHead>
-                                    <TableHead className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">{t("workItems.table.status")}</TableHead>
-                                    <TableHead className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">{t("workItems.table.readiness")}</TableHead>
-                                    <TableHead className="text-right text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">{t("workItems.table.actions")}</TableHead>
-                                  </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                  {obraGroup.items.map((item, idx) => renderItemRow(item, idx))}
-                                </TableBody>
-                              </Table>
-                            </div>
-                          </CollapsibleContent>
-                        </Collapsible>
-                      );
-                    })}
-                  </div>
-                </CollapsibleContent>
-              </Collapsible>
-            );
-          })}
-        </div>
-      )}
+                return (
+                  <Collapsible key={sectorGroup.sector} open={sectorOpen} onOpenChange={() => toggleSector(sectorGroup.sector)}>
+                    <CollapsibleTrigger className="w-full">
+                      <div className="flex items-center gap-2 px-4 py-3 rounded-xl border border-border bg-card shadow-card hover:bg-muted/30 transition-colors cursor-pointer">
+                        {sectorOpen ? <ChevronDown className="h-4 w-4 text-muted-foreground" /> : <ChevronRight className="h-4 w-4 text-muted-foreground" />}
+                        <span className="font-semibold text-sm text-foreground">{sectorGroup.sector}</span>
+                        <Badge variant="secondary" className="text-[10px] ml-1">{totalItems}</Badge>
+                        <span className="flex-1" />
+                        {sectorGroup.obraGroups.length > 1 && (
+                          <span className="text-[10px] text-muted-foreground">{sectorGroup.obraGroups.length} {t("workItems.groups.obras")}</span>
+                        )}
+                      </div>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                      <div className="ml-4 mt-2 space-y-2">
+                        {sectorGroup.obraGroups.map((obraGroup) => {
+                          const obraKey = `${sectorGroup.sector}::${obraGroup.obra}`;
+                          const obraOpen = effectiveExpandedObras.has(obraKey);
+
+                          return (
+                            <Collapsible key={obraKey} open={obraOpen} onOpenChange={() => toggleObra(obraKey)}>
+                              <CollapsibleTrigger className="w-full">
+                                <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border/60 bg-muted/20 hover:bg-muted/40 transition-colors cursor-pointer">
+                                  {obraOpen ? <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />}
+                                  <span className="text-sm font-medium text-foreground">{obraGroup.obra}</span>
+                                  <GroupSummary items={obraGroup.items} t={t} />
+                                </div>
+                              </CollapsibleTrigger>
+                              <CollapsibleContent>
+                                <div className="rounded-lg border border-border/40 overflow-hidden mt-1.5 ml-2 bg-card">
+                                  <Table>
+                                    <TableHeader>
+                                      <TableRow className="bg-muted/30 hover:bg-muted/30">
+                                        <TableHead className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">{t("workItems.table.discipline")}</TableHead>
+                                        <TableHead className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">{t("workItems.table.element")}</TableHead>
+                                        <TableHead className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">{t("workItems.table.pk")}</TableHead>
+                                        <TableHead className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">{t("workItems.table.status")}</TableHead>
+                                        <TableHead className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">{t("workItems.table.readiness")}</TableHead>
+                                        <TableHead className="text-right text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">{t("workItems.table.actions")}</TableHead>
+                                      </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                      {obraGroup.items.map((item, idx) => renderItemRow(item, idx))}
+                                    </TableBody>
+                                  </Table>
+                                </div>
+                              </CollapsibleContent>
+                            </Collapsible>
+                          );
+                        })}
+                      </div>
+                    </CollapsibleContent>
+                  </Collapsible>
+                );
+              })}
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="readiness" className="mt-4">
+          <ReadinessPanel />
+        </TabsContent>
+      </Tabs>
 
       {/* ── Form dialog (create / edit / duplicate) ──────────────────── */}
       <WorkItemFormDialog

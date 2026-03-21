@@ -6,6 +6,7 @@ import {
 import { fullPdfHeader } from "./pdfProjectHeader";
 import type { Plan } from "./planService";
 import type { DocumentVersion } from "./documentService";
+import { esc } from "@/lib/utils/escapeHtml";
 
 const labels = (locale: string): ReportLabels => ({
   appName: "Atlas QMS",
@@ -26,7 +27,7 @@ export function exportPlansPdf(data: Plan[], meta: ReportMeta, logoBase64?: stri
 
   const columns = ["Tipo", "Título", "Revisão", "Estado", "Data"];
   const rows = data.map(p => [p.plan_type, p.title, p.revision ?? "—", p.status, p.created_at.slice(0, 10)]);
-  const tableRows = rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join("")}</tr>`).join("");
+  const tableRows = rows.map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join("")}</tr>`).join("");
 
   const bodyHtml = `
     <table class="atlas-table">

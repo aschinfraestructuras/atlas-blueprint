@@ -5,6 +5,7 @@
  */
 
 import type { TestResult, TestCatalogEntry } from "./testService";
+import { esc } from "@/lib/utils/escapeHtml";
 
 // ─── Atlas brand colours ──────────────────────────────────────────────────────
 
@@ -336,36 +337,36 @@ function buildSingleHtml(
   const statusLabel = labels.statuses[r.status] ?? r.status;
 
   const infoRows: [string, string][] = [
-    [labels.project,      projectName],
-    [labels.workItem,     workItemSector ?? "—"],
+    [labels.project,      esc(projectName)],
+    [labels.workItem,     esc(workItemSector) ?? "—"],
     [labels.date,         fmtDate(r.date, locale)],
-    [labels.reportNumber, r.report_number ?? "—"],
-    [labels.laboratory,   (r.suppliers as { name?: string } | null)?.name ?? "—"],
-    [labels.sampleRef,    r.sample_ref ?? "—"],
-    [labels.location,     r.location ?? "—"],
+    [labels.reportNumber, esc(r.report_number)],
+    [labels.laboratory,   esc((r.suppliers as { name?: string } | null)?.name)],
+    [labels.sampleRef,    esc(r.sample_ref)],
+    [labels.location,     esc(r.location)],
     [labels.pkRange,      r.pk_inicio != null
       ? `${r.pk_inicio}${r.pk_fim != null ? ` – ${r.pk_fim}` : ""}` : "—"],
-    [labels.status,       statusLabel],
-    [labels.testCode,     tc?.code ?? "—"],
-    [labels.testName,     tc?.name ?? "—"],
-    [labels.discipline,   tc?.disciplina ?? "—"],
+    [labels.status,       esc(statusLabel)],
+    [labels.testCode,     esc(tc?.code)],
+    [labels.testName,     esc(tc?.name)],
+    [labels.discipline,   esc(tc?.disciplina)],
   ];
 
   const payload = r.result_payload ?? {};
 
   const criteriaHtml = tc?.acceptance_criteria
     ? `<div class="sec">${labels.acceptanceCriteria}</div>
-       <p style="font-size:11px;margin-bottom:12px;line-height:1.5;color:${BRAND.text}">${tc.acceptance_criteria}</p>`
+       <p style="font-size:11px;margin-bottom:12px;line-height:1.5;color:${BRAND.text}">${esc(tc.acceptance_criteria)}</p>`
     : "";
 
   const methodHtml = tc?.description
     ? `<div class="sec">${labels.method}</div>
-       <p style="font-size:11px;margin-bottom:12px;line-height:1.5;color:${BRAND.text}">${tc.description}</p>`
+       <p style="font-size:11px;margin-bottom:12px;line-height:1.5;color:${BRAND.text}">${esc(tc.description)}</p>`
     : "";
 
   const notesHtml = r.notes
     ? `<div class="sec">${labels.notes}</div>
-       <p style="font-size:11px;margin-bottom:12px;line-height:1.5;color:${BRAND.text}">${r.notes}</p>`
+       <p style="font-size:11px;margin-bottom:12px;line-height:1.5;color:${BRAND.text}">${esc(r.notes)}</p>`
     : "";
 
   return `<!DOCTYPE html>
@@ -422,24 +423,24 @@ function buildBulkHtml(
     const pf      = r.pass_fail ?? r.status;
     const pfColor = verdictColor(r.pass_fail, r.status);
     const pfLabel = labels.passFailLabels[pf] ?? labels.statuses[pf] ?? pf;
-    const wi      = (r.work_items as { sector?: string } | null)?.sector ?? "—";
+    const wi      = esc((r.work_items as { sector?: string } | null)?.sector);
     return `
 <tr>
-  <td class="mono" style="font-size:10px;white-space:nowrap">${r.code ?? "—"}</td>
+  <td class="mono" style="font-size:10px;white-space:nowrap">${esc(r.code)}</td>
   <td>
-    <div style="font-weight:600;font-size:11px">${tc?.name ?? "—"}</div>
-    <div style="font-size:8.5px;color:${BRAND.muted};font-family:monospace">${tc?.code ?? ""}</div>
+    <div style="font-weight:600;font-size:11px">${esc(tc?.name)}</div>
+    <div style="font-size:8.5px;color:${BRAND.muted};font-family:monospace">${esc(tc?.code)}</div>
   </td>
   <td style="font-size:10px">${wi}</td>
-  <td style="font-size:10px">${r.sample_ref ?? "—"}</td>
-  <td style="font-size:10px">${r.location ?? (r.pk_inicio != null ? `PK ${r.pk_inicio}` : "—")}</td>
+  <td style="font-size:10px">${esc(r.sample_ref)}</td>
+  <td style="font-size:10px">${esc(r.location) !== "—" ? esc(r.location) : (r.pk_inicio != null ? `PK ${r.pk_inicio}` : "—")}</td>
   <td style="font-size:10px;white-space:nowrap">${fmtDate(r.date, locale)}</td>
   <td>
     <span class="badge" style="color:${pfColor};background:${pfColor}1A;border:1px solid ${pfColor}40">
-      ${pfLabel}
+      ${esc(pfLabel)}
     </span>
   </td>
-  <td style="font-size:10px;font-family:monospace">${r.report_number ?? "—"}</td>
+  <td style="font-size:10px;font-family:monospace">${esc(r.report_number)}</td>
 </tr>`;
   }).join("");
 

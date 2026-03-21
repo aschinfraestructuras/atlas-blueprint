@@ -198,16 +198,16 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
         const testName = catalog.find((c) => c.id === values.test_id)?.name ?? "Ensaio";
         const testCode = catalog.find((c) => c.id === values.test_id)?.code ?? "";
         toast({
-          title: "Resultado não conforme",
-          description: `${testName} (${testCode}) — Deseja abrir uma Não Conformidade?`,
+          title: t("tests.resultNonConform", { defaultValue: "Resultado não conforme" }),
+          description: `${testName} (${testCode}) — ${t("tests.openRnc", { defaultValue: "Abrir RNC" })}?`,
           action: (
             <ToastAction
-              altText="Abrir RNC"
+              altText={t("tests.openRnc", { defaultValue: "Abrir RNC" })}
               onClick={() => {
-                navigate(`/non-conformities?new=1&test_result_id=${savedId}&description=${encodeURIComponent(`Resultado não conforme: ${testName} — ${testCode}`)}&category=qualidade`);
+                navigate(`/non-conformities?new=1&test_result_id=${savedId}&description=${encodeURIComponent(`${t("tests.resultNonConform", { defaultValue: "Resultado não conforme" })}: ${testName} — ${testCode}`)}&category=qualidade&work_item_id=${values.work_item_id ?? ""}`);
               }}
             >
-              Abrir RNC
+              {t("tests.openRnc", { defaultValue: "Abrir RNC" })} →
             </ToastAction>
           ),
           duration: 10000,

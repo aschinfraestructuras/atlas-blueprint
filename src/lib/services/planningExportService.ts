@@ -5,6 +5,7 @@ import {
 } from "./reportService";
 import { fullPdfHeader } from "./pdfProjectHeader";
 import type { WbsNode, Activity } from "./planningService";
+import { esc } from "@/lib/utils/escapeHtml";
 
 const labels = (locale: string): ReportLabels => ({
   appName: "Atlas QMS",
@@ -23,7 +24,7 @@ export function exportWbsPdf(data: WbsNode[], meta: ReportMeta, logoBase64?: str
   const header = fullPdfHeader(logoBase64 ?? null, meta.projectName ?? meta.projectCode, "WBS-LISTA", "0", today);
   const columns = ["Código", "Descrição", "Zona", "Início", "Fim", "Responsável"];
   const rows = data.map(w => [w.wbs_code, w.description, w.zone ?? "—", w.planned_start ?? "—", w.planned_end ?? "—", w.responsible ?? "—"]);
-  const tableRows = rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join("")}</tr>`).join("");
+  const tableRows = rows.map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join("")}</tr>`).join("");
 
   const html = `<!DOCTYPE html><html lang="${meta.locale}"><head><meta charset="UTF-8"/><title>WBS — Atlas QMS</title>
 <style>${sharedCss()}</style></head><body>
@@ -47,7 +48,7 @@ export function exportActivitiesPdf(data: Activity[], meta: ReportMeta, logoBase
   const header = fullPdfHeader(logoBase64 ?? null, meta.projectName ?? meta.projectCode, "ACT-LISTA", "0", today);
   const columns = ["Descrição", "WBS", "Zona", "Estado", "Progresso", "Datas"];
   const rows = data.map(a => [a.description, a.wbs_code ?? "—", a.zone ?? "—", a.status, `${a.progress_pct}%`, `${a.planned_start ?? "?"} → ${a.planned_end ?? "?"}`]);
-  const tableRows = rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join("")}</tr>`).join("");
+  const tableRows = rows.map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join("")}</tr>`).join("");
 
   const html = `<!DOCTYPE html><html lang="${meta.locale}"><head><meta charset="UTF-8"/><title>${title} — Atlas QMS</title>
 <style>${sharedCss()}</style></head><body>
@@ -92,7 +93,7 @@ export function exportActivityDetailPdf(
   let reqHtml = "";
   if (requirements.length > 0) {
     const reqRows = requirements.map(r =>
-      `<tr><td style="padding:4px 8px">${r.label}</td><td style="padding:4px 8px">${r.met ? "✅ Cumprido" : "❌ Pendente"}</td><td style="padding:4px 8px">${r.details}</td></tr>`
+      `<tr><td style="padding:4px 8px">${esc(r.label)}</td><td style="padding:4px 8px">${r.met ? "✅ Cumprido" : "❌ Pendente"}</td><td style="padding:4px 8px">${esc(r.details)}</td></tr>`
     ).join("");
     reqHtml = `<div class="atlas-section">${meta.locale === "pt" ? "Requisitos" : "Requisitos"}</div>
       <table class="atlas-table">
@@ -102,7 +103,7 @@ export function exportActivityDetailPdf(
   }
 
   const constraintHtml = activity.constraints_text
-    ? `<div class="atlas-section">${meta.locale === "pt" ? "Restrições" : "Restricciones"}</div><p style="font-size:10px">${activity.constraints_text}</p>`
+    ? `<div class="atlas-section">${meta.locale === "pt" ? "Restrições" : "Restricciones"}</div><p style="font-size:10px">${esc(activity.constraints_text)}</p>`
     : "";
 
   const html = `<!DOCTYPE html><html lang="${meta.locale}"><head><meta charset="UTF-8"/><title>${title} — Atlas QMS</title>
