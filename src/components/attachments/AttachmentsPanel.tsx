@@ -64,26 +64,22 @@ function isTouchDevice(): boolean {
 
 function compressImage(file: File, maxDim = 1920, quality = 0.85): Promise<File> {
   return new Promise((resolve, reject) => {
-    const img = new Image();
+    const img = document.createElement("img");
     const url = URL.createObjectURL(file);
     img.onload = () => {
       URL.revokeObjectURL(url);
-      let { width, height } = img;
-      if (width > maxDim || height > maxDim) {
-        if (width > height) {
-          height = Math.round(height * (maxDim / width));
-          width = maxDim;
-        } else {
-          width = Math.round(width * (maxDim / height));
-          height = maxDim;
-        }
+      let w = img.naturalWidth;
+      let h = img.naturalHeight;
+      if (w > maxDim || h > maxDim) {
+        if (w > h) { h = Math.round(h * (maxDim / w)); w = maxDim; }
+        else { w = Math.round(w * (maxDim / h)); h = maxDim; }
       }
       const canvas = document.createElement("canvas");
-      canvas.width = width;
-      canvas.height = height;
+      canvas.width = w;
+      canvas.height = h;
       const ctx = canvas.getContext("2d");
       if (!ctx) { resolve(file); return; }
-      ctx.drawImage(img, 0, 0, width, height);
+      ctx.drawImage(img, 0, 0, w, h);
       canvas.toBlob(
         (blob) => {
           if (!blob) { resolve(file); return; }
