@@ -37,7 +37,25 @@
     "no": "No",
     "conforming": "Conforme",
     "nonConforming": "No conforme",
-    "invalidId": "ID inválido — no es posible abrir este registro"
+    "invalidId": "ID inválido — no es posible abrir este registro",
+    "all": "Todos",
+    "code": "Código",
+    "deleteConfirmDesc": "Esta acción no puede ser revertida.",
+    "deleteConfirmTitle": "Confirmar eliminación",
+    "deleteError": "Error al eliminar",
+    "deleted": "Eliminado con éxito",
+    "discipline": "Disciplina",
+    "error": "Error",
+    "filter": "Filtrar",
+    "generatedOn": "Generado el",
+    "observations": "Observaciones",
+    "pending": "Pendiente",
+    "project": "Proyecto",
+    "recordNotFound": "Registro no encontrado",
+    "result": "Resultado",
+    "saved": "Guardado con éxito",
+    "saving": "Guardando…",
+    "showAll": "Mostrar todos"
   },
   "auth": {
     "signIn": "Iniciar sesión",
@@ -96,7 +114,14 @@
       "unexpected": "Ocurrió un error inesperado. Inténtelo de nuevo.",
       "signupsDisabled": "Registros públicos desactivados. Cuenta solo por invitación.",
       "rateLimited": "Demasiados intentos. Espere antes de intentar de nuevo."
-    }
+    },
+    "cooldown": "Espere antes de intentar de nuevo",
+    "invalidRecoveryText": "El enlace de recuperación es inválido o ha expirado. Solicite uno nuevo.",
+    "invalidRecoveryTitle": "Enlace inválido",
+    "passwordsMismatch": "Las contraseñas no coinciden",
+    "setPassword": "Definir nueva contraseña",
+    "setPasswordSubtitle": "Introduzca su nueva contraseña",
+    "welcomeAtlas": "Bienvenido a Atlas"
   },
   "nav": {
     "sections": {
@@ -433,7 +458,8 @@
     },
     "nonConformities": {
       "title": "No Conformidades",
-      "subtitle": "Registro y tratamiento de no conformidades"
+      "subtitle": "Registro y tratamiento de no conformidades",
+      "module": "Calidad"
     },
     "auditLog": {
       "title": "Registro de Auditoría",
@@ -456,7 +482,8 @@
           "notifications": "Notificaciones del proyecto",
           "notificationsDesc": "Alertas de NC, ensayos y documentos",
           "exportData": "Exportar datos del proyecto",
-          "exportDataDesc": "Exportar registros en CSV / PDF"
+          "exportDataDesc": "Exportar registros en CSV / PDF",
+          "exportDone": "Exportación completada"
         },
         "profile": {
           "title": "Perfil de Usuario",
@@ -486,7 +513,12 @@
             "quality_manager": "Gestión documental, ensayos y NCs",
             "technician": "Registro de ensayos y consulta de documentos",
             "viewer": "Solo lectura, sin permiso de escritura"
-          }
+          },
+          "approve": "Aprobar",
+          "edit": "Editar",
+          "matrixTitle": "Matriz de permisos",
+          "module": "Módulo",
+          "view": "Ver"
         },
         "preferences": {
           "title": "Preferencias",
@@ -497,7 +529,10 @@
           "timezone": "Zona horaria",
           "timezoneDesc": "Ajustar hora local",
           "theme": "Tema",
-          "themeDesc": "Modo claro / oscuro"
+          "themeDesc": "Modo claro / oscuro",
+          "restartTour": "Reiniciar tour",
+          "tour": "Tour de introducción",
+          "tourDesc": "Reiniciar la guía de introducción al sistema"
         },
         "branding": {
           "title": "Imagen Corporativa",
@@ -511,6 +546,41 @@
           "uploadError": "Error al subir logotipo.",
           "removeSuccess": "Logotipo eliminado.",
           "noLogo": "Ningún logotipo configurado."
+        },
+        "audit": {
+          "desc": "Consulte el registro de todas las acciones en el sistema",
+          "subtitle": "Registro de actividad",
+          "title": "Auditoría",
+          "viewLogs": "Ver registros"
+        },
+        "backup": {
+          "autoBackup": "Backup automático",
+          "autoBackupDesc": "Backup diario automático de los datos del proyecto",
+          "encryption": "Encriptación",
+          "encryptionDesc": "Datos encriptados en tránsito y en reposo",
+          "rls": "Row Level Security",
+          "rlsDesc": "Aislamiento de datos por proyecto activo",
+          "session": "Sesión segura",
+          "sessionDesc": "Timeout automático por inactividad",
+          "subtitle": "Seguridad y protección de datos",
+          "title": "Seguridad"
+        },
+        "notifications": {
+          "deadlineOverdue": "Plazo vencido",
+          "deadlineOverdueDesc": "Notificar cuando plazos estén vencidos",
+          "docApproval": "Aprobación de documento",
+          "docApprovalDesc": "Notificar cuando un documento es aprobado",
+          "emailNote": "Las notificaciones por e-mail estarán disponibles pronto",
+          "memberJoined": "Nuevo miembro",
+          "memberJoinedDesc": "Notificar cuando un miembro se une al proyecto",
+          "ncNew": "Nueva NC",
+          "ncNewDesc": "Notificar cuando una NC es creada",
+          "ppiSubmitted": "PPI enviado",
+          "ppiSubmittedDesc": "Notificar cuando un PPI es enviado",
+          "subtitle": "Gestionar notificaciones del sistema",
+          "testNew": "Nuevo ensayo",
+          "testNewDesc": "Notificar cuando un ensayo es creado",
+          "title": "Notificaciones"
         }
       },
       "roles": {
@@ -580,9 +650,22 @@
       "archived": "Proyecto archivado.",
       "unarchived": "Proyecto reactivado.",
       "activated": "Proyecto activo: {{name}}",
-      "error": "Ocurrió un error. Inténtelo de nuevo."
+      "error": "Ocurrió un error. Inténtelo de nuevo.",
+      "deleted": "Proyecto eliminado"
     },
-    "archivedBanner": "Proyecto archivado — solo lectura. Reactive el proyecto para realizar cambios."
+    "archivedBanner": "Proyecto archivado — solo lectura. Reactive el proyecto para realizar cambios.",
+    "deleteConfirm": "¿Está seguro de que desea eliminar este proyecto?",
+    "fields": {
+      "client": "Cliente",
+      "location": "Ubicación",
+      "name": "Nombre del proyecto"
+    },
+    "kpi": {
+      "avgHealth": "Salud media",
+      "ncOpen": "NCs abiertas",
+      "ppiPending": "PPIs pendientes",
+      "total": "Total proyectos"
+    }
   },
   "documents": {
     "editWarningApproved": "Este documento está aprobado. Cualquier edición debe registrarse con nueva revisión.",
@@ -708,7 +791,9 @@
         "typeRequired": "El tipo es obligatorio.",
         "disciplinaRequired": "La disciplina es obligatoria.",
         "fileUrlInvalid": "Introduzca una URL válida."
-      }
+      },
+      "disciplinaOutro": "Otra disciplina",
+      "typeOutro": "Otro tipo"
     },
     "detail": {
       "breadcrumb": "Documentos",
@@ -800,7 +885,287 @@
   "tests": {
     "openRnc": "Abrir RNC",
     "resultNonConform": "no conforme — ¿Abrir RNC?",
-    "linkedNc": "NC asociada"
+    "linkedNc": "NC asociada",
+    "catalog": {
+      "activate": "Activar",
+      "archive": "Archivar",
+      "clone": "Duplicar",
+      "filters": {
+        "allDisciplines": "Todas las disciplinas",
+        "hideInactive": "Ocultar inactivos",
+        "showInactive": "Mostrar inactivos"
+      },
+      "form": {
+        "acceptanceCriteria": "Criterios de aceptación",
+        "acceptanceCriteriaPlaceholder": "Ej: ≥ 25 MPa a los 28 días",
+        "code": "Código",
+        "createBtn": "Crear entrada",
+        "descriptionPlaceholder": "Descripción del ensayo",
+        "disciplina": "Disciplina",
+        "disciplinaOutro": "Otra disciplina",
+        "disciplinaOutroPlaceholder": "Especifique",
+        "frequency": "Frecuencia",
+        "laboratorio": "Laboratorio",
+        "material": "Material",
+        "name": "Nombre del ensayo",
+        "namePlaceholder": "Ej: Resistencia a la compresión",
+        "standards": "Normas",
+        "titleCreate": "Crear Entrada de Catálogo",
+        "titleEdit": "Editar Entrada de Catálogo",
+        "unit": "Unidad",
+        "validation": {
+          "codeRequired": "Código obligatorio",
+          "nameRequired": "Nombre obligatorio"
+        }
+      },
+      "newEntry": "Nueva entrada",
+      "searchPlaceholder": "Buscar catálogo…",
+      "status": {
+        "active": "Activo",
+        "archived": "Archivado"
+      },
+      "table": {
+        "code": "Código",
+        "disciplina": "Disciplina",
+        "name": "Nombre",
+        "standards": "Normas",
+        "unit": "Unidad"
+      },
+      "toast": {
+        "activated": "Entrada activada",
+        "archived": "Entrada archivada",
+        "cloned": "Entrada duplicada",
+        "created": "Entrada creada",
+        "updated": "Entrada actualizada"
+      }
+    },
+    "demo": {
+      "alreadyExists": "Datos de demostración ya existen",
+      "catalogEntries": "entradas de catálogo",
+      "created": "Datos de demostración creados",
+      "results": "resultados"
+    },
+    "due": {
+      "generateBtn": "Generar agendamientos",
+      "generated": "Agendamientos generados",
+      "generatedCount": "agendamientos generados",
+      "kpi": {
+        "fail30d": "Fallos 30d",
+        "overdue": "Atrasados",
+        "pass30d": "Aprobados 30d",
+        "pending": "Pendientes",
+        "scheduled7d": "Agendados 7d",
+        "totalDue": "Total agendados"
+      },
+      "noGenerated": "Sin agendamientos generados",
+      "schedule": "Agendar",
+      "scheduled": "Agendado",
+      "start": "Iniciar",
+      "started": "Ensayo iniciado",
+      "table": {
+        "context": "Contexto",
+        "dueDate": "Fecha prevista",
+        "lab": "Laboratorio",
+        "reason": "Motivo",
+        "status": "Estado",
+        "test": "Ensayo"
+      },
+      "waive": "Dispensar",
+      "waiveReason": "Motivo de la dispensa",
+      "waiveReasonPlaceholder": "Explique el motivo…",
+      "waived": "Ensayo dispensado"
+    },
+    "export": {
+      "acceptanceCriteria": "Criterios de aceptación",
+      "approvalRate": "Tasa de aprobación",
+      "attachments": "Anexos",
+      "bulkReportTitle": "Informe de Ensayos",
+      "date": "Fecha",
+      "discipline": "Disciplina",
+      "exportBulk": "Exportar informe",
+      "exportSingle": "Exportar boletín",
+      "generatedOn": "Generado el",
+      "laboratory": "Laboratorio",
+      "location": "Ubicación",
+      "method": "Método",
+      "noSelection": "Seleccione al menos un ensayo",
+      "notes": "Observaciones",
+      "of": "de",
+      "page": "Página",
+      "passFail": "Resultado",
+      "pkRange": "PK",
+      "project": "Proyecto",
+      "reportNumber": "Nº informe",
+      "reportTitle": "Boletín de Ensayo",
+      "results": "Resultados",
+      "sampleRef": "Ref. muestra",
+      "standards": "Normas",
+      "status": "Estado",
+      "technician": "Técnico",
+      "testCode": "Código ensayo",
+      "testName": "Nombre ensayo",
+      "wiSummaryTitle": "Resumen por Elemento",
+      "workItem": "Elemento de obra"
+    },
+    "form": {
+      "addNewTestType": "Añadir nuevo tipo de ensayo",
+      "addTestTypeBtn": "Añadir tipo",
+      "createBtn": "Crear ensayo",
+      "locationPlaceholder": "PK o ubicación",
+      "newTestCodePlaceholder": "Código",
+      "newTestNamePlaceholder": "Nombre del ensayo",
+      "newTestTypeLabel": "Nuevo tipo de ensayo",
+      "sampleRefPlaceholder": "Ref. de la muestra",
+      "testType": "Tipo de ensayo",
+      "testTypePlaceholder": "Seleccione el tipo",
+      "titleCreate": "Crear Ensayo",
+      "titleEdit": "Editar Ensayo",
+      "validation": {
+        "dateRequired": "Fecha obligatoria",
+        "testRequired": "Tipo de ensayo obligatorio"
+      }
+    },
+    "plans": {
+      "allPlans": "Todos los planes",
+      "form": {
+        "code": "Código",
+        "codePlaceholder": "Ej: PIE-001",
+        "createBtn": "Crear plan",
+        "disciplina": "Disciplina",
+        "saveBtn": "Guardar",
+        "scopeNotes": "Notas de ámbito",
+        "title": "Título",
+        "titleCreate": "Crear Plan de Ensayos",
+        "titleEdit": "Editar Plan de Ensayos",
+        "titlePlaceholder": "Ej: Plan general de hormigón"
+      },
+      "newPlan": "Nuevo plan",
+      "rules": {
+        "created": "Regla creada",
+        "deleted": "Regla eliminada",
+        "empty": "Sin reglas definidas",
+        "frequency": "Frecuencia",
+        "labRequired": "Laboratorio obligatorio",
+        "newRule": "Nueva regla",
+        "requiresPhotos": "Requiere fotos",
+        "requiresReport": "Requiere informe",
+        "title": "Reglas del Plan",
+        "witness": "Testimonio"
+      },
+      "title": "Planes de Ensayos",
+      "toast": {
+        "created": "Plan creado",
+        "deleted": "Plan eliminado",
+        "updated": "Plan actualizado"
+      }
+    },
+    "ppiTab": {
+      "compaction": "Compactación",
+      "concrete": "Hormigón",
+      "empty": "Sin ensayos asociados"
+    },
+    "results": {
+      "filters": {
+        "allDisciplines": "Todas las disciplinas",
+        "allStatuses": "Todos los estados"
+      },
+      "form": {
+        "addNewTestType": "Añadir nuevo tipo",
+        "addTestTypeBtn": "Añadir",
+        "beCampoCode": "Código BE Campo",
+        "beCampoSection": "Boletín de Ensayo en Campo",
+        "createBtn": "Crear resultado",
+        "emeCalDate": "Fecha calibración EME",
+        "emeCode": "Código EME",
+        "location": "Ubicación",
+        "newTestTypeLabel": "Nuevo tipo",
+        "noSupplier": "Sin proveedor",
+        "noWorkItem": "Sin elemento",
+        "notes": "Observaciones",
+        "notesPlaceholder": "Notas adicionales…",
+        "photoAfterSave": "Fotos disponibles tras guardar",
+        "photoHint": "Añada fotos tras guardar",
+        "photosAndAttachments": "Fotos y anexos",
+        "pkEnd": "PK fin",
+        "pkStart": "PK inicio",
+        "reportNumber": "Nº informe",
+        "sampleRef": "Ref. muestra",
+        "supplier": "Laboratorio / Proveedor",
+        "supplierPlaceholder": "Seleccione",
+        "temperature": "Temperatura (°C)",
+        "testDate": "Fecha del ensayo",
+        "testType": "Tipo de ensayo",
+        "testTypePlaceholder": "Seleccione el tipo",
+        "titleCreate": "Registrar Resultado",
+        "titleEdit": "Editar Resultado",
+        "validation": {
+          "dateRequired": "Fecha obligatoria",
+          "testRequired": "Tipo obligatorio"
+        },
+        "weather": "Condiciones meteorológicas",
+        "workItem": "Elemento de obra",
+        "workItemPlaceholder": "Seleccione elemento"
+      },
+      "newResult": "Nuevo resultado",
+      "searchPlaceholder": "Buscar resultados…",
+      "table": {
+        "code": "Código",
+        "location": "Ubicación",
+        "passFail": "Resultado",
+        "sampleRef": "Ref. muestra",
+        "test": "Ensayo"
+      },
+      "toast": {
+        "archived": "Resultado archivado",
+        "created": "Resultado registrado",
+        "updated": "Resultado actualizado"
+      }
+    },
+    "stats": {
+      "approved": "Aprobados",
+      "failed": "No conformes",
+      "pending": "Pendientes",
+      "total": "Total"
+    },
+    "status": {
+      "approved": "Aprobado",
+      "archived": "Archivado",
+      "completed": "Completado",
+      "draft": "Borrador",
+      "fail": "No conforme",
+      "in_progress": "En curso",
+      "inconclusive": "Inconcluso",
+      "pass": "Conforme",
+      "pending": "Pendiente"
+    },
+    "table": {
+      "location": "Ubicación",
+      "sampleRef": "Ref. muestra"
+    },
+    "tabs": {
+      "catalog": "Catálogo",
+      "controls": "Control",
+      "due": "Agendados",
+      "plan": "Planes",
+      "results": "Resultados"
+    },
+    "templates": {
+      "criteria": "Criterios",
+      "criteriaFail": "No conforme",
+      "criteriaPass": "Conforme"
+    },
+    "title": "Ensayos",
+    "toast": {
+      "catalogCreated": "Entrada de catálogo creada",
+      "created": "Ensayo creado",
+      "updated": "Ensayo actualizado"
+    },
+    "unknownTest": "Ensayo desconocido",
+    "workItemTab": {
+      "createTest": "Crear ensayo",
+      "empty": "Sin ensayos",
+      "exportSummary": "Exportar resumen"
+    }
   },
   "laboratories": {
     "title": "Laboratorios",
@@ -979,8 +1344,11 @@
       "qualificationScore": "Puntuación de Calificación",
       "createBtn": "Crear proveedor",
       "validation": {
-        "nameRequired": "El nombre es obligatorio."
-      }
+        "nameRequired": "El nombre es obligatorio.",
+        "categoryOutroRequired": "Categoría obligatoria"
+      },
+      "categoryOutro": "Otra categoría",
+      "categoryOutroPlaceholder": "Especifique la categoría"
     },
     "toast": {
       "created": "Proveedor creado con éxito.",
@@ -989,6 +1357,24 @@
       "activated": "Proveedor reactivado.",
       "error": "Ocurrió un error. Inténtelo de nuevo.",
       "materialAdded": "Material añadido."
+    },
+    "evaluations": {
+      "created": "Evaluación creada",
+      "criteria": {
+        "cooperation": "Cooperación",
+        "delivery": "Entrega",
+        "ncManagement": "Gestión de NCs",
+        "quality": "Calidad"
+      },
+      "ncWarning": "Atención",
+      "ncWarningDesc": "Este proveedor tiene NCs abiertas",
+      "ncWarningTitle": "NCs abiertas",
+      "new": "Nueva evaluación",
+      "notes": "Notas",
+      "preview": "Vista previa",
+      "result": "Resultado",
+      "score": "Puntuación",
+      "title": "Evaluaciones"
     }
   },
   "nc": {
@@ -1173,14 +1559,17 @@
         "categoryOutroRequired": "Especifique la categoría cuando selecciona «Otros».",
         "classificationRequired": "La clasificación es obligatoria.",
         "disciplineOutroRequired": "Especifique la disciplina cuando selecciona «Otros»."
-      }
+      },
+      "rootCauseOptional": "Causa raíz (opcional)",
+      "rootCauseRequired": "Causa raíz (obligatorio)"
     },
     "toast": {
       "created": "No conformidad registrada con éxito.",
       "updated": "No conformidad actualizada con éxito.",
       "statusChanged": "Estado cambiado a {{status}}.",
       "bulkStatusChanged": "{{count}} NC(s) actualizadas.",
-      "error": "Ocurrió un error. Inténtelo de nuevo."
+      "error": "Ocurrió un error. Inténtelo de nuevo.",
+      "deleted": "NC eliminada con éxito"
     },
     "bulk": {
       "selected": "{{count}} seleccionada(s)",
@@ -1205,7 +1594,10 @@
       "generatedOn": "Generado el",
       "page": "Página",
       "of": "de",
-      "noData": "Ninguna NC para exportar."
+      "noData": "Ninguna NC para exportar.",
+      "wiBySeverity": "NCs por Severidad",
+      "wiByStatus": "NCs por Estado",
+      "wiOpenNcs": "NCs Abiertas"
     },
     "detail": {
       "notFound": "No conformidad no encontrada.",
@@ -1233,6 +1625,17 @@
         "history": "Historial"
       },
       "verification": "Verificación y Cierre"
+    },
+    "deleteDialog": {
+      "description": "La NC será marcada como eliminada. Puede ser restaurada posteriormente.",
+      "title": "Eliminar No Conformidad"
+    },
+    "history": {
+      "created": "Creada",
+      "deleted": "Eliminada",
+      "fieldsUpdated": "Campos actualizados",
+      "statusChanged": "Estado cambiado",
+      "updated": "Actualizada"
     }
   },
   "technicalOffice": {
@@ -1247,7 +1650,8 @@
       "code": "Código",
       "subject": "Asunto",
       "priority": "Prioridad",
-      "deadline": "Plazo"
+      "deadline": "Plazo",
+      "daysOpen": "Días abierto"
     },
     "types": {
       "RFI": "RFI",
@@ -1319,7 +1723,8 @@
       "statusChanged": "Estado actualizado.",
       "cannotCloseNoResponse": "Cerrar requiere al menos una respuesta.",
       "deleteTitle": "¿Eliminar RFI?",
-      "deleteDesc": "El RFI será archivado (soft-delete). El historial se preservará para trazabilidad."
+      "deleteDesc": "El RFI será archivado (soft-delete). El historial se preservará para trazabilidad.",
+      "responseDeadline": "Plazo de respuesta"
     },
     "form": {
       "titleCreate": "Nuevo Ítem — Oficina Técnica",
@@ -1342,10 +1747,68 @@
       "rfiUpdated": "RFI actualizado.",
       "rfiDeleted": "RFI eliminado.",
       "error": "Ocurrió un error. Inténtelo de nuevo."
+    },
+    "transmittal": {
+      "docsSent": "Documentos enviados",
+      "docsSentPlaceholder": "Lista de documentos",
+      "emitter": "Emisor",
+      "reason": "Motivo",
+      "reasonApproval": "Para aprobación",
+      "reasonInfo": "Para información",
+      "reasonRecord": "Para registro",
+      "reasonResponse": "Para respuesta",
+      "reasonReview": "Para revisión",
+      "receiver": "Destinatario",
+      "respApproved": "Aprobado",
+      "respApprovedComments": "Aprobado con comentarios",
+      "respPending": "Pendiente",
+      "respRejected": "Rechazado",
+      "responseStatus": "Estado de la respuesta",
+      "section": "Transmittals"
     }
   },
   "rfi": {
-    "codeGenerated": "Código generado automáticamente"
+    "codeGenerated": "Código generado automáticamente",
+    "detail": {
+      "closeRfi": "Cerrar RFI",
+      "daysRemaining": "días restantes",
+      "details": "Detalles",
+      "docRef": "Ref. documento",
+      "links": "Enlaces",
+      "noResponseYet": "Sin respuesta aún",
+      "ppiRef": "Ref. PPI",
+      "registerResponse": "Registrar respuesta",
+      "respondedByPlaceholder": "Nombre de quien respondió",
+      "response": "Respuesta",
+      "responseDeadline": "Plazo de respuesta",
+      "responseRegistered": "Respuesta registrada",
+      "responseRequired": "Respuesta obligatoria",
+      "responseTextPlaceholder": "Texto de la respuesta",
+      "timeline": "Línea temporal",
+      "zone": "Zona"
+    },
+    "filters": {
+      "allDisciplines": "Todas las disciplinas",
+      "allStatuses": "Todos los estados",
+      "overdue": "Atrasadas"
+    },
+    "kpi": {
+      "answered": "Respondidos",
+      "closed": "Cerrados",
+      "open": "Abiertos",
+      "overdue": "Atrasados"
+    },
+    "status": {
+      "overdue": "Atrasado"
+    },
+    "table": {
+      "responseDeadline": "Plazo respuesta"
+    },
+    "timeline": {
+      "closed": "RFI cerrado",
+      "created": "RFI creado",
+      "responded": "Respuesta registrada"
+    }
   },
   "rfis": {
     "form": {
@@ -1450,7 +1913,8 @@
       "approvalDate": "Fecha de Aprobación",
       "docReference": "Referencia Documental",
       "notes": "Notas",
-      "notesPlaceholder": "Observaciones adicionales…"
+      "notesPlaceholder": "Observaciones adicionales…",
+      "type": "Tipo"
     },
     "detail": {
       "breadcrumb": "Planes",
@@ -1469,7 +1933,12 @@
       "timeline": "Línea temporal",
       "linkedWorkItems": "Trabajos Enlazados",
       "linkedActivities": "Actividades Enlazadas",
-      "relatedItems": "Ítems Relacionados"
+      "relatedItems": "Ítems Relacionados",
+      "attachFile": "Adjuntar archivo",
+      "downloadDwg": "Descargar DWG",
+      "openPdf": "Abrir PDF",
+      "pdfPreview": "Vista previa PDF",
+      "pdfPreviewError": "Error al cargar PDF"
     },
     "deleteConfirm": {
       "title": "¿Eliminar plan?",
@@ -1487,8 +1956,10 @@
       "status_under_review": "Plan enviado a revisión.",
       "status_approved": "Plan aprobado.",
       "status_obsolete": "Plan marcado como obsoleto.",
-      "status_archived": "Plan archivado."
-    }
+      "status_archived": "Plan archivado.",
+      "imported": "Planos importados con éxito"
+    },
+    "importPF17A": "Importar PF17A"
   },
   "survey": {
     "newRecord": "Nuevo Levantamiento",
@@ -1584,7 +2055,10 @@
       "contactNamePlaceholder": "Nombre del responsable",
       "contactPhone": "Teléfono de contacto",
       "notes": "Observaciones",
-      "notesPlaceholder": "Observaciones generales…"
+      "notesPlaceholder": "Observaciones generales…",
+      "mandatoryDocs": "Documentos obligatorios",
+      "validUntil": "Válido hasta",
+      "validity": "Validez"
     },
     "detail": {
       "tabs": {
@@ -1641,7 +2115,9 @@
       "created": "Subcontratista creado con éxito.",
       "updated": "Subcontratista actualizado con éxito.",
       "deleted": "Subcontratista eliminado.",
-      "error": "Ocurrió un error. Inténtelo de nuevo."
+      "error": "Ocurrió un error. Inténtelo de nuevo.",
+      "docAdded": "Documento añadido",
+      "docRemoved": "Documento eliminado"
     },
     "fipPending": "Aprobación F/IP pendiente"
   },
@@ -1744,7 +2220,120 @@
       "soils": "Suelos"
     },
     "linkedActivity": "Actividad de planificación",
-    "viewInPlanning": "Ver en planificación"
+    "viewInPlanning": "Ver en planificación",
+    "actions": {
+      "createPPI": "Crear PPI",
+      "duplicate": "Duplicar"
+    },
+    "count": "elementos",
+    "deleteConfirm": {
+      "description": "El elemento será eliminado permanentemente.",
+      "title": "Eliminar elemento"
+    },
+    "detail": {
+      "baseActivity": "Actividad base",
+      "breadcrumb": "Detalle",
+      "createdAt": "Creado el",
+      "discipline": "Disciplina",
+      "edit": "Editar",
+      "element": "Elemento",
+      "emptyNcs": "Sin NCs",
+      "generalInfo": "Información general",
+      "loadError": "Error al cargar elemento",
+      "lote": "Lote",
+      "obra": "Obra",
+      "parte": "Parte",
+      "pk": "PK",
+      "pkEnd": "PK fin",
+      "pkStart": "PK inicio",
+      "ppiTab": {
+        "createPPI": "Crear PPI",
+        "empty": "Sin PPIs asociados"
+      },
+      "sector": "Sector",
+      "tabs": {
+        "attachments": "Anexos",
+        "ncs": "NCs",
+        "planning": "Planificación",
+        "ppi": "PPIs",
+        "tests": "Ensayos"
+      },
+      "testsTab": {
+        "suggestion": "Sugerencia de ensayo"
+      },
+      "testsTimeline": {
+        "title": "Cronograma de Ensayos"
+      }
+    },
+    "export": {
+      "fields": {
+        "createdAt": "Creado el",
+        "discipline": "Disciplina",
+        "elemento": "Elemento",
+        "lote": "Lote",
+        "ncs": "NCs",
+        "obra": "Obra",
+        "parte": "Parte",
+        "pk": "PK",
+        "ppis": "PPIs",
+        "sector": "Sector",
+        "status": "Estado",
+        "tests": "Ensayos"
+      },
+      "generatedOn": "Generado el",
+      "reportTitle": "Informe de Elementos de Obra"
+    },
+    "filters": {
+      "allDisciplines": "Todas las disciplinas",
+      "allStatuses": "Todos los estados"
+    },
+    "form": {
+      "createBtn": "Crear elemento",
+      "disciplinaOutro": "Otra disciplina",
+      "disciplinaOutroPlaceholder": "Especifique",
+      "discipline": "Disciplina",
+      "duplicateBtn": "Duplicar",
+      "element": "Elemento",
+      "elementPlaceholder": "Ej: Viaducto V1",
+      "lote": "Lote",
+      "lotePlaceholder": "Ej: L1",
+      "obra": "Obra",
+      "obraPlaceholder": "Ej: OA1",
+      "parte": "Parte",
+      "partePlaceholder": "Ej: Pilar P1",
+      "pkEnd": "PK fin",
+      "pkEndPlaceholder": "Ej: 1+500",
+      "pkPlaceholder": "Ej: 0+000",
+      "pkStart": "PK inicio",
+      "saveBtn": "Guardar",
+      "saving": "Guardando…",
+      "sector": "Sector",
+      "sectorPlaceholder": "Ej: PSR Cachofarra",
+      "status": "Estado",
+      "titleCreate": "Crear Elemento de Obra",
+      "titleDuplicate": "Duplicar Elemento de Obra",
+      "titleEdit": "Editar Elemento de Obra",
+      "validation": {
+        "disciplinaOutroRequired": "Disciplina obligatoria",
+        "disciplineRequired": "Disciplina obligatoria",
+        "pkEndInvalid": "PK fin inválido",
+        "sectorRequired": "Sector obligatorio"
+      }
+    },
+    "groups": {
+      "baseActivity": "Actividad base"
+    },
+    "module": "Elementos de Obra",
+    "new": "Nuevo elemento",
+    "searchPlaceholder": "Buscar elementos…",
+    "subtitle": "Gestión de elementos de obra",
+    "title": "Elementos de Obra",
+    "toast": {
+      "created": "Elemento creado",
+      "deleted": "Elemento eliminado",
+      "duplicated": "Elemento duplicado",
+      "updated": "Elemento actualizado"
+    }
   },
   "ppi": {
     "title": "Planes de Puntos de Inspección (PPI)",
@@ -1928,7 +2517,9 @@
         "cancel": "Cancelar",
         "disciplineMismatchInline": "Esta plantilla es de disciplina '{{templateDisciplina}}' — el work item es '{{wiDisciplina}}'",
         "matchingDiscipline": "Misma disciplina",
-        "otherDisciplines": "Otras disciplinas"
+        "otherDisciplines": "Otras disciplinas",
+        "autoCode": "Código automático",
+        "manualCode": "Código manual"
       },
       "items": {
         "itemNo": "Nº",
@@ -2072,7 +2663,31 @@
     "hpNotification": {
       "earlyWarning": "Aviso con menos de 48h — requiere justificación",
       "earlyReason": "Motivo del aviso anticipado (obligatorio)",
-      "earlyBadge": "Anticipado"
+      "earlyBadge": "Anticipado",
+      "activityLabel": "Actividad",
+      "confirmBtn": "Confirmar presencia",
+      "confirmDesc": "Confirmar la presencia en la inspección",
+      "confirmError": "Error al confirmar",
+      "confirmTitle": "Confirmar HP",
+      "confirmed": "Presencia confirmada",
+      "confirmedByLabel": "Confirmado por",
+      "createError": "Error al crear notificación",
+      "createTitle": "Nueva Notificación HP",
+      "created": "Notificación HP creada",
+      "dateLabel": "Fecha",
+      "history": "Historial de notificaciones",
+      "locationLabel": "Ubicación",
+      "noHpItems": "Sin ítems HP en este PPI",
+      "notesLabel": "Observaciones",
+      "notify": "Notificar",
+      "plannedDate": "Fecha planificada",
+      "send": "Enviar notificación",
+      "statusCol": "Estado",
+      "statusConfirmed": "Confirmado",
+      "statusNone": "No notificado",
+      "statusPending": "Pendiente",
+      "timeLabel": "Hora",
+      "unnotifiedWarning": "Existen ítems HP sin notificación"
     }
   },
   "attachments": {
@@ -2101,7 +2716,12 @@
   },
   "report": {
     "generatedOn": "Generado el",
-    "qualityManagementSystem": "Sistema de Gestión de Calidad"
+    "qualityManagementSystem": "Sistema de Gestión de Calidad",
+    "csvList": "Exportar lista CSV",
+    "export": "Exportar",
+    "exportError": "Error en la exportación",
+    "exportOptions": "Opciones de exportación",
+    "pdfList": "Exportar lista PDF"
   },
   "materials": {
     "newMaterial": "Nuevo Material",
@@ -2223,7 +2843,8 @@
       "pameNorma": "Norma Aplicable",
       "pameDocsReq": "Documentos Requeridos",
       "pameDocsReqPlaceholder": "ej: FT, CE, DA, Informe de ensayo",
-      "pamePpiRef": "Referencia PPI"
+      "pamePpiRef": "Referencia PPI",
+      "sectionIdentification": "Identificación"
     },
     "pame": {
       "title": "Plan de Materiales (PAME)",
@@ -2384,6 +3005,12 @@
       "archived": "Material archivado.",
       "activated": "Material activado.",
       "error": "Ocurrió un error. Inténtelo de nuevo."
+    },
+    "fav": {
+      "exportFav": "Exportar FAV"
+    },
+    "quarantine": {
+      "printLabel": "Imprimir etiqueta"
     }
   },
   "settings": {
@@ -2428,7 +3055,17 @@
       "removeConfirm": "Eliminar acceso",
       "noProjectsEmpty": "No está asociado a ningún proyecto.",
       "noProjectsEmptySub": "Contacte a un administrador para obtener acceso a un proyecto o cree uno nuevo.",
-      "requestAccess": "Solicitar acceso"
+      "requestAccess": "Solicitar acceso",
+      "accountCreated": "Cuenta creada con éxito",
+      "alreadyMember": "Este usuario ya es miembro",
+      "createAccount": "Crear cuenta y añadir",
+      "createBtn": "Crear miembro",
+      "inviteEmailSent": "Invitación enviada por e-mail",
+      "inviteToken": "Token de invitación",
+      "passwordHint": "Mín. 6 caracteres",
+      "passwordLabel": "Contraseña inicial",
+      "passwordPlaceholder": "Introduzca la contraseña",
+      "passwordTooShort": "Contraseña demasiado corta"
     },
     "password": {
       "newPasswordLabel": "Nueva contraseña",
@@ -2595,7 +3232,95 @@
     "createWorkItem": "Crear elemento de obra",
     "workItemCreated": "Elemento creado y asociado",
     "linkedElement": "Elemento de obra asociado",
-    "viewElement": "Ver elemento"
+    "viewElement": "Ver elemento",
+    "activities": "Actividades",
+    "activity": {
+      "add": "Nueva actividad",
+      "createTitle": "Crear Actividad",
+      "editTitle": "Editar Actividad"
+    },
+    "completion": {
+      "blocked": "Bloqueada — requisitos no cumplidos",
+      "canComplete": "Puede ser concluida",
+      "runCheck": "Verificar conclusión",
+      "title": "Verificación de Conclusión"
+    },
+    "detail": {
+      "met": "Cumplido",
+      "noLinks": "Sin documentos asociados",
+      "noRequirements": "Sin requisitos definidos",
+      "notMet": "No cumplido",
+      "reqMet": "Requisito cumplido",
+      "reqNotMet": "Requisito no cumplido",
+      "tabs": {
+        "evidence": "Evidencias",
+        "links": "Documentos",
+        "overview": "Resumen",
+        "requirements": "Requisitos"
+      }
+    },
+    "fields": {
+      "actualEnd": "Fecha real fin",
+      "actualStart": "Fecha real inicio",
+      "constraints": "Condicionantes",
+      "constraintsPlaceholder": "Ej: acceso, licencias, etc.",
+      "dates": "Fechas",
+      "plannedEnd": "Fecha planificada fin",
+      "plannedStart": "Fecha planificada inicio",
+      "progress": "Progreso",
+      "reqPpi": "Requiere PPI",
+      "reqTests": "Requiere ensayos",
+      "reqTopography": "Requiere topografía",
+      "requirements": "Requisitos",
+      "subcontractor": "Subcontratista",
+      "workItem": "Elemento de obra",
+      "zone": "Zona"
+    },
+    "filters": {
+      "allStatuses": "Todos los estados"
+    },
+    "kpi": {
+      "activities": "Actividades",
+      "activityStatus": "Estado de las Actividades",
+      "avgProgress": "Progreso medio",
+      "blocked": "Bloqueadas",
+      "completed": "Completadas",
+      "inProgress": "En curso",
+      "wbsNodes": "Nodos WBS"
+    },
+    "noActivities": "Sin actividades registradas",
+    "searchPlaceholder": "Buscar código, descripción, zona…",
+    "status": {
+      "blocked": "Bloqueada",
+      "cancelled": "Cancelada",
+      "completed": "Completada",
+      "in_progress": "En curso",
+      "planned": "Planificada"
+    },
+    "subtitle": "Planificación y control de actividades",
+    "tabs": {
+      "activities": "Actividades"
+    },
+    "title": "Planificación",
+    "toast": {
+      "activityCreated": "Actividad creada con éxito",
+      "activityUpdated": "Actividad actualizada",
+      "wbsCreated": "Nodo WBS creado",
+      "wbsUpdated": "Nodo WBS actualizado"
+    },
+    "wbs": {
+      "add": "Añadir WBS",
+      "addChild": "Añadir sub-nodo",
+      "code": "Código WBS",
+      "codeDuplicate": "Código ya existe",
+      "collapseAll": "Colapsar todos",
+      "createTitle": "Crear Nodo WBS",
+      "editTitle": "Editar Nodo WBS",
+      "expandAll": "Expandir todos",
+      "parent": "Nodo padre",
+      "responsible": "Responsable",
+      "zone": "Zona"
+    }
   },
   "mapMas": {
     "title": "Aprobación MAP/MAS",
@@ -2690,7 +3415,8 @@
     "pdfTitle": "Informe QC",
     "toast": {
       "generated": "Informe QC generado con éxito.",
-      "error": "Error al generar informe."
+      "error": "Error al generar informe.",
+      "dataLoaded": "Datos cargados"
     },
     "kpi": {
       "testPass": "Ensayos Conformes",
@@ -2701,12 +3427,21 @@
       "docsApproved": "Docs Aprobados",
       "docsReview": "Docs en Revisión",
       "expiring": "Ítems por Expirar (30d)",
-      "period": "Período"
+      "period": "Período",
+      "conformityRate": "Tasa de conformidad",
+      "overdue": "Atrasados",
+      "ppi": "PPIs"
     },
     "sections": {
       "criticalNc": "NCs Críticas (Top 10)",
       "failedTests": "Ensayos No Conformes",
-      "expiredCals": "Calibraciones Expiradas / Por Expirar"
+      "expiredCals": "Calibraciones Expiradas / Por Expirar",
+      "byCategory": "Por categoría",
+      "byWorkItem": "Por elemento de obra",
+      "ncDistribution": "Distribución de NCs",
+      "overdueNcs": "NCs atrasadas",
+      "pendingMaterials": "Materiales pendientes",
+      "testConformity": "Conformidad de ensayos"
     },
     "signature": {
       "title": "Firma Simple",
@@ -2737,6 +3472,29 @@
       "valid": "Válido",
       "expired": "Expirado",
       "expiring_soon": "Por expirar"
+    },
+    "activeFilters": "Filtros activos",
+    "chart": {
+      "bySeverity": "Por severidad",
+      "byStatus": "Por estado",
+      "ncOpen": "NCs abiertas"
+    },
+    "loadData": "Cargar Datos",
+    "noData": {
+      "subtitle": "Seleccione los parámetros y cargue los datos",
+      "title": "Sin datos cargados"
+    },
+    "scope": {
+      "chapter": "Capítulo",
+      "executive": "Ejecutivo",
+      "full": "Completo",
+      "subcontractor": "Subcontratista"
+    },
+    "tabs": {
+      "ncs": "NCs",
+      "overview": "Resumen",
+      "sectors": "Sectores",
+      "tests": "Ensayos"
     }
   },
   "globalSearch": {
@@ -2905,7 +3663,51 @@
       "widget": "PPGRCD — Reciclados"
     },
     "kpi": {
-      "target": "Meta PPGRCD"
+      "target": "Meta PPGRCD",
+      "approved": "Aprobados",
+      "avgPct": "% media reciclado",
+      "pending": "Pendientes",
+      "total": "Total"
+    },
+    "documents": {
+      "title": "Documentos y Evidencias"
+    },
+    "fields": {
+      "applicationDate": "Fecha de aplicación",
+      "applicationLocation": "Lugar de aplicación",
+      "certificateNumber": "Nº certificado",
+      "composition": "Composición",
+      "documentRef": "Referencia documental",
+      "materialName": "Nombre del material",
+      "observations": "Observaciones",
+      "quantityPlanned": "Cantidad planificada",
+      "quantityUsed": "Cantidad aplicada",
+      "recycledPct": "% contenido reciclado",
+      "referenceNumber": "Nº referencia",
+      "referenceType": "Tipo de referencia",
+      "serialNumber": "Nº serie",
+      "supplier": "Proveedor",
+      "unit": "Unidad"
+    },
+    "filters": {
+      "allStatuses": "Todos los estados",
+      "allTypes": "Todos los tipos"
+    },
+    "new": "Nuevo material reciclado",
+    "status": {
+      "approved": "Aprobado",
+      "pending": "Pendiente",
+      "rejected": "Rechazado",
+      "submitted": "Enviado"
+    },
+    "subtitle": "Gestión de materiales reciclados — PPGRCD",
+    "title": "Materiales Reciclados",
+    "toast": {
+      "created": "Material reciclado creado",
+      "updated": "Material reciclado actualizado"
+    },
+    "types": {
+      "OUTRO": "Otro"
     }
   },
   "onboarding": {
@@ -3045,7 +3847,10 @@
       "created": "Auditoría creada",
       "updated": "Auditoría actualizada",
       "deleted": "Auditoría cancelada"
-    }
+    },
+    "create": "Crear auditoría",
+    "emptyDescription": "Ninguna auditoría registrada",
+    "emptyTitle": "Sin auditorías"
   },
   "sgqMatrix": {
     "title": "Matriz de Conformidad SGC",
@@ -3210,7 +4015,8 @@
       "test": "Ensayo",
       "testResult": "Resultado",
       "ppi": "PPI",
-      "workItem": "Actividad"
+      "workItem": "Actividad",
+      "materialName": "Material"
     },
     "filter": {
       "supplier": "Proveedor",
@@ -3228,7 +4034,11 @@
       "partial": "Parcial",
       "incomplete": "Sin trazabilidad"
     },
-    "showingFiltered": "Mostrando {{count}} de {{total}} materiales"
+    "showingFiltered": "Mostrando {{count}} de {{total}} materiales",
+    "document": "Documento",
+    "lot": "Lote",
+    "supplier": "Proveedor",
+    "test": "Ensayo"
   },
   "meetingActions": {
     "title": "Acciones de Reuniones (ATA-Q)",
@@ -3330,7 +4140,19 @@
     }
   },
   "fieldRecords": {
-    "empty": "Sin fichas de registro asociadas a esta inspección."
+    "empty": "Sin fichas de registro asociadas a esta inspección.",
+    "activity": "Actividad",
+    "form": {
+      "title": "Registro de campo"
+    },
+    "new": "Nuevo registro",
+    "pointType": "Tipo de punto",
+    "specialist": "Especialista",
+    "title": "Registros de Campo",
+    "toast": {
+      "created": "Registro creado con éxito"
+    },
+    "weather": "Condiciones meteorológicas"
   },
   "myTasks": {
     "title": "Mi Día",
@@ -3365,5 +4187,45 @@
     "accreditationExpired": "Acreditación expirada",
     "accreditationValid": "Válida",
     "recentTests": "Ensayos realizados"
+  },
+  "actionPlan": {
+    "col": {
+      "dueDate": "Plazo",
+      "origin": "Origen",
+      "responsible": "Responsable",
+      "type": "Tipo"
+    },
+    "filter": {
+      "allOrigins": "Todos los orígenes",
+      "allStatuses": "Todos los estados",
+      "allTypes": "Todos los tipos"
+    },
+    "kpi": {
+      "closed": "Cerradas",
+      "fromNc": "Origen NC",
+      "open": "Abiertas",
+      "overdue": "Atrasadas",
+      "total": "Total"
+    },
+    "module": "Calidad",
+    "origin": {
+      "audit": "Auditoría",
+      "meeting": "Reunión",
+      "nc": "No Conformidad"
+    },
+    "status": {
+      "closed": "Cerrada",
+      "inProgress": "En curso",
+      "open": "Abierta",
+      "overdue": "Atrasada"
+    },
+    "subtitle": "Vista consolidada de todas las acciones correctivas y preventivas",
+    "title": "Plan de Acciones",
+    "type": {
+      "action": "Acción",
+      "correction": "Corrección",
+      "corrective": "Acción Correctiva",
+      "preventive": "Acción Preventiva"
+    }
   }
 }
