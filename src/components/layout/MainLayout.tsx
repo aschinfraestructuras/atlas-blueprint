@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { Eye } from "lucide-react";
 import { AppSidebar } from "./AppSidebar";
 import { TopBar } from "./TopBar";
 import { useArchivedProject } from "@/hooks/useArchivedProject";
 import { ArchivedBanner } from "@/components/ArchivedBanner";
 import { useProject } from "@/contexts/ProjectContext";
+import { useProjectRole } from "@/hooks/useProjectRole";
 import { useSessionTimeout } from "@/hooks/useSessionTimeout";
 import { SessionTimeoutWarning } from "@/components/session/SessionTimeoutWarning";
 import { OnboardingTour } from "@/components/onboarding/OnboardingTour";
