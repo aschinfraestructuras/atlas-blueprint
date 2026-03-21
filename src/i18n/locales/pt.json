@@ -150,7 +150,8 @@
     "testSchedule": "Programação Ensaios",
     "traceability": "Rastreabilidade",
     "actionPlan": "Plano de Ações",
-    "submittals": "Submittals"
+    "submittals": "Submittals",
+    "myTasks": "O Meu Dia"
   },
   "topbar": {
     "language": "Idioma",
@@ -332,7 +333,6 @@
       "upcoming": "Relatório Mensal SGQ — entregar até {{date}}",
       "create": "Criar Relatório"
     },
-    "hpPending": "HPs Sem Confirmação",
     "healthBreakdown": "Indicadores de Saúde",
     "recentActivity": "Atividade Recente",
     "nextActions": "Próximas Ações",
@@ -356,17 +356,39 @@
       "subtitleActive": "Não tem projetos ativos. Crie o primeiro para começar.",
       "subtitleArchived": "Não tem projetos arquivados."
     },
-    "documents": { "subtitle": "Este projeto ainda não tem documentos. Crie o primeiro." },
-    "tests": { "subtitle": "Ainda não foram registados ensaios neste projeto." },
-    "suppliers": { "subtitle": "Ainda não existem fornecedores associados a este projeto." },
-    "nonConformities": { "subtitle": "Não existem não conformidades registadas. Excelente!" },
-    "auditLog": { "subtitle": "Nenhuma ação registada ainda para este projeto." },
-    "technicalOffice": { "subtitle": "Ainda não existem RFIs, Submittals ou Clarificações neste projeto." },
-    "plans": { "subtitle": "Ainda não existem planos associados a este projeto." },
-    "survey": { "subtitle": "Ainda não existem registos topográficos neste projeto." },
-    "subcontractors": { "subtitle": "Ainda não existem subempreiteiros associados a este projeto." },
-    "materials": { "subtitle": "Este projeto ainda não tem materiais. Crie o primeiro." },
-    "workItems": { "subtitle": "Este projeto ainda não tem atividades. Crie a primeira." },
+    "documents": {
+      "subtitle": "Este projeto ainda não tem documentos. Crie o primeiro."
+    },
+    "tests": {
+      "subtitle": "Ainda não foram registados ensaios neste projeto."
+    },
+    "suppliers": {
+      "subtitle": "Ainda não existem fornecedores associados a este projeto."
+    },
+    "nonConformities": {
+      "subtitle": "Não existem não conformidades registadas. Excelente!"
+    },
+    "auditLog": {
+      "subtitle": "Nenhuma ação registada ainda para este projeto."
+    },
+    "technicalOffice": {
+      "subtitle": "Ainda não existem RFIs, Submittals ou Clarificações neste projeto."
+    },
+    "plans": {
+      "subtitle": "Ainda não existem planos associados a este projeto."
+    },
+    "survey": {
+      "subtitle": "Ainda não existem registos topográficos neste projeto."
+    },
+    "subcontractors": {
+      "subtitle": "Ainda não existem subempreiteiros associados a este projeto."
+    },
+    "materials": {
+      "subtitle": "Este projeto ainda não tem materiais. Crie o primeiro."
+    },
+    "workItems": {
+      "subtitle": "Este projeto ainda não tem atividades. Crie a primeira."
+    },
     "planning": {
       "wbs": "Nenhuma WBS definida. Crie a estrutura de decomposição do trabalho.",
       "activities": "Nenhuma atividade planeada. Crie atividades ligadas a WBS e atividades de campo."
@@ -766,14 +788,12 @@
   "tests": {
     "newTest": "Novo Ensaio",
     "unknownTest": "Ensaio desconhecido",
-
     "tabs": {
       "due": "Devidos",
       "results": "Resultados",
       "plan": "Plano",
       "catalog": "Catálogo"
     },
-
     "status": {
       "draft": "Rascunho",
       "pending": "Pendente",
@@ -788,14 +808,12 @@
       "inconclusive": "Inconclusivo",
       "na": "N/A"
     },
-
     "stats": {
       "total": "Total",
       "approved": "Aprovados",
       "failed": "Não Conformes",
       "pending": "Pendentes"
     },
-
     "due": {
       "title": "Ensaios Devidos",
       "generateBtn": "Gerar Devidos",
@@ -844,7 +862,6 @@
         "pending": "Pendentes"
       }
     },
-
     "plans": {
       "title": "Planos de Ensaios",
       "newPlan": "Novo Plano",
@@ -909,7 +926,6 @@
         "deleted": "Plano eliminado."
       }
     },
-
     "templates": {
       "title": "Templates de Ensaio",
       "hasTemplate": "Tem template",
@@ -925,7 +941,6 @@
       "criteriaPass": "Conforme",
       "criteriaFail": "Não Conforme"
     },
-
     "catalog": {
       "newEntry": "Novo Tipo de Ensaio",
       "searchPlaceholder": "Pesquisar código, nome, norma…",
@@ -993,7 +1008,6 @@
         "error": "Ocorreu um erro. Tente novamente."
       }
     },
-
     "results": {
       "newResult": "Novo Ensaio",
       "searchPlaceholder": "Pesquisar código, referência, local…",
@@ -1067,7 +1081,6 @@
         "archived": "Ensaio arquivado."
       }
     },
-
     "demo": {
       "button": "Dados Demo",
       "alreadyExists": "Dados demo já existem neste projeto.",
@@ -1075,7 +1088,6 @@
       "catalogEntries": "tipos de ensaio",
       "results": "resultados"
     },
-
     "workItemTab": {
       "createTest": "Criar Ensaio",
       "exportSummary": "Exportar Resumo PDF",
@@ -1087,7 +1099,6 @@
         "pending": "Pendentes"
       }
     },
-
     "export": {
       "exportSingle": "Exportar PDF",
       "exportBulk": "Exportar selecionados",
@@ -1121,13 +1132,11 @@
       "of": "de",
       "approvalRate": "Taxa de Aprovação"
     },
-
     "table": {
       "name": "Ensaio",
       "sampleRef": "Ref. Amostra",
       "location": "Localização"
     },
-
     "form": {
       "titleCreate": "Novo Ensaio",
       "titleEdit": "Editar Ensaio",
@@ -1146,14 +1155,12 @@
         "dateRequired": "A data é obrigatória."
       }
     },
-
     "toast": {
       "created": "Ensaio registado com sucesso.",
       "updated": "Ensaio atualizado com sucesso.",
       "catalogCreated": "Tipo de ensaio adicionado ao catálogo.",
       "error": "Ocorreu um erro. Tente novamente."
     },
-
     "ppiTab": {
       "title": "Ensaios associados a este PPI",
       "empty": "Nenhum ensaio associado a este PPI",
@@ -2648,6 +2655,11 @@
         "linkedNc": "NC Associada",
         "attachmentCount": "Nº Anexos"
       }
+    },
+    "hpNotification": {
+      "earlyWarning": "Aviso com menos de 48h — exige justificação",
+      "earlyReason": "Motivo do aviso antecipado (obrigatório)",
+      "earlyBadge": "Antecipado"
     }
   },
   "attachments": {
@@ -2667,26 +2679,33 @@
       "downloadError": "Falha no download",
       "deleted": "Anexo eliminado.",
       "deleteError": "Falha ao eliminar o anexo"
-    }
+    },
+    "camera": "Câmara",
+    "previewTitle": "Confirmar foto",
+    "compressing": "A comprimir...",
+    "typeNotAllowed": "Tipo de ficheiro não permitido",
+    "confirmUpload": "Confirmar"
   },
   "report": {
-    "export": "Exportar",
-    "exportOptions": "Opções de exportação",
-    "exportError": "Erro ao exportar",
-    "pdfList": "PDF — Lista",
-    "pdfDetail": "PDF — Detalhe",
-    "csvList": "CSV — Lista"
+    "generatedOn": "Gerado em",
+    "qualityManagementSystem": "Sistema de Gestão da Qualidade"
   },
   "materials": {
     "newMaterial": "Novo Material",
     "searchPlaceholder": "Pesquisar código, nome, especificação…",
-    "table": { "code": "Código" },
+    "table": {
+      "code": "Código"
+    },
     "filters": {
       "allStatuses": "Todos os estados",
       "allCategories": "Todas as categorias",
       "allApprovals": "Todas as aprovações"
     },
-    "status": { "active": "Ativo", "discontinued": "Descontinuado", "archived": "Arquivado" },
+    "status": {
+      "active": "Ativo",
+      "discontinued": "Descontinuado",
+      "archived": "Arquivado"
+    },
     "categories": {
       "betao": "Betão",
       "aco": "Aço",
@@ -2700,7 +2719,10 @@
       "prefabricado": "Pré-fabricado",
       "outro": "Outro"
     },
-    "actions": { "archive": "Arquivar", "activate": "Ativar" },
+    "actions": {
+      "archive": "Arquivar",
+      "activate": "Ativar"
+    },
     "kpi": {
       "total": "Total",
       "active": "Ativos",
@@ -3160,7 +3182,9 @@
     "tabs": {
       "activities": "Atividades"
     },
-    "filters": { "allStatuses": "Todos os estados" },
+    "filters": {
+      "allStatuses": "Todos os estados"
+    },
     "createWorkItem": "Criar elemento de obra associado",
     "workItemCreated": "Atividade e elemento de obra criados",
     "linkedElement": "Elemento de obra associado",
@@ -3228,7 +3252,12 @@
       "blocked": "Atividade NÃO pode ser concluída:"
     },
     "detail": {
-      "tabs": { "overview": "Resumo", "requirements": "Requisitos", "evidence": "Evidências", "links": "Ligações" },
+      "tabs": {
+        "overview": "Resumo",
+        "requirements": "Requisitos",
+        "evidence": "Evidências",
+        "links": "Ligações"
+      },
       "reqMet": "{{count}} pedido(s) em progresso/concluídos",
       "reqNotMet": "Nenhum pedido topográfico registado ou todos pendentes",
       "met": "Cumprido",
@@ -3378,10 +3407,6 @@
       "expired": "Expirado",
       "expiring_soon": "A expirar"
     }
-  },
-  "report": {
-    "generatedOn": "Gerado em",
-    "qualityManagementSystem": "Sistema de Gestão da Qualidade"
   },
   "globalSearch": {
     "title": "Pesquisa Global",
@@ -3866,9 +3891,25 @@
     "newBatch": "Nova Amassada",
     "empty": "Nenhuma amassada registada",
     "emptySubtitle": "Crie a primeira ficha de betonagem para iniciar o controlo.",
-    "tabs": { "identification": "Identificação", "fresh": "Betão Fresco", "specimens": "Provetes" },
-    "fields": { "code": "Código", "element": "Elemento Betonado", "class": "Classe", "consistency": "Consistência", "specimens": "Provetes", "result": "Resultado" },
-    "kpi": { "total": "Total Amassadas", "pass": "Conformes", "fail": "Não Conformes", "pendingSpecimens": "Provetes Pendentes" }
+    "tabs": {
+      "identification": "Identificação",
+      "fresh": "Betão Fresco",
+      "specimens": "Provetes"
+    },
+    "fields": {
+      "code": "Código",
+      "element": "Elemento Betonado",
+      "class": "Classe",
+      "consistency": "Consistência",
+      "specimens": "Provetes",
+      "result": "Resultado"
+    },
+    "kpi": {
+      "total": "Total Amassadas",
+      "pass": "Conformes",
+      "fail": "Não Conformes",
+      "pendingSpecimens": "Provetes Pendentes"
+    }
   },
   "compaction": {
     "title": "Controlo de Compactação",
@@ -3876,8 +3917,16 @@
     "newZone": "Nova Zona",
     "empty": "Nenhuma zona registada",
     "emptySubtitle": "Crie a primeira zona de compactação.",
-    "fields": { "description": "Descrição", "material": "Material" },
-    "kpi": { "total": "Total Zonas", "pass": "Conformes", "fail": "Não Conformes", "pending": "Pendentes" }
+    "fields": {
+      "description": "Descrição",
+      "material": "Material"
+    },
+    "kpi": {
+      "total": "Total Zonas",
+      "pass": "Conformes",
+      "fail": "Não Conformes",
+      "pending": "Pendentes"
+    }
   },
   "soils": {
     "title": "Caracterização de Solos",
@@ -3885,20 +3934,43 @@
     "newSample": "Nova Amostra",
     "empty": "Nenhuma amostra registada",
     "emptySubtitle": "Crie a primeira amostra de solo.",
-    "kpi": { "total": "Total Amostras", "apto": "Aptas", "conditional": "Condicionais", "inapto": "Inaptas" }
+    "kpi": {
+      "total": "Total Amostras",
+      "apto": "Aptas",
+      "conditional": "Condicionais",
+      "inapto": "Inaptas"
+    }
   },
   "welding": {
     "title": "Controlo de Soldadura Aluminotérmica",
     "subtitle": "Inspecção e ensaios de soldaduras EN 14730",
     "empty": "Nenhuma soldadura registada",
     "emptySubtitle": "Crie o primeiro registo de soldadura.",
-    "kpi": { "total": "Total Soldaduras", "pass": "Aceites", "fail": "Rejeitadas", "repair": "Reparação", "ut": "Com UT" },
-    "result": { "pass": "Aceite", "fail": "Rejeitada", "repair_needed": "Reparação necessária", "pending": "Pendente" },
+    "kpi": {
+      "total": "Total Soldaduras",
+      "pass": "Aceites",
+      "fail": "Rejeitadas",
+      "repair": "Reparação",
+      "ut": "Com UT"
+    },
+    "result": {
+      "pass": "Aceite",
+      "fail": "Rejeitada",
+      "repair_needed": "Reparação necessária",
+      "pending": "Pendente"
+    },
     "fields": {
-      "pk": "PK Soldadura", "railProfile": "Perfil de carril", "operator": "Operador",
-      "certRef": "Ref. certificado", "portionBrand": "Marca porção", "portionLot": "Lote porção",
-      "preheat": "Pré-aquecimento", "visual": "Inspecção visual", "alignment": "Desalinhamento (mm)",
-      "ut": "Ensaio Ultrassónico (UT)", "hardness": "Dureza (HV)"
+      "pk": "PK Soldadura",
+      "railProfile": "Perfil de carril",
+      "operator": "Operador",
+      "certRef": "Ref. certificado",
+      "portionBrand": "Marca porção",
+      "portionLot": "Lote porção",
+      "preheat": "Pré-aquecimento",
+      "visual": "Inspecção visual",
+      "alignment": "Desalinhamento (mm)",
+      "ut": "Ensaio Ultrassónico (UT)",
+      "hardness": "Dureza (HV)"
     }
   },
   "traceability": {
@@ -4044,5 +4116,14 @@
   },
   "fieldRecords": {
     "empty": "Sem grelhas de registo associadas a esta inspeção."
+  },
+  "myTasks": {
+    "title": "O Meu Dia",
+    "myPpis": "Os Meus PPIs",
+    "pendingTests": "Ensaios Pendentes",
+    "myNcs": "NCs Atribuídas",
+    "hpPending": "HPs pendentes",
+    "testsDue": "Ensaios em atraso",
+    "ncsAssigned": "NCs atribuídas"
   }
 }
