@@ -601,7 +601,7 @@ export function exportNotHpPdf(
     <div class="brand">
       <div class="brand-bar"></div>
       <div class="brand-text">
-        <div class="app">${labels.appName}</div>
+        <div class="app">${esc(labels.appName)}</div>
         <div class="sub">Notificação Hold Point (48h)</div>
       </div>
     </div>
