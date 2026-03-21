@@ -83,24 +83,21 @@ export default function WeldPage() {
 
   useEffect(() => { load(); }, [load]);
 
-  // US pending > 7 days banner
-  const pendingUtCount = useMemo(() => {
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-    return records.filter(w => !w.has_ut && new Date(w.weld_date) < sevenDaysAgo).length;
-  }, [records]);
-
-  if (!activeProject) return <NoProjectBanner />;
-
-  const sevenDaysAgo = useMemo(() => {
+  const sevenDaysAgoDate = useMemo(() => {
     const d = new Date(); d.setDate(d.getDate() - 7); return d;
   }, []);
+
+  const pendingUtCount = useMemo(() => {
+    return records.filter(w => !w.has_ut && new Date(w.weld_date) < sevenDaysAgoDate).length;
+  }, [records, sevenDaysAgoDate]);
+
+  if (!activeProject) return <NoProjectBanner />;
 
   const filtered = records.filter(r => {
     const q = search.toLowerCase();
     const matchSearch = !q || r.code.toLowerCase().includes(q) || r.pk_location.toLowerCase().includes(q) || (r.operator_name ?? "").toLowerCase().includes(q);
     const matchResult = filterResult === "all" || r.overall_result === filterResult;
-    const matchPendingUS = !filterPendingUS || (!r.has_ut && new Date(r.weld_date) < sevenDaysAgo);
+    const matchPendingUS = !filterPendingUS || (!r.has_ut && new Date(r.weld_date) < sevenDaysAgoDate);
     return matchSearch && matchResult && matchPendingUS;
   });
 
