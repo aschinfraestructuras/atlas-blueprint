@@ -623,7 +623,7 @@ export function exportNotHpPdf(
     </div>
     <div class="info-row">
       <span class="info-label">Código NOT-HP</span>
-      <span class="info-value" style="font-family:monospace;font-weight:700;">${notification.code}</span>
+      <span class="info-value" style="font-family:monospace;font-weight:700;">${esc(notification.code)}</span>
     </div>
     <div class="info-row">
       <span class="info-label">Referência PPI</span>
