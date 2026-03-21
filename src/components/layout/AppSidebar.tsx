@@ -115,7 +115,6 @@ const NAV_SECTIONS: SidebarSection[] = [
       { labelKey: "nav.orgChart",  url: "/org-chart",    icon: Users },
       { labelKey: "nav.settings",  url: "/settings",      icon: Settings,    adminOnly: true },
       { labelKey: "nav.auditLog",  url: "/audit-log",    icon: ScrollText,  requiredAction: "viewAudit" },
-      { labelKey: "nav.health",    url: "/admin/health",  icon: ShieldCheck, adminOnly: true },
     ],
   },
 ];

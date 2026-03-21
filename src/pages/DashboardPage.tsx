@@ -240,7 +240,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-4 animate-fade-in" style={{ animationDelay: "60ms", animationFillMode: "both" }}>
         <Card
           className="border border-border bg-card shadow-card flex flex-col items-center justify-center py-3 cursor-pointer hover:shadow-card-hover transition-all"
-          onClick={() => navigate("/admin/health")}
+          onClick={() => setHealthSheetOpen(true)}
         >
           <div className="scale-[0.85] origin-center">
             <HealthGauge
@@ -253,6 +253,7 @@ export default function DashboardPage() {
             {t("health.score", { defaultValue: "Health Score" })}
           </p>
         </Card>
+        <HealthScoreSheet open={healthSheetOpen} onOpenChange={setHealthSheetOpen} health={health} loading={healthLoading} />
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           <SparklineKPI
