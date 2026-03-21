@@ -50,7 +50,7 @@ export function exportRfiDetailPdf(rfi: Rfi, messages: RfiMessage[], meta: Repor
   const today = new Date().toLocaleDateString("pt-PT");
   const header = fullPdfHeader(
     logoBase64 ?? null,
-    `LINHA DO SUL — ${meta.projectCode}`,
+    meta.projectName ?? meta.projectCode,
     rfi.code ?? "RFI",
     "0",
     today,
