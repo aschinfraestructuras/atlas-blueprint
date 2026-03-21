@@ -640,7 +640,7 @@ export function exportNotHpPdf(
     ${notification.location_pk ? `
     <div class="info-row">
       <span class="info-label">Localização / PK</span>
-      <span class="info-value">${notification.location_pk}</span>
+      <span class="info-value">${esc(notification.location_pk)}</span>
     </div>` : ""}
     ${notification.notes ? `
     <div class="info-row" style="grid-column:span 2;">
