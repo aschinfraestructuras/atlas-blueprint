@@ -363,7 +363,7 @@ export async function exportNCWorkItemSummaryPdf(
     locale: "pt",
   };
   const today = new Date().toLocaleDateString("pt-PT");
-  const header = fullPdfHeader(logoBase64 ?? null, `LINHA DO SUL — ${meta.projectCode}`, "RNC-WI-RESUMO", "0", today);
+  const header = fullPdfHeader(logoBase64 ?? null, meta.projectName ?? meta.projectCode, "RNC-WI-RESUMO", "0", today);
 
   const severities = [
     { key: "critical", label: labels.severity_critical, color: "#DC2626" },

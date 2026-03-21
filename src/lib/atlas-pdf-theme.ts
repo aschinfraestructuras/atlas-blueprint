@@ -34,9 +34,9 @@ export const ATLAS_PDF = {
     footerHeight: 8,                   // mm
   },
   header: {
-    leftLine1: "PF17A — Linha do Sul · Porto de Setúbal – Praias do Sado",
-    leftLine2: "Infraestruturas de Portugal, S.A. · Sistema de Gestão da Qualidade",
-    org: "ACE ASCH Infraestructuras + Cimontubo",
+    leftLine1: "Atlas QMS · Sistema de Gestão da Qualidade",
+    leftLine2: "—",
+    org: "—",
   },
   footer: {
     left: "Confidencial — Uso Interno",

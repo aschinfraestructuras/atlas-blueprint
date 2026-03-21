@@ -19,7 +19,7 @@ export function exportMaterialsListPdf(
 ) {
   const today = new Date().toLocaleDateString("pt-PT");
   const docCode = `MAT-${projectCode}-LISTA`;
-  const header = fullPdfHeader(logoBase64 ?? null, `LINHA DO SUL — ${projectCode}`, docCode, "0", today);
+  const header = fullPdfHeader(logoBase64 ?? null, projectCode || "Atlas QMS", docCode, "0", today);
 
   const columns = [
     t("materials.table.code"),
