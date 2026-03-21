@@ -63,6 +63,7 @@ export default function ActivityDetailPage() {
   const [loading, setLoading] = useState(true);
   const [completionCheck, setCompletionCheck] = useState<CompletionCheck | null>(null);
   const [checkLoading, setCheckLoading] = useState(false);
+  const [linkedWorkItem, setLinkedWorkItem] = useState<WorkItem | null>(null);
 
   // Requirement data
   const [topoRequests, setTopoRequests] = useState<any[]>([]);
