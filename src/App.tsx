@@ -70,6 +70,7 @@ const TestSchedulePage = lazy(() => import("./pages/TestSchedulePage"));
 const TraceabilityMatrixPage = lazy(() => import("./pages/TraceabilityMatrixPage"));
 const ActionPlanPage = lazy(() => import("./pages/ActionPlanPage"));
 const SubmittalsPage = lazy(() => import("./pages/SubmittalsPage"));
+const MyTasksPage = lazy(() => import("./pages/MyTasksPage"));
 
 function ProtectedLayout({ children }: { children: React.ReactNode }) {
   return (
