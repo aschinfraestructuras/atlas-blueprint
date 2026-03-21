@@ -55,8 +55,9 @@ export default function AuditLogPage() {
   const [dateFrom, setDateFrom]         = useState("");
   const [dateTo, setDateTo]             = useState("");
   const [applied, setApplied]           = useState<{ module?: string; dateFrom?: string; dateTo?: string }>({});
+  const [applyCount, setApplyCount]     = useState(0);
 
-  const { data: entries, loading, error } = useAuditLog(applied);
+  const { data: entries, loading, error, refetch } = useAuditLog(applied);
 
   if (!activeProject) return <NoProjectBanner />;
 
