@@ -207,7 +207,22 @@
       "accessible": "Accesible",
       "warnings": "Avisos",
       "failures": "Fallos"
-    }
+    },
+    "sheetTitle": "Estado General de la Obra",
+    "components": {
+      "nc": "No Conformidades",
+      "ncOverdue": "NCs atrasadas",
+      "tests": "Ensayos",
+      "ppis": "PPIs pendientes",
+      "docs": "Documentos",
+      "calibrations": "Calibraciones",
+      "readiness": "Preparación elementos"
+    },
+    "viewNcs": "Ver NCs abiertas",
+    "viewPpis": "Ver PPIs pendientes",
+    "viewTests": "Ver ensayos atrasados",
+    "systemTab": "Sistema",
+    "sidebarScore": "Score"
   },
   "moduleKpi": {
     "total": "Total",
