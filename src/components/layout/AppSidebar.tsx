@@ -29,6 +29,8 @@ interface SidebarNavItem {
   exact?: boolean;
   requiredAction?: string;
   adminOnly?: boolean;
+  /** If true, this item is visible to the viewer role */
+  viewerVisible?: boolean;
 }
 
 interface SidebarSection {
