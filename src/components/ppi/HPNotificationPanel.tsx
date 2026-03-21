@@ -456,6 +456,7 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
             ))}
           </div>
         </div>
+        </TooltipProvider>
       )}
 
       {/* ── Create notification dialog ─────────────────────────────── */}
