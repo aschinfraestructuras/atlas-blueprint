@@ -265,8 +265,9 @@ function SidebarContent({ collapsed, onClose }: { collapsed: boolean; onClose?: 
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
-  const { can, isAdmin } = useProjectRole();
+  const { can, isAdmin, role } = useProjectRole();
   const { logoUrl } = useProjectLogo();
+  const isViewer = role === "viewer";
 
   const isActive = useCallback(
     (url: string, exact?: boolean) =>
