@@ -207,7 +207,22 @@
       "accessible": "Accesible",
       "warnings": "Avisos",
       "failures": "Fallos"
-    }
+    },
+    "sheetTitle": "Estado General de la Obra",
+    "components": {
+      "nc": "No Conformidades",
+      "ncOverdue": "NCs atrasadas",
+      "tests": "Ensayos",
+      "ppis": "PPIs pendientes",
+      "docs": "Documentos",
+      "calibrations": "Calibraciones",
+      "readiness": "Preparación elementos"
+    },
+    "viewNcs": "Ver NCs abiertas",
+    "viewPpis": "Ver PPIs pendientes",
+    "viewTests": "Ver ensayos atrasados",
+    "systemTab": "Sistema",
+    "sidebarScore": "Score"
   },
   "moduleKpi": {
     "total": "Total",
@@ -4174,5 +4189,17 @@
     "weldsPendingUT": "Soldaduras sin US",
     "testsOverdue": "Ensayos atrasados",
     "ncMajorOpen": "NC mayor abierta"
+  },
+  "labs": {
+    "viewFile": "Ver Ficha",
+    "exportFile": "Exportar Ficha",
+    "accreditationExpiry": "Validez de la acreditación",
+    "accreditationExpired": "Acreditación expirada",
+    "accreditationValid": "Válida",
+    "recentTests": "Ensayos realizados"
+  },
+  "recycled": {
+    "exportPpgrcd": "Exportar Ficha PPGRCD",
+    "documentsSection": "Documentos y Evidencias"
   }
 }

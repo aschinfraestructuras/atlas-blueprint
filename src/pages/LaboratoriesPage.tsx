@@ -28,8 +28,11 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   FlaskConical, Plus, Pencil, Trash2, Search, Loader2,
-  Building2, Award, CheckCircle2, XCircle, Clock, FileDown, Eye, AlertTriangle,
+  Building2, Award, CheckCircle2, XCircle, Clock, FileDown, Eye, AlertTriangle, MoreHorizontal,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { differenceInDays, parseISO } from "date-fns";
@@ -445,24 +448,27 @@ export default function LaboratoriesPage() {
                     {lab.contact_name ?? lab.contact_email ?? "—"}
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center gap-1">
-                      <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-primary"
-                        onClick={() => setDetailLab(lab)} title="Ver Ficha">
-                        <Eye className="h-3.5 w-3.5" />
-                      </Button>
-                      <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-primary"
-                        onClick={() => handleExportSingle(lab)} title="Exportar PDF">
-                        <FileDown className="h-3.5 w-3.5" />
-                      </Button>
-                      <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground"
-                        onClick={() => { setEditing(lab); setDialogOpen(true); }}>
-                        <Pencil className="h-3.5 w-3.5" />
-                      </Button>
-                      <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive"
-                        onClick={() => handleDelete(lab)}>
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </Button>
-                    </div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground">
+                          <MoreHorizontal className="h-3.5 w-3.5" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => setDetailLab(lab)}>
+                          <Eye className="h-3.5 w-3.5 mr-2" /> {t("labs.viewFile", { defaultValue: "Ver Ficha" })}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleExportSingle(lab)}>
+                          <FileDown className="h-3.5 w-3.5 mr-2" /> {t("labs.exportFile", { defaultValue: "Exportar Ficha" })}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => { setEditing(lab); setDialogOpen(true); }}>
+                          <Pencil className="h-3.5 w-3.5 mr-2" /> {t("common.edit")}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="text-destructive" onClick={() => handleDelete(lab)}>
+                          <Trash2 className="h-3.5 w-3.5 mr-2" /> {t("common.delete")}
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </TableCell>
                 </TableRow>
               ))}

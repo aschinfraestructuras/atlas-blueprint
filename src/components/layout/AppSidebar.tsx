@@ -3,13 +3,16 @@ import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
+import { useProjectHealth } from "@/hooks/useProjectHealth";
+import { useProject } from "@/contexts/ProjectContext";
+import { HealthScoreSheet } from "@/components/dashboard/HealthScoreSheet";
 import {
   LayoutDashboard, FolderKanban, FileText, Truck, Package,
   FlaskConical, AlertTriangle, ScrollText, Settings,
   ShieldCheck, ChevronLeft, ChevronRight, X, ChevronDown,
   Inbox, BookOpen, HardHat, Construction, ClipboardCheck, Crosshair, CalendarClock,
   Clock, FileCheck, BarChart3, Building2, ClipboardList, Leaf, GraduationCap, FileBarChart2,
-  Users, Link2, Hammer, CheckSquare, FileStack, PieChart, Cog, CalendarCheck,
+  Users, Link2, Hammer, CheckSquare, FileStack, PieChart, Cog, CalendarCheck, Activity,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { cn } from "@/lib/utils";
@@ -115,7 +118,6 @@ const NAV_SECTIONS: SidebarSection[] = [
       { labelKey: "nav.orgChart",  url: "/org-chart",    icon: Users },
       { labelKey: "nav.settings",  url: "/settings",      icon: Settings,    adminOnly: true },
       { labelKey: "nav.auditLog",  url: "/audit-log",    icon: ScrollText,  requiredAction: "viewAudit" },
-      { labelKey: "nav.health",    url: "/admin/health",  icon: ShieldCheck, adminOnly: true },
     ],
   },
 ];
@@ -267,7 +269,10 @@ function SidebarContent({ collapsed, onClose }: { collapsed: boolean; onClose?: 
   const location = useLocation();
   const { can, isAdmin, role } = useProjectRole();
   const { logoUrl } = useProjectLogo();
+  const { activeProject } = useProject();
+  const { health, loading: healthLoading } = useProjectHealth(activeProject?.id);
   const isViewer = role === "viewer";
+  const [healthSheetOpen, setHealthSheetOpen] = useState(false);
 
   const isActive = useCallback(
     (url: string, exact?: boolean) =>
@@ -408,6 +413,29 @@ function SidebarContent({ collapsed, onClose }: { collapsed: boolean; onClose?: 
         })}
       </nav>
 
+      {/* ── Health Score Indicator ────────────────────────────── */}
+      {activeProject && (
+        <div className="flex-shrink-0 px-3 py-2 border-t border-sidebar-border/40">
+          <button
+            type="button"
+            className="flex items-center gap-2 w-full rounded-lg px-2 py-1.5 hover:bg-sidebar-accent/50 transition-colors"
+            onClick={() => setHealthSheetOpen(true)}
+          >
+            <span className={cn(
+              "h-2.5 w-2.5 rounded-full flex-shrink-0",
+              health.health_status === "healthy" && "bg-emerald-500",
+              health.health_status === "attention" && "bg-amber-500",
+              health.health_status === "critical" && "bg-destructive",
+            )} />
+            {!collapsed && (
+              <span className="text-[10px] font-bold tracking-wider text-sidebar-foreground/50">
+                {t("health.sidebarScore", { defaultValue: "Score" })}: {healthLoading ? "…" : health.health_score}
+              </span>
+            )}
+          </button>
+        </div>
+      )}
+
       {/* ── Footer ───────────────────────────────────────────────── */}
       {!onClose && (
         <div className="flex-shrink-0 py-3 px-3 border-t border-sidebar-border/40">
@@ -418,6 +446,8 @@ function SidebarContent({ collapsed, onClose }: { collapsed: boolean; onClose?: 
           )}
         </div>
       )}
+
+      <HealthScoreSheet open={healthSheetOpen} onOpenChange={setHealthSheetOpen} health={health} loading={healthLoading} />
     </div>
   );
 }
