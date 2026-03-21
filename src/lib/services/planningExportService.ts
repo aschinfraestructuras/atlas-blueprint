@@ -93,7 +93,7 @@ export function exportActivityDetailPdf(
   let reqHtml = "";
   if (requirements.length > 0) {
     const reqRows = requirements.map(r =>
-      `<tr><td style="padding:4px 8px">${r.label}</td><td style="padding:4px 8px">${r.met ? "✅ Cumprido" : "❌ Pendente"}</td><td style="padding:4px 8px">${r.details}</td></tr>`
+      `<tr><td style="padding:4px 8px">${esc(r.label)}</td><td style="padding:4px 8px">${r.met ? "✅ Cumprido" : "❌ Pendente"}</td><td style="padding:4px 8px">${esc(r.details)}</td></tr>`
     ).join("");
     reqHtml = `<div class="atlas-section">${meta.locale === "pt" ? "Requisitos" : "Requisitos"}</div>
       <table class="atlas-table">
