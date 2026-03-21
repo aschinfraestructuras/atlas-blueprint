@@ -67,6 +67,8 @@ export default function AuditLogPage() {
       dateFrom: dateFrom || undefined,
       dateTo: dateTo || undefined,
     });
+    // Force refetch even if filters are the same
+    setTimeout(() => refetch(), 0);
   };
 
   const handleReset = () => {
