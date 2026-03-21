@@ -132,6 +132,17 @@ export default function NonConformitiesPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingNC, setEditingNC]   = useState<NonConformity | null>(null);
 
+  // NC prefill from test result fail
+  const [searchParams, setSearchParams] = useSearchParams();
+  useEffect(() => {
+    if (searchParams.get("prefill") === "true") {
+      setEditingNC(null);
+      setDialogOpen(true);
+      // Clear params so it doesn't re-open on navigation
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
+
   // Transition
   const [transitioningId, setTransitioningId] = useState<string | null>(null);
 

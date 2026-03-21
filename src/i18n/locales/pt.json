@@ -4125,5 +4125,51 @@
     "hpPending": "HPs pendentes",
     "testsDue": "Ensaios em atraso",
     "ncsAssigned": "NCs atribuídas"
+  },
+  "workItems": {
+    "readiness": {
+      "tab": "Prontidão",
+      "ready": "Pronto",
+      "inProgress": "Em progresso",
+      "blocked": "Bloqueado",
+      "noPpi": "Sem PPI",
+      "export": "Exportar Relatório de Prontidão"
+    },
+    "tabs": {
+      "concrete": "Betão",
+      "welds": "Soldaduras",
+      "soils": "Solos"
+    },
+    "linkedActivity": "Atividade de planeamento",
+    "viewInPlanning": "Ver no planeamento"
+  },
+  "planning": {
+    "createWorkItem": "Criar elemento de obra",
+    "workItemCreated": "Elemento criado e associado",
+    "linkedElement": "Elemento de obra associado",
+    "viewElement": "Ver elemento"
+  },
+  "tests": {
+    "openRnc": "Abrir RNC",
+    "resultNonConform": "não conforme — Abrir RNC?",
+    "linkedNc": "NC associada"
+  },
+  "welds": {
+    "usPendingBanner": "soldadura(s) com US pendente há mais de 7 dias",
+    "filterPendingUS": "Ver pendentes US"
+  },
+  "rfi": {
+    "codeGenerated": "Código gerado automaticamente"
+  },
+  "viewer": {
+    "banner": "Acesso de visualização — Fiscalização / IP · Apenas leitura e exportação"
+  },
+  "dashboard": {
+    "testStatus": "Estado dos Ensaios",
+    "concreteSummary": "Resumo de Betão",
+    "specimensOverdue": "Provetes aguardam 28d",
+    "weldsPendingUT": "Soldaduras sem US",
+    "testsOverdue": "Ensaios em atraso",
+    "ncMajorOpen": "NC major em aberto"
   }
 }

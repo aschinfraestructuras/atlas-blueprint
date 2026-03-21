@@ -4128,5 +4128,51 @@
     "hpPending": "HPs pendientes",
     "testsDue": "Ensayos atrasados",
     "ncsAssigned": "NCs asignadas"
+  },
+  "workItems": {
+    "readiness": {
+      "tab": "Preparación",
+      "ready": "Listo",
+      "inProgress": "En progreso",
+      "blocked": "Bloqueado",
+      "noPpi": "Sin PPI",
+      "export": "Exportar Informe de Preparación"
+    },
+    "tabs": {
+      "concrete": "Hormigón",
+      "welds": "Soldaduras",
+      "soils": "Suelos"
+    },
+    "linkedActivity": "Actividad de planificación",
+    "viewInPlanning": "Ver en planificación"
+  },
+  "planning": {
+    "createWorkItem": "Crear elemento de obra",
+    "workItemCreated": "Elemento creado y asociado",
+    "linkedElement": "Elemento de obra asociado",
+    "viewElement": "Ver elemento"
+  },
+  "tests": {
+    "openRnc": "Abrir RNC",
+    "resultNonConform": "no conforme — ¿Abrir RNC?",
+    "linkedNc": "NC asociada"
+  },
+  "welds": {
+    "usPendingBanner": "soldadura(s) con US pendiente hace más de 7 días",
+    "filterPendingUS": "Ver pendientes US"
+  },
+  "rfi": {
+    "codeGenerated": "Código generado automáticamente"
+  },
+  "viewer": {
+    "banner": "Acceso de visualización — Fiscalización / IP · Solo lectura y exportación"
+  },
+  "dashboard": {
+    "testStatus": "Estado de los Ensayos",
+    "concreteSummary": "Resumen de Hormigón",
+    "specimensOverdue": "Probetas pendientes 28d",
+    "weldsPendingUT": "Soldaduras sin US",
+    "testsOverdue": "Ensayos atrasados",
+    "ncMajorOpen": "NC mayor abierta"
   }
 }
