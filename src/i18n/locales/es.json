@@ -3165,6 +3165,10 @@
     "subtitle": "WBS jerárquica, actividades planificadas y bloqueos inteligentes",
     "tabs": { "activities": "Actividades" },
     "searchPlaceholder": "Buscar código, descripción, zona…",
+    "createWorkItem": "Crear elemento de obra asociado",
+    "workItemCreated": "Actividad y elemento de obra creados",
+    "linkedElement": "Elemento de obra asociado",
+    "viewElement": "Ver elemento →",
     "wbs": {
       "add": "Nueva WBS",
       "addChild": "Crear hijo",
