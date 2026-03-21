@@ -340,7 +340,7 @@ export function exportFavPdf(
   </div>
 
   <div style="text-align:center;font-size:8px;color:#999;margin-top:20px;padding:8px;">
-    Atlas QMS · PF17A · Gerado em ${new Date().toLocaleString("pt-PT")}
+    Atlas QMS · ${escapeHtml(projectCode)} · Gerado em ${new Date().toLocaleString("pt-PT")}
   </div>
 </body></html>`;
 

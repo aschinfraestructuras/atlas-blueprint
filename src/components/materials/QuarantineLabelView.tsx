@@ -51,7 +51,7 @@ function buildLabelHtml(material: Material, nc?: QuarantineLabelProps["nc"]): st
         </table>
       </div>
       <div style="text-align:center;font-size:9px;color:#999;border-top:1px solid #e5e5e5;padding-top:8px;">
-        Atlas QMS · PF17A · ACE ASCH Infraestructuras + Cimontubo
+        Atlas QMS
       </div>
     </div>
   `;

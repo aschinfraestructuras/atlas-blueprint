@@ -160,7 +160,7 @@ ${audit.report_ref ? `<div class="section"><h2>Referência do Relatório</h2><p>
   <div class="sig-item"><div class="line"></div><div class="role">Director de Obra (DO)</div></div>
   <div class="sig-item"><div class="line"></div><div class="role">Resp. Qualidade (RQ)</div></div>
 </div>
-<div class="footer">Atlas QMS · PF17A · ACE ASCH Infraestructuras + Cimontubo</div>
+<div class="footer">Atlas QMS · ${projectName}</div>
 </body></html>`;
 
     const w = window.open("", "_blank");

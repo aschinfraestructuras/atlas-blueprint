@@ -59,7 +59,7 @@ export function exportPlanDetailPdf(
   const isPt = meta.locale === "pt";
   const today = new Date().toLocaleDateString("pt-PT");
   const docCode = (plan as any).code ?? `PLAN-${plan.plan_type}`;
-  const header = fullPdfHeader(logoBase64 ?? null, `LINHA DO SUL — ${meta.projectCode}`, docCode, plan.revision ?? "0", today);
+  const header = fullPdfHeader(logoBase64 ?? null, meta.projectName ?? meta.projectCode, docCode, plan.revision ?? "0", today);
 
   const info = infoGridHtml([
     [isPt ? "Tipo" : "Tipo", typeLabels[plan.plan_type] ?? plan.plan_type],

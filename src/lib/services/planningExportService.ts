@@ -74,7 +74,7 @@ export function exportActivityDetailPdf(
 ) {
   const today = new Date().toLocaleDateString("pt-PT");
   const title = meta.locale === "pt" ? "Detalhe da Atividade" : "Detalle de Actividad";
-  const header = fullPdfHeader(logoBase64 ?? null, `LINHA DO SUL — ${meta.projectCode}`, `ACT-${meta.projectCode}`, "0", today);
+  const header = fullPdfHeader(logoBase64 ?? null, meta.projectName ?? meta.projectCode, `ACT-${meta.projectCode}`, "0", today);
 
   const info = infoGridHtml([
     [meta.locale === "pt" ? "Descrição" : "Descripción", activity.description],
