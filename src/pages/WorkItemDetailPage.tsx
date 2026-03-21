@@ -1009,6 +1009,14 @@ export default function WorkItemDetailPage() {
     loadRelated();
   }, [id]);
 
+  // Load linked activities for the banner
+  useEffect(() => {
+    if (!id || !activeProject) return;
+    planningService.getActivities(activeProject.id)
+      .then(all => setActivitiesList(all.filter(a => a.work_item_id === id)))
+      .catch(() => setActivitiesList([]));
+  }, [id, activeProject?.id]);
+
   // Load work item materials
   useEffect(() => {
     if (!item || !activeProject) return;
