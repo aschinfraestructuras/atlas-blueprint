@@ -2700,6 +2700,7 @@
       "pendingApproval": "Pendentes MAP/MAS"
     },
     "form": {
+      "code": "Código",
       "titleCreate": "Novo Material",
       "titleEdit": "Editar Material",
       "name": "Nome",
