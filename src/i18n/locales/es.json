@@ -3975,5 +3975,8 @@
       "updated": "Submittal actualizado",
       "deleted": "Submittal eliminado"
     }
+  },
+  "fieldRecords": {
+    "empty": "Sin fichas de registro asociadas a esta inspección."
   }
 }
