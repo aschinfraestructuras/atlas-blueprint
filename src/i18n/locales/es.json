@@ -3884,7 +3884,24 @@
       "testResult": "Resultado",
       "ppi": "PPI",
       "workItem": "Actividad"
-    }
+    },
+    "filter": {
+      "supplier": "Proveedor",
+      "allSuppliers": "Todos los proveedores",
+      "allPame": "Todos los PAME",
+      "testResult": "Ensayo",
+      "allTests": "Todos los ensayos",
+      "pass": "✓ Conforme",
+      "fail": "✗ No conforme",
+      "pending": "Pendiente",
+      "noTest": "Sin ensayo",
+      "completeness": "Completitud",
+      "allCompleteness": "Todos",
+      "full": "Trazabilidad completa",
+      "partial": "Parcial",
+      "incomplete": "Sin trazabilidad"
+    },
+    "showingFiltered": "Mostrando {{count}} de {{total}} materiales"
   },
   "meetingActions": {
     "title": "Acciones de Reuniones (ATA-Q)",
