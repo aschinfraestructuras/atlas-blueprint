@@ -3,13 +3,16 @@ import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
+import { useProjectHealth } from "@/hooks/useProjectHealth";
+import { useProject } from "@/contexts/ProjectContext";
+import { HealthScoreSheet } from "@/components/dashboard/HealthScoreSheet";
 import {
   LayoutDashboard, FolderKanban, FileText, Truck, Package,
   FlaskConical, AlertTriangle, ScrollText, Settings,
   ShieldCheck, ChevronLeft, ChevronRight, X, ChevronDown,
   Inbox, BookOpen, HardHat, Construction, ClipboardCheck, Crosshair, CalendarClock,
   Clock, FileCheck, BarChart3, Building2, ClipboardList, Leaf, GraduationCap, FileBarChart2,
-  Users, Link2, Hammer, CheckSquare, FileStack, PieChart, Cog, CalendarCheck,
+  Users, Link2, Hammer, CheckSquare, FileStack, PieChart, Cog, CalendarCheck, Activity,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { cn } from "@/lib/utils";
