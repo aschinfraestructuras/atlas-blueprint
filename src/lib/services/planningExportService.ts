@@ -44,7 +44,7 @@ export function exportActivitiesCsv(data: Activity[], meta: ReportMeta) {
 export function exportActivitiesPdf(data: Activity[], meta: ReportMeta, logoBase64?: string | null) {
   const today = new Date().toLocaleDateString("pt-PT");
   const title = meta.locale === "pt" ? "Atividades" : "Actividades";
-  const header = fullPdfHeader(logoBase64 ?? null, `LINHA DO SUL — ${meta.projectCode}`, "ACT-LISTA", "0", today);
+  const header = fullPdfHeader(logoBase64 ?? null, meta.projectName ?? meta.projectCode, "ACT-LISTA", "0", today);
   const columns = ["Descrição", "WBS", "Zona", "Estado", "Progresso", "Datas"];
   const rows = data.map(a => [a.description, a.wbs_code ?? "—", a.zone ?? "—", a.status, `${a.progress_pct}%`, `${a.planned_start ?? "?"} → ${a.planned_end ?? "?"}`]);
   const tableRows = rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join("")}</tr>`).join("");
