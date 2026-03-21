@@ -255,7 +255,7 @@ function buildNCDocument(
 
   const header = fullPdfHeader(
     logoBase64 ?? null,
-    `LINHA DO SUL — ${meta.projectCode}`,
+    meta.projectName ?? meta.projectCode,
     docCode,
     "0",
     today,
