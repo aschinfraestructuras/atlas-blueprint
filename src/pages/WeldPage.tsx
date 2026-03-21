@@ -374,6 +374,17 @@ export default function WeldPage() {
             </TabsContent>
           </Tabs>
 
+          {/* Attachments */}
+          {editingId && activeProject && (
+            <div className="mt-4">
+              <AttachmentsPanel
+                projectId={activeProject.id}
+                entityType="weld_records"
+                entityId={editingId}
+              />
+            </div>
+          )}
+
           <DialogFooter>
             <Button variant="outline" onClick={() => setDialogOpen(false)}>{t("common.cancel")}</Button>
             <Button onClick={handleSave} disabled={saving}>{saving ? "A guardar..." : t("common.save")}</Button>
