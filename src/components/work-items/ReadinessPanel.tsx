@@ -83,10 +83,10 @@ export function ReadinessPanel() {
         .select("id, work_item_id, status")
         .eq("project_id", activeProject.id)
         .eq("is_deleted", false) as any);
-      const ppiItemsRes = await (supabase
+      const ppiItemsRes = await (supabase as any)
         .from("ppi_instance_items")
         .select("instance_id, result")
-        .eq("project_id", activeProject.id) as any);
+        .eq("project_id", activeProject.id);
       const testRes = await (supabase
         .from("test_results")
         .select("work_item_id, pass_fail, status")
