@@ -27,7 +27,8 @@ export type EntityType =
   | "weld_records"
   | "soil_samples"
   | "compaction_tests"
-  | "recycled_materials";
+  | "recycled_materials"
+  | "daily_reports";
 
 export interface Attachment {
   id: string;

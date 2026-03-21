@@ -25,8 +25,16 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
   Paperclip, Upload, Download, Trash2, Loader2,
   FileText, FileSpreadsheet, FileImage, FileArchive, File,
+  Camera,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Attachment } from "@/lib/services/attachmentService";
@@ -44,6 +52,54 @@ const ALLOWED_SET = new Set([
 function isFileAllowed(fileName: string): boolean {
   const ext = fileName.split(".").pop()?.toLowerCase() ?? "";
   return ALLOWED_SET.has(ext);
+}
+
+// ─── Mobile detection ────────────────────────────────────────────────────────
+
+function isTouchDevice(): boolean {
+  return "ontouchstart" in window || navigator.maxTouchPoints > 0;
+}
+
+// ─── Image compression ──────────────────────────────────────────────────────
+
+function compressImage(file: File, maxDim = 1920, quality = 0.85): Promise<File> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      let { width, height } = img;
+      if (width > maxDim || height > maxDim) {
+        if (width > height) {
+          height = Math.round(height * (maxDim / width));
+          width = maxDim;
+        } else {
+          width = Math.round(width * (maxDim / height));
+          height = maxDim;
+        }
+      }
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) { resolve(file); return; }
+      ctx.drawImage(img, 0, 0, width, height);
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) { resolve(file); return; }
+          const compressed = new File([blob], file.name.replace(/\.[^.]+$/, ".jpg"), {
+            type: "image/jpeg",
+            lastModified: Date.now(),
+          });
+          resolve(compressed);
+        },
+        "image/jpeg",
+        quality
+      );
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("Failed to load image")); };
+    img.src = url;
+  });
 }
 
 // ─── File icon helpers ───────────────────────────────────────────────────────
@@ -94,6 +150,8 @@ interface AttachmentsPanelProps {
   entityId: string | null | undefined;
   readOnly?: boolean;
   className?: string;
+  /** Show camera button more prominently (e.g. in PPI evidence tab) */
+  cameraProminent?: boolean;
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -104,15 +162,24 @@ export function AttachmentsPanel({
   entityId,
   readOnly = false,
   className,
+  cameraProminent = false,
 }: AttachmentsPanelProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { data: attachments, loading, refetch } = useAttachments(entityType, entityId);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
   const [thumbnails, setThumbnails] = useState<Record<string, string>>({});
+
+  // Camera preview state
+  const [previewFile, setPreviewFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [compressing, setCompressing] = useState(false);
+
+  const showCamera = isTouchDevice();
 
   // ── Thumbnail loader ──────────────────────────────────────────────────────
 
@@ -126,6 +193,53 @@ export function AttachmentsPanel({
     }
   };
 
+  // ── Camera capture ────────────────────────────────────────────────────────
+
+  const handleCameraCapture = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+
+    setCompressing(true);
+    try {
+      const compressed = await compressImage(file);
+      const url = URL.createObjectURL(compressed);
+      setPreviewFile(compressed);
+      setPreviewUrl(url);
+    } catch {
+      toast({ title: t("attachments.compressing"), variant: "destructive" });
+    } finally {
+      setCompressing(false);
+    }
+  };
+
+  const handleConfirmCamera = async () => {
+    if (!previewFile || !entityId || !user) return;
+    setUploading(true);
+    try {
+      await attachmentService.upload(previewFile, projectId, entityType, entityId, user.id);
+      toast({ title: t("attachments.toast.uploaded", { name: previewFile.name }) });
+      refetch();
+    } catch (err) {
+      toast({
+        title: t("attachments.toast.uploadError"),
+        description: err instanceof Error ? err.message : String(err),
+        variant: "destructive",
+      });
+    } finally {
+      setUploading(false);
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      setPreviewFile(null);
+      setPreviewUrl(null);
+    }
+  };
+
+  const handleCancelCamera = () => {
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setPreviewFile(null);
+    setPreviewUrl(null);
+  };
+
   // ── Upload ────────────────────────────────────────────────────────────────
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -135,8 +249,8 @@ export function AttachmentsPanel({
 
     if (!isFileAllowed(file.name)) {
       toast({
-        title: "Tipo de ficheiro não permitido",
-        description: `Extensão ".${file.name.split(".").pop()}" não é aceite. Tipos permitidos: PDF, DOC, XLS, DWG, imagens, ZIP, etc.`,
+        title: t("attachments.typeNotAllowed"),
+        description: `Extensão ".${file.name.split(".").pop()}" não é aceite.`,
         variant: "destructive",
       });
       return;
@@ -212,7 +326,7 @@ export function AttachmentsPanel({
     <TooltipProvider>
       <div className={cn("space-y-3", className)}>
         {/* Section header */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-2">
           <div className="flex items-center gap-1.5 text-sm font-medium text-foreground">
             <Paperclip className="h-3.5 w-3.5 text-muted-foreground" />
             {t("attachments.title")}
@@ -224,7 +338,35 @@ export function AttachmentsPanel({
           </div>
 
           {canUpload && (
-            <>
+            <div className="flex items-center gap-1.5">
+              {/* Camera button — mobile only */}
+              {showCamera && (
+                <>
+                  <input
+                    ref={cameraInputRef}
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    className="hidden"
+                    onChange={handleCameraCapture}
+                  />
+                  <Button
+                    type="button"
+                    variant={cameraProminent ? "default" : "outline"}
+                    size="sm"
+                    className={cn("gap-1.5 text-xs", cameraProminent ? "h-8" : "h-7")}
+                    onClick={() => cameraInputRef.current?.click()}
+                    disabled={uploading || compressing}
+                  >
+                    {compressing
+                      ? <Loader2 className="h-3 w-3 animate-spin" />
+                      : <Camera className={cn("h-3 w-3", cameraProminent && "h-3.5 w-3.5")} />}
+                    {t("attachments.camera")}
+                  </Button>
+                </>
+              )}
+
+              {/* File upload button */}
               <input
                 ref={fileInputRef}
                 type="file"
@@ -245,7 +387,7 @@ export function AttachmentsPanel({
                   : <Upload className="h-3 w-3" />}
                 {t("attachments.upload")}
               </Button>
-            </>
+            </div>
           )}
         </div>
 
@@ -363,6 +505,41 @@ export function AttachmentsPanel({
             })}
           </ul>
         )}
+
+        {/* Camera preview dialog */}
+        <Dialog open={!!previewUrl} onOpenChange={(v) => { if (!v) handleCancelCamera(); }}>
+          <DialogContent className="max-w-sm">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-sm">
+                <Camera className="h-4 w-4" />
+                {t("attachments.previewTitle")}
+              </DialogTitle>
+            </DialogHeader>
+            {previewUrl && (
+              <div className="space-y-3">
+                <img
+                  src={previewUrl}
+                  alt="Preview"
+                  className="w-full rounded-lg border border-border object-contain max-h-[60vh]"
+                />
+                {previewFile && (
+                  <p className="text-xs text-muted-foreground text-center">
+                    {formatBytes(previewFile.size)}
+                  </p>
+                )}
+              </div>
+            )}
+            <DialogFooter className="gap-2">
+              <Button variant="outline" onClick={handleCancelCamera} disabled={uploading}>
+                {t("common.cancel")}
+              </Button>
+              <Button onClick={handleConfirmCamera} disabled={uploading} className="gap-1.5">
+                {uploading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}
+                {t("attachments.confirmUpload")}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </TooltipProvider>
   );
