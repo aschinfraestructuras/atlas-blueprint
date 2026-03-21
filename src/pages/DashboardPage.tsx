@@ -152,6 +152,7 @@ export default function DashboardPage() {
   const { data: kpis, loading: kpiLoading, refetch } = useDashboardKpis();
   const { summary, ncMonthly, testsMonthly, loading: viewsLoading } = useDashboardViews();
   const { health, loading: healthLoading } = useProjectHealth(activeProject?.id);
+  const [healthSheetOpen, setHealthSheetOpen] = useState(false);
 
   // Period filter state
   const [period, setPeriod] = useState<string>("all");
