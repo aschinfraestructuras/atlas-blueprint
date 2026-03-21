@@ -356,17 +356,17 @@ function buildSingleHtml(
 
   const criteriaHtml = tc?.acceptance_criteria
     ? `<div class="sec">${labels.acceptanceCriteria}</div>
-       <p style="font-size:11px;margin-bottom:12px;line-height:1.5;color:${BRAND.text}">${tc.acceptance_criteria}</p>`
+       <p style="font-size:11px;margin-bottom:12px;line-height:1.5;color:${BRAND.text}">${esc(tc.acceptance_criteria)}</p>`
     : "";
 
   const methodHtml = tc?.description
     ? `<div class="sec">${labels.method}</div>
-       <p style="font-size:11px;margin-bottom:12px;line-height:1.5;color:${BRAND.text}">${tc.description}</p>`
+       <p style="font-size:11px;margin-bottom:12px;line-height:1.5;color:${BRAND.text}">${esc(tc.description)}</p>`
     : "";
 
   const notesHtml = r.notes
     ? `<div class="sec">${labels.notes}</div>
-       <p style="font-size:11px;margin-bottom:12px;line-height:1.5;color:${BRAND.text}">${r.notes}</p>`
+       <p style="font-size:11px;margin-bottom:12px;line-height:1.5;color:${BRAND.text}">${esc(r.notes)}</p>`
     : "";
 
   return `<!DOCTYPE html>
