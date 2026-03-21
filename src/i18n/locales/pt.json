@@ -3159,6 +3159,10 @@
       "activities": "Atividades"
     },
     "filters": { "allStatuses": "Todos os estados" },
+    "createWorkItem": "Criar elemento de obra associado",
+    "workItemCreated": "Atividade e elemento de obra criados",
+    "linkedElement": "Elemento de obra associado",
+    "viewElement": "Ver elemento →",
     "wbs": {
       "add": "Nova WBS",
       "addChild": "Criar filho",
