@@ -631,7 +631,7 @@ export function exportNotHpPdf(
     </div>
     <div class="info-row">
       <span class="info-label">Ponto de Inspeção</span>
-      <span class="info-value" style="font-weight:700;">${notification.point_no}</span>
+      <span class="info-value" style="font-weight:700;">${esc(notification.point_no)}</span>
     </div>
     <div class="info-row" style="grid-column:span 2;">
       <span class="info-label">Actividade</span>
