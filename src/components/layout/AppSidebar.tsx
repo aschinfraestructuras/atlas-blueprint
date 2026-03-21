@@ -52,7 +52,6 @@ const NAV_SECTIONS: SidebarSection[] = [
     collapsible: false,
     items: [
       { labelKey: "nav.dashboard", url: "/", icon: LayoutDashboard, exact: true, viewerVisible: true },
-      { labelKey: "nav.myTasks", url: "/my-tasks", icon: CalendarCheck },
     ],
   },
   {
@@ -60,6 +59,7 @@ const NAV_SECTIONS: SidebarSection[] = [
     sectionIcon: Hammer,
     collapsible: true,
     items: [
+      { labelKey: "nav.myTasks",      url: "/my-tasks",      icon: CalendarCheck },
       { labelKey: "nav.planning",     url: "/planning",      icon: CalendarClock },
       { labelKey: "nav.workItems",    url: "/work-items",    icon: Construction },
       { labelKey: "nav.ppi",          url: "/ppi",           icon: ClipboardCheck, viewerVisible: true },

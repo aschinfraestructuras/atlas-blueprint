@@ -173,90 +173,43 @@
     "cta": "Ver projetos"
   },
   "dashboard": {
-    "welcome": "Bem-vindo de volta",
-    "subtitle": "Aqui está um resumo do estado atual dos seus projetos.",
-    "subtitleProject": "A visualizar dados do projeto: {{project}}",
-    "noProjectSelected": "Selecione um projeto no topo para filtrar os dados.",
-    "noProjectTitle": "Nenhum projeto selecionado",
-    "noProjectDescription": "Selecione ou crie um projeto para visualizar os indicadores e dados de qualidade.",
-    "goToProjects": "Ver projetos",
-    "noData": "Sem dados no período selecionado.",
-    "tabs": {
-      "executive": "Painel Executivo",
-      "advanced": "Análise Avançada"
+    "testStatus": {
+      "title": "Estado dos Ensaios",
+      "ncOpen": "NCs em aberto",
+      "ppiInProgress": "PPIs em progresso",
+      "specimensOverdue": "Provetes aguardam 28d",
+      "weldsUsPending": "Soldaduras sem US",
+      "testsOverdue": "Ensaios em atraso"
     },
-    "exec": {
-      "wiOpen": "Atividades em Curso",
-      "ppiPending": "PPI Pend. Aprovação",
-      "testsNC": "Ensaios Não Conformes",
-      "ncOpen": "NC Abertas",
-      "ppiConform": "% PPI Conformes",
-      "testsConform": "% Ensaios Conformes",
-      "ncAging": "Aging Médio NC",
-      "docsReview": "Documentos em Revisão",
-      "conform": "Conformes",
-      "nonConform": "Não Conformes",
-      "suppliersPendingQual": "Fornecedores Pend. Qualificação",
-      "supplierDocsExpiring": "Docs Fornecedor a Expirar (30d)",
-      "suppliersWithNC": "Fornecedores com NC Aberta",
-      "materialsDocsExpired": "Materiais com Docs Expirados",
-      "materialsWithNC": "Materiais com NC Aberta",
-      "materialsNonconformTests": "Materiais com Ensaios NC (30d)"
-    },
-    "adv": {
-      "quality": "Qualidade Técnica",
-      "documental": "Documental",
-      "ncRisk": "NC & Risco",
-      "operational": "Operacional",
-      "testsByType": "Ensaios por Tipo",
-      "failureByMaterial": "Taxa Reprovação por Disciplina (%)",
-      "docsByType": "Documentos por Tipo",
-      "avgApproval": "Tempo Médio Aprovação (dias)",
-      "ncByDiscipline": "NC por Disciplina",
-      "ncBySupplier": "NC por Fornecedor",
-      "ncBySeverity": "NC por Gravidade",
-      "wiByDiscipline": "Atividades por Disciplina"
-    },
-    "stats": {
-      "activeProjects": "Projetos Ativos",
-      "openDocuments": "Documentos em Curso",
-      "pendingTests": "Ensaios Pendentes",
-      "openNCs": "NCs Abertas",
-      "totalWorkItems": "Total Atividades",
-      "openWorkItems": "Atividades em Curso",
-      "workItemsWithNC": "Atividades c/ NC Aberta",
-      "completed": "concluídos",
-      "ppiTotal": "PPI Total",
-      "ppiPending": "PPI Pendentes Aprovação",
-      "ppiConform": "conformes"
+    "concreteSummary": "Resumo de Betão",
+    "specimensOverdue": "Provetes aguardam 28d",
+    "weldsPendingUT": "Soldaduras sem US",
+    "testsOverdue": "Ensaios em atraso",
+    "ncMajorOpen": "NC major em aberto",
+    "welcome": "Bem-vindo",
+    "subtitleProject": "Gestão da qualidade · {{project}}",
+    "alerts": {
+      "ncOpen": "NCs abertas",
+      "ncOverdue": "NCs em atraso",
+      "emesExpiring": "EMEs a expirar",
+      "pamePending": "PAME pendentes"
     },
     "kpi": {
-      "title": "KPIs do Projeto",
-      "documents": "Documentos",
-      "tests": "Ensaios",
-      "ncs": "Não Conformidades",
-      "suppliers": "Fornecedores",
-      "ppi": "PPI",
-      "avgAging": "Aging médio: {{days}} dias",
-      "avgAgingTitle": "Aging Médio NC",
-      "days": "dias em aberto",
-      "openNcCount": "{{count}} NC abertas",
-      "noOpenNcs": "Sem NCs abertas",
-      "awaitingReview": "Em revisão",
-      "approved": "Aprovados",
-      "ncLeadTimeTitle": "Lead Time Médio NC",
-      "daysToClose": "dias até fecho",
-      "closedNcCount": "{{count}} NC fechadas",
-      "noClosedNcs": "Sem NCs fechadas",
-      "ncOpened": "Abertas",
-      "ncClosed": "Fechadas",
       "ncOpen": "NCs Abertas",
+      "ncClosed": "NCs Fechadas",
+      "ncOpened": "NCs Abertas",
       "pamePending": "PAME Pendentes",
       "emesExpiring": "EMEs ≤30d",
       "nextAudit": "Próxima Auditoria"
     },
+    "period": {
+      "all": "Todo o período",
+      "3m": "Últimos 3 meses",
+      "6m": "Últimos 6 meses",
+      "12m": "Últimos 12 meses",
+      "ytd": "Ano corrente"
+    },
     "progress": {
-      "title": "Progresso do SGQ",
       "ppi": "PPIs Aprovados",
       "tests": "Ensaios Realizados",
       "materials": "Materiais Aprovados (PAME)"
@@ -265,87 +218,61 @@
       "title": "Actividade Recente",
       "empty": "Sem actividade recente"
     },
-    "actions": {
-      "newProject": "Novo Projeto",
-      "newDocument": "Novo Documento",
-      "newTest": "Novo Ensaio",
-      "newNC": "Nova NC",
-      "openNc": "Abrir NC",
-      "reception": "Receção Material",
-      "test": "Registar Ensaio",
-      "rfi": "Novo RFI"
-    },
-    "noAudit": "Sem auditorias planeadas",
     "modules": "Módulos",
     "hpPending": "HPs Sem Confirmação",
+    "noData": "Sem dados",
     "expirations": {
       "subtitle": "Documentos e calibrações a expirar nos próximos 30 dias"
     },
-    "conformityByFrente": {
-      "title": "Conformidade por Frente de Obra",
-      "empty": "Sem frentes de obra ativas"
-    },
-    "alerts": {
-      "title": "Alertas",
-      "ncOpen": "NCs Abertas",
-      "ncOverdue": "NCs Vencidas",
-      "emesExpiring": "EMEs a Expirar",
-      "pamePending": "PAME Pendente"
+    "monthlyReport": {
+      "create": "Criar Relatório",
+      "overdue": "Relatório Mensal SGQ em atraso — {{days}} dias",
+      "upcoming": "Relatório Mensal SGQ — entregar até {{date}}"
     },
     "charts": {
-      "tests": "Ensaios",
-      "suppliers": "Fornecedores",
-      "ncTrend": "NC Abertas vs Fechadas — 6 Meses",
       "ncTrendTitle": "Tendência de NCs",
-      "ncTrendSub": "Abertas · Fechadas · Saldo acumulado",
+      "ncTrendSub": "Abertas vs. fechadas por mês",
+      "ncMonthly": "NCs Mensal",
+      "ncStatus": "Estado das NCs",
+      "ncClassification": "Classificação de NCs",
+      "workProgress": "Progresso de Obra",
+      "workProgressSub": "Elementos por estado",
+      "ppiProgress": "Progresso PPIs",
+      "ppiProgressSub": "Estado das inspecções",
+      "total": "Total",
+      "completed": "Concluídas",
+      "inProgress": "Em curso",
+      "inProgressLabel": "Em progresso",
+      "planned": "Planeadas",
+      "approved": "Aprovados",
       "balance": "Saldo",
-      "ncMonthly": "NCs por Mês",
-      "testsDistribution": "Distribuição de Ensaios",
-      "docsByType": "Documentos por Tipo",
-      "testsTrend": "Ensaios Conformes vs Não Conformes — 6 Meses",
-      "workProgress": "Progresso por Disciplina",
-      "workProgressSub": "Concluído · Em execução · Planeado",
-      "completed": "Concluído",
-      "inProgress": "Em execução",
-      "planned": "Planeado",
-      "ppiProgress": "Inspecções PPI",
-      "ppiProgressSub": "Estado geral das inspecções",
-      "approved": "Aprovadas",
-      "inProgressLabel": "Em curso",
-      "hpPending": "HP Pendentes",
-      "inspCompleted": "inspecções concluídas"
-    },
-    "testStatus": {
-      "title": "Estado dos Ensaios",
-      "ncOpen": "NCs abertas",
-      "ppiInProgress": "PPIs em progresso",
-      "specimensOverdue": "Provetes 28d s/ resultado",
-      "weldsUsPending": "Soldaduras s/ US",
-      "testsOverdue": "Ensaios pendentes"
+      "onTime": "No prazo",
+      "pastDue": "Em atraso",
+      "hpPending": "HP pendentes",
+      "inspCompleted": "Inspecções concluídas",
+      "actionPlan": "Plano de Acções",
+      "documentMetrics": "Métricas de Documentos",
+      "docDraft": "Rascunho",
+      "docReview": "Em revisão",
+      "docApproved": "Aprovados",
+      "qualityKpi": "KPIs de Qualidade",
+      "failRate": "Taxa de falha",
+      "indicator": "Indicador",
+      "testsDistribution": "Distribuição de Ensaios"
     },
     "concrete": {
       "title": "Betão por Classe",
-      "noData": "Sem dados de betão",
-      "samples": "amostras"
+      "samples": "amostras",
+      "noData": "Sem amostras de betão"
     },
-    "monthlyReport": {
-      "overdue": "Relatório Mensal SGQ em atraso — {{days}} dias",
-      "upcoming": "Relatório Mensal SGQ — entregar até {{date}}",
-      "create": "Criar Relatório"
+    "conformityByFrente": {
+      "title": "Conformidade por Frente",
+      "empty": "Sem dados de frentes"
     },
-    "healthBreakdown": "Indicadores de Saúde",
-    "recentActivity": "Atividade Recente",
-    "nextActions": "Próximas Ações",
-    "allClear": "Sem ações pendentes 🎉",
-    "quickActions": "Ações Rápidas",
-    "activity": {
-      "documentApproved": "Documento aprovado",
-      "testCompleted": "Ensaio concluído",
-      "ncOpened": "NC aberta",
-      "projectCreated": "Projeto criado",
-      "supplierAdded": "Fornecedor adicionado"
-    },
-    "noActivity": "Sem atividade recente."
+    "exec": {
+      "conform": "Conforme",
+      "nonConform": "Não conforme"
+    }
   },
   "emptyState": {
     "title": "Ainda sem dados",
@@ -786,388 +713,9 @@
     }
   },
   "tests": {
-    "newTest": "Novo Ensaio",
-    "unknownTest": "Ensaio desconhecido",
-    "tabs": {
-      "due": "Devidos",
-      "results": "Resultados",
-      "plan": "Plano",
-      "catalog": "Catálogo"
-    },
-    "status": {
-      "draft": "Rascunho",
-      "pending": "Pendente",
-      "in_progress": "Em Curso",
-      "submitted": "Submetido",
-      "reviewed": "Revisto",
-      "completed": "Concluído",
-      "approved": "Aprovado",
-      "archived": "Arquivado",
-      "pass": "Conforme",
-      "fail": "Não Conforme",
-      "inconclusive": "Inconclusivo",
-      "na": "N/A"
-    },
-    "stats": {
-      "total": "Total",
-      "approved": "Aprovados",
-      "failed": "Não Conformes",
-      "pending": "Pendentes"
-    },
-    "due": {
-      "title": "Ensaios Devidos",
-      "generateBtn": "Gerar Devidos",
-      "generating": "A gerar…",
-      "generated": "Devidos gerados",
-      "generatedCount": "{{count}} ensaio(s) devido(s) gerado(s).",
-      "noGenerated": "Nenhum ensaio devido gerado. Verifique se existem planos ativos e work items em curso.",
-      "schedule": "Agendar",
-      "start": "Iniciar Ensaio",
-      "waive": "Dispensar",
-      "waiveReason": "Motivo da Dispensa",
-      "waiveReasonPlaceholder": "Justifique a dispensa deste ensaio…",
-      "waived": "Ensaio dispensado.",
-      "started": "Ensaio iniciado.",
-      "scheduled": "Ensaio agendado.",
-      "empty": "Sem ensaios devidos. Use «Gerar Devidos» para programar ensaios com base no plano ativo.",
-      "status": {
-        "due": "Devido",
-        "scheduled": "Agendado",
-        "in_progress": "Em Curso",
-        "done": "Concluído",
-        "overdue": "Em Atraso",
-        "waived": "Dispensado"
-      },
-      "table": {
-        "test": "Ensaio",
-        "context": "Contexto",
-        "reason": "Motivo",
-        "dueDate": "Data Limite",
-        "lab": "Laboratório",
-        "status": "Estado"
-      },
-      "reasons": {
-        "activity_in_progress": "Atividade em curso",
-        "periodic": "Periódico",
-        "quantity_threshold": "Limiar de quantidade",
-        "manual_rule": "Regra manual",
-        "manual": "Manual"
-      },
-      "kpi": {
-        "totalDue": "Total Devidos",
-        "overdue": "Em Atraso",
-        "scheduled7d": "Agendados (7d)",
-        "pass30d": "Conformes (30d)",
-        "fail30d": "Não Conformes (30d)",
-        "pending": "Pendentes"
-      }
-    },
-    "plans": {
-      "title": "Planos de Ensaios",
-      "newPlan": "Novo Plano",
-      "empty": "Sem planos de ensaios. Crie o primeiro para definir regras de ensaio.",
-      "status": {
-        "draft": "Rascunho",
-        "active": "Ativo",
-        "archived": "Arquivado"
-      },
-      "form": {
-        "titleCreate": "Novo Plano de Ensaios",
-        "titleEdit": "Editar Plano",
-        "code": "Código",
-        "codePlaceholder": "ex: PIE-001",
-        "title": "Título",
-        "titlePlaceholder": "ex: Plano de Inspeção e Ensaios - Terras",
-        "disciplina": "Disciplina",
-        "scopeNotes": "Notas de Âmbito",
-        "createBtn": "Criar Plano",
-        "saveBtn": "Guardar"
-      },
-      "rules": {
-        "title": "Regras de Ensaio",
-        "newRule": "Nova Regra",
-        "empty": "Sem regras. Adicione regras para definir quando cada ensaio é exigido.",
-        "appliesTo": "Aplica-se a",
-        "appliesOptions": {
-          "work_item": "Work Item",
-          "activity": "Atividade",
-          "both": "Ambos"
-        },
-        "frequencyType": "Tipo de Frequência",
-        "frequencyOptions": {
-          "quantity": "Quantidade",
-          "time": "Temporal",
-          "event": "Evento",
-          "manual": "Manual"
-        },
-        "frequencyValue": "Valor",
-        "frequencyUnit": "Unidade",
-        "unitOptions": {
-          "m": "m",
-          "m2": "m²",
-          "m3": "m³",
-          "t": "t",
-          "lot": "lote",
-          "layer": "camada",
-          "day": "dia",
-          "week": "semana",
-          "month": "mês"
-        },
-        "requiresReport": "Relatório obrigatório",
-        "requiresPhotos": "Fotos obrigatórias",
-        "requiresWitness": "Testemunha obrigatória",
-        "defaultLab": "Laboratório padrão",
-        "created": "Regra criada.",
-        "deleted": "Regra eliminada."
-      },
-      "toast": {
-        "created": "Plano criado.",
-        "updated": "Plano atualizado.",
-        "deleted": "Plano eliminado."
-      }
-    },
-    "templates": {
-      "title": "Templates de Ensaio",
-      "hasTemplate": "Tem template",
-      "noTemplate": "Sem template",
-      "builtinTemplates": {
-        "density_in_situ": "Densidade In Situ",
-        "plate_load": "Placa de Carga",
-        "concrete_control": "Controlo de Betão"
-      },
-      "autoPassFail": "Pass/Fail automático",
-      "computed": "Calculado",
-      "criteria": "Critérios de Aceitação",
-      "criteriaPass": "Conforme",
-      "criteriaFail": "Não Conforme"
-    },
-    "catalog": {
-      "newEntry": "Novo Tipo de Ensaio",
-      "searchPlaceholder": "Pesquisar código, nome, norma…",
-      "clone": "Clonar",
-      "archive": "Arquivar",
-      "activate": "Ativar",
-      "empty": "Nenhum ensaio no catálogo. Crie o primeiro ou use «Dados Demo».",
-      "filters": {
-        "allDisciplines": "Todas as disciplinas",
-        "showInactive": "Mostrar arquivados",
-        "hideInactive": "Ocultar arquivados"
-      },
-      "table": {
-        "code": "Código",
-        "name": "Tipo de Ensaio",
-        "disciplina": "Disciplina",
-        "standards": "Normas",
-        "unit": "Unidade",
-        "material": "Material",
-        "laboratorio": "Laboratório"
-      },
-      "status": {
-        "active": "Ativo",
-        "archived": "Arquivado"
-      },
-      "form": {
-        "titleCreate": "Novo Tipo de Ensaio",
-        "titleEdit": "Editar Tipo de Ensaio",
-        "code": "Código",
-        "codePlaceholder": "ex: TST-SOIL-DENS",
-        "name": "Nome",
-        "namePlaceholder": "ex: Densidade In Situ",
-        "disciplina": "Disciplina",
-        "disciplinaPlaceholder": "Selecionar disciplina…",
-        "disciplinaOutro": "Disciplina (outro)",
-        "material": "Material",
-        "materialPlaceholder": "ex: Solo, Betão, Betuminoso…",
-        "materialOutro": "Material (outro)",
-        "laboratorio": "Laboratório / Método",
-        "laboratorioPlaceholder": "ex: Laboratório Geotécnico",
-        "laboratorioOutro": "Laboratório (outro)",
-        "standards": "Normas (uma por linha)",
-        "standardsPlaceholder": "ex: EN 12390-3\nASTM D1883",
-        "unit": "Unidade",
-        "unitPlaceholder": "ex: MPa, %, mm",
-        "frequency": "Frequência de Ensaio",
-        "frequencyPlaceholder": "ex: 1 por cada 100 m³",
-        "acceptanceCriteria": "Critérios de Aceitação",
-        "acceptanceCriteriaPlaceholder": "ex: fck ≥ 30 MPa",
-        "description": "Descrição / Método",
-        "descriptionPlaceholder": "Descreva o procedimento de ensaio…",
-        "createBtn": "Criar tipo de ensaio",
-        "saveBtn": "Guardar alterações",
-        "validation": {
-          "codeRequired": "O código é obrigatório.",
-          "nameRequired": "O nome é obrigatório."
-        }
-      },
-      "toast": {
-        "created": "Tipo de ensaio criado.",
-        "updated": "Tipo de ensaio atualizado.",
-        "archived": "Ensaio arquivado.",
-        "activated": "Ensaio ativado.",
-        "cloned": "Ensaio clonado.",
-        "error": "Ocorreu um erro. Tente novamente."
-      }
-    },
-    "results": {
-      "newResult": "Novo Ensaio",
-      "searchPlaceholder": "Pesquisar código, referência, local…",
-      "empty": "Nenhum resultado registado. Clique em «Novo Ensaio» para começar.",
-      "filters": {
-        "allStatuses": "Todos os estados",
-        "allDisciplines": "Todas as disciplinas"
-      },
-      "table": {
-        "code": "Código",
-        "test": "Tipo de Ensaio",
-        "sampleRef": "Ref. Amostra",
-        "location": "Localização / PK",
-        "date": "Data",
-        "status": "Estado",
-        "passFail": "Resultado",
-        "supplier": "Laboratório",
-        "workItem": "Work Item",
-        "report": "Nº Relatório"
-      },
-      "form": {
-        "titleCreate": "Registar Ensaio",
-        "titleEdit": "Editar Registo de Ensaio",
-        "catalogEntry": "Tipo de Ensaio",
-        "testType": "Tipo de Ensaio",
-        "catalogPlaceholder": "Selecionar do catálogo…",
-        "testTypePlaceholder": "Selecionar do catálogo…",
-        "addNewTestType": "Criar novo tipo de ensaio",
-        "workItem": "Work Item (Tramo / Elemento)",
-        "workItemPlaceholder": "Selecionar work item…",
-        "date": "Data do Ensaio",
-        "sampleRef": "Ref. Amostra / Lote",
-        "sampleRefPlaceholder": "ex: AM-2024-001",
-        "location": "Localização",
-        "locationPlaceholder": "ex: Km 12+500, Viga V1…",
-        "pkInicio": "PK Início (m)",
-        "pkFim": "PK Fim (m)",
-        "pkStart": "PK Início (m)",
-        "pkEnd": "PK Fim (m)",
-        "material": "Material",
-        "materialPlaceholder": "ex: Betão C30/37",
-        "materialOutro": "Material (outro)",
-        "reportNumber": "Nº Relatório de Ensaio",
-        "reportPlaceholder": "ex: LAB-2026-0001",
-        "supplier": "Laboratório / Fornecedor",
-        "supplierPlaceholder": "Selecionar laboratório…",
-        "notes": "Observações",
-        "notesPlaceholder": "Observações adicionais sobre o ensaio…",
-        "status": "Estado",
-        "passFail": "Resultado (Pass/Fail)",
-        "passFailPlaceholder": "Selecionar resultado…",
-        "passFailOptions": {
-          "pass": "Conforme",
-          "fail": "Não Conforme",
-          "inconclusive": "Inconclusivo",
-          "na": "N/A"
-        },
-        "createBtn": "Registar Ensaio",
-        "saveBtn": "Guardar",
-        "noWorkItem": "— Sem work item —",
-        "noSupplier": "— Sem laboratório —",
-        "validation": {
-          "catalogRequired": "Selecione um tipo de ensaio do catálogo.",
-          "dateRequired": "A data do ensaio é obrigatória."
-        }
-      },
-      "toast": {
-        "created": "Ensaio registado com sucesso.",
-        "updated": "Ensaio atualizado com sucesso.",
-        "error": "Ocorreu um erro. Tente novamente.",
-        "archived": "Ensaio arquivado."
-      }
-    },
-    "demo": {
-      "button": "Dados Demo",
-      "alreadyExists": "Dados demo já existem neste projeto.",
-      "created": "Dados demo criados",
-      "catalogEntries": "tipos de ensaio",
-      "results": "resultados"
-    },
-    "workItemTab": {
-      "createTest": "Criar Ensaio",
-      "exportSummary": "Exportar Resumo PDF",
-      "empty": "Nenhum ensaio associado a este work item.",
-      "stats": {
-        "total": "Total",
-        "approved": "Aprovados",
-        "failed": "Não Conformes",
-        "pending": "Pendentes"
-      }
-    },
-    "export": {
-      "exportSingle": "Exportar PDF",
-      "exportBulk": "Exportar selecionados",
-      "exportWI": "Exportar resumo WI",
-      "noSelection": "Selecione pelo menos um ensaio para exportar.",
-      "reportTitle": "Relatório de Ensaio",
-      "bulkReportTitle": "Relatório de Ensaios em Lote",
-      "wiSummaryTitle": "Resumo de Ensaios por Work Item",
-      "generatedOn": "Gerado em",
-      "project": "Projeto",
-      "workItem": "Work Item",
-      "date": "Data",
-      "laboratory": "Laboratório",
-      "reportNumber": "Nº Relatório",
-      "technician": "Técnico",
-      "testCode": "Código",
-      "testName": "Tipo de Ensaio",
-      "discipline": "Disciplina",
-      "standards": "Normas Aplicáveis",
-      "method": "Método",
-      "acceptanceCriteria": "Critérios de Aceitação",
-      "sampleRef": "Ref. Amostra",
-      "location": "Localização / PK",
-      "pkRange": "Intervalo PK",
-      "status": "Estado",
-      "passFail": "Resultado",
-      "notes": "Observações",
-      "attachments": "Anexos",
-      "results": "Resultados",
-      "page": "Página",
-      "of": "de",
-      "approvalRate": "Taxa de Aprovação"
-    },
-    "table": {
-      "name": "Ensaio",
-      "sampleRef": "Ref. Amostra",
-      "location": "Localização"
-    },
-    "form": {
-      "titleCreate": "Novo Ensaio",
-      "titleEdit": "Editar Ensaio",
-      "testType": "Tipo de ensaio",
-      "testTypePlaceholder": "Selecionar ensaio do catálogo…",
-      "addNewTestType": "Criar novo tipo de ensaio",
-      "newTestTypeLabel": "Novo tipo de ensaio",
-      "newTestCodePlaceholder": "Código (ex: ENS-01)",
-      "newTestNamePlaceholder": "Nome do ensaio",
-      "addTestTypeBtn": "Adicionar ao catálogo",
-      "sampleRefPlaceholder": "ex: AM-2024-001",
-      "locationPlaceholder": "ex: Piso 2 — Betão A",
-      "createBtn": "Registar ensaio",
-      "validation": {
-        "testRequired": "Selecione um tipo de ensaio.",
-        "dateRequired": "A data é obrigatória."
-      }
-    },
-    "toast": {
-      "created": "Ensaio registado com sucesso.",
-      "updated": "Ensaio atualizado com sucesso.",
-      "catalogCreated": "Tipo de ensaio adicionado ao catálogo.",
-      "error": "Ocorreu um erro. Tente novamente."
-    },
-    "ppiTab": {
-      "title": "Ensaios associados a este PPI",
-      "empty": "Nenhum ensaio associado a este PPI",
-      "concrete": "Betão",
-      "compaction": "Compactação",
-      "soils": "Solos"
-    }
+    "openRnc": "Abrir RNC",
+    "resultNonConform": "não conforme — Abrir RNC?",
+    "linkedNc": "NC associada"
   },
   "laboratories": {
     "title": "Laboratórios",
@@ -1712,56 +1260,7 @@
     }
   },
   "rfi": {
-    "page": {
-      "title": "RFIs",
-      "subtitle": "Pedidos de Informação e Esclarecimento"
-    },
-    "searchPlaceholder": "Pesquisar código, assunto…",
-    "kpi": {
-      "open": "Em Aberto",
-      "answered": "Respondidos",
-      "overdue": "Em Atraso",
-      "closed": "Fechados"
-    },
-    "table": {
-      "code": "Código",
-      "subject": "Assunto",
-      "discipline": "Disciplina",
-      "priority": "Prioridade",
-      "responseDeadline": "Prazo Resposta",
-      "daysOpen": "Dias"
-    },
-    "filters": {
-      "allStatuses": "Todos os estados",
-      "overdue": "⚠ Em atraso",
-      "allDisciplines": "Todas disciplinas",
-      "allPriorities": "Todas prioridades"
-    },
-    "priority": {
-      "normal": "Normal",
-      "urgent": "Urgente",
-      "critical": "Crítico"
-    },
-    "status": {
-      "overdue": "Atrasado"
-    },
-    "detail": {
-      "responseDeadline": "Prazo de resposta:",
-      "daysRemaining": "dias restantes",
-      "details": "Detalhes",
-      "zone": "Zona/PK",
-      "docRef": "Ref. Doc.",
-      "ppiRef": "PPI Ref.",
-      "response": "Resposta",
-      "responseTextPlaceholder": "Texto da resposta…",
-      "respondedByPlaceholder": "Respondido por (nome/cargo)",
-      "registerResponse": "Registar Resposta",
-      "noResponseYet": "Sem resposta registada.",
-      "closeRfi": "Fechar RFI",
-      "links": "Ligações",
-      "responseRequired": "Resposta obrigatória.",
-      "responseRegistered": "Resposta registada com sucesso."
-    }
+    "codeGenerated": "Código gerado automaticamente"
   },
   "rfis": {
     "form": {
@@ -2146,192 +1645,21 @@
     }
   },
   "workItems": {
-    "title": "Atividades",
-    "subtitle": "Gestão de frentes de obra e sectores",
-    "linkedActivity": "Atividade de planeamento",
-    "viewInPlanning": "Ver no planeamento →",
-    "module": "Módulo",
-    "new": "Nova Atividade",
-    "count_one": "{{count}} item",
-    "count_other": "{{count}} itens",
-    "searchPlaceholder": "Pesquisar sector, obra, lote…",
-    "filters": {
-      "allDisciplines": "Todas as disciplinas",
-      "allStatuses": "Todos os estados"
-    },
-    "table": {
-      "sector": "Sector",
-      "discipline": "Disciplina",
-      "obraLote": "Obra / Lote",
-      "element": "Elemento",
-      "pk": "PK",
-      "status": "Estado",
-      "readiness": "Prontidão",
-      "actions": "Ações"
-    },
-    "disciplines": {
-      "geral": "Geral",
-      "terras": "Terraplenagem",
-      "firmes": "Pavimentação",
-      "betao": "Betão",
-      "drenagem": "Drenagem",
-      "estruturas": "Estruturas",
-      "ferrovia": "Ferrovia",
-      "instalacoes": "Instalações",
-      "outros": "Outros"
-    },
-    "status": {
-      "planned": "Previsto",
-      "in_progress": "Em Execução",
-      "hold": "Em Espera",
-      "completed": "Concluído",
-      "approved": "Aprovado",
-      "archived": "Arquivado",
-      "cancelled": "Cancelado"
-    },
     "readiness": {
+      "tab": "Prontidão",
       "ready": "Pronto",
+      "inProgress": "Em progresso",
       "blocked": "Bloqueado",
-      "not_ready": "Não Pronto",
-      "openNc": "NC Abertas",
-      "pendingPpi": "PPI Pendentes",
-      "pendingTests": "Ensaios Pendentes"
-    },
-    "detail": {
-      "back": "Voltar",
-      "breadcrumb": "Work Item",
-      "edit": "Editar",
-      "generalInfo": "Informação Geral",
-      "sector": "Sector",
-      "discipline": "Disciplina",
-      "obra": "Obra",
-      "lote": "Lote",
-      "element": "Elemento",
-      "parte": "Parte",
-      "pk": "PK",
-      "createdAt": "Criado em",
-      "tabs": {
-        "ppi": "Inspeções PPI",
-        "tests": "Ensaios",
-        "ncs": "Não Conformidades",
-        "planning": "Planeamento",
-        "attachments": "Anexos"
-      },
-      "ppiTab": {
-        "createPPI": "Criar PPI",
-        "empty": "Nenhuma inspeção PPI associada a este work item."
-      },
-      "emptyTests": "Nenhum ensaio associado",
-      "emptyNcs": "Nenhuma não conformidade associada",
-      "loadError": "Work item não encontrado",
-      "baseActivity": "Actividade base — duplicar para criar frente de obra",
-      "testsTab": {
-        "suggestion": "O plano PE-PF17A-001 tem {{count}} ensaios aplicáveis para a disciplina {{discipline}}"
-      }
+      "noPpi": "Sem PPI",
+      "export": "Exportar Relatório de Prontidão"
     },
     "tabs": {
-      "materials": "Materiais"
+      "concrete": "Betão",
+      "welds": "Soldaduras",
+      "soils": "Solos"
     },
-    "materials": {
-      "add": "Associar material",
-      "empty": "Nenhum material associado a esta actividade.",
-      "form": {
-        "material": "Material",
-        "quantity": "Quantidade",
-        "unit": "Unidade",
-        "lotRef": "Lote / Referência"
-      }
-    },
-    "form": {
-      "titleCreate": "Novo Work Item",
-      "titleEdit": "Editar Work Item",
-      "titleDuplicate": "Duplicar Atividade",
-      "duplicateBtn": "Duplicar",
-      "sector": "Sector",
-      "sectorPlaceholder": "ex: Lote 1, Troço A",
-      "discipline": "Disciplina",
-      "disciplinaOutro": "Especificar disciplina",
-      "disciplinaOutroPlaceholder": "ex: Impermeabilização, Aterro",
-      "obra": "Obra",
-      "obraPlaceholder": "Identificação da obra",
-      "lote": "Lote",
-      "lotePlaceholder": "ex: L1, L2",
-      "element": "Elemento",
-      "elementPlaceholder": "ex: Viaduto V1",
-      "parte": "Parte",
-      "partePlaceholder": "ex: Fundações",
-      "pkStart": "PK Início (m)",
-      "pkEnd": "PK Fim (m)",
-      "pkPlaceholder": "ex: 15250",
-      "pkEndPlaceholder": "ex: 17500",
-      "status": "Estado",
-      "saving": "A guardar…",
-      "createBtn": "Criar Work Item",
-      "saveBtn": "Guardar alterações",
-      "cancel": "Cancelar",
-      "validation": {
-        "sectorRequired": "O sector é obrigatório.",
-        "disciplineRequired": "A disciplina é obrigatória.",
-        "disciplinaOutroRequired": "Especifique a disciplina quando seleciona «Outros».",
-        "pkEndInvalid": "PK Fim deve ser ≥ PK Início."
-      }
-    },
-    "toast": {
-      "created": "Work Item criado com sucesso.",
-      "updated": "Work Item atualizado com sucesso.",
-      "deleted": "Work Item eliminado.",
-      "duplicated": "Atividade duplicada — preencha o elemento e PK.",
-      "error": "Ocorreu um erro. Tente novamente."
-    },
-    "actions": {
-      "duplicate": "Duplicar atividade",
-      "createPPI": "Criar PPI"
-    },
-    "groups": {
-      "obras": "obras",
-      "frentes": "frentes",
-      "inExecution": "em execução",
-      "baseActivity": "Actividade base"
-    },
-    "export": {
-      "button": "Exportar",
-      "csvList": "CSV — Lista de Work Items",
-      "pdfSingle": "PDF — Este Work Item",
-      "reportTitle": "Ficha de Work Item",
-      "generatedOn": "Gerado em",
-      "fields": {
-        "sector": "Sector",
-        "discipline": "Disciplina",
-        "obra": "Obra",
-        "parte": "Parte",
-        "elemento": "Elemento",
-        "lote": "Lote",
-        "pk": "PK",
-        "status": "Estado",
-        "ncs": "NCs",
-        "ppis": "PPIs",
-        "tests": "Ensaios",
-        "createdAt": "Data de criação"
-      }
-    },
-    "deleteConfirm": {
-      "title": "Eliminar Work Item?",
-      "description": "O work item «{{sector}}» será eliminado permanentemente. Os ensaios e NCs associados perderão a ligação."
-    },
-    "emptyState": {
-      "subtitle": "Este projeto ainda não tem work items. Crie o primeiro."
-    },
-    "report": {
-      "exportButton": "Exportar Ficha",
-      "errorLoading": "Erro ao carregar dados do relatório",
-      "title": "Ficha de Frente de Obra",
-      "printSave": "Imprimir / Guardar PDF",
-      "noTests": "Sem ensaios registados.",
-      "noNCs": "Sem não conformidades registadas.",
-      "noMaterials": "Sem materiais associados.",
-      "noPPI": "Sem inspecções PPI associadas.",
-      "footer": "Documento gerado automaticamente pelo Atlas QMS"
-    }
+    "linkedActivity": "Atividade de planeamento",
+    "viewInPlanning": "Ver no planeamento"
   },
   "ppi": {
     "title": "Planos de Pontos de Inspeção (PPI)",
@@ -3176,95 +2504,10 @@
     }
   },
   "planning": {
-    "title": "Planeamento Estruturado",
-    "subtitle": "WBS hierárquica, atividades planeadas e bloqueios inteligentes",
-    "searchPlaceholder": "Pesquisar código, descrição, zona…",
-    "tabs": {
-      "activities": "Atividades"
-    },
-    "filters": {
-      "allStatuses": "Todos os estados"
-    },
-    "createWorkItem": "Criar elemento de obra associado",
-    "workItemCreated": "Atividade e elemento de obra criados",
+    "createWorkItem": "Criar elemento de obra",
+    "workItemCreated": "Elemento criado e associado",
     "linkedElement": "Elemento de obra associado",
-    "viewElement": "Ver elemento →",
-    "wbs": {
-      "add": "Nova WBS",
-      "addChild": "Criar filho",
-      "createTitle": "Criar Nó WBS",
-      "editTitle": "Editar Nó WBS",
-      "code": "Código WBS",
-      "parent": "Nó Pai",
-      "zone": "Zona",
-      "responsible": "Responsável",
-      "codeDuplicate": "Já existe um nó WBS com este código neste projeto.",
-      "expandAll": "Expandir tudo",
-      "collapseAll": "Recolher tudo"
-    },
-    "kpi": {
-      "wbsNodes": "Nós WBS",
-      "activities": "Atividades",
-      "inProgress": "Em Curso",
-      "completed": "Concluídas",
-      "blocked": "Bloqueadas",
-      "avgProgress": "Progresso Médio"
-    },
-    "activity": {
-      "add": "Nova Atividade",
-      "createTitle": "Criar Atividade",
-      "editTitle": "Editar Atividade"
-    },
-    "fields": {
-      "plannedStart": "Início Planeado",
-      "plannedEnd": "Fim Planeado",
-      "actualStart": "Início Real",
-      "actualEnd": "Fim Real",
-      "progress": "Progresso",
-      "zone": "Zona",
-      "dates": "Datas",
-      "requirements": "Requisitos",
-      "workItem": "Atividade (WI)",
-      "subcontractor": "Subempreiteiro",
-      "constraints": "Restrições",
-      "constraintsPlaceholder": "Ex: Depende de aprovação de material, acesso condicionado…",
-      "reqTopography": "Requer topografia",
-      "reqTests": "Requer ensaios",
-      "reqPpi": "Requer PPI"
-    },
-    "status": {
-      "planned": "Planeado",
-      "in_progress": "Em curso",
-      "blocked": "Bloqueado",
-      "completed": "Concluído",
-      "cancelled": "Cancelado"
-    },
-    "toast": {
-      "wbsCreated": "WBS criado com sucesso",
-      "wbsUpdated": "WBS atualizado",
-      "activityCreated": "Atividade criada com sucesso",
-      "activityUpdated": "Atividade atualizada"
-    },
-    "completion": {
-      "title": "Verificar Conclusão",
-      "runCheck": "Executar Verificação",
-      "canComplete": "Atividade pode ser concluída — sem bloqueios.",
-      "blocked": "Atividade NÃO pode ser concluída:"
-    },
-    "detail": {
-      "tabs": {
-        "overview": "Resumo",
-        "requirements": "Requisitos",
-        "evidence": "Evidências",
-        "links": "Ligações"
-      },
-      "reqMet": "{{count}} pedido(s) em progresso/concluídos",
-      "reqNotMet": "Nenhum pedido topográfico registado ou todos pendentes",
-      "met": "Cumprido",
-      "notMet": "Pendente",
-      "noRequirements": "Esta atividade não tem requisitos obrigatórios (Topografia, PPI, Ensaios).",
-      "noLinks": "Sem ligações a Work Items ou Subempreiteiros."
-    }
+    "viewElement": "Ver elemento"
   },
   "mapMas": {
     "title": "Aprovação MAP/MAS",
@@ -3463,7 +2706,7 @@
     "healthy": "Saudável",
     "attention": "Atenção",
     "critical": "Crítico",
-    "score": "Índice de Saúde",
+    "score": "Health Score",
     "ncOpen": "NC Abertas",
     "ncOverdue": "NC em Atraso",
     "testsPending": "Ensaios Pendentes",
@@ -3653,59 +2896,13 @@
     }
   },
   "recycled": {
-    "title": "Materiais Reciclados",
-    "subtitle": "Controlo PPGRCD · Infraestruturas de Portugal",
-    "new": "Novo Registo",
-    "kpi": {
-      "total": "Total Registos",
-      "avgPct": "% Médio Reciclado",
-      "approved": "Aprovados",
-      "pending": "Pendentes",
-      "target": "Meta PPGRCD"
-    },
-    "fields": {
-      "referenceType": "Tipo",
-      "referenceNumber": "Nº Referência",
-      "materialName": "Material",
-      "supplier": "Fornecedor",
-      "composition": "Composição / Origem",
-      "recycledPct": "% Reciclado",
-      "serialNumber": "Nº Série",
-      "quantityPlanned": "Qtd Planeada",
-      "quantityUsed": "Qtd Usada",
-      "unit": "Unidade",
-      "applicationLocation": "Local de Aplicação (PK)",
-      "applicationDate": "Data de Aplicação",
-      "certificateNumber": "Nº Certificado",
-      "documentRef": "Ref. Documento Comprovativo",
-      "observations": "Observações"
-    },
-    "status": {
-      "pending": "Pendente",
-      "submitted": "Submetido",
-      "approved": "Aprovado",
-      "rejected": "Rejeitado"
-    },
-    "types": {
-      "FAM": "FAM — Formulário de Acompanhamento de Materiais",
-      "PAP": "PAP — Plano de Aplicação de Produtos",
-      "BAM": "BAM — Boletim de Acompanhamento de Materiais",
-      "OUTRO": "Outro"
-    },
-    "filters": {
-      "allTypes": "Todos os tipos",
-      "allStatuses": "Todos os estados"
-    },
-    "documents": {
-      "title": "Documentos Comprovativos",
-      "upload": "Anexar Documento"
-    },
-    "toast": {
-      "created": "Registo criado.",
-      "updated": "Registo actualizado."
-    },
+    "exportPpgrcd": "Exportar Ficha PPGRCD",
+    "documentsSection": "Documentos e Evidências",
     "dashboard": {
       "widget": "PPGRCD — Reciclados"
+    },
+    "kpi": {
+      "target": "Meta PPGRCD"
     }
   },
   "onboarding": {
@@ -4139,53 +3336,24 @@
     "myNcs": "NCs Atribuídas",
     "hpPending": "HPs pendentes",
     "testsDue": "Ensaios em atraso",
-    "ncsAssigned": "NCs atribuídas"
-  },
-  "workItems": {
-    "readiness": {
-      "tab": "Prontidão",
-      "ready": "Pronto",
-      "inProgress": "Em progresso",
-      "blocked": "Bloqueado",
-      "noPpi": "Sem PPI",
-      "export": "Exportar Relatório de Prontidão"
-    },
-    "tabs": {
-      "concrete": "Betão",
-      "welds": "Soldaduras",
-      "soils": "Solos"
-    },
-    "linkedActivity": "Atividade de planeamento",
-    "viewInPlanning": "Ver no planeamento"
-  },
-  "planning": {
-    "createWorkItem": "Criar elemento de obra",
-    "workItemCreated": "Elemento criado e associado",
-    "linkedElement": "Elemento de obra associado",
-    "viewElement": "Ver elemento"
-  },
-  "tests": {
-    "openRnc": "Abrir RNC",
-    "resultNonConform": "não conforme — Abrir RNC?",
-    "linkedNc": "NC associada"
+    "ncsAssigned": "NCs atribuídas",
+    "summary": "Resumo do Dia",
+    "filterAll": "Todos",
+    "filterPending": "Pendentes",
+    "filterOverdue": "Em atraso",
+    "filterDone": "Concluídos",
+    "completionRate": "Taxa de conclusão",
+    "todayTasks": "Tarefas de hoje",
+    "weekOverview": "Visão semanal",
+    "noOverdue": "Nenhum item em atraso",
+    "priorityHigh": "Prioridade alta"
   },
   "welds": {
     "usPendingBanner": "soldadura(s) com US pendente há mais de 7 dias",
     "filterPendingUS": "Ver pendentes US"
   },
-  "rfi": {
-    "codeGenerated": "Código gerado automaticamente"
-  },
   "viewer": {
     "banner": "Acesso de visualização — Fiscalização / IP · Apenas leitura e exportação"
-  },
-  "dashboard": {
-    "testStatus": "Estado dos Ensaios",
-    "concreteSummary": "Resumo de Betão",
-    "specimensOverdue": "Provetes aguardam 28d",
-    "weldsPendingUT": "Soldaduras sem US",
-    "testsOverdue": "Ensaios em atraso",
-    "ncMajorOpen": "NC major em aberto"
   },
   "labs": {
     "viewFile": "Ver Ficha",
@@ -4194,9 +3362,5 @@
     "accreditationExpired": "Acreditação expirada",
     "accreditationValid": "Válida",
     "recentTests": "Ensaios realizados"
-  },
-  "recycled": {
-    "exportPpgrcd": "Exportar Ficha PPGRCD",
-    "documentsSection": "Documentos e Evidências"
   }
 }
