@@ -413,6 +413,29 @@ function SidebarContent({ collapsed, onClose }: { collapsed: boolean; onClose?: 
         })}
       </nav>
 
+      {/* ── Health Score Indicator ────────────────────────────── */}
+      {activeProject && (
+        <div className="flex-shrink-0 px-3 py-2 border-t border-sidebar-border/40">
+          <button
+            type="button"
+            className="flex items-center gap-2 w-full rounded-lg px-2 py-1.5 hover:bg-sidebar-accent/50 transition-colors"
+            onClick={() => setHealthSheetOpen(true)}
+          >
+            <span className={cn(
+              "h-2.5 w-2.5 rounded-full flex-shrink-0",
+              health.health_status === "healthy" && "bg-emerald-500",
+              health.health_status === "attention" && "bg-amber-500",
+              health.health_status === "critical" && "bg-destructive",
+            )} />
+            {!collapsed && (
+              <span className="text-[10px] font-bold tracking-wider text-sidebar-foreground/50">
+                {t("health.sidebarScore", { defaultValue: "Score" })}: {healthLoading ? "…" : health.health_score}
+              </span>
+            )}
+          </button>
+        </div>
+      )}
+
       {/* ── Footer ───────────────────────────────────────────────── */}
       {!onClose && (
         <div className="flex-shrink-0 py-3 px-3 border-t border-sidebar-border/40">
@@ -423,6 +446,8 @@ function SidebarContent({ collapsed, onClose }: { collapsed: boolean; onClose?: 
           )}
         </div>
       )}
+
+      <HealthScoreSheet open={healthSheetOpen} onOpenChange={setHealthSheetOpen} health={health} loading={healthLoading} />
     </div>
   );
 }
