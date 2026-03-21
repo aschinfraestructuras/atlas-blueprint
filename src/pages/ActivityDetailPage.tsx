@@ -5,6 +5,7 @@ import { useProject } from "@/contexts/ProjectContext";
 import { useReportMeta } from "@/hooks/useReportMeta";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { planningService, type Activity, type CompletionCheck } from "@/lib/services/planningService";
+import { workItemService, formatPk, type WorkItem } from "@/lib/services/workItemService";
 import { supabase } from "@/integrations/supabase/client";
 import { auditService } from "@/lib/services/auditService";
 import { exportActivityDetailPdf } from "@/lib/services/planningExportService";
