@@ -5,6 +5,7 @@ import {
 } from "./reportService";
 import { fullPdfHeader } from "./pdfProjectHeader";
 import type { WbsNode, Activity } from "./planningService";
+import { esc } from "@/lib/utils/escapeHtml";
 
 const labels = (locale: string): ReportLabels => ({
   appName: "Atlas QMS",
