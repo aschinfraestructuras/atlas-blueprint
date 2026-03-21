@@ -306,12 +306,13 @@ export async function exportNCBulkPdf(
   labels: NCExportLabels,
   projectName: string,
   logoBase64?: string | null,
+  projectCode?: string,
 ): Promise<void> {
   if (ncs.length === 0) return;
 
   const meta: ReportMeta = {
     projectName,
-    projectCode: "PF17A",
+    projectCode: projectCode ?? "—",
     locale: "pt",
   };
 
