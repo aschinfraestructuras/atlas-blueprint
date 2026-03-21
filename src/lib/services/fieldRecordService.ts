@@ -260,7 +260,7 @@ export const fieldRecordService = {
         </div>
       </div>
 
-      ${projectInfoStripHtml()}
+      ${projectInfoStripHtml(null)}
 
       <h3>1. Identificação</h3>
       <div class="info-grid">
