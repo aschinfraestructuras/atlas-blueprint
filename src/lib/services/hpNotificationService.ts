@@ -37,6 +37,8 @@ export interface HpNotificationInput {
   planned_datetime: string;
   notes?: string | null;
   rfi_ref?: string | null;
+  advance_notice_override?: boolean;
+  advance_notice_reason?: string | null;
 }
 
 export const hpNotificationService = {
