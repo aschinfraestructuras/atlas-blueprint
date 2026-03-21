@@ -23,6 +23,8 @@ export function MainLayout({ children }: MainLayoutProps) {
   const { activeProject } = useProject();
   const { t } = useTranslation();
   const { showWarning, extendSession } = useSessionTimeout();
+  const { role } = useProjectRole();
+  const isViewer = role === "viewer";
   const location = useLocation();
 
   // Dynamic browser tab title
