@@ -287,10 +287,11 @@ export async function exportNCPdf(
   labels: NCExportLabels,
   projectName: string,
   logoBase64?: string | null,
+  projectCode?: string,
 ): Promise<void> {
   const meta: ReportMeta = {
     projectName,
-    projectCode: "PF17A",
+    projectCode: projectCode ?? "—",
     locale: "pt",
   };
   const bodyHtml = renderNCHtml(nc, labels);
