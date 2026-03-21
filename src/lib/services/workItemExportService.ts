@@ -7,6 +7,7 @@
 import type { WorkItem } from "./workItemService";
 import { formatPk } from "./workItemService";
 import { projectInfoStripHtml } from "./pdfProjectHeader";
+import { esc } from "@/lib/utils/escapeHtml";
 
 // ─── Atlas brand colours ──────────────────────────────────────────────────────
 
