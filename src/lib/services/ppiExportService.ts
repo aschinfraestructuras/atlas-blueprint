@@ -206,10 +206,10 @@ function buildSinglePdfHtml(
 
     // Build item cell with acceptance_criteria and method
     const criteriaHtml = it.acceptance_criteria
-      ? `<div style="font-size:9px;color:${BRAND.textLight};font-style:italic;margin-top:2px;">${it.acceptance_criteria}</div>`
+      ? `<div style="font-size:9px;color:${BRAND.textLight};font-style:italic;margin-top:2px;">${esc(it.acceptance_criteria)}</div>`
       : "";
     const methodHtml = it.method
-      ? `<div style="font-size:8px;color:${BRAND.muted};margin-top:1px;">${it.method}</div>`
+      ? `<div style="font-size:8px;color:${BRAND.muted};margin-top:1px;">${esc(it.method)}</div>`
       : "";
 
     return `${phaseRow}
