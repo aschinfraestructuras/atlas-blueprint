@@ -45,6 +45,12 @@ const MODULES = [
   "survey",
   "technical_office",
   "plans",
+  "materials",
+  "ppi_instances",
+  "ppi_templates",
+  "work_items",
+  "planning",
+  "Reports",
 ];
 
 export default function AuditLogPage() {
