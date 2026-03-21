@@ -409,8 +409,8 @@ function buildSinglePdfHtml(
 
   <!-- Footer -->
   <div class="footer">
-    <span>${labels.appName} · Quality Management System</span>
-    <span>${inst.code} · ${statusLabel}</span>
+    <span>${esc(labels.appName)} · Quality Management System</span>
+    <span>${esc(inst.code)} · ${esc(statusLabel)}</span>
   </div>
 </body>
 </html>`;
