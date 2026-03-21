@@ -107,6 +107,7 @@ const App = () => (
 
                 {/* Protected – all share MainLayout */}
                 <Route path="/" element={<ProtectedLayout><DashboardPage /></ProtectedLayout>} />
+                <Route path="/my-tasks" element={<ProtectedLayout><MyTasksPage /></ProtectedLayout>} />
                 <Route path="/projects" element={<ProtectedLayout><ProjectsPage /></ProtectedLayout>} />
                 <Route path="/documents" element={<ProtectedLayout><DocumentsPage /></ProtectedLayout>} />
                 <Route path="/documents/:id" element={<ProtectedLayout><DocumentDetailPage /></ProtectedLayout>} />

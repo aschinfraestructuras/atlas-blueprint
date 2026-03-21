@@ -482,8 +482,7 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
                 <Input
                   type="date"
                   value={plannedDate}
-                  onChange={(e) => setPlannedDate(e.target.value)}
-                  min={new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString().slice(0, 10)}
+                  onChange={(e) => { setPlannedDate(e.target.value); setEarlyOverride(false); setEarlyReason(""); }}
                   className="text-sm"
                 />
               </div>
