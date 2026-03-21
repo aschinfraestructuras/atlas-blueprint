@@ -302,7 +302,7 @@ function buildSinglePdfHtml(
     <div class="brand">
       ${logoUrl ? `<img src="${logoUrl}" class="brand-logo" />` : `<div class="brand-bar"></div>`}
       <div class="brand-text">
-        <div class="app">${labels.appName}</div>
+        <div class="app">${esc(labels.appName)}</div>
         <div class="sub">Quality Management System</div>
       </div>
     </div>
