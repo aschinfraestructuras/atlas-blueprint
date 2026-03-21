@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProject } from "@/contexts/ProjectContext";
 import { planningService, type Activity, type WbsNode } from "@/lib/services/planningService";
+import { workItemService } from "@/lib/services/workItemService";
 import { useWorkItems } from "@/hooks/useWorkItems";
 import { useSubcontractors } from "@/hooks/useSubcontractors";
 import { toast } from "sonner";
@@ -18,9 +19,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Slider } from "@/components/ui/slider";
 import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
+import { ChevronDown, Construction } from "lucide-react";
 
 const STATUSES = ["planned", "in_progress", "blocked", "completed", "cancelled"] as const;
+const WI_DISCIPLINES = ["terras", "betao", "ferrovia", "catenaria", "st", "drenagem", "estruturas", "via", "geotecnia", "eletrica", "sinalizacao", "geral", "outros"] as const;
 
 interface Props {
   open: boolean;
@@ -38,6 +43,10 @@ const EMPTY = {
   requires_topography: false, requires_tests: false, requires_ppi: false,
 };
 
+const EMPTY_WI = {
+  sector: "", disciplina: "geral", pk_inicio: "", pk_fim: "",
+};
+
 export function ActivityFormDialog({ open, onOpenChange, wbsNodes, editActivity, onSuccess }: Props) {
   const { t } = useTranslation();
   const { user } = useAuth();
@@ -47,6 +56,11 @@ export function ActivityFormDialog({ open, onOpenChange, wbsNodes, editActivity,
   const [form, setForm] = useState(EMPTY);
   const [submitting, setSubmitting] = useState(false);
   const isEdit = !!editActivity;
+
+  // WorkItem creation inline
+  const [createWI, setCreateWI] = useState(true);
+  const [wiForm, setWiForm] = useState(EMPTY_WI);
+  const showWICreation = !isEdit && (form.requires_ppi || form.requires_tests) && form.work_item_id === "__none__";
 
   useEffect(() => {
     if (editActivity) {
@@ -69,6 +83,8 @@ export function ActivityFormDialog({ open, onOpenChange, wbsNodes, editActivity,
       });
     } else {
       setForm(EMPTY);
+      setWiForm(EMPTY_WI);
+      setCreateWI(true);
     }
   }, [editActivity, open]);
 
@@ -76,9 +92,24 @@ export function ActivityFormDialog({ open, onOpenChange, wbsNodes, editActivity,
     if (!activeProject || !user || !form.description.trim()) return;
     setSubmitting(true);
     try {
+      let workItemId = form.work_item_id === "__none__" ? null : form.work_item_id;
+
+      // Create WorkItem inline if needed
+      if (!isEdit && showWICreation && createWI && wiForm.sector.trim()) {
+        const wi = await workItemService.create({
+          project_id: activeProject.id,
+          sector: wiForm.sector.trim(),
+          disciplina: wiForm.disciplina || "geral",
+          pk_inicio: wiForm.pk_inicio ? Number(wiForm.pk_inicio) : null,
+          pk_fim: wiForm.pk_fim ? Number(wiForm.pk_fim) : null,
+          created_by: user.id,
+        });
+        workItemId = wi.id;
+      }
+
       const payload = {
         wbs_id: form.wbs_id === "__none__" ? null : form.wbs_id,
-        work_item_id: form.work_item_id === "__none__" ? null : form.work_item_id,
+        work_item_id: workItemId,
         subcontractor_id: form.subcontractor_id === "__none__" ? null : form.subcontractor_id,
         zone: form.zone || undefined,
         description: form.description.trim(),
@@ -99,7 +130,11 @@ export function ActivityFormDialog({ open, onOpenChange, wbsNodes, editActivity,
         toast.success(t("planning.toast.activityUpdated"));
       } else {
         await planningService.createActivity({ ...payload, project_id: activeProject.id, created_by: user.id });
-        toast.success(t("planning.toast.activityCreated"));
+        if (workItemId && showWICreation && createWI) {
+          toast.success(t("planning.workItemCreated", { defaultValue: "Atividade e elemento de obra criados" }));
+        } else {
+          toast.success(t("planning.toast.activityCreated"));
+        }
       }
       onSuccess();
       onOpenChange(false);
@@ -196,6 +231,57 @@ export function ActivityFormDialog({ open, onOpenChange, wbsNodes, editActivity,
                 <Label htmlFor="req-ppi" className="text-sm">{t("planning.fields.reqPpi")}</Label>
               </div>
             </div>
+
+            {/* ── Criar WorkItem inline ─────────────────────────────── */}
+            {showWICreation && (
+              <Collapsible defaultOpen={true}>
+                <div className="rounded-lg border border-border bg-muted/30 p-3">
+                  <CollapsibleTrigger className="flex items-center justify-between w-full">
+                    <div className="flex items-center gap-2">
+                      <Construction className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm font-medium">{t("planning.createWorkItem", { defaultValue: "Criar elemento de obra associado" })}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Switch checked={createWI} onCheckedChange={setCreateWI} onClick={e => e.stopPropagation()} />
+                      <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    {createWI && (
+                      <div className="mt-3 space-y-3 pt-3 border-t border-border/50">
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <Label className="text-xs">{t("workItems.detail.sector")} *</Label>
+                            <Input value={wiForm.sector} onChange={e => setWiForm(f => ({ ...f, sector: e.target.value }))} placeholder="Ex: PSR Cachofarra" />
+                          </div>
+                          <div>
+                            <Label className="text-xs">{t("workItems.detail.discipline")}</Label>
+                            <Select value={wiForm.disciplina} onValueChange={v => setWiForm(f => ({ ...f, disciplina: v }))}>
+                              <SelectTrigger><SelectValue /></SelectTrigger>
+                              <SelectContent>
+                                {WI_DISCIPLINES.map(d => (
+                                  <SelectItem key={d} value={d}>{t(`workItems.disciplines.${d}`, { defaultValue: d })}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <Label className="text-xs">PK {t("workItems.detail.pkStart", { defaultValue: "Início" })}</Label>
+                            <Input type="number" value={wiForm.pk_inicio} onChange={e => setWiForm(f => ({ ...f, pk_inicio: e.target.value }))} placeholder="29730" />
+                          </div>
+                          <div>
+                            <Label className="text-xs">PK {t("workItems.detail.pkEnd", { defaultValue: "Fim" })}</Label>
+                            <Input type="number" value={wiForm.pk_fim} onChange={e => setWiForm(f => ({ ...f, pk_fim: e.target.value }))} placeholder="33700" />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </CollapsibleContent>
+                </div>
+              </Collapsible>
+            )}
 
             {isEdit && editActivity && activeProject && (
               <>

@@ -1009,6 +1009,14 @@ export default function WorkItemDetailPage() {
     loadRelated();
   }, [id]);
 
+  // Load linked activities for the banner
+  useEffect(() => {
+    if (!id || !activeProject) return;
+    planningService.getActivities(activeProject.id)
+      .then(all => setActivitiesList(all.filter(a => a.work_item_id === id)))
+      .catch(() => setActivitiesList([]));
+  }, [id, activeProject?.id]);
+
   // Load work item materials
   useEffect(() => {
     if (!item || !activeProject) return;
@@ -1076,7 +1084,24 @@ export default function WorkItemDetailPage() {
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto animate-fade-in">
-      {/* ── Back + Header ────────────────────────────────────────────── */}
+      {/* ── Linked Activity Banner ───────────────────────────────────── */}
+      {activitiesList.length > 0 && (
+        <div className="rounded-lg border border-border bg-muted/30 px-4 py-2.5 flex items-center gap-3 text-sm flex-wrap">
+          <Calendar className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+          <span className="text-foreground font-medium">{activitiesList[0].description}</span>
+          {activitiesList[0].planned_start && (
+            <span className="text-muted-foreground">
+              {activitiesList[0].planned_start} → {activitiesList[0].planned_end ?? "—"}
+            </span>
+          )}
+          <span className="text-muted-foreground">
+            · {t("planning.fields.progress")}: {activitiesList[0].progress_pct}%
+          </span>
+          <Button variant="link" size="sm" className="h-auto p-0 text-xs" onClick={() => navigate(`/planning/activity/${activitiesList[0].id}`)}>
+            {t("workItems.viewInPlanning", { defaultValue: "Ver no planeamento →" })}
+          </Button>
+        </div>
+      )}
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-start gap-3">
           <Button variant="ghost" size="icon" onClick={() => navigate("/work-items")} className="mt-0.5">

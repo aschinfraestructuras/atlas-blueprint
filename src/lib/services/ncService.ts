@@ -94,6 +94,20 @@ export interface NCCreateInput {
   document_id?: string;
   supplier_id?: string;
   subcontractor_id?: string;
+  // CAPA fields
+  location_pk?: string;
+  classification?: string;
+  violated_requirement?: string;
+  correction_type?: string;
+  correction?: string;
+  root_cause_method?: string;
+  root_cause?: string;
+  corrective_action?: string;
+  preventive_action?: string;
+  ac_efficacy_indicator?: string;
+  deviation_justification?: string;
+  efficacy_analysis?: string;
+  audit_origin_type?: string;
 }
 
 export interface NCUpdateInput {
@@ -211,6 +225,22 @@ export const ncService = {
       p_document_id:          input.document_id ?? null,
       p_supplier_id:          input.supplier_id ?? null,
       p_subcontractor_id:     input.subcontractor_id ?? null,
+      // CAPA fields
+      p_location_pk:              input.location_pk ?? null,
+      p_discipline:               input.discipline ?? null,
+      p_discipline_outro:         input.discipline_outro ?? null,
+      p_classification:           input.classification ?? null,
+      p_violated_requirement:     input.violated_requirement ?? null,
+      p_correction_type:          input.correction_type ?? null,
+      p_correction:               input.correction ?? null,
+      p_root_cause_method:        input.root_cause_method ?? null,
+      p_root_cause:               input.root_cause ?? null,
+      p_corrective_action:        input.corrective_action ?? null,
+      p_preventive_action:        input.preventive_action ?? null,
+      p_ac_efficacy_indicator:    input.ac_efficacy_indicator ?? null,
+      p_deviation_justification:  input.deviation_justification ?? null,
+      p_efficacy_analysis:        input.efficacy_analysis ?? null,
+      p_audit_origin_type:        input.audit_origin_type ?? null,
     });
     if (error) throw error;
     return data as NonConformity;

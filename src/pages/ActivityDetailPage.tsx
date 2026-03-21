@@ -5,6 +5,7 @@ import { useProject } from "@/contexts/ProjectContext";
 import { useReportMeta } from "@/hooks/useReportMeta";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { planningService, type Activity, type CompletionCheck } from "@/lib/services/planningService";
+import { workItemService, formatPk, type WorkItem } from "@/lib/services/workItemService";
 import { supabase } from "@/integrations/supabase/client";
 import { auditService } from "@/lib/services/auditService";
 import { exportActivityDetailPdf } from "@/lib/services/planningExportService";
@@ -20,7 +21,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import {
   ArrowLeft, CheckCircle2, AlertTriangle, XCircle, ExternalLink,
-  ClipboardList, MapPin, Wrench, FlaskConical, ShieldCheck, HardHat
+  ClipboardList, MapPin, Wrench, FlaskConical, ShieldCheck, HardHat, Construction
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
@@ -62,6 +63,7 @@ export default function ActivityDetailPage() {
   const [loading, setLoading] = useState(true);
   const [completionCheck, setCompletionCheck] = useState<CompletionCheck | null>(null);
   const [checkLoading, setCheckLoading] = useState(false);
+  const [linkedWorkItem, setLinkedWorkItem] = useState<WorkItem | null>(null);
 
   // Requirement data
   const [topoRequests, setTopoRequests] = useState<any[]>([]);
@@ -92,6 +94,13 @@ export default function ActivityDetailPage() {
         subcontractor_name: data.subcontractors?.name ?? null,
       };
       setActivity(act);
+      // Load linked work item
+      if (act.work_item_id) {
+        try {
+          const wi = await workItemService.getById(act.work_item_id);
+          setLinkedWorkItem(wi);
+        } catch { setLinkedWorkItem(null); }
+      }
       await loadRequirements(act);
     } catch {
       setActivity(null);
@@ -260,7 +269,45 @@ export default function ActivityDetailPage() {
         ]} />
       </div>
 
-      {/* KPI row */}
+      {/* Linked Work Item card */}
+      {linkedWorkItem && (
+        <Card className="border-border/60 shadow-sm">
+          <CardContent className="py-3 px-4">
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <Construction className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-foreground truncate">
+                    {t("planning.linkedElement", { defaultValue: "Elemento de obra associado" })}:
+                    {" "}{linkedWorkItem.sector}
+                    {linkedWorkItem.elemento ? ` — ${linkedWorkItem.elemento}` : ""}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {t(`workItems.disciplines.${linkedWorkItem.disciplina}`, { defaultValue: linkedWorkItem.disciplina })}
+                    {linkedWorkItem.pk_inicio != null && ` · PK ${formatPk(linkedWorkItem.pk_inicio, linkedWorkItem.pk_fim)}`}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge variant={
+                  linkedWorkItem.readiness_status === "ready" ? "default" :
+                  linkedWorkItem.readiness_status === "blocked" ? "destructive" : "secondary"
+                } className="text-[10px]">
+                  {linkedWorkItem.readiness_status === "ready" ? t("planning.detail.met", { defaultValue: "Pronto" }) :
+                   linkedWorkItem.readiness_status === "blocked" ? t("planning.completion.blocked", { defaultValue: "Bloqueado" }) :
+                   t("planning.detail.notMet", { defaultValue: "Em progresso" })}
+                </Badge>
+                <Button variant="link" size="sm" className="h-auto p-0 text-xs" asChild>
+                  <Link to={`/work-items/${linkedWorkItem.id}`}>
+                    {t("planning.viewElement", { defaultValue: "Ver elemento →" })}
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Card><CardContent className="pt-4 pb-3 text-center">
           <p className="text-xs text-muted-foreground">{t("planning.fields.progress")}</p>
