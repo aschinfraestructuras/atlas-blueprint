@@ -47,6 +47,7 @@ const NAV_SECTIONS: SidebarSection[] = [
     collapsible: false,
     items: [
       { labelKey: "nav.dashboard", url: "/", icon: LayoutDashboard, exact: true },
+      { labelKey: "nav.myTasks", url: "/my-tasks", icon: CalendarCheck },
     ],
   },
   {
