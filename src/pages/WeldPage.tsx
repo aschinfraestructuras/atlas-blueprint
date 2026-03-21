@@ -92,11 +92,16 @@ export default function WeldPage() {
 
   if (!activeProject) return <NoProjectBanner />;
 
+  const sevenDaysAgo = useMemo(() => {
+    const d = new Date(); d.setDate(d.getDate() - 7); return d;
+  }, []);
+
   const filtered = records.filter(r => {
     const q = search.toLowerCase();
     const matchSearch = !q || r.code.toLowerCase().includes(q) || r.pk_location.toLowerCase().includes(q) || (r.operator_name ?? "").toLowerCase().includes(q);
     const matchResult = filterResult === "all" || r.overall_result === filterResult;
-    return matchSearch && matchResult;
+    const matchPendingUS = !filterPendingUS || (!r.has_ut && new Date(r.weld_date) < sevenDaysAgo);
+    return matchSearch && matchResult && matchPendingUS;
   });
 
   const pass = records.filter(w => w.overall_result === "pass").length;
