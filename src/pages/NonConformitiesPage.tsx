@@ -1,6 +1,6 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useProject } from "@/contexts/ProjectContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePermissions } from "@/hooks/usePermissions";
@@ -131,6 +131,17 @@ export default function NonConformitiesPage() {
   // Dialog
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingNC, setEditingNC]   = useState<NonConformity | null>(null);
+
+  // NC prefill from test result fail
+  const [searchParams, setSearchParams] = useSearchParams();
+  useEffect(() => {
+    if (searchParams.get("prefill") === "true") {
+      setEditingNC(null);
+      setDialogOpen(true);
+      // Clear params so it doesn't re-open on navigation
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   // Transition
   const [transitioningId, setTransitioningId] = useState<string | null>(null);

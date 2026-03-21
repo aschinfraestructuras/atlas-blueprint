@@ -286,7 +286,7 @@ export const compactionService = {
         ${logoHtml}
         <h2>ATLAS QMS — Controlo de Compactação</h2>
       </div>
-      ${projectInfoStripHtml()}
+      ${projectInfoStripHtml(null)}
       <h3>1. Identificação da Zona</h3>
       <dl class="info-grid">
         <dt>Código</dt><dd>${zone.code}</dd>

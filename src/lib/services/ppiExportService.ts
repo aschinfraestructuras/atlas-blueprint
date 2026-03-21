@@ -311,7 +311,7 @@ function buildSinglePdfHtml(
     </div>
   </div>
 
-  ${projectInfoStripHtml()}
+  ${projectInfoStripHtml(null)}
 
   <!-- Info grid -->
   <div class="info-grid">

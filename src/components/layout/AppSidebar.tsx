@@ -29,6 +29,8 @@ interface SidebarNavItem {
   exact?: boolean;
   requiredAction?: string;
   adminOnly?: boolean;
+  /** If true, this item is visible to the viewer role */
+  viewerVisible?: boolean;
 }
 
 interface SidebarSection {
@@ -46,7 +48,7 @@ const NAV_SECTIONS: SidebarSection[] = [
     sectionIcon: LayoutDashboard,
     collapsible: false,
     items: [
-      { labelKey: "nav.dashboard", url: "/", icon: LayoutDashboard, exact: true },
+      { labelKey: "nav.dashboard", url: "/", icon: LayoutDashboard, exact: true, viewerVisible: true },
       { labelKey: "nav.myTasks", url: "/my-tasks", icon: CalendarCheck },
     ],
   },
@@ -57,7 +59,7 @@ const NAV_SECTIONS: SidebarSection[] = [
     items: [
       { labelKey: "nav.planning",     url: "/planning",      icon: CalendarClock },
       { labelKey: "nav.workItems",    url: "/work-items",    icon: Construction },
-      { labelKey: "nav.ppi",          url: "/ppi",           icon: ClipboardCheck },
+      { labelKey: "nav.ppi",          url: "/ppi",           icon: ClipboardCheck, viewerVisible: true },
       { labelKey: "nav.dailyReports", url: "/daily-reports", icon: ClipboardList },
       { labelKey: "nav.topography",   url: "/topography",    icon: Crosshair },
     ],
@@ -74,7 +76,7 @@ const NAV_SECTIONS: SidebarSection[] = [
       { labelKey: "nav.laboratories",    url: "/laboratories",     icon: Building2 },
       { labelKey: "nav.tests",           url: "/tests",            icon: FlaskConical },
       { labelKey: "nav.testSchedule",    url: "/tests/schedule",   icon: CalendarClock },
-      { labelKey: "nav.nonConformities", url: "/non-conformities", icon: AlertTriangle },
+      { labelKey: "nav.nonConformities", url: "/non-conformities", icon: AlertTriangle, viewerVisible: true },
       { labelKey: "nav.actionPlan",      url: "/action-plan",      icon: ClipboardList },
     ],
   },
@@ -86,7 +88,7 @@ const NAV_SECTIONS: SidebarSection[] = [
       { labelKey: "nav.technicalOffice", url: "/technical-office", icon: Inbox },
       { labelKey: "nav.plans",           url: "/plans",            icon: BookOpen },
       { labelKey: "nav.dfo",             url: "/dfo",              icon: FolderKanban },
-      { labelKey: "nav.documents",       url: "/documents",        icon: FileText },
+      { labelKey: "nav.documents",       url: "/documents",        icon: FileText, viewerVisible: true },
       { labelKey: "nav.submittals",      url: "/submittals",       icon: FileCheck },
       { labelKey: "nav.audits",          url: "/audits",           icon: FileCheck },
       { labelKey: "nav.training",        url: "/training",         icon: GraduationCap },
@@ -263,8 +265,9 @@ function SidebarContent({ collapsed, onClose }: { collapsed: boolean; onClose?: 
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
-  const { can, isAdmin } = useProjectRole();
+  const { can, isAdmin, role } = useProjectRole();
   const { logoUrl } = useProjectLogo();
+  const isViewer = role === "viewer";
 
   const isActive = useCallback(
     (url: string, exact?: boolean) =>
@@ -349,6 +352,8 @@ function SidebarContent({ collapsed, onClose }: { collapsed: boolean; onClose?: 
           const filteredItems = section.items.filter(item => {
             if (item.adminOnly && !isAdmin) return false;
             if (item.requiredAction && !can(item.requiredAction)) return false;
+            // Viewer role: only show items explicitly marked as viewerVisible
+            if (isViewer && !item.viewerVisible) return false;
             return true;
           });
 

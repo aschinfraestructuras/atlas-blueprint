@@ -56,6 +56,7 @@ export default function WeldPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filterResult, setFilterResult] = useState("all");
+  const [filterPendingUS, setFilterPendingUS] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -82,12 +83,13 @@ export default function WeldPage() {
 
   useEffect(() => { load(); }, [load]);
 
-  // US pending > 7 days banner
+  const sevenDaysAgoDate = useMemo(() => {
+    const d = new Date(); d.setDate(d.getDate() - 7); return d;
+  }, []);
+
   const pendingUtCount = useMemo(() => {
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-    return records.filter(w => !w.has_ut && new Date(w.weld_date) < sevenDaysAgo).length;
-  }, [records]);
+    return records.filter(w => !w.has_ut && new Date(w.weld_date) < sevenDaysAgoDate).length;
+  }, [records, sevenDaysAgoDate]);
 
   if (!activeProject) return <NoProjectBanner />;
 
@@ -95,7 +97,8 @@ export default function WeldPage() {
     const q = search.toLowerCase();
     const matchSearch = !q || r.code.toLowerCase().includes(q) || r.pk_location.toLowerCase().includes(q) || (r.operator_name ?? "").toLowerCase().includes(q);
     const matchResult = filterResult === "all" || r.overall_result === filterResult;
-    return matchSearch && matchResult;
+    const matchPendingUS = !filterPendingUS || (!r.has_ut && new Date(r.weld_date) < sevenDaysAgoDate);
+    return matchSearch && matchResult && matchPendingUS;
   });
 
   const pass = records.filter(w => w.overall_result === "pass").length;
@@ -176,8 +179,16 @@ export default function WeldPage() {
         <div className="flex items-center gap-3 px-4 py-3 rounded-lg border bg-amber-500/5 border-amber-500/30 text-amber-700 dark:text-amber-400 animate-fade-in">
           <ShieldAlert className="h-4 w-4 flex-shrink-0" />
           <span className="text-sm flex-1">
-            <strong>{pendingUtCount}</strong> soldadura{pendingUtCount > 1 ? "s" : ""} pendente{pendingUtCount > 1 ? "s" : ""} de inspecção US há mais de 7 dias
+            ⚠ <strong>{pendingUtCount}</strong> {t("welds.usPendingBanner", { defaultValue: "soldadura(s) com US pendente há mais de 7 dias" })}
           </span>
+          <Button
+            variant="outline"
+            size="sm"
+            className="text-xs border-amber-500/30 text-amber-700 dark:text-amber-400 hover:bg-amber-500/10"
+            onClick={() => setFilterPendingUS(prev => !prev)}
+          >
+            {filterPendingUS ? t("common.showAll", { defaultValue: "Mostrar todas" }) : t("welds.filterPendingUS", { defaultValue: "Ver pendentes US" })}
+          </Button>
         </div>
       )}
 

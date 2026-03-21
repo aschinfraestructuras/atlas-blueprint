@@ -57,7 +57,7 @@ async function buildDoc(opts: {
     <span>${opts.code}</span>
   </div>`;
   return `<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>${opts.code} — Atlas QMS</title>
-<style>${sharedCss()}</style></head><body>${header}${projectInfoStripHtml()}${opts.body}${footer}</body></html>`;
+<style>${sharedCss()}</style></head><body>${header}${projectInfoStripHtml(null)}${opts.body}${footer}</body></html>`;
 }
 
 // ─── LMD: Lista Mestra de Documentos ──────────────────────────────────────────

@@ -260,7 +260,7 @@ export const fieldRecordService = {
         </div>
       </div>
 
-      ${projectInfoStripHtml()}
+      ${projectInfoStripHtml(null)}
 
       <h3>1. Identificação</h3>
       <div class="info-grid">
@@ -301,7 +301,7 @@ export const fieldRecordService = {
       </div>
 
       <div style="margin-top:30px;padding-top:8px;border-top:1px solid #ccc;font-size:8px;color:#999;display:flex;justify-content:space-between">
-        <span>Atlas QMS · ${projectName} · ACE ASCH Infraestructuras + Cimontubo</span>
+        <span>Atlas QMS · ${projectName}</span>
         <span>${record.code}</span>
       </div>
     </body></html>`);

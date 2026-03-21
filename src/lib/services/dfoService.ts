@@ -335,7 +335,7 @@ export const dfoService = {
     const fullHtml = `<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>DFO — Atlas QMS</title>
 <style>${sharedCss()}</style></head><body>
 ${header}
-${projectInfoStripHtml()}
+${projectInfoStripHtml(null)}
 ${volumesHtml}
 ${summaryHtml}
 <div class="atlas-footer" style="margin-top:20px;padding-top:8px;border-top:1px solid #ccc;display:flex;justify-content:space-between;font-size:8px;color:#999">

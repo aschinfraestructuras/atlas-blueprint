@@ -275,7 +275,7 @@ export const soilService = {
         ${logoHtml}
         <h2>ATLAS QMS — Caracterização de Solos</h2>
       </div>
-      ${projectInfoStripHtml()}
+      ${projectInfoStripHtml(null)}
       <h3>Identificação</h3>
       <dl class="info-grid">
         <dt>Código</dt><dd>${sample.code}</dd>

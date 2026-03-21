@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { Eye } from "lucide-react";
 import { AppSidebar } from "./AppSidebar";
 import { TopBar } from "./TopBar";
 import { useArchivedProject } from "@/hooks/useArchivedProject";
 import { ArchivedBanner } from "@/components/ArchivedBanner";
 import { useProject } from "@/contexts/ProjectContext";
+import { useProjectRole } from "@/hooks/useProjectRole";
 import { useSessionTimeout } from "@/hooks/useSessionTimeout";
 import { SessionTimeoutWarning } from "@/components/session/SessionTimeoutWarning";
 import { OnboardingTour } from "@/components/onboarding/OnboardingTour";
@@ -21,6 +23,8 @@ export function MainLayout({ children }: MainLayoutProps) {
   const { activeProject } = useProject();
   const { t } = useTranslation();
   const { showWarning, extendSession } = useSessionTimeout();
+  const { role } = useProjectRole();
+  const isViewer = role === "viewer";
   const location = useLocation();
 
   // Dynamic browser tab title
@@ -102,6 +106,12 @@ export function MainLayout({ children }: MainLayoutProps) {
         <main className="flex-1 overflow-y-auto bg-muted/20">
           <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
             {isArchived && <ArchivedBanner />}
+            {isViewer && (
+              <div className="flex items-center gap-2 mb-4 px-4 py-2.5 rounded-lg border bg-primary/5 border-primary/20 text-primary">
+                <Eye className="h-4 w-4 flex-shrink-0" />
+                <span className="text-xs">{t("viewer.banner", { defaultValue: "Acesso de visualização — Fiscalização / IP · Apenas leitura e exportação" })}</span>
+              </div>
+            )}
             {children}
           </div>
           {/* Discrete footer */}
