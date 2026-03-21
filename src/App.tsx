@@ -70,6 +70,7 @@ const TestSchedulePage = lazy(() => import("./pages/TestSchedulePage"));
 const TraceabilityMatrixPage = lazy(() => import("./pages/TraceabilityMatrixPage"));
 const ActionPlanPage = lazy(() => import("./pages/ActionPlanPage"));
 const SubmittalsPage = lazy(() => import("./pages/SubmittalsPage"));
+const MyTasksPage = lazy(() => import("./pages/MyTasksPage"));
 
 function ProtectedLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -106,6 +107,7 @@ const App = () => (
 
                 {/* Protected – all share MainLayout */}
                 <Route path="/" element={<ProtectedLayout><DashboardPage /></ProtectedLayout>} />
+                <Route path="/my-tasks" element={<ProtectedLayout><MyTasksPage /></ProtectedLayout>} />
                 <Route path="/projects" element={<ProtectedLayout><ProjectsPage /></ProtectedLayout>} />
                 <Route path="/documents" element={<ProtectedLayout><DocumentsPage /></ProtectedLayout>} />
                 <Route path="/documents/:id" element={<ProtectedLayout><DocumentDetailPage /></ProtectedLayout>} />

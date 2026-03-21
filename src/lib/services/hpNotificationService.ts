@@ -37,6 +37,8 @@ export interface HpNotificationInput {
   planned_datetime: string;
   notes?: string | null;
   rfi_ref?: string | null;
+  advance_notice_override?: boolean;
+  advance_notice_reason?: string | null;
 }
 
 export const hpNotificationService = {
@@ -66,6 +68,8 @@ export const hpNotificationService = {
         notified_by: user?.id ?? null,
         notes: input.notes ?? null,
         rfi_ref: input.rfi_ref ?? null,
+        advance_notice_override: input.advance_notice_override ?? false,
+        advance_notice_reason: input.advance_notice_reason ?? null,
         status: "pending",
       })
       .select()

@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { weldService, type WeldRecord, type WeldInput, computeOverallResult } from "@/lib/services/weldService";
+import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { toast } from "@/hooks/use-toast";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import {
@@ -373,6 +374,17 @@ export default function WeldPage() {
               </div>
             </TabsContent>
           </Tabs>
+
+          {/* Attachments */}
+          {editingId && activeProject && (
+            <div className="mt-4">
+              <AttachmentsPanel
+                projectId={activeProject.id}
+                entityType="weld_records"
+                entityId={editingId}
+              />
+            </div>
+          )}
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setDialogOpen(false)}>{t("common.cancel")}</Button>

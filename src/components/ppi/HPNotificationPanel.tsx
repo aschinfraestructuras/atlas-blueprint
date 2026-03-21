@@ -5,6 +5,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   hpNotificationService,
   type HpNotification,
@@ -60,6 +61,8 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
   const [notes, setNotes] = useState("");
   const [rfiRef, setRfiRef] = useState("");
   const [creating, setCreating] = useState(false);
+  const [earlyOverride, setEarlyOverride] = useState(false);
+  const [earlyReason, setEarlyReason] = useState("");
 
   // Confirm dialog
   const [confirmingId, setConfirmingId] = useState<string | null>(null);
@@ -110,6 +113,8 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
     setLocationPk("");
     setNotes("");
     setRfiRef("");
+    setEarlyOverride(false);
+    setEarlyReason("");
     // Default date: 48h+ from now
     const minDate = new Date(Date.now() + 48 * 60 * 60 * 1000);
     setPlannedDate(minDate.toISOString().slice(0, 10));
@@ -122,10 +127,17 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
 
     const plannedDatetime = `${plannedDate}T${plannedTime}:00`;
     const minDatetime = new Date(Date.now() + 48 * 60 * 60 * 1000);
-    if (new Date(plannedDatetime) < minDatetime) {
+    const isEarly = new Date(plannedDatetime) < minDatetime;
+
+    if (isEarly && !earlyOverride) {
+      setEarlyOverride(true);
+      return;
+    }
+
+    if (isEarly && !earlyReason.trim()) {
       toast({
-        title: t("ppi.hpNotification.min48h", {
-          defaultValue: "A data/hora deve ser no mínimo 48h no futuro.",
+        title: t("ppi.hpNotification.earlyReason", {
+          defaultValue: "Motivo do aviso antecipado (obrigatório)",
         }),
         variant: "destructive",
       });
@@ -146,7 +158,11 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
         notes: notes || null,
         rfi_ref: rfiRef || null,
       };
-      await hpNotificationService.create(input);
+      // Pass early override fields
+      const payload = isEarly
+        ? { ...input, advance_notice_override: true, advance_notice_reason: earlyReason.trim() }
+        : input;
+      await hpNotificationService.create(payload as any);
       toast({
         title: t("ppi.hpNotification.created", {
           defaultValue: "Notificação HP criada com sucesso.",
@@ -368,6 +384,7 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
 
       {/* ── Notification list (history) ─────────────────────────────── */}
       {notifications.length > 0 && (
+        <TooltipProvider>
         <div className="space-y-2 mt-6">
           <h3 className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
             {t("ppi.hpNotification.history", { defaultValue: "Histórico de Notificações" })}
@@ -388,7 +405,20 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
+                  {(n as any).advance_notice_override && (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Badge variant="outline" className="text-[10px] border-amber-400/40 bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400 gap-0.5">
+                          <AlertTriangle className="h-2.5 w-2.5" />
+                          {t("ppi.hpNotification.earlyBadge", { defaultValue: "Antecipado" })}
+                        </Badge>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="max-w-xs text-xs">
+                        {(n as any).advance_notice_reason || "—"}
+                      </TooltipContent>
+                    </Tooltip>
+                  )}
                   {(n as any).rfi_ref && (
                     <span className="text-[10px] font-mono text-primary">RFI: {(n as any).rfi_ref}</span>
                   )}
@@ -426,6 +456,7 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
             ))}
           </div>
         </div>
+        </TooltipProvider>
       )}
 
       {/* ── Create notification dialog ─────────────────────────────── */}
@@ -451,8 +482,7 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
                 <Input
                   type="date"
                   value={plannedDate}
-                  onChange={(e) => setPlannedDate(e.target.value)}
-                  min={new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString().slice(0, 10)}
+                  onChange={(e) => { setPlannedDate(e.target.value); setEarlyOverride(false); setEarlyReason(""); }}
                   className="text-sm"
                 />
               </div>
@@ -511,6 +541,26 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
                 className="text-sm"
               />
             </div>
+            {/* Early warning override section */}
+            {earlyOverride && (
+              <div className="rounded-lg border border-amber-400/40 bg-amber-50 dark:bg-amber-900/20 p-3 space-y-2">
+                <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400 text-xs font-medium">
+                  <AlertTriangle className="h-3.5 w-3.5" />
+                  {t("ppi.hpNotification.earlyWarning", {
+                    defaultValue: "Aviso com menos de 48h — exige justificação",
+                  })}
+                </div>
+                <Textarea
+                  value={earlyReason}
+                  onChange={(e) => setEarlyReason(e.target.value)}
+                  placeholder={t("ppi.hpNotification.earlyReason", {
+                    defaultValue: "Motivo do aviso antecipado (obrigatório)",
+                  })}
+                  rows={2}
+                  className="text-sm resize-none"
+                />
+              </div>
+            )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDialogOpen(false)}>
@@ -518,7 +568,7 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
             </Button>
             <Button
               onClick={handleCreate}
-              disabled={creating || !plannedDate || !plannedTime || !activity.trim()}
+              disabled={creating || !plannedDate || !plannedTime || !activity.trim() || (earlyOverride && !earlyReason.trim())}
               className="gap-1.5"
             >
               {creating ? (
