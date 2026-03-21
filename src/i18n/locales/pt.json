@@ -3494,7 +3494,22 @@
       "noRole": "Sem papel atribuído",
       "notMember": "Não é membro do projecto activo",
       "warnings": "Avisos"
-    }
+    },
+    "sheetTitle": "Estado Geral da Obra",
+    "components": {
+      "nc": "Não Conformidades",
+      "ncOverdue": "NCs em atraso",
+      "tests": "Ensaios",
+      "ppis": "PPIs pendentes",
+      "docs": "Documentos",
+      "calibrations": "Calibrações",
+      "readiness": "Prontidão elementos"
+    },
+    "viewNcs": "Ver NCs abertas",
+    "viewPpis": "Ver PPIs pendentes",
+    "viewTests": "Ver ensaios em atraso",
+    "systemTab": "Sistema",
+    "sidebarScore": "Score"
   },
   "moduleKpi": {
     "total": "Total",

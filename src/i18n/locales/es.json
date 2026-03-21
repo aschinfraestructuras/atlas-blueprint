@@ -4174,5 +4174,17 @@
     "weldsPendingUT": "Soldaduras sin US",
     "testsOverdue": "Ensayos atrasados",
     "ncMajorOpen": "NC mayor abierta"
+  },
+  "labs": {
+    "viewFile": "Ver Ficha",
+    "exportFile": "Exportar Ficha",
+    "accreditationExpiry": "Validez de la acreditación",
+    "accreditationExpired": "Acreditación expirada",
+    "accreditationValid": "Válida",
+    "recentTests": "Ensayos realizados"
+  },
+  "recycled": {
+    "exportPpgrcd": "Exportar Ficha PPGRCD",
+    "documentsSection": "Documentos y Evidencias"
   }
 }
