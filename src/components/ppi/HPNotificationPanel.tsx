@@ -384,6 +384,7 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
 
       {/* ── Notification list (history) ─────────────────────────────── */}
       {notifications.length > 0 && (
+        <TooltipProvider>
         <div className="space-y-2 mt-6">
           <h3 className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
             {t("ppi.hpNotification.history", { defaultValue: "Histórico de Notificações" })}
