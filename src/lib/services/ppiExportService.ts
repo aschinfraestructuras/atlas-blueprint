@@ -326,7 +326,7 @@ function buildSinglePdfHtml(
     </div>
     <div class="info-row">
       <span class="info-label">${labels.template}</span>
-      <span class="info-value" style="font-family:monospace;font-size:9px;">${inst.template_code ?? "—"}</span>
+      <span class="info-value" style="font-family:monospace;font-size:9px;">${esc(inst.template_code) || "—"}</span>
     </div>
     <div class="info-row">
       <span class="info-label">${labels.workItem}</span>
