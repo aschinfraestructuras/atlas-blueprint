@@ -126,10 +126,17 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
 
     const plannedDatetime = `${plannedDate}T${plannedTime}:00`;
     const minDatetime = new Date(Date.now() + 48 * 60 * 60 * 1000);
-    if (new Date(plannedDatetime) < minDatetime) {
+    const isEarly = new Date(plannedDatetime) < minDatetime;
+
+    if (isEarly && !earlyOverride) {
+      setEarlyOverride(true);
+      return;
+    }
+
+    if (isEarly && !earlyReason.trim()) {
       toast({
-        title: t("ppi.hpNotification.min48h", {
-          defaultValue: "A data/hora deve ser no mínimo 48h no futuro.",
+        title: t("ppi.hpNotification.earlyReason", {
+          defaultValue: "Motivo do aviso antecipado (obrigatório)",
         }),
         variant: "destructive",
       });
@@ -150,7 +157,11 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
         notes: notes || null,
         rfi_ref: rfiRef || null,
       };
-      await hpNotificationService.create(input);
+      // Pass early override fields
+      const payload = isEarly
+        ? { ...input, advance_notice_override: true, advance_notice_reason: earlyReason.trim() }
+        : input;
+      await hpNotificationService.create(payload as any);
       toast({
         title: t("ppi.hpNotification.created", {
           defaultValue: "Notificação HP criada com sucesso.",
