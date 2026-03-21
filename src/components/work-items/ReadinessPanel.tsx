@@ -77,33 +77,29 @@ export function ReadinessPanel() {
     if (!activeProject || workItems.length === 0) { setSubLoading(false); return; }
     setSubLoading(true);
 
-    Promise.all([
-      // PPIs
-      supabase
+    const fetchData = async () => {
+      const ppiRes: any = await supabase
         .from("ppi_instances")
         .select("id, work_item_id, status")
         .eq("project_id", activeProject.id)
-        .eq("is_deleted", false) as any,
-      // PPI items
-      supabase
+        .eq("is_deleted", false);
+      const ppiItemsRes: any = await supabase
         .from("ppi_instance_items")
         .select("instance_id, result")
-        .eq("project_id", activeProject.id) as any,
-      // Tests
-      supabase
+        .eq("project_id", activeProject.id);
+      const testRes: any = await supabase
         .from("test_results")
         .select("work_item_id, pass_fail, status")
         .eq("project_id", activeProject.id)
-        .not("work_item_id", "is", null) as any,
-      // NCs
-      supabase
+        .not("work_item_id", "is", null);
+      const ncRes: any = await supabase
         .from("non_conformities")
         .select("work_item_id, status")
         .eq("project_id", activeProject.id)
         .eq("is_deleted", false)
         .not("work_item_id", "is", null)
-        .not("status", "in", '("closed","archived")') as any,
-    ]).then(([ppiRes, ppiItemsRes, testRes, ncRes]: any[]) => {
+        .not("status", "in", '("closed","archived")');
+
       // PPI map
       const pm = new Map<string, { status: string; okCount: number; total: number }>();
       const ppiInstances = ppiRes.data ?? [];
