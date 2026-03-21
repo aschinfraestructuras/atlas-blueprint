@@ -20,6 +20,7 @@ import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { HealthGauge } from "@/components/dashboard/HealthGauge";
+import { HealthScoreSheet } from "@/components/dashboard/HealthScoreSheet";
 import { SparklineKPI } from "@/components/dashboard/SparklineKPI";
 import { CriticalAlertsBanner } from "@/components/dashboard/CriticalAlertsBanner";
 import { NCTrendChart } from "@/components/dashboard/NCTrendChart";
