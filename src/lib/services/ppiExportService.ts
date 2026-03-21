@@ -10,6 +10,7 @@
 import type { PpiInstance, PpiInstanceItem } from "./ppiService";
 import type { HpNotification } from "./hpNotificationService";
 import { projectInfoStripHtml } from "./pdfProjectHeader";
+import { esc } from "@/lib/utils/escapeHtml";
 
 // ─── Shared types ─────────────────────────────────────────────────────────────
 
