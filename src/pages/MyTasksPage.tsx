@@ -203,7 +203,7 @@ export default function MyTasksPage() {
     return (
       <div className="p-6">
         <PageHeader title={t("myTasks.title")} icon={CalendarCheck} />
-        <EmptyState icon={CalendarCheck} message={t("common.noData")} />
+        <EmptyState icon={CalendarCheck} titleKey="common.noData" />
       </div>
     );
   }
@@ -243,7 +243,7 @@ export default function MyTasksPage() {
           {/* Section 1: PPIs */}
           <Section title={t("myTasks.myPpis")} icon={ClipboardCheck} count={ppis.length}>
             {ppis.length === 0 ? (
-              <EmptyState icon={ClipboardCheck} message={t("common.noData")} />
+              <EmptyState icon={ClipboardCheck} titleKey="common.noData" />
             ) : (
               <div className="space-y-2">
                 {ppis.map(ppi => (
@@ -285,7 +285,7 @@ export default function MyTasksPage() {
           {/* Section 2: Tests Due */}
           <Section title={t("myTasks.pendingTests")} icon={FlaskConical} count={tests.length}>
             {tests.length === 0 ? (
-              <EmptyState icon={FlaskConical} message={t("common.noData")} />
+              <EmptyState icon={FlaskConical} titleKey="common.noData" />
             ) : (
               <div className="space-y-2">
                 {tests.map(td => (
@@ -317,7 +317,7 @@ export default function MyTasksPage() {
           {/* Section 3: NCs */}
           <Section title={t("myTasks.myNcs")} icon={AlertTriangle} count={ncs.length}>
             {ncs.length === 0 ? (
-              <EmptyState icon={AlertTriangle} message={t("common.noData")} />
+              <EmptyState icon={AlertTriangle} titleKey="common.noData" />
             ) : (
               <div className="space-y-2">
                 {ncs.map(nc => (

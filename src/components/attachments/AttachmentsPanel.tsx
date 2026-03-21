@@ -83,10 +83,12 @@ function compressImage(file: File, maxDim = 1920, quality = 0.85): Promise<File>
       canvas.toBlob(
         (blob) => {
           if (!blob) { resolve(file); return; }
-          const compressed = new File([blob], file.name.replace(/\.[^.]+$/, ".jpg"), {
+          // Create a new file from the blob
+          const name = file.name.replace(/\.[^.]+$/, ".jpg");
+          const compressed = new (window.File as any)([blob], name, {
             type: "image/jpeg",
             lastModified: Date.now(),
-          });
+          }) as File;
           resolve(compressed);
         },
         "image/jpeg",
