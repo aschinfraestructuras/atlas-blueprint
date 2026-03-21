@@ -78,27 +78,27 @@ export function ReadinessPanel() {
     setSubLoading(true);
 
     const fetchData = async () => {
-      const ppiRes: any = await supabase
+      const ppiRes = await (supabase
         .from("ppi_instances")
         .select("id, work_item_id, status")
         .eq("project_id", activeProject.id)
-        .eq("is_deleted", false);
-      const ppiItemsRes: any = await supabase
+        .eq("is_deleted", false) as any);
+      const ppiItemsRes = await (supabase
         .from("ppi_instance_items")
         .select("instance_id, result")
-        .eq("project_id", activeProject.id);
-      const testRes: any = await supabase
+        .eq("project_id", activeProject.id) as any);
+      const testRes = await (supabase
         .from("test_results")
         .select("work_item_id, pass_fail, status")
         .eq("project_id", activeProject.id)
-        .not("work_item_id", "is", null);
-      const ncRes: any = await supabase
+        .not("work_item_id", "is", null) as any);
+      const ncRes = await (supabase
         .from("non_conformities")
         .select("work_item_id, status")
         .eq("project_id", activeProject.id)
         .eq("is_deleted", false)
         .not("work_item_id", "is", null)
-        .not("status", "in", '("closed","archived")');
+        .not("status", "in", '("closed","archived")') as any);
 
       // PPI map
       const pm = new Map<string, { status: string; okCount: number; total: number }>();
