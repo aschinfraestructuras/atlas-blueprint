@@ -179,8 +179,16 @@ export default function WeldPage() {
         <div className="flex items-center gap-3 px-4 py-3 rounded-lg border bg-amber-500/5 border-amber-500/30 text-amber-700 dark:text-amber-400 animate-fade-in">
           <ShieldAlert className="h-4 w-4 flex-shrink-0" />
           <span className="text-sm flex-1">
-            <strong>{pendingUtCount}</strong> soldadura{pendingUtCount > 1 ? "s" : ""} pendente{pendingUtCount > 1 ? "s" : ""} de inspecção US há mais de 7 dias
+            ⚠ <strong>{pendingUtCount}</strong> {t("welds.usPendingBanner", { defaultValue: "soldadura(s) com US pendente há mais de 7 dias" })}
           </span>
+          <Button
+            variant="outline"
+            size="sm"
+            className="text-xs border-amber-500/30 text-amber-700 dark:text-amber-400 hover:bg-amber-500/10"
+            onClick={() => setFilterPendingUS(prev => !prev)}
+          >
+            {filterPendingUS ? t("common.showAll", { defaultValue: "Mostrar todas" }) : t("welds.filterPendingUS", { defaultValue: "Ver pendentes US" })}
+          </Button>
         </div>
       )}
 
