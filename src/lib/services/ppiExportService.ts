@@ -154,7 +154,7 @@ function iptBadge(val: string | null | undefined): string {
   const v = val?.toUpperCase() ?? "N/A";
   const color = val === "hp" ? BRAND.hp : val === "wp" ? BRAND.wp : val === "rp" ? BRAND.rp : BRAND.muted;
   const bg = val === "hp" ? "#FEF2F2" : val === "wp" ? "#FFFBEB" : val === "rp" ? "#EFF6FF" : "#F3F4F6";
-  return `<span style="display:inline-block;padding:1px 5px;border-radius:3px;font-size:9px;font-weight:700;background:${bg};color:${color};">${v}</span>`;
+  return `<span style="display:inline-block;padding:1px 5px;border-radius:3px;font-size:9px;font-weight:700;background:${bg};color:${color};">${esc(v)}</span>`;
 }
 
 function iptTypeBadge(ipt: string | null | undefined): string {
