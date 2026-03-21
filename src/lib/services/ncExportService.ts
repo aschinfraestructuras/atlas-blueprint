@@ -353,12 +353,13 @@ export async function exportNCWorkItemSummaryPdf(
   projectName: string,
   workItemSector: string,
   logoBase64?: string | null,
+  projectCode?: string,
 ): Promise<void> {
   if (ncs.length === 0) return;
 
   const meta: ReportMeta = {
     projectName,
-    projectCode: "PF17A",
+    projectCode: projectCode ?? "—",
     locale: "pt",
   };
   const today = new Date().toLocaleDateString("pt-PT");
