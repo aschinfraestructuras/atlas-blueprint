@@ -5,6 +5,7 @@
  */
 
 import type { TestResult, TestCatalogEntry } from "./testService";
+import { esc } from "@/lib/utils/escapeHtml";
 
 // ─── Atlas brand colours ──────────────────────────────────────────────────────
 
