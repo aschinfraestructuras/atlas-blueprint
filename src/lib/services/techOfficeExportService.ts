@@ -24,7 +24,7 @@ export function exportTechOfficeCsv(data: TechnicalOfficeItem[], meta: ReportMet
 export function exportTechOfficePdf(data: TechnicalOfficeItem[], meta: ReportMeta, logoBase64?: string | null) {
   const today = new Date().toLocaleDateString("pt-PT");
   const title = meta.locale === "pt" ? "Oficina Técnica" : "Oficina Técnica";
-  const header = fullPdfHeader(logoBase64 ?? null, `LINHA DO SUL — ${meta.projectCode}`, "OT-LISTA", "0", today);
+  const header = fullPdfHeader(logoBase64 ?? null, meta.projectName ?? meta.projectCode, "OT-LISTA", "0", today);
 
   const cols = ["Código", "Tipo", "Título", "Prioridade", "Estado", "Prazo"];
   const rows = data.map(r => [
