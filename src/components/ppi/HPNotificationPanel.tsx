@@ -112,6 +112,8 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
     setLocationPk("");
     setNotes("");
     setRfiRef("");
+    setEarlyOverride(false);
+    setEarlyReason("");
     // Default date: 48h+ from now
     const minDate = new Date(Date.now() + 48 * 60 * 60 * 1000);
     setPlannedDate(minDate.toISOString().slice(0, 10));
