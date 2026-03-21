@@ -2127,12 +2127,20 @@
       "inProgress": "Em progresso",
       "blocked": "Bloqueado",
       "noPpi": "Sem PPI",
-      "export": "Exportar Relatório de Prontidão"
+      "export": "Exportar Relatório de Prontidão",
+      "blockedTooltip": "Bloqueado: NCs abertas ou ensaio não conforme",
+      "inProgressTooltip": "Em progresso: PPI em curso ou ensaios pendentes",
+      "noneOpen": "Nenhuma",
+      "openNc": "NCs abertas",
+      "pendingPpi": "PPI pendente",
+      "pendingTests": "Ensaios pendentes",
+      "readyTooltip": "Pronto: PPI aprovado, ensaios conformes, sem NCs"
     },
     "tabs": {
       "concrete": "Betão",
       "welds": "Soldaduras",
-      "soils": "Solos"
+      "soils": "Solos",
+      "materials": "Materiais"
     },
     "linkedActivity": "Atividade de planeamento",
     "viewInPlanning": "Ver no planeamento",
@@ -2236,7 +2244,10 @@
       }
     },
     "groups": {
-      "baseActivity": "Atividade base"
+      "baseActivity": "Atividade base",
+      "frentes": "Frentes",
+      "inExecution": "Em execução",
+      "obras": "Obras"
     },
     "module": "Elementos de Obra",
     "new": "Novo elemento",
@@ -2247,7 +2258,39 @@
       "created": "Elemento criado",
       "deleted": "Elemento eliminado",
       "duplicated": "Elemento duplicado",
-      "updated": "Elemento atualizado"
+      "updated": "Elemento atualizado",
+      "error": "Erro ao processar"
+    },
+    "materials": {
+      "add": "Adicionar material",
+      "empty": "Sem materiais associados",
+      "form": {
+        "lotRef": "Ref. lote",
+        "material": "Material",
+        "quantity": "Quantidade",
+        "unit": "Unidade"
+      }
+    },
+    "report": {
+      "errorLoading": "Erro ao carregar relatório",
+      "exportButton": "Exportar relatório",
+      "footer": "Gerado por Atlas",
+      "noMaterials": "Sem materiais",
+      "noNCs": "Sem NCs",
+      "noPPI": "Sem PPI",
+      "noTests": "Sem ensaios",
+      "printSave": "Imprimir / Guardar",
+      "title": "Relatório do Elemento"
+    },
+    "table": {
+      "actions": "Ações",
+      "code": "Código",
+      "discipline": "Disciplina",
+      "element": "Elemento",
+      "pk": "PK",
+      "readiness": "Prontidão",
+      "sector": "Sector",
+      "status": "Estado"
     }
   },
   "ppi": {
