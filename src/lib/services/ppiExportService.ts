@@ -645,7 +645,7 @@ export function exportNotHpPdf(
     ${notification.notes ? `
     <div class="info-row" style="grid-column:span 2;">
       <span class="info-label">Observações</span>
-      <span class="info-value">${notification.notes}</span>
+      <span class="info-value">${esc(notification.notes)}</span>
     </div>` : ""}
   </div>
 
