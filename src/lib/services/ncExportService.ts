@@ -317,7 +317,7 @@ export async function exportNCBulkPdf(
   };
 
   const today = new Date().toLocaleDateString("pt-PT");
-  const header = fullPdfHeader(logoBase64 ?? null, `LINHA DO SUL — ${meta.projectCode}`, "RNC-CONSOLIDADO", "0", today);
+  const header = fullPdfHeader(logoBase64 ?? null, meta.projectName ?? meta.projectCode, "RNC-CONSOLIDADO", "0", today);
 
   const bodies = ncs.map((nc, idx) => {
     const ncHtml = renderNCHtml(nc, labels);
