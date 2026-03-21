@@ -3406,7 +3406,8 @@
       "planning_due": "Planeamento (prazo)",
       "subcontractor_doc": "Doc. Subcontratado",
       "ppi_pending": "PPI Pendente",
-      "ppi_approval": "PPI Aguarda Aprovação"
+      "ppi_approval": "PPI Aguarda Aprovação",
+      "hp_notification": "Notificação HP"
     },
     "table": {
       "date": "Data",
