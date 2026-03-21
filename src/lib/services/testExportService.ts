@@ -337,19 +337,19 @@ function buildSingleHtml(
   const statusLabel = labels.statuses[r.status] ?? r.status;
 
   const infoRows: [string, string][] = [
-    [labels.project,      projectName],
-    [labels.workItem,     workItemSector ?? "—"],
+    [labels.project,      esc(projectName)],
+    [labels.workItem,     esc(workItemSector) ?? "—"],
     [labels.date,         fmtDate(r.date, locale)],
-    [labels.reportNumber, r.report_number ?? "—"],
-    [labels.laboratory,   (r.suppliers as { name?: string } | null)?.name ?? "—"],
-    [labels.sampleRef,    r.sample_ref ?? "—"],
-    [labels.location,     r.location ?? "—"],
+    [labels.reportNumber, esc(r.report_number)],
+    [labels.laboratory,   esc((r.suppliers as { name?: string } | null)?.name)],
+    [labels.sampleRef,    esc(r.sample_ref)],
+    [labels.location,     esc(r.location)],
     [labels.pkRange,      r.pk_inicio != null
       ? `${r.pk_inicio}${r.pk_fim != null ? ` – ${r.pk_fim}` : ""}` : "—"],
-    [labels.status,       statusLabel],
-    [labels.testCode,     tc?.code ?? "—"],
-    [labels.testName,     tc?.name ?? "—"],
-    [labels.discipline,   tc?.disciplina ?? "—"],
+    [labels.status,       esc(statusLabel)],
+    [labels.testCode,     esc(tc?.code)],
+    [labels.testName,     esc(tc?.name)],
+    [labels.discipline,   esc(tc?.disciplina)],
   ];
 
   const payload = r.result_payload ?? {};
