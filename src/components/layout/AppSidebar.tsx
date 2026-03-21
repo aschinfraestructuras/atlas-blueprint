@@ -352,6 +352,8 @@ function SidebarContent({ collapsed, onClose }: { collapsed: boolean; onClose?: 
           const filteredItems = section.items.filter(item => {
             if (item.adminOnly && !isAdmin) return false;
             if (item.requiredAction && !can(item.requiredAction)) return false;
+            // Viewer role: only show items explicitly marked as viewerVisible
+            if (isViewer && !item.viewerVisible) return false;
             return true;
           });
 
