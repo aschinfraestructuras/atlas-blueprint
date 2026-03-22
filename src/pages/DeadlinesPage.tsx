@@ -66,8 +66,7 @@ const SOURCE_ROUTES: Record<string, string> = {
 };
 
 const DETAIL_SOURCES = new Set([
-  "nc_due", "ppi_pending", "ppi_approval",
-  "supplier_doc", "material_doc", "subcontractor_doc",
+  "nc_due", "ppi_pending", "ppi_approval", "hp_notification",
 ]);
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
