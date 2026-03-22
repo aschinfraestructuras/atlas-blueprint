@@ -205,7 +205,8 @@ export const workItemService = {
     const { count, error } = await supabase
       .from("work_items")
       .select("*", { count: "exact", head: true })
-      .eq("project_id", projectId);
+      .eq("project_id", projectId)
+      .eq("is_deleted", false);
     if (error) throw error;
     return count ?? 0;
   },
