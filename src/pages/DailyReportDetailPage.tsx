@@ -529,20 +529,31 @@ export default function DailyReportDetailPage() {
         </CardContent>
       </Card>
 
-      {/* Section 8: Signatures */}
+      {/* Section 8: Signatures — editable */}
       <Card>
         <CardHeader><CardTitle className="text-sm">{t("dailyReports.sections.observations")}</CardTitle></CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 gap-4">
             {[
-              { label: t("dailyReports.signatures.foreman"), value: report.foreman_name },
-              { label: t("dailyReports.signatures.contractor"), value: report.contractor_rep },
-              { label: t("dailyReports.signatures.supervisor"), value: report.supervisor_rep },
-              { label: t("dailyReports.signatures.ip"), value: report.ip_rep },
-            ].map(({ label, value }) => (
-              <div key={label} className="border rounded-lg p-3">
+              { label: t("dailyReports.signatures.foreman"), field: "foreman_name" as const, value: report.foreman_name },
+              { label: t("dailyReports.signatures.contractor"), field: "contractor_rep" as const, value: report.contractor_rep },
+              { label: t("dailyReports.signatures.supervisor"), field: "supervisor_rep" as const, value: report.supervisor_rep },
+              { label: t("dailyReports.signatures.ip"), field: "ip_rep" as const, value: report.ip_rep },
+            ].map(({ label, field, value }) => (
+              <div key={field} className="border rounded-lg p-3">
                 <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</p>
-                <p className="text-sm mt-1">{value ?? "—"}</p>
+                {isEditable ? (
+                  <Input
+                    className="h-7 text-sm mt-1 border-0 bg-transparent focus:bg-background focus:border focus:border-input px-0"
+                    defaultValue={value ?? ""}
+                    onBlur={e => {
+                      const newVal = e.target.value || null;
+                      if (newVal !== value) dailyReportService.update(report.id, { [field]: newVal }).then(reload);
+                    }}
+                  />
+                ) : (
+                  <p className="text-sm mt-1">{value ?? "—"}</p>
+                )}
               </div>
             ))}
           </div>
