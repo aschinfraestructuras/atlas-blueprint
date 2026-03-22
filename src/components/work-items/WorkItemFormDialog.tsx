@@ -38,7 +38,6 @@ const makeSchema = (t: (k: string) => string) =>
       sector:          z.string().min(1, t("workItems.form.validation.sectorRequired")),
       disciplina:      z.string().min(1, t("workItems.form.validation.disciplineRequired")),
       disciplina_outro:z.string().optional(),
-      obra:            z.string().optional(),
       lote:            z.string().optional(),
       elemento:        z.string().optional(),
       parte:           z.string().optional(),
