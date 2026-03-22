@@ -469,7 +469,7 @@ export default function QCReportPage() {
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs">{t("qcReport.scope", { defaultValue: "Tipo de Relatório" })}</Label>
+              <Label className="text-xs">{t("qcReport.scopeLabel", { defaultValue: "Âmbito" })}</Label>
               <Select value={reportScope} onValueChange={(v: any) => setReportScope(v)}>
                 <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
                 <SelectContent>
