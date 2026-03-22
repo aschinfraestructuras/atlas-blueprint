@@ -216,6 +216,7 @@ export const workItemService = {
       .from("work_items")
       .select("*", { count: "exact", head: true })
       .eq("project_id", projectId)
+      .eq("is_deleted", false)
       .in("status", ["planned", "in_progress"]);
     if (error) throw error;
     return count ?? 0;
