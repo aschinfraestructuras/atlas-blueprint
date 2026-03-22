@@ -4291,5 +4291,37 @@
   },
   "export": {
     "logoLoading": "A carregar logo..."
+  },
+  "workers": {
+    "title": "Pessoal",
+    "add": "Adicionar Trabalhador",
+    "name": "Nome",
+    "function": "Função",
+    "workerNumber": "Nº Trabalhador",
+    "safetyTraining": "Formação Segurança",
+    "deactivate": "Desactivar",
+    "status": {
+      "active": "Activo",
+      "inactive": "Inactivo",
+      "left": "Saiu"
+    }
+  },
+  "machinery": {
+    "title": "Equipamentos",
+    "add": "Adicionar Equipamento",
+    "designation": "Designação",
+    "type": "Tipo",
+    "plate": "Matrícula",
+    "serial": "Nº Série",
+    "soundPower": "Potência Sonora (dB)",
+    "status": {
+      "on_site": "Em Obra",
+      "off_site": "Fora de Obra",
+      "maintenance": "Manutenção"
+    }
+  },
+  "settings": {
+    "ownResources": "Recursos Próprios",
+    "ownResourcesDesc": "Pessoal e Equipamentos — ASCH"
   }
 }
