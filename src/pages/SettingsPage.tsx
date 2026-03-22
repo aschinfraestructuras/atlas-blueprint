@@ -36,6 +36,7 @@ import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { toast } from "sonner";
 import { WorkersPanel } from "@/components/workers/WorkersPanel";
 import { MachineryPanel } from "@/components/workers/MachineryPanel";
+import { ContactsNotificationsSection } from "@/components/settings/ContactsNotificationsSection";
 
 const MOD = {
   documents: "hsl(215, 70%, 38%)", tests: "hsl(252, 55%, 45%)",
@@ -873,6 +874,13 @@ export default function SettingsPage() {
       {/* ── 7b. Own Resources (ASCH) ─────────────────────────────────── */}
       {(isAdmin || myRole === "quality_manager") && activeProject && (
         <OwnResourcesSection projectId={activeProject.id} />
+      )}
+
+      {/* ── 7c. Contacts & Notifications ─────────────────────────────── */}
+      {(isAdmin || myRole === "quality_manager") && activeProject && (
+        <SettingsSection icon={Mail} title={t("settings.contactsTab", { defaultValue: "Contactos & Notificações" })} subtitle={t("settings.contactsTabDesc", { defaultValue: "Gerir contactos do projecto e listas de distribuição para notificações" })} color="hsl(252, 55%, 45%)">
+          <ContactsNotificationsSection projectId={activeProject.id} />
+        </SettingsSection>
       )}
 
       {/* ── 8. System Audit ──────────────────────────────────────────── */}
