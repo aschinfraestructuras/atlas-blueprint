@@ -36,8 +36,14 @@ import {
   ExternalLink,
   Loader2,
   Plus,
+  Send,
   XCircle,
+  ChevronDown,
+  ChevronRight,
+  Mail,
 } from "lucide-react";
+import { NotificationModal } from "@/components/notifications/NotificationModal";
+import { notificationLogService, type NotificationLog, type NotificationRecipient } from "@/lib/services/notificationLogService";
 
 interface Props {
   instance: PpiInstance;
