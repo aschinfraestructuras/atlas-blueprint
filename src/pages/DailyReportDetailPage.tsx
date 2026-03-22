@@ -563,6 +563,36 @@ export default function DailyReportDetailPage() {
   );
 }
 
+function EditableCell({ label, value, editable, type = "text", onSave }: {
+  label: string;
+  value: string | null | undefined;
+  editable: boolean;
+  type?: string;
+  onSave: (val: string) => void;
+}) {
+  if (!editable) {
+    return (
+      <div>
+        <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</p>
+        <p className="mt-0.5">{value ?? "—"}</p>
+      </div>
+    );
+  }
+  return (
+    <div>
+      <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</p>
+      <Input
+        type={type}
+        className="h-7 mt-0.5 text-sm border-0 bg-transparent focus:bg-background focus:border focus:border-input px-0"
+        defaultValue={value ?? ""}
+        onBlur={e => {
+          if (e.target.value !== (value ?? "")) onSave(e.target.value);
+        }}
+      />
+    </div>
+  );
+}
+
 function InfoCell({ label, value }: { label: string; value: string | null | undefined }) {
   return (
     <div>
