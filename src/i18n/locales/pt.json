@@ -888,7 +888,13 @@
       "waive": "Dispensar",
       "waiveReason": "Motivo da dispensa",
       "waiveReasonPlaceholder": "Explique o motivo…",
-      "waived": "Ensaio dispensado"
+      "waived": "Ensaio dispensado",
+      "howToSchedule": "Como agendar ensaios",
+      "step1": "Configure o Plano de Ensaios na tab Planos — adicione regras com frequência e disciplina",
+      "step2": "Clique em \"Gerar agendamentos\" para criar os ensaios obrigatórios",
+      "goToPlans": "Ir para Planos",
+      "empty": "Sem ensaios agendados",
+      "noTests": "Sem ensaios agendados para esta semana."
     },
     "export": {
       "acceptanceCriteria": "Critérios de aceitação",
@@ -4211,7 +4217,8 @@
     "todayTasks": "Tarefas de hoje",
     "weekOverview": "Visão semanal",
     "noOverdue": "Nenhum item em atraso",
-    "priorityHigh": "Prioridade alta"
+    "priorityHigh": "Prioridade alta",
+    "todayDate": "Hoje, {{date}}"
   },
   "welds": {
     "usPendingBanner": "soldadura(s) com US pendente há mais de 7 dias",
