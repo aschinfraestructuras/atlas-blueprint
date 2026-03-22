@@ -34,6 +34,8 @@ import { useProjectRole } from "@/hooks/useProjectRole";
 import { memberService, type ProjectMember, type ProjectInvite } from "@/lib/services/memberService";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { toast } from "sonner";
+import { WorkersPanel } from "@/components/workers/WorkersPanel";
+import { MachineryPanel } from "@/components/workers/MachineryPanel";
 
 const MOD = {
   documents: "hsl(215, 70%, 38%)", tests: "hsl(252, 55%, 45%)",
