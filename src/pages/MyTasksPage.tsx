@@ -131,9 +131,13 @@ export default function MyTasksPage() {
         }
       }
       ppiResults.sort((a, b) => {
+        // HP pending first
         if (a.hp_pending_count > 0 && b.hp_pending_count === 0) return -1;
         if (a.hp_pending_count === 0 && b.hp_pending_count > 0) return 1;
-        return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
+        // Then by progress ascending (less complete first)
+        const pctA = a.total_items > 0 ? a.ok_items / a.total_items : 0;
+        const pctB = b.total_items > 0 ? b.ok_items / b.total_items : 0;
+        return pctA - pctB;
       });
       setPpis(ppiResults);
 
