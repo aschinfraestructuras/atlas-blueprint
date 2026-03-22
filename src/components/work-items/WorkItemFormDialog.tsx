@@ -123,7 +123,6 @@ export function WorkItemFormDialog({ open, onOpenChange, item, duplicateFrom, on
         sector:          values.sector,
         disciplina:      values.disciplina,
         disciplina_outro:values.disciplina === "outros" ? (values.disciplina_outro?.trim() || null) : null,
-        obra:            values.obra      || undefined,
         lote:            values.lote      || undefined,
         elemento:        values.elemento  || undefined,
         parte:           values.parte     || undefined,
