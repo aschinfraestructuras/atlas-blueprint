@@ -487,7 +487,7 @@ export default function PPIDetailPage() {
             <PPIExportMenu instances={[exportInst]} projectName={activeProject?.name ?? ""} variant="single" />
           )}
           {/* Bulk actions (only when editable) */}
-          {!isReadOnly && items.length > 0 && (
+          {!isReadOnly && !isViewer && items.length > 0 && (
             <>
               {dirtyItems.size > 0 && (
                 <Button variant="default" size="sm" onClick={handleBulkSave} disabled={bulkSaving} className="gap-1.5 flex-shrink-0">
