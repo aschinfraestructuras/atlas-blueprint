@@ -315,6 +315,7 @@ export const testService = {
       .from("test_results")
       .select(RESULT_SELECT)
       .eq("work_item_id", workItemId)
+      .eq("is_deleted", false)
       .order("date", { ascending: false });
     if (error) throw error;
     return (data ?? []) as unknown as TestResult[];
