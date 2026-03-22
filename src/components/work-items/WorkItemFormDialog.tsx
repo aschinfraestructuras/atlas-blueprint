@@ -204,17 +204,8 @@ export function WorkItemFormDialog({ open, onOpenChange, item, duplicateFrom, on
               )} />
             </div>
 
-            {/* Row 2: Obra + Lote */}
+            {/* Row 2: Lote + Elemento */}
             <div className="grid grid-cols-2 gap-4">
-              <FormField control={form.control} name="obra" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("workItems.form.obra")}</FormLabel>
-                  <FormControl>
-                    <Input placeholder={t("workItems.form.obraPlaceholder")} {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
               <FormField control={form.control} name="lote" render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t("workItems.form.lote")}</FormLabel>
@@ -224,10 +215,6 @@ export function WorkItemFormDialog({ open, onOpenChange, item, duplicateFrom, on
                   <FormMessage />
                 </FormItem>
               )} />
-            </div>
-
-            {/* Row 3: Elemento + Parte */}
-            <div className="grid grid-cols-2 gap-4">
               <FormField control={form.control} name="elemento" render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t("workItems.form.element")}</FormLabel>
@@ -237,6 +224,10 @@ export function WorkItemFormDialog({ open, onOpenChange, item, duplicateFrom, on
                   <FormMessage />
                 </FormItem>
               )} />
+            </div>
+
+            {/* Row 3: Parte + Estado */}
+            <div className="grid grid-cols-2 gap-4">
               <FormField control={form.control} name="parte" render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t("workItems.form.parte")}</FormLabel>
@@ -246,44 +237,31 @@ export function WorkItemFormDialog({ open, onOpenChange, item, duplicateFrom, on
                   <FormMessage />
                 </FormItem>
               )} />
+              <FormField control={form.control} name="status" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("workItems.form.status")}</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder={t("workItems.form.status")} />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {WORK_ITEM_STATUS_OPTIONS.map((s) => (
+                        <SelectItem key={s.value} value={s.value}>
+                          {t(`workItems.status.${s.value}`)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )} />
             </div>
 
             {/* Row 4: PK Início + PK Fim */}
             <div className="grid grid-cols-2 gap-4">
               <FormField control={form.control} name="pk_inicio" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("workItems.form.pkStart")}</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder={t("workItems.form.pkPlaceholder")}
-                      {...field}
-                      value={field.value ?? ""}
-                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="pk_fim" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("workItems.form.pkEnd")}</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder={t("workItems.form.pkEndPlaceholder")}
-                      {...field}
-                      value={field.value ?? ""}
-                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-            </div>
-
-            {/* Row 5: Status */}
-            <FormField control={form.control} name="status" render={({ field }) => (
               <FormItem>
                 <FormLabel>{t("workItems.form.status")}</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
