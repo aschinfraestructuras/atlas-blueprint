@@ -403,8 +403,14 @@ export default function MyTasksPage() {
         </div>
       ) : (
         <>
-          {/* Section 1: PPIs */}
-          <Section title={t("myTasks.myPpis")} icon={ClipboardCheck} count={filteredPpis.length}>
+          {/* Empty all state */}
+          {ppis.length === 0 && tests.length === 0 && ncs.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12 gap-3 text-center">
+              <CheckCircle2 className="h-10 w-10 text-emerald-500" />
+              <p className="text-sm font-medium text-foreground">{t("myTasks.emptyAll")}</p>
+            </div>
+          ) : (
+          <>
             {filteredPpis.length === 0 ? (
               <EmptyState icon={ClipboardCheck} titleKey="common.noData" />
             ) : (
