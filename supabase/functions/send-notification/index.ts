@@ -11,6 +11,12 @@ interface Recipient {
   name?: string;
 }
 
+interface EmailAttachment {
+  filename: string;
+  base64: string;
+  mime_type: string;
+}
+
 interface RequestBody {
   project_id: string;
   entity_type: string;
@@ -20,8 +26,156 @@ interface RequestBody {
   recipients: Recipient[];
   subject: string;
   body?: string;
+  attachments?: EmailAttachment[];
+  // Legacy single PDF fields (backward compat)
   pdf_base64?: string;
   pdf_filename?: string;
+}
+
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function buildHtmlBody(subject: string, emailBody: string | undefined, entityCode: string | undefined, attachmentCount: number): string {
+  return `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #1a1a2e;">${escapeHtml(subject)}</h2>
+      ${emailBody ? `<p style="color: #333; line-height: 1.6;">${escapeHtml(emailBody).replace(/\n/g, "<br/>")}</p>` : ""}
+      ${entityCode ? `<p style="color: #666; font-size: 12px;">Ref: ${escapeHtml(entityCode)}</p>` : ""}
+      ${attachmentCount > 0 ? `<p style="color: #666; font-size: 12px;">📎 ${attachmentCount} anexo(s)</p>` : ""}
+      <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
+      <p style="color: #999; font-size: 11px;">Atlas Quality Management System</p>
+    </div>
+  `;
+}
+
+function buildMimeMessage(
+  fromEmail: string,
+  recipient: Recipient,
+  subject: string,
+  htmlBody: string,
+  attachments: EmailAttachment[],
+): string {
+  const lines: string[] = [
+    `From: Atlas QMS <${fromEmail}>`,
+    `To: ${recipient.name ?? recipient.email} <${recipient.email}>`,
+    `Subject: ${subject}`,
+    `MIME-Version: 1.0`,
+  ];
+
+  if (attachments.length > 0) {
+    const boundary = `----=_Part_${crypto.randomUUID().replace(/-/g, "")}`;
+    lines.push(`Content-Type: multipart/mixed; boundary="${boundary}"`);
+    lines.push("");
+
+    // HTML part
+    lines.push(`--${boundary}`);
+    lines.push(`Content-Type: text/html; charset=utf-8`);
+    lines.push(`Content-Transfer-Encoding: 7bit`);
+    lines.push("");
+    lines.push(htmlBody);
+
+    // Attachment parts
+    for (const att of attachments) {
+      lines.push(`--${boundary}`);
+      lines.push(`Content-Type: ${att.mime_type}; name="${att.filename}"`);
+      lines.push(`Content-Transfer-Encoding: base64`);
+      lines.push(`Content-Disposition: attachment; filename="${att.filename}"`);
+      lines.push("");
+      // Split base64 into 76-char lines
+      for (let i = 0; i < att.base64.length; i += 76) {
+        lines.push(att.base64.substring(i, i + 76));
+      }
+    }
+    lines.push(`--${boundary}--`);
+  } else {
+    lines.push(`Content-Type: text/html; charset=utf-8`);
+    lines.push("");
+    lines.push(htmlBody);
+  }
+
+  lines.push(".");
+  return lines.join("\r\n");
+}
+
+async function sendViaSMTP(
+  smtpHost: string,
+  smtpPort: number,
+  smtpUser: string,
+  smtpPass: string,
+  fromEmail: string,
+  recipient: Recipient,
+  subject: string,
+  htmlBody: string,
+  attachments: EmailAttachment[],
+): Promise<void> {
+  const encoder = new TextEncoder();
+  const decoder = new TextDecoder();
+
+  const conn = await Deno.connect({ hostname: smtpHost, port: smtpPort });
+
+  const read = async (): Promise<string> => {
+    const buf = new Uint8Array(4096);
+    const n = await conn.read(buf);
+    return n ? decoder.decode(buf.subarray(0, n)) : "";
+  };
+
+  const writeAndRead = async (cmd: string): Promise<string> => {
+    await conn.write(encoder.encode(cmd + "\r\n"));
+    return await read();
+  };
+
+  // SMTP handshake
+  await read(); // greeting
+  await writeAndRead("EHLO localhost");
+  await writeAndRead("STARTTLS");
+
+  // Upgrade to TLS
+  const tlsConn = await Deno.startTls(conn, { hostname: smtpHost });
+
+  const tlsRead = async (): Promise<string> => {
+    const buf = new Uint8Array(4096);
+    const n = await tlsConn.read(buf);
+    return n ? decoder.decode(buf.subarray(0, n)) : "";
+  };
+
+  const tlsWriteAndRead = async (cmd: string): Promise<string> => {
+    await tlsConn.write(encoder.encode(cmd + "\r\n"));
+    return await tlsRead();
+  };
+
+  await tlsWriteAndRead("EHLO localhost");
+
+  // AUTH LOGIN
+  await tlsWriteAndRead("AUTH LOGIN");
+  await tlsWriteAndRead(btoa(smtpUser));
+  const authResp = await tlsWriteAndRead(btoa(smtpPass));
+
+  if (!authResp.startsWith("235")) {
+    try { tlsConn.close(); } catch { /* ignore */ }
+    throw new Error("SMTP auth failed: " + authResp);
+  }
+
+  await tlsWriteAndRead(`MAIL FROM:<${fromEmail}>`);
+  await tlsWriteAndRead(`RCPT TO:<${recipient.email}>`);
+  await tlsWriteAndRead("DATA");
+
+  const fullEmail = buildMimeMessage(fromEmail, recipient, subject, htmlBody, attachments);
+  await tlsConn.write(encoder.encode(fullEmail + "\r\n"));
+  const dataResp = await tlsRead();
+
+  if (!dataResp.startsWith("250")) {
+    try { tlsConn.close(); } catch { /* ignore */ }
+    throw new Error("SMTP send failed: " + dataResp);
+  }
+
+  await tlsWriteAndRead("QUIT");
+  try { tlsConn.close(); } catch { /* ignore */ }
 }
 
 Deno.serve(async (req: Request) => {
@@ -57,13 +211,25 @@ Deno.serve(async (req: Request) => {
     const userId = user.id;
 
     const body: RequestBody = await req.json();
-    const { project_id, entity_type, entity_id, entity_code, list_id, recipients, subject, body: emailBody, pdf_base64, pdf_filename } = body;
+    const {
+      project_id, entity_type, entity_id, entity_code, list_id,
+      recipients, subject, body: emailBody,
+      attachments: bodyAttachments,
+      pdf_base64, pdf_filename,
+    } = body;
 
     if (!project_id || !recipients?.length || !subject) {
       return new Response(JSON.stringify({ error: "Missing required fields" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
+    }
+
+    // Build unified attachments list (new format + legacy fallback)
+    const allAttachments: EmailAttachment[] = bodyAttachments ? [...bodyAttachments] : [];
+    // If legacy pdf fields sent and not already in attachments array, add them
+    if (pdf_base64 && pdf_filename && !allAttachments.some(a => a.filename === pdf_filename)) {
+      allAttachments.push({ filename: pdf_filename, base64: pdf_base64, mime_type: "application/pdf" });
     }
 
     // Use service role for DB ops
@@ -96,7 +262,7 @@ Deno.serve(async (req: Request) => {
         body: emailBody || null,
         list_id: list_id || null,
         sent_by: userId,
-        pdf_attached: !!pdf_base64,
+        pdf_attached: allAttachments.length > 0,
       })
       .select("id")
       .single();
@@ -104,12 +270,14 @@ Deno.serve(async (req: Request) => {
     if (logErr) throw logErr;
     const logId = logEntry.id;
 
-    // Send emails via SMTP
+    // SMTP config
     const smtpHost = Deno.env.get("SMTP_HOST") ?? "smtp.ionos.es";
     const smtpPort = parseInt(Deno.env.get("SMTP_PORT") ?? "587");
     const smtpUser = Deno.env.get("SMTP_USERNAME") ?? "";
     const smtpPass = Deno.env.get("SMTP_PASSWORD") ?? "";
     const fromEmail = Deno.env.get("SMTP_FROM") ?? smtpUser;
+
+    const htmlBody = buildHtmlBody(subject, emailBody, entity_code, allAttachments.length);
 
     let sent = 0;
     let failed = 0;
@@ -118,126 +286,9 @@ Deno.serve(async (req: Request) => {
       let sentStatus = "sent";
       try {
         if (smtpUser && smtpPass) {
-          // Build email content
-          const htmlBody = `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-              <h2 style="color: #1a1a2e;">${escapeHtml(subject)}</h2>
-              ${emailBody ? `<p style="color: #333; line-height: 1.6;">${escapeHtml(emailBody).replace(/\n/g, "<br/>")}</p>` : ""}
-              ${entity_code ? `<p style="color: #666; font-size: 12px;">Ref: ${escapeHtml(entity_code)}</p>` : ""}
-              ${pdf_base64 ? `<p style="color: #666; font-size: 12px;">📎 ${escapeHtml(pdf_filename ?? "document.pdf")} (em anexo)</p>` : ""}
-              <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
-              <p style="color: #999; font-size: 11px;">Atlas Quality Management System</p>
-            </div>
-          `;
-
-          // Use Deno's built-in capabilities to connect to SMTP
-          const conn = await Deno.connect({ hostname: smtpHost, port: smtpPort });
-          const encoder = new TextEncoder();
-          const decoder = new TextDecoder();
-
-          const read = async (): Promise<string> => {
-            const buf = new Uint8Array(4096);
-            const n = await conn.read(buf);
-            return n ? decoder.decode(buf.subarray(0, n)) : "";
-          };
-
-          const write = async (cmd: string) => {
-            await conn.write(encoder.encode(cmd + "\r\n"));
-          };
-
-          const writeAndRead = async (cmd: string): Promise<string> => {
-            await write(cmd);
-            return await read();
-          };
-
-          // SMTP handshake
-          await read(); // greeting
-          await writeAndRead(`EHLO localhost`);
-          await writeAndRead(`STARTTLS`);
-
-          // Upgrade to TLS
-          const tlsConn = await Deno.startTls(conn, { hostname: smtpHost });
-          
-          const tlsRead = async (): Promise<string> => {
-            const buf = new Uint8Array(4096);
-            const n = await tlsConn.read(buf);
-            return n ? decoder.decode(buf.subarray(0, n)) : "";
-          };
-
-          const tlsWrite = async (cmd: string) => {
-            await tlsConn.write(encoder.encode(cmd + "\r\n"));
-          };
-
-          const tlsWriteAndRead = async (cmd: string): Promise<string> => {
-            await tlsWrite(cmd);
-            return await tlsRead();
-          };
-
-          await tlsWriteAndRead(`EHLO localhost`);
-
-          // AUTH LOGIN
-          await tlsWriteAndRead(`AUTH LOGIN`);
-          await tlsWriteAndRead(btoa(smtpUser));
-          const authResp = await tlsWriteAndRead(btoa(smtpPass));
-
-          if (!authResp.startsWith("235")) {
-            throw new Error("SMTP auth failed: " + authResp);
-          }
-
-          await tlsWriteAndRead(`MAIL FROM:<${fromEmail}>`);
-          await tlsWriteAndRead(`RCPT TO:<${recipient.email}>`);
-          await tlsWriteAndRead(`DATA`);
-
-          const boundary = `----=_Part_${crypto.randomUUID().replace(/-/g, "")}`;
-          
-          let emailContent = [
-            `From: Atlas QMS <${fromEmail}>`,
-            `To: ${recipient.name ?? recipient.email} <${recipient.email}>`,
-            `Subject: ${subject}`,
-            `MIME-Version: 1.0`,
-          ];
-
-          if (pdf_base64 && pdf_filename) {
-            emailContent.push(`Content-Type: multipart/mixed; boundary="${boundary}"`);
-            emailContent.push("");
-            emailContent.push(`--${boundary}`);
-            emailContent.push(`Content-Type: text/html; charset=utf-8`);
-            emailContent.push(`Content-Transfer-Encoding: 7bit`);
-            emailContent.push("");
-            emailContent.push(htmlBody);
-            emailContent.push(`--${boundary}`);
-            emailContent.push(`Content-Type: application/pdf; name="${pdf_filename}"`);
-            emailContent.push(`Content-Transfer-Encoding: base64`);
-            emailContent.push(`Content-Disposition: attachment; filename="${pdf_filename}"`);
-            emailContent.push("");
-            // Split base64 into 76-char lines
-            const b64 = pdf_base64;
-            for (let i = 0; i < b64.length; i += 76) {
-              emailContent.push(b64.substring(i, i + 76));
-            }
-            emailContent.push(`--${boundary}--`);
-          } else {
-            emailContent.push(`Content-Type: text/html; charset=utf-8`);
-            emailContent.push("");
-            emailContent.push(htmlBody);
-          }
-
-          emailContent.push(".");
-
-          const fullEmail = emailContent.join("\r\n");
-          await tlsWrite(fullEmail);
-          const dataResp = await tlsRead();
-
-          if (!dataResp.startsWith("250")) {
-            throw new Error("SMTP send failed: " + dataResp);
-          }
-
-          await tlsWriteAndRead(`QUIT`);
-          try { tlsConn.close(); } catch { /* ignore */ }
-          
+          await sendViaSMTP(smtpHost, smtpPort, smtpUser, smtpPass, fromEmail, recipient, subject, htmlBody, allAttachments);
           sent++;
         } else {
-          // No SMTP config — log as failed
           sentStatus = "failed";
           failed++;
           console.warn("No SMTP credentials configured");
@@ -275,12 +326,3 @@ Deno.serve(async (req: Request) => {
     );
   }
 });
-
-function escapeHtml(str: string): string {
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
