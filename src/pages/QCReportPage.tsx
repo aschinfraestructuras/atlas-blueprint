@@ -509,9 +509,9 @@ export default function QCReportPage() {
             </Select>
             {subcontractors.length > 0 && (
               <Select value={filterSubcontractor} onValueChange={setFilterSubcontractor}>
-                <SelectTrigger className="h-8 w-[200px] text-xs"><SelectValue placeholder="Subempreiteiro" /></SelectTrigger>
+                <SelectTrigger className="h-8 w-[200px] text-xs"><SelectValue placeholder={t("nav.subcontractors")} /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">{t("common.all", { defaultValue: "Todos" })} Subempreiteiros</SelectItem>
+                  <SelectItem value="all">{t("common.allSubcontractors", { defaultValue: "Todos os subempreiteiros" })}</SelectItem>
                   {subcontractors.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
                 </SelectContent>
               </Select>
