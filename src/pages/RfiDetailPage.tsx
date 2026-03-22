@@ -235,6 +235,13 @@ export default function RfiDetailPage() {
           {t("common.back")}
         </Button>
         <div className="flex items-center gap-2">
+          <EmailNotificationSection
+            projectId={activeProject.id}
+            entityType="rfi"
+            entityId={rfi.id}
+            entityCode={rfi.code}
+            defaultSubject={`RFI — ${rfi.code} — ${rfi.subject}`}
+          />
           <Button variant="outline" size="sm" onClick={handleExportPdf} className="gap-1.5">
             <Download className="h-3.5 w-3.5" />
             PDF

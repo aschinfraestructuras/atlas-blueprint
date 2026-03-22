@@ -174,6 +174,13 @@ export default function TechOfficeDetailPage() {
           {t("common.back")}
         </Button>
         <div className="flex items-center gap-2">
+          <EmailNotificationSection
+            projectId={activeProject.id}
+            entityType={isSubmittal ? "submittal" : item.type === "TRANSMITTAL" ? "transmittal" : "general"}
+            entityId={item.id}
+            entityCode={item.code ?? undefined}
+            defaultSubject={`${item.type} — ${item.code ?? ""} — ${item.title}`}
+          />
           <Button variant="outline" size="sm" onClick={handleExportPdf} className="gap-1.5">
             <Download className="h-3.5 w-3.5" /> PDF
           </Button>
