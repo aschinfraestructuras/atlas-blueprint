@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
@@ -13,11 +13,18 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Loader2, Send, Paperclip, Plus, X } from "lucide-react";
+import { Loader2, Send, Paperclip, Plus, X, Upload, FileIcon } from "lucide-react";
 import { useProject } from "@/contexts/ProjectContext";
 import { distributionListService, type DistributionList } from "@/lib/services/distributionListService";
 import type { ProjectContact } from "@/lib/services/projectContactService";
 import { supabase } from "@/integrations/supabase/client";
+
+interface Attachment {
+  filename: string;
+  base64: string;
+  mimeType: string;
+  size: number;
+}
 
 interface Props {
   open: boolean;
@@ -30,12 +37,36 @@ interface Props {
   pdfFilename?: string;
 }
 
+const MAX_ATTACHMENT_SIZE = 10 * 1024 * 1024; // 10MB per file
+const MAX_TOTAL_SIZE = 20 * 1024 * 1024; // 20MB total
+
+function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      // Remove data URL prefix (data:mime;base64,)
+      const base64 = result.split(",")[1] || result;
+      resolve(base64);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 export function NotificationModal({
   open, onOpenChange, entityType, entityId, entityCode,
   defaultSubject, pdfBase64, pdfFilename,
 }: Props) {
   const { t } = useTranslation();
   const { activeProject } = useProject();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [lists, setLists] = useState<DistributionList[]>([]);
   const [selectedListId, setSelectedListId] = useState<string>("");
   const [recipients, setRecipients] = useState<{ email: string; name: string; checked: boolean }[]>([]);
@@ -44,10 +75,18 @@ export function NotificationModal({
   const [sending, setSending] = useState(false);
   const [addEmail, setAddEmail] = useState("");
   const [addName, setAddName] = useState("");
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
 
   useEffect(() => {
     if (defaultSubject) setSubject(defaultSubject);
   }, [defaultSubject]);
+
+  // Reset attachments when modal opens
+  useEffect(() => {
+    if (open) {
+      setAttachments([]);
+    }
+  }, [open]);
 
   const loadLists = useCallback(async () => {
     if (!activeProject) return;
@@ -97,6 +136,47 @@ export function NotificationModal({
     setRecipients(prev => prev.filter(r => r.email !== email));
   };
 
+  // ── Attachments ──
+  const totalAttachmentSize = attachments.reduce((sum, a) => sum + a.size, 0)
+    + (pdfBase64 ? Math.ceil((pdfBase64.length * 3) / 4) : 0);
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    for (const file of Array.from(files)) {
+      if (file.size > MAX_ATTACHMENT_SIZE) {
+        toast.error(`${file.name}: ${t("notifications.attachments.tooLarge", { defaultValue: "Ficheiro demasiado grande (máx 10MB)" })}`);
+        continue;
+      }
+      if (totalAttachmentSize + file.size > MAX_TOTAL_SIZE) {
+        toast.error(t("notifications.attachments.totalTooLarge", { defaultValue: "Tamanho total dos anexos excede 20MB" }));
+        break;
+      }
+      if (attachments.some(a => a.filename === file.name)) {
+        toast.error(`${file.name}: ${t("notifications.attachments.duplicate", { defaultValue: "Ficheiro já adicionado" })}`);
+        continue;
+      }
+      try {
+        const base64 = await fileToBase64(file);
+        setAttachments(prev => [...prev, {
+          filename: file.name,
+          base64,
+          mimeType: file.type || "application/octet-stream",
+          size: file.size,
+        }]);
+      } catch {
+        toast.error(`${file.name}: erro ao ler ficheiro`);
+      }
+    }
+    // Reset input
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const removeAttachment = (filename: string) => {
+    setAttachments(prev => prev.filter(a => a.filename !== filename));
+  };
+
   const handleSend = async () => {
     if (!activeProject) return;
     const selected = recipients.filter(r => r.checked);
@@ -106,6 +186,27 @@ export function NotificationModal({
     }
     setSending(true);
     try {
+      // Build attachments array for edge function
+      const allAttachments: Array<{ filename: string; base64: string; mime_type: string }> = [];
+
+      // Add pre-generated PDF if exists
+      if (pdfBase64 && pdfFilename) {
+        allAttachments.push({
+          filename: pdfFilename,
+          base64: pdfBase64,
+          mime_type: "application/pdf",
+        });
+      }
+
+      // Add user-selected attachments
+      for (const att of attachments) {
+        allAttachments.push({
+          filename: att.filename,
+          base64: att.base64,
+          mime_type: att.mimeType,
+        });
+      }
+
       const { data, error } = await supabase.functions.invoke("send-notification", {
         body: {
           project_id: activeProject.id,
@@ -116,6 +217,8 @@ export function NotificationModal({
           recipients: selected.map(r => ({ email: r.email, name: r.name })),
           subject,
           body: message,
+          attachments: allAttachments.length > 0 ? allAttachments : undefined,
+          // Keep backward compat fields
           pdf_base64: pdfBase64,
           pdf_filename: pdfFilename,
         },
@@ -132,6 +235,7 @@ export function NotificationModal({
   };
 
   const checkedCount = recipients.filter(r => r.checked).length;
+  const totalFiles = attachments.length + (pdfBase64 ? 1 : 0);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -217,14 +321,79 @@ export function NotificationModal({
             <Textarea value={message} onChange={e => setMessage(e.target.value)} rows={4} className="text-xs resize-none" />
           </div>
 
-          {/* PDF badge */}
-          {pdfBase64 && (
-            <Badge variant="secondary" className="gap-1.5 text-xs">
-              <Paperclip className="h-3 w-3" />
-              {t("notifications.pdfAttached", { defaultValue: "PDF em anexo" })}
-              {pdfFilename && ` — ${pdfFilename}`}
-            </Badge>
-          )}
+          {/* ── Attachments section ── */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label className="text-xs flex items-center gap-1.5">
+                <Paperclip className="h-3 w-3" />
+                {t("notifications.attachments.title", { defaultValue: "Anexos" })}
+                {totalFiles > 0 && (
+                  <span className="text-muted-foreground">({totalFiles})</span>
+                )}
+              </Label>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                className="h-7 text-xs gap-1"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Upload className="h-3 w-3" />
+                {t("notifications.attachments.add", { defaultValue: "Adicionar ficheiro" })}
+              </Button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                className="hidden"
+                onChange={handleFileSelect}
+                accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.dwg,.dxf,.zip"
+              />
+            </div>
+
+            {/* File list */}
+            <div className="space-y-1">
+              {/* Pre-generated PDF */}
+              {pdfBase64 && pdfFilename && (
+                <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-md border border-border bg-muted/30 text-xs">
+                  <FileIcon className="h-3.5 w-3.5 text-destructive flex-shrink-0" />
+                  <span className="flex-1 truncate font-medium">{pdfFilename}</span>
+                  <Badge variant="secondary" className="text-[9px] px-1.5 py-0">
+                    {t("notifications.attachments.auto", { defaultValue: "Auto" })}
+                  </Badge>
+                </div>
+              )}
+
+              {/* User-added attachments */}
+              {attachments.map(att => (
+                <div key={att.filename} className="flex items-center gap-2 px-2.5 py-1.5 rounded-md border border-border bg-card text-xs group">
+                  <FileIcon className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                  <span className="flex-1 truncate">{att.filename}</span>
+                  <span className="text-muted-foreground text-[10px]">{formatFileSize(att.size)}</span>
+                  <button
+                    type="button"
+                    className="text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={() => removeAttachment(att.filename)}
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              ))}
+
+              {totalFiles === 0 && (
+                <p className="text-[10px] text-muted-foreground text-center py-1.5">
+                  {t("notifications.attachments.none", { defaultValue: "Sem anexos. Clique para adicionar ficheiros." })}
+                </p>
+              )}
+            </div>
+
+            {totalFiles > 0 && (
+              <p className="text-[10px] text-muted-foreground">
+                {t("notifications.attachments.totalSize", { defaultValue: "Tamanho total" })}:{" "}
+                {formatFileSize(totalAttachmentSize)}
+              </p>
+            )}
+          </div>
         </div>
 
         <DialogFooter>
