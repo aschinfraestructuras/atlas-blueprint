@@ -169,7 +169,7 @@ export const expirationService = {
 
     // 4. Material documents
     const { data: matDocs } = await db.from("material_documents")
-      .select("id, doc_type, valid_to, material_id, materials:material_id(name, code)")
+      .select("id, doc_type, valid_to, material_id, materials:material_id(name, code, is_deleted)")
       .eq("project_id", projectId)
       .not("valid_to", "is", null)
       .lte("valid_to", cutoffStr);
