@@ -4364,7 +4364,7 @@
       "maintenance": "Manutenção"
     }
   },
-  "settings": {
+  "_settings_extra": {
     "ownResources": "Recursos Próprios",
     "ownResourcesDesc": "Pessoal e Equipamentos — ASCH",
     "contactsTab": "Contactos & Notificações",
