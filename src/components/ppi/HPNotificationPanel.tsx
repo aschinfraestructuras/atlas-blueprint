@@ -93,14 +93,18 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await hpNotificationService.listByInstance(instance.id);
+      const [data, logs] = await Promise.all([
+        hpNotificationService.listByInstance(instance.id),
+        notificationLogService.listByEntity(projectId, "hp", instance.id),
+      ]);
       setNotifications(data);
+      setEmailLogs(logs);
     } catch {
       /* swallow */
     } finally {
       setLoading(false);
     }
-  }, [instance.id]);
+  }, [instance.id, projectId]);
 
   useEffect(() => {
     load();
