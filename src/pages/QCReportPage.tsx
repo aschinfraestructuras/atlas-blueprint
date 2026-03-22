@@ -485,9 +485,9 @@ export default function QCReportPage() {
           {/* Row 2: Advanced filters */}
           <FilterBar>
             <Select value={filterWorkItem} onValueChange={setFilterWorkItem}>
-              <SelectTrigger className="h-8 w-[200px] text-xs"><SelectValue placeholder="Work Item" /></SelectTrigger>
+              <SelectTrigger className="h-8 w-[200px] text-xs"><SelectValue placeholder={t("workItems.filterAll", { defaultValue: "Todos os elementos" })} /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">{t("common.all", { defaultValue: "Todos" })} Work Items</SelectItem>
+                <SelectItem value="all">{t("workItems.filterAll", { defaultValue: "Todos os elementos" })}</SelectItem>
                 {workItems.map(wi => (
                   <SelectItem key={wi.id} value={wi.id}>{wiLabel(wi)}</SelectItem>
                 ))}
