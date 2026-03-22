@@ -137,9 +137,10 @@ export const hpNotificationService = {
 
     const { data, error } = await (supabase as any)
       .from("hp_notifications")
-      .select("*")
+      .select("*, ppi_instances!inner(id, is_deleted)")
       .eq("project_id", projectId)
       .eq("status", "pending")
+      .eq("ppi_instances.is_deleted", false)
       .lte("planned_datetime", future.toISOString())
       .order("planned_datetime", { ascending: true });
     if (error) throw error;

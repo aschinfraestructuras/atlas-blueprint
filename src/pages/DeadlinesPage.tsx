@@ -200,24 +200,13 @@ export default function DeadlinesPage() {
 
   const handleNavigate = (item: DeadlineItem) => {
     const base = SOURCE_ROUTES[item.source] ?? "/expirations";
-    const listRoute = SOURCE_LIST_ROUTES[item.source] ?? "/expirations";
     const id = item.entity_id;
 
-    // Sources that have no detail page — always navigate to list
-    const listOnlySources = new Set(["calibration", "planning_due", "hp_notification"]);
-    if (listOnlySources.has(item.source)) {
-      navigate(listRoute);
-      return;
-    }
-
-    // Guard: only navigate to detail if we have a valid-looking UUID
-    const isValidId = id && id !== "undefined" && id !== "null" && /^[0-9a-f-]{36}$/i.test(id);
-    if (isValidId) {
+    // Only navigate to detail for sources that have detail pages + valid UUID
+    if (DETAIL_SOURCES.has(item.source) && id && UUID_RE.test(id)) {
       navigate(`${base}/${id}`);
     } else {
-      // Navigate to list page instead
-      navigate(listRoute);
-      toast({ title: t("deadlines.noEntityLink"), variant: "default" });
+      navigate(base);
     }
   };
 
