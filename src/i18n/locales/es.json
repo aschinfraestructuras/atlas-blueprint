@@ -3152,7 +3152,11 @@
       "location": "Ubicación",
       "contractNumber": "Número de Contrato",
       "metadata": "Datos del Proyecto (PDF)"
-    }
+    },
+    "ownResources": "Recursos Propios",
+    "ownResourcesDesc": "Personal y Equipos — ASCH",
+    "contactsTab": "Contactos y Notificaciones",
+    "contactsTabDesc": "Gestionar contactos del proyecto y listas de distribución"
   },
   "topography": {
     "title": "Mediciones & Equipos",
@@ -3635,7 +3639,29 @@
     "markAllRead": "Marcar todas como leídas",
     "viewAll": "Ver todos los plazos",
     "generated": "{{count}} alertas generadas.",
-    "generateError": "Error al generar alertas."
+    "generateError": "Error al generar alertas.",
+    "send": "Notificar",
+    "sent": "Enviado",
+    "recipients": "Destinatarios",
+    "selectList": "Seleccionar lista",
+    "addRecipient": "Añadir destinatario",
+    "subject": "Asunto",
+    "message": "Mensaje",
+    "pdfAttached": "PDF adjunto",
+    "sendBtn": "Enviar Notificación",
+    "sentSuccess": "Enviado a {{count}} destinatario(s)",
+    "history": "Historial de Envíos",
+    "noHistory": "Sin notificaciones enviadas",
+    "attachments": {
+      "title": "Anexos",
+      "add": "Añadir fichero",
+      "none": "Sin anexos. Haga clic para añadir ficheros.",
+      "tooLarge": "Fichero demasiado grande (máx 10MB)",
+      "totalTooLarge": "Tamaño total de los anexos supera 20MB",
+      "duplicate": "Fichero ya añadido",
+      "auto": "Auto",
+      "totalSize": "Tamaño total"
+    }
   },
   "pagination": {
     "showing": "{{from}}-{{to}} de {{total}}",
@@ -3800,6 +3826,9 @@
       "updated": "Material reciclado actualizado"
     },
     "types": {
+      "FAM": "FAM",
+      "PAP": "PAP",
+      "BAM": "BAM",
       "OUTRO": "Otro"
     }
   },
@@ -4365,37 +4394,6 @@
       "on_site": "En Obra",
       "off_site": "Fuera de Obra",
       "maintenance": "Mantenimiento"
-    }
-  },
-  "settings": {
-    "ownResources": "Recursos Propios",
-    "ownResourcesDesc": "Personal y Equipos — ASCH",
-    "contactsTab": "Contactos y Notificaciones",
-    "contactsTabDesc": "Gestionar contactos del proyecto y listas de distribución"
-  },
-  "notifications": {
-    "title": "Notificaciones",
-    "send": "Notificar",
-    "sent": "Enviado",
-    "recipients": "Destinatarios",
-    "selectList": "Seleccionar lista",
-    "addRecipient": "Añadir destinatario",
-    "subject": "Asunto",
-    "message": "Mensaje",
-    "pdfAttached": "PDF adjunto",
-    "sendBtn": "Enviar Notificación",
-    "sentSuccess": "Enviado a {{count}} destinatario(s)",
-    "history": "Historial de Envíos",
-    "noHistory": "Sin notificaciones enviadas",
-    "attachments": {
-      "title": "Anexos",
-      "add": "Añadir fichero",
-      "none": "Sin anexos. Haga clic para añadir ficheros.",
-      "tooLarge": "Fichero demasiado grande (máx 10MB)",
-      "totalTooLarge": "Tamaño total de los anexos supera 20MB",
-      "duplicate": "Fichero ya añadido",
-      "auto": "Auto",
-      "totalSize": "Tamaño total"
     }
   },
   "contacts": {
