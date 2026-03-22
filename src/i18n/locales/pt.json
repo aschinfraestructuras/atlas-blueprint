@@ -3636,7 +3636,29 @@
     "markAllRead": "Marcar todas como lidas",
     "viewAll": "Ver todos os prazos",
     "generated": "{{count}} alertas gerados.",
-    "generateError": "Erro ao gerar alertas."
+    "generateError": "Erro ao gerar alertas.",
+    "send": "Notificar",
+    "sent": "Enviado",
+    "recipients": "Destinatários",
+    "selectList": "Seleccionar lista",
+    "addRecipient": "Adicionar destinatário",
+    "subject": "Assunto",
+    "message": "Mensagem",
+    "pdfAttached": "PDF em anexo",
+    "sendBtn": "Enviar Notificação",
+    "sentSuccess": "Enviado para {{count}} destinatário(s)",
+    "history": "Histórico de Envios",
+    "noHistory": "Sem notificações enviadas",
+    "attachments": {
+      "title": "Anexos",
+      "add": "Adicionar ficheiro",
+      "none": "Sem anexos. Clique para adicionar ficheiros.",
+      "tooLarge": "Ficheiro demasiado grande (máx 10MB)",
+      "totalTooLarge": "Tamanho total dos anexos excede 20MB",
+      "duplicate": "Ficheiro já adicionado",
+      "auto": "Auto",
+      "totalSize": "Tamanho total"
+    }
   },
   "pagination": {
     "showing": "{{from}}-{{to}} de {{total}}",
