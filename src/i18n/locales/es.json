@@ -3703,11 +3703,13 @@
       "supervisor": "Representante Fiscalización (Externa)",
       "ip": "Representante IP"
     },
+    "reopen": "Reabrir",
     "toast": {
       "created": "Parte diario creado.",
       "updated": "Parte diario actualizado.",
       "submitted": "Parte diario enviado.",
-      "validated": "Parte diario validado."
+      "validated": "Parte diario validado.",
+      "reopened": "Parte diario reabierto para edición."
     },
     "export": {
       "title": "Parte Diario de Obra"

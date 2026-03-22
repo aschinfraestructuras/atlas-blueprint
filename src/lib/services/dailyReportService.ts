@@ -174,6 +174,15 @@ export const dailyReportService = {
     if (error) throw error;
   },
 
+  async reopen(id: string): Promise<void> {
+    const payload: DailyReportUpdate = { status: "draft", updated_at: new Date().toISOString() };
+    const { error } = await supabase
+      .from("daily_reports")
+      .update(payload)
+      .eq("id", id);
+    if (error) throw error;
+  },
+
   // ── Child table helpers ───────────────────────────────────────────────────
   async getLabour(reportId: string): Promise<LabourRow[]> {
     const { data, error } = await supabase
