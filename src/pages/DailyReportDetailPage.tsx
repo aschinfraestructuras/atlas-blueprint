@@ -380,9 +380,10 @@ export default function DailyReportDetailPage() {
         <CardHeader className="flex flex-row items-center justify-between py-3">
           <CardTitle className="text-sm">{t("dailyReports.sections.equipment")}</CardTitle>
           {isEditable && (
-            <Button variant="outline" size="sm" onClick={addEquipmentRow}>
-              <Plus className="h-3.5 w-3.5 mr-1" /> {t("common.create")}
-            </Button>
+            <EquipmentPickerPopover
+              onSelect={addEquipmentFromMachinery}
+              onManual={addEquipmentRow}
+            />
           )}
         </CardHeader>
         <CardContent className="p-0">
