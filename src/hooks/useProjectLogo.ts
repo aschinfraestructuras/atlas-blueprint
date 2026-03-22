@@ -59,10 +59,10 @@ export function useProjectLogo() {
         }
         url = data.signedUrl;
       }
-      if (cancelled || !url) return;
+      if (cancelled || !url) { setLoading(false); return; }
       setLogoUrl(url);
       // Pre-fetch base64 for PDF exports
-      fetchAsBase64(url).then(b64 => { if (!cancelled) setLogoBase64(b64); });
+      fetchAsBase64(url).then(b64 => { if (!cancelled) { setLogoBase64(b64); setLoading(false); } });
     }
 
     resolve();
