@@ -43,6 +43,7 @@ export function fullPdfHeader(
   date: string,
   empreiteiro = "—",
   donoObra = "—",
+  projectMeta?: PdfProjectInfo | null,
 ): string {
   const logoHtml = logoBase64
     ? `<img src="${logoBase64}" style="height:12mm;max-width:40mm;object-fit:contain;" />`
@@ -64,5 +65,6 @@ export function fullPdfHeader(
       <div style="font-size:9px;color:#6B7280;">${escapeHtml(date)}</div>
     </div>
   </div>
-  ${projectInfoStripHtml()}`;
+  ${projectInfoStripHtml(projectMeta)}`;
+}
 }
