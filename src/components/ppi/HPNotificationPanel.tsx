@@ -76,6 +76,13 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [confirming, setConfirming] = useState(false);
 
+  // Email notification modal
+  const [notifyModalOpen, setNotifyModalOpen] = useState(false);
+
+  // Email notification history
+  const [emailLogs, setEmailLogs] = useState<(NotificationLog & { recipients: NotificationRecipient[] })[]>([]);
+  const [expandedLogId, setExpandedLogId] = useState<string | null>(null);
+
   const hpItems = items.filter(
     (it) =>
       (it as any).ipt_e === "hp" ||
