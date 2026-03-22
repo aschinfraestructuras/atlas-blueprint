@@ -25,8 +25,9 @@ import { toast } from "@/hooks/use-toast";
 // ─── Discipline codes (stable, stored in DB) ──────────────────────────────────
 
 const DISCIPLINE_CODES = [
-  "geral", "terras", "firmes", "betao", "drenagem",
-  "estruturas", "ferrovia", "instalacoes", "outros",
+  "geral", "estruturas", "via", "catenaria", "sinalizacao",
+  "telecomunicacoes", "drenagem", "geotecnia", "terraplenagem",
+  "pavimentacao", "outros",
 ] as const;
 
 // ─── Schema factory ───────────────────────────────────────────────────────────
@@ -37,7 +38,6 @@ const makeSchema = (t: (k: string) => string) =>
       sector:          z.string().min(1, t("workItems.form.validation.sectorRequired")),
       disciplina:      z.string().min(1, t("workItems.form.validation.disciplineRequired")),
       disciplina_outro:z.string().optional(),
-      obra:            z.string().optional(),
       lote:            z.string().optional(),
       elemento:        z.string().optional(),
       parte:           z.string().optional(),
@@ -85,7 +85,7 @@ export function WorkItemFormDialog({ open, onOpenChange, item, duplicateFrom, on
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      sector: "", disciplina: "geral", disciplina_outro: "", obra: "", lote: "",
+      sector: "", disciplina: "geral", disciplina_outro: "", lote: "",
       elemento: "", parte: "", pk_inicio: undefined, pk_fim: undefined, status: "planned",
     },
   });
@@ -99,7 +99,6 @@ export function WorkItemFormDialog({ open, onOpenChange, item, duplicateFrom, on
             sector:          source.sector ?? "",
             disciplina:      (source.disciplina as string) ?? "geral",
             disciplina_outro:(source as any).disciplina_outro ?? "",
-            obra:            source.obra      ?? "",
             lote:            source.lote      ?? "",
             elemento:        duplicateFrom ? "" : (source.elemento ?? ""),
             parte:           duplicateFrom ? "" : (source.parte ?? ""),
@@ -108,7 +107,7 @@ export function WorkItemFormDialog({ open, onOpenChange, item, duplicateFrom, on
             status:          duplicateFrom ? "planned" : (source.status ?? "planned"),
           }
         : {
-            sector: "", disciplina: "geral", disciplina_outro: "", obra: "", lote: "",
+            sector: "", disciplina: "geral", disciplina_outro: "", lote: "",
             elemento: "", parte: "", pk_inicio: undefined, pk_fim: undefined, status: "planned",
           },
     );
@@ -124,7 +123,6 @@ export function WorkItemFormDialog({ open, onOpenChange, item, duplicateFrom, on
         sector:          values.sector,
         disciplina:      values.disciplina,
         disciplina_outro:values.disciplina === "outros" ? (values.disciplina_outro?.trim() || null) : null,
-        obra:            values.obra      || undefined,
         lote:            values.lote      || undefined,
         elemento:        values.elemento  || undefined,
         parte:           values.parte     || undefined,
@@ -206,17 +204,8 @@ export function WorkItemFormDialog({ open, onOpenChange, item, duplicateFrom, on
               )} />
             </div>
 
-            {/* Row 2: Obra + Lote */}
+            {/* Row 2: Lote + Elemento */}
             <div className="grid grid-cols-2 gap-4">
-              <FormField control={form.control} name="obra" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("workItems.form.obra")}</FormLabel>
-                  <FormControl>
-                    <Input placeholder={t("workItems.form.obraPlaceholder")} {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
               <FormField control={form.control} name="lote" render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t("workItems.form.lote")}</FormLabel>
@@ -226,10 +215,6 @@ export function WorkItemFormDialog({ open, onOpenChange, item, duplicateFrom, on
                   <FormMessage />
                 </FormItem>
               )} />
-            </div>
-
-            {/* Row 3: Elemento + Parte */}
-            <div className="grid grid-cols-2 gap-4">
               <FormField control={form.control} name="elemento" render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t("workItems.form.element")}</FormLabel>
@@ -239,12 +224,36 @@ export function WorkItemFormDialog({ open, onOpenChange, item, duplicateFrom, on
                   <FormMessage />
                 </FormItem>
               )} />
+            </div>
+
+            {/* Row 3: Parte + Estado */}
+            <div className="grid grid-cols-2 gap-4">
               <FormField control={form.control} name="parte" render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t("workItems.form.parte")}</FormLabel>
                   <FormControl>
                     <Input placeholder={t("workItems.form.partePlaceholder")} {...field} />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="status" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("workItems.form.status")}</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder={t("workItems.form.status")} />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {WORK_ITEM_STATUS_OPTIONS.map((s) => (
+                        <SelectItem key={s.value} value={s.value}>
+                          {t(`workItems.status.${s.value}`)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )} />
@@ -283,28 +292,6 @@ export function WorkItemFormDialog({ open, onOpenChange, item, duplicateFrom, on
                 </FormItem>
               )} />
             </div>
-
-            {/* Row 5: Status */}
-            <FormField control={form.control} name="status" render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("workItems.form.status")}</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder={t("workItems.form.status")} />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {WORK_ITEM_STATUS_OPTIONS.map((s) => (
-                      <SelectItem key={s.value} value={s.value}>
-                        {t(`workItems.status.${s.value}`)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )} />
 
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>

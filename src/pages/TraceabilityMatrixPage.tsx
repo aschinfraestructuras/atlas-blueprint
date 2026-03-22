@@ -33,10 +33,11 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 function StatusBadge({ status, label }: { status: string | null; label?: string }) {
+  const { t } = useTranslation();
   if (!status) return <span className="text-muted-foreground text-xs">—</span>;
   return (
     <Badge variant="secondary" className={cn("text-[10px]", STATUS_COLORS[status] ?? "")}>
-      {label ?? status}
+      {label ?? t(`traceability.status.${status}`, { defaultValue: status })}
     </Badge>
   );
 }
