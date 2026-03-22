@@ -121,7 +121,9 @@ export const expirationService = {
         .eq("is_deleted", false);
       const subMap = Object.fromEntries((subs ?? []).map(s => [s.id, s.name]));
 
-      subDocs.forEach((d) => {
+      subDocs
+        .filter((d) => subMap[d.subcontractor_id]) // skip docs from deleted subcontractors
+        .forEach((d) => {
         results.push({
           id: d.id,
           domain: "subcontractor",
