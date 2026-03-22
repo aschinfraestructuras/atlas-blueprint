@@ -544,7 +544,7 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
         entityType="hp"
         entityId={instance.id}
         entityCode={instance.code}
-        defaultSubject={`NOT-HP — ${instance.code} — ${instance.description ?? ""}`}
+        defaultSubject={`NOT-HP — ${instance.code} — ${(instance as any).description ?? instance.code}`}
       />
 
       {/* ── Create notification dialog ─────────────────────────────── */}
