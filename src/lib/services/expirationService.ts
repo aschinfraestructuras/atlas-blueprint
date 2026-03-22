@@ -174,7 +174,9 @@ export const expirationService = {
       .not("valid_to", "is", null)
       .lte("valid_to", cutoffStr);
 
-    ((matDocs ?? []) as unknown as MatDocResult[]).forEach((d) => {
+    ((matDocs ?? []) as unknown as MatDocResult[])
+      .filter((d) => !d.materials?.is_deleted)
+      .forEach((d) => {
       results.push({
         id: d.id,
         domain: "material",
