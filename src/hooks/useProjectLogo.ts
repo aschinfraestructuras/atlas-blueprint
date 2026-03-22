@@ -31,6 +31,7 @@ export function useProjectLogo() {
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [logoBase64, setLogoBase64] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // Resolve logo URL from storage path
   useEffect(() => {
