@@ -202,6 +202,34 @@ export function DueTab() {
         <div className="space-y-2">
           {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-10 w-full rounded" />)}
         </div>
+      ) : allItems.length === 0 ? (
+        <Card className="border border-border">
+          <CardContent className="p-6 space-y-4">
+            <div className="flex items-center gap-2">
+              <CalendarClock className="h-5 w-5 text-muted-foreground" />
+              <h3 className="text-sm font-semibold text-foreground">{t("tests.due.howToSchedule")}</h3>
+            </div>
+            <div className="space-y-2 text-sm text-muted-foreground">
+              <p>
+                <Badge variant="secondary" className="mr-1.5 text-[10px]">1</Badge>
+                {t("tests.due.step1")}
+              </p>
+              <p>
+                <Badge variant="secondary" className="mr-1.5 text-[10px]">2</Badge>
+                {t("tests.due.step2")}
+              </p>
+            </div>
+            <Button variant="outline" size="sm" className="gap-1.5" onClick={() => {
+              // Navigate to plans tab — parent handles this via URL param
+              const params = new URLSearchParams(window.location.search);
+              params.set("tab", "plans");
+              window.history.replaceState({}, "", `?${params.toString()}`);
+              window.location.reload();
+            }}>
+              {t("tests.due.goToPlans")} →
+            </Button>
+          </CardContent>
+        </Card>
       ) : filtered.length === 0 ? (
         <EmptyState icon={Clock} subtitleKey="tests.due.empty" />
       ) : (
