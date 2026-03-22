@@ -4368,12 +4368,6 @@
       "maintenance": "Manutenção"
     }
   },
-  "_settings_extra": {
-    "ownResources": "Recursos Próprios",
-    "ownResourcesDesc": "Pessoal e Equipamentos — ASCH",
-    "contactsTab": "Contactos & Notificações",
-    "contactsTabDesc": "Gerir contactos do projecto e listas de distribuição"
-  },
   "notifications": {
     "title": "Notificações",
     "send": "Notificar",

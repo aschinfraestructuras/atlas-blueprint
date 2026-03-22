@@ -4371,12 +4371,6 @@
       "maintenance": "Mantenimiento"
     }
   },
-  "_settings_extra": {
-    "ownResources": "Recursos Propios",
-    "ownResourcesDesc": "Personal y Equipos — ASCH",
-    "contactsTab": "Contactos y Notificaciones",
-    "contactsTabDesc": "Gestionar contactos del proyecto y listas de distribución"
-  },
   "notifications": {
     "title": "Notificaciones",
     "send": "Notificar",
