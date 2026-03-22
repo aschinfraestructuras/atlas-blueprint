@@ -22,6 +22,9 @@ import {
   generatePdfDocument, printHtml, infoGridHtml, buildReportFilename,
   type ReportLabels,
 } from "@/lib/services/reportService";
+import { WorkerPickerPopover, EquipmentPickerPopover } from "@/components/daily-reports/ResourcePickerPopover";
+import type { ProjectWorker } from "@/lib/services/projectWorkerService";
+import type { ProjectMachinery } from "@/lib/services/projectMachineryService";
 
 const STATUS_COLORS: Record<string, string> = {
   draft: "bg-muted text-muted-foreground",
