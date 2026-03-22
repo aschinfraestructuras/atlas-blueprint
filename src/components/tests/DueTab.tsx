@@ -43,6 +43,7 @@ const DUE_STATUS_COLORS: Record<string, string> = {
 
 export function DueTab() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { activeProject } = useProject();
   const [filterStatus, setFilterStatus] = useState("all");
   const [search, setSearch] = useState("");
