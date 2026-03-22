@@ -87,7 +87,9 @@ export const expirationService = {
       .not("valid_to", "is", null)
       .lte("valid_to", cutoffStr);
 
-    ((supDocs ?? []) as unknown as SupplierDocResult[]).forEach((d) => {
+    ((supDocs ?? []) as unknown as SupplierDocResult[])
+      .filter((d) => !d.suppliers?.is_deleted)
+      .forEach((d) => {
       results.push({
         id: d.id,
         domain: "supplier",
