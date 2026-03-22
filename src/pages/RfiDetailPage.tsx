@@ -235,7 +235,7 @@ export default function RfiDetailPage() {
           {t("common.back")}
         </Button>
         <div className="flex items-center gap-2">
-          <EmailNotificationSection
+          <NotifyEmailButton
             projectId={activeProject.id}
             entityType="rfi"
             entityId={rfi.id}

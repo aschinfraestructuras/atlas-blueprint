@@ -290,7 +290,7 @@ export default function NCDetailPage() {
 
         {/* Actions — scrollable on mobile */}
         <div className="flex items-center gap-2 flex-shrink-0 overflow-x-auto pb-1 -mb-1 sm:pb-0 sm:mb-0 sm:flex-wrap">
-          <EmailNotificationSection
+          <NotifyEmailButton
             projectId={activeProject!.id}
             entityType="nc"
             entityId={nc.id}
