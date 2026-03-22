@@ -22,6 +22,9 @@ import {
   generatePdfDocument, printHtml, infoGridHtml, buildReportFilename,
   type ReportLabels,
 } from "@/lib/services/reportService";
+import { WorkerPickerPopover, EquipmentPickerPopover } from "@/components/daily-reports/ResourcePickerPopover";
+import type { ProjectWorker } from "@/lib/services/projectWorkerService";
+import type { ProjectMachinery } from "@/lib/services/projectMachineryService";
 
 const STATUS_COLORS: Record<string, string> = {
   draft: "bg-muted text-muted-foreground",
@@ -95,9 +98,33 @@ export default function DailyReportDetailPage() {
     await dailyReportService.addLabour({ daily_report_id: id, category: "Servente", name: null, time_start: null, time_end: null, hours_worked: null });
     setLabour(await dailyReportService.getLabour(id));
   };
+  const addLabourFromWorker = async (worker: ProjectWorker) => {
+    if (!id) return;
+    await dailyReportService.addLabour({
+      daily_report_id: id,
+      category: worker.role_function ?? "Servente",
+      name: worker.name,
+      time_start: null,
+      time_end: null,
+      hours_worked: null,
+    });
+    setLabour(await dailyReportService.getLabour(id));
+  };
   const addEquipmentRow = async () => {
     if (!id) return;
     await dailyReportService.addEquipment({ daily_report_id: id, designation: "Equipamento", type: null, serial_number: null, sound_power_db: null, hours_worked: null });
+    setEquipment(await dailyReportService.getEquipment(id));
+  };
+  const addEquipmentFromMachinery = async (mach: ProjectMachinery) => {
+    if (!id) return;
+    await dailyReportService.addEquipment({
+      daily_report_id: id,
+      designation: mach.designation,
+      type: mach.type ?? null,
+      serial_number: mach.serial_number ?? mach.plate ?? null,
+      sound_power_db: mach.sound_power_db ?? null,
+      hours_worked: null,
+    });
     setEquipment(await dailyReportService.getEquipment(id));
   };
   const addMaterialRow = async (materialId?: string) => {
@@ -182,8 +209,8 @@ export default function DailyReportDetailPage() {
       ])),
       sectionHtml(t("dailyReports.sections.works"), `<p style="padding:6px 0;">${report.observations ?? "—"}</p>`),
       sectionHtml(t("dailyReports.sections.labour"), tableHtml(
-        [t("dailyReports.labour.category"), t("dailyReports.labour.name"), t("dailyReports.labour.timeStart"), t("dailyReports.labour.timeEnd"), t("dailyReports.labour.hours")],
-        labour.map(r => [r.category, r.name ?? "", r.time_start ?? "", r.time_end ?? "", String(r.hours_worked ?? "")])
+        [t("dailyReports.labour.category"), t("dailyReports.labour.name"), t("dailyReports.labour.training"), t("dailyReports.labour.timeStart"), t("dailyReports.labour.timeEnd"), t("dailyReports.labour.hours")],
+        labour.map(r => [r.category, r.name ?? "", "—", r.time_start ?? "", r.time_end ?? "", String(r.hours_worked ?? "")])
       )),
       sectionHtml(t("dailyReports.sections.equipment"), tableHtml(
         [t("dailyReports.equipment.designation"), t("dailyReports.equipment.type"), t("dailyReports.equipment.serial"), t("dailyReports.equipment.soundPower"), t("dailyReports.equipment.hours")],
@@ -312,9 +339,10 @@ export default function DailyReportDetailPage() {
         <CardHeader className="flex flex-row items-center justify-between py-3">
           <CardTitle className="text-sm">{t("dailyReports.sections.labour")}</CardTitle>
           {isEditable && (
-            <Button variant="outline" size="sm" onClick={addLabourRow}>
-              <Plus className="h-3.5 w-3.5 mr-1" /> {t("common.create")}
-            </Button>
+            <WorkerPickerPopover
+              onSelect={addLabourFromWorker}
+              onManual={addLabourRow}
+            />
           )}
         </CardHeader>
         <CardContent className="p-0">
@@ -352,9 +380,10 @@ export default function DailyReportDetailPage() {
         <CardHeader className="flex flex-row items-center justify-between py-3">
           <CardTitle className="text-sm">{t("dailyReports.sections.equipment")}</CardTitle>
           {isEditable && (
-            <Button variant="outline" size="sm" onClick={addEquipmentRow}>
-              <Plus className="h-3.5 w-3.5 mr-1" /> {t("common.create")}
-            </Button>
+            <EquipmentPickerPopover
+              onSelect={addEquipmentFromMachinery}
+              onManual={addEquipmentRow}
+            />
           )}
         </CardHeader>
         <CardContent className="p-0">

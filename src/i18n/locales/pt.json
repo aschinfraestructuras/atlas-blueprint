@@ -3659,7 +3659,8 @@
       "name": "Nome",
       "timeStart": "Início",
       "timeEnd": "Fim",
-      "hours": "Horas"
+      "hours": "Horas",
+      "training": "Formação"
     },
     "equipment": {
       "designation": "Designação",
@@ -3713,6 +3714,16 @@
     },
     "filters": {
       "allStatuses": "Todos os estados"
+    },
+    "picker": {
+      "selectCompany": "Seleccionar empresa",
+      "selectWorker": "Seleccionar trabalhador",
+      "selectEquipment": "Seleccionar equipamento",
+      "manualEntry": "Introdução manual",
+      "activeWorkers": "trabalhadores activos",
+      "onSiteEquipment": "equipamentos em obra",
+      "safetyOk": "Formação OK",
+      "noSafety": "Sem formação"
     }
   },
   "recycled": {

@@ -22,6 +22,7 @@ import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 import { useProject } from "@/contexts/ProjectContext";
 import { useArchivedProject } from "@/hooks/useArchivedProject";
 import { usePermissions } from "@/hooks/usePermissions";
+import { useProjectRole } from "@/hooks/useProjectRole";
 import { useDailyReports } from "@/hooks/useDailyReports";
 import { dailyReportService } from "@/lib/services/dailyReportService";
 import { DailyReportFormDialog } from "@/components/daily-reports/DailyReportFormDialog";
@@ -39,6 +40,7 @@ export default function DailyReportsPage() {
   const { activeProject } = useProject();
   const isArchived = useArchivedProject();
   const { canDelete } = usePermissions();
+  const { isManager } = useProjectRole();
   const { data, loading, refetch } = useDailyReports();
 
   const handleDelete = async (id: string) => {
@@ -198,7 +200,7 @@ export default function DailyReportsPage() {
                         shareUrl={`${window.location.origin}/daily-reports/${r.id}`}
                         actions={[
                           { key: "view", label: t("common.view"), icon: Eye, onClick: () => navigate(`/daily-reports/${r.id}`) },
-                          ...(canDelete && r.status === "draft" ? [{ key: "delete", label: t("common.delete"), icon: Trash2, onClick: () => handleDelete(r.id), variant: "destructive" as const }] : []),
+                          ...((canDelete || isManager) ? [{ key: "delete", label: t("common.delete"), icon: Trash2, onClick: () => handleDelete(r.id), variant: "destructive" as const }] : []),
                         ]}
                       />
                     </TableCell>
