@@ -183,6 +183,13 @@ export default function PPIPage() {
 
   return (
     <div className="space-y-6 animate-fade-in">
+      {/* Viewer banner */}
+      {!canCreate && (
+        <div className="rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 px-4 py-2.5 flex items-center gap-2 text-sm text-blue-700 dark:text-blue-300">
+          <Eye className="h-4 w-4 flex-shrink-0" />
+          {t("viewer.ppiBanner")}
+        </div>
+      )}
       {/* ── Header ──────────────────────────────────────────────────── */}
       <div className="flex items-center justify-between">
         <div>
