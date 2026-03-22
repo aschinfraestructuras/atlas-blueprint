@@ -222,10 +222,7 @@ export function DueTab() {
               </p>
             </div>
             <Button variant="outline" size="sm" className="gap-1.5" onClick={() => {
-              const params = new URLSearchParams(window.location.search);
-              params.set("tab", "plan");
-              window.history.replaceState({}, "", `${window.location.pathname}?${params.toString()}`);
-              window.dispatchEvent(new PopStateEvent("popstate"));
+              navigate("/tests?tab=plan");
             }}>
               {t("tests.due.goToPlans")} →
             </Button>
