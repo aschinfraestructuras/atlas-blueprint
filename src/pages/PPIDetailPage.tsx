@@ -40,6 +40,7 @@ import { PPIStatusBadge } from "@/components/ppi/PPIStatusBadge";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { LinkedDocumentsPanel } from "@/components/documents/LinkedDocumentsPanel";
 import { useProject } from "@/contexts/ProjectContext";
+import { useProjectRole } from "@/hooks/useProjectRole";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
