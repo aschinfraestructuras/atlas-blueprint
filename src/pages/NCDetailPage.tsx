@@ -37,7 +37,7 @@ import { toast } from "@/hooks/use-toast";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { cn } from "@/lib/utils";
 import { getNCTransitions, canDeleteNC, canEditNC } from "@/lib/stateMachines";
-import { EmailNotificationSection } from "@/components/notifications/EmailNotificationSection";
+import { NotifyEmailButton, NotificationHistory } from "@/components/notifications/EmailNotificationSection";
 
 // ─── Colour maps ──────────────────────────────────────────────────────────────
 

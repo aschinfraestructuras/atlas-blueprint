@@ -31,7 +31,7 @@ import {
   FileText, ExternalLink, LinkIcon, Download, Clock, User, CalendarDays, MapPin, FileCode,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { EmailNotificationSection } from "@/components/notifications/EmailNotificationSection";
+import { NotifyEmailButton, NotificationHistory } from "@/components/notifications/EmailNotificationSection";
 
 const STATUS_OPTIONS = ["open", "in_review", "answered", "closed"] as const;
 
