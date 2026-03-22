@@ -99,7 +99,6 @@ export function WorkItemFormDialog({ open, onOpenChange, item, duplicateFrom, on
             sector:          source.sector ?? "",
             disciplina:      (source.disciplina as string) ?? "geral",
             disciplina_outro:(source as any).disciplina_outro ?? "",
-            obra:            source.obra      ?? "",
             lote:            source.lote      ?? "",
             elemento:        duplicateFrom ? "" : (source.elemento ?? ""),
             parte:           duplicateFrom ? "" : (source.parte ?? ""),
@@ -108,7 +107,7 @@ export function WorkItemFormDialog({ open, onOpenChange, item, duplicateFrom, on
             status:          duplicateFrom ? "planned" : (source.status ?? "planned"),
           }
         : {
-            sector: "", disciplina: "geral", disciplina_outro: "", obra: "", lote: "",
+            sector: "", disciplina: "geral", disciplina_outro: "", lote: "",
             elemento: "", parte: "", pk_inicio: undefined, pk_fim: undefined, status: "planned",
           },
     );
