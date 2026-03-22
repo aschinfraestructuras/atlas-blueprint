@@ -973,7 +973,13 @@
       "waive": "Dispensar",
       "waiveReason": "Motivo de la dispensa",
       "waiveReasonPlaceholder": "Explique el motivo…",
-      "waived": "Ensayo dispensado"
+      "waived": "Ensayo dispensado",
+      "howToSchedule": "Cómo programar ensayos",
+      "step1": "Configure el Plan de Ensayos en la pestaña Planes — añada reglas con frecuencia y disciplina",
+      "step2": "Haga clic en \"Generar programación\" para crear los ensayos obligatorios",
+      "goToPlans": "Ir a Planes",
+      "empty": "Sin ensayos programados",
+      "noTests": "Sin ensayos programados para esta semana."
     },
     "export": {
       "acceptanceCriteria": "Criterios de aceptación",
@@ -4214,7 +4220,8 @@
     "todayTasks": "Tareas de hoy",
     "weekOverview": "Visión semanal",
     "noOverdue": "Ningún item atrasado",
-    "priorityHigh": "Prioridad alta"
+    "priorityHigh": "Prioridad alta",
+    "todayDate": "Hoy, {{date}}"
   },
   "welds": {
     "usPendingBanner": "soldadura(s) con US pendiente hace más de 7 días",
