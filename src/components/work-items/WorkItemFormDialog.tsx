@@ -85,7 +85,7 @@ export function WorkItemFormDialog({ open, onOpenChange, item, duplicateFrom, on
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      sector: "", disciplina: "geral", disciplina_outro: "", obra: "", lote: "",
+      sector: "", disciplina: "geral", disciplina_outro: "", lote: "",
       elemento: "", parte: "", pk_inicio: undefined, pk_fim: undefined, status: "planned",
     },
   });
