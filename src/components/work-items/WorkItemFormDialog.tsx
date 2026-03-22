@@ -262,25 +262,36 @@ export function WorkItemFormDialog({ open, onOpenChange, item, duplicateFrom, on
             {/* Row 4: PK Início + PK Fim */}
             <div className="grid grid-cols-2 gap-4">
               <FormField control={form.control} name="pk_inicio" render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("workItems.form.status")}</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value}>
+                <FormItem>
+                  <FormLabel>{t("workItems.form.pkStart")}</FormLabel>
                   <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder={t("workItems.form.status")} />
-                    </SelectTrigger>
+                    <Input
+                      type="number"
+                      placeholder={t("workItems.form.pkPlaceholder")}
+                      {...field}
+                      value={field.value ?? ""}
+                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                    />
                   </FormControl>
-                  <SelectContent>
-                    {WORK_ITEM_STATUS_OPTIONS.map((s) => (
-                      <SelectItem key={s.value} value={s.value}>
-                        {t(`workItems.status.${s.value}`)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )} />
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="pk_fim" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("workItems.form.pkEnd")}</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder={t("workItems.form.pkEndPlaceholder")}
+                      {...field}
+                      value={field.value ?? ""}
+                      onChange={(e) => field.onChange(e.target.value === "" ? null : parseFloat(e.target.value))}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            </div>
 
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
