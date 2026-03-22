@@ -668,6 +668,7 @@ export const ppiService = {
       .from("ppi_instances")
       .select("*", { count: "exact", head: true })
       .eq("project_id", projectId)
+      .eq("is_deleted", false)
       .eq("status", "submitted");
     if (error) throw error;
     return count ?? 0;

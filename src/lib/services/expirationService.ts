@@ -41,7 +41,7 @@ interface SupplierDocResult {
   doc_type: string;
   valid_to: string;
   supplier_id: string;
-  suppliers: { name: string } | null;
+  suppliers: { name: string; is_deleted?: boolean } | null;
 }
 
 interface SubDocResult {
@@ -69,7 +69,7 @@ interface MatDocResult {
   doc_type: string;
   valid_to: string;
   material_id: string;
-  materials: { name: string; code: string } | null;
+  materials: { name: string; code: string; is_deleted?: boolean } | null;
 }
 
 export const expirationService = {
@@ -80,14 +80,16 @@ export const expirationService = {
 
     const results: ExpiringItem[] = [];
 
-    // 1. Supplier documents
+    // 1. Supplier documents (exclude docs from deleted suppliers)
     const { data: supDocs } = await db.from("supplier_documents")
-      .select("id, doc_type, valid_to, supplier_id, suppliers:supplier_id(name)")
+      .select("id, doc_type, valid_to, supplier_id, suppliers:supplier_id(name, is_deleted)")
       .eq("project_id", projectId)
       .not("valid_to", "is", null)
       .lte("valid_to", cutoffStr);
 
-    ((supDocs ?? []) as unknown as SupplierDocResult[]).forEach((d) => {
+    ((supDocs ?? []) as unknown as SupplierDocResult[])
+      .filter((d) => !d.suppliers?.is_deleted)
+      .forEach((d) => {
       results.push({
         id: d.id,
         domain: "supplier",
@@ -110,15 +112,18 @@ export const expirationService = {
       .lte("valid_to", cutoffStr);
 
     if (subDocs) {
-      // Get subcontractor names
+      // Get subcontractor names (only non-deleted)
       const subIds = [...new Set(subDocs.map(d => d.subcontractor_id))];
       const { data: subs } = await supabase
         .from("subcontractors")
         .select("id, name")
-        .in("id", subIds);
+        .in("id", subIds)
+        .eq("is_deleted", false);
       const subMap = Object.fromEntries((subs ?? []).map(s => [s.id, s.name]));
 
-      subDocs.forEach((d) => {
+      subDocs
+        .filter((d) => subMap[d.subcontractor_id]) // skip docs from deleted subcontractors
+        .forEach((d) => {
         results.push({
           id: d.id,
           domain: "subcontractor",
@@ -164,12 +169,14 @@ export const expirationService = {
 
     // 4. Material documents
     const { data: matDocs } = await db.from("material_documents")
-      .select("id, doc_type, valid_to, material_id, materials:material_id(name, code)")
+      .select("id, doc_type, valid_to, material_id, materials:material_id(name, code, is_deleted)")
       .eq("project_id", projectId)
       .not("valid_to", "is", null)
       .lte("valid_to", cutoffStr);
 
-    ((matDocs ?? []) as unknown as MatDocResult[]).forEach((d) => {
+    ((matDocs ?? []) as unknown as MatDocResult[])
+      .filter((d) => !d.materials?.is_deleted)
+      .forEach((d) => {
       results.push({
         id: d.id,
         domain: "material",

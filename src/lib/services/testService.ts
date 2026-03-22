@@ -315,6 +315,7 @@ export const testService = {
       .from("test_results")
       .select(RESULT_SELECT)
       .eq("work_item_id", workItemId)
+      .eq("is_deleted", false)
       .order("date", { ascending: false });
     if (error) throw error;
     return (data ?? []) as unknown as TestResult[];
@@ -411,6 +412,7 @@ export const testService = {
       .from("test_results")
       .select("*", { count: "exact", head: true })
       .eq("project_id", projectId)
+      .eq("is_deleted", false)
       .in("status", ["pending", "draft", "in_progress"]);
     if (error) throw error;
     return count ?? 0;
@@ -422,7 +424,8 @@ export const testService = {
     const { data, error } = await supabase
       .from("test_results")
       .select("status, pass_fail")
-      .eq("work_item_id", workItemId);
+      .eq("work_item_id", workItemId)
+      .eq("is_deleted", false);
     if (error) throw error;
     const rows = data ?? [];
     return {
