@@ -411,6 +411,8 @@ export default function MyTasksPage() {
             </div>
           ) : (
           <>
+          {/* Section 1: PPIs */}
+          <Section title={t("myTasks.myPpis")} icon={ClipboardCheck} count={filteredPpis.length}>
             {filteredPpis.length === 0 ? (
               <EmptyState icon={ClipboardCheck} titleKey="common.noData" />
             ) : (
