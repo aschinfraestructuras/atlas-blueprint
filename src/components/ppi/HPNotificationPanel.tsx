@@ -476,6 +476,77 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
         </TooltipProvider>
       )}
 
+      {/* ── Email Notify Button ────────────────────────────────────── */}
+      <div className="flex items-center gap-2">
+        <Button
+          size="sm"
+          variant="outline"
+          className="gap-1.5 text-xs"
+          onClick={() => setNotifyModalOpen(true)}
+        >
+          <Send className="h-3 w-3" />
+          {t("notifications.send", { defaultValue: "Notificar" })}
+        </Button>
+      </div>
+
+      {/* ── Email Notification History ─────────────────────────────── */}
+      {emailLogs.length > 0 && (
+        <div className="space-y-2 mt-4">
+          <h3 className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+            {t("notifications.history", { defaultValue: "Histórico de Envios" })}
+          </h3>
+          <div className="space-y-1.5">
+            {emailLogs.map(log => (
+              <div key={log.id} className="rounded-lg border border-border bg-card">
+                <div
+                  className="flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-muted/20 transition-colors"
+                  onClick={() => setExpandedLogId(expandedLogId === log.id ? null : log.id)}
+                >
+                  {expandedLogId === log.id ? <ChevronDown className="h-3 w-3 text-muted-foreground" /> : <ChevronRight className="h-3 w-3 text-muted-foreground" />}
+                  <Mail className="h-3 w-3 text-muted-foreground" />
+                  <span className="text-xs font-medium flex-1 truncate">{log.subject}</span>
+                  <Badge variant="secondary" className="text-[9px]">
+                    {log.recipients.length} {t("notifications.recipients", { defaultValue: "destinatários" })}
+                  </Badge>
+                  <span className="text-[10px] text-muted-foreground">
+                    {new Date(log.sent_at).toLocaleString()}
+                  </span>
+                </div>
+                {expandedLogId === log.id && (
+                  <div className="border-t border-border px-3 py-2 bg-muted/10 space-y-1">
+                    {log.recipients.map(r => (
+                      <div key={r.id} className="flex items-center gap-2 text-xs">
+                        <Badge variant="outline" className={r.sent_status === "sent" ? "border-emerald-400/40 bg-emerald-50 text-emerald-700 text-[9px]" : "border-destructive/40 bg-destructive/10 text-destructive text-[9px]"}>
+                          {r.sent_status}
+                        </Badge>
+                        <span>{r.name ?? r.email}</span>
+                        <span className="text-muted-foreground">{r.email}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {emailLogs.length === 0 && !loading && (
+        <p className="text-xs text-muted-foreground italic mt-2">
+          {t("notifications.noHistory", { defaultValue: "Sem notificações enviadas" })}
+        </p>
+      )}
+
+      {/* Notification Modal */}
+      <NotificationModal
+        open={notifyModalOpen}
+        onOpenChange={setNotifyModalOpen}
+        entityType="hp"
+        entityId={instance.id}
+        entityCode={instance.code}
+        defaultSubject={`NOT-HP — ${instance.code} — ${instance.description ?? ""}`}
+      />
+
       {/* ── Create notification dialog ─────────────────────────────── */}
       <Dialog open={dialogOpen} onOpenChange={(v) => { if (!v) setDialogOpen(false); }}>
         <DialogContent className="max-w-md">
