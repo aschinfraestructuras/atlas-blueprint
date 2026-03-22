@@ -2336,6 +2336,26 @@
         "sectorRequired": "Sector obligatorio"
       }
     },
+    "disciplines": {
+      "geral": "General",
+      "estruturas": "Estructuras",
+      "via": "Vía",
+      "catenaria": "Catenaria",
+      "sinalizacao": "Señalización",
+      "telecomunicacoes": "Telecomunicaciones",
+      "drenagem": "Drenaje",
+      "geotecnia": "Geotecnia",
+      "terraplenagem": "Explanación",
+      "pavimentacao": "Pavimentación",
+      "outros": "Otros"
+    },
+    "status": {
+      "planned": "Planificado",
+      "in_progress": "En Ejecución",
+      "completed": "Completado",
+      "blocked": "Bloqueado",
+      "cancelled": "Cancelado"
+    },
     "groups": {
       "baseActivity": "Actividad base",
       "frentes": "Frentes",
