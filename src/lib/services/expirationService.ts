@@ -69,7 +69,7 @@ interface MatDocResult {
   doc_type: string;
   valid_to: string;
   material_id: string;
-  materials: { name: string; code: string } | null;
+  materials: { name: string; code: string; is_deleted?: boolean } | null;
 }
 
 export const expirationService = {
