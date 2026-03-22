@@ -411,6 +411,13 @@ export default function TechOfficeDetailPage() {
           />
         </TabsContent>
       </Tabs>
+
+      {/* Email notification history */}
+      <NotificationHistory
+        projectId={activeProject.id}
+        entityType={isSubmittal ? "submittal" : item.type === "TRANSMITTAL" ? "transmittal" : "general"}
+        entityId={item.id}
+      />
     </div>
   );
 }

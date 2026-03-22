@@ -616,6 +616,9 @@ export default function RfiDetailPage() {
           </Card>
         </div>
       </div>
+
+      {/* Email notification history */}
+      <NotificationHistory projectId={activeProject.id} entityType="rfi" entityId={rfi.id} />
     </div>
   );
 }

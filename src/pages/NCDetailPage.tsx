@@ -643,6 +643,9 @@ export default function NCDetailPage() {
         </TabsContent>
       </Tabs>
 
+      {/* Email notification history */}
+      {activeProject && <NotificationHistory projectId={activeProject.id} entityType="nc" entityId={nc.id} />}
+
       {/* ── Edit dialog ─────────────────────────────────────────────────── */}
       <NCFormDialog
         open={editOpen}
