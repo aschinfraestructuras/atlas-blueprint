@@ -513,7 +513,7 @@ export default function PPIDetailPage() {
           )}
 
           {/* Status transition buttons */}
-          {availableTransitions.map((tr) => (
+          {!isViewer && availableTransitions.map((tr) => (
             <Button
               key={tr.to}
               variant={tr.variant}
