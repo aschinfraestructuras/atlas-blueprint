@@ -264,6 +264,19 @@ function ProjectMetadataEditor({ projectId, project, onSaved }: {
   );
 }
 
+// ── Own Resources Section ─────────────────────────────────────────────────────
+function OwnResourcesSection({ projectId }: { projectId: string }) {
+  const { t } = useTranslation();
+  return (
+    <SettingsSection icon={Users} title={t("settings.ownResources")} subtitle={t("settings.ownResourcesDesc", { defaultValue: "Pessoal e Equipamentos — ASCH" })} color={MOD.suppliers}>
+      <div className="space-y-4">
+        <WorkersPanel projectId={projectId} subcontractorId={null} company="ASCH" />
+        <MachineryPanel projectId={projectId} subcontractorId={null} company="ASCH" />
+      </div>
+    </SettingsSection>
+  );
+}
+
 // ═══════════════════════════════════════════════════════════════
 // MAIN
 // ═══════════════════════════════════════════════════════════════
