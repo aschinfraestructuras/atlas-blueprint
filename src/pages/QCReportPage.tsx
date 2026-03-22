@@ -494,9 +494,9 @@ export default function QCReportPage() {
               </SelectContent>
             </Select>
             <Select value={filterDiscipline} onValueChange={setFilterDiscipline}>
-              <SelectTrigger className="h-8 w-[160px] text-xs"><SelectValue placeholder="Disciplina" /></SelectTrigger>
+              <SelectTrigger className="h-8 w-[160px] text-xs"><SelectValue placeholder={t("common.discipline")} /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">{t("common.all", { defaultValue: "Todas" })} Disciplinas</SelectItem>
+                <SelectItem value="all">{t("common.allDisciplines", { defaultValue: "Todas as disciplinas" })}</SelectItem>
                 {DISCIPLINES.map(d => <SelectItem key={d} value={d}>{t(`documents.disciplinas.${d}`, { defaultValue: d })}</SelectItem>)}
               </SelectContent>
             </Select>
