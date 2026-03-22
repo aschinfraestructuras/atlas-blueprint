@@ -3662,7 +3662,8 @@
       "name": "Nombre",
       "timeStart": "Inicio",
       "timeEnd": "Fin",
-      "hours": "Horas"
+      "hours": "Horas",
+      "training": "Formación"
     },
     "equipment": {
       "designation": "Designación",
