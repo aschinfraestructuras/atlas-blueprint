@@ -56,27 +56,21 @@ const SOURCE_ROUTES: Record<string, string> = {
   subcontractor_doc: "/subcontractors",
   calibration: "/topography",
   nc_due: "/non-conformities",
-  rfi_due: "/technical-office/rfis",
-  tech_office_due: "/technical-office/items",
-  planning_due: "/planning/activities",
-  ppi_pending: "/ppi",
-  ppi_approval: "/ppi",
-  hp_notification: "/ppi",
-};
-
-const SOURCE_LIST_ROUTES: Record<string, string> = {
-  supplier_doc: "/suppliers",
-  material_doc: "/materials",
-  subcontractor_doc: "/subcontractors",
-  calibration: "/topography",
-  nc_due: "/non-conformities",
   rfi_due: "/technical-office",
   tech_office_due: "/technical-office",
   planning_due: "/planning",
   ppi_pending: "/ppi",
   ppi_approval: "/ppi",
+  quarantine_lot: "/materials",
   hp_notification: "/ppi",
 };
+
+const DETAIL_SOURCES = new Set([
+  "nc_due", "ppi_pending", "ppi_approval",
+  "supplier_doc", "material_doc", "subcontractor_doc",
+]);
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const SEVERITY_COLORS: Record<string, string> = {
   critical: "bg-destructive/10 text-destructive",
@@ -206,24 +200,13 @@ export default function DeadlinesPage() {
 
   const handleNavigate = (item: DeadlineItem) => {
     const base = SOURCE_ROUTES[item.source] ?? "/expirations";
-    const listRoute = SOURCE_LIST_ROUTES[item.source] ?? "/expirations";
     const id = item.entity_id;
 
-    // Sources that have no detail page — always navigate to list
-    const listOnlySources = new Set(["calibration", "planning_due", "hp_notification"]);
-    if (listOnlySources.has(item.source)) {
-      navigate(listRoute);
-      return;
-    }
-
-    // Guard: only navigate to detail if we have a valid-looking UUID
-    const isValidId = id && id !== "undefined" && id !== "null" && /^[0-9a-f-]{36}$/i.test(id);
-    if (isValidId) {
+    // Only navigate to detail for sources that have detail pages + valid UUID
+    if (DETAIL_SOURCES.has(item.source) && id && UUID_RE.test(id)) {
       navigate(`${base}/${id}`);
     } else {
-      // Navigate to list page instead
-      navigate(listRoute);
-      toast({ title: t("deadlines.noEntityLink"), variant: "default" });
+      navigate(base);
     }
   };
 

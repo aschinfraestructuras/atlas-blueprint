@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Progress } from "@/components/ui/progress";
 import { EmptyState } from "@/components/EmptyState";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
@@ -58,7 +59,7 @@ type StatusFilter = "all" | "pending" | "overdue";
 // ─── Page ───────────────────────────────────────────────────────
 
 export default function MyTasksPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { activeProject } = useProject();
   const { user } = useAuth();
@@ -131,9 +132,13 @@ export default function MyTasksPage() {
         }
       }
       ppiResults.sort((a, b) => {
+        // HP pending first
         if (a.hp_pending_count > 0 && b.hp_pending_count === 0) return -1;
         if (a.hp_pending_count === 0 && b.hp_pending_count > 0) return 1;
-        return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
+        // Then by progress ascending (less complete first)
+        const pctA = a.total_items > 0 ? a.ok_items / a.total_items : 0;
+        const pctB = b.total_items > 0 ? b.ok_items / b.total_items : 0;
+        return pctA - pctB;
       });
       setPpis(ppiResults);
 
@@ -279,9 +284,14 @@ export default function MyTasksPage() {
     );
   }
 
+  const today = new Date().toLocaleDateString(
+    i18n.language === "es" ? "es-ES" : "pt-PT",
+    { weekday: "long", day: "numeric", month: "long", year: "numeric" }
+  );
+
   return (
     <div className="p-4 md:p-6 space-y-5 max-w-5xl mx-auto">
-      <PageHeader title={t("myTasks.title")} icon={CalendarCheck} />
+      <PageHeader title={t("myTasks.title")} subtitle={t("myTasks.todayDate", { date: today })} icon={CalendarCheck} />
 
       {/* ── KPIs Row ──────────────────────────────────────── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -394,6 +404,14 @@ export default function MyTasksPage() {
         </div>
       ) : (
         <>
+          {/* Empty all state */}
+          {ppis.length === 0 && tests.length === 0 && ncs.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12 gap-3 text-center">
+              <CheckCircle2 className="h-10 w-10 text-emerald-500" />
+              <p className="text-sm font-medium text-foreground">{t("myTasks.emptyAll")}</p>
+            </div>
+          ) : (
+          <>
           {/* Section 1: PPIs */}
           <Section title={t("myTasks.myPpis")} icon={ClipboardCheck} count={filteredPpis.length}>
             {filteredPpis.length === 0 ? (
@@ -444,9 +462,12 @@ export default function MyTasksPage() {
           {/* Section 2: Tests Due */}
           <Section title={t("myTasks.pendingTests")} icon={FlaskConical} count={filteredTests.length}>
             {filteredTests.length === 0 ? (
-              <div className="flex items-center gap-2 py-6 justify-center text-muted-foreground">
+              <div className="flex flex-col items-center gap-2 py-6 text-muted-foreground">
                 <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                <span className="text-sm">{t("myTasks.noOverdue")}</span>
+                <span className="text-sm">{t("myTasks.noTests")}</span>
+                <Button variant="link" size="sm" className="text-xs" onClick={() => navigate("/tests?tab=due")}>
+                  {t("tests.due.goToPlans")} →
+                </Button>
               </div>
             ) : (
               <div className="space-y-2">
@@ -516,7 +537,9 @@ export default function MyTasksPage() {
                 ))}
               </div>
             )}
-          </Section>
+           </Section>
+          </>
+          )}
         </>
       )}
     </div>

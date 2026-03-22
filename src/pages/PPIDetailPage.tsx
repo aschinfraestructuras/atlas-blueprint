@@ -21,6 +21,7 @@ import {
   Info,
   Bell,
   FlaskConical,
+  Eye,
 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { HPNotificationPanel } from "@/components/ppi/HPNotificationPanel";
@@ -40,6 +41,7 @@ import { PPIStatusBadge } from "@/components/ppi/PPIStatusBadge";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { LinkedDocumentsPanel } from "@/components/documents/LinkedDocumentsPanel";
 import { useProject } from "@/contexts/ProjectContext";
+import { useProjectRole } from "@/hooks/useProjectRole";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -131,6 +133,8 @@ export default function PPIDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { activeProject } = useProject();
+  const { role } = useProjectRole();
+  const isViewer = role === "viewer";
   const { user } = useAuth();
 
   useEffect(() => {
@@ -445,6 +449,13 @@ export default function PPIDetailPage() {
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto animate-fade-in">
+      {/* Viewer banner */}
+      {isViewer && (
+        <div className="rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 px-4 py-2.5 flex items-center gap-2 text-sm text-blue-700 dark:text-blue-300">
+          <Eye className="h-4 w-4 flex-shrink-0" />
+          {t("viewer.ppiBanner")}
+        </div>
+      )}
       {/* ── Back + Header ────────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div className="flex items-start gap-3 min-w-0">
@@ -477,7 +488,7 @@ export default function PPIDetailPage() {
             <PPIExportMenu instances={[exportInst]} projectName={activeProject?.name ?? ""} variant="single" />
           )}
           {/* Bulk actions (only when editable) */}
-          {!isReadOnly && items.length > 0 && (
+          {!isReadOnly && !isViewer && items.length > 0 && (
             <>
               {dirtyItems.size > 0 && (
                 <Button variant="default" size="sm" onClick={handleBulkSave} disabled={bulkSaving} className="gap-1.5 flex-shrink-0">
@@ -503,7 +514,7 @@ export default function PPIDetailPage() {
           )}
 
           {/* Status transition buttons */}
-          {availableTransitions.map((tr) => (
+          {!isViewer && availableTransitions.map((tr) => (
             <Button
               key={tr.to}
               variant={tr.variant}
@@ -519,7 +530,7 @@ export default function PPIDetailPage() {
           ))}
 
           {/* Delete draft button — only for draft status */}
-          {instance.status === "draft" && (
+          {!isViewer && instance.status === "draft" && (
             <Button
               variant="ghost"
               size="sm"

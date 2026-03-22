@@ -469,7 +469,7 @@ export default function QCReportPage() {
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs">{t("qcReport.scope", { defaultValue: "Tipo de Relatório" })}</Label>
+              <Label className="text-xs">{t("qcReport.scopeLabel", { defaultValue: "Âmbito" })}</Label>
               <Select value={reportScope} onValueChange={(v: any) => setReportScope(v)}>
                 <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -485,33 +485,33 @@ export default function QCReportPage() {
           {/* Row 2: Advanced filters */}
           <FilterBar>
             <Select value={filterWorkItem} onValueChange={setFilterWorkItem}>
-              <SelectTrigger className="h-8 w-[200px] text-xs"><SelectValue placeholder="Work Item" /></SelectTrigger>
+              <SelectTrigger className="h-8 w-[200px] text-xs"><SelectValue placeholder={t("workItems.filterAll", { defaultValue: "Todos os elementos" })} /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">{t("common.all", { defaultValue: "Todos" })} Work Items</SelectItem>
+                <SelectItem value="all">{t("workItems.filterAll", { defaultValue: "Todos os elementos" })}</SelectItem>
                 {workItems.map(wi => (
                   <SelectItem key={wi.id} value={wi.id}>{wiLabel(wi)}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
             <Select value={filterDiscipline} onValueChange={setFilterDiscipline}>
-              <SelectTrigger className="h-8 w-[160px] text-xs"><SelectValue placeholder="Disciplina" /></SelectTrigger>
+              <SelectTrigger className="h-8 w-[160px] text-xs"><SelectValue placeholder={t("common.discipline")} /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">{t("common.all", { defaultValue: "Todas" })} Disciplinas</SelectItem>
+                <SelectItem value="all">{t("common.allDisciplines", { defaultValue: "Todas as disciplinas" })}</SelectItem>
                 {DISCIPLINES.map(d => <SelectItem key={d} value={d}>{t(`documents.disciplinas.${d}`, { defaultValue: d })}</SelectItem>)}
               </SelectContent>
             </Select>
             <Select value={filterSeverity} onValueChange={setFilterSeverity}>
-              <SelectTrigger className="h-8 w-[140px] text-xs"><SelectValue placeholder="Gravidade" /></SelectTrigger>
+              <SelectTrigger className="h-8 w-[140px] text-xs"><SelectValue placeholder={t("nc.severity.label", { defaultValue: "Gravidade" })} /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">{t("common.all", { defaultValue: "Todas" })} Gravidades</SelectItem>
+                <SelectItem value="all">{t("common.allSeverities", { defaultValue: "Todas as gravidades" })}</SelectItem>
                 {SEVERITIES.map(s => <SelectItem key={s} value={s}>{t(`nc.severity.${s}`, { defaultValue: s })}</SelectItem>)}
               </SelectContent>
             </Select>
             {subcontractors.length > 0 && (
               <Select value={filterSubcontractor} onValueChange={setFilterSubcontractor}>
-                <SelectTrigger className="h-8 w-[200px] text-xs"><SelectValue placeholder="Subempreiteiro" /></SelectTrigger>
+                <SelectTrigger className="h-8 w-[200px] text-xs"><SelectValue placeholder={t("nav.subcontractors")} /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">{t("common.all", { defaultValue: "Todos" })} Subempreiteiros</SelectItem>
+                  <SelectItem value="all">{t("common.allSubcontractors", { defaultValue: "Todos os subempreiteiros" })}</SelectItem>
                   {subcontractors.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
                 </SelectContent>
               </Select>
