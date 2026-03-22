@@ -4371,7 +4371,7 @@
       "maintenance": "Manutenção"
     }
   },
-  "notifications": {
+  "emailNotifications": {
     "title": "Notificações",
     "send": "Notificar",
     "sent": "Enviado",
