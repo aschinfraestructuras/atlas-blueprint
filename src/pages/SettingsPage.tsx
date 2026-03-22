@@ -211,7 +211,7 @@ function NotificationPreferencesSection() {
 export default function SettingsPage() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const { activeProject } = useProject();
+  const { activeProject, refetchProjects } = useProject();
   const { user } = useAuth();
   const { isAdmin, role: myRole } = useProjectRole();
   const { theme, setTheme } = useTheme();
