@@ -855,6 +855,11 @@ export default function SettingsPage() {
       {/* ── 7. Branding / Logo ───────────────────────────────────────── */}
       <BrandingSection />
 
+      {/* ── 7b. Own Resources (ASCH) ─────────────────────────────────── */}
+      {(isAdmin || myRole === "quality_manager") && activeProject && (
+        <OwnResourcesSection projectId={activeProject.id} />
+      )}
+
       {/* ── 8. System Audit ──────────────────────────────────────────── */}
       {(isAdmin || myRole === "project_manager" || myRole === "quality_manager") && (
         <SettingsSection icon={ClipboardList} title={t("pages.settings.sections.audit.title", { defaultValue: "Auditoria do Sistema" })} subtitle={t("pages.settings.sections.audit.subtitle", { defaultValue: "Logs de ações, alterações e aprovações — ISO 9001" })} color={MOD.nc}>
