@@ -6,6 +6,7 @@ import { testDueService } from "@/lib/services/testDueService";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { toast } from "@/hooks/use-toast";
 import { ModuleKPICard } from "@/components/ModuleKPICard";
+import { Card, CardContent } from "@/components/ui/card";
 import { EmptyState } from "@/components/EmptyState";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
