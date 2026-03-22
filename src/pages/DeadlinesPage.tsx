@@ -56,27 +56,21 @@ const SOURCE_ROUTES: Record<string, string> = {
   subcontractor_doc: "/subcontractors",
   calibration: "/topography",
   nc_due: "/non-conformities",
-  rfi_due: "/technical-office/rfis",
-  tech_office_due: "/technical-office/items",
-  planning_due: "/planning/activities",
-  ppi_pending: "/ppi",
-  ppi_approval: "/ppi",
-  hp_notification: "/ppi",
-};
-
-const SOURCE_LIST_ROUTES: Record<string, string> = {
-  supplier_doc: "/suppliers",
-  material_doc: "/materials",
-  subcontractor_doc: "/subcontractors",
-  calibration: "/topography",
-  nc_due: "/non-conformities",
   rfi_due: "/technical-office",
   tech_office_due: "/technical-office",
   planning_due: "/planning",
   ppi_pending: "/ppi",
   ppi_approval: "/ppi",
+  quarantine_lot: "/materials",
   hp_notification: "/ppi",
 };
+
+const DETAIL_SOURCES = new Set([
+  "nc_due", "ppi_pending", "ppi_approval",
+  "supplier_doc", "material_doc", "subcontractor_doc",
+]);
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const SEVERITY_COLORS: Record<string, string> = {
   critical: "bg-destructive/10 text-destructive",
