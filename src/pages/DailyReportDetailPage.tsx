@@ -98,9 +98,33 @@ export default function DailyReportDetailPage() {
     await dailyReportService.addLabour({ daily_report_id: id, category: "Servente", name: null, time_start: null, time_end: null, hours_worked: null });
     setLabour(await dailyReportService.getLabour(id));
   };
+  const addLabourFromWorker = async (worker: ProjectWorker) => {
+    if (!id) return;
+    await dailyReportService.addLabour({
+      daily_report_id: id,
+      category: worker.role_function ?? "Servente",
+      name: worker.name,
+      time_start: null,
+      time_end: null,
+      hours_worked: null,
+    });
+    setLabour(await dailyReportService.getLabour(id));
+  };
   const addEquipmentRow = async () => {
     if (!id) return;
     await dailyReportService.addEquipment({ daily_report_id: id, designation: "Equipamento", type: null, serial_number: null, sound_power_db: null, hours_worked: null });
+    setEquipment(await dailyReportService.getEquipment(id));
+  };
+  const addEquipmentFromMachinery = async (mach: ProjectMachinery) => {
+    if (!id) return;
+    await dailyReportService.addEquipment({
+      daily_report_id: id,
+      designation: mach.designation,
+      type: mach.type ?? null,
+      serial_number: mach.serial_number ?? mach.plate ?? null,
+      sound_power_db: mach.sound_power_db ?? null,
+      hours_worked: null,
+    });
     setEquipment(await dailyReportService.getEquipment(id));
   };
   const addMaterialRow = async (materialId?: string) => {
