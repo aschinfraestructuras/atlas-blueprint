@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { useTestDueItems } from "@/hooks/useTestDueItems";
@@ -42,6 +43,7 @@ const DUE_STATUS_COLORS: Record<string, string> = {
 
 export function DueTab() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { activeProject } = useProject();
   const [filterStatus, setFilterStatus] = useState("all");
   const [search, setSearch] = useState("");
@@ -221,11 +223,7 @@ export function DueTab() {
               </p>
             </div>
             <Button variant="outline" size="sm" className="gap-1.5" onClick={() => {
-              // Navigate to plans tab — parent handles this via URL param
-              const params = new URLSearchParams(window.location.search);
-              params.set("tab", "plans");
-              window.history.replaceState({}, "", `?${params.toString()}`);
-              window.location.reload();
+              navigate("/tests?tab=plan");
             }}>
               {t("tests.due.goToPlans")} →
             </Button>

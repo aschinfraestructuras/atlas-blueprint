@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
@@ -807,6 +808,11 @@ async function seedDemoData(projectId: string, t: (k: string) => string) {
 export default function TestsPage() {
   const { t }             = useTranslation();
   const { activeProject } = useProject();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get("tab") || "due";
+  const setActiveTab = useCallback((v: string) => {
+    setSearchParams((prev) => { prev.set("tab", v); return prev; }, { replace: true });
+  }, [setSearchParams]);
 
   if (!activeProject) return <NoProjectBanner />;
 
@@ -824,7 +830,7 @@ export default function TestsPage() {
       </div>
 
       {/* Tabs — core + control modules grouped */}
-      <Tabs defaultValue="due">
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
         <div className="overflow-x-auto -mx-1 px-1">
           <TabsList className="h-auto gap-1 p-1 inline-flex w-max min-w-full sm:w-auto">
             <TabsTrigger value="due" className="gap-1.5 text-xs sm:text-sm">
