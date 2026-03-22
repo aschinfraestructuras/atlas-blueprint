@@ -461,9 +461,12 @@ export default function MyTasksPage() {
           {/* Section 2: Tests Due */}
           <Section title={t("myTasks.pendingTests")} icon={FlaskConical} count={filteredTests.length}>
             {filteredTests.length === 0 ? (
-              <div className="flex items-center gap-2 py-6 justify-center text-muted-foreground">
+              <div className="flex flex-col items-center gap-2 py-6 text-muted-foreground">
                 <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                <span className="text-sm">{t("myTasks.noOverdue")}</span>
+                <span className="text-sm">{t("myTasks.noTests")}</span>
+                <Button variant="link" size="sm" className="text-xs" onClick={() => navigate("/tests?tab=due")}>
+                  {t("tests.due.goToPlans")} →
+                </Button>
               </div>
             ) : (
               <div className="space-y-2">
