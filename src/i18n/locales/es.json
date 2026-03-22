@@ -4087,6 +4087,17 @@
     }
   },
   "traceability": {
+    "status": {
+      "approved": "Aprobado",
+      "pass": "Conforme",
+      "pending": "Pendiente",
+      "draft": "Borrador",
+      "in_progress": "En Progreso",
+      "submitted": "Enviado",
+      "fail": "No Conforme",
+      "rejected": "Rechazado",
+      "quarantine": "Cuarentena"
+    },
     "title": "Matriz de Trazabilidad",
     "subtitle": "Vista integrada: Proveedor → Material → Lote → Ensayo → PPI → Actividad",
     "searchPlaceholder": "Buscar material, proveedor, lote…",
