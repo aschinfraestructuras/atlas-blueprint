@@ -205,13 +205,72 @@ function NotificationPreferencesSection() {
   );
 }
 
+// ── Project Metadata Editor ───────────────────────────────────────────────────
+function ProjectMetadataEditor({ projectId, project, onSaved }: {
+  projectId: string; project: any; onSaved: () => Promise<void>;
+}) {
+  const { t } = useTranslation();
+  const [contractor, setContractor] = useState((project as any)?.contractor ?? "");
+  const [client, setClient] = useState((project as any)?.client ?? "");
+  const [location, setLocation] = useState((project as any)?.location ?? "");
+  const [contractNumber, setContractNumber] = useState((project as any)?.contract_number ?? "");
+  const [saving, setSaving] = useState(false);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const { error } = await supabase.from("projects").update({
+        contractor: contractor || null,
+        client: client || null,
+        location: location || null,
+        contract_number: contractNumber || null,
+      } as any).eq("id", projectId);
+      if (error) throw error;
+      await onSaved();
+      toast.success(t("common.saved", { defaultValue: "Guardado" }));
+    } catch {
+      toast.error(t("common.error"));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="space-y-3 py-3 border-b border-border/50">
+      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{t("settings.project.metadata", { defaultValue: "Dados do Projecto (PDF)" })}</p>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1">
+          <Label className="text-xs">{t("settings.project.contractor")}</Label>
+          <Input value={contractor} onChange={e => setContractor(e.target.value)} className="h-8 text-xs" placeholder={t("settings.project.contractor")} />
+        </div>
+        <div className="space-y-1">
+          <Label className="text-xs">{t("settings.project.client")}</Label>
+          <Input value={client} onChange={e => setClient(e.target.value)} className="h-8 text-xs" placeholder={t("settings.project.client")} />
+        </div>
+        <div className="space-y-1">
+          <Label className="text-xs">{t("settings.project.location")}</Label>
+          <Input value={location} onChange={e => setLocation(e.target.value)} className="h-8 text-xs" placeholder={t("settings.project.location")} />
+        </div>
+        <div className="space-y-1">
+          <Label className="text-xs">{t("settings.project.contractNumber")}</Label>
+          <Input value={contractNumber} onChange={e => setContractNumber(e.target.value)} className="h-8 text-xs" placeholder={t("settings.project.contractNumber")} />
+        </div>
+      </div>
+      <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={handleSave} disabled={saving}>
+        {saving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Check className="h-3 w-3" />}
+        {t("common.save")}
+      </Button>
+    </div>
+  );
+}
+
 // ═══════════════════════════════════════════════════════════════
 // MAIN
 // ═══════════════════════════════════════════════════════════════
 export default function SettingsPage() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const { activeProject } = useProject();
+  const { activeProject, refetchProjects } = useProject();
   const { user } = useAuth();
   const { isAdmin, role: myRole } = useProjectRole();
   const { theme, setTheme } = useTheme();
@@ -353,14 +412,17 @@ export default function SettingsPage() {
       {/* ── 1. Project Settings ──────────────────────────────────────── */}
       <SettingsSection icon={Building2} title={s("project.title")} subtitle={s("project.subtitle")} color={MOD.projects} badge={activeProject ? s("project.badgeActive") : undefined}>
         <SettingsRow label={s("project.activeProject")} description={activeProject?.name ?? s("project.noProject")} value={activeProject?.code} icon={Building2} />
-        <SettingsRow label={s("project.location")} description={activeProject?.location ?? "—"} icon={Globe} comingSoon comingSoonLabel={cs} />
+        <SettingsRow label={s("project.location")} description={(activeProject as any)?.location ?? "—"} icon={Globe} />
+        {isAdmin && activeProject && (
+          <ProjectMetadataEditor projectId={activeProject.id} project={activeProject} onSaved={refetchProjects} />
+        )}
         <SettingsRow label={s("project.notifications")} description={s("project.notificationsDesc")} icon={Bell} comingSoon comingSoonLabel={cs} />
         <div
           className="flex items-center gap-3 py-3 border-b border-border/50 hover:bg-muted/30 -mx-2 px-2 rounded-lg transition-colors duration-150 cursor-pointer"
           onClick={() => {
             if (!activeProject) return;
             const exportData = {
-              project: { name: activeProject.name, code: activeProject.code, location: activeProject.location, status: activeProject.status, start_date: (activeProject as unknown as Record<string, unknown>)?.start_date ?? null },
+              project: { name: activeProject.name, code: activeProject.code, location: (activeProject as any)?.location, status: activeProject.status, start_date: (activeProject as unknown as Record<string, unknown>)?.start_date ?? null },
               exported_at: new Date().toISOString(),
               exported_by: user?.email ?? "—",
             };

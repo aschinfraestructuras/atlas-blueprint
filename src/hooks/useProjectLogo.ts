@@ -31,13 +31,15 @@ export function useProjectLogo() {
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [logoBase64, setLogoBase64] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // Resolve logo URL from storage path
   useEffect(() => {
     const raw = (activeProject as any)?.logo_url as string | null | undefined;
-    if (!raw) { setLogoUrl(null); setLogoBase64(null); return; }
+    if (!raw) { setLogoUrl(null); setLogoBase64(null); setLoading(false); return; }
 
     let cancelled = false;
+    setLoading(true);
 
     async function resolve() {
       let url: string;
@@ -57,10 +59,10 @@ export function useProjectLogo() {
         }
         url = data.signedUrl;
       }
-      if (cancelled || !url) return;
+      if (cancelled || !url) { setLoading(false); return; }
       setLogoUrl(url);
       // Pre-fetch base64 for PDF exports
-      fetchAsBase64(url).then(b64 => { if (!cancelled) setLogoBase64(b64); });
+      fetchAsBase64(url).then(b64 => { if (!cancelled) { setLogoBase64(b64); setLoading(false); } });
     }
 
     resolve();
@@ -123,5 +125,5 @@ export function useProjectLogo() {
     }
   };
 
-  return { logoUrl, logoBase64, uploading, uploadLogo, removeLogo };
+  return { logoUrl, logoBase64, uploading, loading, uploadLogo, removeLogo };
 }

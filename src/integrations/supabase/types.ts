@@ -1280,6 +1280,101 @@ export type Database = {
           },
         ]
       }
+      distribution_list_members: {
+        Row: {
+          contact_id: string
+          created_at: string
+          id: string
+          list_id: string
+        }
+        Insert: {
+          contact_id: string
+          created_at?: string
+          id?: string
+          list_id: string
+        }
+        Update: {
+          contact_id?: string
+          created_at?: string
+          id?: string
+          list_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "distribution_list_members_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "project_contacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "distribution_list_members_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "distribution_lists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      distribution_lists: {
+        Row: {
+          created_at: string
+          description: string | null
+          entity_type: string
+          id: string
+          is_default: boolean
+          name: string
+          project_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          entity_type?: string
+          id?: string
+          is_default?: boolean
+          name: string
+          project_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          entity_type?: string
+          id?: string
+          is_default?: boolean
+          name?: string
+          project_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "distribution_lists_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "distribution_lists_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "distribution_lists_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "distribution_lists_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
       document_files: {
         Row: {
           created_at: string
@@ -2831,6 +2926,54 @@ export type Database = {
           },
         ]
       }
+      notification_recipients: {
+        Row: {
+          confirmed_at: string | null
+          contact_id: string | null
+          created_at: string
+          email: string
+          id: string
+          name: string | null
+          notification_id: string
+          sent_status: string
+        }
+        Insert: {
+          confirmed_at?: string | null
+          contact_id?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          name?: string | null
+          notification_id: string
+          sent_status?: string
+        }
+        Update: {
+          confirmed_at?: string | null
+          contact_id?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string | null
+          notification_id?: string
+          sent_status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_recipients_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "project_contacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notification_recipients_notification_id_fkey"
+            columns: ["notification_id"]
+            isOneToOne: false
+            referencedRelation: "notifications_log"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           body: string | null
@@ -2892,6 +3035,87 @@ export type Database = {
           },
           {
             foreignKeyName: "notifications_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
+      notifications_log: {
+        Row: {
+          body: string | null
+          created_at: string
+          entity_code: string | null
+          entity_id: string | null
+          entity_type: string
+          id: string
+          list_id: string | null
+          pdf_attached: boolean
+          project_id: string
+          sent_at: string
+          sent_by: string | null
+          subject: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          entity_code?: string | null
+          entity_id?: string | null
+          entity_type: string
+          id?: string
+          list_id?: string | null
+          pdf_attached?: boolean
+          project_id: string
+          sent_at?: string
+          sent_by?: string | null
+          subject: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          entity_code?: string | null
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+          list_id?: string | null
+          pdf_attached?: boolean
+          project_id?: string
+          sent_at?: string
+          sent_by?: string | null
+          subject?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_log_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "distribution_lists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_log_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_log_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "notifications_log_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "notifications_log_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "vw_project_health"
@@ -3704,6 +3928,77 @@ export type Database = {
           },
         ]
       }
+      project_contacts: {
+        Row: {
+          company: string | null
+          created_at: string
+          email: string
+          id: string
+          is_active: boolean
+          name: string
+          notes: string | null
+          phone: string | null
+          project_id: string
+          role_title: string | null
+          role_type: string
+        }
+        Insert: {
+          company?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          is_active?: boolean
+          name: string
+          notes?: string | null
+          phone?: string | null
+          project_id: string
+          role_title?: string | null
+          role_type?: string
+        }
+        Update: {
+          company?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          project_id?: string
+          role_title?: string | null
+          role_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_contacts_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_contacts_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_contacts_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_contacts_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
       project_invites: {
         Row: {
           accepted_at: string | null
@@ -3769,6 +4064,90 @@ export type Database = {
           },
         ]
       }
+      project_machinery: {
+        Row: {
+          company: string | null
+          created_at: string
+          designation: string
+          id: string
+          notes: string | null
+          plate: string | null
+          project_id: string
+          serial_number: string | null
+          sound_power_db: number | null
+          status: string
+          subcontractor_id: string | null
+          type: string | null
+          updated_at: string
+        }
+        Insert: {
+          company?: string | null
+          created_at?: string
+          designation: string
+          id?: string
+          notes?: string | null
+          plate?: string | null
+          project_id: string
+          serial_number?: string | null
+          sound_power_db?: number | null
+          status?: string
+          subcontractor_id?: string | null
+          type?: string | null
+          updated_at?: string
+        }
+        Update: {
+          company?: string | null
+          created_at?: string
+          designation?: string
+          id?: string
+          notes?: string | null
+          plate?: string | null
+          project_id?: string
+          serial_number?: string | null
+          sound_power_db?: number | null
+          status?: string
+          subcontractor_id?: string | null
+          type?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_machinery_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_machinery_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_machinery_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_machinery_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_machinery_subcontractor_id_fkey"
+            columns: ["subcontractor_id"]
+            isOneToOne: false
+            referencedRelation: "subcontractors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       project_members: {
         Row: {
           created_at: string
@@ -3829,10 +4208,93 @@ export type Database = {
           },
         ]
       }
+      project_workers: {
+        Row: {
+          company: string | null
+          created_at: string
+          has_safety_training: boolean
+          id: string
+          name: string
+          notes: string | null
+          project_id: string
+          role_function: string | null
+          status: string
+          subcontractor_id: string | null
+          updated_at: string
+          worker_number: string | null
+        }
+        Insert: {
+          company?: string | null
+          created_at?: string
+          has_safety_training?: boolean
+          id?: string
+          name: string
+          notes?: string | null
+          project_id: string
+          role_function?: string | null
+          status?: string
+          subcontractor_id?: string | null
+          updated_at?: string
+          worker_number?: string | null
+        }
+        Update: {
+          company?: string | null
+          created_at?: string
+          has_safety_training?: boolean
+          id?: string
+          name?: string
+          notes?: string | null
+          project_id?: string
+          role_function?: string | null
+          status?: string
+          subcontractor_id?: string | null
+          updated_at?: string
+          worker_number?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_workers_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_workers_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_workers_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_workers_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_workers_subcontractor_id_fkey"
+            columns: ["subcontractor_id"]
+            isOneToOne: false
+            referencedRelation: "subcontractors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       projects: {
         Row: {
           client: string | null
           code: string
+          contract_number: string | null
+          contractor: string | null
           created_at: string
           created_by: string | null
           id: string
@@ -3847,6 +4309,8 @@ export type Database = {
         Insert: {
           client?: string | null
           code: string
+          contract_number?: string | null
+          contractor?: string | null
           created_at?: string
           created_by?: string | null
           id?: string
@@ -3861,6 +4325,8 @@ export type Database = {
         Update: {
           client?: string | null
           code?: string
+          contract_number?: string | null
+          contractor?: string | null
           created_at?: string
           created_by?: string | null
           id?: string
@@ -8458,6 +8924,8 @@ export type Database = {
         Returns: {
           client: string | null
           code: string
+          contract_number: string | null
+          contractor: string | null
           created_at: string
           created_by: string | null
           id: string

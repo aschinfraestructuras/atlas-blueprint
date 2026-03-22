@@ -55,7 +55,10 @@
     "result": "Resultado",
     "saved": "Guardado com sucesso",
     "saving": "A guardar…",
-    "showAll": "Mostrar todos"
+    "showAll": "Mostrar todos",
+    "allDisciplines": "Todas as disciplinas",
+    "allSeverities": "Todas as gravidades",
+    "allSubcontractors": "Todos os subempreiteiros"
   },
   "auth": {
     "signIn": "Iniciar sessão",
@@ -889,12 +892,11 @@
       "waiveReason": "Motivo da dispensa",
       "waiveReasonPlaceholder": "Explique o motivo…",
       "waived": "Ensaio dispensado",
-      "howToSchedule": "Como agendar ensaios",
-      "step1": "Configure o Plano de Ensaios na tab Planos — adicione regras com frequência e disciplina",
-      "step2": "Clique em \"Gerar agendamentos\" para criar os ensaios obrigatórios",
-      "goToPlans": "Ir para Planos",
       "empty": "Sem ensaios agendados",
-      "noTests": "Sem ensaios agendados para esta semana."
+      "goToPlans": "Ir para Planos",
+      "howToSchedule": "Como agendar ensaios",
+      "step1": "Passo 1: Configure o Plano de Ensaios (tab Planos → seleccione um plano → adicione regras de ensaio com frequência e disciplina)",
+      "step2": "Passo 2: Clique em \"Gerar agendamentos\" para criar os ensaios obrigatórios com base nas regras configuradas"
     },
     "export": {
       "acceptanceCriteria": "Critérios de aceitação",
@@ -2297,7 +2299,8 @@
       "readiness": "Prontidão",
       "sector": "Sector",
       "status": "Estado"
-    }
+    },
+    "filterAll": "Todos os elementos"
   },
   "ppi": {
     "title": "Planos de Pontos de Inspeção (PPI)",
@@ -3034,6 +3037,13 @@
       "changeBtn": "Alterar password",
       "success": "Password alterada com sucesso.",
       "error": "Erro ao alterar password."
+    },
+    "project": {
+      "contractor": "Empreiteiro",
+      "client": "Dono de Obra",
+      "location": "Localização",
+      "contractNumber": "Número de Contrato",
+      "metadata": "Dados do Projecto (PDF)"
     }
   },
   "topography": {
@@ -3456,7 +3466,8 @@
       "overview": "Resumo",
       "sectors": "Sectores",
       "tests": "Ensaios"
-    }
+    },
+    "scopeLabel": "Âmbito"
   },
   "globalSearch": {
     "title": "Pesquisa Global",
@@ -4216,16 +4227,19 @@
     "completionRate": "Taxa de conclusão",
     "todayTasks": "Tarefas de hoje",
     "weekOverview": "Visão semanal",
-    "noOverdue": "Nenhum item em atraso",
+    "noOverdue": "Sem ensaios em atraso",
     "priorityHigh": "Prioridade alta",
-    "todayDate": "Hoje, {{date}}"
+    "todayDate": "Hoje, {{date}}",
+    "emptyAll": "Sem tarefas pendentes. Bom trabalho!",
+    "noTests": "Sem ensaios agendados para esta semana."
   },
   "welds": {
     "usPendingBanner": "soldadura(s) com US pendente há mais de 7 dias",
     "filterPendingUS": "Ver pendentes US"
   },
   "viewer": {
-    "banner": "Acesso de visualização — Fiscalização / IP · Apenas leitura e exportação"
+    "banner": "Acesso de visualização — Fiscalização / IP · Apenas leitura e exportação",
+    "ppiBanner": "Modo visualização — Fiscalização IP · Apenas leitura"
   },
   "labs": {
     "viewFile": "Ver Ficha",
@@ -4274,5 +4288,8 @@
       "corrective": "Ação Corretiva",
       "preventive": "Ação Preventiva"
     }
+  },
+  "export": {
+    "logoLoading": "A carregar logo..."
   }
 }

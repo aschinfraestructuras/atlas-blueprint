@@ -6,6 +6,8 @@ export interface Project {
   name: string;
   client: string | null;
   location: string | null;
+  contractor: string | null;
+  contract_number: string | null;
   start_date: string | null;
   status: string;
   tenant_id: string | null;
