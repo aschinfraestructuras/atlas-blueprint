@@ -8,7 +8,7 @@ import {
   Settings, Users, ShieldCheck, Sliders, Globe, Bell, Lock,
   Building2, Mail, UserCheck, Key, Database, ChevronRight,
   Plus, Trash2, UserMinus, Loader2, Sun, Moon, Monitor,
-  ImageIcon, Upload, X, ClipboardList, HardDrive, Check, Eye, EyeOff, Pencil, ShieldAlert, Rocket,
+  ImageIcon, Upload, X, ClipboardList, HardDrive, Check, Eye, EyeOff, Pencil, ShieldAlert, Rocket, Wrench,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -34,6 +34,8 @@ import { useProjectRole } from "@/hooks/useProjectRole";
 import { memberService, type ProjectMember, type ProjectInvite } from "@/lib/services/memberService";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { toast } from "sonner";
+import { WorkersPanel } from "@/components/workers/WorkersPanel";
+import { MachineryPanel } from "@/components/workers/MachineryPanel";
 
 const MOD = {
   documents: "hsl(215, 70%, 38%)", tests: "hsl(252, 55%, 45%)",
@@ -261,6 +263,19 @@ function ProjectMetadataEditor({ projectId, project, onSaved }: {
         {t("common.save")}
       </Button>
     </div>
+  );
+}
+
+// ── Own Resources Section ─────────────────────────────────────────────────────
+function OwnResourcesSection({ projectId }: { projectId: string }) {
+  const { t } = useTranslation();
+  return (
+    <SettingsSection icon={Users} title={t("settings.ownResources")} subtitle={t("settings.ownResourcesDesc", { defaultValue: "Pessoal e Equipamentos — ASCH" })} color={MOD.suppliers}>
+      <div className="space-y-4">
+        <WorkersPanel projectId={projectId} subcontractorId={null} company="ASCH" />
+        <MachineryPanel projectId={projectId} subcontractorId={null} company="ASCH" />
+      </div>
+    </SettingsSection>
   );
 }
 
@@ -854,6 +869,11 @@ export default function SettingsPage() {
 
       {/* ── 7. Branding / Logo ───────────────────────────────────────── */}
       <BrandingSection />
+
+      {/* ── 7b. Own Resources (ASCH) ─────────────────────────────────── */}
+      {(isAdmin || myRole === "quality_manager") && activeProject && (
+        <OwnResourcesSection projectId={activeProject.id} />
+      )}
 
       {/* ── 8. System Audit ──────────────────────────────────────────── */}
       {(isAdmin || myRole === "project_manager" || myRole === "quality_manager") && (

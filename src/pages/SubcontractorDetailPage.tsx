@@ -24,8 +24,10 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { ArrowLeft, HardHat, Plus, Trash2, FileCheck, AlertTriangle, ClipboardList, Briefcase, History, AlertCircle, FlaskConical, Package, Leaf, Eye } from "lucide-react";
+import { ArrowLeft, HardHat, Plus, Trash2, FileCheck, AlertTriangle, ClipboardList, Briefcase, History, AlertCircle, FlaskConical, Package, Leaf, Eye, Users, Wrench } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { WorkersPanel } from "@/components/workers/WorkersPanel";
+import { MachineryPanel } from "@/components/workers/MachineryPanel";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import { exportSubcontractorDetailPdf } from "@/lib/services/subcontractorExportService";
 import type { ReportMeta } from "@/lib/services/reportService";
@@ -354,6 +356,14 @@ export default function SubcontractorDetailPage() {
             {tests.length > 0 && <Badge variant="secondary" className="ml-1.5 text-[10px] px-1.5 py-0">{tests.length}</Badge>}
           </TabsTrigger>
           <TabsTrigger value="audit">{t("subcontractors.detail.tabs.audit")}</TabsTrigger>
+          <TabsTrigger value="workers" className="gap-1">
+            <Users className="h-3.5 w-3.5" />
+            {t("workers.title")}
+          </TabsTrigger>
+          <TabsTrigger value="machinery" className="gap-1">
+            <Wrench className="h-3.5 w-3.5" />
+            {t("machinery.title")}
+          </TabsTrigger>
         </TabsList>
 
         {/* Overview */}
@@ -661,6 +671,16 @@ export default function SubcontractorDetailPage() {
               )}
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* Workers */}
+        <TabsContent value="workers">
+          <WorkersPanel projectId={activeProject.id} subcontractorId={sub.id} company={sub.name} />
+        </TabsContent>
+
+        {/* Machinery */}
+        <TabsContent value="machinery">
+          <MachineryPanel projectId={activeProject.id} subcontractorId={sub.id} company={sub.name} />
         </TabsContent>
       </Tabs>
 
