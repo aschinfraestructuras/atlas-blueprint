@@ -85,19 +85,19 @@ async function fetchKpiSnapshot(projectId: string, refMonth: string) {
     db.from("non_conformities").select("id", { count: "exact", head: true })
       .eq("project_id", projectId).neq("status", "closed").neq("status", "archived").eq("is_deleted", false),
     db.from("non_conformities").select("id", { count: "exact", head: true })
-      .eq("project_id", projectId).eq("status", "closed").gte("closure_date", monthStart).lt("closure_date", monthEnd),
+      .eq("project_id", projectId).eq("status", "closed").eq("is_deleted", false).gte("closure_date", monthStart).lt("closure_date", monthEnd),
     db.from("test_results").select("id", { count: "exact", head: true })
-      .eq("project_id", projectId).in("pass_fail", ["pass", "conform"]),
+      .eq("project_id", projectId).eq("is_deleted", false).in("pass_fail", ["pass", "conform"]),
     db.from("test_results").select("id", { count: "exact", head: true })
-      .eq("project_id", projectId),
+      .eq("project_id", projectId).eq("is_deleted", false),
     db.from("hp_notifications").select("id", { count: "exact", head: true })
       .eq("project_id", projectId).eq("status", "confirmed"),
     db.from("hp_notifications").select("id", { count: "exact", head: true })
       .eq("project_id", projectId),
     db.from("materials").select("id", { count: "exact", head: true })
-      .eq("project_id", projectId).not("pame_code", "is", null).eq("pame_status", "approved"),
+      .eq("project_id", projectId).eq("is_deleted", false).not("pame_code", "is", null).eq("pame_status", "approved"),
     db.from("materials").select("id", { count: "exact", head: true })
-      .eq("project_id", projectId).not("pame_code", "is", null).eq("pame_status", "pending"),
+      .eq("project_id", projectId).eq("is_deleted", false).not("pame_code", "is", null).eq("pame_status", "pending"),
     db.from("ppi_instances").select("id", { count: "exact", head: true })
       .eq("project_id", projectId).eq("status", "approved").eq("is_deleted", false),
     db.from("topography_equipment").select("id", { count: "exact", head: true })

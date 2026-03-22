@@ -95,7 +95,8 @@ export const traceabilityService = {
         .from("ppi_instances")
         .select("id, code, status, work_item_id")
         .in("work_item_id", uniqueWiIds)
-        .eq("project_id", projectId);
+        .eq("project_id", projectId)
+        .eq("is_deleted", false);
 
       (ppis ?? []).forEach((p: any) => {
         if (p.work_item_id && !ppiMap[p.work_item_id]) {

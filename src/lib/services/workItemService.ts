@@ -228,6 +228,7 @@ export const workItemService = {
       .from("non_conformities")
       .select("work_item_id")
       .eq("project_id", projectId)
+      .eq("is_deleted", false)
       .neq("status", "closed")
       .not("work_item_id", "is", null);
     if (error) throw error;

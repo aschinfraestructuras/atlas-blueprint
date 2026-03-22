@@ -214,10 +214,10 @@ export const dfoService = {
   async syncItemStatuses(projectId: string): Promise<void> {
     // Batch-query counts of completed entities
     const [ppiRes, rmsgqRes, ncRes, pameRes, hpRes, auditsRes] = await Promise.all([
-      supabase.from("ppi_instances").select("id", { count: "exact", head: true }).eq("project_id", projectId).eq("status", "approved"),
+      supabase.from("ppi_instances").select("id", { count: "exact", head: true }).eq("project_id", projectId).eq("status", "approved").eq("is_deleted", false),
       supabase.from("monthly_quality_reports").select("id", { count: "exact", head: true }).eq("project_id", projectId).eq("status", "submitted"),
-      supabase.from("non_conformities").select("id", { count: "exact", head: true }).eq("project_id", projectId).eq("status", "closed"),
-      supabase.from("materials").select("id", { count: "exact", head: true }).eq("project_id", projectId).eq("pame_status", "approved"),
+      supabase.from("non_conformities").select("id", { count: "exact", head: true }).eq("project_id", projectId).eq("status", "closed").eq("is_deleted", false),
+      supabase.from("materials").select("id", { count: "exact", head: true }).eq("project_id", projectId).eq("pame_status", "approved").eq("is_deleted", false),
       supabase.from("hp_notifications").select("id", { count: "exact", head: true }).eq("project_id", projectId).eq("status", "confirmed"),
       supabase.from("quality_audits").select("id", { count: "exact", head: true }).eq("project_id", projectId).eq("status", "completed"),
     ]);
