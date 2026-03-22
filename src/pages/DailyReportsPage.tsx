@@ -40,6 +40,7 @@ export default function DailyReportsPage() {
   const { activeProject } = useProject();
   const isArchived = useArchivedProject();
   const { canDelete } = usePermissions();
+  const { isManager } = useProjectRole();
   const { data, loading, refetch } = useDailyReports();
 
   const handleDelete = async (id: string) => {
