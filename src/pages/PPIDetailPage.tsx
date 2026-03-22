@@ -21,6 +21,7 @@ import {
   Info,
   Bell,
   FlaskConical,
+  Eye,
 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { HPNotificationPanel } from "@/components/ppi/HPNotificationPanel";
