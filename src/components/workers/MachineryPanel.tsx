@@ -193,11 +193,11 @@ export function MachineryPanel({ projectId, subcontractorId, company }: Machiner
                     </TableCell>
                     <TableCell>
                       <RowActionMenu actions={[
-                        { label: t("common.edit"), icon: Pencil, onClick: () => openEdit(m) },
-                        ...(m.status !== "on_site" ? [{ label: t("machinery.status.on_site"), icon: RefreshCw, onClick: () => handleStatusChange(m, "on_site") }] : []),
-                        ...(m.status !== "off_site" ? [{ label: t("machinery.status.off_site"), icon: RefreshCw, onClick: () => handleStatusChange(m, "off_site") }] : []),
-                        ...(m.status !== "maintenance" ? [{ label: t("machinery.status.maintenance"), icon: RefreshCw, onClick: () => handleStatusChange(m, "maintenance") }] : []),
-                        { label: t("common.delete"), icon: Trash2, onClick: () => setDeleting(m), variant: "destructive" as const },
+                        { key: "edit", label: t("common.edit"), icon: Pencil, onClick: () => openEdit(m) },
+                        ...(m.status !== "on_site" ? [{ key: "to_on_site", label: t("machinery.status.on_site"), icon: RefreshCw, onClick: () => handleStatusChange(m, "on_site") }] : []),
+                        ...(m.status !== "off_site" ? [{ key: "to_off_site", label: t("machinery.status.off_site"), icon: RefreshCw, onClick: () => handleStatusChange(m, "off_site") }] : []),
+                        ...(m.status !== "maintenance" ? [{ key: "to_maint", label: t("machinery.status.maintenance"), icon: RefreshCw, onClick: () => handleStatusChange(m, "maintenance") }] : []),
+                        { key: "delete", label: t("common.delete"), icon: Trash2, onClick: () => setDeleting(m), variant: "destructive" as const },
                       ]} />
                     </TableCell>
                   </TableRow>

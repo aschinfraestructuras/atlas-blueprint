@@ -195,9 +195,9 @@ export function WorkersPanel({ projectId, subcontractorId, company }: WorkersPan
                     </TableCell>
                     <TableCell>
                       <RowActionMenu actions={[
-                        { label: t("common.edit"), icon: Pencil, onClick: () => openEdit(w) },
-                        ...(w.status === "active" ? [{ label: t("workers.deactivate"), icon: UserMinus, onClick: () => handleDeactivate(w) }] : []),
-                        { label: t("common.delete"), icon: Trash2, onClick: () => setDeleting(w), variant: "destructive" as const },
+                        { key: "edit", label: t("common.edit"), icon: Pencil, onClick: () => openEdit(w) },
+                        ...(w.status === "active" ? [{ key: "deactivate", label: t("workers.deactivate"), icon: UserMinus, onClick: () => handleDeactivate(w) }] : []),
+                        { key: "delete", label: t("common.delete"), icon: Trash2, onClick: () => setDeleting(w), variant: "destructive" as const },
                       ]} />
                     </TableCell>
                   </TableRow>
