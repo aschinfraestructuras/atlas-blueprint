@@ -36,6 +36,7 @@ import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { toast } from "sonner";
 import { WorkersPanel } from "@/components/workers/WorkersPanel";
 import { MachineryPanel } from "@/components/workers/MachineryPanel";
+import { ContactsNotificationsSection } from "@/components/settings/ContactsNotificationsSection";
 
 const MOD = {
   documents: "hsl(215, 70%, 38%)", tests: "hsl(252, 55%, 45%)",
