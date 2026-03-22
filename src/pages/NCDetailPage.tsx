@@ -37,6 +37,7 @@ import { toast } from "@/hooks/use-toast";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { cn } from "@/lib/utils";
 import { getNCTransitions, canDeleteNC, canEditNC } from "@/lib/stateMachines";
+import { NotifyEmailButton, NotificationHistory } from "@/components/notifications/EmailNotificationSection";
 
 // ─── Colour maps ──────────────────────────────────────────────────────────────
 
@@ -289,6 +290,13 @@ export default function NCDetailPage() {
 
         {/* Actions — scrollable on mobile */}
         <div className="flex items-center gap-2 flex-shrink-0 overflow-x-auto pb-1 -mb-1 sm:pb-0 sm:mb-0 sm:flex-wrap">
+          <NotifyEmailButton
+            projectId={activeProject!.id}
+            entityType="nc"
+            entityId={nc.id}
+            entityCode={nc.code ?? nc.reference}
+            defaultSubject={`NC — ${nc.code ?? nc.reference ?? ""} — ${nc.title ?? ""}`}
+          />
           {transitions.length > 0 && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -634,6 +642,9 @@ export default function NCDetailPage() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Email notification history */}
+      {activeProject && <NotificationHistory projectId={activeProject.id} entityType="nc" entityId={nc.id} />}
 
       {/* ── Edit dialog ─────────────────────────────────────────────────── */}
       <NCFormDialog

@@ -31,6 +31,7 @@ import {
   FileText, ExternalLink, LinkIcon, Download, Clock, User, CalendarDays, MapPin, FileCode,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { NotifyEmailButton, NotificationHistory } from "@/components/notifications/EmailNotificationSection";
 
 const STATUS_OPTIONS = ["open", "in_review", "answered", "closed"] as const;
 
@@ -234,6 +235,13 @@ export default function RfiDetailPage() {
           {t("common.back")}
         </Button>
         <div className="flex items-center gap-2">
+          <NotifyEmailButton
+            projectId={activeProject.id}
+            entityType="rfi"
+            entityId={rfi.id}
+            entityCode={rfi.code}
+            defaultSubject={`RFI — ${rfi.code} — ${rfi.subject}`}
+          />
           <Button variant="outline" size="sm" onClick={handleExportPdf} className="gap-1.5">
             <Download className="h-3.5 w-3.5" />
             PDF
@@ -608,6 +616,9 @@ export default function RfiDetailPage() {
           </Card>
         </div>
       </div>
+
+      {/* Email notification history */}
+      <NotificationHistory projectId={activeProject.id} entityType="rfi" entityId={rfi.id} />
     </div>
   );
 }
