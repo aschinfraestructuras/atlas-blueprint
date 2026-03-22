@@ -339,9 +339,10 @@ export default function DailyReportDetailPage() {
         <CardHeader className="flex flex-row items-center justify-between py-3">
           <CardTitle className="text-sm">{t("dailyReports.sections.labour")}</CardTitle>
           {isEditable && (
-            <Button variant="outline" size="sm" onClick={addLabourRow}>
-              <Plus className="h-3.5 w-3.5 mr-1" /> {t("common.create")}
-            </Button>
+            <WorkerPickerPopover
+              onSelect={addLabourFromWorker}
+              onManual={addLabourRow}
+            />
           )}
         </CardHeader>
         <CardContent className="p-0">
