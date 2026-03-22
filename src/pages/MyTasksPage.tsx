@@ -279,9 +279,14 @@ export default function MyTasksPage() {
     );
   }
 
+  const today = new Date().toLocaleDateString(
+    i18n.language === "es" ? "es-ES" : "pt-PT",
+    { weekday: "long", day: "numeric", month: "long", year: "numeric" }
+  );
+
   return (
     <div className="p-4 md:p-6 space-y-5 max-w-5xl mx-auto">
-      <PageHeader title={t("myTasks.title")} icon={CalendarCheck} />
+      <PageHeader title={t("myTasks.title")} subtitle={t("myTasks.todayDate", { date: today })} icon={CalendarCheck} />
 
       {/* ── KPIs Row ──────────────────────────────────────── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
