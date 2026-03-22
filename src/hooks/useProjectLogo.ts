@@ -125,5 +125,5 @@ export function useProjectLogo() {
     }
   };
 
-  return { logoUrl, logoBase64, uploading, uploadLogo, removeLogo };
+  return { logoUrl, logoBase64, uploading, loading, uploadLogo, removeLogo };
 }
