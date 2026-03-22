@@ -258,6 +258,11 @@ export default function DailyReportDetailPage() {
           <Button variant="outline" size="sm" onClick={exportPdf}>
             <FileText className="h-4 w-4 mr-1" /> {t("common.exportPdf")}
           </Button>
+          {(report.status === "submitted" || report.status === "validated") && (
+            <Button variant="outline" size="sm" onClick={handleReopen}>
+              <RotateCcw className="h-4 w-4 mr-1" /> {t("dailyReports.reopen")}
+            </Button>
+          )}
           {report.status === "draft" && (
             <Button size="sm" onClick={handleSubmit}>
               <Send className="h-4 w-4 mr-1" /> {t("dailyReports.status.submitted")}
@@ -271,17 +276,17 @@ export default function DailyReportDetailPage() {
         </div>
       </div>
 
-      {/* Section 1: Identification */}
+      {/* Section 1: Identification — editable */}
       <Card>
         <CardHeader><CardTitle className="text-sm">{t("dailyReports.sections.identification")}</CardTitle></CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-            <InfoCell label={t("dailyReports.fields.reportNumber")} value={report.report_number} />
-            <InfoCell label={t("dailyReports.fields.reportDate")} value={report.report_date} />
-            <InfoCell label={t("dailyReports.fields.weather")} value={report.weather} />
-            <InfoCell label={t("dailyReports.fields.tempMin")} value={report.temperature_min != null ? `${report.temperature_min}°C` : null} />
-            <InfoCell label={t("dailyReports.fields.tempMax")} value={report.temperature_max != null ? `${report.temperature_max}°C` : null} />
-            <InfoCell label={t("dailyReports.fields.foremanName")} value={report.foreman_name} />
+            <EditableCell label={t("dailyReports.fields.reportNumber")} value={report.report_number} editable={isEditable} onSave={v => dailyReportService.update(report.id, { report_number: v }).then(reload)} />
+            <EditableCell label={t("dailyReports.fields.reportDate")} value={report.report_date} editable={isEditable} type="date" onSave={v => dailyReportService.update(report.id, { report_date: v }).then(reload)} />
+            <EditableCell label={t("dailyReports.fields.weather")} value={report.weather} editable={isEditable} onSave={v => dailyReportService.update(report.id, { weather: v || null }).then(reload)} />
+            <EditableCell label={t("dailyReports.fields.tempMin")} value={report.temperature_min != null ? String(report.temperature_min) : ""} editable={isEditable} type="number" onSave={v => dailyReportService.update(report.id, { temperature_min: v ? Number(v) : null }).then(reload)} />
+            <EditableCell label={t("dailyReports.fields.tempMax")} value={report.temperature_max != null ? String(report.temperature_max) : ""} editable={isEditable} type="number" onSave={v => dailyReportService.update(report.id, { temperature_max: v ? Number(v) : null }).then(reload)} />
+            <EditableCell label={t("dailyReports.fields.foremanName")} value={report.foreman_name} editable={isEditable} onSave={v => dailyReportService.update(report.id, { foreman_name: v || null }).then(reload)} />
           </div>
         </CardContent>
       </Card>
@@ -290,7 +295,7 @@ export default function DailyReportDetailPage() {
       <Card>
         <CardHeader><CardTitle className="text-sm">{t("dailyReports.sections.works")}</CardTitle></CardHeader>
         <CardContent>
-          {isDraft ? (
+          {isEditable ? (
             <Textarea
               defaultValue={report.observations ?? ""}
               onBlur={e => dailyReportService.update(report.id, { observations: e.target.value }).then(reload)}
