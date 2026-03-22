@@ -132,6 +132,8 @@ export default function PPIDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { activeProject } = useProject();
+  const { role } = useProjectRole();
+  const isViewer = role === "viewer";
   const { user } = useAuth();
 
   useEffect(() => {
