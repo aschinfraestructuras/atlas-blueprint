@@ -22,6 +22,7 @@ import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 import { useProject } from "@/contexts/ProjectContext";
 import { useArchivedProject } from "@/hooks/useArchivedProject";
 import { usePermissions } from "@/hooks/usePermissions";
+import { useProjectRole } from "@/hooks/useProjectRole";
 import { useDailyReports } from "@/hooks/useDailyReports";
 import { dailyReportService } from "@/lib/services/dailyReportService";
 import { DailyReportFormDialog } from "@/components/daily-reports/DailyReportFormDialog";
