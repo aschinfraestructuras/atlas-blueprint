@@ -825,7 +825,7 @@ export default function TestsPage() {
       </div>
 
       {/* Tabs — core + control modules grouped */}
-      <Tabs defaultValue="due">
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
         <div className="overflow-x-auto -mx-1 px-1">
           <TabsList className="h-auto gap-1 p-1 inline-flex w-max min-w-full sm:w-auto">
             <TabsTrigger value="due" className="gap-1.5 text-xs sm:text-sm">
