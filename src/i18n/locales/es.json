@@ -4355,7 +4355,17 @@
     "sendBtn": "Enviar Notificación",
     "sentSuccess": "Enviado a {{count}} destinatario(s)",
     "history": "Historial de Envíos",
-    "noHistory": "Sin notificaciones enviadas"
+    "noHistory": "Sin notificaciones enviadas",
+    "attachments": {
+      "title": "Anexos",
+      "add": "Añadir fichero",
+      "none": "Sin anexos. Haga clic para añadir ficheros.",
+      "tooLarge": "Fichero demasiado grande (máx 10MB)",
+      "totalTooLarge": "Tamaño total de los anexos supera 20MB",
+      "duplicate": "Fichero ya añadido",
+      "auto": "Auto",
+      "totalSize": "Tamaño total"
+    }
   },
   "contacts": {
     "title": "Contactos del Proyecto",
