@@ -41,7 +41,7 @@ interface SupplierDocResult {
   doc_type: string;
   valid_to: string;
   supplier_id: string;
-  suppliers: { name: string } | null;
+  suppliers: { name: string; is_deleted?: boolean } | null;
 }
 
 interface SubDocResult {
