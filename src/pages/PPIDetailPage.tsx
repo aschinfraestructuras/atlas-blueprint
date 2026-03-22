@@ -529,7 +529,7 @@ export default function PPIDetailPage() {
           ))}
 
           {/* Delete draft button — only for draft status */}
-          {instance.status === "draft" && (
+          {!isViewer && instance.status === "draft" && (
             <Button
               variant="ghost"
               size="sm"
