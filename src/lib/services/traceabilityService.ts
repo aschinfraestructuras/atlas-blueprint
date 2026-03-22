@@ -64,11 +64,13 @@ export const traceabilityService = {
         .from("material_lots")
         .select("id, lot_code, reception_date, reception_status, ce_marking_ok, material_id, supplier_id, suppliers:supplier_id(id, name, code)")
         .in("material_id", materialIds)
+        .eq("is_deleted", false)
         .order("reception_date", { ascending: false }),
       (supabase as any)
         .from("test_results")
         .select("id, code, date, status, pass_fail, material_id, work_item_id")
         .in("material_id", materialIds)
+        .eq("is_deleted", false)
         .order("date", { ascending: false }),
       (supabase as any)
         .from("material_suppliers")
