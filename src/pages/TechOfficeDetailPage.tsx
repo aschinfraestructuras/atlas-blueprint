@@ -33,6 +33,7 @@ import {
   ShieldCheck, ShieldAlert, RotateCcw, Clock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { EmailNotificationSection } from "@/components/notifications/EmailNotificationSection";
 
 const STATUS_COLORS: Record<string, string> = {
   draft: "bg-muted text-muted-foreground",
