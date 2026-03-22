@@ -671,6 +671,8 @@ export default function SubcontractorDetailPage() {
               )}
             </CardContent>
           </Card>
+        </TabsContent>
+
         {/* Workers */}
         <TabsContent value="workers">
           <WorkersPanel projectId={activeProject.id} subcontractorId={sub.id} company={sub.name} />
