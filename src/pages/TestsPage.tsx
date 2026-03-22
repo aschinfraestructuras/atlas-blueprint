@@ -808,6 +808,11 @@ async function seedDemoData(projectId: string, t: (k: string) => string) {
 export default function TestsPage() {
   const { t }             = useTranslation();
   const { activeProject } = useProject();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get("tab") || "due";
+  const setActiveTab = useCallback((v: string) => {
+    setSearchParams((prev) => { prev.set("tab", v); return prev; }, { replace: true });
+  }, [setSearchParams]);
 
   if (!activeProject) return <NoProjectBanner />;
 
