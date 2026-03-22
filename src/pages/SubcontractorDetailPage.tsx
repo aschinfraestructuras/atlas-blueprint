@@ -356,6 +356,14 @@ export default function SubcontractorDetailPage() {
             {tests.length > 0 && <Badge variant="secondary" className="ml-1.5 text-[10px] px-1.5 py-0">{tests.length}</Badge>}
           </TabsTrigger>
           <TabsTrigger value="audit">{t("subcontractors.detail.tabs.audit")}</TabsTrigger>
+          <TabsTrigger value="workers" className="gap-1">
+            <Users className="h-3.5 w-3.5" />
+            {t("workers.title")}
+          </TabsTrigger>
+          <TabsTrigger value="machinery" className="gap-1">
+            <Wrench className="h-3.5 w-3.5" />
+            {t("machinery.title")}
+          </TabsTrigger>
         </TabsList>
 
         {/* Overview */}
