@@ -230,9 +230,17 @@ export default function DailyReportDetailPage() {
     printHtml(html, buildReportFilename("PD", meta.projectCode, report.report_number));
   };
 
+  const handleReopen = async () => {
+    if (!id) return;
+    await dailyReportService.reopen(id);
+    toast({ title: t("dailyReports.toast.reopened") });
+    reload();
+  };
+
   if (loading || !report) return <div className="p-8 text-center text-muted-foreground">{t("common.loading")}</div>;
 
   const isDraft = report.status === "draft";
+  const isEditable = report.status === "draft" || report.status === "submitted";
 
   return (
     <div className="space-y-6 p-6">
