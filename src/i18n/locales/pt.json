@@ -4335,6 +4335,44 @@
   },
   "settings": {
     "ownResources": "Recursos Próprios",
-    "ownResourcesDesc": "Pessoal e Equipamentos — ASCH"
+    "ownResourcesDesc": "Pessoal e Equipamentos — ASCH",
+    "contactsTab": "Contactos & Notificações",
+    "contactsTabDesc": "Gerir contactos do projecto e listas de distribuição"
+  },
+  "notifications": {
+    "title": "Notificações",
+    "send": "Notificar",
+    "sent": "Enviado",
+    "recipients": "Destinatários",
+    "selectList": "Seleccionar lista",
+    "addRecipient": "Adicionar destinatário",
+    "subject": "Assunto",
+    "message": "Mensagem",
+    "pdfAttached": "PDF em anexo",
+    "sendBtn": "Enviar Notificação",
+    "sentSuccess": "Enviado para {{count}} destinatário(s)",
+    "history": "Histórico de Envios",
+    "noHistory": "Sem notificações enviadas"
+  },
+  "contacts": {
+    "title": "Contactos do Projecto",
+    "add": "Novo Contacto",
+    "name": "Nome",
+    "email": "Email",
+    "company": "Empresa",
+    "roleTitle": "Função",
+    "roleType": {
+      "fiscalizacao": "Fiscalização",
+      "direccao_obra": "Direcção de Obra",
+      "projectista": "Projectista",
+      "cliente": "Cliente",
+      "outro": "Outro"
+    }
+  },
+  "distLists": {
+    "title": "Listas de Distribuição",
+    "add": "Nova Lista",
+    "members": "Membros",
+    "isDefault": "Lista padrão"
   }
 }
