@@ -112,12 +112,13 @@ export const expirationService = {
       .lte("valid_to", cutoffStr);
 
     if (subDocs) {
-      // Get subcontractor names
+      // Get subcontractor names (only non-deleted)
       const subIds = [...new Set(subDocs.map(d => d.subcontractor_id))];
       const { data: subs } = await supabase
         .from("subcontractors")
         .select("id, name")
-        .in("id", subIds);
+        .in("id", subIds)
+        .eq("is_deleted", false);
       const subMap = Object.fromEntries((subs ?? []).map(s => [s.id, s.name]));
 
       subDocs.forEach((d) => {
