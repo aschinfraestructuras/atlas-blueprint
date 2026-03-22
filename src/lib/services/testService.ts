@@ -424,7 +424,8 @@ export const testService = {
     const { data, error } = await supabase
       .from("test_results")
       .select("status, pass_fail")
-      .eq("work_item_id", workItemId);
+      .eq("work_item_id", workItemId)
+      .eq("is_deleted", false);
     if (error) throw error;
     const rows = data ?? [];
     return {
