@@ -3152,7 +3152,11 @@
       "location": "Ubicación",
       "contractNumber": "Número de Contrato",
       "metadata": "Datos del Proyecto (PDF)"
-    }
+    },
+    "ownResources": "Recursos Propios",
+    "ownResourcesDesc": "Personal y Equipos — ASCH",
+    "contactsTab": "Contactos y Notificaciones",
+    "contactsTabDesc": "Gestionar contactos del proyecto y listas de distribución"
   },
   "topography": {
     "title": "Mediciones & Equipos",

@@ -3064,7 +3064,11 @@
       "location": "Localização",
       "contractNumber": "Número de Contrato",
       "metadata": "Dados do Projecto (PDF)"
-    }
+    },
+    "ownResources": "Recursos Próprios",
+    "ownResourcesDesc": "Pessoal e Equipamentos — ASCH",
+    "contactsTab": "Contactos & Notificações",
+    "contactsTabDesc": "Gerir contactos do projecto e listas de distribuição"
   },
   "topography": {
     "title": "Medições & Equipamentos",
