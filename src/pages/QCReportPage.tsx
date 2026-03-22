@@ -501,9 +501,9 @@ export default function QCReportPage() {
               </SelectContent>
             </Select>
             <Select value={filterSeverity} onValueChange={setFilterSeverity}>
-              <SelectTrigger className="h-8 w-[140px] text-xs"><SelectValue placeholder="Gravidade" /></SelectTrigger>
+              <SelectTrigger className="h-8 w-[140px] text-xs"><SelectValue placeholder={t("nc.severity.label", { defaultValue: "Gravidade" })} /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">{t("common.all", { defaultValue: "Todas" })} Gravidades</SelectItem>
+                <SelectItem value="all">{t("common.allSeverities", { defaultValue: "Todas as gravidades" })}</SelectItem>
                 {SEVERITIES.map(s => <SelectItem key={s} value={s}>{t(`nc.severity.${s}`, { defaultValue: s })}</SelectItem>)}
               </SelectContent>
             </Select>
