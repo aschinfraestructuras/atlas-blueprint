@@ -209,8 +209,8 @@ export default function DailyReportDetailPage() {
       ])),
       sectionHtml(t("dailyReports.sections.works"), `<p style="padding:6px 0;">${report.observations ?? "—"}</p>`),
       sectionHtml(t("dailyReports.sections.labour"), tableHtml(
-        [t("dailyReports.labour.category"), t("dailyReports.labour.name"), t("dailyReports.labour.timeStart"), t("dailyReports.labour.timeEnd"), t("dailyReports.labour.hours")],
-        labour.map(r => [r.category, r.name ?? "", r.time_start ?? "", r.time_end ?? "", String(r.hours_worked ?? "")])
+        [t("dailyReports.labour.category"), t("dailyReports.labour.name"), t("dailyReports.labour.training"), t("dailyReports.labour.timeStart"), t("dailyReports.labour.timeEnd"), t("dailyReports.labour.hours")],
+        labour.map(r => [r.category, r.name ?? "", "—", r.time_start ?? "", r.time_end ?? "", String(r.hours_worked ?? "")])
       )),
       sectionHtml(t("dailyReports.sections.equipment"), tableHtml(
         [t("dailyReports.equipment.designation"), t("dailyReports.equipment.type"), t("dailyReports.equipment.serial"), t("dailyReports.equipment.soundPower"), t("dailyReports.equipment.hours")],
