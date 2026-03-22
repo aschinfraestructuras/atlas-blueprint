@@ -353,14 +353,17 @@ export default function SettingsPage() {
       {/* ── 1. Project Settings ──────────────────────────────────────── */}
       <SettingsSection icon={Building2} title={s("project.title")} subtitle={s("project.subtitle")} color={MOD.projects} badge={activeProject ? s("project.badgeActive") : undefined}>
         <SettingsRow label={s("project.activeProject")} description={activeProject?.name ?? s("project.noProject")} value={activeProject?.code} icon={Building2} />
-        <SettingsRow label={s("project.location")} description={activeProject?.location ?? "—"} icon={Globe} comingSoon comingSoonLabel={cs} />
+        <SettingsRow label={s("project.location")} description={(activeProject as any)?.location ?? "—"} icon={Globe} />
+        {isAdmin && activeProject && (
+          <ProjectMetadataEditor projectId={activeProject.id} project={activeProject} onSaved={refetchProjects} />
+        )}
         <SettingsRow label={s("project.notifications")} description={s("project.notificationsDesc")} icon={Bell} comingSoon comingSoonLabel={cs} />
         <div
           className="flex items-center gap-3 py-3 border-b border-border/50 hover:bg-muted/30 -mx-2 px-2 rounded-lg transition-colors duration-150 cursor-pointer"
           onClick={() => {
             if (!activeProject) return;
             const exportData = {
-              project: { name: activeProject.name, code: activeProject.code, location: activeProject.location, status: activeProject.status, start_date: (activeProject as unknown as Record<string, unknown>)?.start_date ?? null },
+              project: { name: activeProject.name, code: activeProject.code, location: (activeProject as any)?.location, status: activeProject.status, start_date: (activeProject as unknown as Record<string, unknown>)?.start_date ?? null },
               exported_at: new Date().toISOString(),
               exported_by: user?.email ?? "—",
             };
