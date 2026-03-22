@@ -536,7 +536,9 @@ export default function MyTasksPage() {
                 ))}
               </div>
             )}
-          </Section>
+           </Section>
+          </>
+          )}
         </>
       )}
     </div>
