@@ -25,8 +25,9 @@ import { toast } from "@/hooks/use-toast";
 // ─── Discipline codes (stable, stored in DB) ──────────────────────────────────
 
 const DISCIPLINE_CODES = [
-  "geral", "terras", "firmes", "betao", "drenagem",
-  "estruturas", "ferrovia", "instalacoes", "outros",
+  "geral", "estruturas", "via", "catenaria", "sinalizacao",
+  "telecomunicacoes", "drenagem", "geotecnia", "terraplenagem",
+  "pavimentacao", "outros",
 ] as const;
 
 // ─── Schema factory ───────────────────────────────────────────────────────────
