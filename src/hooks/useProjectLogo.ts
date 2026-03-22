@@ -36,9 +36,10 @@ export function useProjectLogo() {
   // Resolve logo URL from storage path
   useEffect(() => {
     const raw = (activeProject as any)?.logo_url as string | null | undefined;
-    if (!raw) { setLogoUrl(null); setLogoBase64(null); return; }
+    if (!raw) { setLogoUrl(null); setLogoBase64(null); setLoading(false); return; }
 
     let cancelled = false;
+    setLoading(true);
 
     async function resolve() {
       let url: string;
