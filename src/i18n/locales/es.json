@@ -3804,6 +3804,9 @@
       "updated": "Material reciclado actualizado"
     },
     "types": {
+      "FAM": "FAM",
+      "PAP": "PAP",
+      "BAM": "BAM",
       "OUTRO": "Otro"
     }
   },
