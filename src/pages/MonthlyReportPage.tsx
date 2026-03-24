@@ -312,7 +312,7 @@ export default function MonthlyReportPage() {
               </CardContent></Card>
             )}
             <div className="flex items-center gap-2 justify-end">
-              <Button variant="outline" onClick={() => monthlyReportService.exportPdf(r, activeProject.name)}>
+              <Button variant="outline" onClick={() => doPdf(r)}>
                 <FileText className="h-3.5 w-3.5 mr-1.5" />
                 {t("monthlyReport.exportPdf")}
               </Button>
