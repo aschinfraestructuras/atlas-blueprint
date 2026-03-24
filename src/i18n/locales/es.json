@@ -3661,7 +3661,14 @@
       "duplicate": "Fichero ya añadido",
       "auto": "Auto",
       "totalSize": "Tamaño total"
-    }
+    },
+    "confirmTitle": "Recepción Confirmada",
+    "confirmMsg": "Su recepción ha sido registrada. Puede cerrar esta ventana.",
+    "confirmError": "No fue posible confirmar la recepción. El enlace puede ser inválido.",
+    "awaitingConfirm": "Pendiente de confirmación",
+    "confirmedAt": "Confirmado {{date}}",
+    "resend": "Reenviar",
+    "failed": "Falló"
   },
   "pagination": {
     "showing": "{{from}}-{{to}} de {{total}}",
