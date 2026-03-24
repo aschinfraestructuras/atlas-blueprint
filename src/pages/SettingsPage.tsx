@@ -409,6 +409,23 @@ export default function SettingsPage() {
   const userEmail = user?.email ?? "—";
   const roleColor = ROLE_COLOR[myRole ?? "viewer"] ?? MOD.muted;
 
+  // Usage stats for admin
+  const [usageStats, setUsageStats] = useState<{ members: number; ppis: number; ncs: number; tests: number } | null>(null);
+  useEffect(() => {
+    if (!activeProject || !isAdmin) return;
+    (async () => {
+      const db = supabase as any;
+      const pid = activeProject.id;
+      const [m, p, n, te] = await Promise.all([
+        db.from("project_members").select("user_id", { count: "exact", head: true }).eq("project_id", pid).eq("is_active", true),
+        db.from("ppi_instances").select("id", { count: "exact", head: true }).eq("project_id", pid).eq("is_deleted", false).in("status", ["draft", "in_progress", "submitted"]),
+        db.from("non_conformities").select("id", { count: "exact", head: true }).eq("project_id", pid).eq("is_deleted", false).in("status", ["open", "in_progress"]),
+        db.from("test_results").select("id", { count: "exact", head: true }).eq("project_id", pid).eq("is_deleted", false).in("status", ["draft", "pending", "in_progress"]),
+      ]);
+      setUsageStats({ members: m.count ?? 0, ppis: p.count ?? 0, ncs: n.count ?? 0, tests: te.count ?? 0 });
+    })();
+  }, [activeProject, isAdmin]);
+
   return (
     <div className="space-y-6 max-w-3xl mx-auto">
 
@@ -424,6 +441,23 @@ export default function SettingsPage() {
           <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">{t("pages.settings.version")}</span>
         </div>
       </div>
+
+      {/* ── Usage Stats Pills (admin only) ───────────────────────────── */}
+      {isAdmin && usageStats && (
+        <div className="flex flex-wrap gap-2">
+          {[
+            { label: t("settings.usageMembers", { defaultValue: "Membros" }), value: usageStats.members, color: MOD.plans },
+            { label: t("settings.usagePpis", { defaultValue: "PPIs activos" }), value: usageStats.ppis, color: MOD.suppliers },
+            { label: t("settings.usageNcs", { defaultValue: "NCs abertas" }), value: usageStats.ncs, color: MOD.nc },
+            { label: t("settings.usageTests", { defaultValue: "Ensaios pendentes" }), value: usageStats.tests, color: MOD.tests },
+          ].map((pill, i) => (
+            <div key={i} className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-1.5">
+              <span className="text-lg font-black tabular-nums" style={{ color: pill.color }}>{pill.value}</span>
+              <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">{pill.label}</span>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* ── 1. Project Settings ──────────────────────────────────────── */}
       <SettingsSection icon={Building2} title={s("project.title")} subtitle={s("project.subtitle")} color={MOD.projects} badge={activeProject ? s("project.badgeActive") : undefined}>
