@@ -117,7 +117,7 @@ export function NotificationHistory({ projectId, entityType, entityId }: Pick<Ba
                   )}
                   {failedCount > 0 && (
                     <Badge variant="secondary" className="text-[9px] bg-destructive/10 text-destructive">
-                      {failedCount} falhou
+                      {failedCount} {t("notifications.failed", { defaultValue: "falhou" })}
                     </Badge>
                   )}
                 </div>
