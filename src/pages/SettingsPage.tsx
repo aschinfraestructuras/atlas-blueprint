@@ -471,18 +471,57 @@ export default function SettingsPage() {
           className="flex items-center gap-3 py-3 border-b border-border/50 hover:bg-muted/30 -mx-2 px-2 rounded-lg transition-colors duration-150 cursor-pointer"
           onClick={() => {
             if (!activeProject) return;
-            const exportData = {
-              project: { name: activeProject.name, code: activeProject.code, location: (activeProject as any)?.location, status: activeProject.status, start_date: (activeProject as unknown as Record<string, unknown>)?.start_date ?? null },
-              exported_at: new Date().toISOString(),
-              exported_by: user?.email ?? "—",
-            };
-            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = `${activeProject.code}_export.json`;
-            a.click();
-            URL.revokeObjectURL(url);
+            const ap = activeProject as any;
+            const date = new Date().toLocaleDateString("pt-PT");
+            const html = `<!DOCTYPE html><html><head><meta charset="utf-8">
+<title>Ficha do Projecto — ${activeProject.code}</title>
+<style>
+  @media print { body { margin: 0; } }
+  body { margin: 0; font-family: Arial, Helvetica, sans-serif; font-size: 12px; padding: 20px; }
+  @page { size: A4 portrait; margin: 15mm; }
+  table { border-collapse: collapse; width: 100%; margin-bottom: 16px; }
+  th, td { border: 1px solid #d1d5db; padding: 6px 10px; text-align: left; font-size: 11px; }
+  th { background: #f3f4f6; font-weight: 700; font-size: 10px; text-transform: uppercase; color: #6b7280; }
+  .section { font-weight: 700; font-size: 11px; text-transform: uppercase; color: #6b7280; margin: 20px 0 6px; border-bottom: 2px solid #192F48; padding-bottom: 3px; }
+</style></head><body>
+<div style="border-bottom: 3px solid #192F48; padding-bottom: 10px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+  <div>
+    <div style="font-size: 18px; font-weight: 900; color: #192F48;">${activeProject.name}</div>
+    <div style="font-size: 10px; color: #6b7280;">Código: ${activeProject.code}</div>
+  </div>
+  <div style="text-align: right; font-size: 10px; color: #6b7280;">
+    <div>Ficha do Projecto</div>
+    <div>${date}</div>
+    <div>Gerado por: ${user?.email ?? "—"}</div>
+  </div>
+</div>
+<div class="section">Dados do Projecto</div>
+<table>
+  <tr><th style="width:180px;">Campo</th><th>Valor</th></tr>
+  <tr><td>Nome</td><td>${activeProject.name ?? "—"}</td></tr>
+  <tr><td>Código</td><td>${activeProject.code ?? "—"}</td></tr>
+  <tr><td>Empreiteiro</td><td>${ap?.contractor ?? "—"}</td></tr>
+  <tr><td>Dono de Obra</td><td>${ap?.client ?? "—"}</td></tr>
+  <tr><td>Localização</td><td>${ap?.location ?? "—"}</td></tr>
+  <tr><td>Nº Contrato</td><td>${ap?.contract_number ?? "—"}</td></tr>
+  <tr><td>Estado</td><td>${activeProject.status ?? "—"}</td></tr>
+  <tr><td>Data de Início</td><td>${(activeProject as any)?.start_date ?? "—"}</td></tr>
+</table>
+${usageStats ? `
+<div class="section">Resumo de Utilização</div>
+<table>
+  <tr><th>Membros Activos</th><th>PPIs Activos</th><th>NCs Abertas</th><th>Ensaios Pendentes</th></tr>
+  <tr><td>${usageStats.members}</td><td>${usageStats.ppis}</td><td>${usageStats.ncs}</td><td>${usageStats.tests}</td></tr>
+</table>` : ""}
+<div style="text-align:center;font-size:8px;color:#999;margin-top:30px;">
+  Atlas QMS · Gerado em ${new Date().toLocaleString("pt-PT")}
+</div>
+</body></html>`;
+            const w = window.open("", "_blank", "width=800,height=1000");
+            if (!w) return;
+            w.document.write(html);
+            w.document.close();
+            setTimeout(() => w.print(), 400);
             toast.success(t("pages.settings.sections.project.exportDone", { defaultValue: "Dados exportados com sucesso." }));
           }}
         >
