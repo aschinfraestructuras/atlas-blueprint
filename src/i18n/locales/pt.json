@@ -3658,7 +3658,14 @@
       "duplicate": "Ficheiro já adicionado",
       "auto": "Auto",
       "totalSize": "Tamanho total"
-    }
+    },
+    "confirmTitle": "Recepção Confirmada",
+    "confirmMsg": "A sua recepção foi registada. Pode fechar esta janela.",
+    "confirmError": "Não foi possível confirmar a recepção. O link pode ser inválido.",
+    "awaitingConfirm": "Aguarda confirmação",
+    "confirmedAt": "Confirmado {{date}}",
+    "resend": "Reenviar",
+    "failed": "Falhou"
   },
   "pagination": {
     "showing": "{{from}}-{{to}} de {{total}}",

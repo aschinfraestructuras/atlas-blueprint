@@ -4025,7 +4025,21 @@
       "matPending": "Mat. Pendientes",
       "ppiCompleted": "PPIs Completados",
       "emesExpiring": "EMEs por Expirar"
-    }
+    },
+    "ensaiosSection": "Ensayos y Control",
+    "concrete": "Hormigón",
+    "welds": "Soldaduras",
+    "soils": "Suelos y Compactación",
+    "topography": "Topografía",
+    "conformRate": "% Conformes",
+    "withUT": "Con US",
+    "pendingUT": "Sin US",
+    "batches": "Amasadas",
+    "lots": "Lotes",
+    "soilSamples": "Muestras suelo",
+    "compactionTests": "Ensayos compactación",
+    "controls": "Levantamientos",
+    "expiringEquip": "Equip. por expirar"
   },
   "concrete": {
     "title": "Control de Hormigón — Fichas de Hormigonado",
