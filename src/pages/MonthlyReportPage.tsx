@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
+import { MonthlyReportTestCards } from "@/components/dashboard/MonthlyReportTestCards";
 import { EmptyState } from "@/components/EmptyState";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent } from "@/components/ui/card";
