@@ -288,16 +288,33 @@ Deno.serve(async (req: Request) => {
     const smtpPass = Deno.env.get("SMTP_PASSWORD") ?? "";
     const fromEmail = Deno.env.get("SMTP_FROM") ?? smtpUser;
 
-    const htmlBody = buildHtmlBody(subject, emailBody, entity_code, allAttachments.length);
-
     let sent = 0;
     let failed = 0;
 
     for (const recipient of recipients) {
       let sentStatus = "sent";
+
+      // Insert recipient first to get the ID for confirmation link
+      const { data: recipientRow, error: recipErr } = await supabaseAdmin
+        .from("notification_recipients")
+        .insert({
+          notification_id: logId,
+          email: recipient.email,
+          name: recipient.name || null,
+          sent_status: "pending",
+        })
+        .select("id")
+        .single();
+
+      const recipientId = recipientRow?.id;
+
+      // Build HTML with confirmation link per recipient
+      const htmlBody = buildHtmlBody(subject, emailBody, entity_code, allAttachments.length, recipientId);
+
       try {
         if (smtpUser && smtpPass) {
           await sendViaSMTP(smtpHost, smtpPort, smtpUser, smtpPass, fromEmail, recipient, subject, htmlBody, allAttachments);
+          sentStatus = "sent";
           sent++;
         } else {
           sentStatus = "failed";
@@ -310,13 +327,13 @@ Deno.serve(async (req: Request) => {
         failed++;
       }
 
-      // Log recipient
-      await supabaseAdmin.from("notification_recipients").insert({
-        notification_id: logId,
-        email: recipient.email,
-        name: recipient.name || null,
-        sent_status: sentStatus,
-      });
+      // Update recipient status
+      if (recipientId) {
+        await supabaseAdmin
+          .from("notification_recipients")
+          .update({ sent_status: sentStatus })
+          .eq("id", recipientId);
+      }
     }
 
     return new Response(

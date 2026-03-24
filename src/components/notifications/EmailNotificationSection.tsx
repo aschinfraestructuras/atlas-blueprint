@@ -129,6 +129,17 @@ export function NotificationHistory({ projectId, entityType, entityId }: Pick<Ba
                       <span className={`h-1.5 w-1.5 rounded-full flex-shrink-0 ${r.sent_status === "sent" ? "bg-emerald-500" : "bg-destructive"}`} />
                       <span className="text-muted-foreground">{r.name || r.email}</span>
                       <span className="text-muted-foreground/60 truncate">{r.email}</span>
+                      <span className="ml-auto flex-shrink-0">
+                        {r.confirmed_at ? (
+                          <Badge variant="secondary" className="text-[9px] bg-emerald-500/10 text-emerald-700 dark:text-emerald-400">
+                            ✓ {t("notifications.confirmedAt", { date: new Date(r.confirmed_at).toLocaleString(undefined, { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }), defaultValue: "Confirmado {{date}}" })}
+                          </Badge>
+                        ) : r.sent_status === "sent" ? (
+                          <Badge variant="secondary" className="text-[9px] bg-muted text-muted-foreground">
+                            {t("notifications.awaitingConfirm", { defaultValue: "Aguarda confirmação" })}
+                          </Badge>
+                        ) : null}
+                      </span>
                     </div>
                   ))}
                 </div>
