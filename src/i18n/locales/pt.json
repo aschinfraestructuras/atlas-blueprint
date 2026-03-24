@@ -3658,7 +3658,14 @@
       "duplicate": "Ficheiro já adicionado",
       "auto": "Auto",
       "totalSize": "Tamanho total"
-    }
+    },
+    "confirmTitle": "Recepção Confirmada",
+    "confirmMsg": "A sua recepção foi registada. Pode fechar esta janela.",
+    "confirmError": "Não foi possível confirmar a recepção. O link pode ser inválido.",
+    "awaitingConfirm": "Aguarda confirmação",
+    "confirmedAt": "Confirmado {{date}}",
+    "resend": "Reenviar",
+    "failed": "Falhou"
   },
   "pagination": {
     "showing": "{{from}}-{{to}} de {{total}}",
@@ -4022,7 +4029,21 @@
       "matPending": "Mat. Pendentes",
       "ppiCompleted": "PPIs Concluídos",
       "emesExpiring": "EMEs a Expirar"
-    }
+    },
+    "ensaiosSection": "Ensaios e Controlo",
+    "concrete": "Betão",
+    "welds": "Soldaduras",
+    "soils": "Solos e Compactação",
+    "topography": "Topografia",
+    "conformRate": "% Conformes",
+    "withUT": "Com US",
+    "pendingUT": "Sem US",
+    "batches": "Amassadas",
+    "lots": "Lotes",
+    "soilSamples": "Amostras solo",
+    "compactionTests": "Ensaios compactação",
+    "controls": "Levantamentos",
+    "expiringEquip": "Equip. a expirar"
   },
   "concrete": {
     "title": "Controlo de Betão — Fichas de Betonagem",

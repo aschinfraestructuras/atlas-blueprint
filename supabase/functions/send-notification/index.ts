@@ -41,13 +41,24 @@ function escapeHtml(str: string): string {
     .replace(/'/g, "&#39;");
 }
 
-function buildHtmlBody(subject: string, emailBody: string | undefined, entityCode: string | undefined, attachmentCount: number): string {
+function buildHtmlBody(subject: string, emailBody: string | undefined, entityCode: string | undefined, attachmentCount: number, recipientId?: string): string {
+  const confirmUrl = recipientId
+    ? `https://atlasquality.lovable.app/confirm-receipt?id=${recipientId}`
+    : "";
   return `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #1a1a2e;">${escapeHtml(subject)}</h2>
       ${emailBody ? `<p style="color: #333; line-height: 1.6;">${escapeHtml(emailBody).replace(/\n/g, "<br/>")}</p>` : ""}
       ${entityCode ? `<p style="color: #666; font-size: 12px;">Ref: ${escapeHtml(entityCode)}</p>` : ""}
       ${attachmentCount > 0 ? `<p style="color: #666; font-size: 12px;">📎 ${attachmentCount} anexo(s)</p>` : ""}
+      ${confirmUrl ? `
+        <div style="text-align: center; margin: 24px 0;">
+          <a href="${confirmUrl}" style="display: inline-block; padding: 12px 28px; background-color: #1a1a2e; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: 600;">
+            ✓ Confirmar Recepção
+          </a>
+        </div>
+        <p style="color: #999; font-size: 11px; text-align: center;">Clique no botão acima para confirmar que recebeu esta comunicação.</p>
+      ` : ""}
       <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
       <p style="color: #999; font-size: 11px;">Atlas Quality Management System</p>
     </div>
@@ -277,16 +288,33 @@ Deno.serve(async (req: Request) => {
     const smtpPass = Deno.env.get("SMTP_PASSWORD") ?? "";
     const fromEmail = Deno.env.get("SMTP_FROM") ?? smtpUser;
 
-    const htmlBody = buildHtmlBody(subject, emailBody, entity_code, allAttachments.length);
-
     let sent = 0;
     let failed = 0;
 
     for (const recipient of recipients) {
       let sentStatus = "sent";
+
+      // Insert recipient first to get the ID for confirmation link
+      const { data: recipientRow, error: recipErr } = await supabaseAdmin
+        .from("notification_recipients")
+        .insert({
+          notification_id: logId,
+          email: recipient.email,
+          name: recipient.name || null,
+          sent_status: "pending",
+        })
+        .select("id")
+        .single();
+
+      const recipientId = recipientRow?.id;
+
+      // Build HTML with confirmation link per recipient
+      const htmlBody = buildHtmlBody(subject, emailBody, entity_code, allAttachments.length, recipientId);
+
       try {
         if (smtpUser && smtpPass) {
           await sendViaSMTP(smtpHost, smtpPort, smtpUser, smtpPass, fromEmail, recipient, subject, htmlBody, allAttachments);
+          sentStatus = "sent";
           sent++;
         } else {
           sentStatus = "failed";
@@ -299,13 +327,13 @@ Deno.serve(async (req: Request) => {
         failed++;
       }
 
-      // Log recipient
-      await supabaseAdmin.from("notification_recipients").insert({
-        notification_id: logId,
-        email: recipient.email,
-        name: recipient.name || null,
-        sent_status: sentStatus,
-      });
+      // Update recipient status
+      if (recipientId) {
+        await supabaseAdmin
+          .from("notification_recipients")
+          .update({ sent_status: sentStatus })
+          .eq("id", recipientId);
+      }
     }
 
     return new Response(

@@ -71,6 +71,7 @@ const TraceabilityMatrixPage = lazy(() => import("./pages/TraceabilityMatrixPage
 const ActionPlanPage = lazy(() => import("./pages/ActionPlanPage"));
 const SubmittalsPage = lazy(() => import("./pages/SubmittalsPage"));
 const MyTasksPage = lazy(() => import("./pages/MyTasksPage"));
+const ConfirmReceiptPage = lazy(() => import("./pages/ConfirmReceiptPage"));
 
 function ProtectedLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -103,6 +104,7 @@ const App = () => (
                 {/* Public */}
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/reset-password" element={<ResetPasswordPage />} />
+                <Route path="/confirm-receipt" element={<ConfirmReceiptPage />} />
                 <Route path="/invite/accept" element={<ProtectedLayout><AcceptInvitePage /></ProtectedLayout>} />
 
                 {/* Protected – all share MainLayout */}
