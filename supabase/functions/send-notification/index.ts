@@ -41,13 +41,24 @@ function escapeHtml(str: string): string {
     .replace(/'/g, "&#39;");
 }
 
-function buildHtmlBody(subject: string, emailBody: string | undefined, entityCode: string | undefined, attachmentCount: number): string {
+function buildHtmlBody(subject: string, emailBody: string | undefined, entityCode: string | undefined, attachmentCount: number, recipientId?: string): string {
+  const confirmUrl = recipientId
+    ? `https://atlasquality.lovable.app/confirm-receipt?id=${recipientId}`
+    : "";
   return `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #1a1a2e;">${escapeHtml(subject)}</h2>
       ${emailBody ? `<p style="color: #333; line-height: 1.6;">${escapeHtml(emailBody).replace(/\n/g, "<br/>")}</p>` : ""}
       ${entityCode ? `<p style="color: #666; font-size: 12px;">Ref: ${escapeHtml(entityCode)}</p>` : ""}
       ${attachmentCount > 0 ? `<p style="color: #666; font-size: 12px;">📎 ${attachmentCount} anexo(s)</p>` : ""}
+      ${confirmUrl ? `
+        <div style="text-align: center; margin: 24px 0;">
+          <a href="${confirmUrl}" style="display: inline-block; padding: 12px 28px; background-color: #1a1a2e; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: 600;">
+            ✓ Confirmar Recepção
+          </a>
+        </div>
+        <p style="color: #999; font-size: 11px; text-align: center;">Clique no botão acima para confirmar que recebeu esta comunicação.</p>
+      ` : ""}
       <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
       <p style="color: #999; font-size: 11px;">Atlas Quality Management System</p>
     </div>
