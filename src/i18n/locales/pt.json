@@ -4022,7 +4022,21 @@
       "matPending": "Mat. Pendentes",
       "ppiCompleted": "PPIs Concluídos",
       "emesExpiring": "EMEs a Expirar"
-    }
+    },
+    "ensaiosSection": "Ensaios e Controlo",
+    "concrete": "Betão",
+    "welds": "Soldaduras",
+    "soils": "Solos e Compactação",
+    "topography": "Topografia",
+    "conformRate": "% Conformes",
+    "withUT": "Com US",
+    "pendingUT": "Sem US",
+    "batches": "Amassadas",
+    "lots": "Lotes",
+    "soilSamples": "Amostras solo",
+    "compactionTests": "Ensaios compactação",
+    "controls": "Levantamentos",
+    "expiringEquip": "Equip. a expirar"
   },
   "concrete": {
     "title": "Controlo de Betão — Fichas de Betonagem",
