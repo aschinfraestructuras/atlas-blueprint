@@ -222,6 +222,19 @@ export default function MonthlyReportPage() {
           )}
         </div>
 
+        {/* Test & Control Section Cards */}
+        {(() => {
+          const refDate = new Date(r.reference_month);
+          const nextM = new Date(refDate.getFullYear(), refDate.getMonth() + 1, 1);
+          return (
+            <MonthlyReportTestCards
+              projectId={activeProject.id}
+              monthStart={r.reference_month}
+              monthEnd={nextM.toISOString().slice(0, 10)}
+            />
+          );
+        })()}
+
         {/* KPI Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {kpis.map((k, i) => (
