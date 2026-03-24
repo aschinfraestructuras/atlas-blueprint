@@ -686,7 +686,15 @@ export default function SettingsPage() {
                 const color = ROLE_COLOR[m.role] ?? MOD.muted;
                 return (
                   <TableRow key={m.user_id}>
-                    <TableCell className="text-sm font-medium">{displayName}{isMe && <span className="text-muted-foreground ml-1 text-xs">({t("settings.members.you")})</span>}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2.5">
+                        <div className="flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-bold flex-shrink-0"
+                          style={{ background: `${color}18`, color, border: `1px solid ${color}28` }}>
+                          {(displayName ?? "?").charAt(0).toUpperCase()}
+                        </div>
+                        <span className="text-sm font-medium">{displayName}{isMe && <span className="text-muted-foreground ml-1 text-xs">({t("settings.members.you")})</span>}</span>
+                      </div>
+                    </TableCell>
                     <TableCell className="text-sm text-muted-foreground">{displayEmail}</TableCell>
                     <TableCell>
                       {isAdmin && !isMe ? (
