@@ -61,6 +61,20 @@ export default function MonthlyReportPage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
   const { canCreate, canEdit, canDelete } = useProjectRole();
+  const { logoBase64 } = useProjectLogo();
+
+  const projectMeta = useMemo(() => activeProject ? {
+    name: activeProject.name,
+    code: activeProject.code,
+    contractor: (activeProject as any)?.contractor ?? null,
+    client: (activeProject as any)?.client ?? null,
+    location: (activeProject as any)?.location ?? null,
+    contract_number: (activeProject as any)?.contract_number ?? null,
+  } : null, [activeProject]);
+
+  const doPdf = useCallback((r: MonthlyReport) => {
+    monthlyReportService.exportPdf(r, activeProject?.name ?? "", logoBase64, projectMeta);
+  }, [activeProject, logoBase64, projectMeta]);
 
   const [reports, setReports] = useState<MonthlyReport[]>([]);
   const [loading, setLoading] = useState(true);
