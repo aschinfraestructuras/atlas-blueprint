@@ -1,5 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import { projectInfoStripHtml } from "./pdfProjectHeader";
+import { projectInfoStripHtml, fullPdfHeader, type PdfProjectInfo } from "./pdfProjectHeader";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const db = supabase as any;
@@ -199,9 +199,7 @@ export const monthlyReportService = {
     if (error) throw error;
   },
 
-  exportPdf(report: MonthlyReport, projectName: string) {
-    const logo = `<svg width="32" height="32" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="6" fill="#2F4F75"/><path d="M16 4L6 9v7c0 5.25 4.25 10.15 10 11.35C21.75 26.15 26 21.25 26 16V9L16 4z" fill="white" fill-opacity="0.9"/><path d="M13 16l2 2 4-4" stroke="#2F4F75" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-
+  exportPdf(report: MonthlyReport, projectName: string, logoBase64?: string | null, projectMeta?: PdfProjectInfo | null) {
     const refDate = new Date(report.reference_month);
     const monthLabel = refDate.toLocaleDateString("pt-PT", { year: "numeric", month: "long" });
     const deadline = getDeadlineForMonth(report.reference_month);
@@ -233,32 +231,29 @@ export const monthlyReportService = {
       </div>
     ` : "";
 
+    const headerHtml = fullPdfHeader(
+      logoBase64 ?? null,
+      projectName,
+      report.code,
+      "0",
+      new Date().toLocaleDateString("pt-PT"),
+      projectMeta?.contractor ?? "—",
+      projectMeta?.client ?? "—",
+      projectMeta,
+    );
+
     const html = `<!DOCTYPE html>
 <html><head>
 <meta charset="utf-8">
 <title>${report.code} — Relatório Mensal SGQ</title>
 <style>
   @media print { body { margin: 0; } .no-print { display: none; } }
-  body { margin: 0; font-family: Arial, Helvetica, sans-serif; font-size: 12px; }
+  body { margin: 0; font-family: Arial, Helvetica, sans-serif; font-size: 12px; padding: 20px; }
   @page { size: A4 portrait; margin: 15mm; }
   table { border-collapse: collapse; width: 100%; }
 </style>
 </head><body>
-  <div style="background:#0f1e37;color:#fff;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;">
-    <div style="display:flex;align-items:center;gap:12px;">
-      ${logo}
-      <div>
-        <div style="font-size:18px;font-weight:900;letter-spacing:0.1em;">ATLAS QMS</div>
-        <div style="font-size:10px;opacity:0.7;">Relatório Mensal SGQ</div>
-      </div>
-    </div>
-    <div style="text-align:right;">
-      <div style="font-size:16px;font-weight:700;">${report.code}</div>
-      <div style="font-size:10px;opacity:0.7;">${projectName}</div>
-    </div>
-  </div>
-
-  ${projectInfoStripHtml()}
+  ${headerHtml}
 
   <div style="padding:20px;">
     <table style="margin-bottom:20px;">

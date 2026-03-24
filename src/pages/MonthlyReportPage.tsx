@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { useProjectRole } from "@/hooks/useProjectRole";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { MonthlyReportTestCards } from "@/components/dashboard/MonthlyReportTestCards";
 import { EmptyState } from "@/components/EmptyState";
@@ -60,6 +61,20 @@ export default function MonthlyReportPage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
   const { canCreate, canEdit, canDelete } = useProjectRole();
+  const { logoBase64 } = useProjectLogo();
+
+  const projectMeta = useMemo(() => activeProject ? {
+    name: activeProject.name,
+    code: activeProject.code,
+    contractor: (activeProject as any)?.contractor ?? null,
+    client: (activeProject as any)?.client ?? null,
+    location: (activeProject as any)?.location ?? null,
+    contract_number: (activeProject as any)?.contract_number ?? null,
+  } : null, [activeProject]);
+
+  const doPdf = useCallback((r: MonthlyReport) => {
+    monthlyReportService.exportPdf(r, activeProject?.name ?? "", logoBase64, projectMeta);
+  }, [activeProject, logoBase64, projectMeta]);
 
   const [reports, setReports] = useState<MonthlyReport[]>([]);
   const [loading, setLoading] = useState(true);
@@ -270,7 +285,7 @@ export default function MonthlyReportPage() {
                 <Send className="h-3.5 w-3.5 mr-1.5" />
                 {t("monthlyReport.submit")}
               </Button>
-              <Button variant="outline" onClick={() => monthlyReportService.exportPdf(r, activeProject.name)}>
+              <Button variant="outline" onClick={() => doPdf(r)}>
                 <FileText className="h-3.5 w-3.5 mr-1.5" />
                 PDF
               </Button>
@@ -297,7 +312,7 @@ export default function MonthlyReportPage() {
               </CardContent></Card>
             )}
             <div className="flex items-center gap-2 justify-end">
-              <Button variant="outline" onClick={() => monthlyReportService.exportPdf(r, activeProject.name)}>
+              <Button variant="outline" onClick={() => doPdf(r)}>
                 <FileText className="h-3.5 w-3.5 mr-1.5" />
                 {t("monthlyReport.exportPdf")}
               </Button>
@@ -400,7 +415,7 @@ export default function MonthlyReportPage() {
                     <RowActionMenu
                       actions={[
                         { key: "view", labelKey: "common.view", onClick: () => openDetail(r) },
-                        { key: "pdf", labelKey: "common.export", onClick: () => monthlyReportService.exportPdf(r, activeProject.name) },
+                        { key: "pdf", labelKey: "common.export", onClick: () => doPdf(r) },
                         ...(r.status === "draft" && canEdit ? [{ key: "submit", labelKey: "monthlyReport.submit", onClick: () => handleSubmit(r) }] : []),
                         ...(r.status === "draft" && canDelete ? [{ key: "delete", labelKey: "common.delete", onClick: () => setDeleteTarget(r), variant: "destructive" as const }] : []),
                       ]}
