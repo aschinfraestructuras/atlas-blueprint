@@ -71,6 +71,7 @@ const TraceabilityMatrixPage = lazy(() => import("./pages/TraceabilityMatrixPage
 const ActionPlanPage = lazy(() => import("./pages/ActionPlanPage"));
 const SubmittalsPage = lazy(() => import("./pages/SubmittalsPage"));
 const MyTasksPage = lazy(() => import("./pages/MyTasksPage"));
+const ConfirmReceiptPage = lazy(() => import("./pages/ConfirmReceiptPage"));
 
 function ProtectedLayout({ children }: { children: React.ReactNode }) {
   return (
