@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { useProjectRole } from "@/hooks/useProjectRole";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { trainingService, type TrainingSession, type TrainingAttendee } from "@/lib/services/trainingService";
 import { GraduationCap, Plus, FileText, Trash2, Eye, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -45,6 +46,7 @@ export default function TrainingPage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
   const { canCreate, canEdit } = useProjectRole();
+  const { logoBase64 } = useProjectLogo();
 
   const [sessions, setSessions] = useState<TrainingSession[]>([]);
   const [loading, setLoading] = useState(true);
@@ -156,7 +158,7 @@ export default function TrainingPage() {
   const handleExportPdf = async (session: TrainingSession) => {
     try {
       const { attendees } = await trainingService.getById(session.id);
-      trainingService.exportPdf(session, attendees, activeProject.name);
+      trainingService.exportPdf(session, attendees, activeProject.name, logoBase64);
     } catch {
       toast({ title: "Erro ao exportar", variant: "destructive" });
     }

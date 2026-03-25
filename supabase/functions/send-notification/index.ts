@@ -130,11 +130,16 @@ async function sendViaSMTP(
 
   const conn = await Deno.connect({ hostname: smtpHost, port: smtpPort });
 
-  const read = async (): Promise<string> => {
-    const buf = new Uint8Array(4096);
-    const n = await conn.read(buf);
-    return n ? decoder.decode(buf.subarray(0, n)) : "";
+  const readWithTimeout = async (c: Deno.Conn, ms = 30000): Promise<string> => {
+    const buf = new Uint8Array(8192);
+    const timer = new Promise<null>((_, reject) =>
+      setTimeout(() => reject(new Error("SMTP read timeout")), ms),
+    );
+    const n = await Promise.race([c.read(buf), timer]);
+    return n ? decoder.decode(buf.subarray(0, n as number)) : "";
   };
+
+  const read = () => readWithTimeout(conn);
 
   const writeAndRead = async (cmd: string): Promise<string> => {
     await conn.write(encoder.encode(cmd + "\r\n"));
@@ -149,11 +154,7 @@ async function sendViaSMTP(
   // Upgrade to TLS
   const tlsConn = await Deno.startTls(conn, { hostname: smtpHost });
 
-  const tlsRead = async (): Promise<string> => {
-    const buf = new Uint8Array(4096);
-    const n = await tlsConn.read(buf);
-    return n ? decoder.decode(buf.subarray(0, n)) : "";
-  };
+  const tlsRead = () => readWithTimeout(tlsConn, 60000);
 
   const tlsWriteAndRead = async (cmd: string): Promise<string> => {
     await tlsConn.write(encoder.encode(cmd + "\r\n"));
@@ -177,8 +178,13 @@ async function sendViaSMTP(
   await tlsWriteAndRead("DATA");
 
   const fullEmail = buildMimeMessage(fromEmail, recipient, subject, htmlBody, attachments);
-  await tlsConn.write(encoder.encode(fullEmail + "\r\n"));
-  const dataResp = await tlsRead();
+  const emailBytes = encoder.encode(fullEmail + "\r\n");
+  // Write in chunks to avoid buffer issues with large attachments
+  const CHUNK = 16384;
+  for (let i = 0; i < emailBytes.length; i += CHUNK) {
+    await tlsConn.write(emailBytes.subarray(i, Math.min(i + CHUNK, emailBytes.length)));
+  }
+  const dataResp = await readWithTimeout(tlsConn, 120000); // 2min for large payloads
 
   if (!dataResp.startsWith("250")) {
     try { tlsConn.close(); } catch { /* ignore */ }

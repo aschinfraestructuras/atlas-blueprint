@@ -2,7 +2,7 @@
  * Quality Audit Service — manages dedicated audit records (quality_audits table)
  */
 import { supabase } from "@/integrations/supabase/client";
-import { projectInfoStripHtml } from "./pdfProjectHeader";
+import { fullPdfHeader, projectInfoStripHtml } from "./pdfProjectHeader";
 
 export interface QualityAudit {
   id: string;
@@ -105,15 +105,14 @@ export const qualityAuditService = {
     if (error) throw error;
   },
 
-  exportRaiPdf(audit: QualityAudit, projectName: string) {
+  exportRaiPdf(audit: QualityAudit, projectName: string, logoBase64?: string | null) {
+    const today = new Date().toLocaleDateString("pt-PT");
+    const header = fullPdfHeader(logoBase64 ?? null, projectName, audit.code, "0", today);
+
     const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>RAI ${audit.code}</title>
 <style>
 @page { size: A4; margin: 18mm; }
 body { font-family: 'Segoe UI', system-ui, sans-serif; font-size: 11px; color: #1a1a1a; margin: 0; padding: 20px; }
-.header { display: flex; align-items: center; gap: 16px; border-bottom: 2px solid #2F4F75; padding-bottom: 12px; margin-bottom: 20px; }
-.logo { flex-shrink: 0; }
-.header-text h1 { font-size: 16px; margin: 0; color: #2F4F75; }
-.header-text p { margin: 2px 0 0; font-size: 11px; color: #666; }
 .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
 .meta-item { padding: 8px 12px; background: #f8f9fa; border-radius: 4px; }
 .meta-item label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.05em; color: #888; display: block; }
@@ -131,14 +130,7 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; font-size: 11px; color: #
 .sig-item .role { font-size: 9px; text-transform: uppercase; color: #888; }
 .footer { margin-top: 40px; text-align: center; font-size: 9px; color: #999; border-top: 1px solid #eee; padding-top: 8px; }
 </style></head><body>
-<div class="header">
-  <div class="logo">${ATLAS_LOGO_SVG}</div>
-  <div class="header-text">
-    <h1>ATLAS QMS — Relatório de Auditoria Interna</h1>
-    <p>${projectName}</p>
-  </div>
-</div>
-${projectInfoStripHtml()}
+${header}
 <div class="meta-grid">
   <div class="meta-item"><label>Código</label><span>${audit.code}</span></div>
   <div class="meta-item"><label>Tipo</label><span>${AUDIT_TYPE_LABELS[audit.audit_type] ?? audit.audit_type}</span></div>

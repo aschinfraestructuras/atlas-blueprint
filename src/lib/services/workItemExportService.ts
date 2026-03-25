@@ -6,7 +6,7 @@
 
 import type { WorkItem } from "./workItemService";
 import { formatPk } from "./workItemService";
-import { projectInfoStripHtml } from "./pdfProjectHeader";
+import { fullPdfHeader, projectInfoStripHtml } from "./pdfProjectHeader";
 import { esc } from "@/lib/utils/escapeHtml";
 
 // ─── Atlas brand colours ──────────────────────────────────────────────────────
@@ -191,8 +191,6 @@ function buildConsolidatedHtml(
   const topoCtrlSection = sectionHtml("Topografia — Controlos", ["Elemento", "Zona", "Desvio", "Resultado"],
     data.topoControls.map(c => [c.element, c.zone, c.deviation, statusDot(c.result)]));
 
-  const logo = `<svg width="32" height="32" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="6" fill="#2F4F75"/><path d="M16 4L6 9v7c0 5.25 4.25 10.15 10 11.35C21.75 26.15 26 21.25 26 16V9L16 4z" fill="white" fill-opacity="0.9"/><path d="M13 16l2 2 4-4" stroke="#2F4F75" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-
   return `<!DOCTYPE html>
 <html lang="${locale}">
 <head>
@@ -201,26 +199,13 @@ function buildConsolidatedHtml(
 <style>
   * { box-sizing:border-box; margin:0; padding:0; }
   body { font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-         font-size:12px; color:${BRAND.text}; background:${BRAND.white}; }
+         font-size:12px; color:${BRAND.text}; background:${BRAND.white}; padding: 20px; }
   @page { size:A4; margin:14mm 12mm; }
   @media print { .page-break { page-break-before:always; } }
 </style>
 </head>
 <body>
-  <div style="background:#0f1e37;color:#fff;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;">
-    <div style="display:flex;align-items:center;gap:12px;">
-      ${logo}
-      <div>
-        <div style="font-size:18px;font-weight:900;letter-spacing:0.1em;">ATLAS QMS</div>
-        <div style="font-size:10px;opacity:0.7;">${labels.reportTitle} — Consolidado</div>
-      </div>
-    </div>
-    <div style="text-align:right;">
-      <div style="font-size:16px;font-weight:700;">${item.sector}</div>
-      <div style="font-size:10px;opacity:0.7;">${projectName}</div>
-    </div>
-  </div>
-  ${projectInfoStripHtml()}
+  ${fullPdfHeader(null, projectName, item.sector, "0", new Date().toLocaleDateString("pt-PT"))}
 
   <div style="font-size:20px;font-weight:800;color:${BRAND.primary};margin-bottom:4px;">${item.sector}</div>
   <div style="font-size:11px;color:${BRAND.muted};margin-bottom:16px;">${labels.project}: ${projectName}</div>
