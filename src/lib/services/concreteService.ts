@@ -336,6 +336,21 @@ export const concreteService = {
     const result = computeBatchResult(batch.concrete_class, specimens);
     const isPass = result.overall === "pass";
 
+    const specRows = specimens
+      .map(
+        (s) => `
+      <tr>
+        <td style="padding:6px 8px;border-bottom:1px solid ${ATLAS_PDF.colors.rule};">${s.specimen_no}</td>
+        <td style="padding:6px 8px;border-bottom:1px solid ${ATLAS_PDF.colors.rule};">${s.mold_date}</td>
+        <td style="padding:6px 8px;border-bottom:1px solid ${ATLAS_PDF.colors.rule};">${s.cure_days}d</td>
+        <td style="padding:6px 8px;border-bottom:1px solid ${ATLAS_PDF.colors.rule};">${s.test_date ?? "—"}</td>
+        <td style="padding:6px 8px;border-bottom:1px solid ${ATLAS_PDF.colors.rule};">${s.break_load_kn ?? "—"}</td>
+        <td style="padding:6px 8px;border-bottom:1px solid ${ATLAS_PDF.colors.rule};font-weight:600;">${s.strength_mpa ?? "—"}</td>
+        <td style="padding:6px 8px;border-bottom:1px solid ${ATLAS_PDF.colors.rule};">${s.fracture_type ?? "—"}</td>
+      </tr>`,
+      )
+      .join("");
+
     const today = new Date().toLocaleDateString("pt-PT");
     const header = fullPdfHeader(logoBase64 ?? null, projectName, batch.code, "0", today);
 
