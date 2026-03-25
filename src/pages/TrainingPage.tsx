@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { useProjectRole } from "@/hooks/useProjectRole";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { trainingService, type TrainingSession, type TrainingAttendee } from "@/lib/services/trainingService";
 import { GraduationCap, Plus, FileText, Trash2, Eye, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
