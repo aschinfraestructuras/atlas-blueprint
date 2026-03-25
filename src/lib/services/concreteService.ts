@@ -336,24 +336,8 @@ export const concreteService = {
     const result = computeBatchResult(batch.concrete_class, specimens);
     const isPass = result.overall === "pass";
 
-    const logoHtml = logoBase64
-      ? `<img src="${logoBase64}" style="height:45px;max-width:150px;object-fit:contain;" />`
-      : "";
-
-    const specRows = specimens
-      .map(
-        (s) => `
-      <tr>
-        <td style="padding:6px 8px;border-bottom:1px solid ${ATLAS_PDF.colors.rule};">${s.specimen_no}</td>
-        <td style="padding:6px 8px;border-bottom:1px solid ${ATLAS_PDF.colors.rule};">${s.mold_date}</td>
-        <td style="padding:6px 8px;border-bottom:1px solid ${ATLAS_PDF.colors.rule};">${s.cure_days}d</td>
-        <td style="padding:6px 8px;border-bottom:1px solid ${ATLAS_PDF.colors.rule};">${s.test_date ?? "—"}</td>
-        <td style="padding:6px 8px;border-bottom:1px solid ${ATLAS_PDF.colors.rule};">${s.break_load_kn ?? "—"}</td>
-        <td style="padding:6px 8px;border-bottom:1px solid ${ATLAS_PDF.colors.rule};font-weight:600;">${s.strength_mpa ?? "—"}</td>
-        <td style="padding:6px 8px;border-bottom:1px solid ${ATLAS_PDF.colors.rule};">${s.fracture_type ?? "—"}</td>
-      </tr>`,
-      )
-      .join("");
+    const today = new Date().toLocaleDateString("pt-PT");
+    const header = fullPdfHeader(logoBase64 ?? null, projectName, batch.code, "0", today);
 
     const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${batch.code}</title>
       <style>body{font-family:${ATLAS_PDF.fonts.base};font-size:${ATLAS_PDF.fonts.sizes.body}pt;color:${ATLAS_PDF.colors.ink};margin:20px;}
@@ -368,15 +352,10 @@ export const concreteService = {
       .info-grid dt{color:${ATLAS_PDF.colors.muted};font-weight:600;text-transform:uppercase;font-size:7pt;}
       .sig-block{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:40px;font-size:8pt;}
       .sig-line{border-top:1px solid ${ATLAS_PDF.colors.rule};padding-top:4px;margin-top:40px;}
-      .pdf-header{display:flex;align-items:center;gap:16px;margin-bottom:4px;}
       .criterion-text{font-size:7pt;color:${ATLAS_PDF.colors.muted};margin-top:6px;font-style:italic;}
       @media print{body{margin:0;}}
       </style></head><body>
-      <div class="pdf-header">
-        ${logoHtml}
-        <h2>ATLAS QMS — Ficha de Betonagem</h2>
-      </div>
-      ${projectInfoStripHtml()}
+      ${header}
       <h3>1. Identificação</h3>
       <dl class="info-grid">
         <dt>Código</dt><dd>${batch.code}</dd>

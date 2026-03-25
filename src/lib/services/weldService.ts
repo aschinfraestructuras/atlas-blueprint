@@ -188,9 +188,8 @@ export const weldService = {
     };
     const res = resultMap[record.overall_result] ?? resultMap.pending;
 
-    const logoHtml = logoBase64
-      ? `<img src="${logoBase64}" style="height:45px;max-width:150px;object-fit:contain;" />`
-      : "";
+    const today = new Date().toLocaleDateString("pt-PT");
+    const header = fullPdfHeader(logoBase64 ?? null, projectName, record.code, "0", today);
 
     const html = `<html><head><style>
       body{font-family:Arial,sans-serif;font-size:11px;color:${ATLAS_PDF.colors.navy};margin:20px 30px}
@@ -202,13 +201,8 @@ export const weldService = {
       .result-box span{font-size:20px;font-weight:900;color:${res.color}}
       .sig-row{display:flex;justify-content:space-between;margin-top:40px}
       .sig-block{width:45%;text-align:center;border-top:1px solid #333;padding-top:6px;font-size:10px}
-      .pdf-header{display:flex;align-items:center;gap:16px;margin-bottom:6px;text-align:center}
     </style></head><body>
-      <div class="pdf-header">
-        ${logoHtml}
-        <strong style="font-size:16px;letter-spacing:2px;color:${ATLAS_PDF.colors.navy}">ATLAS QMS</strong>
-      </div>
-      ${projectInfoStripHtml()}
+      ${header}
       <h2>1. Identificação da Soldadura</h2>
       <table>
         <tr><th>Código</th><td>${record.code}</td><th>Data</th><td>${record.weld_date}</td></tr>
