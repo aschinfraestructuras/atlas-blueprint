@@ -25,7 +25,7 @@ import { projectContactService, type ProjectContact } from "@/lib/services/proje
 import { distributionListService, type DistributionList } from "@/lib/services/distributionListService";
 
 const ROLE_TYPES = ["fiscalizacao", "direccao_obra", "projectista", "cliente", "outro"];
-const ENTITY_TYPES = ["hp", "nc", "rfi", "submittal", "transmittal", "geral"];
+const ENTITY_TYPES = ["all", "hp", "nc", "rfi", "submittal", "transmittal"];
 
 interface Props {
   projectId: string;
