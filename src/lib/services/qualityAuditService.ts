@@ -2,7 +2,7 @@
  * Quality Audit Service — manages dedicated audit records (quality_audits table)
  */
 import { supabase } from "@/integrations/supabase/client";
-import { projectInfoStripHtml } from "./pdfProjectHeader";
+import { fullPdfHeader, projectInfoStripHtml } from "./pdfProjectHeader";
 
 export interface QualityAudit {
   id: string;
