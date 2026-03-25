@@ -1,6 +1,10 @@
 /**
  * Shared project identification header strip for all PDF exports.
  * Renders a compact 2-row grid below the main header with project metadata.
+ *
+ * Use setCurrentProjectMeta() before triggering any export so that all
+ * calls to projectInfoStripHtml() (even without arguments) pick up the
+ * active project's data automatically.
  */
 
 import { escapeHtml } from "@/lib/utils/escapeHtml";
@@ -14,21 +18,30 @@ export interface PdfProjectInfo {
   contract_number?: string | null;
 }
 
+// ── Module-level registry ─────────────────────────────────────────────────────
+let _currentMeta: PdfProjectInfo | null = null;
+
+/** Call once (e.g. from a React effect) so every export picks up the data. */
+export function setCurrentProjectMeta(meta: PdfProjectInfo | null): void {
+  _currentMeta = meta;
+}
+
 function val(v?: string | null): string {
   return v ? escapeHtml(v) : "—";
 }
 
 export function projectInfoStripHtml(project?: PdfProjectInfo | null): string {
+  const p = project ?? _currentMeta;
   return `
   <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:8px 20px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:10px;">
-    <div><span style="color:#6b7280;font-weight:600;">EMPREITADA</span><br>${val(project?.code)} — ${val(project?.name)}</div>
-    <div><span style="color:#6b7280;font-weight:600;">EMPREITEIRO</span><br>${val(project?.contractor)}</div>
-    <div><span style="color:#6b7280;font-weight:600;">DONO DE OBRA</span><br>${val(project?.client)}</div>
+    <div><span style="color:#6b7280;font-weight:600;">EMPREITADA</span><br>${val(p?.code)} — ${val(p?.name)}</div>
+    <div><span style="color:#6b7280;font-weight:600;">EMPREITEIRO</span><br>${val(p?.contractor)}</div>
+    <div><span style="color:#6b7280;font-weight:600;">DONO DE OBRA</span><br>${val(p?.client)}</div>
   </div>
   <div style="background:#f8fafc;border:1px solid #e2e8f0;border-top:0;padding:6px 20px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:10px;margin-bottom:16px;">
-    <div><span style="color:#6b7280;font-weight:600;">LOCALIZAÇÃO</span><br>${val(project?.location)}</div>
+    <div><span style="color:#6b7280;font-weight:600;">LOCALIZAÇÃO</span><br>${val(p?.location)}</div>
     <div><span style="color:#6b7280;font-weight:600;">EXTENSÃO</span><br>—</div>
-    <div><span style="color:#6b7280;font-weight:600;">CONTRATO</span><br>${val(project?.contract_number)}</div>
+    <div><span style="color:#6b7280;font-weight:600;">CONTRATO</span><br>${val(p?.contract_number)}</div>
   </div>`;
 }
 

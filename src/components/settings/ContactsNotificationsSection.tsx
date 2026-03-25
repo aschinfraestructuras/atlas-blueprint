@@ -448,7 +448,7 @@ export function ContactsNotificationsSection({ projectId }: Props) {
                   <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     {ENTITY_TYPES.map(et => (
-                      <SelectItem key={et} value={et}>{et.toUpperCase()}</SelectItem>
+                      <SelectItem key={et} value={et}>{t(`distLists.types.${et}`, { defaultValue: et })}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
