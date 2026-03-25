@@ -84,4 +84,3 @@ export function fullPdfHeader(
   </div>
   ${projectInfoStripHtml(meta)}`;
 }
-}
