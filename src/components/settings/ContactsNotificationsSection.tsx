@@ -46,7 +46,7 @@ export function ContactsNotificationsSection({ projectId }: Props) {
   // List dialog
   const [listDialogOpen, setListDialogOpen] = useState(false);
   const [editingList, setEditingList] = useState<DistributionList | null>(null);
-  const [listForm, setListForm] = useState({ name: "", description: "", entity_type: "geral", is_default: false });
+  const [listForm, setListForm] = useState({ name: "", description: "", entity_type: "all", is_default: false });
   const [listMembers, setListMembers] = useState<string[]>([]);
   const [savingList, setSavingList] = useState(false);
 
