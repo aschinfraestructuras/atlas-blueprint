@@ -141,7 +141,7 @@ export const trainingService = {
     if (error) throw error;
   },
 
-  exportPdf(session: TrainingSession, attendees: TrainingAttendee[], projectName: string) {
+  exportPdf(session: TrainingSession, attendees: TrainingAttendee[], projectName: string, logoBase64?: string | null) {
     const typeLabels: Record<string, string> = {
       initial: "Formação Inicial",
       new_personnel: "Integração de Novos Colaboradores",
