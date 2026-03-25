@@ -284,7 +284,7 @@ export default function AuditsPage() {
                     <RowActionMenu
                       actions={[
                         ...(canEdit ? [{ key: "edit", labelKey: "common.edit", onClick: () => openEdit(audit) }] : []),
-                        { key: "export", label: "Exportar RAI (PDF)", onClick: () => qualityAuditService.exportRaiPdf(audit, activeProject.name ?? "Projeto") },
+                        { key: "export", label: "Exportar RAI (PDF)", onClick: () => qualityAuditService.exportRaiPdf(audit, activeProject.name ?? "Projeto", logoBase64) },
                         ...(canDelete ? [{ key: "delete", labelKey: "common.delete", onClick: () => setDeleteTarget(audit), variant: "destructive" as const }] : []),
                       ]}
                     />
