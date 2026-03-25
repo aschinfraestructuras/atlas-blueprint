@@ -1,6 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { ATLAS_PDF } from "@/lib/atlas-pdf-theme";
-import { projectInfoStripHtml } from "./pdfProjectHeader";
+import { fullPdfHeader, projectInfoStripHtml } from "./pdfProjectHeader";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
