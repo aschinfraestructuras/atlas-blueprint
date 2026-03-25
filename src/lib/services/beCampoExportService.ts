@@ -67,21 +67,7 @@ export function exportBeCampoPdf(
   @page{size:A4 portrait;margin:14mm 12mm}
 </style>
 </head><body>
-  <div class="header">
-    <div style="display:flex;align-items:center;gap:12px">
-      ${logoBase64 ? `<img src="${logoBase64}" style="height:45px;max-width:150px;object-fit:contain;" />` : ""}
-      <div>
-        <h2 style="color:${BRAND.primary};font-size:18px;font-weight:900;margin:0">ATLAS QMS</h2>
-        <p style="color:#777;margin:2px 0 0;font-size:10px">${projectName}</p>
-      </div>
-    </div>
-    <div style="text-align:right">
-      <h2 style="font-size:16px;color:${BRAND.primary};font-weight:900;margin:0">${code}</h2>
-      <p style="margin:2px 0 0;color:#777;font-size:9px;text-transform:uppercase;letter-spacing:.1em">Boletim de Ensaio de Campo</p>
-    </div>
-  </div>
-
-  ${projectInfoStripHtml()}
+  ${fullPdfHeader(logoBase64 ?? null, projectName, code, "0", new Date().toLocaleDateString("pt-PT"))}
 
    <h3>1. Identificação</h3>
   <div class="info-grid">
