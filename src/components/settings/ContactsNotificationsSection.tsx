@@ -137,7 +137,7 @@ export function ContactsNotificationsSection({ projectId }: Props) {
       distributionListService.getMembersOfList(list.id).then(m => setListMembers(m.map(c => c.id))).catch(() => {});
     } else {
       setEditingList(null);
-      setListForm({ name: "", description: "", entity_type: "geral", is_default: false });
+      setListForm({ name: "", description: "", entity_type: "all", is_default: false });
       setListMembers([]);
     }
     setListDialogOpen(true);
