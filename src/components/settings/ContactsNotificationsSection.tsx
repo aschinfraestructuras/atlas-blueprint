@@ -25,7 +25,7 @@ import { projectContactService, type ProjectContact } from "@/lib/services/proje
 import { distributionListService, type DistributionList } from "@/lib/services/distributionListService";
 
 const ROLE_TYPES = ["fiscalizacao", "direccao_obra", "projectista", "cliente", "outro"];
-const ENTITY_TYPES = ["hp", "nc", "rfi", "submittal", "transmittal", "geral"];
+const ENTITY_TYPES = ["all", "hp", "nc", "rfi", "submittal", "transmittal"];
 
 interface Props {
   projectId: string;
@@ -46,7 +46,7 @@ export function ContactsNotificationsSection({ projectId }: Props) {
   // List dialog
   const [listDialogOpen, setListDialogOpen] = useState(false);
   const [editingList, setEditingList] = useState<DistributionList | null>(null);
-  const [listForm, setListForm] = useState({ name: "", description: "", entity_type: "geral", is_default: false });
+  const [listForm, setListForm] = useState({ name: "", description: "", entity_type: "all", is_default: false });
   const [listMembers, setListMembers] = useState<string[]>([]);
   const [savingList, setSavingList] = useState(false);
 
@@ -137,7 +137,7 @@ export function ContactsNotificationsSection({ projectId }: Props) {
       distributionListService.getMembersOfList(list.id).then(m => setListMembers(m.map(c => c.id))).catch(() => {});
     } else {
       setEditingList(null);
-      setListForm({ name: "", description: "", entity_type: "geral", is_default: false });
+      setListForm({ name: "", description: "", entity_type: "all", is_default: false });
       setListMembers([]);
     }
     setListDialogOpen(true);
@@ -315,7 +315,7 @@ export function ContactsNotificationsSection({ projectId }: Props) {
                 >
                   {expandedListId === l.id ? <ChevronDown className="h-3 w-3 text-muted-foreground" /> : <ChevronRight className="h-3 w-3 text-muted-foreground" />}
                   <span className="text-xs font-medium flex-1">{l.name}</span>
-                  <Badge variant="outline" className="text-[9px]">{l.entity_type}</Badge>
+                  <Badge variant="outline" className="text-[9px]">{t(`distLists.types.${l.entity_type}`, { defaultValue: l.entity_type })}</Badge>
                   {l.is_default && <Badge variant="secondary" className="text-[9px]">★ {t("distLists.isDefault", { defaultValue: "Padrão" })}</Badge>}
                   <div className="flex gap-1" onClick={e => e.stopPropagation()}>
                     <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => openListDialog(l)}>
@@ -448,7 +448,7 @@ export function ContactsNotificationsSection({ projectId }: Props) {
                   <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     {ENTITY_TYPES.map(et => (
-                      <SelectItem key={et} value={et}>{et.toUpperCase()}</SelectItem>
+                      <SelectItem key={et} value={et}>{t(`distLists.types.${et}`, { defaultValue: et })}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>

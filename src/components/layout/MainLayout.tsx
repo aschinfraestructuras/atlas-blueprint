@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { setCurrentProjectMeta } from "@/lib/services/pdfProjectHeader";
 import { useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Eye } from "lucide-react";
@@ -26,6 +27,22 @@ export function MainLayout({ children }: MainLayoutProps) {
   const { role } = useProjectRole();
   const isViewer = role === "viewer";
   const location = useLocation();
+
+  // Keep PDF header registry in sync with active project
+  useEffect(() => {
+    if (activeProject) {
+      setCurrentProjectMeta({
+        name: activeProject.name,
+        code: activeProject.code,
+        contractor: (activeProject as any)?.contractor ?? null,
+        client: (activeProject as any)?.client ?? null,
+        location: (activeProject as any)?.location ?? null,
+        contract_number: (activeProject as any)?.contract_number ?? null,
+      });
+    } else {
+      setCurrentProjectMeta(null);
+    }
+  }, [activeProject]);
 
   // Dynamic browser tab title
   useEffect(() => {

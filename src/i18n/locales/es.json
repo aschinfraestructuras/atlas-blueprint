@@ -4436,6 +4436,14 @@
     "title": "Listas de Distribución",
     "add": "Nueva Lista",
     "members": "Miembros",
-    "isDefault": "Lista predeterminada"
+    "isDefault": "Lista predeterminada",
+    "types": {
+      "all": "General",
+      "hp": "Hold Points (HP)",
+      "nc": "No Conformidades",
+      "rfi": "RFI",
+      "submittal": "Submittal",
+      "transmittal": "Transmittal"
+    }
   }
 }
