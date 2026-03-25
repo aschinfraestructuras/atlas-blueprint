@@ -178,8 +178,13 @@ async function sendViaSMTP(
   await tlsWriteAndRead("DATA");
 
   const fullEmail = buildMimeMessage(fromEmail, recipient, subject, htmlBody, attachments);
-  await tlsConn.write(encoder.encode(fullEmail + "\r\n"));
-  const dataResp = await tlsRead();
+  const emailBytes = encoder.encode(fullEmail + "\r\n");
+  // Write in chunks to avoid buffer issues with large attachments
+  const CHUNK = 16384;
+  for (let i = 0; i < emailBytes.length; i += CHUNK) {
+    await tlsConn.write(emailBytes.subarray(i, Math.min(i + CHUNK, emailBytes.length)));
+  }
+  const dataResp = await readWithTimeout(tlsConn, 120000); // 2min for large payloads
 
   if (!dataResp.startsWith("250")) {
     try { tlsConn.close(); } catch { /* ignore */ }
