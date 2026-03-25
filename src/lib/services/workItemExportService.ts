@@ -191,8 +191,6 @@ function buildConsolidatedHtml(
   const topoCtrlSection = sectionHtml("Topografia — Controlos", ["Elemento", "Zona", "Desvio", "Resultado"],
     data.topoControls.map(c => [c.element, c.zone, c.deviation, statusDot(c.result)]));
 
-  const logoImg = item.logoBase64 ? `<img src="${item.logoBase64}" style="height:12mm;max-width:40mm;object-fit:contain;" />` : "";
-
   return `<!DOCTYPE html>
 <html lang="${locale}">
 <head>
@@ -207,7 +205,7 @@ function buildConsolidatedHtml(
 </style>
 </head>
 <body>
-  ${fullPdfHeader(item.logoBase64 ?? null, projectName, item.sector, "0", new Date().toLocaleDateString("pt-PT"))}
+  ${fullPdfHeader(null, projectName, item.sector, "0", new Date().toLocaleDateString("pt-PT"))}
 
   <div style="font-size:20px;font-weight:800;color:${BRAND.primary};margin-bottom:4px;">${item.sector}</div>
   <div style="font-size:11px;color:${BRAND.muted};margin-bottom:16px;">${labels.project}: ${projectName}</div>
