@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { setCurrentProjectMeta } from "@/lib/services/pdfProjectHeader";
 import { useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Eye } from "lucide-react";
