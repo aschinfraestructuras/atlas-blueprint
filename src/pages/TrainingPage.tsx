@@ -46,6 +46,7 @@ export default function TrainingPage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
   const { canCreate, canEdit } = useProjectRole();
+  const { logoBase64 } = useProjectLogo();
 
   const [sessions, setSessions] = useState<TrainingSession[]>([]);
   const [loading, setLoading] = useState(true);
