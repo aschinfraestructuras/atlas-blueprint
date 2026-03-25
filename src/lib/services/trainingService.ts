@@ -171,7 +171,8 @@ export const trainingService = {
       </tr>
     `).join("");
 
-    const logo = `<svg width="32" height="32" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="6" fill="#2F4F75"/><path d="M16 4L6 9v7c0 5.25 4.25 10.15 10 11.35C21.75 26.15 26 21.25 26 16V9L16 4z" fill="white" fill-opacity="0.9"/><path d="M13 16l2 2 4-4" stroke="#2F4F75" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+    const today = new Date().toLocaleDateString("pt-PT");
+    const header = fullPdfHeader(logoBase64 ?? null, projectName, session.code, "0", today);
 
     const html = `<!DOCTYPE html>
 <html><head>
@@ -179,28 +180,14 @@ export const trainingService = {
 <title>${session.code} — Registo de Formação</title>
 <style>
   @media print { body { margin: 0; } .no-print { display: none; } }
-  body { margin: 0; font-family: Arial, Helvetica, sans-serif; font-size: 12px; }
+  body { margin: 0; padding: 20px; font-family: Arial, Helvetica, sans-serif; font-size: 12px; }
   @page { size: A4 portrait; margin: 15mm; }
   table { border-collapse: collapse; width: 100%; }
 </style>
 </head><body>
-  <div style="background:#0f1e37;color:#fff;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;">
-    <div style="display:flex;align-items:center;gap:12px;">
-      ${logo}
-      <div>
-        <div style="font-size:18px;font-weight:900;letter-spacing:0.1em;">ATLAS QMS</div>
-        <div style="font-size:10px;opacity:0.7;">Registo de Formação</div>
-      </div>
-    </div>
-    <div style="text-align:right;">
-      <div style="font-size:16px;font-weight:700;">${session.code}</div>
-      <div style="font-size:10px;opacity:0.7;">${projectName}</div>
-    </div>
-  </div>
+  ${header}
 
-  ${projectInfoStripHtml()}
-
-  <div style="padding:20px;">
+  <div style="padding:0 0 20px 0;">
     <table style="margin-bottom:20px;">
       <tr>
         <td style="padding:6px 8px;font-weight:700;width:160px;border:1px solid #d1d5db;background:#f3f4f6;">Tipo</td>
