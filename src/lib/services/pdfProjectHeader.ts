@@ -54,10 +54,14 @@ export function fullPdfHeader(
   docCode: string,
   revision: string,
   date: string,
-  empreiteiro = "—",
-  donoObra = "—",
+  empreiteiro?: string,
+  donoObra?: string,
   projectMeta?: PdfProjectInfo | null,
 ): string {
+  const meta = projectMeta ?? _currentMeta;
+  const emp = empreiteiro && empreiteiro !== "—" ? empreiteiro : (meta?.contractor ?? "—");
+  const dono = donoObra && donoObra !== "—" ? donoObra : (meta?.client ?? "—");
+
   const logoHtml = logoBase64
     ? `<img src="${logoBase64}" style="height:12mm;max-width:40mm;object-fit:contain;" />`
     : `<div style="width:40mm;height:12mm;background:#192F48;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:900;letter-spacing:-0.5px;">ATLAS</div>`;
@@ -68,8 +72,8 @@ export function fullPdfHeader(
       ${logoHtml}
       <div>
         <div style="font-size:14px;font-weight:800;color:#192F48;line-height:1.2;">${escapeHtml(projectName)}</div>
-        <div style="font-size:9px;color:#6B7280;margin-top:2px;">${escapeHtml(empreiteiro)}</div>
-        <div style="font-size:9px;color:#6B7280;">${escapeHtml(donoObra)}</div>
+        <div style="font-size:9px;color:#6B7280;margin-top:2px;">${escapeHtml(emp)}</div>
+        <div style="font-size:9px;color:#6B7280;">${escapeHtml(dono)}</div>
       </div>
     </div>
     <div style="text-align:right;">
@@ -78,5 +82,6 @@ export function fullPdfHeader(
       <div style="font-size:9px;color:#6B7280;">${escapeHtml(date)}</div>
     </div>
   </div>
-  ${projectInfoStripHtml(projectMeta)}`;
+  ${projectInfoStripHtml(meta)}`;
+}
 }
