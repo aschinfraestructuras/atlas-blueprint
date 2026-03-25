@@ -154,11 +154,7 @@ async function sendViaSMTP(
   // Upgrade to TLS
   const tlsConn = await Deno.startTls(conn, { hostname: smtpHost });
 
-  const tlsRead = async (): Promise<string> => {
-    const buf = new Uint8Array(4096);
-    const n = await tlsConn.read(buf);
-    return n ? decoder.decode(buf.subarray(0, n)) : "";
-  };
+  const tlsRead = () => readWithTimeout(tlsConn, 60000);
 
   const tlsWriteAndRead = async (cmd: string): Promise<string> => {
     await tlsConn.write(encoder.encode(cmd + "\r\n"));
