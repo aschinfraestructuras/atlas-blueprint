@@ -315,7 +315,7 @@ export function ContactsNotificationsSection({ projectId }: Props) {
                 >
                   {expandedListId === l.id ? <ChevronDown className="h-3 w-3 text-muted-foreground" /> : <ChevronRight className="h-3 w-3 text-muted-foreground" />}
                   <span className="text-xs font-medium flex-1">{l.name}</span>
-                  <Badge variant="outline" className="text-[9px]">{l.entity_type}</Badge>
+                  <Badge variant="outline" className="text-[9px]">{t(`distLists.types.${l.entity_type}`, { defaultValue: l.entity_type })}</Badge>
                   {l.is_default && <Badge variant="secondary" className="text-[9px]">★ {t("distLists.isDefault", { defaultValue: "Padrão" })}</Badge>}
                   <div className="flex gap-1" onClick={e => e.stopPropagation()}>
                     <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => openListDialog(l)}>
