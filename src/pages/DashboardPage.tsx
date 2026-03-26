@@ -35,12 +35,8 @@ import { cn } from "@/lib/utils";
 // ── Semaphore logic ───────────────────────────────────────────────
 function ncSemaphore(v: number) { return v === 0 ? "145 55% 42%" : v <= 3 ? "38 85% 50%" : "0 65% 50%"; }
 function pameSemaphore(v: number) { return v === 0 ? "145 55% 42%" : v <= 15 ? "38 85% 50%" : "0 65% 50%"; }
-function emeSemaphore(v: number) { return v === 0 ? "145 55% 42%" : v <= 2 ? "38 85% 50%" : "0 65% 50%"; }
-
-function daysUntilDate(dateStr: string | null): number | null {
-  if (!dateStr) return null;
-  return Math.ceil((new Date(dateStr).getTime() - Date.now()) / 86400000);
-}
+function ppiInProgressSemaphore(v: number) { return v === 0 ? "145 55% 42%" : "210 65% 50%"; }
+function testsOverdueSemaphore(v: number) { return v === 0 ? "145 55% 42%" : "0 65% 50%"; }
 
 // ── Activity icon/color ───────────────────────────────────────────
 const ACTIVITY_CFG: Record<string, { icon: React.ElementType; cls: string }> = {
