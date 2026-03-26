@@ -93,6 +93,14 @@ function useRealSGQData(projectId: string | undefined) {
         auditsTotal: auditsData.length,
         trainingCount: training.data?.length ?? 0,
         monthlyReportsSubmitted: (reports.data ?? []).filter((r: any) => r.status !== "draft").length,
+        concreteBatches: concreteBatches.count ?? 0,
+        concreteLots: concreteLots.count ?? 0,
+        concreteLotsConform: 0, // would need view_concrete_lot_conformity but count is sufficient
+        weldsTotal: weldData.length,
+        weldsWithUT: weldData.filter((w: any) => w.has_ut === true).length,
+        weldsPendingUT: weldData.filter((w: any) => w.has_ut === false).length,
+        soilsTotal: soilData.length,
+        soilsConform: soilData.filter((s: any) => s.classification && s.classification !== "").length,
       });
     } catch {
       setData(null);
