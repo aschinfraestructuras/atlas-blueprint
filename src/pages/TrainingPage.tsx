@@ -46,8 +46,20 @@ interface AttendeeRow {
   company: string;
 }
 
+  // Validity helper
+  function getSessionValidity(sessionDate: string) {
+    const validUntil = new Date(sessionDate);
+    validUntil.setFullYear(validUntil.getFullYear() + 1);
+    const now = new Date();
+    const daysLeft = Math.ceil((validUntil.getTime() - now.getTime()) / 86400000);
+    if (daysLeft < 0) return { status: "expired" as const, daysLeft, validUntil };
+    if (daysLeft <= 30) return { status: "expiring" as const, daysLeft, validUntil };
+    return { status: "valid" as const, daysLeft, validUntil };
+  }
+
 export default function TrainingPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { activeProject } = useProject();
   const { canCreate, canEdit } = useProjectRole();
   const { logoBase64 } = useProjectLogo();
@@ -59,6 +71,9 @@ export default function TrainingPage() {
   const [detailSession, setDetailSession] = useState<TrainingSession | null>(null);
   const [detailAttendees, setDetailAttendees] = useState<TrainingAttendee[]>([]);
   const [detailOpen, setDetailOpen] = useState(false);
+  const [workersSheetOpen, setWorkersSheetOpen] = useState(false);
+  const [untrained, setUntrained] = useState<ProjectWorker[]>([]);
+  const [coverageData, setCoverageData] = useState({ trained: 0, total: 0 });
 
   // Form state
   const [formType, setFormType] = useState("initial");
