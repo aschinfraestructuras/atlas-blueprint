@@ -239,6 +239,43 @@ export default function TrainingPage() {
         ))}
       </div>
 
+      {/* Coverage KPI */}
+      {coverageData.total > 0 && (() => {
+        const pct = Math.round((coverageData.trained / coverageData.total) * 100);
+        const colorClass = pct >= 80 ? "text-emerald-600" : pct >= 50 ? "text-amber-500" : "text-destructive";
+        const barColor = pct >= 80 ? "bg-emerald-500" : pct >= 50 ? "bg-amber-500" : "bg-destructive";
+        return (
+          <Card className="border border-border bg-card shadow-card">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Users className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                    {t("training.kpi.coverage", { defaultValue: "Cobertura da Equipa" })}
+                  </span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className={`text-lg font-black tabular-nums ${colorClass}`}>{pct}%</span>
+                  <span className="text-xs text-muted-foreground">{coverageData.trained}/{coverageData.total}</span>
+                </div>
+              </div>
+              <Progress value={pct} className={`h-2 [&>div]:${barColor}`} />
+              {untrained.length > 0 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="mt-3 gap-1.5 text-xs"
+                  onClick={() => setWorkersSheetOpen(true)}
+                >
+                  <AlertTriangle className="h-3 w-3" />
+                  {t("training.noSafetyTraining", { defaultValue: "Trabalhadores sem formação" })} ({untrained.length})
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+        );
+      })()}
+
       {loading ? (
         <div className="space-y-2">
           {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}
