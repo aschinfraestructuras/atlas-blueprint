@@ -182,7 +182,6 @@ export default function DashboardPage() {
   const testsSpark = useMemo(() => filteredTestsMonthly.slice(-6).map(m => ({ v: m.conform + m.non_conform })), [filteredTestsMonthly]);
 
   const displayName = user?.email?.split("@")[0] ?? "—";
-  const auditDays = daysUntilDate(kpis.nextAudit?.planned_start ?? null);
 
   if (!activeProject) return <NoProjectBanner />;
 
