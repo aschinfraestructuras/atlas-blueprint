@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { FlaskConical, AlertTriangle, ClipboardCheck, Flame, Beaker, ArrowRight } from "lucide-react";
+import { FlaskConical, AlertTriangle, ClipboardCheck, Flame, Beaker, ArrowRight, Crosshair, CalendarClock } from "lucide-react";
 
 interface TestStatus {
   ncOpen: number;
