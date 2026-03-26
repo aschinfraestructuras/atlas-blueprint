@@ -209,7 +209,9 @@
       "ppiInProgress": "PPIs em progresso",
       "specimensOverdue": "Provetes aguardam 28d",
       "weldsUsPending": "Soldaduras sem US",
-      "testsOverdue": "Ensaios em atraso"
+      "testsOverdue": "Ensaios em atraso",
+      "emesExpiring": "EMEs ≤30d",
+      "nextAudit": "Próxima Auditoria"
     },
     "concreteSummary": "Resumo de Betão",
     "specimensOverdue": "Provetes aguardam 28d",
