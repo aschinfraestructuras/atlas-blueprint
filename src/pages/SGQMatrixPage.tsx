@@ -73,6 +73,8 @@ function useRealSGQData(projectId: string | undefined) {
       const calibsData = calibs.data ?? [];
       const testsData = tests.data ?? [];
       const auditsData = audits.data ?? [];
+      const weldData = weldRecords.data ?? [];
+      const soilData = soilSamples.data ?? [];
 
       setData({
         docsApproved: docsData.filter((d: any) => d.status === "approved").length,
