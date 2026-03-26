@@ -15,6 +15,9 @@ interface TestStatus {
   specimensOverdue: number;
   weldsUsPending: number;
   testsOverdue: number;
+  emesExpiring: number;
+  nextAuditDays: number | null;
+  nextAuditDesc: string;
 }
 
 export function TestStatusCard() {
