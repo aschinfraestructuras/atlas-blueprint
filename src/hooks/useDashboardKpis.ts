@@ -15,6 +15,8 @@ export interface DashboardKpis {
   pamePending: number;
   emesExpiring30d: number;
   nextAudit: { description: string; planned_start: string } | null;
+  ppiInProgress: number;
+  testsOverdue: number;
   ppiApproved: number;
   ppiTotal: number;
   testsCompleted: number;
@@ -26,6 +28,7 @@ export interface DashboardKpis {
 
 const EMPTY: DashboardKpis = {
   ncOpen: 0, pamePending: 0, emesExpiring30d: 0, nextAudit: null,
+  ppiInProgress: 0, testsOverdue: 0,
   ppiApproved: 0, ppiTotal: 0, testsCompleted: 0, testsTotal: 0,
   matApproved: 0, matTotal: 0, recentActivity: [],
 };
