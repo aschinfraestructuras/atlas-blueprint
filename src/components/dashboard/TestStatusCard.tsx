@@ -63,6 +63,11 @@ export function TestStatusCard() {
             .order("planned_start", { ascending: true }).limit(1),
         ]);
 
+        const auditData = auditRes.data?.[0];
+        const auditDays = auditData?.planned_start
+          ? Math.ceil((new Date(auditData.planned_start).getTime() - Date.now()) / 86400000)
+          : null;
+
         setData({
           ncOpen: ncRes.count ?? 0,
           ncMajorOpen: ncMajorRes.count ?? 0,
@@ -70,6 +75,9 @@ export function TestStatusCard() {
           specimensOverdue: specRes.count ?? 0,
           weldsUsPending: weldRes.count ?? 0,
           testsOverdue: testRes.count ?? 0,
+          emesExpiring: emeRes.count ?? 0,
+          nextAuditDays: auditDays,
+          nextAuditDesc: auditData?.description?.substring(0, 30) ?? "",
         });
       } catch (e) {
         console.error("[TestStatusCard]", e);
