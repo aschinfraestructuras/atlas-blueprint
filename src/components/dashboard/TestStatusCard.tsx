@@ -93,6 +93,8 @@ export function TestStatusCard() {
     { label: t("dashboard.testStatus.specimensOverdue", { defaultValue: "Provetes 28d s/ resultado" }), value: data.specimensOverdue, icon: Beaker, route: "/tests/concrete", alert: data.specimensOverdue > 0 },
     { label: t("dashboard.testStatus.weldsUsPending", { defaultValue: "Soldaduras s/ US" }), value: data.weldsUsPending, icon: Flame, route: "/tests/welding", alert: data.weldsUsPending > 0 },
     { label: t("dashboard.testStatus.testsOverdue", { defaultValue: "Ensaios pendentes" }), value: data.testsOverdue, icon: FlaskConical, route: "/tests", alert: data.testsOverdue > 3 },
+    { label: t("dashboard.testStatus.emesExpiring", { defaultValue: "EMEs ≤30d" }), value: data.emesExpiring, icon: Crosshair, route: "/topography", alert: data.emesExpiring > 0 },
+    { label: t("dashboard.testStatus.nextAudit", { defaultValue: "Próxima Auditoria" }), value: data.nextAuditDays !== null ? `${data.nextAuditDays}d` : "—", sub: data.nextAuditDesc || undefined, icon: CalendarClock, route: "/planning", alert: data.nextAuditDays !== null && data.nextAuditDays <= 7 },
   ] : [];
 
   return (
