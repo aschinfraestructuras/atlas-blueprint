@@ -101,6 +101,20 @@ export default function TrainingPage() {
 
   useEffect(() => { fetchSessions(); }, [fetchSessions]);
 
+  // Fetch workers coverage
+  useEffect(() => {
+    if (!activeProject) return;
+    (async () => {
+      try {
+        const workers = await projectWorkerService.list(activeProject.id);
+        const active = workers.filter(w => w.status === "active");
+        const trained = active.filter(w => w.has_safety_training);
+        setCoverageData({ trained: trained.length, total: active.length });
+        setUntrained(active.filter(w => !w.has_safety_training));
+      } catch { /* ignore */ }
+    })();
+  }, [activeProject]);
+
   if (!activeProject) return <NoProjectBanner />;
 
   const resetForm = () => {
