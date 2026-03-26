@@ -141,6 +141,8 @@ export function useDashboardKpis() {
         pamePending: pameRes.count ?? 0,
         emesExpiring30d: emeRes.count ?? 0,
         nextAudit: auditRes.data?.[0] ?? null,
+        ppiInProgress: ppiInProgressRes.count ?? 0,
+        testsOverdue: testsOverdueRes.count ?? 0,
         ppiApproved: ppiApprovedRes.count ?? 0,
         ppiTotal: ppiTotalRes.count ?? 0,
         testsCompleted: testsCompletedRes.count ?? 0,
