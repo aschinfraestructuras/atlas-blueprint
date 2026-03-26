@@ -3916,8 +3916,13 @@
       "total": "Total",
       "thisMonth": "Este Mes",
       "attendees": "Asistentes",
-      "types": "Tipos"
+      "types": "Tipos",
+      "coverage": "Cobertura del Equipo"
     },
+    "noSafetyTraining": "Trabajadores sin formación",
+    "registerTraining": "Registrar formación",
+    "validUntil": "Válida hasta",
+    "expired": "Expirada",
     "table": {
       "code": "Código",
       "type": "Tipo",
