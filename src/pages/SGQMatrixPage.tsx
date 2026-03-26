@@ -283,6 +283,27 @@ const SGQ_REQUIREMENTS: SGQRequirement[] = [
     details: "Muros M31.1, M31.2, M31.3, M32.1 — plantas, alçados, secções tipo com geometria e armaduras.",
     registryTypes: ["MDJ", "MED", "CTE", "DPU", "Drawing"],
   },
+  {
+    chapter: "E1", requirement: "Betão — Amassadas, Lotes e Conformidade NA.M",
+    atlasModule: "Ensaios — Betão", route: "/tests", icon: FlaskConical, coverage: "full",
+    details: "Amassadas com controlo de slump e temperatura, lotes NA.M com avaliação fcm/fc,min, provetes a 7/28 dias.",
+    registryTypes: ["Batch", "Lot", "Specimen"],
+    dataKey: "concreteLots", dataTotalKey: "concreteBatches",
+  },
+  {
+    chapter: "E2", requirement: "Soldaduras — Registos e Controlo US",
+    atlasModule: "Ensaios — Soldaduras", route: "/tests", icon: Zap, coverage: "full",
+    details: "Registo de soldaduras com tipo (topo, ângulo), controlo US, rastreabilidade a soldador e PPI.",
+    registryTypes: ["Weld"],
+    dataKey: "weldsWithUT", dataTotalKey: "weldsTotal",
+  },
+  {
+    chapter: "E3", requirement: "Solos e Compactação — Caracterização e Controlo In-Situ",
+    atlasModule: "Ensaios — Solos", route: "/tests", icon: Layers, coverage: "full",
+    details: "Granulometria, Proctor, CBR, gamadensímetro nuclear, ensaios de carga com placa. Classificação AASHTO automática.",
+    registryTypes: ["Soil", "Compaction"],
+    dataKey: "soilsConform", dataTotalKey: "soilsTotal",
+  },
 ];
 
 // ─── Coverage helpers ────────────────────────────────────────────────────────
