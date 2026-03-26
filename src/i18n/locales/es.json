@@ -4003,7 +4003,11 @@
     },
     "tableTitle": "Capítulos del Plan de Calidad vs. Módulos Atlas",
     "progress": "Progreso",
-    "detailsCol": "Detalles"
+    "detailsCol": "Detalles",
+    "concrete": "Hormigón",
+    "welds": "Soldaduras",
+    "soils": "Suelos",
+    "pendingUT": "Pendientes US"
   },
   "monthlyReport": {
     "title": "Informe Mensual SGQ",
