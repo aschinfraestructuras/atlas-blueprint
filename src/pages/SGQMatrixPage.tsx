@@ -15,7 +15,7 @@ import {
   CheckCircle2, AlertCircle, Circle, ExternalLink, ShieldCheck,
   FileText, FlaskConical, ClipboardCheck, AlertTriangle, Truck,
   Package, HardHat, Construction, Crosshair, ClipboardList,
-  BookOpen, CalendarClock, BarChart3, Leaf, Building2,
+  BookOpen, CalendarClock, BarChart3, Leaf, Building2, Zap, Layers,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
