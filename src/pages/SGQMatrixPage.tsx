@@ -46,6 +46,7 @@ function useRealSGQData(projectId: string | undefined) {
     try {
       const [
         docs, ncs, ppis, mats, calibs, tests, audits, training, reports,
+        concreteBatches, concreteLots, weldRecords, soilSamples,
       ] = await Promise.all([
         supabase.from("documents").select("id, status", { count: "exact" }).eq("project_id", projectId).eq("is_deleted", false),
         supabase.from("non_conformities").select("id, status", { count: "exact" }).eq("project_id", projectId).eq("is_deleted", false),
@@ -56,6 +57,13 @@ function useRealSGQData(projectId: string | undefined) {
         supabase.from("quality_audits" as any).select("id, status", { count: "exact" }).eq("project_id", projectId),
         supabase.from("training_sessions" as any).select("id", { count: "exact" }).eq("project_id", projectId),
         supabase.from("monthly_quality_reports" as any).select("id, status", { count: "exact" }).eq("project_id", projectId),
+        // Concrete
+        (supabase as any).from("concrete_batches").select("id", { count: "exact" }).eq("project_id", projectId),
+        (supabase as any).from("concrete_lots").select("id, notes", { count: "exact" }).eq("project_id", projectId).eq("is_deleted", false),
+        // Welds
+        (supabase as any).from("weld_records").select("id, has_ut", { count: "exact" }).eq("project_id", projectId),
+        // Soils
+        (supabase as any).from("soil_samples").select("id, classification", { count: "exact" }).eq("project_id", projectId),
       ]);
 
       const docsData = docs.data ?? [];
