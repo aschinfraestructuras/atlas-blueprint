@@ -315,7 +315,9 @@
       "ncOpened": "NCs Abiertas",
       "pamePending": "PAME Pendientes",
       "emesExpiring": "EMEs ≤30d",
-      "nextAudit": "Próxima Auditoría"
+      "nextAudit": "Próxima Auditoría",
+      "ppiInProgress": "PPIs en Curso",
+      "testsOverdue": "Ensayos Atrasados"
     },
     "period": {
       "all": "Todo el período",
