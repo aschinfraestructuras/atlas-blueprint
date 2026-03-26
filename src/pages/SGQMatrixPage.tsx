@@ -15,7 +15,7 @@ import {
   CheckCircle2, AlertCircle, Circle, ExternalLink, ShieldCheck,
   FileText, FlaskConical, ClipboardCheck, AlertTriangle, Truck,
   Package, HardHat, Construction, Crosshair, ClipboardList,
-  BookOpen, CalendarClock, BarChart3, Leaf, Building2,
+  BookOpen, CalendarClock, BarChart3, Leaf, Building2, Zap, Layers,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -31,6 +31,9 @@ interface RealData {
   auditsDone: number; auditsTotal: number;
   trainingCount: number;
   monthlyReportsSubmitted: number;
+  concreteBatches: number; concreteLots: number; concreteLotsConform: number;
+  weldsTotal: number; weldsWithUT: number; weldsPendingUT: number;
+  soilsTotal: number; soilsConform: number;
 }
 
 function useRealSGQData(projectId: string | undefined) {
@@ -43,6 +46,7 @@ function useRealSGQData(projectId: string | undefined) {
     try {
       const [
         docs, ncs, ppis, mats, calibs, tests, audits, training, reports,
+        concreteBatches, concreteLots, weldRecords, soilSamples,
       ] = await Promise.all([
         supabase.from("documents").select("id, status", { count: "exact" }).eq("project_id", projectId).eq("is_deleted", false),
         supabase.from("non_conformities").select("id, status", { count: "exact" }).eq("project_id", projectId).eq("is_deleted", false),
@@ -53,6 +57,13 @@ function useRealSGQData(projectId: string | undefined) {
         supabase.from("quality_audits" as any).select("id, status", { count: "exact" }).eq("project_id", projectId),
         supabase.from("training_sessions" as any).select("id", { count: "exact" }).eq("project_id", projectId),
         supabase.from("monthly_quality_reports" as any).select("id, status", { count: "exact" }).eq("project_id", projectId),
+        // Concrete
+        (supabase as any).from("concrete_batches").select("id", { count: "exact" }).eq("project_id", projectId),
+        (supabase as any).from("concrete_lots").select("id, notes", { count: "exact" }).eq("project_id", projectId).eq("is_deleted", false),
+        // Welds
+        (supabase as any).from("weld_records").select("id, has_ut", { count: "exact" }).eq("project_id", projectId),
+        // Soils
+        (supabase as any).from("soil_samples").select("id, classification", { count: "exact" }).eq("project_id", projectId),
       ]);
 
       const docsData = docs.data ?? [];
@@ -62,6 +73,8 @@ function useRealSGQData(projectId: string | undefined) {
       const calibsData = calibs.data ?? [];
       const testsData = tests.data ?? [];
       const auditsData = audits.data ?? [];
+      const weldData = weldRecords.data ?? [];
+      const soilData = soilSamples.data ?? [];
 
       setData({
         docsApproved: docsData.filter((d: any) => d.status === "approved").length,
@@ -80,6 +93,14 @@ function useRealSGQData(projectId: string | undefined) {
         auditsTotal: auditsData.length,
         trainingCount: training.data?.length ?? 0,
         monthlyReportsSubmitted: (reports.data ?? []).filter((r: any) => r.status !== "draft").length,
+        concreteBatches: concreteBatches.count ?? 0,
+        concreteLots: concreteLots.count ?? 0,
+        concreteLotsConform: 0, // would need view_concrete_lot_conformity but count is sufficient
+        weldsTotal: weldData.length,
+        weldsWithUT: weldData.filter((w: any) => w.has_ut === true).length,
+        weldsPendingUT: weldData.filter((w: any) => w.has_ut === false).length,
+        soilsTotal: soilData.length,
+        soilsConform: soilData.filter((s: any) => s.classification && s.classification !== "").length,
       });
     } catch {
       setData(null);
@@ -261,6 +282,27 @@ const SGQ_REQUIREMENTS: SGQRequirement[] = [
     atlasModule: "Documentos", route: "/documents", icon: Construction, coverage: "full",
     details: "Muros M31.1, M31.2, M31.3, M32.1 — plantas, alçados, secções tipo com geometria e armaduras.",
     registryTypes: ["MDJ", "MED", "CTE", "DPU", "Drawing"],
+  },
+  {
+    chapter: "E1", requirement: "Betão — Amassadas, Lotes e Conformidade NA.M",
+    atlasModule: "Ensaios — Betão", route: "/tests", icon: FlaskConical, coverage: "full",
+    details: "Amassadas com controlo de slump e temperatura, lotes NA.M com avaliação fcm/fc,min, provetes a 7/28 dias.",
+    registryTypes: ["Batch", "Lot", "Specimen"],
+    dataKey: "concreteLots", dataTotalKey: "concreteBatches",
+  },
+  {
+    chapter: "E2", requirement: "Soldaduras — Registos e Controlo US",
+    atlasModule: "Ensaios — Soldaduras", route: "/tests", icon: Zap, coverage: "full",
+    details: "Registo de soldaduras com tipo (topo, ângulo), controlo US, rastreabilidade a soldador e PPI.",
+    registryTypes: ["Weld"],
+    dataKey: "weldsWithUT", dataTotalKey: "weldsTotal",
+  },
+  {
+    chapter: "E3", requirement: "Solos e Compactação — Caracterização e Controlo In-Situ",
+    atlasModule: "Ensaios — Solos", route: "/tests", icon: Layers, coverage: "full",
+    details: "Granulometria, Proctor, CBR, gamadensímetro nuclear, ensaios de carga com placa. Classificação AASHTO automática.",
+    registryTypes: ["Soil", "Compaction"],
+    dataKey: "soilsConform", dataTotalKey: "soilsTotal",
   },
 ];
 

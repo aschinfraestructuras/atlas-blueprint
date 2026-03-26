@@ -15,6 +15,8 @@ export interface DashboardKpis {
   pamePending: number;
   emesExpiring30d: number;
   nextAudit: { description: string; planned_start: string } | null;
+  ppiInProgress: number;
+  testsOverdue: number;
   ppiApproved: number;
   ppiTotal: number;
   testsCompleted: number;
@@ -26,6 +28,7 @@ export interface DashboardKpis {
 
 const EMPTY: DashboardKpis = {
   ncOpen: 0, pamePending: 0, emesExpiring30d: 0, nextAudit: null,
+  ppiInProgress: 0, testsOverdue: 0,
   ppiApproved: 0, ppiTotal: 0, testsCompleted: 0, testsTotal: 0,
   matApproved: 0, matTotal: 0, recentActivity: [],
 };
@@ -49,6 +52,7 @@ export function useDashboardKpis() {
         testsCompletedRes, testsTotalRes,
         matApprovedRes, matTotalRes,
         recentNcRes, recentLotRes, recentPpiRes, recentTestRes,
+        ppiInProgressRes, testsOverdueRes,
       ] = await Promise.all([
         // NCs abertas (not closed, not archived)
         (supabase as any).from("non_conformities")
@@ -111,6 +115,14 @@ export function useDashboardKpis() {
           .select("id, test_id, status, created_at, tests_catalog(code)")
           .eq("project_id", pid)
           .order("created_at", { ascending: false }).limit(4),
+        // PPIs em curso (draft + in_progress)
+        (supabase as any).from("ppi_instances")
+          .select("id", { count: "exact", head: true })
+          .eq("project_id", pid).in("status", ["draft", "in_progress"]).eq("is_deleted", false),
+        // Ensaios em atraso
+        (supabase as any).from("test_due_items")
+          .select("id", { count: "exact", head: true })
+          .eq("project_id", pid).in("status", ["due", "overdue"]).lt("due_at_date", today),
       ]);
 
       const recent: RecentItem[] = [];
@@ -129,6 +141,8 @@ export function useDashboardKpis() {
         pamePending: pameRes.count ?? 0,
         emesExpiring30d: emeRes.count ?? 0,
         nextAudit: auditRes.data?.[0] ?? null,
+        ppiInProgress: ppiInProgressRes.count ?? 0,
+        testsOverdue: testsOverdueRes.count ?? 0,
         ppiApproved: ppiApprovedRes.count ?? 0,
         ppiTotal: ppiTotalRes.count ?? 0,
         testsCompleted: testsCompletedRes.count ?? 0,

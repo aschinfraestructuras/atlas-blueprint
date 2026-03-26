@@ -294,7 +294,9 @@
       "ppiInProgress": "PPIs en progreso",
       "specimensOverdue": "Probetas pendientes 28d",
       "weldsUsPending": "Soldaduras sin US",
-      "testsOverdue": "Ensayos atrasados"
+      "testsOverdue": "Ensayos atrasados",
+      "emesExpiring": "EMEs ≤30d",
+      "nextAudit": "Próxima Auditoría"
     },
     "concreteSummary": "Resumen de Hormigón",
     "specimensOverdue": "Probetas pendientes 28d",
@@ -315,7 +317,9 @@
       "ncOpened": "NCs Abiertas",
       "pamePending": "PAME Pendientes",
       "emesExpiring": "EMEs ≤30d",
-      "nextAudit": "Próxima Auditoría"
+      "nextAudit": "Próxima Auditoría",
+      "ppiInProgress": "PPIs en Curso",
+      "testsOverdue": "Ensayos Atrasados"
     },
     "period": {
       "all": "Todo el período",
@@ -3912,8 +3916,13 @@
       "total": "Total",
       "thisMonth": "Este Mes",
       "attendees": "Asistentes",
-      "types": "Tipos"
+      "types": "Tipos",
+      "coverage": "Cobertura del Equipo"
     },
+    "noSafetyTraining": "Trabajadores sin formación",
+    "registerTraining": "Registrar formación",
+    "validUntil": "Válida hasta",
+    "expired": "Expirada",
     "table": {
       "code": "Código",
       "type": "Tipo",
@@ -3994,7 +4003,11 @@
     },
     "tableTitle": "Capítulos del Plan de Calidad vs. Módulos Atlas",
     "progress": "Progreso",
-    "detailsCol": "Detalles"
+    "detailsCol": "Detalles",
+    "concrete": "Hormigón",
+    "welds": "Soldaduras",
+    "soils": "Suelos",
+    "pendingUT": "Pendientes US"
   },
   "monthlyReport": {
     "title": "Informe Mensual SGQ",

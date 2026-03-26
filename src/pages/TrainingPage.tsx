@@ -1,19 +1,23 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { useProject } from "@/contexts/ProjectContext";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { trainingService, type TrainingSession, type TrainingAttendee } from "@/lib/services/trainingService";
-import { GraduationCap, Plus, FileText, Trash2, Eye, X } from "lucide-react";
+import { projectWorkerService, type ProjectWorker } from "@/lib/services/projectWorkerService";
+import { GraduationCap, Plus, FileText, Trash2, Eye, X, Users, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/EmptyState";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
@@ -42,8 +46,20 @@ interface AttendeeRow {
   company: string;
 }
 
+  // Validity helper
+  function getSessionValidity(sessionDate: string) {
+    const validUntil = new Date(sessionDate);
+    validUntil.setFullYear(validUntil.getFullYear() + 1);
+    const now = new Date();
+    const daysLeft = Math.ceil((validUntil.getTime() - now.getTime()) / 86400000);
+    if (daysLeft < 0) return { status: "expired" as const, daysLeft, validUntil };
+    if (daysLeft <= 30) return { status: "expiring" as const, daysLeft, validUntil };
+    return { status: "valid" as const, daysLeft, validUntil };
+  }
+
 export default function TrainingPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { activeProject } = useProject();
   const { canCreate, canEdit } = useProjectRole();
   const { logoBase64 } = useProjectLogo();
@@ -55,6 +71,9 @@ export default function TrainingPage() {
   const [detailSession, setDetailSession] = useState<TrainingSession | null>(null);
   const [detailAttendees, setDetailAttendees] = useState<TrainingAttendee[]>([]);
   const [detailOpen, setDetailOpen] = useState(false);
+  const [workersSheetOpen, setWorkersSheetOpen] = useState(false);
+  const [untrained, setUntrained] = useState<ProjectWorker[]>([]);
+  const [coverageData, setCoverageData] = useState({ trained: 0, total: 0 });
 
   // Form state
   const [formType, setFormType] = useState("initial");
@@ -81,6 +100,20 @@ export default function TrainingPage() {
   }, [activeProject]);
 
   useEffect(() => { fetchSessions(); }, [fetchSessions]);
+
+  // Fetch workers coverage
+  useEffect(() => {
+    if (!activeProject) return;
+    (async () => {
+      try {
+        const workers = await projectWorkerService.list(activeProject.id);
+        const active = workers.filter(w => w.status === "active");
+        const trained = active.filter(w => w.has_safety_training);
+        setCoverageData({ trained: trained.length, total: active.length });
+        setUntrained(active.filter(w => !w.has_safety_training));
+      } catch { /* ignore */ }
+    })();
+  }, [activeProject]);
 
   if (!activeProject) return <NoProjectBanner />;
 
@@ -206,6 +239,43 @@ export default function TrainingPage() {
         ))}
       </div>
 
+      {/* Coverage KPI */}
+      {coverageData.total > 0 && (() => {
+        const pct = Math.round((coverageData.trained / coverageData.total) * 100);
+        const colorClass = pct >= 80 ? "text-emerald-600" : pct >= 50 ? "text-amber-500" : "text-destructive";
+        const barColor = pct >= 80 ? "bg-emerald-500" : pct >= 50 ? "bg-amber-500" : "bg-destructive";
+        return (
+          <Card className="border border-border bg-card shadow-card">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Users className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                    {t("training.kpi.coverage", { defaultValue: "Cobertura da Equipa" })}
+                  </span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className={`text-lg font-black tabular-nums ${colorClass}`}>{pct}%</span>
+                  <span className="text-xs text-muted-foreground">{coverageData.trained}/{coverageData.total}</span>
+                </div>
+              </div>
+              <Progress value={pct} className={`h-2 [&>div]:${barColor}`} />
+              {untrained.length > 0 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="mt-3 gap-1.5 text-xs"
+                  onClick={() => setWorkersSheetOpen(true)}
+                >
+                  <AlertTriangle className="h-3 w-3" />
+                  {t("training.noSafetyTraining", { defaultValue: "Trabalhadores sem formação" })} ({untrained.length})
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+        );
+      })()}
+
       {loading ? (
         <div className="space-y-2">
           {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}
@@ -222,11 +292,14 @@ export default function TrainingPage() {
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("training.table.type", { defaultValue: "Tipo" })}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("training.table.title", { defaultValue: "Título" })}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("training.table.attendees", { defaultValue: "Formandos" })}</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("training.validUntil", { defaultValue: "Válida até" })}</TableHead>
                 <TableHead className="w-28" />
               </TableRow>
             </TableHeader>
             <TableBody>
-              {sessions.map(s => (
+              {sessions.map(s => {
+                const validity = getSessionValidity(s.session_date);
+                return (
                 <TableRow key={s.id} className="hover:bg-muted/20 transition-colors">
                   <TableCell className="font-mono text-xs text-muted-foreground">{s.code}</TableCell>
                   <TableCell className="text-sm">{new Date(s.session_date).toLocaleDateString("pt-PT")}</TableCell>
@@ -237,6 +310,17 @@ export default function TrainingPage() {
                   </TableCell>
                   <TableCell className="text-sm font-medium text-foreground">{s.title}</TableCell>
                   <TableCell className="text-sm tabular-nums">{s.attendee_count}</TableCell>
+                  <TableCell>
+                    <Badge variant={validity.status === "expired" ? "destructive" : validity.status === "expiring" ? "secondary" : "secondary"}
+                      className={`text-[10px] ${validity.status === "valid" ? "bg-emerald-500/10 text-emerald-600" : validity.status === "expiring" ? "bg-amber-500/10 text-amber-600" : ""}`}
+                    >
+                      {validity.status === "expired"
+                        ? t("training.expired", { defaultValue: "Expirada" })
+                        : validity.status === "expiring"
+                          ? `${t("training.validUntil", { defaultValue: "Expira em" })} ${validity.daysLeft}d`
+                          : validity.validUntil.toLocaleDateString("pt-PT")}
+                    </Badge>
+                  </TableCell>
                   <TableCell>
                     <div className="flex gap-1">
                       <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleViewDetail(s)} title={t("common.view")}>
@@ -253,7 +337,8 @@ export default function TrainingPage() {
                     </div>
                   </TableCell>
                 </TableRow>
-              ))}
+                );
+              })}
             </TableBody>
           </Table>
         </div>
@@ -405,6 +490,61 @@ export default function TrainingPage() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Workers without training Sheet */}
+      <Sheet open={workersSheetOpen} onOpenChange={setWorkersSheetOpen}>
+        <SheetContent className="sm:max-w-lg overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 text-destructive" />
+              {t("training.noSafetyTraining", { defaultValue: "Trabalhadores sem formação" })}
+            </SheetTitle>
+          </SheetHeader>
+          <div className="mt-4 space-y-2">
+            {untrained.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-8">
+                {t("common.noData")}
+              </p>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>{t("common.name")}</TableHead>
+                    <TableHead>{t("training.form.company", { defaultValue: "Empresa" })}</TableHead>
+                    <TableHead>{t("training.form.function", { defaultValue: "Função" })}</TableHead>
+                    <TableHead className="w-20" />
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {untrained.map(w => (
+                    <TableRow key={w.id}>
+                      <TableCell className="text-sm font-medium">{w.name}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{w.company ?? "—"}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{w.role_function ?? "—"}</TableCell>
+                      <TableCell>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-xs gap-1"
+                          onClick={() => {
+                            setWorkersSheetOpen(false);
+                            resetForm();
+                            setFormAttendees([{ name: w.name, role_function: w.role_function ?? "", company: w.company ?? "" }]);
+                            setDialogOpen(true);
+                          }}
+                        >
+                          <Plus className="h-3 w-3" />
+                          {t("training.registerTraining", { defaultValue: "Registar formação" })}
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }

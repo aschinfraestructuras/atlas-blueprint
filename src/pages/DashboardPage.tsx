@@ -35,12 +35,8 @@ import { cn } from "@/lib/utils";
 // ── Semaphore logic ───────────────────────────────────────────────
 function ncSemaphore(v: number) { return v === 0 ? "145 55% 42%" : v <= 3 ? "38 85% 50%" : "0 65% 50%"; }
 function pameSemaphore(v: number) { return v === 0 ? "145 55% 42%" : v <= 15 ? "38 85% 50%" : "0 65% 50%"; }
-function emeSemaphore(v: number) { return v === 0 ? "145 55% 42%" : v <= 2 ? "38 85% 50%" : "0 65% 50%"; }
-
-function daysUntilDate(dateStr: string | null): number | null {
-  if (!dateStr) return null;
-  return Math.ceil((new Date(dateStr).getTime() - Date.now()) / 86400000);
-}
+function ppiInProgressSemaphore(v: number) { return v === 0 ? "145 55% 42%" : "210 65% 50%"; }
+function testsOverdueSemaphore(v: number) { return v === 0 ? "145 55% 42%" : "0 65% 50%"; }
 
 // ── Activity icon/color ───────────────────────────────────────────
 const ACTIVITY_CFG: Record<string, { icon: React.ElementType; cls: string }> = {
@@ -186,7 +182,6 @@ export default function DashboardPage() {
   const testsSpark = useMemo(() => filteredTestsMonthly.slice(-6).map(m => ({ v: m.conform + m.non_conform })), [filteredTestsMonthly]);
 
   const displayName = user?.email?.split("@")[0] ?? "—";
-  const auditDays = daysUntilDate(kpis.nextAudit?.planned_start ?? null);
 
   if (!activeProject) return <NoProjectBanner />;
 
@@ -274,19 +269,19 @@ export default function DashboardPage() {
             loading={kpiLoading}
           />
           <SparklineKPI
-            label={t("dashboard.kpi.emesExpiring", { defaultValue: "EMEs ≤30d" })}
-            value={kpis.emesExpiring30d}
-            icon={Crosshair}
-            color={emeSemaphore(kpis.emesExpiring30d)}
-            onClick={() => navigate("/topography")}
+            label={t("dashboard.kpi.ppiInProgress", { defaultValue: "PPIs em Curso" })}
+            value={kpis.ppiInProgress}
+            icon={ClipboardCheck}
+            color={ppiInProgressSemaphore(kpis.ppiInProgress)}
+            onClick={() => navigate("/ppi")}
             loading={kpiLoading}
           />
           <SparklineKPI
-            label={t("dashboard.kpi.nextAudit", { defaultValue: "Próxima Auditoria" })}
-            value={auditDays !== null ? `${auditDays}d` : "—"}
-            subtitle={kpis.nextAudit?.description?.substring(0, 30) || undefined}
-            icon={CalendarClock}
-            onClick={() => navigate("/planning")}
+            label={t("dashboard.kpi.testsOverdue", { defaultValue: "Ensaios em Atraso" })}
+            value={kpis.testsOverdue}
+            icon={FlaskConical}
+            color={testsOverdueSemaphore(kpis.testsOverdue)}
+            onClick={() => navigate("/deadlines")}
             loading={kpiLoading}
           />
         </div>

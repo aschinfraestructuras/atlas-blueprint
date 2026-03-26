@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { FlaskConical, AlertTriangle, ClipboardCheck, Flame, Beaker, ArrowRight } from "lucide-react";
+import { FlaskConical, AlertTriangle, ClipboardCheck, Flame, Beaker, ArrowRight, Crosshair, CalendarClock } from "lucide-react";
 
 interface TestStatus {
   ncOpen: number;
@@ -15,6 +15,9 @@ interface TestStatus {
   specimensOverdue: number;
   weldsUsPending: number;
   testsOverdue: number;
+  emesExpiring: number;
+  nextAuditDays: number | null;
+  nextAuditDesc: string;
 }
 
 export function TestStatusCard() {
@@ -33,8 +36,10 @@ export function TestStatusCard() {
       try {
         const twentyEightDaysAgo = new Date(Date.now() - 28 * 86400000).toISOString().split("T")[0];
         const sevenDaysAgo = new Date(Date.now() - 7 * 86400000).toISOString().split("T")[0];
+        const today = new Date().toISOString().split("T")[0];
+        const in30d = new Date(Date.now() + 30 * 86400000).toISOString().split("T")[0];
 
-        const [ncRes, ncMajorRes, ppiRes, specRes, weldRes, testRes] = await Promise.all([
+        const [ncRes, ncMajorRes, ppiRes, specRes, weldRes, testRes, emeRes, auditRes] = await Promise.all([
           supabase.from("non_conformities" as any).select("id", { count: "exact", head: true })
             .eq("project_id", pid).neq("status", "closed").neq("status", "archived").eq("is_deleted", false),
           supabase.from("non_conformities" as any).select("id", { count: "exact", head: true })
@@ -47,7 +52,21 @@ export function TestStatusCard() {
             .eq("project_id", pid).eq("has_ut", false).lt("weld_date", sevenDaysAgo),
           supabase.from("test_results" as any).select("id", { count: "exact", head: true })
             .eq("project_id", pid).in("status", ["draft", "in_progress", "pending"]),
+          // EMEs expiring ≤30d
+          (supabase as any).from("topography_equipment")
+            .select("id", { count: "exact", head: true })
+            .eq("project_id", pid).eq("status", "active").gte("calibration_valid_until", today).lte("calibration_valid_until", in30d),
+          // Next audit
+          (supabase as any).from("planning_activities")
+            .select("description, planned_start")
+            .eq("project_id", pid).eq("status", "planned").like("description", "AI-PF17A-%")
+            .order("planned_start", { ascending: true }).limit(1),
         ]);
+
+        const auditData = auditRes.data?.[0];
+        const auditDays = auditData?.planned_start
+          ? Math.ceil((new Date(auditData.planned_start).getTime() - Date.now()) / 86400000)
+          : null;
 
         setData({
           ncOpen: ncRes.count ?? 0,
@@ -56,6 +75,9 @@ export function TestStatusCard() {
           specimensOverdue: specRes.count ?? 0,
           weldsUsPending: weldRes.count ?? 0,
           testsOverdue: testRes.count ?? 0,
+          emesExpiring: emeRes.count ?? 0,
+          nextAuditDays: auditDays,
+          nextAuditDesc: auditData?.description?.substring(0, 30) ?? "",
         });
       } catch (e) {
         console.error("[TestStatusCard]", e);
@@ -71,6 +93,8 @@ export function TestStatusCard() {
     { label: t("dashboard.testStatus.specimensOverdue", { defaultValue: "Provetes 28d s/ resultado" }), value: data.specimensOverdue, icon: Beaker, route: "/tests/concrete", alert: data.specimensOverdue > 0 },
     { label: t("dashboard.testStatus.weldsUsPending", { defaultValue: "Soldaduras s/ US" }), value: data.weldsUsPending, icon: Flame, route: "/tests/welding", alert: data.weldsUsPending > 0 },
     { label: t("dashboard.testStatus.testsOverdue", { defaultValue: "Ensaios pendentes" }), value: data.testsOverdue, icon: FlaskConical, route: "/tests", alert: data.testsOverdue > 3 },
+    { label: t("dashboard.testStatus.emesExpiring", { defaultValue: "EMEs ≤30d" }), value: data.emesExpiring, icon: Crosshair, route: "/topography", alert: data.emesExpiring > 0 },
+    { label: t("dashboard.testStatus.nextAudit", { defaultValue: "Próxima Auditoria" }), value: data.nextAuditDays !== null ? `${data.nextAuditDays}d` : "—", sub: data.nextAuditDesc || undefined, icon: CalendarClock, route: "/planning", alert: data.nextAuditDays !== null && data.nextAuditDays <= 7 },
   ] : [];
 
   return (
