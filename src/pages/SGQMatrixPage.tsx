@@ -31,6 +31,9 @@ interface RealData {
   auditsDone: number; auditsTotal: number;
   trainingCount: number;
   monthlyReportsSubmitted: number;
+  concreteBatches: number; concreteLots: number; concreteLotsConform: number;
+  weldsTotal: number; weldsWithUT: number; weldsPendingUT: number;
+  soilsTotal: number; soilsConform: number;
 }
 
 function useRealSGQData(projectId: string | undefined) {
