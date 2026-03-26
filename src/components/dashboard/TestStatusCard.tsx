@@ -36,8 +36,10 @@ export function TestStatusCard() {
       try {
         const twentyEightDaysAgo = new Date(Date.now() - 28 * 86400000).toISOString().split("T")[0];
         const sevenDaysAgo = new Date(Date.now() - 7 * 86400000).toISOString().split("T")[0];
+        const today = new Date().toISOString().split("T")[0];
+        const in30d = new Date(Date.now() + 30 * 86400000).toISOString().split("T")[0];
 
-        const [ncRes, ncMajorRes, ppiRes, specRes, weldRes, testRes] = await Promise.all([
+        const [ncRes, ncMajorRes, ppiRes, specRes, weldRes, testRes, emeRes, auditRes] = await Promise.all([
           supabase.from("non_conformities" as any).select("id", { count: "exact", head: true })
             .eq("project_id", pid).neq("status", "closed").neq("status", "archived").eq("is_deleted", false),
           supabase.from("non_conformities" as any).select("id", { count: "exact", head: true })
@@ -50,6 +52,15 @@ export function TestStatusCard() {
             .eq("project_id", pid).eq("has_ut", false).lt("weld_date", sevenDaysAgo),
           supabase.from("test_results" as any).select("id", { count: "exact", head: true })
             .eq("project_id", pid).in("status", ["draft", "in_progress", "pending"]),
+          // EMEs expiring ≤30d
+          (supabase as any).from("topography_equipment")
+            .select("id", { count: "exact", head: true })
+            .eq("project_id", pid).eq("status", "active").gte("calibration_valid_until", today).lte("calibration_valid_until", in30d),
+          // Next audit
+          (supabase as any).from("planning_activities")
+            .select("description, planned_start")
+            .eq("project_id", pid).eq("status", "planned").like("description", "AI-PF17A-%")
+            .order("planned_start", { ascending: true }).limit(1),
         ]);
 
         setData({
