@@ -292,11 +292,14 @@ export default function TrainingPage() {
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("training.table.type", { defaultValue: "Tipo" })}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("training.table.title", { defaultValue: "Título" })}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("training.table.attendees", { defaultValue: "Formandos" })}</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("training.validUntil", { defaultValue: "Válida até" })}</TableHead>
                 <TableHead className="w-28" />
               </TableRow>
             </TableHeader>
             <TableBody>
-              {sessions.map(s => (
+              {sessions.map(s => {
+                const validity = getSessionValidity(s.session_date);
+                return (
                 <TableRow key={s.id} className="hover:bg-muted/20 transition-colors">
                   <TableCell className="font-mono text-xs text-muted-foreground">{s.code}</TableCell>
                   <TableCell className="text-sm">{new Date(s.session_date).toLocaleDateString("pt-PT")}</TableCell>
@@ -307,6 +310,17 @@ export default function TrainingPage() {
                   </TableCell>
                   <TableCell className="text-sm font-medium text-foreground">{s.title}</TableCell>
                   <TableCell className="text-sm tabular-nums">{s.attendee_count}</TableCell>
+                  <TableCell>
+                    <Badge variant={validity.status === "expired" ? "destructive" : validity.status === "expiring" ? "secondary" : "secondary"}
+                      className={`text-[10px] ${validity.status === "valid" ? "bg-emerald-500/10 text-emerald-600" : validity.status === "expiring" ? "bg-amber-500/10 text-amber-600" : ""}`}
+                    >
+                      {validity.status === "expired"
+                        ? t("training.expired", { defaultValue: "Expirada" })
+                        : validity.status === "expiring"
+                          ? `${t("training.validUntil", { defaultValue: "Expira em" })} ${validity.daysLeft}d`
+                          : validity.validUntil.toLocaleDateString("pt-PT")}
+                    </Badge>
+                  </TableCell>
                   <TableCell>
                     <div className="flex gap-1">
                       <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleViewDetail(s)} title={t("common.view")}>
