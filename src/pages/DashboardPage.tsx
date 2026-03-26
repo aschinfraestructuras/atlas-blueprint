@@ -269,19 +269,19 @@ export default function DashboardPage() {
             loading={kpiLoading}
           />
           <SparklineKPI
-            label={t("dashboard.kpi.emesExpiring", { defaultValue: "EMEs ≤30d" })}
-            value={kpis.emesExpiring30d}
-            icon={Crosshair}
-            color={emeSemaphore(kpis.emesExpiring30d)}
-            onClick={() => navigate("/topography")}
+            label={t("dashboard.kpi.ppiInProgress", { defaultValue: "PPIs em Curso" })}
+            value={kpis.ppiInProgress}
+            icon={ClipboardCheck}
+            color={ppiInProgressSemaphore(kpis.ppiInProgress)}
+            onClick={() => navigate("/ppi")}
             loading={kpiLoading}
           />
           <SparklineKPI
-            label={t("dashboard.kpi.nextAudit", { defaultValue: "Próxima Auditoria" })}
-            value={auditDays !== null ? `${auditDays}d` : "—"}
-            subtitle={kpis.nextAudit?.description?.substring(0, 30) || undefined}
-            icon={CalendarClock}
-            onClick={() => navigate("/planning")}
+            label={t("dashboard.kpi.testsOverdue", { defaultValue: "Ensaios em Atraso" })}
+            value={kpis.testsOverdue}
+            icon={FlaskConical}
+            color={testsOverdueSemaphore(kpis.testsOverdue)}
+            onClick={() => navigate("/deadlines")}
             loading={kpiLoading}
           />
         </div>
