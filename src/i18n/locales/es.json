@@ -294,7 +294,9 @@
       "ppiInProgress": "PPIs en progreso",
       "specimensOverdue": "Probetas pendientes 28d",
       "weldsUsPending": "Soldaduras sin US",
-      "testsOverdue": "Ensayos atrasados"
+      "testsOverdue": "Ensayos atrasados",
+      "emesExpiring": "EMEs ≤30d",
+      "nextAudit": "Próxima Auditoría"
     },
     "concreteSummary": "Resumen de Hormigón",
     "specimensOverdue": "Probetas pendientes 28d",
