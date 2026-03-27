@@ -127,7 +127,7 @@ export default function SoilPage() {
   const inaptoCount = samples.filter((s) => s.overall_result === "inapto").length;
 
   function resetForm() {
-    setForm({ work_item_id: "", sample_ref: "", pk_location: "", depth_from: "", depth_to: "", sample_date: new Date().toISOString().slice(0, 10), material_type: "", has_grading: false, grading_p0075: "", grading_p0425: "", grading_p2: "", grading_p10: "", grading_p20: "", grading_p50: "", grading_d10: "", grading_d30: "", grading_d60: "", has_atterberg: false, ll_pct: "", lp_pct: "", has_proctor: false, proctor_gamma_max: "", proctor_wopt: "", has_cbr: false, cbr_95: "", cbr_98: "", cbr_expansion: "", cbr_criteria: "", has_organic: false, organic_pct: "", organic_limit: "2.0", has_sulfates: false, sulfate_pct: "", chloride_pct: "", sulfate_limit: "0.5", notes: "" });
+    setForm({ work_item_id: "", sample_ref: "", pk_location: "", depth_from: "", depth_to: "", sample_date: new Date().toISOString().slice(0, 10), material_type: "", lab_id: "", lab_name: "", test_norm: "", test_norm_other: "", bulletin_ref: "", has_grading: false, grading_p0075: "", grading_p0425: "", grading_p2: "", grading_p10: "", grading_p20: "", grading_p50: "", grading_d10: "", grading_d30: "", grading_d60: "", has_atterberg: false, ll_pct: "", lp_pct: "", has_proctor: false, proctor_gamma_max: "", proctor_wopt: "", has_cbr: false, cbr_95: "", cbr_98: "", cbr_expansion: "", cbr_criteria: "", has_organic: false, organic_pct: "", organic_limit: "2.0", has_sulfates: false, sulfate_pct: "", chloride_pct: "", sulfate_limit: "0.5", notes: "" });
     setEditingId(null);
   }
 
