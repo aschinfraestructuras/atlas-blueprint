@@ -228,10 +228,10 @@ export default function WeldPage() {
         <div className="rounded-xl border border-border overflow-hidden">
           <Table>
             <TableHeader><TableRow className="bg-muted/40">
-              <TableHead className="text-xs font-semibold uppercase">Código</TableHead>
+              <TableHead className="text-xs font-semibold uppercase">{t("common.code")}</TableHead>
               <TableHead className="text-xs font-semibold uppercase">PK</TableHead>
               <TableHead className="text-xs font-semibold uppercase">{t("common.date")}</TableHead>
-              <TableHead className="text-xs font-semibold uppercase">Perfil</TableHead>
+              <TableHead className="text-xs font-semibold uppercase">{t("welds.workItem", { defaultValue: "Elemento" })}</TableHead>
               <TableHead className="text-xs font-semibold uppercase">{t("welding.fields.operator")}</TableHead>
               <TableHead className="text-xs font-semibold uppercase">Visual</TableHead>
               <TableHead className="text-xs font-semibold uppercase">UT</TableHead>
