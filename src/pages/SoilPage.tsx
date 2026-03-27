@@ -8,6 +8,7 @@ import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { useProject } from "@/contexts/ProjectContext";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { useWorkItems } from "@/hooks/useWorkItems";
+import { useLaboratories } from "@/hooks/useLaboratories";
 import { PageHeader } from "@/components/ui/page-header";
 import { FilterBar } from "@/components/ui/filter-bar";
 import { Card, CardContent } from "@/components/ui/card";
@@ -33,6 +34,15 @@ const MATERIAL_TYPES = [
   "Outro",
 ];
 
+const TEST_NORMS = [
+  { value: "LNEC E-196", label: "soils.norms.granulometry" },
+  { value: "LNEC E-197", label: "soils.norms.proctor" },
+  { value: "LNEC E-200", label: "soils.norms.atterberg" },
+  { value: "LNEC E-198", label: "soils.norms.cbr" },
+  { value: "NP EN ISO 17892", label: "soils.norms.identification" },
+  { value: "Outro", label: "soils.norms.other" },
+];
+
 // PK validation: PK NNN+NNN
 function validatePK(val: string): boolean {
   if (!val) return true; // optional
@@ -51,6 +61,7 @@ export default function SoilPage() {
   const { activeProject } = useProject();
   const { logoBase64 } = useProjectLogo();
   const { data: workItems } = useWorkItems();
+  const { data: laboratories } = useLaboratories();
   const [samples, setSamples] = useState<SoilSample[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -68,6 +79,11 @@ export default function SoilPage() {
     depth_to: "",
     sample_date: new Date().toISOString().slice(0, 10),
     material_type: "",
+    lab_id: "",
+    lab_name: "",
+    test_norm: "",
+    test_norm_other: "",
+    bulletin_ref: "",
     has_grading: false,
     grading_p0075: "", grading_p0425: "", grading_p2: "", grading_p10: "", grading_p20: "", grading_p50: "",
     grading_d10: "", grading_d30: "", grading_d60: "",
@@ -111,7 +127,7 @@ export default function SoilPage() {
   const inaptoCount = samples.filter((s) => s.overall_result === "inapto").length;
 
   function resetForm() {
-    setForm({ work_item_id: "", sample_ref: "", pk_location: "", depth_from: "", depth_to: "", sample_date: new Date().toISOString().slice(0, 10), material_type: "", has_grading: false, grading_p0075: "", grading_p0425: "", grading_p2: "", grading_p10: "", grading_p20: "", grading_p50: "", grading_d10: "", grading_d30: "", grading_d60: "", has_atterberg: false, ll_pct: "", lp_pct: "", has_proctor: false, proctor_gamma_max: "", proctor_wopt: "", has_cbr: false, cbr_95: "", cbr_98: "", cbr_expansion: "", cbr_criteria: "", has_organic: false, organic_pct: "", organic_limit: "2.0", has_sulfates: false, sulfate_pct: "", chloride_pct: "", sulfate_limit: "0.5", notes: "" });
+    setForm({ work_item_id: "", sample_ref: "", pk_location: "", depth_from: "", depth_to: "", sample_date: new Date().toISOString().slice(0, 10), material_type: "", lab_id: "", lab_name: "", test_norm: "", test_norm_other: "", bulletin_ref: "", has_grading: false, grading_p0075: "", grading_p0425: "", grading_p2: "", grading_p10: "", grading_p20: "", grading_p50: "", grading_d10: "", grading_d30: "", grading_d60: "", has_atterberg: false, ll_pct: "", lp_pct: "", has_proctor: false, proctor_gamma_max: "", proctor_wopt: "", has_cbr: false, cbr_95: "", cbr_98: "", cbr_expansion: "", cbr_criteria: "", has_organic: false, organic_pct: "", organic_limit: "2.0", has_sulfates: false, sulfate_pct: "", chloride_pct: "", sulfate_limit: "0.5", notes: "" });
     setEditingId(null);
   }
 
@@ -124,6 +140,11 @@ export default function SoilPage() {
       depth_to: s.depth_to != null ? String(s.depth_to) : "",
       sample_date: s.sample_date,
       material_type: s.material_type ?? "",
+      lab_id: (s as any).lab_id ?? "",
+      lab_name: (s as any).lab_name ?? "",
+      test_norm: (s as any).test_norm ?? "",
+      test_norm_other: (s as any).test_norm_other ?? "",
+      bulletin_ref: (s as any).bulletin_ref ?? "",
       has_grading: s.has_grading,
       grading_p0075: s.grading_p0075 != null ? String(s.grading_p0075) : "",
       grading_p0425: s.grading_p0425 != null ? String(s.grading_p0425) : "",
@@ -395,8 +416,38 @@ export default function SoilPage() {
               <div><Label>Prof. Até (m)</Label><Input type="number" value={form.depth_to} onChange={(e) => setForm((f) => ({ ...f, depth_to: e.target.value }))} /></div>
               <div><Label>Data</Label><Input type="date" value={form.sample_date} onChange={(e) => setForm((f) => ({ ...f, sample_date: e.target.value }))} /></div>
             </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>{t("soils.laboratory", { defaultValue: "Laboratório" })}</Label>
+                <Select value={form.lab_id} onValueChange={(v) => {
+                  const lab = laboratories.find(l => l.id === v);
+                  setForm((f) => ({ ...f, lab_id: v, lab_name: lab?.suppliers?.name ?? "" }));
+                }}>
+                  <SelectTrigger><SelectValue placeholder={t("common.optional")} /></SelectTrigger>
+                  <SelectContent>
+                    {laboratories.map((lab) => <SelectItem key={lab.id} value={lab.id}>{lab.suppliers?.name ?? lab.id}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>{t("soils.bulletinRef", { defaultValue: "Ref. Boletim" })}</Label>
+                <Input value={form.bulletin_ref} onChange={(e) => setForm((f) => ({ ...f, bulletin_ref: e.target.value }))} placeholder="BL-001" />
+              </div>
+            </div>
             <div>
-              <Label>Tipo Material</Label>
+              <Label>{t("soils.testNorm", { defaultValue: "Norma de Ensaio" })}</Label>
+              <Select value={form.test_norm} onValueChange={(v) => setForm((f) => ({ ...f, test_norm: v }))}>
+                <SelectTrigger><SelectValue placeholder={t("common.optional")} /></SelectTrigger>
+                <SelectContent>
+                  {TEST_NORMS.map((n) => <SelectItem key={n.value} value={n.value}>{t(n.label, { defaultValue: n.value })}</SelectItem>)}
+                </SelectContent>
+              </Select>
+              {form.test_norm === "Outro" && (
+                <Input className="mt-2" value={form.test_norm_other} onChange={(e) => setForm((f) => ({ ...f, test_norm_other: e.target.value }))} placeholder={t("soils.norms.other", { defaultValue: "Especificar norma..." })} />
+              )}
+            </div>
+            <div>
+              <Label>{t("soils.materialType", { defaultValue: "Tipo Material" })}</Label>
               <Select value={form.material_type} onValueChange={(v) => setForm((f) => ({ ...f, material_type: v }))}>
                 <SelectTrigger><SelectValue placeholder="Selecionar tipo..." /></SelectTrigger>
                 <SelectContent>

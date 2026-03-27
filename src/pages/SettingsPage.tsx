@@ -37,6 +37,47 @@ import { toast } from "sonner";
 import { WorkersPanel } from "@/components/workers/WorkersPanel";
 import { MachineryPanel } from "@/components/workers/MachineryPanel";
 import { ContactsNotificationsSection } from "@/components/settings/ContactsNotificationsSection";
+import { ppiSeedService } from "@/lib/services/ppiSeedService";
+
+// ── PPI Seed Section ──────────────────────────────────────────────────────────
+function PpiSeedSection({ projectId }: { projectId: string }) {
+  const { t } = useTranslation();
+  const { user } = useAuth();
+  const [importing, setImporting] = useState(false);
+  const [done, setDone] = useState(false);
+
+  const handleImport = async () => {
+    if (!user) return;
+    setImporting(true);
+    try {
+      const result = await ppiSeedService.seedAllTemplates(projectId, user.id);
+      if (result.created === 0 && result.skipped > 0) {
+        toast.info(t("settings.ppiAlreadyImported", { defaultValue: "Templates PPI já existem neste projecto." }));
+      } else {
+        toast.success(t("settings.ppiImportSuccess", { defaultValue: `${result.created} templates importados com ${result.itemsCreated} itens.` }));
+      }
+      setDone(true);
+    } catch (err: any) {
+      toast.error(t("common.error"), { description: err?.message });
+    } finally {
+      setImporting(false);
+    }
+  };
+
+  return (
+    <div className="flex items-center gap-3 py-3 border-b border-border/50 hover:bg-muted/30 -mx-2 px-2 rounded-lg transition-colors duration-150">
+      <ClipboardList className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+      <div className="flex-1 min-w-0">
+        <p className="text-[12.5px] font-medium text-foreground leading-none">{t("settings.importPpiTemplates", { defaultValue: "Importar Templates PPI PF17A" })}</p>
+        <p className="text-[11px] text-muted-foreground mt-0.5 leading-snug">{t("settings.importPpiDesc", { defaultValue: "Carregar os 12 templates de PPI com conteúdo técnico real da empreitada PF17A" })}</p>
+      </div>
+      <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={handleImport} disabled={importing || done}>
+        {importing ? <Loader2 className="h-3 w-3 animate-spin" /> : done ? <Check className="h-3 w-3" /> : <ClipboardList className="h-3 w-3" />}
+        {importing ? t("common.loading") : done ? t("settings.ppiImported", { defaultValue: "Importado" }) : t("common.import", { defaultValue: "Importar" })}
+      </Button>
+    </div>
+  );
+}
 
 const MOD = {
   documents: "hsl(215, 70%, 38%)", tests: "hsl(252, 55%, 45%)",
@@ -532,6 +573,9 @@ ${usageStats ? `
           </div>
           <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/40" />
         </div>
+
+        {/* PPI Templates Import */}
+        {isAdmin && activeProject && <PpiSeedSection projectId={activeProject.id} />}
       </SettingsSection>
 
       {/* ── 2. User Profile ──────────────────────────────────────────── */}

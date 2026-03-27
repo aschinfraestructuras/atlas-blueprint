@@ -4347,7 +4347,32 @@
   },
   "welds": {
     "usPendingBanner": "soldadura(s) con US pendiente hace más de 7 días",
-    "filterPendingUS": "Ver pendientes US"
+    "filterPendingUS": "Ver pendientes US",
+    "workItem": "Elemento de Obra"
+  },
+  "soils": {
+    "laboratory": "Laboratorio",
+    "testNorm": "Norma de Ensayo",
+    "bulletinRef": "Ref. Boletín",
+    "materialType": "Tipo Material",
+    "norms": {
+      "granulometry": "LNEC E-196 (Granulometría)",
+      "proctor": "LNEC E-197 (Proctor)",
+      "atterberg": "LNEC E-200 (Atterberg)",
+      "cbr": "LNEC E-198 (CBR)",
+      "identification": "NP EN ISO 17892 (Identificación)",
+      "other": "Otro"
+    }
+  },
+  "compaction": {
+    "workItem": "Elemento de Obra"
+  },
+  "settings": {
+    "importPpiTemplates": "Importar Templates PPI PF17A",
+    "importPpiDesc": "Cargar los 12 templates de PPI con contenido técnico real de la obra PF17A",
+    "ppiAlreadyImported": "Templates PPI ya existen en este proyecto.",
+    "ppiImportSuccess": "Templates PPI importados con éxito.",
+    "ppiImported": "Importado"
   },
   "viewer": {
     "banner": "Acceso de visualización — Fiscalización / IP · Solo lectura y exportación",

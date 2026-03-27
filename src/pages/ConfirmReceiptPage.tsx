@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { supabase } from "@/integrations/supabase/client";
+import { createClient } from "@supabase/supabase-js";
 import { CheckCircle, Loader2, XCircle } from "lucide-react";
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
 export default function ConfirmReceiptPage() {
   const { t } = useTranslation();
@@ -18,10 +21,12 @@ export default function ConfirmReceiptPage() {
       return;
     }
 
+    const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
     (async () => {
       try {
         // Check if already confirmed
-        const { data: recipient, error: readErr } = await (supabase as any)
+        const { data: recipient, error: readErr } = await client
           .from("notification_recipients")
           .select("id, confirmed_at, notification_id")
           .eq("id", recipientId)
@@ -34,8 +39,7 @@ export default function ConfirmReceiptPage() {
 
         if (recipient.confirmed_at) {
           setConfirmedAt(new Date(recipient.confirmed_at).toLocaleString());
-          // Get subject
-          const { data: log } = await (supabase as any)
+          const { data: log } = await client
             .from("notifications_log")
             .select("subject")
             .eq("id", recipient.notification_id)
@@ -46,7 +50,7 @@ export default function ConfirmReceiptPage() {
         }
 
         // Confirm now
-        const { error: updateErr } = await (supabase as any)
+        const { error: updateErr } = await client
           .from("notification_recipients")
           .update({ confirmed_at: new Date().toISOString() })
           .eq("id", recipientId);
@@ -59,8 +63,7 @@ export default function ConfirmReceiptPage() {
         const now = new Date().toLocaleString();
         setConfirmedAt(now);
 
-        // Get subject
-        const { data: log } = await (supabase as any)
+        const { data: log } = await client
           .from("notifications_log")
           .select("subject")
           .eq("id", recipient.notification_id)

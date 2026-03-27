@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
+import { useWorkItems } from "@/hooks/useWorkItems";
 import { weldService, type WeldRecord, type WeldInput, computeOverallResult } from "@/lib/services/weldService";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { toast } from "@/hooks/use-toast";
@@ -52,6 +53,7 @@ export default function WeldPage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
   const { logoBase64 } = useProjectLogo();
+  const { data: workItems } = useWorkItems();
   const [records, setRecords] = useState<WeldRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -228,10 +230,10 @@ export default function WeldPage() {
         <div className="rounded-xl border border-border overflow-hidden">
           <Table>
             <TableHeader><TableRow className="bg-muted/40">
-              <TableHead className="text-xs font-semibold uppercase">Código</TableHead>
+              <TableHead className="text-xs font-semibold uppercase">{t("common.code")}</TableHead>
               <TableHead className="text-xs font-semibold uppercase">PK</TableHead>
               <TableHead className="text-xs font-semibold uppercase">{t("common.date")}</TableHead>
-              <TableHead className="text-xs font-semibold uppercase">Perfil</TableHead>
+              <TableHead className="text-xs font-semibold uppercase">{t("welds.workItem", { defaultValue: "Elemento" })}</TableHead>
               <TableHead className="text-xs font-semibold uppercase">{t("welding.fields.operator")}</TableHead>
               <TableHead className="text-xs font-semibold uppercase">Visual</TableHead>
               <TableHead className="text-xs font-semibold uppercase">UT</TableHead>
@@ -245,7 +247,7 @@ export default function WeldPage() {
                   <TableCell className="font-mono text-xs font-semibold">{w.code}</TableCell>
                   <TableCell className="text-xs">{w.pk_location}</TableCell>
                   <TableCell className="text-xs">{w.weld_date}</TableCell>
-                  <TableCell className="text-xs font-mono">{w.rail_profile}</TableCell>
+                  <TableCell className="text-xs">{w.work_item_id ? (() => { const wi = workItems.find(x => x.id === w.work_item_id); return wi ? `${wi.sector} — ${wi.disciplina ?? ""}` : "—"; })() : "—"}</TableCell>
                   <TableCell className="text-xs">
                     {w.operator_name ?? "—"}
                     <CertExpiryBadge date={(w as any).operator_cert_expiry} />

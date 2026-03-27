@@ -249,6 +249,7 @@ export default function CompactionPage() {
                 <TableRow>
                   <TableHead>{t("concrete.fields.code")}</TableHead>
                   <TableHead>{t("compaction.fields.description")}</TableHead>
+                  <TableHead>{t("compaction.workItem", { defaultValue: "Elemento" })}</TableHead>
                   <TableHead>PK</TableHead>
                   <TableHead>{t("compaction.fields.material")}</TableHead>
                   <TableHead>Nuclear</TableHead>
@@ -262,6 +263,9 @@ export default function CompactionPage() {
                   <TableRow key={z.id} className="cursor-pointer hover:bg-muted/30" onClick={() => setDetailId(z.id)}>
                     <TableCell className="font-mono text-xs font-semibold">{z.code}</TableCell>
                     <TableCell className="max-w-[200px] truncate">
+                      {z.zone_description}
+                    </TableCell>
+                    <TableCell className="text-xs">{z.work_item_id ? (() => { const wi = workItems.find(x => x.id === z.work_item_id); return wi ? `${wi.sector} — ${wi.disciplina ?? ""}` : "—"; })() : "—"}</TableCell>
                       {z.zone_description}
                       {z.work_item_id && concreteLots[z.work_item_id] && (
                         <Badge

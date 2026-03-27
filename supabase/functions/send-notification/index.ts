@@ -41,28 +41,54 @@ function escapeHtml(str: string): string {
     .replace(/'/g, "&#39;");
 }
 
-function buildHtmlBody(subject: string, emailBody: string | undefined, entityCode: string | undefined, attachmentCount: number, recipientId?: string): string {
+function buildHtmlBody(subject: string, emailBody: string | undefined, entityCode: string | undefined, attachmentCount: number, entityType?: string, recipientId?: string): string {
   const confirmUrl = recipientId
-    ? `https://atlasquality.lovable.app/confirm-receipt?id=${recipientId}`
+    ? `https://aschquality.com/confirm-receipt?id=${recipientId}`
     : "";
-  return `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <h2 style="color: #1a1a2e;">${escapeHtml(subject)}</h2>
-      ${emailBody ? `<p style="color: #333; line-height: 1.6;">${escapeHtml(emailBody).replace(/\n/g, "<br/>")}</p>` : ""}
-      ${entityCode ? `<p style="color: #666; font-size: 12px;">Ref: ${escapeHtml(entityCode)}</p>` : ""}
-      ${attachmentCount > 0 ? `<p style="color: #666; font-size: 12px;">📎 ${attachmentCount} anexo(s)</p>` : ""}
-      ${confirmUrl ? `
-        <div style="text-align: center; margin: 24px 0;">
-          <a href="${confirmUrl}" style="display: inline-block; padding: 12px 28px; background-color: #1a1a2e; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: 600;">
-            ✓ Confirmar Recepção
-          </a>
-        </div>
-        <p style="color: #999; font-size: 11px; text-align: center;">Clique no botão acima para confirmar que recebeu esta comunicação.</p>
-      ` : ""}
-      <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
-      <p style="color: #999; font-size: 11px;">Atlas Quality Management System</p>
+  const today = new Date().toLocaleDateString("pt-PT");
+  const typeLabel = (entityType ?? "comunicação").toUpperCase();
+
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="margin:0;padding:0;background:#f3f4f6;font-family:Arial,Helvetica,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f3f4f6;padding:20px 0;">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+  <!-- Header -->
+  <tr><td style="background:#192F48;padding:24px 30px;text-align:center;">
+    <div style="font-size:20px;font-weight:900;color:#ffffff;letter-spacing:2px;">ATLAS QMS</div>
+    <div style="font-size:12px;color:#94a3b8;margin-top:4px;">Sistema de Gestão da Qualidade</div>
+  </td></tr>
+  <!-- Type bar -->
+  <tr><td style="background:#2563eb;padding:10px 30px;text-align:center;">
+    <span style="font-size:12px;font-weight:700;color:#ffffff;letter-spacing:1.5px;text-transform:uppercase;">${escapeHtml(typeLabel)}</span>
+  </td></tr>
+  <!-- Body -->
+  <tr><td style="padding:28px 30px;">
+    ${entityCode ? `<div style="font-size:16px;font-weight:700;color:#192F48;margin-bottom:16px;">${escapeHtml(entityCode)}</div>` : ""}
+    <div style="font-size:14px;font-weight:700;color:#1e293b;margin-bottom:12px;">${escapeHtml(subject)}</div>
+    ${emailBody ? `<div style="font-size:13px;color:#334155;line-height:1.6;margin-bottom:20px;">${escapeHtml(emailBody).replace(/\n/g, "<br/>")}</div>` : ""}
+    ${attachmentCount > 0 ? `<div style="font-size:12px;color:#64748b;margin-bottom:16px;">📎 ${attachmentCount} anexo(s)</div>` : ""}
+    <!-- Info table -->
+    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:16px 0;">
+      <tr style="background:#f9fafb;"><td style="padding:8px 12px;font-size:11px;color:#6b7280;border:1px solid #e5e7eb;font-weight:700;">Tipo</td><td style="padding:8px 12px;font-size:11px;color:#1e293b;border:1px solid #e5e7eb;">${escapeHtml(typeLabel)}</td></tr>
+      <tr><td style="padding:8px 12px;font-size:11px;color:#6b7280;border:1px solid #e5e7eb;font-weight:700;">Data de Envio</td><td style="padding:8px 12px;font-size:11px;color:#1e293b;border:1px solid #e5e7eb;">${today}</td></tr>
+      ${entityCode ? `<tr style="background:#f9fafb;"><td style="padding:8px 12px;font-size:11px;color:#6b7280;border:1px solid #e5e7eb;font-weight:700;">Referência</td><td style="padding:8px 12px;font-size:11px;color:#1e293b;border:1px solid #e5e7eb;">${escapeHtml(entityCode)}</td></tr>` : ""}
+    </table>
+    ${confirmUrl ? `
+    <div style="border-top:1px solid #e5e7eb;margin:24px 0;padding-top:24px;text-align:center;">
+      <a href="${confirmUrl}" style="display:inline-block;padding:12px 32px;background-color:#192F48;color:#ffffff;text-decoration:none;border-radius:6px;font-size:14px;font-weight:600;">✓ Confirmar Recepção</a>
+      <div style="font-size:11px;color:#94a3b8;margin-top:12px;">Clique no botão acima para confirmar que recebeu esta comunicação.</div>
     </div>
-  `;
+    ` : ""}
+    <div style="font-size:11px;color:#94a3b8;margin-top:20px;line-height:1.5;">Esta comunicação é parte integrante do SGQ da obra. A confirmação fica registada para efeitos de auditoria.</div>
+  </td></tr>
+  <!-- Footer -->
+  <tr><td style="background:#f3f4f6;padding:16px 30px;text-align:center;">
+    <div style="font-size:10px;color:#9ca3af;">Atlas QMS · info@aschquality.com · aschquality.com · Gerado automaticamente</div>
+  </td></tr>
+</table>
+</td></tr>
+</table>
+</body></html>`;
 }
 
 function buildMimeMessage(
@@ -315,7 +341,7 @@ Deno.serve(async (req: Request) => {
       const recipientId = recipientRow?.id;
 
       // Build HTML with confirmation link per recipient
-      const htmlBody = buildHtmlBody(subject, emailBody, entity_code, allAttachments.length, recipientId);
+      const htmlBody = buildHtmlBody(subject, emailBody, entity_code, allAttachments.length, entity_type, recipientId);
 
       try {
         if (smtpUser && smtpPass) {
