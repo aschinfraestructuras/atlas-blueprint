@@ -8,6 +8,7 @@ import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { useProject } from "@/contexts/ProjectContext";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { useWorkItems } from "@/hooks/useWorkItems";
+import { useLaboratories } from "@/hooks/useLaboratories";
 import { PageHeader } from "@/components/ui/page-header";
 import { FilterBar } from "@/components/ui/filter-bar";
 import { Card, CardContent } from "@/components/ui/card";
