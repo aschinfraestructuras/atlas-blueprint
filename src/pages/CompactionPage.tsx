@@ -249,6 +249,7 @@ export default function CompactionPage() {
                 <TableRow>
                   <TableHead>{t("concrete.fields.code")}</TableHead>
                   <TableHead>{t("compaction.fields.description")}</TableHead>
+                  <TableHead>{t("compaction.workItem", { defaultValue: "Elemento" })}</TableHead>
                   <TableHead>PK</TableHead>
                   <TableHead>{t("compaction.fields.material")}</TableHead>
                   <TableHead>Nuclear</TableHead>
