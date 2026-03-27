@@ -61,6 +61,7 @@ export default function SoilPage() {
   const { activeProject } = useProject();
   const { logoBase64 } = useProjectLogo();
   const { data: workItems } = useWorkItems();
+  const { data: laboratories } = useLaboratories();
   const [samples, setSamples] = useState<SoilSample[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
