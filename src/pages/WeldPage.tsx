@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
+import { useWorkItems } from "@/hooks/useWorkItems";
 import { weldService, type WeldRecord, type WeldInput, computeOverallResult } from "@/lib/services/weldService";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { toast } from "@/hooks/use-toast";

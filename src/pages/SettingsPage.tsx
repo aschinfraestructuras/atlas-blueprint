@@ -50,7 +50,7 @@ function PpiSeedSection({ projectId }: { projectId: string }) {
     if (!user) return;
     setImporting(true);
     try {
-      const result = await ppiSeedService.seedPpiTemplates(projectId, user.id);
+      const result = await ppiSeedService.seedAllTemplates(projectId, user.id);
       if (result.created === 0 && result.skipped > 0) {
         toast.info(t("settings.ppiAlreadyImported", { defaultValue: "Templates PPI já existem neste projecto." }));
       } else {
