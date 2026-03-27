@@ -34,6 +34,15 @@ const MATERIAL_TYPES = [
   "Outro",
 ];
 
+const TEST_NORMS = [
+  { value: "LNEC E-196", label: "soils.norms.granulometry" },
+  { value: "LNEC E-197", label: "soils.norms.proctor" },
+  { value: "LNEC E-200", label: "soils.norms.atterberg" },
+  { value: "LNEC E-198", label: "soils.norms.cbr" },
+  { value: "NP EN ISO 17892", label: "soils.norms.identification" },
+  { value: "Outro", label: "soils.norms.other" },
+];
+
 // PK validation: PK NNN+NNN
 function validatePK(val: string): boolean {
   if (!val) return true; // optional
