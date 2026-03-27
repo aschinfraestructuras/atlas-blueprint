@@ -416,8 +416,38 @@ export default function SoilPage() {
               <div><Label>Prof. Até (m)</Label><Input type="number" value={form.depth_to} onChange={(e) => setForm((f) => ({ ...f, depth_to: e.target.value }))} /></div>
               <div><Label>Data</Label><Input type="date" value={form.sample_date} onChange={(e) => setForm((f) => ({ ...f, sample_date: e.target.value }))} /></div>
             </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>{t("soils.laboratory", { defaultValue: "Laboratório" })}</Label>
+                <Select value={form.lab_id} onValueChange={(v) => {
+                  const lab = laboratories.find(l => l.id === v);
+                  setForm((f) => ({ ...f, lab_id: v, lab_name: lab?.name ?? "" }));
+                }}>
+                  <SelectTrigger><SelectValue placeholder={t("common.optional")} /></SelectTrigger>
+                  <SelectContent>
+                    {laboratories.map((lab) => <SelectItem key={lab.id} value={lab.id}>{lab.name}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>{t("soils.bulletinRef", { defaultValue: "Ref. Boletim" })}</Label>
+                <Input value={form.bulletin_ref} onChange={(e) => setForm((f) => ({ ...f, bulletin_ref: e.target.value }))} placeholder="BL-001" />
+              </div>
+            </div>
             <div>
-              <Label>Tipo Material</Label>
+              <Label>{t("soils.testNorm", { defaultValue: "Norma de Ensaio" })}</Label>
+              <Select value={form.test_norm} onValueChange={(v) => setForm((f) => ({ ...f, test_norm: v }))}>
+                <SelectTrigger><SelectValue placeholder={t("common.optional")} /></SelectTrigger>
+                <SelectContent>
+                  {TEST_NORMS.map((n) => <SelectItem key={n.value} value={n.value}>{t(n.label, { defaultValue: n.value })}</SelectItem>)}
+                </SelectContent>
+              </Select>
+              {form.test_norm === "Outro" && (
+                <Input className="mt-2" value={form.test_norm_other} onChange={(e) => setForm((f) => ({ ...f, test_norm_other: e.target.value }))} placeholder={t("soils.norms.other", { defaultValue: "Especificar norma..." })} />
+              )}
+            </div>
+            <div>
+              <Label>{t("soils.materialType", { defaultValue: "Tipo Material" })}</Label>
               <Select value={form.material_type} onValueChange={(v) => setForm((f) => ({ ...f, material_type: v }))}>
                 <SelectTrigger><SelectValue placeholder="Selecionar tipo..." /></SelectTrigger>
                 <SelectContent>
