@@ -421,11 +421,11 @@ export default function SoilPage() {
                 <Label>{t("soils.laboratory", { defaultValue: "Laboratório" })}</Label>
                 <Select value={form.lab_id} onValueChange={(v) => {
                   const lab = laboratories.find(l => l.id === v);
-                  setForm((f) => ({ ...f, lab_id: v, lab_name: lab?.name ?? "" }));
+                  setForm((f) => ({ ...f, lab_id: v, lab_name: lab?.suppliers?.name ?? "" }));
                 }}>
                   <SelectTrigger><SelectValue placeholder={t("common.optional")} /></SelectTrigger>
                   <SelectContent>
-                    {laboratories.map((lab) => <SelectItem key={lab.id} value={lab.id}>{lab.name}</SelectItem>)}
+                    {laboratories.map((lab) => <SelectItem key={lab.id} value={lab.id}>{lab.suppliers?.name ?? lab.id}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
