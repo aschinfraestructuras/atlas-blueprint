@@ -532,6 +532,9 @@ ${usageStats ? `
           </div>
           <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/40" />
         </div>
+
+        {/* PPI Templates Import */}
+        {isAdmin && activeProject && <PpiSeedSection projectId={activeProject.id} />}
       </SettingsSection>
 
       {/* ── 2. User Profile ──────────────────────────────────────────── */}
