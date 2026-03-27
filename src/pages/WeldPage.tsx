@@ -53,6 +53,7 @@ export default function WeldPage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
   const { logoBase64 } = useProjectLogo();
+  const { data: workItems } = useWorkItems();
   const [records, setRecords] = useState<WeldRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
