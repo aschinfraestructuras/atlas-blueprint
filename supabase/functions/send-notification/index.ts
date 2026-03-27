@@ -341,7 +341,7 @@ Deno.serve(async (req: Request) => {
       const recipientId = recipientRow?.id;
 
       // Build HTML with confirmation link per recipient
-      const htmlBody = buildHtmlBody(subject, emailBody, entity_code, allAttachments.length, recipientId);
+      const htmlBody = buildHtmlBody(subject, emailBody, entity_code, allAttachments.length, entity_type, recipientId);
 
       try {
         if (smtpUser && smtpPass) {

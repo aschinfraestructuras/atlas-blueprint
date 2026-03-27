@@ -245,7 +245,7 @@ export default function WeldPage() {
                   <TableCell className="font-mono text-xs font-semibold">{w.code}</TableCell>
                   <TableCell className="text-xs">{w.pk_location}</TableCell>
                   <TableCell className="text-xs">{w.weld_date}</TableCell>
-                  <TableCell className="text-xs font-mono">{w.rail_profile}</TableCell>
+                  <TableCell className="text-xs">{w.work_item_id ? (() => { const wi = workItems.find(x => x.id === w.work_item_id); return wi ? `${wi.sector} — ${wi.disciplina ?? ""}` : "—"; })() : "—"}</TableCell>
                   <TableCell className="text-xs">
                     {w.operator_name ?? "—"}
                     <CertExpiryBadge date={(w as any).operator_cert_expiry} />
