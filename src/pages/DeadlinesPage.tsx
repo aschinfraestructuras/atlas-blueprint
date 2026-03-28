@@ -224,11 +224,65 @@ export default function DeadlinesPage() {
           <h1 className="text-2xl font-bold tracking-tight text-foreground">{t("deadlines.title")}</h1>
           <p className="text-sm text-muted-foreground">{t("deadlines.subtitle")}</p>
         </div>
-        <Button variant="outline" size="sm" onClick={handleGenerate} disabled={generating} className="gap-2">
-          <Bell className="h-3.5 w-3.5" />
-          {t("deadlines.generateAlerts")}
-          {generating && <RefreshCw className="h-3 w-3 animate-spin" />}
-        </Button>
+        <div className="flex items-center gap-2">
+          <ReportExportMenu
+            options={[
+              {
+                label: t("deadlines.exportPdf"),
+                icon: "pdf",
+                action: () => {
+                  if (!activeProject) return;
+                  const doc = new jsPDF({ unit: "mm", format: "a4", orientation: "landscape" });
+                  const projectName = `${activeProject.code} — ${activeProject.name}`;
+                  const date = new Date().toLocaleDateString("pt-PT");
+                  let html = `<html><head><style>
+                    body{font-family:Arial,sans-serif;font-size:9px;color:#1a1a1a;padding:16px}
+                    table{width:100%;border-collapse:collapse;margin-top:10px}
+                    th{background:#192F48;color:#fff;padding:5px 4px;font-size:8px;text-align:left}
+                    td{border:1px solid #e2e8f0;padding:4px;font-size:8px}
+                    tr:nth-child(even){background:#f9fafb}
+                  </style></head><body>`;
+                  html += fullPdfHeader(logoBase64, projectName, "PRAZOS-" + activeProject.code, "0", date);
+                  html += `<h2 style="text-align:center;font-size:12px;color:#192F48;margin:8px 0">${t("deadlines.title")}</h2>`;
+                  html += `<table><tr><th>${t("deadlines.table.type")}</th><th>${t("deadlines.table.entity")}</th><th>${t("deadlines.table.date")}</th><th>${t("deadlines.table.days")}</th><th>${t("deadlines.table.status")}</th><th>${t("deadlines.table.severity")}</th></tr>`;
+                  filtered.forEach(item => {
+                    html += `<tr><td>${t(`deadlines.sources.${item.source}`)}</td><td>${item.entity_label}</td><td>${item.due_date ? new Date(item.due_date).toLocaleDateString("pt-PT") : "—"}</td><td>${item.days_remaining}d</td><td>${item.status}</td><td>${t(`deadlines.severity.${item.severity}`)}</td></tr>`;
+                  });
+                  html += `</table></body></html>`;
+                  doc.html(html, { callback: d => d.save(`Prazos_${activeProject.code}.pdf`), x: 8, y: 5, width: 275, windowWidth: 1000 });
+                },
+              },
+              {
+                label: t("deadlines.exportCsv"),
+                icon: "csv",
+                action: () => {
+                  const headers = ["Tipo", "Entidade", "Data", "Dias", "Estado", "Urgência"];
+                  const rows = filtered.map(i => [
+                    t(`deadlines.sources.${i.source}`),
+                    `"${(i.entity_label ?? "").replace(/"/g, '""')}"`,
+                    i.due_date ? new Date(i.due_date).toLocaleDateString("pt-PT") : "",
+                    String(i.days_remaining),
+                    i.status,
+                    t(`deadlines.severity.${i.severity}`),
+                  ]);
+                  const csv = [headers, ...rows].map(r => r.join(";")).join("\n");
+                  const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = `Prazos_${activeProject?.code ?? "proj"}.csv`;
+                  a.click();
+                  URL.revokeObjectURL(url);
+                },
+              },
+            ]}
+          />
+          <Button variant="outline" size="sm" onClick={handleGenerate} disabled={generating} className="gap-2">
+            <Bell className="h-3.5 w-3.5" />
+            {t("deadlines.generateAlerts")}
+            {generating && <RefreshCw className="h-3 w-3 animate-spin" />}
+          </Button>
+        </div>
       </div>
 
       {/* KPI cards */}
