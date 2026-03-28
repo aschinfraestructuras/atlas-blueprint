@@ -414,10 +414,10 @@ export default function AuditsPage() {
             )}
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setFormOpen(false)}>Cancelar</Button>
+            <Button variant="outline" onClick={() => setFormOpen(false)}>{t("common.cancel")}</Button>
             <Button onClick={handleSave} disabled={saving || !fPlannedDate}>
               {saving && <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" />}
-              {editAudit ? "Guardar" : "Criar"}
+              {editAudit ? t("common.save") : t("common.create")}
             </Button>
           </DialogFooter>
         </DialogContent>
