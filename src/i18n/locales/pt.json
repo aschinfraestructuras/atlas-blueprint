@@ -3074,6 +3074,12 @@
     "usagePpis": "PPIs activos",
     "usageNcs": "NCs abertas",
     "usageTests": "Ensaios pendentes",
+    "usage": {
+      "activeMembers": "Membros Activos",
+      "activePpis": "PPIs Activos",
+      "openNcs": "NCs Abertas",
+      "pendingTests": "Ensaios Pendentes"
+    },
     "project": {
       "contractor": "Empreiteiro",
       "client": "Dono de Obra",
