@@ -392,11 +392,11 @@ export default function AuditsPage() {
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <Label className="text-xs">N.º NCs</Label>
+                    <Label className="text-xs">{t("audits.ncCount")}</Label>
                     <Input type="number" min={0} value={fNcCount} onChange={e => setFNcCount(Number(e.target.value))} className="text-sm" />
                   </div>
                   <div>
-                    <Label className="text-xs">N.º Observações</Label>
+                    <Label className="text-xs">{t("audits.obsCount")}</Label>
                     <Input type="number" min={0} value={fObsCount} onChange={e => setFObsCount(Number(e.target.value))} className="text-sm" />
                   </div>
                 </div>
