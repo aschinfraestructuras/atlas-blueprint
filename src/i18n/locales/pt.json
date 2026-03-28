@@ -4202,7 +4202,21 @@
     "nProvetes": "Provetes 28d",
     "fcmMedio": "fcm médio (MPa)",
     "criterio": "Critério",
-    "resultado": "Resultado"
+    "resultado": "Resultado",
+    "lots": {
+      "columns": {
+        "code": "Código",
+        "element": "Elemento",
+        "class": "Classe",
+        "exc": "EXC",
+        "volume": "Vol. (m³)",
+        "samples": "n amostras",
+        "fcm": "fcm (MPa)",
+        "fcMin": "fc_min (MPa)",
+        "criterion": "Critério NA.M",
+        "result": "Resultado"
+      }
+    }
   },
   "compaction": {
     "workItem": "Elemento de Obra",
