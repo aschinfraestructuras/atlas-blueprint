@@ -4202,6 +4202,9 @@
       "fresh": "Hormigón Fresco",
       "specimens": "Probetas"
     },
+    "specimens": {
+      "testDate": "Fecha Ensayo"
+    },
     "fields": {
       "code": "Código",
       "element": "Elemento Hormigonado",
