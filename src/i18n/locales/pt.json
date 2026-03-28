@@ -4134,8 +4134,17 @@
       "total": "Total Amassadas",
       "pass": "Conformes",
       "fail": "Não Conformes",
-      "pendingSpecimens": "Provetes Pendentes"
-    }
+      "pendingSpecimens": "Provetes Pendentes",
+      "totalLotes": "Total Lotes",
+      "conformesNAM": "Conformes (NA.M)",
+      "lotesAvaliados": "Lotes avaliados"
+    },
+    "conformityPanel": "Conformidade NA.M por Classe",
+    "nAmassadas": "Amassadas",
+    "nProvetes": "Provetes 28d",
+    "fcmMedio": "fcm médio (MPa)",
+    "criterio": "Critério",
+    "resultado": "Resultado"
   },
   "compaction": {
     "title": "Controlo de Compactação",
