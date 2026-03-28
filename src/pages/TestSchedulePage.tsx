@@ -110,10 +110,11 @@ export default function TestSchedulePage() {
       if (dayTests.length === 0) {
         html += `<span style="color:#ccc;font-size:8px;">—</span>`;
       } else {
-        for (const t of dayTests) {
-          const statusCls = t.status === "pass" || t.status === "approved" || t.status === "completed" ? "status-pass" :
-                           t.status === "fail" ? "status-fail" : "status-pending";
-          html += `<div class="test-item ${statusCls}"><strong>${t.code ?? "—"}</strong><br/>${(t as any).test_name ?? (t as any).location ?? ""}<br/><span style="color:#888">${t.status ?? ""}</span></div>`;
+        for (const item of dayTests) {
+          const testName = item.test_plan_rules?.tests_catalog?.name ?? "—";
+          const statusCls = item.status === "done" ? "status-pass" :
+                           item.status === "overdue" ? "status-fail" : "status-pending";
+          html += `<div class="test-item ${statusCls}"><strong>${testName}</strong><br/><span style="color:#888">${t(`tests.due.status.${item.status}`, { defaultValue: item.status })}</span></div>`;
         }
       }
       html += `</td>`;
