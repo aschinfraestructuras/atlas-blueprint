@@ -2303,7 +2303,8 @@
         "ncs": "NCs",
         "planning": "Planificación",
         "ppi": "PPIs",
-        "tests": "Ensayos"
+        "tests": "Ensayos",
+        "physicalTests": "Ensayos físicos"
       },
       "testsTab": {
         "suggestion": "Sugerencia de ensayo"
