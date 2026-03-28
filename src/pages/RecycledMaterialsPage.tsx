@@ -181,6 +181,30 @@ export default function RecycledMaterialsPage() {
 
       <RecycledMaterialFormDialog open={dialogOpen} onOpenChange={setDialogOpen} onSuccess={refetch} />
       <RecycledMaterialDetailSheet open={!!detailId} onOpenChange={v => { if (!v) setDetailId(null); }} materialId={detailId} onUpdated={refetch} />
+
+      <AlertDialog open={!!deleteTarget} onOpenChange={v => !v && setDeleteTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("common.deleteConfirmTitle")}</AlertDialogTitle>
+            <AlertDialogDescription>{t("recycled.deleteConfirm")}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+            <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={async () => {
+              if (!deleteTarget) return;
+              try {
+                await (supabase as any).from("recycled_materials").update({ is_deleted: true }).eq("id", deleteTarget);
+                toast({ title: t("recycled.toast.deleted") });
+                refetch();
+              } catch {
+                toast({ title: t("common.deleteError"), variant: "destructive" });
+              } finally {
+                setDeleteTarget(null);
+              }
+            }}>{t("common.confirm")}</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
