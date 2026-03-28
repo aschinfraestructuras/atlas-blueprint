@@ -3160,6 +3160,7 @@
     "noDrawingsInTechOffice": "Sem desenhos topográficos registados. Crie peças desenhadas no Arquivo Topográfico para que apareçam aqui.",
     "deleteConfirm": "Este registo será eliminado permanentemente. Tem a certeza?",
     "searchPlaceholder": "Pesquisar código, tipo, zona…",
+    "exportReq": "Exportar REQ",
     "status": {
       "valid": "Válido",
       "expiring_soon": "Expira em breve",
