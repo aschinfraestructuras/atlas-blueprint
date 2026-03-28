@@ -355,14 +355,14 @@ export default function AuditsPage() {
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label className="text-xs">Tipo *</Label>
+                <Label className="text-xs">{t("audits.type")} *</Label>
                 <Select value={fAuditType} onValueChange={setFAuditType}>
                   <SelectTrigger className="text-sm"><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="internal">Interna</SelectItem>
-                    <SelectItem value="external">Externa</SelectItem>
-                    <SelectItem value="surveillance">Vigilância</SelectItem>
-                    <SelectItem value="closing">Encerramento</SelectItem>
+                    <SelectItem value="internal">{t("audits.types.internal")}</SelectItem>
+                    <SelectItem value="external">{t("audits.types.external")}</SelectItem>
+                    <SelectItem value="surveillance">{t("audits.types.surveillance")}</SelectItem>
+                    <SelectItem value="closing">{t("audits.types.closing")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
