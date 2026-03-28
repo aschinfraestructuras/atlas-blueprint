@@ -35,6 +35,10 @@ import {
   Bell,
   ClipboardCheck,
 } from "lucide-react";
+import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
+import { fullPdfHeader } from "@/lib/services/pdfProjectHeader";
+import jsPDF from "jspdf";
 
 const SOURCE_ICONS: Record<string, React.ElementType> = {
   supplier_doc: Truck,
