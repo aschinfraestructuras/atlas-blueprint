@@ -2218,8 +2218,9 @@
         "ncs": "NCs",
         "planning": "Planeamento",
         "ppi": "PPIs",
-        "tests": "Ensaios"
-      },
+         "tests": "Ensaios",
+         "physicalTests": "Ensaios físicos"
+       },
       "testsTab": {
         "suggestion": "Sugestão de ensaio"
       },
