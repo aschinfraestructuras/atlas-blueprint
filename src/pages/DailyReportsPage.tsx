@@ -2,6 +2,10 @@ import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { ClipboardList, Plus, Search, FileText, Send, CheckCircle, Hash, Eye, Calendar, Trash2, Cloud, Sun, CloudRain } from "lucide-react";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { StackedBar, DistributionBar } from "@/components/dashboard/DistributionBar";
 import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
