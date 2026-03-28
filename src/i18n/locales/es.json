@@ -178,7 +178,6 @@
     "soils": "Caracterización de Suelos",
     "welding": "Soldadura — Vía Férrea",
     "orgChart": "Organigrama",
-    "projects": "Proyectos",
     "testSchedule": "Programación Ensayos",
     "traceability": "Trazabilidad",
     "actionPlan": "Plan de Acciones",
@@ -997,6 +996,20 @@
         "in_progress": "En ejecución",
         "done": "Completado",
         "waived": "Dispensado"
+      },
+      "trigger": {
+        "quantity_reached": "Cantidad alcanzada",
+        "area_reached": "Área alcanzada",
+        "time_interval": "Intervalo de tiempo",
+        "manual": "Manual",
+        "lot_complete": "Lote completo"
+      },
+      "reasons": {
+        "quantity_reached": "Cantidad alcanzada",
+        "area_reached": "Área alcanzada",
+        "time_interval": "Intervalo de tiempo",
+        "manual": "Manual",
+        "lot_complete": "Lote completo"
       }
     },
     "schedule": {
@@ -1089,6 +1102,11 @@
         "created": "Plan creado",
         "deleted": "Plan eliminado",
         "updated": "Plan actualizado"
+      },
+      "status": {
+        "active": "Activo",
+        "draft": "Borrador",
+        "archived": "Archivado"
       }
     },
     "ppiTab": {
@@ -2258,7 +2276,8 @@
       "openNc": "NCs abiertas",
       "pendingPpi": "PPI pendiente",
       "pendingTests": "Ensayos pendientes",
-      "readyTooltip": "Listo: PPI aprobado, ensayos conformes, sin NCs"
+      "readyTooltip": "Listo: PPI aprobado, ensayos conformes, sin NCs",
+      "not_ready": "Elemento con pendencias — verifique PPIs, ensayos y NCs"
     },
     "tabs": {
       "concrete": "Hormigón",
@@ -3123,77 +3142,15 @@
     }
   },
   "settings": {
-    "roles": {
-      "admin": "Administrador",
-      "project_manager": "Gestor de Proyecto",
-      "quality_manager": "Gestor de Calidad",
-      "technician": "Técnico",
-      "viewer": "Visualizador"
-    },
-    "roleDescriptions": {
-      "admin": "Acceso total al proyecto: miembros, datos, aprobaciones y eliminación.",
-      "project_manager": "Gestión completa del proyecto, sin eliminar registros críticos.",
-      "quality_manager": "Gestión documental, ensayos, NCs y aprobaciones de calidad.",
-      "technician": "Registro de ensayos, PPI y consulta de documentos.",
-      "viewer": "Solo lectura, sin permiso de escritura."
-    },
-    "members": {
-      "inviteBtn": "Invitar miembro",
-      "inviteTitle": "Invitar usuario al proyecto",
-      "emailLabel": "Correo electrónico",
-      "emailPlaceholder": "usuario@empresa.com",
-      "roleLabel": "Rol",
-      "sendInvite": "Enviar invitación",
-      "addedDirectly": "Usuario añadido al proyecto.",
-      "inviteSent": "Invitación enviada con éxito.",
-      "inviteAccepted": "Invitación aceptada con éxito.",
-      "acceptInviteLoading": "Validando invitación…",
-      "invalidInviteToken": "Enlace de invitación inválido o ausente.",
-      "roleUpdated": "Rol actualizado.",
-      "memberRemoved": "Miembro eliminado del proyecto.",
-      "inviteDeleted": "Invitación eliminada.",
-      "noMembers": "Sin miembros en este proyecto.",
-      "pendingInvites": "Invitaciones pendientes",
-      "expires": "Expira el",
-      "you": "usted",
-      "colName": "Nombre",
-      "colEmail": "Correo",
-      "colRole": "Rol",
-      "removeTitle": "¿Eliminar miembro?",
-      "removeDesc": "El usuario «{{name}}» perderá acceso a este proyecto. Esta acción se puede revertir añadiendo nuevamente al miembro.",
-      "removeConfirm": "Eliminar acceso",
-      "noProjectsEmpty": "No está asociado a ningún proyecto.",
-      "noProjectsEmptySub": "Contacte a un administrador para obtener acceso a un proyecto o cree uno nuevo.",
-      "requestAccess": "Solicitar acceso",
-      "accountCreated": "Cuenta creada con éxito",
-      "alreadyMember": "Este usuario ya es miembro",
-      "createAccount": "Crear cuenta y añadir",
-      "createBtn": "Crear miembro",
-      "inviteEmailSent": "Invitación enviada por e-mail",
-      "inviteToken": "Token de invitación",
-      "passwordHint": "Mín. 6 caracteres",
-      "passwordLabel": "Contraseña inicial",
-      "passwordPlaceholder": "Introduzca la contraseña",
-      "passwordTooShort": "Contraseña demasiado corta"
-    },
-    "password": {
-      "newPasswordLabel": "Nueva contraseña",
-      "newPasswordPlaceholder": "Mínimo 6 caracteres",
-      "changeBtn": "Cambiar contraseña",
-      "success": "Contraseña cambiada con éxito.",
-      "error": "Error al cambiar contraseña."
-    },
-    "project": {
-      "contractor": "Contratista",
-      "client": "Propietario",
-      "location": "Ubicación",
-      "contractNumber": "Número de Contrato",
-      "metadata": "Datos del Proyecto (PDF)"
-    },
+    "importPpiTemplates": "Importar Templates PPI PF17A",
+    "importPpiDesc": "Cargar los 12 templates de PPI con contenido técnico real de la obra PF17A",
+    "ppiAlreadyImported": "Templates PPI ya existen en este proyecto.",
+    "ppiImportSuccess": "Templates PPI importados con éxito.",
+    "ppiImported": "Importado",
+    "importPpiDone": "12 plantillas PPI importadas con éxito",
+    "importPpiExists": "Las plantillas ya existen para este proyecto",
     "ownResources": "Recursos Propios",
-    "ownResourcesDesc": "Personal y Equipos — ASCH",
-    "contactsTab": "Contactos y Notificaciones",
-    "contactsTabDesc": "Gestionar contactos del proyecto y listas de distribución"
+    "ownResourcesDesc": "Personal y Equipos — ASCH Infraestructuras"
   },
   "topography": {
     "title": "Mediciones & Equipos",
@@ -4176,6 +4133,7 @@
     "resultado": "Resultado"
   },
   "compaction": {
+    "workItem": "Elemento de Obra",
     "title": "Control de Compactación",
     "subtitle": "Zonas de compactación — densímetro nuclear y ensayo de placa",
     "newZone": "Nueva Zona",
@@ -4193,6 +4151,18 @@
     }
   },
   "soils": {
+    "laboratory": "Laboratorio",
+    "testNorm": "Norma de Ensayo",
+    "bulletinRef": "Ref. Boletín",
+    "materialType": "Tipo Material",
+    "norms": {
+      "granulometry": "LNEC E-196 (Granulometría)",
+      "proctor": "LNEC E-197 (Proctor)",
+      "atterberg": "LNEC E-200 (Atterberg)",
+      "cbr": "LNEC E-198 (CBR)",
+      "identification": "NP EN ISO 17892 (Identificación)",
+      "other": "Otro"
+    },
     "title": "Caracterización de Suelos",
     "subtitle": "Muestras y ensayos de caracterización",
     "newSample": "Nueva Muestra",
@@ -4441,34 +4411,6 @@
     "filterPendingUS": "Ver pendientes US",
     "workItem": "Elemento de Obra"
   },
-  "soils": {
-    "laboratory": "Laboratorio",
-    "testNorm": "Norma de Ensayo",
-    "bulletinRef": "Ref. Boletín",
-    "materialType": "Tipo Material",
-    "norms": {
-      "granulometry": "LNEC E-196 (Granulometría)",
-      "proctor": "LNEC E-197 (Proctor)",
-      "atterberg": "LNEC E-200 (Atterberg)",
-      "cbr": "LNEC E-198 (CBR)",
-      "identification": "NP EN ISO 17892 (Identificación)",
-      "other": "Otro"
-    }
-  },
-  "compaction": {
-    "workItem": "Elemento de Obra"
-  },
-  "settings": {
-    "importPpiTemplates": "Importar Templates PPI PF17A",
-    "importPpiDesc": "Cargar los 12 templates de PPI con contenido técnico real de la obra PF17A",
-    "ppiAlreadyImported": "Templates PPI ya existen en este proyecto.",
-    "ppiImportSuccess": "Templates PPI importados con éxito.",
-    "ppiImported": "Importado",
-    "importPpiDone": "12 plantillas PPI importadas con éxito",
-    "importPpiExists": "Las plantillas ya existen para este proyecto",
-    "ownResources": "Recursos Propios",
-    "ownResourcesDesc": "Personal y Equipos — ASCH Infraestructuras"
-  },
   "viewer": {
     "banner": "Acceso de visualización — Fiscalización / IP · Solo lectura y exportación",
     "ppiBanner": "Modo visualización — Fiscalización IP · Solo lectura"
@@ -4580,5 +4522,11 @@
       "submittal": "Submittal",
       "transmittal": "Transmittal"
     }
+  },
+  "dailyReport": {
+    "contextBanner": "Atención — elemento tiene pendencias",
+    "ncOpen": "{{count}} NC(s) abiertas",
+    "hpPending": "{{count}} HP(s) pendientes",
+    "testsOverdue": "{{count}} ensayo(s) atrasados"
   }
 }
