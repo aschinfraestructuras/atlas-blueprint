@@ -4097,6 +4097,9 @@
       "emesExpiring": "EMEs a Expirar"
     },
     "ensaiosSection": "Ensaios e Controlo",
+    "testsSection": "Ensaios e Controlo de Qualidade",
+    "autofillKpis": "Auto-preencher KPIs",
+    "autofillDone": "KPIs preenchidos automaticamente",
     "concrete": "Betão",
     "welds": "Soldaduras",
     "soils": "Solos e Compactação",
