@@ -3877,8 +3877,11 @@
     "title": "Materiales Reciclados",
     "toast": {
       "created": "Material reciclado creado",
-      "updated": "Material reciclado actualizado"
+      "updated": "Material reciclado actualizado",
+      "deleted": "Material reciclado eliminado"
     },
+    "delete": "Eliminar",
+    "deleteConfirm": "Confirmar eliminación del registro",
     "types": {
       "FAM": "FAM",
       "PAP": "PAP",
