@@ -145,7 +145,8 @@ export default function RecycledMaterialsPage() {
                   <TableHead className="text-right">{t("recycled.fields.quantityPlanned")}</TableHead>
                   <TableHead className="text-right">{t("recycled.fields.quantityUsed")}</TableHead>
                   <TableHead>{t("recycled.fields.documentRef")}</TableHead>
-                  <TableHead>{t("common.status")}</TableHead>
+                   <TableHead>{t("common.status")}</TableHead>
+                   <TableHead className="w-[40px]" />
                 </TableRow>
               </TableHeader>
               <TableBody>
