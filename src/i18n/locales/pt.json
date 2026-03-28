@@ -2227,7 +2227,12 @@
         "tests": "Ensaios"
       },
       "generatedOn": "Gerado em",
-      "reportTitle": "Relatório de Elementos de Obra"
+      "reportTitle": "Relatório de Elementos de Obra",
+      "readiness": "Prontidão",
+      "readinessTitle": "Relatório de Prontidão de Obra",
+      "ppis": "PPIs",
+      "openNcs": "NCs Abertas",
+      "tests": "Ensaios"
     },
     "filters": {
       "allDisciplines": "Todas as disciplinas",
