@@ -3859,7 +3859,11 @@
     "title": "Materiais Reciclados",
     "toast": {
       "created": "Material reciclado criado",
-      "updated": "Material reciclado atualizado"
+      "updated": "Material reciclado atualizado",
+      "deleted": "Material reciclado eliminado"
+    },
+    "delete": "Eliminar",
+    "deleteConfirm": "Confirmar eliminação do registo"
     },
     "types": {
       "FAM": "FAM",
