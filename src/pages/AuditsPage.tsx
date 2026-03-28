@@ -383,7 +383,7 @@ export default function AuditsPage() {
             {editAudit && (
               <>
                 <div>
-                  <Label className="text-xs">Constatações</Label>
+                  <Label className="text-xs">{t("audits.findings")}</Label>
                   <Textarea value={fFindings} onChange={e => setFFindings(e.target.value)} rows={3} className="text-sm resize-none" />
                 </div>
                 <div>
