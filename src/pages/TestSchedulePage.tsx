@@ -189,7 +189,7 @@ export default function TestSchedulePage() {
             <CheckCircle2 className="h-5 w-5 text-chart-2" />
             <div>
               <p className="text-2xl font-bold text-foreground">{totalThisWeek - pendingThisWeek}</p>
-              <p className="text-xs text-muted-foreground">{isEs ? "Realizados" : "Realizados"}</p>
+              <p className="text-xs text-muted-foreground">{t("tests.schedule.done")}</p>
             </div>
           </CardContent>
         </Card>
