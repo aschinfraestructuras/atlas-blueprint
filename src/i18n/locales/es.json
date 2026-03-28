@@ -988,7 +988,15 @@
       "goToPlans": "Ir a Planes",
       "howToSchedule": "Cómo programar ensayos",
       "step1": "Paso 1: Configure el Plan de Ensayos (pestaña Planes → seleccione un plan → añada reglas de ensayo)",
-      "step2": "Paso 2: Haga clic en \"Generar programación\" para crear los ensayos obligatorios"
+      "step2": "Paso 2: Haga clic en \"Generar programación\" para crear los ensayos obligatorios",
+      "status": {
+        "due": "Por vencer",
+        "overdue": "Vencido",
+        "scheduled": "Programado",
+        "in_progress": "En ejecución",
+        "done": "Completado",
+        "waived": "Dispensado"
+      }
     },
     "export": {
       "acceptanceCriteria": "Criterios de aceptación",
