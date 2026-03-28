@@ -290,10 +290,10 @@ export default function AuditsPage() {
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="font-mono text-sm font-bold text-foreground">{audit.code}</span>
                       <Badge variant="outline" className={cn("text-[10px]", TYPE_COLORS[audit.audit_type])}>
-                        {TYPE_LABELS[audit.audit_type] ?? audit.audit_type}
+                        {t(TYPE_KEYS[audit.audit_type]) ?? audit.audit_type}
                       </Badge>
                       <Badge variant="secondary" className={cn("text-[10px]", STATUS_COLORS[audit.status])}>
-                        {STATUS_LABELS[audit.status] ?? audit.status}
+                        {t(STATUS_KEYS[audit.status]) ?? audit.status}
                       </Badge>
                     </div>
                     <div className="flex items-center gap-4 mt-1.5 text-xs text-muted-foreground">
