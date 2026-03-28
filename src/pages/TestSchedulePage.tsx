@@ -33,7 +33,7 @@ export default function TestSchedulePage() {
   const { t, i18n } = useTranslation();
   const { activeProject } = useProject();
   const { logoBase64 } = useProjectLogo();
-  const { data: tests, loading } = useTests();
+  const { data: dueItems, loading } = useTestDueItems();
   const isEs = i18n.language?.startsWith("es");
   const locale = isEs ? es : pt;
 
