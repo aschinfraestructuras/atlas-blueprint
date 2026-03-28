@@ -3976,10 +3976,14 @@
     }
   },
   "audits": {
-    "title": "Auditorias",
-    "subtitle": "Programa anual de auditorias internas e externas",
+    "title": "Programa de Auditorias",
+    "subtitle": "Auditorias internas e externas do programa de qualidade",
     "new": "Nova Auditoria",
+    "create": "Nova Auditoria",
+    "editTitle": "Editar Auditoria",
     "empty": "Nenhuma auditoria registada. O programa anual de auditorias deve ser definido no PQO.",
+    "emptyTitle": "Sem auditorias",
+    "emptyDescription": "Nenhuma auditoria registada",
     "type": {
       "internal": "Interna",
       "external": "Externa",
@@ -4009,9 +4013,21 @@
       "updated": "Auditoria actualizada",
       "deleted": "Auditoria cancelada"
     },
-    "create": "Criar auditoria",
-    "emptyDescription": "Nenhuma auditoria registada",
-    "emptyTitle": "Sem auditorias"
+    "exportPdf": "Exportar PAI (PDF)",
+    "exportListPdf": "Lista Auditorias (PDF)",
+    "exportRai": "Exportar RAI (PDF)",
+    "registerNc": "Registar NC",
+    "ncRegistered": "NC registada com sucesso",
+    "start": "Iniciar",
+    "conclude": "Concluir",
+    "auditor": "Auditor",
+    "scope": "Âmbito",
+    "findings": "Constatações",
+    "plannedDate": "Data Planeada",
+    "completedDate": "Data Conclusão",
+    "reportRef": "Ref. Relatório",
+    "ncCount": "N.º NCs",
+    "obsCount": "N.º Observações"
   },
   "sgqMatrix": {
     "title": "Matriz de Conformidade SGQ",

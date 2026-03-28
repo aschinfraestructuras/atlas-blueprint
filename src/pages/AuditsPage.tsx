@@ -39,17 +39,17 @@ import { NCFormDialog } from "@/components/nc/NCFormDialog";
 import jsPDF from "jspdf";
 
 const TYPE_KEYS: Record<string, string> = {
-  internal: "audits.types.internal",
-  external: "audits.types.external",
-  surveillance: "audits.types.surveillance",
-  closing: "audits.types.closing",
+  internal: "audits.type.internal",
+  external: "audits.type.external",
+  surveillance: "audits.type.surveillance",
+  closing: "audits.type.closing",
 };
 
 const STATUS_KEYS: Record<string, string> = {
-  planned: "audits.statuses.planned",
-  in_progress: "audits.statuses.inProgress",
-  completed: "audits.statuses.completed",
-  cancelled: "audits.statuses.cancelled",
+  planned: "audits.status.planned",
+  in_progress: "audits.status.in_progress",
+  completed: "audits.status.completed",
+  cancelled: "audits.status.cancelled",
 };
 
 const STATUS_COLORS: Record<string, string> = {
