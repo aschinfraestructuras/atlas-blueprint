@@ -367,7 +367,7 @@ export default function AuditsPage() {
                 </Select>
               </div>
               <div>
-                <Label className="text-xs">Data Planeada *</Label>
+                <Label className="text-xs">{t("audits.plannedDate")} *</Label>
                 <Input type="date" value={fPlannedDate} onChange={e => setFPlannedDate(e.target.value)} className="text-sm" />
               </div>
             </div>
