@@ -26,12 +26,12 @@ const STATUS_COLORS: Record<string, string> = {
   expiring_90d: "bg-muted text-muted-foreground",
 };
 
-const STATUS_LABELS: Record<string, string> = {
-  expired: "Expirado",
-  expiring_7d: "≤ 7 dias",
-  expiring_30d: "≤ 30 dias",
-  expiring_60d: "≤ 60 dias",
-  expiring_90d: "≤ 90 dias",
+const STATUS_LABEL_KEYS: Record<string, string> = {
+  expired: "expirations.status.expired",
+  expiring_7d: "expirations.status.expiring_7d",
+  expiring_30d: "expirations.status.expiring_30d",
+  expiring_60d: "expirations.status.expiring_60d",
+  expiring_90d: "expirations.status.expiring_90d",
 };
 
 const DOMAIN_ICONS: Record<string, React.ElementType> = {
