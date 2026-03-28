@@ -235,7 +235,8 @@
       "emesExpiring": "EMEs ≤30d",
       "nextAudit": "Próxima Auditoria",
       "ppiInProgress": "PPIs em Curso",
-      "testsOverdue": "Ensaios em Atraso"
+      "testsOverdue": "Ensaios em Atraso",
+      "weldsPendingUt": "Soldaduras sem US"
     },
     "period": {
       "all": "Todo o período",
@@ -3439,7 +3440,8 @@
       "ncDistribution": "Distribuição de NCs",
       "overdueNcs": "NCs em atraso",
       "pendingMaterials": "Materiais pendentes",
-      "testConformity": "Conformidade de ensaios"
+      "testConformity": "Conformidade de ensaios",
+      "testsByType": "Ensaios por Tipo"
     },
     "signature": {
       "title": "Assinatura Simples",

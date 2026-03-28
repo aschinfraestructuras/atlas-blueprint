@@ -320,7 +320,8 @@
       "emesExpiring": "EMEs ≤30d",
       "nextAudit": "Próxima Auditoría",
       "ppiInProgress": "PPIs en Curso",
-      "testsOverdue": "Ensayos Atrasados"
+      "testsOverdue": "Ensayos Atrasados",
+      "weldsPendingUt": "Soldaduras sin US"
     },
     "period": {
       "all": "Todo el período",
@@ -3527,7 +3528,8 @@
       "ncDistribution": "Distribución de NCs",
       "overdueNcs": "NCs atrasadas",
       "pendingMaterials": "Materiales pendientes",
-      "testConformity": "Conformidad de ensayos"
+      "testConformity": "Conformidad de ensayos",
+      "testsByType": "Ensayos por Tipo"
     },
     "signature": {
       "title": "Firma Simple",
