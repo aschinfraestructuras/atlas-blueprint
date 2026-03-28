@@ -136,27 +136,29 @@ export default function MyTasksPage() {
         .lte("due_at_date", sevenDaysFromNow)
         .order("due_at_date", { ascending: true });
 
-      const testResults: MyTestDue[] = [];
-      if (testData) {
-        for (const td of testData) {
-          let wiName: string | null = null;
-          if (td.work_item_id) {
-            const { data: wi } = await (supabase as any)
-              .from("work_items")
-              .select("sector")
-              .eq("id", td.work_item_id)
-              .single();
-            wiName = wi?.sector ?? null;
-          }
-          testResults.push({
-            id: td.id,
-            test_type: td.test_type ?? "—",
-            work_item_name: wiName,
-            due_at_date: td.due_at_date,
-            is_overdue: td.due_at_date < today,
-          });
+      // Batch-fetch work items for test due items
+      const testWiIds = [...new Set((testData ?? []).map((td: any) => td.work_item_id).filter(Boolean))];
+      const testWiMap: Record<string, string> = {};
+      if (testWiIds.length > 0) {
+        // Reuse wiMap if IDs overlap, otherwise fetch
+        const missingIds = testWiIds.filter(id => !wiMap[id]);
+        if (missingIds.length > 0) {
+          const { data: moreWi } = await (supabase as any)
+            .from("work_items")
+            .select("id, sector")
+            .in("id", missingIds);
+          (moreWi ?? []).forEach((wi: any) => { testWiMap[wi.id] = wi.sector; });
         }
+        testWiIds.forEach(id => { if (wiMap[id]) testWiMap[id] = wiMap[id].sector; });
       }
+
+      const testResults: MyTestDue[] = (testData ?? []).map((td: any) => ({
+        id: td.id,
+        test_type: td.test_type ?? "—",
+        work_item_name: td.work_item_id ? (testWiMap[td.work_item_id] ?? null) : null,
+        due_at_date: td.due_at_date,
+        is_overdue: td.due_at_date < today,
+      }));
       setTests(testResults);
 
       // 3. NCs
