@@ -39,18 +39,18 @@ import { fullPdfHeader } from "@/lib/services/pdfProjectHeader";
 import { NCFormDialog } from "@/components/nc/NCFormDialog";
 import jsPDF from "jspdf";
 
-const TYPE_LABELS: Record<string, string> = {
-  internal: "Interna",
-  external: "Externa",
-  surveillance: "Vigilância",
-  closing: "Encerramento",
+const TYPE_KEYS: Record<string, string> = {
+  internal: "audits.types.internal",
+  external: "audits.types.external",
+  surveillance: "audits.types.surveillance",
+  closing: "audits.types.closing",
 };
 
-const STATUS_LABELS: Record<string, string> = {
-  planned: "Planeada",
-  in_progress: "Em Curso",
-  completed: "Concluída",
-  cancelled: "Cancelada",
+const STATUS_KEYS: Record<string, string> = {
+  planned: "audits.statuses.planned",
+  in_progress: "audits.statuses.inProgress",
+  completed: "audits.statuses.completed",
+  cancelled: "audits.statuses.cancelled",
 };
 
 const STATUS_COLORS: Record<string, string> = {
