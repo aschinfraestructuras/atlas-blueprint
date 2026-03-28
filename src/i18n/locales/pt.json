@@ -4238,6 +4238,14 @@
       "apto": "Aptas",
       "conditional": "Condicionais",
       "inapto": "Inaptas"
+    },
+    "materialTypes": {
+      "clay": "Solo argiloso",
+      "sand": "Solo arenoso",
+      "toutVenant": "Tout-venant",
+      "gravel": "Brita",
+      "fill": "Aterro seleccionado",
+      "other": "Outro"
     }
   },
   "welding": {
