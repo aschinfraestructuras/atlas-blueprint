@@ -4373,7 +4373,11 @@
     "importPpiDesc": "Cargar los 12 templates de PPI con contenido técnico real de la obra PF17A",
     "ppiAlreadyImported": "Templates PPI ya existen en este proyecto.",
     "ppiImportSuccess": "Templates PPI importados con éxito.",
-    "ppiImported": "Importado"
+    "ppiImported": "Importado",
+    "importPpiDone": "12 plantillas PPI importadas con éxito",
+    "importPpiExists": "Las plantillas ya existen para este proyecto",
+    "ownResources": "Recursos Propios",
+    "ownResourcesDesc": "Personal y Equipos — ASCH Infraestructuras"
   },
   "viewer": {
     "banner": "Acceso de visualización — Fiscalización / IP · Solo lectura y exportación",
