@@ -23,6 +23,7 @@ export interface DashboardKpis {
   testsTotal: number;
   matApproved: number;
   matTotal: number;
+  weldsPendingUt: number;
   recentActivity: RecentItem[];
 }
 
