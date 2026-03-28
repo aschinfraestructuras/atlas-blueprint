@@ -376,7 +376,7 @@ export default function AuditsPage() {
               <Input value={fAuditorName} onChange={e => setFAuditorName(e.target.value)} className="text-sm" />
             </div>
             <div>
-              <Label className="text-xs">Âmbito</Label>
+              <Label className="text-xs">{t("audits.scope")}</Label>
               <Textarea value={fScope} onChange={e => setFScope(e.target.value)} rows={2} className="text-sm resize-none" />
             </div>
 
