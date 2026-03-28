@@ -171,7 +171,7 @@ export default function TestSchedulePage() {
             <FlaskConical className="h-5 w-5 text-primary" />
             <div>
               <p className="text-2xl font-bold text-foreground">{totalThisWeek}</p>
-              <p className="text-xs text-muted-foreground">{isEs ? "Total semana" : "Total semana"}</p>
+              <p className="text-xs text-muted-foreground">{t("tests.schedule.totalWeek")}</p>
             </div>
           </CardContent>
         </Card>
