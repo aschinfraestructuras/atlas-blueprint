@@ -374,6 +374,72 @@ function LotsTab({
   );
 }
 
+// ─── Conformity by Class Panel ────────────────────────────────────────────────
+
+function ConformityByClassPanel({ projectId }: { projectId: string }) {
+  const { t } = useTranslation();
+  const [rows, setRows] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      setLoading(true);
+      try {
+        const { data } = await supabase
+          .from("vw_concrete_conformity_ce" as any)
+          .select("*")
+          .eq("project_id", projectId);
+        setRows(data ?? []);
+      } catch { /* view may not exist */ }
+      setLoading(false);
+    })();
+  }, [projectId]);
+
+  if (loading) return <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>;
+  if (rows.length === 0) return <EmptyState icon={Layers} titleKey="concrete.empty" subtitleKey="concrete.emptySubtitle" />;
+
+  return (
+    <Card>
+      <CardContent className="p-0">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>{t("concrete.class", { defaultValue: "Classe" })}</TableHead>
+              <TableHead>{t("concrete.nAmassadas")}</TableHead>
+              <TableHead>{t("concrete.nProvetes")}</TableHead>
+              <TableHead>{t("concrete.fcmMedio")}</TableHead>
+              <TableHead>{t("concrete.criterio")}</TableHead>
+              <TableHead>{t("concrete.resultado")}</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {rows.map((r: any, i: number) => (
+              <TableRow key={i}>
+                <TableCell className="font-semibold">{r.concrete_class}</TableCell>
+                <TableCell>{r.n_batches ?? "—"}</TableCell>
+                <TableCell>{r.n_specimens_28d ?? "—"}</TableCell>
+                <TableCell className="font-mono">{r.mean_fc_28d != null ? Number(r.mean_fc_28d).toFixed(1) : "—"}</TableCell>
+                <TableCell className="text-xs text-muted-foreground max-w-[180px] truncate">{r.criterion_applied ?? "—"}</TableCell>
+                <TableCell>
+                  {r.result === "pass" ? (
+                    <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-0">
+                      {t("common.compliant", { defaultValue: "Conforme" })}
+                    </Badge>
+                  ) : r.result === "fail" ? (
+                    <Badge variant="destructive">{t("common.nonCompliant", { defaultValue: "Não Conforme" })}</Badge>
+                  ) : (
+                    <Badge variant="outline" className="text-muted-foreground">{t("common.pendingStatus", { defaultValue: "Pendente" })}</Badge>
+                  )}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
+  );
+}
+
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function ConcretePage() {
