@@ -999,6 +999,14 @@
         "waived": "Dispensado"
       }
     },
+    "schedule": {
+      "title": "Programación Semanal de Ensayos",
+      "subtitle": "Calendario semanal con ensayos programados",
+      "totalWeek": "Total semana",
+      "pending": "Pendientes",
+      "done": "Realizados",
+      "weekSummary": "{{total}} ensayos · {{pending}} pendientes"
+    },
     "export": {
       "acceptanceCriteria": "Criterios de aceptación",
       "approvalRate": "Tasa de aprobación",
