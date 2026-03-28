@@ -231,22 +231,29 @@ export default function TestSchedulePage() {
                   {dayTests.length === 0 ? (
                     <p className="text-[10px] text-muted-foreground/50 text-center mt-6">—</p>
                   ) : (
-                    dayTests.map((test) => (
-                      <div
-                        key={test.id}
-                        className={cn(
-                          "rounded-lg px-2 py-1.5 text-[10px] border-l-[3px]",
-                          test.status === "pass" || test.status === "approved" || test.status === "completed"
-                            ? "bg-chart-2/5 border-l-chart-2"
-                            : test.status === "fail"
-                            ? "bg-destructive/5 border-l-destructive"
-                            : "bg-amber-500/5 border-l-amber-500",
-                        )}
-                      >
-                        <p className="font-bold truncate">{test.code ?? "—"}</p>
-                        <p className="text-muted-foreground truncate">{(test as any).test_name ?? (test as any).location ?? ""}</p>
-                      </div>
-                    ))
+                    dayTests.map((item) => {
+                      const testName = item.test_plan_rules?.tests_catalog?.name ?? "—";
+                      const isDone = item.status === "done";
+                      const isOverdue = item.status === "overdue";
+                      return (
+                        <div
+                          key={item.id}
+                          className={cn(
+                            "rounded-lg px-2 py-1.5 text-[10px] border-l-[3px]",
+                            isDone
+                              ? "bg-chart-2/5 border-l-chart-2"
+                              : isOverdue
+                              ? "bg-destructive/5 border-l-destructive"
+                              : "bg-amber-500/5 border-l-amber-500",
+                          )}
+                        >
+                          <p className="font-bold truncate">{testName}</p>
+                          <p className="text-muted-foreground truncate">
+                            {t(`tests.due.status.${item.status}`, { defaultValue: item.status })}
+                          </p>
+                        </div>
+                      );
+                    })
                   )}
                 </div>
               </div>
