@@ -698,7 +698,7 @@ export default function ConcretePage() {
                           <RowActionMenu actions={[
                             { key: "view", label: t("common.view"), icon: Eye, onClick: () => setDetailId(b.id) },
                             { key: "pdf", label: t("common.exportPdf"), icon: FileDown, onClick: () => handleExport(b) },
-                            { key: "delete", label: t("common.delete"), icon: Trash2, onClick: () => handleDelete(b.id), variant: "destructive" as const },
+                            { key: "delete", label: t("common.delete"), icon: Trash2, onClick: () => setDeleteBatchTarget(b.id), variant: "destructive" as const },
                           ]} />
                         </TableCell>
                       </TableRow>

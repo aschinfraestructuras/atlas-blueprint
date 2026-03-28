@@ -333,7 +333,7 @@ export default function TrainingPage() {
                         <FileText className="h-3.5 w-3.5" />
                       </Button>
                       {canEdit && (
-                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleDelete(s.id)} title={t("common.delete")}>
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setDeleteTargetId(s.id)} title={t("common.delete")}>
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>
                       )}
