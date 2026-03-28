@@ -45,24 +45,24 @@ export default function TestSchedulePage() {
 
   // Group tests by date within week
   const testsByDay = useMemo(() => {
-    const map: Record<string, typeof tests> = {};
+    const map: Record<string, typeof dueItems> = {};
     for (const day of days) {
       const key = format(day, "yyyy-MM-dd");
       map[key] = [];
     }
-    for (const test of tests) {
-      const testDate = test.date;
-      if (!testDate) continue;
+    for (const item of dueItems) {
+      const dateStr = item.scheduled_for ?? item.due_at_date;
+      if (!dateStr) continue;
       try {
-        const d = parseISO(testDate);
+        const d = parseISO(dateStr);
         if (isWithinInterval(d, { start: weekStart, end: weekEnd })) {
           const key = format(d, "yyyy-MM-dd");
-          if (map[key]) map[key]!.push(test);
+          if (map[key]) map[key]!.push(item);
         }
       } catch { /* skip */ }
     }
     return map;
-  }, [tests, days, weekStart, weekEnd]);
+  }, [dueItems, days, weekStart, weekEnd]);
 
   const totalThisWeek = useMemo(() => Object.values(testsByDay).reduce((s, v) => s + v.length, 0), [testsByDay]);
   const pendingThisWeek = useMemo(() =>
