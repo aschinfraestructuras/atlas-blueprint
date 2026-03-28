@@ -26,13 +26,13 @@ import { EmptyState } from "@/components/EmptyState";
 import { ModuleKPICard } from "@/components/ModuleKPICard";
 import { toast } from "@/hooks/use-toast";
 
-const MATERIAL_TYPES = [
-  "Solo argiloso",
-  "Solo arenoso",
-  "Tout-venant",
-  "Brita",
-  "Aterro seleccionado",
-  "Outro",
+const MATERIAL_TYPE_KEYS = [
+  { value: "clay", key: "soils.materialTypes.clay" },
+  { value: "sand", key: "soils.materialTypes.sand" },
+  { value: "tout_venant", key: "soils.materialTypes.toutVenant" },
+  { value: "gravel", key: "soils.materialTypes.gravel" },
+  { value: "fill", key: "soils.materialTypes.fill" },
+  { value: "other", key: "soils.materialTypes.other" },
 ];
 
 const TEST_NORMS = [
