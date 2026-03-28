@@ -13,7 +13,9 @@ import {
   Inbox, BookOpen, HardHat, Construction, ClipboardCheck, Crosshair, CalendarClock,
   Clock, FileCheck, BarChart3, Building2, ClipboardList, Leaf, GraduationCap, FileBarChart2,
   Users, Link2, Hammer, CheckSquare, FileStack, PieChart, Cog, CalendarCheck, Activity,
+  Download,
 } from "lucide-react";
+import { usePWAInstall } from "@/hooks/usePWAInstall";
 import { NavLink } from "@/components/NavLink";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -274,6 +276,7 @@ function SidebarContent({ collapsed, onClose }: { collapsed: boolean; onClose?: 
   const { health, loading: healthLoading } = useProjectHealth(activeProject?.id);
   const isViewer = role === "viewer";
   const [healthSheetOpen, setHealthSheetOpen] = useState(false);
+  const { canInstall, install } = usePWAInstall();
 
   const isActive = useCallback(
     (url: string, exact?: boolean) =>
@@ -414,7 +417,24 @@ function SidebarContent({ collapsed, onClose }: { collapsed: boolean; onClose?: 
         })}
       </nav>
 
-      {/* ── Health Score Indicator ────────────────────────────── */}
+      {/* ── PWA Install ─────────────────────────────────── */}
+      {canInstall && (
+        <div className="flex-shrink-0 px-3 py-1">
+          <button
+            type="button"
+            onClick={install}
+            className={cn(
+              "flex items-center gap-2 w-full rounded-lg px-2 py-1.5 text-sidebar-foreground/70 hover:bg-sidebar-accent/50 transition-colors",
+              collapsed && "justify-center"
+            )}
+          >
+            <Download className="h-4 w-4 flex-shrink-0" />
+            {!collapsed && <span className="text-xs font-medium">{t("pwa.install")}</span>}
+          </button>
+        </div>
+      )}
+
+      {/* ── Health Score Indicator ────────────────────────── */}
       {activeProject && (
         <div className="flex-shrink-0 px-3 py-2 border-t border-sidebar-border/40">
           <button

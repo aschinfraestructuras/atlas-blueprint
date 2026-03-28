@@ -12,6 +12,7 @@ import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { Loader2 } from "lucide-react";
 import { queryClient } from "@/lib/queryClient";
+import { PWAInstallBanner } from "@/components/pwa/PWAInstallBanner";
 
 // Static imports — needed before auth redirect
 import LoginPage from "./pages/LoginPage";
@@ -96,6 +97,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <PWAInstallBanner />
       <BrowserRouter>
         <AuthProvider>
           <ProjectProvider>
