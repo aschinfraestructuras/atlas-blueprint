@@ -309,7 +309,7 @@ export default function TrainingPage() {
                   <TableCell className="text-sm">{new Date(s.session_date).toLocaleDateString("pt-PT")}</TableCell>
                   <TableCell>
                     <Badge variant="secondary" className={`text-xs ${SESSION_TYPE_COLORS[s.session_type] ?? ""}`}>
-                      {SESSION_TYPE_LABELS[s.session_type] ?? s.session_type}
+                      {t(SESSION_TYPE_KEYS[s.session_type] ?? s.session_type)}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-sm font-medium text-foreground">{s.title}</TableCell>
