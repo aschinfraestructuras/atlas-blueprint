@@ -305,7 +305,7 @@ export default function WeldPage() {
                     <SelectContent>{RAIL_PROFILES.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}</SelectContent>
                   </Select>
                 </div>
-                <div><Label>Lado via</Label>
+                <div><Label>{t("welding.form.trackSide")}</Label>
                   <Select value={form.track_side ?? "esquerda"} onValueChange={v => setField("track_side", v)}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>{TRACK_SIDES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
