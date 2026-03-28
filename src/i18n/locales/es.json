@@ -1030,6 +1030,7 @@
       "discipline": "Disciplina",
       "exportBulk": "Exportar informe",
       "exportSingle": "Exportar boletín",
+      "exportBeCampo": "Exportar BE-CAMPO",
       "generatedOn": "Generado el",
       "laboratory": "Laboratorio",
       "location": "Ubicación",
