@@ -918,6 +918,13 @@
         "time_interval": "Intervalo de tempo",
         "manual": "Manual",
         "lot_complete": "Lote completo"
+      },
+      "reasons": {
+        "quantity_reached": "Quantidade atingida",
+        "area_reached": "Área atingida",
+        "time_interval": "Intervalo de tempo",
+        "manual": "Manual",
+        "lot_complete": "Lote completo"
       }
     },
     "schedule": {
