@@ -248,7 +248,7 @@ function LotsTab({
                     </TableCell>
                     <TableCell>
                       <RowActionMenu actions={[
-                        { key: "delete", label: t("common.delete"), icon: Trash2, onClick: () => handleDeleteLot(lot.lot_id), variant: "destructive" as const },
+                        { key: "delete", label: t("common.delete"), icon: Trash2, onClick: () => setDeleteLotTarget(lot.lot_id), variant: "destructive" as const },
                       ]} />
                     </TableCell>
                   </TableRow>
