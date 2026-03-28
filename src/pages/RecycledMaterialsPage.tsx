@@ -159,11 +159,18 @@ export default function RecycledMaterialsPage() {
                     <TableCell className="text-right tabular-nums">{r.quantity_planned != null ? `${r.quantity_planned} ${r.unit ?? ""}` : "—"}</TableCell>
                     <TableCell className="text-right tabular-nums">{r.quantity_used != null ? `${r.quantity_used} ${r.unit ?? ""}` : "—"}</TableCell>
                     <TableCell className="text-xs">{r.document_ref ?? "—"}</TableCell>
-                    <TableCell>
-                      <Badge className={STATUS_COLORS[r.status] ?? ""} variant="secondary">
-                        {t(`recycled.status.${r.status}`)}
-                      </Badge>
-                    </TableCell>
+                     <TableCell>
+                       <Badge className={STATUS_COLORS[r.status] ?? ""} variant="secondary">
+                         {t(`recycled.status.${r.status}`)}
+                       </Badge>
+                     </TableCell>
+                     <TableCell onClick={e => e.stopPropagation()}>
+                       {!isArchived && (
+                         <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => setDeleteTarget(r.id)}>
+                           <Trash2 className="h-3.5 w-3.5" />
+                         </Button>
+                       )}
+                     </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
