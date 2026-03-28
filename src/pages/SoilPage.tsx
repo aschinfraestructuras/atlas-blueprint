@@ -455,7 +455,7 @@ export default function SoilPage() {
               <Select value={form.material_type} onValueChange={(v) => setForm((f) => ({ ...f, material_type: v }))}>
                 <SelectTrigger><SelectValue placeholder="Selecionar tipo..." /></SelectTrigger>
                 <SelectContent>
-                  {MATERIAL_TYPES.map((mt) => <SelectItem key={mt} value={mt}>{mt}</SelectItem>)}
+                  {MATERIAL_TYPE_KEYS.map((mt) => <SelectItem key={mt.value} value={mt.value}>{t(mt.key)}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>

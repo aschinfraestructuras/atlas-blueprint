@@ -33,12 +33,12 @@ const SESSION_TYPE_COLORS: Record<string, string> = {
   other: "bg-muted text-muted-foreground",
 };
 
-const SESSION_TYPE_LABELS: Record<string, string> = {
-  initial: "Formação Inicial",
-  new_personnel: "Novos Colaboradores",
-  specific: "Específica",
-  subcontractor: "Subempreiteiro",
-  other: "Outra",
+const SESSION_TYPE_KEYS: Record<string, string> = {
+  initial: "training.sessionTypes.initial",
+  new_personnel: "training.sessionTypes.new_personnel",
+  specific: "training.sessionTypes.specific",
+  subcontractor: "training.sessionTypes.subcontractor",
+  other: "training.sessionTypes.other",
 };
 
 interface AttendeeRow {

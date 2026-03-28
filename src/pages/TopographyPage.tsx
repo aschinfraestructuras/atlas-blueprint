@@ -223,7 +223,7 @@ export default function TopographyPage() {
     } else if (activeTab === "equipment") {
       opts.push({ label: "CSV", icon: "csv", action: () => exportTopographyEquipmentCsv(filteredEquipment, meta) });
       opts.push({ label: "PDF", icon: "pdf", action: () => exportTopographyEquipmentPdf(filteredEquipment, meta) });
-      opts.push({ label: "Exportar REQ", icon: "pdf", action: async () => {
+      opts.push({ label: t("topography.exportReq"), icon: "pdf", action: async () => {
         await exportREQ(filteredEquipment.map(e => ({
           ...e,
           lastCalibrationDate: calibrations.find(c => c.equipment_id === e.id)?.issue_date ?? null,

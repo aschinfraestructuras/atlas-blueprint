@@ -656,7 +656,7 @@ function ResultsTab() {
                           <Button
                             variant="ghost" size="icon"
                             className="h-7 w-7 text-muted-foreground hover:text-primary"
-                            title="Exportar BE-CAMPO"
+                            title={t("tests.exportBeCampo")}
                             onClick={() => exportBeCampoPdf(r as any, activeProject?.name ?? "Projeto")}
                           >
                             <BookOpen className="h-3.5 w-3.5" />
