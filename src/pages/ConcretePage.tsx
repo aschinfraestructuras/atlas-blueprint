@@ -620,10 +620,13 @@ export default function ConcretePage() {
       <Tabs value={pageTab} onValueChange={setPageTab}>
         <TabsList>
           <TabsTrigger value="batches" className="gap-1.5">
-            <Layers className="h-3.5 w-3.5" /> Amassadas
+            <Layers className="h-3.5 w-3.5" /> {t("concrete.tabs.batches", { defaultValue: "Amassadas" })}
           </TabsTrigger>
           <TabsTrigger value="lots" className="gap-1.5">
-            <Package className="h-3.5 w-3.5" /> Lotes (NA.M)
+            <Package className="h-3.5 w-3.5" /> {t("concrete.tabs.lots", { defaultValue: "Lotes (NA.M)" })}
+          </TabsTrigger>
+          <TabsTrigger value="conformity" className="gap-1.5">
+            <CheckCircle2 className="h-3.5 w-3.5" /> {t("concrete.conformityPanel", { defaultValue: "Conformidade" })}
           </TabsTrigger>
         </TabsList>
 
