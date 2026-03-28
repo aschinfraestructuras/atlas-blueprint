@@ -4327,7 +4327,9 @@
     },
     "form": {
       "editTitle": "Editar Soldadura",
-      "newTitle": "Nueva Soldadura"
+      "newTitle": "Nueva Soldadura",
+      "trackSide": "Lado vía",
+      "weldType": "Tipo soldadura"
     }
   },
   "traceability": {
