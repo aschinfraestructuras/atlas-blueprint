@@ -151,34 +151,6 @@ export default function PlansPage() {
           <p className="text-sm text-muted-foreground">{t("pages.plans.subtitle")}</p>
         </div>
         <div className="flex items-center gap-2">
-          <RoleGate action="create">
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-1.5"
-              disabled={importing}
-              onClick={async () => {
-                if (!activeProject || !user) return;
-                setImporting(true);
-                try {
-                  const res = await importPF17APlans(activeProject.id, user.id);
-                  toast({
-                    title: t("plans.toast.imported", { defaultValue: "Planos PF17A importados" }),
-                    description: `${res.inserted} inseridos, ${res.skipped} já existiam`,
-                  });
-                  refetch();
-                } catch (err) {
-                  const { title, description } = classifySupabaseError(err, t);
-                  toast({ variant: "destructive", title, description });
-                } finally {
-                  setImporting(false);
-                }
-              }}
-            >
-              {importing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}
-              {t("plans.importPF17A", { defaultValue: "Importar PF17A" })}
-            </Button>
-          </RoleGate>
           <ReportExportMenu options={[
             { label: "CSV", icon: "csv", action: () => handleExport("csv") },
             { label: "PDF", icon: "pdf", action: () => handleExport("pdf") },
