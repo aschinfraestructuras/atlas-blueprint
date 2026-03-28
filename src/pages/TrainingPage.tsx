@@ -443,7 +443,7 @@ export default function TrainingPage() {
                 <div>
                   <p className="text-xs font-semibold text-muted-foreground uppercase">{t("training.form.type", { defaultValue: "Tipo" })}</p>
                   <Badge variant="secondary" className={`text-xs ${SESSION_TYPE_COLORS[detailSession.session_type] ?? ""}`}>
-                    {SESSION_TYPE_LABELS[detailSession.session_type] ?? detailSession.session_type}
+                    {t(SESSION_TYPE_KEYS[detailSession.session_type] ?? detailSession.session_type)}
                   </Badge>
                 </div>
                 {detailSession.location && (
