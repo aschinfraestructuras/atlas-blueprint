@@ -407,26 +407,53 @@ export default function TopographyPage() {
                 <TableHead>{t("common.date")}</TableHead>
                 <TableHead>{t("topography.table.priority")}</TableHead>
                 <TableHead>{t("common.status")}</TableHead>
+                <TableHead>{t("topography.cycle.status", { defaultValue: "Ciclo" })}</TableHead>
                 <TableHead>{t("common.actions")}</TableHead>
               </TableRow></TableHeader>
               <TableBody>
-                {filteredRequests.map((req) => (
-                  <TableRow key={req.id}>
-                    <TableCell className="font-medium">{t(`topography.requestType.${req.request_type}`, { defaultValue: req.request_type })}</TableCell>
-                    <TableCell className="max-w-[300px] truncate">{req.description}</TableCell>
-                    <TableCell>{req.zone || "—"}</TableCell>
-                    <TableCell>{req.request_date}</TableCell>
-                    <TableCell><PriorityBadge priority={req.priority} /></TableCell>
-                    <TableCell><StatusBadge status={req.status} /></TableCell>
-                    <TableCell>
-                      <div className="flex gap-1">
-                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditRequest(req)}><Pencil className="h-3.5 w-3.5" /></Button>
-                        {isAdmin && <DeleteButton onConfirm={() => handleDeleteRequest(req.id)} />}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-                {filteredRequests.length === 0 && <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-8">{t("common.noData")}</TableCell></TableRow>}
+                {filteredRequests.map((req) => {
+                  const cycle = cycleData.find(c => c.request_id === req.id);
+                  const cycleStatus = cycle?.cycle_status;
+                  const cycleColors: Record<string, string> = {
+                    closed_ok: "bg-emerald-500/10 text-emerald-600",
+                    closed_nok: "bg-destructive/10 text-destructive",
+                    overdue: "bg-destructive/10 text-destructive",
+                    pending: "bg-amber-500/10 text-amber-600",
+                  };
+                  return (
+                    <TableRow key={req.id}>
+                      <TableCell className="font-medium">{t(`topography.requestType.${req.request_type}`, { defaultValue: req.request_type })}</TableCell>
+                      <TableCell className="max-w-[300px] truncate">{req.description}</TableCell>
+                      <TableCell>{req.zone || "—"}</TableCell>
+                      <TableCell>{req.request_date}</TableCell>
+                      <TableCell><PriorityBadge priority={req.priority} /></TableCell>
+                      <TableCell><StatusBadge status={req.status} /></TableCell>
+                      <TableCell>
+                        {cycleStatus ? (
+                          <div className="space-y-0.5">
+                            <Badge className={cn("border-0 text-[10px]", cycleColors[cycleStatus] ?? "bg-muted text-muted-foreground")}>
+                              {t(`topography.cycle.${cycleStatus}`, { defaultValue: cycleStatus })}
+                            </Badge>
+                            {(cycleStatus === "closed_ok" || cycleStatus === "closed_nok") && cycle && (
+                              <div className="text-[10px] text-muted-foreground space-y-0.5">
+                                {cycle.control_date && <div>{cycle.control_date}</div>}
+                                {cycle.deviation && <div>{t("topography.cycle.deviation")}: {cycle.deviation}</div>}
+                                {cycle.technician && <div>{t("topography.cycle.executedBy")}: {cycle.technician}</div>}
+                              </div>
+                            )}
+                          </div>
+                        ) : <span className="text-muted-foreground text-xs">—</span>}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex gap-1">
+                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditRequest(req)}><Pencil className="h-3.5 w-3.5" /></Button>
+                          {isAdmin && <DeleteButton onConfirm={() => handleDeleteRequest(req.id)} />}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+                {filteredRequests.length === 0 && <TableRow><TableCell colSpan={8} className="text-center text-muted-foreground py-8">{t("common.noData")}</TableCell></TableRow>}
               </TableBody>
             </Table>
           </div>
