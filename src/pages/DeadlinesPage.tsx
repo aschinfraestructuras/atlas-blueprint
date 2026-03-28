@@ -99,6 +99,7 @@ export default function DeadlinesPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { activeProject } = useProject();
+  const { logoBase64 } = useProjectLogo();
 
   const [items, setItems] = useState<DeadlineItem[]>([]);
   const [loading, setLoading] = useState(true);
