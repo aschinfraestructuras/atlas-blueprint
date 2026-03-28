@@ -3572,7 +3572,9 @@
       "days": "Dias",
       "severity": "Severidade"
     },
-    "noEntityLink": "Sem entidade associada — a redirecionar para a lista."
+    "noEntityLink": "Sem entidade associada — a redirecionar para a lista.",
+    "exportPdf": "Exportar PDF",
+    "exportCsv": "Exportar CSV"
   },
   "health": {
     "healthy": "Saudável",

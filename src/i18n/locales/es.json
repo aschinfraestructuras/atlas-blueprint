@@ -3660,7 +3660,9 @@
       "days": "Días",
       "severity": "Severidad"
     },
-    "noEntityLink": "Sin entidad asociada — redirigiendo a la lista."
+    "noEntityLink": "Sin entidad asociada — redirigiendo a la lista.",
+    "exportPdf": "Exportar PDF",
+    "exportCsv": "Exportar CSV"
   },
   "notifications": {
     "title": "Notificaciones",
