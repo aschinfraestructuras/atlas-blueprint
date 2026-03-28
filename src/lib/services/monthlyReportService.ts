@@ -199,7 +199,13 @@ export const monthlyReportService = {
     if (error) throw error;
   },
 
-  exportPdf(report: MonthlyReport, projectName: string, logoBase64?: string | null, projectMeta?: PdfProjectInfo | null) {
+  exportPdf(
+    report: MonthlyReport,
+    projectName: string,
+    logoBase64?: string | null,
+    projectMeta?: PdfProjectInfo | null,
+    testsData?: { concreteBatches: number; concreteLots: number; concreteConform: number; weldsTotal: number; weldsWithUT: number; soilsTotal: number; soilsConform: number; compactionTotal: number; compactionConform: number } | null,
+  ) {
     const refDate = new Date(report.reference_month);
     const monthLabel = refDate.toLocaleDateString("pt-PT", { year: "numeric", month: "long" });
     const deadline = getDeadlineForMonth(report.reference_month);
