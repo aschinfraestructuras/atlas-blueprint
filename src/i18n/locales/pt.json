@@ -3825,7 +3825,11 @@
       "onSiteEquipment": "equipamentos em obra",
       "safetyOk": "Formação OK",
       "noSafety": "Sem formação"
-    }
+    },
+    "contextBanner": "Atenção — elemento tem pendências",
+    "ncOpen": "{{count}} NC(s) abertas",
+    "hpPending": "{{count}} HP(s) pendentes",
+    "testsOverdue": "{{count}} ensaio(s) em atraso"
   },
   "recycled": {
     "exportPpgrcd": "Exportar Ficha PPGRCD",

@@ -73,7 +73,6 @@ export default function PlansPage() {
   const [editingPlan, setEditingPlan] = useState<Plan | null>(null);
   const [deletingPlan, setDeletingPlan] = useState<Plan | null>(null);
   const [deleting, setDeleting] = useState(false);
-  const [importing, setImporting] = useState(false);
 
   // Filters
   const [search, setSearch] = useState("");
