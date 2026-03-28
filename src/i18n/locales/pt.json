@@ -4362,6 +4362,11 @@
     },
     "weather": "Condições meteorológicas"
   },
+  "fieldRecord": {
+    "createNc": "Criar NC",
+    "ncLinked": "NC associada",
+    "ncCreated": "NC criada a partir do registo de campo"
+  },
   "myTasks": {
     "title": "O Meu Dia",
     "myPpis": "Os Meus PPIs",
