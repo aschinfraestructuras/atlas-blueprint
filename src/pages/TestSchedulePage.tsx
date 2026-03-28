@@ -135,8 +135,8 @@ export default function TestSchedulePage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title={isEs ? "Programación Semanal de Ensayos" : "Programação Semanal de Ensaios"}
-        subtitle={isEs ? "Calendario semanal con ensayos programados" : "Calendário semanal com ensaios programados"}
+        title={t("tests.schedule.title")}
+        subtitle={t("tests.schedule.subtitle")}
         icon={CalendarClock}
         actions={
           <Button variant="outline" size="sm" onClick={handleExportPdf}>
@@ -148,18 +148,18 @@ export default function TestSchedulePage() {
       {/* Week navigation */}
       <div className="flex items-center justify-between">
         <Button variant="ghost" size="sm" onClick={() => setWeekOffset(w => w - 1)}>
-          <ChevronLeft className="h-4 w-4 mr-1" />{isEs ? "Anterior" : "Anterior"}
+          <ChevronLeft className="h-4 w-4 mr-1" />{t("common.back")}
         </Button>
         <div className="text-center">
           <p className="text-sm font-semibold text-foreground">{weekLabel}</p>
-          <p className="text-xs text-muted-foreground">{isEs ? `${totalThisWeek} ensayos · ${pendingThisWeek} pendientes` : `${totalThisWeek} ensaios · ${pendingThisWeek} pendentes`}</p>
+          <p className="text-xs text-muted-foreground">{t("tests.schedule.weekSummary", { total: totalThisWeek, pending: pendingThisWeek })}</p>
         </div>
         <div className="flex gap-2">
           <Button variant="ghost" size="sm" onClick={() => setWeekOffset(0)}>
-            {isEs ? "Hoy" : "Hoje"}
+            {t("common.today")}
           </Button>
           <Button variant="ghost" size="sm" onClick={() => setWeekOffset(w => w + 1)}>
-            {isEs ? "Siguiente" : "Seguinte"}<ChevronRight className="h-4 w-4 ml-1" />
+            {t("common.next")}<ChevronRight className="h-4 w-4 ml-1" />
           </Button>
         </div>
       </div>
