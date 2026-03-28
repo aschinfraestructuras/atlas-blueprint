@@ -402,11 +402,11 @@ export default function AuditsPage() {
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <Label className="text-xs">Data Conclusão</Label>
+                    <Label className="text-xs">{t("audits.completedDate")}</Label>
                     <Input type="date" value={fCompletedDate} onChange={e => setFCompletedDate(e.target.value)} className="text-sm" />
                   </div>
                   <div>
-                    <Label className="text-xs">Ref. Relatório</Label>
+                    <Label className="text-xs">{t("audits.reportRef")}</Label>
                     <Input value={fReportRef} onChange={e => setFReportRef(e.target.value)} placeholder="RAI-001" className="text-sm" />
                   </div>
                 </div>
