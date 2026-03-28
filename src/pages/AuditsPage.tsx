@@ -313,17 +313,29 @@ export default function AuditsPage() {
                         className="text-xs h-7"
                         onClick={() => handleStatusTransition(audit)}
                       >
-                        {audit.status === "planned" ? "Iniciar" : "Concluir"}
-                      </Button>
-                    )}
+                         {audit.status === "planned" ? t("audits.start") : t("audits.conclude")}
+                       </Button>
+                     )}
 
-                    <RowActionMenu
-                      actions={[
-                        ...(canEdit ? [{ key: "edit", labelKey: "common.edit", onClick: () => openEdit(audit) }] : []),
-                        { key: "export", label: "Exportar RAI (PDF)", onClick: () => qualityAuditService.exportRaiPdf(audit, activeProject.name ?? "Projeto", logoBase64) },
-                        ...(canDelete ? [{ key: "delete", labelKey: "common.delete", onClick: () => setDeleteTarget(audit), variant: "destructive" as const }] : []),
-                      ]}
-                    />
+                     {audit.status === "completed" && canCreate && (
+                       <Button
+                         variant="outline"
+                         size="sm"
+                         className="text-xs h-7 gap-1"
+                         onClick={() => { setNcAudit(audit); setNcDialogOpen(true); }}
+                       >
+                         <AlertTriangleIcon className="h-3 w-3" />
+                         {t("audits.registerNc")}
+                       </Button>
+                     )}
+
+                     <RowActionMenu
+                       actions={[
+                         ...(canEdit ? [{ key: "edit", labelKey: "common.edit", onClick: () => openEdit(audit) }] : []),
+                         { key: "export", label: t("audits.exportRai"), onClick: () => qualityAuditService.exportRaiPdf(audit, activeProject.name ?? "Projeto", logoBase64) },
+                         ...(canDelete ? [{ key: "delete", labelKey: "common.delete", onClick: () => setDeleteTarget(audit), variant: "destructive" as const }] : []),
+                       ]}
+                     />
                   </div>
                 </div>
               </CardContent>
