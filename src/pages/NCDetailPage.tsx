@@ -343,6 +343,9 @@ export default function NCDetailPage() {
         </div>
       </div>
 
+      {/* ── Status Stepper ──────────────────────────────────────────────── */}
+      <NCStatusStepper currentStatus={nc.status} />
+
       {/* ── Status bar ──────────────────────────────────────────────────── */}
       <div className="flex flex-wrap gap-3 items-center">
         <Badge className={cn("text-sm px-3 py-1", STATUS_COLORS[nc.status])}>
