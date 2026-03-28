@@ -723,6 +723,10 @@ export default function ConcretePage() {
             />
           )}
         </TabsContent>
+
+        <TabsContent value="conformity" className="mt-5">
+          {activeProject && <ConformityByClassPanel projectId={activeProject.id} />}
+        </TabsContent>
       </Tabs>
 
       {/* ────── Create Batch Dialog ────── */}
