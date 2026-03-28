@@ -418,7 +418,21 @@ function SidebarContent({ collapsed, onClose }: { collapsed: boolean; onClose?: 
       </nav>
 
       {/* ── PWA Install ─────────────────────────────────── */}
-      <PWAInstallButton collapsed={collapsed} />
+      {canInstall && (
+        <div className="flex-shrink-0 px-3 py-1">
+          <button
+            type="button"
+            onClick={install}
+            className={cn(
+              "flex items-center gap-2 w-full rounded-lg px-2 py-1.5 text-sidebar-foreground/70 hover:bg-sidebar-accent/50 transition-colors",
+              collapsed && "justify-center"
+            )}
+          >
+            <Download className="h-4 w-4 flex-shrink-0" />
+            {!collapsed && <span className="text-xs font-medium">{t("pwa.install")}</span>}
+          </button>
+        </div>
+      )}
 
       {/* ── Health Score Indicator ────────────────────────── */}
       {activeProject && (
