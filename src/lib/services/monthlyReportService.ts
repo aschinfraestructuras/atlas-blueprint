@@ -328,9 +328,52 @@ export const monthlyReportService = {
       </tr>
     </table>
 
-    ${textSection("6 — Observações", report.observations)}
-    ${textSection("7 — Acções Correctivas", report.corrective_actions)}
-    ${textSection("8 — Plano para o Próximo Mês", report.next_month_plan)}
+    ${(() => {
+      if (!testsData) return "";
+      const td = testsData;
+      const concreteRate = td.concreteLots > 0 ? Math.round((td.concreteConform / td.concreteLots) * 100) : 0;
+      const soilRate = td.soilsTotal > 0 ? Math.round((td.soilsConform / td.soilsTotal) * 100) : 0;
+      const compRate = td.compactionTotal > 0 ? Math.round((td.compactionConform / td.compactionTotal) * 100) : 0;
+      return `
+        <div style="font-weight:700;font-size:11px;text-transform:uppercase;color:#6b7280;margin-bottom:6px;">6 — Ensaios e Controlo de Qualidade</div>
+        <table style="margin-bottom:20px;">
+          <tr style="background:#f3f4f6;">
+            <th style="padding:6px 8px;border:1px solid #d1d5db;text-align:left;">Módulo</th>
+            <th style="padding:6px 8px;border:1px solid #d1d5db;">Total</th>
+            <th style="padding:6px 8px;border:1px solid #d1d5db;">Conformes</th>
+            <th style="padding:6px 8px;border:1px solid #d1d5db;">%</th>
+          </tr>
+          <tr>
+            <td style="padding:6px 8px;border:1px solid #d1d5db;font-weight:700;">Betão (amassadas/lotes)</td>
+            <td style="padding:6px 8px;border:1px solid #d1d5db;text-align:center;">${td.concreteBatches} / ${td.concreteLots}</td>
+            <td style="padding:6px 8px;border:1px solid #d1d5db;text-align:center;">${td.concreteConform}</td>
+            <td style="padding:6px 8px;border:1px solid #d1d5db;text-align:center;font-weight:700;">${concreteRate}%</td>
+          </tr>
+          <tr>
+            <td style="padding:6px 8px;border:1px solid #d1d5db;font-weight:700;">Soldaduras</td>
+            <td style="padding:6px 8px;border:1px solid #d1d5db;text-align:center;">${td.weldsTotal}</td>
+            <td style="padding:6px 8px;border:1px solid #d1d5db;text-align:center;">${td.weldsWithUT} com US</td>
+            <td style="padding:6px 8px;border:1px solid #d1d5db;text-align:center;font-weight:700;">${td.weldsTotal > 0 ? Math.round((td.weldsWithUT / td.weldsTotal) * 100) : 0}%</td>
+          </tr>
+          <tr>
+            <td style="padding:6px 8px;border:1px solid #d1d5db;font-weight:700;">Solos</td>
+            <td style="padding:6px 8px;border:1px solid #d1d5db;text-align:center;">${td.soilsTotal}</td>
+            <td style="padding:6px 8px;border:1px solid #d1d5db;text-align:center;">${td.soilsConform}</td>
+            <td style="padding:6px 8px;border:1px solid #d1d5db;text-align:center;font-weight:700;">${soilRate}%</td>
+          </tr>
+          <tr>
+            <td style="padding:6px 8px;border:1px solid #d1d5db;font-weight:700;">Compactação</td>
+            <td style="padding:6px 8px;border:1px solid #d1d5db;text-align:center;">${td.compactionTotal}</td>
+            <td style="padding:6px 8px;border:1px solid #d1d5db;text-align:center;">${td.compactionConform}</td>
+            <td style="padding:6px 8px;border:1px solid #d1d5db;text-align:center;font-weight:700;">${compRate}%</td>
+          </tr>
+        </table>
+      `;
+    })()}
+
+    ${textSection("7 — Observações", report.observations)}
+    ${textSection("8 — Acções Correctivas", report.corrective_actions)}
+    ${textSection("9 — Plano para o Próximo Mês", report.next_month_plan)}
 
     <div style="display:flex;justify-content:space-between;margin-top:40px;">
       <div style="width:45%;">
