@@ -274,14 +274,17 @@ export default function SoilPage() {
     } finally { setSaving(false); }
   }
 
-  async function handleDelete(id: string) {
-    if (!confirm(t("common.confirmDelete"))) return;
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+  async function confirmDeleteSoil() {
+    if (!deleteTargetId) return;
     try {
-      await soilService.deleteSample(id);
-      toast({ title: t("common.delete") });
+      await soilService.deleteSample(deleteTargetId);
+      toast({ title: t("common.deleted") });
       fetchSamples();
     } catch (err: any) {
-      toast({ title: "Erro", description: err.message, variant: "destructive" });
+      toast({ title: t("common.error"), description: err.message, variant: "destructive" });
+    } finally {
+      setDeleteTargetId(null);
     }
   }
 
