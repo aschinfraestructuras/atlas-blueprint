@@ -159,7 +159,7 @@ export default function DFOPage() {
             <TooltipTrigger asChild>
               <Badge className="bg-blue-500/10 text-blue-600 border-0 text-[9px]">{t("dfo.status.auto_complete")}</Badge>
             </TooltipTrigger>
-            <TooltipContent>{t("dfo.tooltip.autoComplete", { count: item.support_count ?? "0" })}</TooltipContent>
+            <TooltipContent>{t("dfo.tooltip.autoComplete", { count: String(item.support_count ?? "0") } as Record<string, string>)}</TooltipContent>
           </Tooltip>
         </TooltipProvider>
       );
