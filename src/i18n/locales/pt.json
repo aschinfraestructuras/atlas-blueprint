@@ -4665,5 +4665,11 @@
     "tooltip": {
       "autoComplete": "{{count}} registos encontrados na BD"
     }
+  },
+  "pwa": {
+    "install": "Instalar como App",
+    "update": "Actualizar App",
+    "updateAvailable": "Nova versão disponível — clique para actualizar",
+    "updateNow": "Actualizar agora"
   }
 }
