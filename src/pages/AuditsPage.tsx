@@ -372,7 +372,7 @@ export default function AuditsPage() {
               </div>
             </div>
             <div>
-              <Label className="text-xs">Auditor</Label>
+              <Label className="text-xs">{t("audits.auditor")}</Label>
               <Input value={fAuditorName} onChange={e => setFAuditorName(e.target.value)} className="text-sm" />
             </div>
             <div>
