@@ -4285,6 +4285,10 @@
       "alignment": "Desalinhamento (mm)",
       "ut": "Ensaio Ultrassónico (UT)",
       "hardness": "Dureza (HV)"
+    },
+    "form": {
+      "editTitle": "Editar Soldadura",
+      "newTitle": "Nova Soldadura"
     }
   },
   "traceability": {
