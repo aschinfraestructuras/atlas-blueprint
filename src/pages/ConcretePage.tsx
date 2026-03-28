@@ -527,14 +527,17 @@ export default function ConcretePage() {
     } finally { setSaving(false); }
   }
 
-  async function handleDelete(id: string) {
-    if (!confirm(t("common.confirmDelete"))) return;
+  const [deleteBatchTarget, setDeleteBatchTarget] = useState<string | null>(null);
+  async function confirmDeleteBatch() {
+    if (!deleteBatchTarget) return;
     try {
-      await concreteService.deleteBatch(id);
-      toast({ title: t("common.delete") });
+      await concreteService.deleteBatch(deleteBatchTarget);
+      toast({ title: t("common.deleted") });
       fetchBatches();
     } catch (err: any) {
-      toast({ title: "Erro", description: err.message, variant: "destructive" });
+      toast({ title: t("common.error"), description: err.message, variant: "destructive" });
+    } finally {
+      setDeleteBatchTarget(null);
     }
   }
 
