@@ -4241,6 +4241,14 @@
       "apto": "Aptas",
       "conditional": "Condicionales",
       "inapto": "No Aptas"
+    },
+    "materialTypes": {
+      "clay": "Suelo arcilloso",
+      "sand": "Suelo arenoso",
+      "toutVenant": "Todo uno",
+      "gravel": "Grava",
+      "fill": "Relleno seleccionado",
+      "other": "Otro"
     }
   },
   "welding": {
