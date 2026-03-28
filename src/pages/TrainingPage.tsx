@@ -165,15 +165,18 @@ export default function TrainingPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm(t("common.confirmDelete"))) return;
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+  const confirmDeleteSession = async () => {
+    if (!deleteTargetId) return;
     try {
-      await trainingService.deleteSession(id);
+      await trainingService.deleteSession(deleteTargetId);
       toast({ title: t("training.toast.deleted", { defaultValue: "Sessão eliminada" }) });
       fetchSessions();
     } catch (err) {
       const info = classifySupabaseError(err, t);
       toast({ title: info.title, variant: "destructive" });
+    } finally {
+      setDeleteTargetId(null);
     }
   };
 
