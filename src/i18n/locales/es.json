@@ -3660,7 +3660,9 @@
       "days": "Días",
       "severity": "Severidad"
     },
-    "noEntityLink": "Sin entidad asociada — redirigiendo a la lista."
+    "noEntityLink": "Sin entidad asociada — redirigiendo a la lista.",
+    "exportPdf": "Exportar PDF",
+    "exportCsv": "Exportar CSV"
   },
   "notifications": {
     "title": "Notificaciones",
@@ -3979,10 +3981,14 @@
     }
   },
   "audits": {
-    "title": "Auditorías",
-    "subtitle": "Programa anual de auditorías internas y externas",
+    "title": "Programa de Auditorías",
+    "subtitle": "Auditorías internas y externas del programa de calidad",
     "new": "Nueva Auditoría",
+    "create": "Nueva Auditoría",
+    "editTitle": "Editar Auditoría",
     "empty": "Ninguna auditoría registrada. El programa anual de auditorías debe definirse en el PQO.",
+    "emptyTitle": "Sin auditorías",
+    "emptyDescription": "Ninguna auditoría registrada",
     "type": {
       "internal": "Interna",
       "external": "Externa",
@@ -4012,9 +4018,21 @@
       "updated": "Auditoría actualizada",
       "deleted": "Auditoría cancelada"
     },
-    "create": "Crear auditoría",
-    "emptyDescription": "Ninguna auditoría registrada",
-    "emptyTitle": "Sin auditorías"
+    "exportPdf": "Exportar PAI (PDF)",
+    "exportListPdf": "Lista Auditorías (PDF)",
+    "exportRai": "Exportar RAI (PDF)",
+    "registerNc": "Registar NC",
+    "ncRegistered": "NC registrada con éxito",
+    "start": "Iniciar",
+    "conclude": "Concluir",
+    "auditor": "Auditor",
+    "scope": "Alcance",
+    "findings": "Constataciones",
+    "plannedDate": "Fecha Planificada",
+    "completedDate": "Fecha Conclusión",
+    "reportRef": "Ref. Informe",
+    "ncCount": "Nº NCs",
+    "obsCount": "Nº Observaciones"
   },
   "sgqMatrix": {
     "title": "Matriz de Conformidad SGC",
@@ -4346,6 +4364,11 @@
       "created": "Registro creado con éxito"
     },
     "weather": "Condiciones meteorológicas"
+  },
+  "fieldRecord": {
+    "createNc": "Crear NC",
+    "ncLinked": "NC asociada",
+    "ncCreated": "NC creada a partir del registro de campo"
   },
   "myTasks": {
     "title": "Mi Día",

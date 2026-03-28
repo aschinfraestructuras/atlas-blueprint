@@ -27,25 +27,29 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { CalendarClock, Plus, FileText, FileDown, Loader2 } from "lucide-react";
+import { CalendarClock, Plus, FileText, FileDown, Loader2, AlertTriangle as AlertTriangleIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/ui/page-header";
 import { exportPAI } from "@/lib/services/sgqListExportService";
 import { useReportMeta } from "@/hooks/useReportMeta";
+import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
+import { fullPdfHeader } from "@/lib/services/pdfProjectHeader";
+import { NCFormDialog } from "@/components/nc/NCFormDialog";
+import jsPDF from "jspdf";
 
-const TYPE_LABELS: Record<string, string> = {
-  internal: "Interna",
-  external: "Externa",
-  surveillance: "Vigilância",
-  closing: "Encerramento",
+const TYPE_KEYS: Record<string, string> = {
+  internal: "audits.type.internal",
+  external: "audits.type.external",
+  surveillance: "audits.type.surveillance",
+  closing: "audits.type.closing",
 };
 
-const STATUS_LABELS: Record<string, string> = {
-  planned: "Planeada",
-  in_progress: "Em Curso",
-  completed: "Concluída",
-  cancelled: "Cancelada",
+const STATUS_KEYS: Record<string, string> = {
+  planned: "audits.status.planned",
+  in_progress: "audits.status.in_progress",
+  completed: "audits.status.completed",
+  cancelled: "audits.status.cancelled",
 };
 
 const STATUS_COLORS: Record<string, string> = {
@@ -75,6 +79,8 @@ export default function AuditsPage() {
   const [editAudit, setEditAudit] = useState<QualityAudit | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<QualityAudit | null>(null);
   const [saving, setSaving] = useState(false);
+  const [ncDialogOpen, setNcDialogOpen] = useState(false);
+  const [ncAudit, setNcAudit] = useState<QualityAudit | null>(null);
 
   // Form fields
   const [fAuditType, setFAuditType] = useState("internal");
@@ -190,7 +196,7 @@ export default function AuditsPage() {
       const updates: Partial<QualityAudit> = { status: next as any };
       if (next === "completed") updates.completed_date = new Date().toISOString().slice(0, 10);
       await qualityAuditService.update(audit.id, updates);
-      toast.success(`Estado → ${STATUS_LABELS[next]}`);
+      toast.success(t("audits.statuses.transitionSuccess", { status: t(STATUS_KEYS[next]) }));
       load();
     } catch (err: any) {
       toast.error(err.message ?? "Erro");
@@ -207,17 +213,45 @@ export default function AuditsPage() {
         icon={CalendarClock}
         actions={
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" className="gap-1.5" onClick={async () => {
-              if (!reportMeta) return;
-              await exportPAI(audits, reportMeta);
-            }}>
-              <FileDown className="h-3.5 w-3.5" />
-              Exportar PAI
-            </Button>
+            <ReportExportMenu
+              options={[
+                {
+                  label: t("audits.exportPdf"),
+                  icon: "pdf",
+                  action: async () => {
+                    if (!reportMeta) return;
+                    await exportPAI(audits, reportMeta);
+                  },
+                },
+                {
+                  label: t("audits.exportListPdf"),
+                  icon: "pdf",
+                  action: () => {
+                    const doc = new jsPDF({ unit: "mm", format: "a4" });
+                    const projectName = `${activeProject.code} — ${activeProject.name}`;
+                    const date = new Date().toLocaleDateString("pt-PT");
+                    let html = `<html><head><style>
+                      body{font-family:Arial,sans-serif;font-size:9px;color:#1a1a1a;padding:16px}
+                      table{width:100%;border-collapse:collapse;margin-top:10px}
+                      th{background:#192F48;color:#fff;padding:5px 4px;font-size:8px;text-align:left}
+                      td{border:1px solid #e2e8f0;padding:4px;font-size:8px}
+                    </style></head><body>`;
+                    html += fullPdfHeader(logoBase64, projectName, "PAI-" + activeProject.code, "0", date);
+                    html += `<h2 style="text-align:center;font-size:12px;color:#192F48;margin:8px 0">${t("audits.title")}</h2>`;
+                    html += `<table><tr><th>${t("common.code")}</th><th>${t("audits.type")}</th><th>${t("common.date")}</th><th>${t("audits.auditor")}</th><th>${t("audits.scope")}</th><th>${t("audits.findings")}</th><th>${t("common.status")}</th></tr>`;
+                    audits.forEach(a => {
+                      html += `<tr><td>${a.code}</td><td>${t(TYPE_KEYS[a.audit_type])}</td><td>${new Date(a.planned_date).toLocaleDateString("pt-PT")}</td><td>${a.auditor_name ?? "—"}</td><td>${a.scope ?? "—"}</td><td>${a.findings ?? "—"}</td><td>${t(STATUS_KEYS[a.status])}</td></tr>`;
+                    });
+                    html += `</table></body></html>`;
+                    doc.html(html, { callback: d => d.save(`Auditorias_${activeProject.code}.pdf`), x: 8, y: 5, width: 190, windowWidth: 900 });
+                  },
+                },
+              ]}
+            />
             {canCreate && (
               <Button onClick={openCreate} size="sm">
                 <Plus className="h-4 w-4 mr-1.5" />
-                {t("audits.create", { defaultValue: "Nova Auditoria" })}
+                {t("audits.create")}
               </Button>
             )}
           </div>
@@ -256,10 +290,10 @@ export default function AuditsPage() {
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="font-mono text-sm font-bold text-foreground">{audit.code}</span>
                       <Badge variant="outline" className={cn("text-[10px]", TYPE_COLORS[audit.audit_type])}>
-                        {TYPE_LABELS[audit.audit_type] ?? audit.audit_type}
+                        {t(TYPE_KEYS[audit.audit_type]) ?? audit.audit_type}
                       </Badge>
                       <Badge variant="secondary" className={cn("text-[10px]", STATUS_COLORS[audit.status])}>
-                        {STATUS_LABELS[audit.status] ?? audit.status}
+                        {t(STATUS_KEYS[audit.status]) ?? audit.status}
                       </Badge>
                     </div>
                     <div className="flex items-center gap-4 mt-1.5 text-xs text-muted-foreground">
@@ -279,17 +313,29 @@ export default function AuditsPage() {
                         className="text-xs h-7"
                         onClick={() => handleStatusTransition(audit)}
                       >
-                        {audit.status === "planned" ? "Iniciar" : "Concluir"}
-                      </Button>
-                    )}
+                         {audit.status === "planned" ? t("audits.start") : t("audits.conclude")}
+                       </Button>
+                     )}
 
-                    <RowActionMenu
-                      actions={[
-                        ...(canEdit ? [{ key: "edit", labelKey: "common.edit", onClick: () => openEdit(audit) }] : []),
-                        { key: "export", label: "Exportar RAI (PDF)", onClick: () => qualityAuditService.exportRaiPdf(audit, activeProject.name ?? "Projeto", logoBase64) },
-                        ...(canDelete ? [{ key: "delete", labelKey: "common.delete", onClick: () => setDeleteTarget(audit), variant: "destructive" as const }] : []),
-                      ]}
-                    />
+                     {audit.status === "completed" && canCreate && (
+                       <Button
+                         variant="outline"
+                         size="sm"
+                         className="text-xs h-7 gap-1"
+                         onClick={() => { setNcAudit(audit); setNcDialogOpen(true); }}
+                       >
+                         <AlertTriangleIcon className="h-3 w-3" />
+                         {t("audits.registerNc")}
+                       </Button>
+                     )}
+
+                     <RowActionMenu
+                       actions={[
+                         ...(canEdit ? [{ key: "edit", labelKey: "common.edit", onClick: () => openEdit(audit) }] : []),
+                         { key: "export", label: t("audits.exportRai"), onClick: () => qualityAuditService.exportRaiPdf(audit, activeProject.name ?? "Projeto", logoBase64) },
+                         ...(canDelete ? [{ key: "delete", labelKey: "common.delete", onClick: () => setDeleteTarget(audit), variant: "destructive" as const }] : []),
+                       ]}
+                     />
                   </div>
                 </div>
               </CardContent>
@@ -303,64 +349,64 @@ export default function AuditsPage() {
         <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {editAudit ? "Editar Auditoria" : "Nova Auditoria"}
+              {editAudit ? t("audits.editTitle") : t("audits.create")}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label className="text-xs">Tipo *</Label>
+                <Label className="text-xs">{t("audits.type")} *</Label>
                 <Select value={fAuditType} onValueChange={setFAuditType}>
                   <SelectTrigger className="text-sm"><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="internal">Interna</SelectItem>
-                    <SelectItem value="external">Externa</SelectItem>
-                    <SelectItem value="surveillance">Vigilância</SelectItem>
-                    <SelectItem value="closing">Encerramento</SelectItem>
+                    <SelectItem value="internal">{t("audits.types.internal")}</SelectItem>
+                    <SelectItem value="external">{t("audits.types.external")}</SelectItem>
+                    <SelectItem value="surveillance">{t("audits.types.surveillance")}</SelectItem>
+                    <SelectItem value="closing">{t("audits.types.closing")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div>
-                <Label className="text-xs">Data Planeada *</Label>
+                <Label className="text-xs">{t("audits.plannedDate")} *</Label>
                 <Input type="date" value={fPlannedDate} onChange={e => setFPlannedDate(e.target.value)} className="text-sm" />
               </div>
             </div>
             <div>
-              <Label className="text-xs">Auditor</Label>
+              <Label className="text-xs">{t("audits.auditor")}</Label>
               <Input value={fAuditorName} onChange={e => setFAuditorName(e.target.value)} className="text-sm" />
             </div>
             <div>
-              <Label className="text-xs">Âmbito</Label>
+              <Label className="text-xs">{t("audits.scope")}</Label>
               <Textarea value={fScope} onChange={e => setFScope(e.target.value)} rows={2} className="text-sm resize-none" />
             </div>
 
             {editAudit && (
               <>
                 <div>
-                  <Label className="text-xs">Constatações</Label>
+                  <Label className="text-xs">{t("audits.findings")}</Label>
                   <Textarea value={fFindings} onChange={e => setFFindings(e.target.value)} rows={3} className="text-sm resize-none" />
                 </div>
                 <div>
-                  <Label className="text-xs">Observações</Label>
+                  <Label className="text-xs">{t("common.observations")}</Label>
                   <Textarea value={fObservations} onChange={e => setFObservations(e.target.value)} rows={2} className="text-sm resize-none" />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <Label className="text-xs">N.º NCs</Label>
+                    <Label className="text-xs">{t("audits.ncCount")}</Label>
                     <Input type="number" min={0} value={fNcCount} onChange={e => setFNcCount(Number(e.target.value))} className="text-sm" />
                   </div>
                   <div>
-                    <Label className="text-xs">N.º Observações</Label>
+                    <Label className="text-xs">{t("audits.obsCount")}</Label>
                     <Input type="number" min={0} value={fObsCount} onChange={e => setFObsCount(Number(e.target.value))} className="text-sm" />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <Label className="text-xs">Data Conclusão</Label>
+                    <Label className="text-xs">{t("audits.completedDate")}</Label>
                     <Input type="date" value={fCompletedDate} onChange={e => setFCompletedDate(e.target.value)} className="text-sm" />
                   </div>
                   <div>
-                    <Label className="text-xs">Ref. Relatório</Label>
+                    <Label className="text-xs">{t("audits.reportRef")}</Label>
                     <Input value={fReportRef} onChange={e => setFReportRef(e.target.value)} placeholder="RAI-001" className="text-sm" />
                   </div>
                 </div>
@@ -368,10 +414,10 @@ export default function AuditsPage() {
             )}
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setFormOpen(false)}>Cancelar</Button>
+            <Button variant="outline" onClick={() => setFormOpen(false)}>{t("common.cancel")}</Button>
             <Button onClick={handleSave} disabled={saving || !fPlannedDate}>
               {saving && <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" />}
-              {editAudit ? "Guardar" : "Criar"}
+              {editAudit ? t("common.save") : t("common.create")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -381,19 +427,34 @@ export default function AuditsPage() {
       <AlertDialog open={!!deleteTarget} onOpenChange={v => !v && setDeleteTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirmar</AlertDialogTitle>
+            <AlertDialogTitle>{t("common.deleteConfirmTitle")}</AlertDialogTitle>
             <AlertDialogDescription>
-              Tem a certeza que pretende cancelar esta auditoria?
+              {t("common.deleteConfirmDesc")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Confirmar
+              {t("common.confirm")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* NC from Audit Dialog */}
+      {ncAudit && (
+        <NCFormDialog
+          open={ncDialogOpen}
+          onOpenChange={setNcDialogOpen}
+          originOverride="auditoria"
+          onSuccess={() => {
+            setNcDialogOpen(false);
+            setNcAudit(null);
+            toast.success(t("audits.ncRegistered"));
+            load();
+          }}
+        />
+      )}
     </div>
   );
 }
