@@ -229,7 +229,7 @@ export default function ExpirationsPage() {
                           </TableCell>
                           <TableCell>
                             <Badge variant="secondary" className={cn("text-xs", STATUS_COLORS[item.status] ?? "")}>
-                              {STATUS_LABELS[item.status] ?? item.status}
+                              {t(STATUS_LABEL_KEYS[item.status] ?? item.status)}
                             </Badge>
                           </TableCell>
                           <TableCell>

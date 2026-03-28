@@ -75,10 +75,10 @@ export function useDashboardKpis() {
         (supabase as any).from("ppi_instances")
           .select("id", { count: "exact", head: true })
           .eq("project_id", pid).eq("status", "approved").eq("is_deleted", false),
-        // PPIs total (templates)
-        (supabase as any).from("ppi_templates")
+        // PPIs total (instances)
+        (supabase as any).from("ppi_instances")
           .select("id", { count: "exact", head: true })
-          .eq("project_id", pid).eq("is_active", true),
+          .eq("project_id", pid).eq("is_deleted", false),
         // Ensaios realizados (pass)
         (supabase as any).from("test_results")
           .select("id", { count: "exact", head: true })

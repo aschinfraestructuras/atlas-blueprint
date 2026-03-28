@@ -158,6 +158,9 @@ export default function DashboardPage() {
   useRealtimeProject("non_conformities", refetchAll);
   useRealtimeProject("materials", refetchAll);
   useRealtimeProject("ppi_instances", refetchAll);
+  useRealtimeProject("hp_notifications", refetchAll);
+  useRealtimeProject("test_results", refetchAll);
+  useRealtimeProject("weld_records", refetchAll);
 
   // Filter monthly data by period
   const filterByPeriod = useCallback(<T extends { month: string }>(data: T[]): T[] => {

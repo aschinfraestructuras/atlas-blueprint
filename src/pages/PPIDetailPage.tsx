@@ -765,7 +765,7 @@ export default function PPIDetailPage() {
 
         {/* Tests tab */}
         <TabsContent value="tests" className="mt-4">
-          <PPITestsTab instanceId={instance.id} ppiCode={instance.code} />
+          <PPITestsTab instanceId={instance.id} ppiCode={instance.code} workItemId={instance.work_item_id ?? null} />
         </TabsContent>
 
         {/* Checklist tab */}
