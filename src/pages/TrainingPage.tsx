@@ -360,8 +360,8 @@ export default function TrainingPage() {
               <Select value={formType} onValueChange={setFormType}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  {Object.entries(SESSION_TYPE_LABELS).map(([k, v]) => (
-                    <SelectItem key={k} value={k}>{v}</SelectItem>
+                  {Object.entries(SESSION_TYPE_KEYS).map(([k, i18nKey]) => (
+                    <SelectItem key={k} value={k}>{t(i18nKey)}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
