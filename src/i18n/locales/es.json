@@ -3488,8 +3488,17 @@
       "entity": "Entidad",
       "document": "Documento",
       "validTo": "Validez",
-      "days": "Días"
-    }
+      "days": "Días",
+      "domain": "Dominio"
+    },
+    "status": {
+      "expired": "Expirado",
+      "expiring_7d": "≤ 7 días",
+      "expiring_30d": "≤ 30 días",
+      "expiring_60d": "≤ 60 días",
+      "expiring_90d": "≤ 90 días"
+    },
+    "urgency": "Urgencia"
   },
   "qcReport": {
     "module": "Informes",
