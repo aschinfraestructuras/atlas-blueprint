@@ -8,6 +8,7 @@ import { concreteService, computeBatchResult, type ConcreteBatchWithCounts, type
 import { concreteLotService, type ConcreteLotConformity } from "@/lib/services/concreteLotService";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { useProject } from "@/contexts/ProjectContext";
+import { supabase } from "@/integrations/supabase/client";
 import { useWorkItems } from "@/hooks/useWorkItems";
 import { usePPIInstances } from "@/hooks/usePPI";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
@@ -374,6 +375,72 @@ function LotsTab({
   );
 }
 
+// ─── Conformity by Class Panel ────────────────────────────────────────────────
+
+function ConformityByClassPanel({ projectId }: { projectId: string }) {
+  const { t } = useTranslation();
+  const [rows, setRows] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      setLoading(true);
+      try {
+        const { data } = await supabase
+          .from("vw_concrete_conformity_ce" as any)
+          .select("*")
+          .eq("project_id", projectId);
+        setRows(data ?? []);
+      } catch { /* view may not exist */ }
+      setLoading(false);
+    })();
+  }, [projectId]);
+
+  if (loading) return <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>;
+  if (rows.length === 0) return <EmptyState icon={Layers} titleKey="concrete.empty" subtitleKey="concrete.emptySubtitle" />;
+
+  return (
+    <Card>
+      <CardContent className="p-0">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>{t("concrete.class", { defaultValue: "Classe" })}</TableHead>
+              <TableHead>{t("concrete.nAmassadas")}</TableHead>
+              <TableHead>{t("concrete.nProvetes")}</TableHead>
+              <TableHead>{t("concrete.fcmMedio")}</TableHead>
+              <TableHead>{t("concrete.criterio")}</TableHead>
+              <TableHead>{t("concrete.resultado")}</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {rows.map((r: any, i: number) => (
+              <TableRow key={i}>
+                <TableCell className="font-semibold">{r.concrete_class}</TableCell>
+                <TableCell>{r.n_batches ?? "—"}</TableCell>
+                <TableCell>{r.n_specimens_28d ?? "—"}</TableCell>
+                <TableCell className="font-mono">{r.mean_fc_28d != null ? Number(r.mean_fc_28d).toFixed(1) : "—"}</TableCell>
+                <TableCell className="text-xs text-muted-foreground max-w-[180px] truncate">{r.criterion_applied ?? "—"}</TableCell>
+                <TableCell>
+                  {r.result === "pass" ? (
+                    <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-0">
+                      {t("common.compliant", { defaultValue: "Conforme" })}
+                    </Badge>
+                  ) : r.result === "fail" ? (
+                    <Badge variant="destructive">{t("common.nonCompliant", { defaultValue: "Não Conforme" })}</Badge>
+                  ) : (
+                    <Badge variant="outline" className="text-muted-foreground">{t("common.pendingStatus", { defaultValue: "Pendente" })}</Badge>
+                  )}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
+  );
+}
+
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function ConcretePage() {
@@ -620,10 +687,13 @@ export default function ConcretePage() {
       <Tabs value={pageTab} onValueChange={setPageTab}>
         <TabsList>
           <TabsTrigger value="batches" className="gap-1.5">
-            <Layers className="h-3.5 w-3.5" /> Amassadas
+            <Layers className="h-3.5 w-3.5" /> {t("concrete.tabs.batches", { defaultValue: "Amassadas" })}
           </TabsTrigger>
           <TabsTrigger value="lots" className="gap-1.5">
-            <Package className="h-3.5 w-3.5" /> Lotes (NA.M)
+            <Package className="h-3.5 w-3.5" /> {t("concrete.tabs.lots", { defaultValue: "Lotes (NA.M)" })}
+          </TabsTrigger>
+          <TabsTrigger value="conformity" className="gap-1.5">
+            <CheckCircle2 className="h-3.5 w-3.5" /> {t("concrete.conformityPanel", { defaultValue: "Conformidade" })}
           </TabsTrigger>
         </TabsList>
 
@@ -719,6 +789,10 @@ export default function ConcretePage() {
               onRefreshBatches={fetchBatches}
             />
           )}
+        </TabsContent>
+
+        <TabsContent value="conformity" className="mt-5">
+          {activeProject && <ConformityByClassPanel projectId={activeProject.id} />}
         </TabsContent>
       </Tabs>
 

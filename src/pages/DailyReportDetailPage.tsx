@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { ArrowLeft, FileText, Send, CheckCircle, Plus, Trash2, AlertTriangle, RotateCcw } from "lucide-react";
+import { ArrowLeft, FileText, Send, CheckCircle, Plus, Trash2, AlertTriangle, RotateCcw, FlaskConical, ClipboardCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -38,6 +38,57 @@ interface ApprovedMaterial {
   name: string;
   unit: string | null;
   pame_code: string | null;
+}
+
+// ─── Quality Context Banner ───────────────────────────────────────────────────
+
+function QualityContextBanner({ reportId }: { reportId: string }) {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const [ctx, setCtx] = useState<{ nc_open: number; hp_pending: number; tests_overdue: number; work_item_id: string | null } | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const { data } = await supabase
+          .from("vw_daily_report_context" as any)
+          .select("*")
+          .eq("report_id", reportId)
+          .maybeSingle();
+        if (data && ((data as any).nc_open > 0 || (data as any).hp_pending > 0 || (data as any).tests_overdue > 0)) {
+          setCtx(data as any);
+        }
+      } catch { /* view may not exist yet */ }
+    })();
+  }, [reportId]);
+
+  if (!ctx) return null;
+
+  return (
+    <div className="flex items-center gap-3 rounded-lg border border-amber-500/30 bg-amber-500/5 px-4 py-2.5">
+      <AlertTriangle className="h-4 w-4 text-amber-600 flex-shrink-0" />
+      <span className="text-sm font-medium text-amber-700 dark:text-amber-400">{t("dailyReport.contextBanner")}</span>
+      <div className="flex items-center gap-2 ml-auto">
+        {ctx.nc_open > 0 && (
+          <Badge variant="destructive" className="cursor-pointer text-xs" onClick={() => navigate("/non-conformities")}>
+            {t("dailyReport.ncOpen", { count: ctx.nc_open })}
+          </Badge>
+        )}
+        {ctx.hp_pending > 0 && (
+          <Badge className="bg-amber-500/15 text-amber-700 dark:text-amber-400 cursor-pointer text-xs" onClick={() => navigate("/ppi")}>
+            <ClipboardCheck className="h-3 w-3 mr-1" />
+            {t("dailyReport.hpPending", { count: ctx.hp_pending })}
+          </Badge>
+        )}
+        {ctx.tests_overdue > 0 && (
+          <Badge className="bg-primary/10 text-primary cursor-pointer text-xs" onClick={() => navigate("/tests")}>
+            <FlaskConical className="h-3 w-3 mr-1" />
+            {t("dailyReport.testsOverdue", { count: ctx.tests_overdue })}
+          </Badge>
+        )}
+      </div>
+    </div>
+  );
 }
 
 export default function DailyReportDetailPage() {
@@ -302,6 +353,9 @@ export default function DailyReportDetailPage() {
           )}
         </div>
       </div>
+
+      {/* Quality context banner */}
+      <QualityContextBanner reportId={id!} />
 
       {/* Section 1: Identification — editable */}
       <Card>

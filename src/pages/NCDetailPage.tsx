@@ -115,6 +115,48 @@ function CapaField({ label, value }: { label: string; value?: string | null }) {
   );
 }
 
+// ─── Status Stepper ───────────────────────────────────────────────────────────
+
+const NC_FLOW = ["draft", "open", "in_progress", "pending_verification", "closed"] as const;
+
+function NCStatusStepper({ currentStatus }: { currentStatus: string }) {
+  const { t } = useTranslation();
+  const currentIdx = NC_FLOW.indexOf(currentStatus as any);
+
+  return (
+    <div className="flex items-center justify-between gap-1 px-2 py-3 rounded-xl border bg-card">
+      {NC_FLOW.map((step, i) => {
+        const isPast = currentIdx > i;
+        const isCurrent = currentIdx === i;
+        return (
+          <div key={step} className="flex items-center gap-1 flex-1 min-w-0">
+            <div className={cn(
+              "flex items-center justify-center rounded-full h-7 w-7 flex-shrink-0 text-xs font-bold transition-colors",
+              isPast && "bg-green-500/15 text-green-600 dark:text-green-400",
+              isCurrent && "bg-primary text-primary-foreground",
+              !isPast && !isCurrent && "bg-muted text-muted-foreground",
+            )}>
+              {isPast ? <CheckCircle2 className="h-4 w-4" /> : i + 1}
+            </div>
+            <span className={cn(
+              "text-[10px] font-medium truncate",
+              isCurrent ? "text-primary font-bold" : isPast ? "text-green-600 dark:text-green-400" : "text-muted-foreground",
+            )}>
+              {t(`nc.statusFlow.${step}`, { defaultValue: step })}
+            </span>
+            {i < NC_FLOW.length - 1 && (
+              <div className={cn(
+                "flex-1 h-px mx-1",
+                isPast ? "bg-green-500/40" : "bg-border",
+              )} />
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 // ─── Main page ────────────────────────────────────────────────────────────────
 
 export default function NCDetailPage() {
@@ -342,6 +384,9 @@ export default function NCDetailPage() {
           )}
         </div>
       </div>
+
+      {/* ── Status Stepper ──────────────────────────────────────────────── */}
+      <NCStatusStepper currentStatus={nc.status} />
 
       {/* ── Status bar ──────────────────────────────────────────────────── */}
       <div className="flex flex-wrap gap-3 items-center">

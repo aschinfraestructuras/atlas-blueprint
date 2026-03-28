@@ -594,6 +594,39 @@ function WorkItemPlanningTab({ workItemId, projectId }: { workItemId: string; pr
     </Card>
   );
 }
+// ─── Physical Tests Grouped Tab ───────────────────────────────────────────────
+
+function PhysicalTestsGroupedTab({ workItemId, projectId }: { workItemId: string; projectId: string }) {
+  const { t } = useTranslation();
+  const [subTab, setSubTab] = useState("concrete");
+  return (
+    <Tabs value={subTab} onValueChange={setSubTab}>
+      <TabsList>
+        <TabsTrigger value="concrete" className="gap-1.5">
+          <Layers className="h-3.5 w-3.5" />
+          {t("workItems.tabs.concrete")}
+        </TabsTrigger>
+        <TabsTrigger value="welds" className="gap-1.5">
+          <Flame className="h-3.5 w-3.5" />
+          {t("workItems.tabs.welds")}
+        </TabsTrigger>
+        <TabsTrigger value="soils" className="gap-1.5">
+          <Mountain className="h-3.5 w-3.5" />
+          {t("workItems.tabs.soils")}
+        </TabsTrigger>
+      </TabsList>
+      <TabsContent value="concrete" className="mt-3">
+        <WorkItemConcreteTab workItemId={workItemId} projectId={projectId} />
+      </TabsContent>
+      <TabsContent value="welds" className="mt-3">
+        <WorkItemWeldTab workItemId={workItemId} />
+      </TabsContent>
+      <TabsContent value="soils" className="mt-3">
+        <WorkItemSoilTab workItemId={workItemId} />
+      </TabsContent>
+    </Tabs>
+  );
+}
 
 // ─── Concrete (Betão) tab ─────────────────────────────────────────────────────
 
@@ -1272,17 +1305,9 @@ export default function WorkItemDetailPage() {
             <Crosshair className="h-3.5 w-3.5" />
             {t("topography.title")}
           </TabsTrigger>
-          <TabsTrigger value="concrete" className="gap-1.5">
-            <Layers className="h-3.5 w-3.5" />
-            {t("workItems.tabs.concrete")}
-          </TabsTrigger>
-          <TabsTrigger value="welds" className="gap-1.5">
-            <Flame className="h-3.5 w-3.5" />
-            {t("workItems.tabs.welds")}
-          </TabsTrigger>
-          <TabsTrigger value="soils" className="gap-1.5">
-            <Mountain className="h-3.5 w-3.5" />
-            {t("workItems.tabs.soils")}
+          <TabsTrigger value="physicalTests" className="gap-1.5">
+            <FlaskConical className="h-3.5 w-3.5" />
+            {t("workItems.detail.tabs.physicalTests")}
           </TabsTrigger>
           <TabsTrigger value="attachments" className="gap-1.5">
             <Paperclip className="h-3.5 w-3.5" />
@@ -1433,19 +1458,9 @@ export default function WorkItemDetailPage() {
           <WorkItemTopoTab workItemId={item.id} projectId={activeProject?.id ?? ""} />
         </TabsContent>
 
-        {/* Concrete tab */}
-        <TabsContent value="concrete" className="mt-4">
-          <WorkItemConcreteTab workItemId={item.id} projectId={activeProject?.id ?? ""} />
-        </TabsContent>
-
-        {/* Welds tab */}
-        <TabsContent value="welds" className="mt-4">
-          <WorkItemWeldTab workItemId={item.id} />
-        </TabsContent>
-
-        {/* Soils tab */}
-        <TabsContent value="soils" className="mt-4">
-          <WorkItemSoilTab workItemId={item.id} />
+        {/* Physical Tests tab — grouped */}
+        <TabsContent value="physicalTests" className="mt-4">
+          <PhysicalTestsGroupedTab workItemId={item.id} projectId={activeProject?.id ?? ""} />
         </TabsContent>
 
         {/* Attachments tab */}
