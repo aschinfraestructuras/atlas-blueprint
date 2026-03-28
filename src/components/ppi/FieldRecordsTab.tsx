@@ -171,9 +171,25 @@ export function FieldRecordsTab({ instanceId, ppiCode, disciplina }: Props) {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleExport(r)} title="Export PDF">
-                      <FileDown className="h-3.5 w-3.5" />
-                    </Button>
+                    <div className="flex items-center gap-1">
+                      {(r.result === "nao_conforme" || r.result === "pendente") && !(r as any).nc_id && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 text-destructive"
+                          onClick={() => { setNcRecord(r); setNcDialogOpen(true); }}
+                          title={t("fieldRecord.createNc")}
+                        >
+                          <AlertTriangle className="h-3.5 w-3.5" />
+                        </Button>
+                      )}
+                      {(r as any).nc_id && (
+                        <Badge variant="destructive" className="text-[9px]">{t("fieldRecord.ncLinked")}</Badge>
+                      )}
+                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleExport(r)} title="Export PDF">
+                        <FileDown className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
