@@ -308,13 +308,14 @@ export default function DFOPage() {
                   <CollapsibleContent>
                     <CardContent className="px-5 pb-4 pt-0">
                       <div className="divide-y divide-border">
-                        {cItems.map(item => {
+                        {displayItems.map(item => {
                           if (!item.id) return null;
+                          const cItem = 'effective_status' in item ? item as CompletenessItem : null;
                           return (
                             <div key={item.id} className="flex items-center gap-3 py-2.5">
                               <span className="font-mono text-[10px] text-muted-foreground w-12 flex-shrink-0">{item.code}</span>
                               <span className="text-sm text-foreground flex-1 min-w-0 truncate">{item.title}</span>
-                              {item.effective_status && <EffectiveStatusBadge item={item} />}
+                              {cItem && cItem.effective_status && <EffectiveStatusBadge item={cItem} />}
                               <Select value={item.status ?? "pending"} onValueChange={(v) => handleStatusChange(item.id!, v)}>
                                 <SelectTrigger className="h-7 w-[120px] text-xs flex-shrink-0">
                                   <SelectValue />
