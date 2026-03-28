@@ -903,7 +903,15 @@
       "goToPlans": "Ir para Planos",
       "howToSchedule": "Como agendar ensaios",
       "step1": "Passo 1: Configure o Plano de Ensaios (tab Planos → seleccione um plano → adicione regras de ensaio com frequência e disciplina)",
-      "step2": "Passo 2: Clique em \"Gerar agendamentos\" para criar os ensaios obrigatórios com base nas regras configuradas"
+      "step2": "Passo 2: Clique em \"Gerar agendamentos\" para criar os ensaios obrigatórios com base nas regras configuradas",
+      "status": {
+        "due": "A vencer",
+        "overdue": "Em atraso",
+        "scheduled": "Agendado",
+        "in_progress": "Em execução",
+        "done": "Concluído",
+        "waived": "Dispensado"
+      }
     },
     "export": {
       "acceptanceCriteria": "Critérios de aceitação",
