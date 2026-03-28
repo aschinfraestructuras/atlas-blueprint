@@ -945,6 +945,7 @@
       "discipline": "Disciplina",
       "exportBulk": "Exportar relatório",
       "exportSingle": "Exportar boletim",
+      "exportBeCampo": "Exportar BE-CAMPO",
       "generatedOn": "Gerado em",
       "laboratory": "Laboratório",
       "location": "Localização",
