@@ -253,7 +253,7 @@ export default function DashboardPage() {
         </Card>
         <HealthScoreSheet open={healthSheetOpen} onOpenChange={setHealthSheetOpen} health={health} loading={healthLoading} />
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
           <SparklineKPI
             label={t("dashboard.kpi.ncOpen", { defaultValue: "NCs Abertas" })}
             value={kpis.ncOpen}
