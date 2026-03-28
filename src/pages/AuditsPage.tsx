@@ -80,6 +80,8 @@ export default function AuditsPage() {
   const [editAudit, setEditAudit] = useState<QualityAudit | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<QualityAudit | null>(null);
   const [saving, setSaving] = useState(false);
+  const [ncDialogOpen, setNcDialogOpen] = useState(false);
+  const [ncAudit, setNcAudit] = useState<QualityAudit | null>(null);
 
   // Form fields
   const [fAuditType, setFAuditType] = useState("internal");
