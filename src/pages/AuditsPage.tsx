@@ -213,17 +213,45 @@ export default function AuditsPage() {
         icon={CalendarClock}
         actions={
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" className="gap-1.5" onClick={async () => {
-              if (!reportMeta) return;
-              await exportPAI(audits, reportMeta);
-            }}>
-              <FileDown className="h-3.5 w-3.5" />
-              Exportar PAI
-            </Button>
+            <ReportExportMenu
+              options={[
+                {
+                  label: t("audits.exportPdf"),
+                  icon: "pdf",
+                  action: async () => {
+                    if (!reportMeta) return;
+                    await exportPAI(audits, reportMeta);
+                  },
+                },
+                {
+                  label: t("audits.exportListPdf"),
+                  icon: "pdf",
+                  action: () => {
+                    const doc = new jsPDF({ unit: "mm", format: "a4" });
+                    const projectName = `${activeProject.code} — ${activeProject.name}`;
+                    const date = new Date().toLocaleDateString("pt-PT");
+                    let html = `<html><head><style>
+                      body{font-family:Arial,sans-serif;font-size:9px;color:#1a1a1a;padding:16px}
+                      table{width:100%;border-collapse:collapse;margin-top:10px}
+                      th{background:#192F48;color:#fff;padding:5px 4px;font-size:8px;text-align:left}
+                      td{border:1px solid #e2e8f0;padding:4px;font-size:8px}
+                    </style></head><body>`;
+                    html += fullPdfHeader(logoBase64, projectName, "PAI-" + activeProject.code, "0", date);
+                    html += `<h2 style="text-align:center;font-size:12px;color:#192F48;margin:8px 0">${t("audits.title")}</h2>`;
+                    html += `<table><tr><th>${t("common.code")}</th><th>${t("audits.type")}</th><th>${t("common.date")}</th><th>${t("audits.auditor")}</th><th>${t("audits.scope")}</th><th>${t("audits.findings")}</th><th>${t("common.status")}</th></tr>`;
+                    audits.forEach(a => {
+                      html += `<tr><td>${a.code}</td><td>${t(TYPE_KEYS[a.audit_type])}</td><td>${new Date(a.planned_date).toLocaleDateString("pt-PT")}</td><td>${a.auditor_name ?? "—"}</td><td>${a.scope ?? "—"}</td><td>${a.findings ?? "—"}</td><td>${t(STATUS_KEYS[a.status])}</td></tr>`;
+                    });
+                    html += `</table></body></html>`;
+                    doc.html(html, { callback: d => d.save(`Auditorias_${activeProject.code}.pdf`), x: 8, y: 5, width: 190, windowWidth: 900 });
+                  },
+                },
+              ]}
+            />
             {canCreate && (
               <Button onClick={openCreate} size="sm">
                 <Plus className="h-4 w-4 mr-1.5" />
-                {t("audits.create", { defaultValue: "Nova Auditoria" })}
+                {t("audits.create")}
               </Button>
             )}
           </div>
