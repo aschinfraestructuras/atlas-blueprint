@@ -129,7 +129,14 @@ export default function TopographyPage() {
   const [docDialogOpen, setDocDialogOpen] = useState(false);
   const [editDoc, setEditDoc] = useState<any>(null);
   const [seeding, setSeeding] = useState(false);
+  const [cycleData, setCycleData] = useState<any[]>([]);
 
+  // Load topography cycle data
+  useEffect(() => {
+    if (!activeProject) return;
+    supabase.from("vw_topography_cycle").select("*").eq("project_id", activeProject.id)
+      .then(({ data }) => setCycleData(data ?? []));
+  }, [activeProject, requests]);
 
   // Filters
   const [search, setSearch] = useState("");
