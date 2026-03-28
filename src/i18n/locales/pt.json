@@ -1431,6 +1431,13 @@
       "archived": "Arquivada",
       "under_review": "Em Análise"
     },
+    "statusFlow": {
+      "draft": "Rascunho",
+      "open": "Aberta",
+      "in_progress": "Em curso",
+      "pending_verification": "Em verificação",
+      "closed": "Fechada"
+    },
     "transitions": {
       "label": "Alterar estado",
       "changeTo": "Transitar para",
