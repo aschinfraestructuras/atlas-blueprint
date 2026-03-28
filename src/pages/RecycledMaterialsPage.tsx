@@ -43,6 +43,7 @@ export default function RecycledMaterialsPage() {
   const [typeFilter, setTypeFilter] = useState("all");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [detailId, setDetailId] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
     let list = data;
