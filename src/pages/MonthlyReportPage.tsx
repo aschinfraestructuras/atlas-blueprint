@@ -288,7 +288,8 @@ export default function MonthlyReportPage() {
                    });
                    if (error) throw error;
                    const kpis = data as any;
-                   await monthlyReportService.update(selectedReport.id, {
+                   // Direct update via supabase since service type is narrow
+                   await (supabase as any).from("monthly_quality_reports").update({
                      kpi_tests_pass_rate: kpis.kpi_tests_pass_rate,
                      kpi_nc_open: kpis.kpi_nc_open,
                      kpi_nc_closed_month: kpis.kpi_nc_closed_month,
@@ -298,7 +299,7 @@ export default function MonthlyReportPage() {
                      kpi_mat_pending: kpis.kpi_mat_pending,
                      kpi_ppi_completed: kpis.kpi_ppi_completed,
                      kpi_emes_expiring: kpis.kpi_emes_expiring,
-                   });
+                   }).eq("id", selectedReport.id);
                    toast({ title: t("monthlyReport.autofillDone") });
                    await fetchReports();
                    const updated = (await monthlyReportService.listByProject(activeProject.id)).find(r => r.id === selectedReport.id);
