@@ -306,7 +306,7 @@ function LotsTab({
             <div>
               <Label>Atividade</Label>
               <Select value={lotForm.work_item_id || "__none__"} onValueChange={(v) => setLotForm((f) => ({ ...f, work_item_id: v === "__none__" ? "" : v }))}>
-                <SelectTrigger><SelectValue placeholder="Selecionar..." /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder={t("common.selectPlaceholder")} /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="__none__">—</SelectItem>
                   {workItems.map((wi) => <SelectItem key={wi.id} value={wi.id}>{wi.sector} — {wi.elemento ?? wi.obra ?? wi.disciplina}</SelectItem>)}
@@ -816,7 +816,7 @@ export default function ConcretePage() {
                 <div>
                   <Label>Atividade</Label>
                   <Select value={form.work_item_id} onValueChange={(v) => setForm((f) => ({ ...f, work_item_id: v, ppi_instance_id: "" }))}>
-                    <SelectTrigger><SelectValue placeholder="Selecionar..." /></SelectTrigger>
+                    <SelectTrigger><SelectValue placeholder={t("common.selectPlaceholder")} /></SelectTrigger>
                     <SelectContent>
                       {workItems.map((wi) => <SelectItem key={wi.id} value={wi.id}>{wi.sector} — {wi.elemento ?? wi.obra ?? wi.disciplina}</SelectItem>)}
                     </SelectContent>
@@ -926,7 +926,7 @@ export default function ConcretePage() {
                     <TableHead className="w-10">#</TableHead>
                     <TableHead>Moldagem</TableHead>
                     <TableHead>Cura (dias)</TableHead>
-                    <TableHead>Data Ensaio</TableHead>
+                    <TableHead>{t("concrete.specimens.testDate")}</TableHead>
                     <TableHead>Ref. Lab</TableHead>
                     <TableHead>Carga (kN)</TableHead>
                     <TableHead>Rotura</TableHead>

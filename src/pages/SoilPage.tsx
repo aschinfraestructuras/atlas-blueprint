@@ -395,7 +395,7 @@ export default function SoilPage() {
               <div>
                 <Label>Atividade</Label>
                 <Select value={form.work_item_id} onValueChange={(v) => setForm((f) => ({ ...f, work_item_id: v }))}>
-                  <SelectTrigger><SelectValue placeholder="Selecionar..." /></SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder={t("common.selectPlaceholder")} /></SelectTrigger>
                   <SelectContent>
                     {workItems.map((wi) => <SelectItem key={wi.id} value={wi.id}>{wi.sector} — {wi.elemento ?? wi.obra ?? wi.disciplina}</SelectItem>)}
                   </SelectContent>
@@ -453,7 +453,7 @@ export default function SoilPage() {
             <div>
               <Label>{t("soils.materialType", { defaultValue: "Tipo Material" })}</Label>
               <Select value={form.material_type} onValueChange={(v) => setForm((f) => ({ ...f, material_type: v }))}>
-                <SelectTrigger><SelectValue placeholder="Selecionar tipo..." /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder={t("common.selectTypePlaceholder")} /></SelectTrigger>
                 <SelectContent>
                   {MATERIAL_TYPE_KEYS.map((mt) => <SelectItem key={mt.value} value={mt.value}>{t(mt.key)}</SelectItem>)}
                 </SelectContent>

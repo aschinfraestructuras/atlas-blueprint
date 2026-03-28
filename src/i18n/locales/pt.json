@@ -61,7 +61,10 @@
     "created": "Criado com sucesso",
     "allDisciplines": "Todas as disciplinas",
     "allSeverities": "Todas as gravidades",
-    "allSubcontractors": "Todos os subempreiteiros"
+    "allSubcontractors": "Todos os subempreiteiros",
+    "selectPlaceholder": "Selecionar...",
+    "selectTypePlaceholder": "Selecionar tipo...",
+    "linkDoc": "Vincular documento..."
   },
   "auth": {
     "signIn": "Iniciar sessão",
@@ -3071,6 +3074,12 @@
     "usagePpis": "PPIs activos",
     "usageNcs": "NCs abertas",
     "usageTests": "Ensaios pendentes",
+    "usage": {
+      "activeMembers": "Membros Activos",
+      "activePpis": "PPIs Activos",
+      "openNcs": "NCs Abertas",
+      "pendingTests": "Ensaios Pendentes"
+    },
     "project": {
       "contractor": "Empreiteiro",
       "client": "Dono de Obra",
@@ -3145,6 +3154,14 @@
     "newRequest": "Novo Pedido",
     "newControl": "Novo Controlo",
     "calibrationBlocked": "Equipamento com calibração inválida. Atualize o certificado antes de registar medições.",
+    "cycle": {
+      "closed_ok": "Executado",
+      "closed_nok": "Não conforme",
+      "overdue": "Em atraso",
+      "pending": "Pendente",
+      "executedBy": "Executado por",
+      "deviation": "Desvio medido"
+    },
     "calibrationHistory": "Histórico de Calibrações",
     "noCalibrationsYet": "Sem calibrações registadas.",
     "noLinked": "Sem registos topográficos ligados a esta atividade.",
@@ -4182,6 +4199,9 @@
       "fresh": "Betão Fresco",
       "specimens": "Provetes"
     },
+    "specimens": {
+      "testDate": "Data Ensaio"
+    },
     "fields": {
       "code": "Código",
       "element": "Elemento Betonado",
@@ -4304,7 +4324,9 @@
     },
     "form": {
       "editTitle": "Editar Soldadura",
-      "newTitle": "Nova Soldadura"
+      "newTitle": "Nova Soldadura",
+      "trackSide": "Lado via",
+      "weldType": "Tipo soldadura"
     }
   },
   "traceability": {
@@ -4630,6 +4652,18 @@
     "testsOverdue": "{{count}} ensaio(s) em atraso",
     "rmm": {
       "defaultName": "Instrumento"
+    }
+  },
+  "dfo": {
+    "progress": "Progresso DFO",
+    "volumeComplete": "{{complete}} de {{total}} itens",
+    "status": {
+      "received": "Recebido",
+      "auto_complete": "Detectado",
+      "pending": "Pendente"
+    },
+    "tooltip": {
+      "autoComplete": "{{count}} registos encontrados na BD"
     }
   }
 }
