@@ -3162,6 +3162,12 @@
     "usagePpis": "PPIs activos",
     "usageNcs": "NCs abiertas",
     "usageTests": "Ensayos pendientes",
+    "usage": {
+      "activeMembers": "Miembros Activos",
+      "activePpis": "PPIs Activos",
+      "openNcs": "NCs Abiertas",
+      "pendingTests": "Ensayos Pendientes"
+    },
     "project": {
       "contractor": "Contratista",
       "client": "Propietario",
