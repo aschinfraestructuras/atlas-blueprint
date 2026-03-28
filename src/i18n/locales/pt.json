@@ -142,7 +142,7 @@
       "reports": "Relatórios"
     },
     "dashboard": "Painel Geral",
-    "projects": "Projetos",
+    "projects": "Projectos",
     "documents": "Documentos",
     "suppliers": "Fornecedores",
     "materials": "Materiais",
@@ -178,7 +178,6 @@
     "soils": "Caracterização de Solos",
     "welding": "Soldadura — Via-Férrea",
     "orgChart": "Organigrama",
-    "projects": "Projectos",
     "testSchedule": "Programação Ensaios",
     "traceability": "Rastreabilidade",
     "actionPlan": "Plano de Ações",
@@ -912,6 +911,13 @@
         "in_progress": "Em execução",
         "done": "Concluído",
         "waived": "Dispensado"
+      },
+      "trigger": {
+        "quantity_reached": "Quantidade atingida",
+        "area_reached": "Área atingida",
+        "time_interval": "Intervalo de tempo",
+        "manual": "Manual",
+        "lot_complete": "Lote completo"
       }
     },
     "schedule": {
@@ -1004,6 +1010,11 @@
         "created": "Plano criado",
         "deleted": "Plano eliminado",
         "updated": "Plano atualizado"
+      },
+      "status": {
+        "active": "Ativo",
+        "draft": "Rascunho",
+        "archived": "Arquivado"
       }
     },
     "ppiTab": {
@@ -2173,7 +2184,8 @@
       "openNc": "NCs abertas",
       "pendingPpi": "PPI pendente",
       "pendingTests": "Ensaios pendentes",
-      "readyTooltip": "Pronto: PPI aprovado, ensaios conformes, sem NCs"
+      "readyTooltip": "Pronto: PPI aprovado, ensaios conformes, sem NCs",
+      "not_ready": "Elemento com pendências — verifique PPIs, ensaios e NCs"
     },
     "tabs": {
       "concrete": "Betão",
@@ -2218,9 +2230,9 @@
         "ncs": "NCs",
         "planning": "Planeamento",
         "ppi": "PPIs",
-         "tests": "Ensaios",
-         "physicalTests": "Ensaios físicos"
-       },
+        "tests": "Ensaios",
+        "physicalTests": "Ensaios físicos"
+      },
       "testsTab": {
         "suggestion": "Sugestão de ensaio"
       },
@@ -3035,77 +3047,15 @@
     }
   },
   "settings": {
-    "roles": {
-      "admin": "Administrador",
-      "project_manager": "Gestor de Projeto",
-      "quality_manager": "Gestor de Qualidade",
-      "technician": "Técnico",
-      "viewer": "Visualizador"
-    },
-    "roleDescriptions": {
-      "admin": "Acesso total ao projeto: membros, dados, aprovações e eliminação.",
-      "project_manager": "Gestão completa do projeto, sem eliminar registos críticos.",
-      "quality_manager": "Gestão documental, ensaios, NCs e aprovações de qualidade.",
-      "technician": "Registo de ensaios, PPI e consulta de documentos.",
-      "viewer": "Leitura apenas, sem permissão de escrita."
-    },
-    "members": {
-      "inviteBtn": "Convidar membro",
-      "inviteTitle": "Convidar utilizador para o projeto",
-      "emailLabel": "E-mail",
-      "emailPlaceholder": "utilizador@empresa.com",
-      "roleLabel": "Função",
-      "sendInvite": "Enviar convite",
-      "addedDirectly": "Utilizador adicionado ao projeto.",
-      "inviteSent": "Convite enviado com sucesso.",
-      "inviteAccepted": "Convite aceite com sucesso.",
-      "acceptInviteLoading": "A validar convite…",
-      "invalidInviteToken": "Link de convite inválido ou em falta.",
-      "roleUpdated": "Função atualizada.",
-      "memberRemoved": "Membro removido do projeto.",
-      "inviteDeleted": "Convite eliminado.",
-      "noMembers": "Sem membros neste projeto.",
-      "pendingInvites": "Convites pendentes",
-      "expires": "Expira em",
-      "you": "você",
-      "colName": "Nome",
-      "colEmail": "E-mail",
-      "colRole": "Função",
-      "removeTitle": "Remover membro?",
-      "removeDesc": "O utilizador «{{name}}» perderá acesso a este projeto. Esta ação pode ser revertida readicionando o membro.",
-      "removeConfirm": "Remover acesso",
-      "noProjectsEmpty": "Não está associado a nenhum projeto.",
-      "noProjectsEmptySub": "Contacte um administrador para obter acesso a um projeto ou crie um novo.",
-      "requestAccess": "Pedir acesso",
-      "accountCreated": "Conta criada com sucesso",
-      "alreadyMember": "Este utilizador já é membro",
-      "createAccount": "Criar conta e adicionar",
-      "createBtn": "Criar membro",
-      "inviteEmailSent": "Convite enviado por e-mail",
-      "inviteToken": "Token de convite",
-      "passwordHint": "Mín. 6 caracteres",
-      "passwordLabel": "Password inicial",
-      "passwordPlaceholder": "Introduza a password",
-      "passwordTooShort": "Password demasiado curta"
-    },
-    "password": {
-      "newPasswordLabel": "Nova password",
-      "newPasswordPlaceholder": "Mínimo 6 caracteres",
-      "changeBtn": "Alterar password",
-      "success": "Password alterada com sucesso.",
-      "error": "Erro ao alterar password."
-    },
-    "project": {
-      "contractor": "Empreiteiro",
-      "client": "Dono de Obra",
-      "location": "Localização",
-      "contractNumber": "Número de Contrato",
-      "metadata": "Dados do Projecto (PDF)"
-    },
+    "importPpiTemplates": "Importar Templates PPI PF17A",
+    "importPpiDesc": "Carregar os 12 templates de PPI com conteúdo técnico real da empreitada PF17A",
+    "ppiAlreadyImported": "Templates PPI já existem neste projecto.",
+    "ppiImportSuccess": "Templates PPI importados com sucesso.",
+    "ppiImported": "Importado",
+    "importPpiDone": "12 templates PPI importados com sucesso",
+    "importPpiExists": "Templates já existem para este projecto",
     "ownResources": "Recursos Próprios",
-    "ownResourcesDesc": "Pessoal e Equipamentos — ASCH",
-    "contactsTab": "Contactos & Notificações",
-    "contactsTabDesc": "Gerir contactos do projecto e listas de distribuição"
+    "ownResourcesDesc": "Pessoal e Equipamentos — ASCH Infraestructuras"
   },
   "topography": {
     "title": "Medições & Equipamentos",
@@ -4173,6 +4123,7 @@
     "resultado": "Resultado"
   },
   "compaction": {
+    "workItem": "Elemento de Obra",
     "title": "Controlo de Compactação",
     "subtitle": "Zonas de compactação — densímetro nuclear e ensaio de placa",
     "newZone": "Nova Zona",
@@ -4190,6 +4141,18 @@
     }
   },
   "soils": {
+    "laboratory": "Laboratório",
+    "testNorm": "Norma de Ensaio",
+    "bulletinRef": "Ref. Boletim",
+    "materialType": "Tipo Material",
+    "norms": {
+      "granulometry": "LNEC E-196 (Granulometria)",
+      "proctor": "LNEC E-197 (Proctor)",
+      "atterberg": "LNEC E-200 (Atterberg)",
+      "cbr": "LNEC E-198 (CBR)",
+      "identification": "NP EN ISO 17892 (Identificação)",
+      "other": "Outro"
+    },
     "title": "Caracterização de Solos",
     "subtitle": "Amostras e ensaios de caracterização conforme LNEC",
     "newSample": "Nova Amostra",
@@ -4438,34 +4401,6 @@
     "filterPendingUS": "Ver pendentes US",
     "workItem": "Elemento de Obra"
   },
-  "soils": {
-    "laboratory": "Laboratório",
-    "testNorm": "Norma de Ensaio",
-    "bulletinRef": "Ref. Boletim",
-    "materialType": "Tipo Material",
-    "norms": {
-      "granulometry": "LNEC E-196 (Granulometria)",
-      "proctor": "LNEC E-197 (Proctor)",
-      "atterberg": "LNEC E-200 (Atterberg)",
-      "cbr": "LNEC E-198 (CBR)",
-      "identification": "NP EN ISO 17892 (Identificação)",
-      "other": "Outro"
-    }
-  },
-  "compaction": {
-    "workItem": "Elemento de Obra"
-  },
-  "settings": {
-    "importPpiTemplates": "Importar Templates PPI PF17A",
-    "importPpiDesc": "Carregar os 12 templates de PPI com conteúdo técnico real da empreitada PF17A",
-    "ppiAlreadyImported": "Templates PPI já existem neste projecto.",
-    "ppiImportSuccess": "Templates PPI importados com sucesso.",
-    "ppiImported": "Importado",
-    "importPpiDone": "12 templates PPI importados com sucesso",
-    "importPpiExists": "Templates já existem para este projecto",
-    "ownResources": "Recursos Próprios",
-    "ownResourcesDesc": "Pessoal e Equipamentos — ASCH Infraestructuras"
-  },
   "viewer": {
     "banner": "Acesso de visualização — Fiscalização / IP · Apenas leitura e exportação",
     "ppiBanner": "Modo visualização — Fiscalização IP · Apenas leitura"
@@ -4577,5 +4512,11 @@
       "submittal": "Submittal",
       "transmittal": "Transmittal"
     }
+  },
+  "dailyReport": {
+    "contextBanner": "Atenção — elemento tem pendências",
+    "ncOpen": "{{count}} NC(s) abertas",
+    "hpPending": "{{count}} HP(s) pendentes",
+    "testsOverdue": "{{count}} ensaio(s) em atraso"
   }
 }
