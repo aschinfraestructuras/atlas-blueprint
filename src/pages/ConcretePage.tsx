@@ -1035,6 +1035,18 @@ export default function ConcretePage() {
           )}
         </DialogContent>
       </Dialog>
+      <AlertDialog open={!!deleteLotTarget} onOpenChange={(v) => !v && setDeleteLotTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader><AlertDialogTitle>{t("common.deleteConfirmTitle")}</AlertDialogTitle><AlertDialogDescription>{t("common.deleteConfirmDesc")}</AlertDialogDescription></AlertDialogHeader>
+          <AlertDialogFooter><AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel><AlertDialogAction onClick={confirmDeleteLot} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">{t("common.confirm")}</AlertDialogAction></AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      <AlertDialog open={!!deleteBatchTarget} onOpenChange={(v) => !v && setDeleteBatchTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader><AlertDialogTitle>{t("common.deleteConfirmTitle")}</AlertDialogTitle><AlertDialogDescription>{t("common.deleteConfirmDesc")}</AlertDialogDescription></AlertDialogHeader>
+          <AlertDialogFooter><AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel><AlertDialogAction onClick={confirmDeleteBatch} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">{t("common.confirm")}</AlertDialogAction></AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
