@@ -4185,6 +4185,9 @@
       "fresh": "Betão Fresco",
       "specimens": "Provetes"
     },
+    "specimens": {
+      "testDate": "Data Ensaio"
+    },
     "fields": {
       "code": "Código",
       "element": "Elemento Betonado",
