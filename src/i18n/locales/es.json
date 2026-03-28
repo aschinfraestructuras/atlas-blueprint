@@ -4628,6 +4628,9 @@
     "contextBanner": "Atención — elemento tiene pendencias",
     "ncOpen": "{{count}} NC(s) abiertas",
     "hpPending": "{{count}} HP(s) pendientes",
-    "testsOverdue": "{{count}} ensayo(s) atrasados"
+    "testsOverdue": "{{count}} ensayo(s) atrasados",
+    "rmm": {
+      "defaultName": "Instrumento"
+    }
   }
 }
