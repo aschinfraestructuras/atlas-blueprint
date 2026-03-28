@@ -44,64 +44,54 @@ function useRealSGQData(projectId: string | undefined) {
     if (!projectId) { setData(null); setLoading(false); return; }
     setLoading(true);
     try {
-      const [
-        docs, ncs, ppis, mats, calibs, tests, audits, training, reports,
-        concreteBatches, concreteLots, weldRecords, soilSamples,
-      ] = await Promise.all([
-        supabase.from("documents").select("id, status", { count: "exact" }).eq("project_id", projectId).eq("is_deleted", false),
-        supabase.from("non_conformities").select("id, status", { count: "exact" }).eq("project_id", projectId).eq("is_deleted", false),
-        supabase.from("ppi_instances").select("id, status", { count: "exact" }).eq("project_id", projectId),
-        supabase.from("materials").select("id, approval_status", { count: "exact" }).eq("project_id", projectId).eq("is_deleted", false),
-        supabase.from("equipment_calibrations").select("id, status", { count: "exact" }).eq("project_id", projectId),
-        supabase.from("test_results" as any).select("id, result", { count: "exact" }).eq("project_id", projectId),
-        supabase.from("quality_audits" as any).select("id, status", { count: "exact" }).eq("project_id", projectId),
-        supabase.from("training_sessions" as any).select("id", { count: "exact" }).eq("project_id", projectId),
-        supabase.from("monthly_quality_reports" as any).select("id, status", { count: "exact" }).eq("project_id", projectId),
-        // Concrete
-        (supabase as any).from("concrete_batches").select("id", { count: "exact" }).eq("project_id", projectId),
-        (supabase as any).from("concrete_lots").select("id, notes", { count: "exact" }).eq("project_id", projectId).eq("is_deleted", false),
-        // Welds
-        (supabase as any).from("weld_records").select("id, has_ut", { count: "exact" }).eq("project_id", projectId),
-        // Soils
-        (supabase as any).from("soil_samples").select("id, classification", { count: "exact" }).eq("project_id", projectId),
-      ]);
+      // Use the materialized view for a single optimized query
+      const { data: vw, error } = await (supabase as any)
+        .from("vw_sgq_matrix_summary")
+        .select("*")
+        .eq("project_id", projectId)
+        .maybeSingle();
 
-      const docsData = docs.data ?? [];
-      const ncsData = ncs.data ?? [];
-      const ppisData = ppis.data ?? [];
-      const matsData = mats.data ?? [];
-      const calibsData = calibs.data ?? [];
-      const testsData = tests.data ?? [];
-      const auditsData = audits.data ?? [];
-      const weldData = weldRecords.data ?? [];
-      const soilData = soilSamples.data ?? [];
+      if (error) throw error;
 
-      setData({
-        docsApproved: docsData.filter((d: any) => d.status === "approved").length,
-        docsTotal: docsData.length,
-        ncsOpen: ncsData.filter((n: any) => !["closed", "archived"].includes(n.status)).length,
-        ncsClosed: ncsData.filter((n: any) => n.status === "closed").length,
-        ppiCompleted: ppisData.filter((p: any) => p.status === "completed" || p.status === "approved").length,
-        ppiTotal: ppisData.length,
-        materialsApproved: matsData.filter((m: any) => m.approval_status === "approved").length,
-        materialsTotal: matsData.length,
-        calibrationsValid: calibsData.filter((c: any) => c.status === "valid").length,
-        calibrationsTotal: calibsData.length,
-        testsPass: testsData.filter((t: any) => t.result === "pass" || t.result === "conform").length,
-        testsTotal: testsData.length,
-        auditsDone: auditsData.filter((a: any) => a.status === "completed").length,
-        auditsTotal: auditsData.length,
-        trainingCount: training.data?.length ?? 0,
-        monthlyReportsSubmitted: (reports.data ?? []).filter((r: any) => r.status !== "draft").length,
-        concreteBatches: concreteBatches.count ?? 0,
-        concreteLots: concreteLots.count ?? 0,
-        concreteLotsConform: 0, // would need view_concrete_lot_conformity but count is sufficient
-        weldsTotal: weldData.length,
-        weldsWithUT: weldData.filter((w: any) => w.has_ut === true).length,
-        weldsPendingUT: weldData.filter((w: any) => w.has_ut === false).length,
-        soilsTotal: soilData.length,
-        soilsConform: soilData.filter((s: any) => s.classification && s.classification !== "").length,
-      });
+      if (vw) {
+        setData({
+          docsApproved: vw.docs_approved ?? 0,
+          docsTotal: vw.docs_total ?? 0,
+          ncsOpen: vw.nc_open ?? 0,
+          ncsClosed: vw.nc_closed ?? 0,
+          ppiCompleted: vw.ppi_completed ?? 0,
+          ppiTotal: vw.ppi_total ?? 0,
+          materialsApproved: vw.materials_approved ?? 0,
+          materialsTotal: vw.materials_total ?? 0,
+          calibrationsValid: vw.calibrations_valid ?? 0,
+          calibrationsTotal: vw.calibrations_total ?? 0,
+          testsPass: vw.tests_pass ?? 0,
+          testsTotal: vw.tests_total ?? 0,
+          auditsDone: vw.audits_completed ?? 0,
+          auditsTotal: vw.audits_total ?? 0,
+          trainingCount: vw.training_total ?? 0,
+          monthlyReportsSubmitted: vw.monthly_reports_submitted ?? 0,
+          concreteBatches: vw.concrete_batches ?? 0,
+          concreteLots: vw.concrete_lots ?? 0,
+          concreteLotsConform: vw.concrete_lots_conform ?? 0,
+          weldsTotal: vw.welds_total ?? 0,
+          weldsWithUT: vw.welds_with_ut ?? 0,
+          weldsPendingUT: vw.welds_pending_ut ?? 0,
+          soilsTotal: vw.soils_total ?? 0,
+          soilsConform: vw.soils_conform ?? 0,
+        });
+      } else {
+        // Fallback: no data in view yet
+        setData({
+          docsApproved: 0, docsTotal: 0, ncsOpen: 0, ncsClosed: 0,
+          ppiCompleted: 0, ppiTotal: 0, materialsApproved: 0, materialsTotal: 0,
+          calibrationsValid: 0, calibrationsTotal: 0, testsPass: 0, testsTotal: 0,
+          auditsDone: 0, auditsTotal: 0, trainingCount: 0, monthlyReportsSubmitted: 0,
+          concreteBatches: 0, concreteLots: 0, concreteLotsConform: 0,
+          weldsTotal: 0, weldsWithUT: 0, weldsPendingUT: 0,
+          soilsTotal: 0, soilsConform: 0,
+        });
+      }
     } catch {
       setData(null);
     } finally {
