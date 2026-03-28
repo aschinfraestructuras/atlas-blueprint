@@ -194,14 +194,18 @@ export default function CompactionPage() {
     } finally { setSaving(false); }
   }
 
-  async function handleDelete(id: string) {
-    if (!confirm(t("common.confirmDelete"))) return;
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+
+  async function confirmDeleteZone() {
+    if (!deleteTargetId) return;
     try {
-      await compactionService.deleteZone(id);
-      toast({ title: t("common.delete") });
+      await compactionService.deleteZone(deleteTargetId);
+      toast({ title: t("common.deleted") });
       fetchZones();
     } catch (err: any) {
-      toast({ title: "Erro", description: err.message, variant: "destructive" });
+      toast({ title: t("common.error"), description: err.message, variant: "destructive" });
+    } finally {
+      setDeleteTargetId(null);
     }
   }
 
