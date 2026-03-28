@@ -619,6 +619,11 @@ export const ppiService = {
       .update({ is_deleted: true, deleted_at: new Date().toISOString(), deleted_by: user?.id ?? null } as any)
       .eq("id", instanceId);
     if (error) throw error;
+    // Cancel pending HP notifications for this instance
+    await (supabase as any).from("hp_notifications")
+      .update({ status: "cancelled" })
+      .eq("instance_id", instanceId)
+      .eq("status", "pending");
     await auditService.log({
       projectId, entity: "ppi_instances", entityId: instanceId,
       action: "DELETE", module: "ppi",

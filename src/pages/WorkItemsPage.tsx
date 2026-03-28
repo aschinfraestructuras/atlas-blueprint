@@ -345,25 +345,30 @@ export default function WorkItemsPage() {
     const columns = [
       t("workItems.export.fields.sector"),
       t("workItems.export.fields.discipline"),
-      t("workItems.export.fields.obra"),
       t("workItems.export.fields.pk"),
+      t("workItems.export.readiness", { defaultValue: "Prontidão" }),
       t("workItems.export.fields.status"),
     ];
-    const rows = filtered.map((wi) => [
+    // Sort: blocked → in_progress → rest
+    const sorted = [...filtered].sort((a, b) => {
+      const order = (wi: WorkItem) => wi.readiness_status === "blocked" ? 0 : wi.status === "in_progress" ? 1 : 2;
+      return order(a) - order(b);
+    });
+    const rows = sorted.map((wi) => [
       wi.sector,
       t(`workItems.disciplines.${wi.disciplina}`, { defaultValue: wi.disciplina }),
-      wi.obra ?? "—",
       formatPk(wi.pk_inicio, wi.pk_fim),
+      t(`workItems.readiness.${wi.readiness_status ?? "not_ready"}`),
       t(`workItems.status.${wi.status}`, { defaultValue: wi.status }),
     ]);
     generateListPdf({
-      reportTitle: t("workItems.export.reportTitle"),
-      labels: { appName: "Atlas QMS", reportTitle: t("workItems.export.reportTitle"), generatedOn: t("workItems.export.generatedOn") },
+      reportTitle: t("workItems.export.readinessTitle", { defaultValue: "Relatório de Prontidão de Obra" }),
+      labels: { appName: "Atlas QMS", reportTitle: t("workItems.export.readinessTitle", { defaultValue: "Relatório de Prontidão de Obra" }), generatedOn: t("workItems.export.generatedOn") },
       meta: reportMeta ?? { projectName: activeProject.name, projectCode: activeProject.code, locale },
       columns,
       rows,
-      footerRef: `${filtered.length} work items`,
-      filename: buildReportFilename("WI", activeProject.code, "list"),
+      footerRef: `${sorted.length} ${t("workItems.title", { defaultValue: "elementos" })}`,
+      filename: buildReportFilename("WI", activeProject.code, "readiness"),
       logoBase64,
     });
   }

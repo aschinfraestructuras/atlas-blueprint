@@ -116,6 +116,7 @@ const NAV_SECTIONS: SidebarSection[] = [
     collapsible: true,
     items: [
       { labelKey: "nav.orgChart",  url: "/org-chart",    icon: Users },
+      { labelKey: "nav.projects",  url: "/projects",     icon: FolderKanban, adminOnly: true },
       { labelKey: "nav.settings",  url: "/settings",      icon: Settings,    adminOnly: true },
       { labelKey: "nav.auditLog",  url: "/audit-log",    icon: ScrollText,  requiredAction: "viewAudit" },
     ],

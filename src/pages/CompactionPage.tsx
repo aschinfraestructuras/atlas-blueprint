@@ -264,9 +264,6 @@ export default function CompactionPage() {
                     <TableCell className="font-mono text-xs font-semibold">{z.code}</TableCell>
                     <TableCell className="max-w-[200px] truncate">
                       {z.zone_description}
-                    </TableCell>
-                    <TableCell className="text-xs">{z.work_item_id ? (() => { const wi = workItems.find(x => x.id === z.work_item_id); return wi ? `${wi.sector} — ${wi.disciplina ?? ""}` : "—"; })() : "—"}</TableCell>
-                      {z.zone_description}
                       {z.work_item_id && concreteLots[z.work_item_id] && (
                         <Badge
                           variant="outline"
@@ -278,6 +275,7 @@ export default function CompactionPage() {
                         </Badge>
                       )}
                     </TableCell>
+                    <TableCell className="text-xs">{z.work_item_id ? (() => { const wi = workItems.find(x => x.id === z.work_item_id); return wi ? `${wi.sector} — ${wi.disciplina ?? ""}` : "—"; })() : "—"}</TableCell>
                     <TableCell className="text-xs">{z.pk_start ?? "—"}</TableCell>
                     <TableCell className="text-xs">{z.material_type ?? "—"}</TableCell>
                     <TableCell className="text-xs">{z.nuclear_count}</TableCell>
