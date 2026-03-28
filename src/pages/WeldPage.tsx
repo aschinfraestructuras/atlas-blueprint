@@ -165,9 +165,11 @@ export default function WeldPage() {
     } finally { setSaving(false); }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm(t("common.confirmDelete"))) return;
-    try { await weldService.remove(id); load(); } catch (e) { console.error(e); }
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+  const confirmDeleteWeld = async () => {
+    if (!deleteTargetId) return;
+    try { await weldService.remove(deleteTargetId); load(); } catch (e) { console.error(e); }
+    setDeleteTargetId(null);
   };
 
   const setField = (k: string, v: any) => setForm(prev => ({ ...prev, [k]: v }));
