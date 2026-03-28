@@ -287,6 +287,14 @@ export default function DashboardPage() {
             onClick={() => navigate("/deadlines")}
             loading={kpiLoading}
           />
+          <SparklineKPI
+            label={t("dashboard.kpi.weldsPendingUt", { defaultValue: "Soldaduras sem US" })}
+            value={kpis.weldsPendingUt}
+            icon={Zap}
+            color={kpis.weldsPendingUt > 0 ? "38 85% 50%" : "145 55% 42%"}
+            onClick={() => navigate("/tests")}
+            loading={kpiLoading}
+          />
         </div>
       </div>
 
