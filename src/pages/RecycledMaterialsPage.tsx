@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Leaf, Plus, Search, Hash, CheckCircle, Clock, Percent } from "lucide-react";
+import { Leaf, Plus, Search, Hash, CheckCircle, Clock, Percent, Trash2 } from "lucide-react";
 import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { FilterBar } from "@/components/ui/filter-bar";
 import { ModuleKPICard } from "@/components/ModuleKPICard";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
@@ -19,6 +20,8 @@ import { useArchivedProject } from "@/hooks/useArchivedProject";
 import { useRecycledMaterials } from "@/hooks/useRecycledMaterials";
 import { RecycledMaterialFormDialog } from "@/components/recycled/RecycledMaterialFormDialog";
 import { RecycledMaterialDetailSheet } from "@/components/recycled/RecycledMaterialDetailSheet";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 const STATUS_COLORS: Record<string, string> = {
   pending: "bg-muted text-muted-foreground",
