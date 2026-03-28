@@ -196,7 +196,7 @@ export default function AuditsPage() {
       const updates: Partial<QualityAudit> = { status: next as any };
       if (next === "completed") updates.completed_date = new Date().toISOString().slice(0, 10);
       await qualityAuditService.update(audit.id, updates);
-      toast.success(`Estado → ${STATUS_LABELS[next]}`);
+      toast.success(t("audits.statuses.transitionSuccess", { status: t(STATUS_KEYS[next]) }));
       load();
     } catch (err: any) {
       toast.error(err.message ?? "Erro");
