@@ -215,16 +215,16 @@ function LotsTab({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Código</TableHead>
-                  <TableHead>Elemento</TableHead>
-                  <TableHead>Classe</TableHead>
-                  <TableHead>EXC</TableHead>
-                  <TableHead>Vol. (m³)</TableHead>
-                  <TableHead>n amostras</TableHead>
-                  <TableHead>fcm (MPa)</TableHead>
-                  <TableHead>fc_min (MPa)</TableHead>
-                  <TableHead>Critério NA.M</TableHead>
-                  <TableHead>Resultado</TableHead>
+                  <TableHead>{t("concrete.lots.columns.code")}</TableHead>
+                  <TableHead>{t("concrete.lots.columns.element")}</TableHead>
+                  <TableHead>{t("concrete.lots.columns.class")}</TableHead>
+                  <TableHead>{t("concrete.lots.columns.exc")}</TableHead>
+                  <TableHead>{t("concrete.lots.columns.volume")}</TableHead>
+                  <TableHead>{t("concrete.lots.columns.samples")}</TableHead>
+                  <TableHead>{t("concrete.lots.columns.fcm")}</TableHead>
+                  <TableHead>{t("concrete.lots.columns.fcMin")}</TableHead>
+                  <TableHead>{t("concrete.lots.columns.criterion")}</TableHead>
+                  <TableHead>{t("concrete.lots.columns.result")}</TableHead>
                   <TableHead className="w-10" />
                 </TableRow>
               </TableHeader>

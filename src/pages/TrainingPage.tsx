@@ -33,12 +33,12 @@ const SESSION_TYPE_COLORS: Record<string, string> = {
   other: "bg-muted text-muted-foreground",
 };
 
-const SESSION_TYPE_LABELS: Record<string, string> = {
-  initial: "Formação Inicial",
-  new_personnel: "Novos Colaboradores",
-  specific: "Específica",
-  subcontractor: "Subempreiteiro",
-  other: "Outra",
+const SESSION_TYPE_KEYS: Record<string, string> = {
+  initial: "training.sessionTypes.initial",
+  new_personnel: "training.sessionTypes.new_personnel",
+  specific: "training.sessionTypes.specific",
+  subcontractor: "training.sessionTypes.subcontractor",
+  other: "training.sessionTypes.other",
 };
 
 interface AttendeeRow {
@@ -309,7 +309,7 @@ export default function TrainingPage() {
                   <TableCell className="text-sm">{new Date(s.session_date).toLocaleDateString("pt-PT")}</TableCell>
                   <TableCell>
                     <Badge variant="secondary" className={`text-xs ${SESSION_TYPE_COLORS[s.session_type] ?? ""}`}>
-                      {SESSION_TYPE_LABELS[s.session_type] ?? s.session_type}
+                      {t(SESSION_TYPE_KEYS[s.session_type] ?? s.session_type)}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-sm font-medium text-foreground">{s.title}</TableCell>
@@ -360,8 +360,8 @@ export default function TrainingPage() {
               <Select value={formType} onValueChange={setFormType}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  {Object.entries(SESSION_TYPE_LABELS).map(([k, v]) => (
-                    <SelectItem key={k} value={k}>{v}</SelectItem>
+                  {Object.entries(SESSION_TYPE_KEYS).map(([k, i18nKey]) => (
+                    <SelectItem key={k} value={k}>{t(i18nKey)}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -443,7 +443,7 @@ export default function TrainingPage() {
                 <div>
                   <p className="text-xs font-semibold text-muted-foreground uppercase">{t("training.form.type", { defaultValue: "Tipo" })}</p>
                   <Badge variant="secondary" className={`text-xs ${SESSION_TYPE_COLORS[detailSession.session_type] ?? ""}`}>
-                    {SESSION_TYPE_LABELS[detailSession.session_type] ?? detailSession.session_type}
+                    {t(SESSION_TYPE_KEYS[detailSession.session_type] ?? detailSession.session_type)}
                   </Badge>
                 </div>
                 {detailSession.location && (

@@ -196,7 +196,7 @@ export default function DailyReportDetailPage() {
   };
   const addRmmRow = async () => {
     if (!id) return;
-    await dailyReportService.addRmm({ daily_report_id: id, designation: "Instrumento", internal_code: null });
+    await dailyReportService.addRmm({ daily_report_id: id, designation: t("dailyReport.rmm.defaultName"), internal_code: null });
     setRmm(await dailyReportService.getRmm(id));
   };
   const addWasteRow = async () => {

@@ -945,6 +945,7 @@
       "discipline": "Disciplina",
       "exportBulk": "Exportar relatório",
       "exportSingle": "Exportar boletim",
+      "exportBeCampo": "Exportar BE-CAMPO",
       "generatedOn": "Gerado em",
       "laboratory": "Laboratório",
       "location": "Localização",
@@ -3159,6 +3160,7 @@
     "noDrawingsInTechOffice": "Sem desenhos topográficos registados. Crie peças desenhadas no Arquivo Topográfico para que apareçam aqui.",
     "deleteConfirm": "Este registo será eliminado permanentemente. Tem a certeza?",
     "searchPlaceholder": "Pesquisar código, tipo, zona…",
+    "exportReq": "Exportar REQ",
     "status": {
       "valid": "Válido",
       "expiring_soon": "Expira em breve",
@@ -4013,6 +4015,13 @@
       "function": "Função",
       "company": "Empresa"
     },
+    "sessionTypes": {
+      "initial": "Formação Inicial",
+      "new_personnel": "Novos Colaboradores",
+      "specific": "Específica",
+      "subcontractor": "Subempreiteiro",
+      "other": "Outra"
+    },
     "toast": {
       "created": "Sessão de formação criada",
       "deleted": "Sessão eliminada"
@@ -4195,7 +4204,21 @@
     "nProvetes": "Provetes 28d",
     "fcmMedio": "fcm médio (MPa)",
     "criterio": "Critério",
-    "resultado": "Resultado"
+    "resultado": "Resultado",
+    "lots": {
+      "columns": {
+        "code": "Código",
+        "element": "Elemento",
+        "class": "Classe",
+        "exc": "EXC",
+        "volume": "Vol. (m³)",
+        "samples": "n amostras",
+        "fcm": "fcm (MPa)",
+        "fcMin": "fc_min (MPa)",
+        "criterion": "Critério NA.M",
+        "result": "Resultado"
+      }
+    }
   },
   "compaction": {
     "workItem": "Elemento de Obra",
@@ -4238,6 +4261,14 @@
       "apto": "Aptas",
       "conditional": "Condicionais",
       "inapto": "Inaptas"
+    },
+    "materialTypes": {
+      "clay": "Solo argiloso",
+      "sand": "Solo arenoso",
+      "toutVenant": "Tout-venant",
+      "gravel": "Brita",
+      "fill": "Aterro seleccionado",
+      "other": "Outro"
     }
   },
   "welding": {
@@ -4270,6 +4301,10 @@
       "alignment": "Desalinhamento (mm)",
       "ut": "Ensaio Ultrassónico (UT)",
       "hardness": "Dureza (HV)"
+    },
+    "form": {
+      "editTitle": "Editar Soldadura",
+      "newTitle": "Nova Soldadura"
     }
   },
   "traceability": {
@@ -4592,6 +4627,9 @@
     "contextBanner": "Atenção — elemento tem pendências",
     "ncOpen": "{{count}} NC(s) abertas",
     "hpPending": "{{count}} HP(s) pendentes",
-    "testsOverdue": "{{count}} ensaio(s) em atraso"
+    "testsOverdue": "{{count}} ensaio(s) em atraso",
+    "rmm": {
+      "defaultName": "Instrumento"
+    }
   }
 }
