@@ -180,7 +180,7 @@ export default function TestSchedulePage() {
             <Clock className="h-5 w-5 text-amber-500" />
             <div>
               <p className="text-2xl font-bold text-foreground">{pendingThisWeek}</p>
-              <p className="text-xs text-muted-foreground">{isEs ? "Pendientes" : "Pendentes"}</p>
+              <p className="text-xs text-muted-foreground">{t("tests.schedule.pending")}</p>
             </div>
           </CardContent>
         </Card>
