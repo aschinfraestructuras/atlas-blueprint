@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
-import { useTests } from "@/hooks/useTests";
+import { useTestDueItems } from "@/hooks/useTestDueItems";
 import { useTestPlans } from "@/hooks/useTestPlans";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { PageHeader } from "@/components/ui/page-header";
