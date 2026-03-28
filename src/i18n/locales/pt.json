@@ -3992,6 +3992,15 @@
       "surveillance": "Vigilância",
       "closing": "Encerramento"
     },
+    "types": {
+      "internal": "Interna",
+      "external": "Externa",
+      "surveillance": "Vigilância",
+      "closing": "Encerramento"
+    },
+    "statuses": {
+      "transitionSuccess": "Estado actualizado para {{status}}"
+    },
     "status": {
       "planned": "Planeada",
       "in_progress": "Em Curso",
