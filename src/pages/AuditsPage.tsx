@@ -349,7 +349,7 @@ export default function AuditsPage() {
         <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {editAudit ? "Editar Auditoria" : "Nova Auditoria"}
+              {editAudit ? t("audits.editTitle") : t("audits.create")}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
