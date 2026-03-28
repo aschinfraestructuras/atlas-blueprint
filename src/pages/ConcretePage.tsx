@@ -171,14 +171,17 @@ function LotsTab({
     } finally { setSaving(false); }
   }
 
-  async function handleDeleteLot(id: string) {
-    if (!confirm(t("common.confirmDelete"))) return;
+  const [deleteLotTarget, setDeleteLotTarget] = useState<string | null>(null);
+  async function confirmDeleteLot() {
+    if (!deleteLotTarget) return;
     try {
-      await concreteLotService.deleteLot(id);
-      toast({ title: t("common.delete") });
+      await concreteLotService.deleteLot(deleteLotTarget);
+      toast({ title: t("common.deleted") });
       fetchLots();
     } catch (err: any) {
-      toast({ title: "Erro", description: err.message, variant: "destructive" });
+      toast({ title: t("common.error"), description: err.message, variant: "destructive" });
+    } finally {
+      setDeleteLotTarget(null);
     }
   }
 
