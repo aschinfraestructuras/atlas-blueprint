@@ -104,10 +104,10 @@ export default function ExpirationsPage() {
   };
 
   const handleExportCsv = () => {
-    const headers = ["Domínio", "Entidade", "Documento", "Tipo", "Validade", "Dias", "Estado"];
+    const headers = [t("expirations.table.domain", { defaultValue: "Domínio" }), t("expirations.table.entity"), t("expirations.table.document"), t("common.status"), t("expirations.table.validTo"), t("expirations.table.days"), t("common.status")];
     const rows = filtered.map(i => [
       i.domain, i.entity_name, i.doc_title, i.doc_type,
-      i.valid_to, String(i.days_remaining), STATUS_LABELS[i.status] ?? i.status,
+      i.valid_to, String(i.days_remaining), t(STATUS_LABEL_KEYS[i.status] ?? i.status),
     ]);
     const csv = [headers.join(";"), ...rows.map(r => r.join(";"))].join("\n");
     const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" });
