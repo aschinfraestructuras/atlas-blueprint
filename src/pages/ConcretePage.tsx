@@ -22,6 +22,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { RowActionMenu } from "@/components/ui/row-action-menu";
@@ -171,14 +172,17 @@ function LotsTab({
     } finally { setSaving(false); }
   }
 
-  async function handleDeleteLot(id: string) {
-    if (!confirm(t("common.confirmDelete"))) return;
+  const [deleteLotTarget, setDeleteLotTarget] = useState<string | null>(null);
+  async function confirmDeleteLot() {
+    if (!deleteLotTarget) return;
     try {
-      await concreteLotService.deleteLot(id);
-      toast({ title: t("common.delete") });
+      await concreteLotService.deleteLot(deleteLotTarget);
+      toast({ title: t("common.deleted") });
       fetchLots();
     } catch (err: any) {
-      toast({ title: "Erro", description: err.message, variant: "destructive" });
+      toast({ title: t("common.error"), description: err.message, variant: "destructive" });
+    } finally {
+      setDeleteLotTarget(null);
     }
   }
 
@@ -245,7 +249,7 @@ function LotsTab({
                     </TableCell>
                     <TableCell>
                       <RowActionMenu actions={[
-                        { key: "delete", label: t("common.delete"), icon: Trash2, onClick: () => handleDeleteLot(lot.lot_id), variant: "destructive" as const },
+                        { key: "delete", label: t("common.delete"), icon: Trash2, onClick: () => setDeleteLotTarget(lot.lot_id), variant: "destructive" as const },
                       ]} />
                     </TableCell>
                   </TableRow>
@@ -524,14 +528,17 @@ export default function ConcretePage() {
     } finally { setSaving(false); }
   }
 
-  async function handleDelete(id: string) {
-    if (!confirm(t("common.confirmDelete"))) return;
+  const [deleteBatchTarget, setDeleteBatchTarget] = useState<string | null>(null);
+  async function confirmDeleteBatch() {
+    if (!deleteBatchTarget) return;
     try {
-      await concreteService.deleteBatch(id);
-      toast({ title: t("common.delete") });
+      await concreteService.deleteBatch(deleteBatchTarget);
+      toast({ title: t("common.deleted") });
       fetchBatches();
     } catch (err: any) {
-      toast({ title: "Erro", description: err.message, variant: "destructive" });
+      toast({ title: t("common.error"), description: err.message, variant: "destructive" });
+    } finally {
+      setDeleteBatchTarget(null);
     }
   }
 
@@ -692,7 +699,7 @@ export default function ConcretePage() {
                           <RowActionMenu actions={[
                             { key: "view", label: t("common.view"), icon: Eye, onClick: () => setDetailId(b.id) },
                             { key: "pdf", label: t("common.exportPdf"), icon: FileDown, onClick: () => handleExport(b) },
-                            { key: "delete", label: t("common.delete"), icon: Trash2, onClick: () => handleDelete(b.id), variant: "destructive" as const },
+                            { key: "delete", label: t("common.delete"), icon: Trash2, onClick: () => setDeleteBatchTarget(b.id), variant: "destructive" as const },
                           ]} />
                         </TableCell>
                       </TableRow>
@@ -1028,6 +1035,12 @@ export default function ConcretePage() {
           )}
         </DialogContent>
       </Dialog>
+      <AlertDialog open={!!deleteBatchTarget} onOpenChange={(v) => !v && setDeleteBatchTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader><AlertDialogTitle>{t("common.deleteConfirmTitle")}</AlertDialogTitle><AlertDialogDescription>{t("common.deleteConfirmDesc")}</AlertDialogDescription></AlertDialogHeader>
+          <AlertDialogFooter><AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel><AlertDialogAction onClick={confirmDeleteBatch} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">{t("common.confirm")}</AlertDialogAction></AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

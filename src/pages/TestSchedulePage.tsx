@@ -135,8 +135,8 @@ export default function TestSchedulePage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title={isEs ? "Programación Semanal de Ensayos" : "Programação Semanal de Ensaios"}
-        subtitle={isEs ? "Calendario semanal con ensayos programados" : "Calendário semanal com ensaios programados"}
+        title={t("tests.schedule.title")}
+        subtitle={t("tests.schedule.subtitle")}
         icon={CalendarClock}
         actions={
           <Button variant="outline" size="sm" onClick={handleExportPdf}>
@@ -148,18 +148,18 @@ export default function TestSchedulePage() {
       {/* Week navigation */}
       <div className="flex items-center justify-between">
         <Button variant="ghost" size="sm" onClick={() => setWeekOffset(w => w - 1)}>
-          <ChevronLeft className="h-4 w-4 mr-1" />{isEs ? "Anterior" : "Anterior"}
+          <ChevronLeft className="h-4 w-4 mr-1" />{t("common.back")}
         </Button>
         <div className="text-center">
           <p className="text-sm font-semibold text-foreground">{weekLabel}</p>
-          <p className="text-xs text-muted-foreground">{isEs ? `${totalThisWeek} ensayos · ${pendingThisWeek} pendientes` : `${totalThisWeek} ensaios · ${pendingThisWeek} pendentes`}</p>
+          <p className="text-xs text-muted-foreground">{t("tests.schedule.weekSummary", { total: totalThisWeek, pending: pendingThisWeek })}</p>
         </div>
         <div className="flex gap-2">
           <Button variant="ghost" size="sm" onClick={() => setWeekOffset(0)}>
-            {isEs ? "Hoy" : "Hoje"}
+            {t("common.today")}
           </Button>
           <Button variant="ghost" size="sm" onClick={() => setWeekOffset(w => w + 1)}>
-            {isEs ? "Siguiente" : "Seguinte"}<ChevronRight className="h-4 w-4 ml-1" />
+            {t("common.next")}<ChevronRight className="h-4 w-4 ml-1" />
           </Button>
         </div>
       </div>
@@ -171,7 +171,7 @@ export default function TestSchedulePage() {
             <FlaskConical className="h-5 w-5 text-primary" />
             <div>
               <p className="text-2xl font-bold text-foreground">{totalThisWeek}</p>
-              <p className="text-xs text-muted-foreground">{isEs ? "Total semana" : "Total semana"}</p>
+              <p className="text-xs text-muted-foreground">{t("tests.schedule.totalWeek")}</p>
             </div>
           </CardContent>
         </Card>
@@ -180,7 +180,7 @@ export default function TestSchedulePage() {
             <Clock className="h-5 w-5 text-amber-500" />
             <div>
               <p className="text-2xl font-bold text-foreground">{pendingThisWeek}</p>
-              <p className="text-xs text-muted-foreground">{isEs ? "Pendientes" : "Pendentes"}</p>
+              <p className="text-xs text-muted-foreground">{t("tests.schedule.pending")}</p>
             </div>
           </CardContent>
         </Card>
@@ -189,7 +189,7 @@ export default function TestSchedulePage() {
             <CheckCircle2 className="h-5 w-5 text-chart-2" />
             <div>
               <p className="text-2xl font-bold text-foreground">{totalThisWeek - pendingThisWeek}</p>
-              <p className="text-xs text-muted-foreground">{isEs ? "Realizados" : "Realizados"}</p>
+              <p className="text-xs text-muted-foreground">{t("tests.schedule.done")}</p>
             </div>
           </CardContent>
         </Card>

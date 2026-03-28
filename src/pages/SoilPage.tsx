@@ -20,6 +20,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { RowActionMenu } from "@/components/ui/row-action-menu";
 import { EmptyState } from "@/components/EmptyState";
 import { ModuleKPICard } from "@/components/ModuleKPICard";
@@ -274,14 +275,17 @@ export default function SoilPage() {
     } finally { setSaving(false); }
   }
 
-  async function handleDelete(id: string) {
-    if (!confirm(t("common.confirmDelete"))) return;
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+  async function confirmDeleteSoil() {
+    if (!deleteTargetId) return;
     try {
-      await soilService.deleteSample(id);
-      toast({ title: t("common.delete") });
+      await soilService.deleteSample(deleteTargetId);
+      toast({ title: t("common.deleted") });
       fetchSamples();
     } catch (err: any) {
-      toast({ title: "Erro", description: err.message, variant: "destructive" });
+      toast({ title: t("common.error"), description: err.message, variant: "destructive" });
+    } finally {
+      setDeleteTargetId(null);
     }
   }
 
@@ -367,7 +371,7 @@ export default function SoilPage() {
                         { key: "view", label: t("common.view"), icon: Eye, onClick: () => setDetailId(s.id) },
                         { key: "edit", label: t("common.edit"), icon: Pencil, onClick: () => openEdit(s) },
                         { key: "pdf", label: t("common.exportPdf"), icon: FileDown, onClick: () => soilService.exportPdf(s, activeProject?.name ?? "PF17A", logoBase64) },
-                        { key: "delete", label: t("common.delete"), icon: Trash2, onClick: () => handleDelete(s.id), variant: "destructive" as const },
+                        { key: "delete", label: t("common.delete"), icon: Trash2, onClick: () => setDeleteTargetId(s.id), variant: "destructive" as const },
                       ]} />
                     </TableCell>
                   </TableRow>
@@ -650,6 +654,12 @@ export default function SoilPage() {
           )}
         </DialogContent>
       </Dialog>
+      <AlertDialog open={!!deleteTargetId} onOpenChange={(v) => !v && setDeleteTargetId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader><AlertDialogTitle>{t("common.deleteConfirmTitle")}</AlertDialogTitle><AlertDialogDescription>{t("common.deleteConfirmDesc")}</AlertDialogDescription></AlertDialogHeader>
+          <AlertDialogFooter><AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel><AlertDialogAction onClick={confirmDeleteSoil} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">{t("common.confirm")}</AlertDialogAction></AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

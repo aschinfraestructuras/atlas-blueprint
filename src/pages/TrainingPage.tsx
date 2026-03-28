@@ -17,6 +17,7 @@ import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/EmptyState";
@@ -165,15 +166,18 @@ export default function TrainingPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm(t("common.confirmDelete"))) return;
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+  const confirmDeleteSession = async () => {
+    if (!deleteTargetId) return;
     try {
-      await trainingService.deleteSession(id);
+      await trainingService.deleteSession(deleteTargetId);
       toast({ title: t("training.toast.deleted", { defaultValue: "Sessão eliminada" }) });
       fetchSessions();
     } catch (err) {
       const info = classifySupabaseError(err, t);
       toast({ title: info.title, variant: "destructive" });
+    } finally {
+      setDeleteTargetId(null);
     }
   };
 
@@ -330,7 +334,7 @@ export default function TrainingPage() {
                         <FileText className="h-3.5 w-3.5" />
                       </Button>
                       {canEdit && (
-                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleDelete(s.id)} title={t("common.delete")}>
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setDeleteTargetId(s.id)} title={t("common.delete")}>
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>
                       )}
@@ -545,6 +549,12 @@ export default function TrainingPage() {
           </div>
         </SheetContent>
       </Sheet>
+      <AlertDialog open={!!deleteTargetId} onOpenChange={(v) => !v && setDeleteTargetId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader><AlertDialogTitle>{t("common.deleteConfirmTitle")}</AlertDialogTitle><AlertDialogDescription>{t("common.deleteConfirmDesc")}</AlertDialogDescription></AlertDialogHeader>
+          <AlertDialogFooter><AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel><AlertDialogAction onClick={confirmDeleteSession} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">{t("common.confirm")}</AlertDialogAction></AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

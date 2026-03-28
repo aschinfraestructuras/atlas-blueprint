@@ -100,7 +100,7 @@ export function useDashboardViews() {
       const [summaryRes, ncRes, testsRes, docRes, qualRes] = await Promise.all([
         supabase.from("view_dashboard_summary" as any).select("*").eq("project_id", pid).single(),
         supabase.from("view_nc_monthly" as any).select("*").eq("project_id", pid).order("month"),
-        supabase.from("view_tests_monthly" as any).select("*").eq("project_id", pid).order("month"),
+        supabase.from("view_physical_tests_monthly_total" as any).select("*").eq("project_id", pid).order("month"),
         supabase.from("view_document_metrics" as any).select("*").eq("project_id", pid),
         supabase.from("view_advanced_quality_metrics" as any).select("*").eq("project_id", pid),
       ]);
@@ -140,8 +140,8 @@ export function useDashboardViews() {
         setTestsMonthly((testsRes.data as any[]).map((r) => ({
           month: r.month,
           label: formatMonthLabel(r.month),
-          conform: Number(r.conform) || 0,
-          non_conform: Number(r.non_conform) || 0,
+          conform: Number(r.conforme) || 0,
+          non_conform: Number(r.nao_conforme) || 0,
         })));
       }
 

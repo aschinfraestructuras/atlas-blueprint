@@ -20,6 +20,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RowActionMenu } from "@/components/ui/row-action-menu";
 import { EmptyState } from "@/components/EmptyState";
@@ -194,14 +195,18 @@ export default function CompactionPage() {
     } finally { setSaving(false); }
   }
 
-  async function handleDelete(id: string) {
-    if (!confirm(t("common.confirmDelete"))) return;
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+
+  async function confirmDeleteZone() {
+    if (!deleteTargetId) return;
     try {
-      await compactionService.deleteZone(id);
-      toast({ title: t("common.delete") });
+      await compactionService.deleteZone(deleteTargetId);
+      toast({ title: t("common.deleted") });
       fetchZones();
     } catch (err: any) {
-      toast({ title: "Erro", description: err.message, variant: "destructive" });
+      toast({ title: t("common.error"), description: err.message, variant: "destructive" });
+    } finally {
+      setDeleteTargetId(null);
     }
   }
 
@@ -290,7 +295,7 @@ export default function CompactionPage() {
                             if (d) compactionService.exportPdf(d.zone, d.nuclear, d.plates, activeProject?.name ?? "PF17A", logoBase64);
                           });
                         }},
-                        { key: "delete", label: t("common.delete"), icon: Trash2, onClick: () => handleDelete(z.id), variant: "destructive" as const },
+                        { key: "delete", label: t("common.delete"), icon: Trash2, onClick: () => setDeleteTargetId(z.id), variant: "destructive" as const },
                       ]} />
                     </TableCell>
                   </TableRow>
@@ -474,6 +479,12 @@ export default function CompactionPage() {
           )}
         </DialogContent>
       </Dialog>
+      <AlertDialog open={!!deleteTargetId} onOpenChange={(v) => !v && setDeleteTargetId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader><AlertDialogTitle>{t("common.deleteConfirmTitle")}</AlertDialogTitle><AlertDialogDescription>{t("common.deleteConfirmDesc")}</AlertDialogDescription></AlertDialogHeader>
+          <AlertDialogFooter><AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel><AlertDialogAction onClick={confirmDeleteZone} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">{t("common.confirm")}</AlertDialogAction></AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

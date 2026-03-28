@@ -2,6 +2,10 @@ import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { ClipboardList, Plus, Search, FileText, Send, CheckCircle, Hash, Eye, Calendar, Trash2, Cloud, Sun, CloudRain } from "lucide-react";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { StackedBar, DistributionBar } from "@/components/dashboard/DistributionBar";
 import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
@@ -43,14 +47,18 @@ export default function DailyReportsPage() {
   const { isManager } = useProjectRole();
   const { data, loading, refetch } = useDailyReports();
 
-  const handleDelete = async (id: string) => {
-    if (!confirm(t("common.confirmDelete"))) return;
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+
+  const confirmDelete = async () => {
+    if (!deleteTargetId) return;
     try {
-      await dailyReportService.update(id, { is_deleted: true });
+      await dailyReportService.update(deleteTargetId, { is_deleted: true });
       toast({ title: t("common.softDeleted") });
       refetch();
     } catch {
-      toast({ title: "Erro ao eliminar", variant: "destructive" });
+      toast({ title: t("common.deleteError"), variant: "destructive" });
+    } finally {
+      setDeleteTargetId(null);
     }
   };
 
@@ -200,7 +208,7 @@ export default function DailyReportsPage() {
                         shareUrl={`${window.location.origin}/daily-reports/${r.id}`}
                         actions={[
                           { key: "view", label: t("common.view"), icon: Eye, onClick: () => navigate(`/daily-reports/${r.id}`) },
-                          ...((canDelete || isManager) ? [{ key: "delete", label: t("common.delete"), icon: Trash2, onClick: () => handleDelete(r.id), variant: "destructive" as const }] : []),
+                          ...((canDelete || isManager) ? [{ key: "delete", label: t("common.delete"), icon: Trash2, onClick: () => setDeleteTargetId(r.id), variant: "destructive" as const }] : []),
                         ]}
                       />
                     </TableCell>
@@ -213,6 +221,21 @@ export default function DailyReportsPage() {
       </Card>
 
       <DailyReportFormDialog open={dialogOpen} onOpenChange={setDialogOpen} onCreated={refetch} />
+
+      <AlertDialog open={!!deleteTargetId} onOpenChange={(v) => !v && setDeleteTargetId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("common.deleteConfirmTitle")}</AlertDialogTitle>
+            <AlertDialogDescription>{t("common.deleteConfirmDesc")}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              {t("common.confirm")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
