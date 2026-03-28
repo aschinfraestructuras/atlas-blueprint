@@ -34,7 +34,6 @@ import { PageHeader } from "@/components/ui/page-header";
 import { exportPAI } from "@/lib/services/sgqListExportService";
 import { useReportMeta } from "@/hooks/useReportMeta";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
-import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { fullPdfHeader } from "@/lib/services/pdfProjectHeader";
 import { NCFormDialog } from "@/components/nc/NCFormDialog";
 import jsPDF from "jspdf";
