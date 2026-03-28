@@ -260,6 +260,21 @@ export function FieldRecordsTab({ instanceId, ppiCode, disciplina }: Props) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* NC from Field Record */}
+      {ncRecord && (
+        <NCFormDialog
+          open={ncDialogOpen}
+          onOpenChange={setNcDialogOpen}
+          originOverride="ppi"
+          onSuccess={() => {
+            setNcDialogOpen(false);
+            setNcRecord(null);
+            toast({ title: t("fieldRecord.ncCreated") });
+            load();
+          }}
+        />
+      )}
     </div>
   );
 }
