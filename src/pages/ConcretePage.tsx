@@ -8,6 +8,7 @@ import { concreteService, computeBatchResult, type ConcreteBatchWithCounts, type
 import { concreteLotService, type ConcreteLotConformity } from "@/lib/services/concreteLotService";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { useProject } from "@/contexts/ProjectContext";
+import { supabase } from "@/integrations/supabase/client";
 import { useWorkItems } from "@/hooks/useWorkItems";
 import { usePPIInstances } from "@/hooks/usePPI";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
