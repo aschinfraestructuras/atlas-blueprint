@@ -140,8 +140,8 @@ export function useDashboardViews() {
         setTestsMonthly((testsRes.data as any[]).map((r) => ({
           month: r.month,
           label: formatMonthLabel(r.month),
-          conform: Number(r.conform) || 0,
-          non_conform: Number(r.non_conform) || 0,
+          conform: Number(r.conforme) || 0,
+          non_conform: Number(r.nao_conforme) || 0,
         })));
       }
 
