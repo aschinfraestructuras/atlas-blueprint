@@ -154,6 +154,7 @@ export function useDashboardKpis() {
         testsTotal: testsTotalRes.count ?? 0,
         matApproved: matApprovedRes.count ?? 0,
         matTotal: matTotalRes.count ?? 0,
+        weldsPendingUt: weldsPendingUtRes.count ?? 0,
         recentActivity: recent.slice(0, 8),
       });
     } catch (err) {
