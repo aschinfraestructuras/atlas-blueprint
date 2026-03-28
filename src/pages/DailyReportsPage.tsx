@@ -47,10 +47,12 @@ export default function DailyReportsPage() {
   const { isManager } = useProjectRole();
   const { data, loading, refetch } = useDailyReports();
 
-  const handleDelete = async (id: string) => {
-    if (!confirm(t("common.confirmDelete"))) return;
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+
+  const confirmDelete = async () => {
+    if (!deleteTargetId) return;
     try {
-      await dailyReportService.update(id, { is_deleted: true });
+      await dailyReportService.update(deleteTargetId, { is_deleted: true });
       toast({ title: t("common.softDeleted") });
       refetch();
     } catch {
