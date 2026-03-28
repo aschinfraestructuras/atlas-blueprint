@@ -999,6 +999,14 @@
         "waived": "Dispensado"
       }
     },
+    "schedule": {
+      "title": "Programación Semanal de Ensayos",
+      "subtitle": "Calendario semanal con ensayos programados",
+      "totalWeek": "Total semana",
+      "pending": "Pendientes",
+      "done": "Realizados",
+      "weekSummary": "{{total}} ensayos · {{pending}} pendientes"
+    },
     "export": {
       "acceptanceCriteria": "Criterios de aceptación",
       "approvalRate": "Tasa de aprobación",
@@ -1469,6 +1477,13 @@
       "closed": "Cerrada",
       "archived": "Archivada",
       "under_review": "En Revisión"
+    },
+    "statusFlow": {
+      "draft": "Borrador",
+      "open": "Abierta",
+      "in_progress": "En curso",
+      "pending_verification": "En verificación",
+      "closed": "Cerrada"
     },
     "transitions": {
       "label": "Cambiar estado",
@@ -2288,7 +2303,8 @@
         "ncs": "NCs",
         "planning": "Planificación",
         "ppi": "PPIs",
-        "tests": "Ensayos"
+        "tests": "Ensayos",
+        "physicalTests": "Ensayos físicos"
       },
       "testsTab": {
         "suggestion": "Sugerencia de ensayo"
@@ -3812,7 +3828,11 @@
       "onSiteEquipment": "equipos en obra",
       "safetyOk": "Formación OK",
       "noSafety": "Sin formación"
-    }
+    },
+    "contextBanner": "Atención — elemento tiene pendencias",
+    "ncOpen": "{{count}} NC(s) abiertas",
+    "hpPending": "{{count}} HP(s) pendientes",
+    "testsOverdue": "{{count}} ensayo(s) atrasados"
   },
   "recycled": {
     "exportPpgrcd": "Exportar Ficha PPGRCD",
@@ -3862,8 +3882,11 @@
     "title": "Materiales Reciclados",
     "toast": {
       "created": "Material reciclado creado",
-      "updated": "Material reciclado actualizado"
+      "updated": "Material reciclado actualizado",
+      "deleted": "Material reciclado eliminado"
     },
+    "delete": "Eliminar",
+    "deleteConfirm": "Confirmar eliminación del registro",
     "types": {
       "FAM": "FAM",
       "PAP": "PAP",
@@ -3995,6 +4018,15 @@
       "surveillance": "Vigilancia",
       "closing": "Cierre"
     },
+    "types": {
+      "internal": "Interna",
+      "external": "Externa",
+      "surveillance": "Vigilancia",
+      "closing": "Cierre"
+    },
+    "statuses": {
+      "transitionSuccess": "Estado actualizado a {{status}}"
+    },
     "status": {
       "planned": "Planificada",
       "in_progress": "En Curso",
@@ -4091,6 +4123,9 @@
       "emesExpiring": "EMEs por Expirar"
     },
     "ensaiosSection": "Ensayos y Control",
+    "testsSection": "Ensayos y Control de Calidad",
+    "autofillKpis": "Auto-rellenar KPIs",
+    "autofillDone": "KPIs rellenados automáticamente",
     "concrete": "Hormigón",
     "welds": "Soldaduras",
     "soils": "Suelos y Compactación",
@@ -4128,8 +4163,17 @@
       "total": "Total Amasadas",
       "pass": "Conformes",
       "fail": "No Conformes",
-      "pendingSpecimens": "Probetas Pendientes"
-    }
+      "pendingSpecimens": "Probetas Pendientes",
+      "totalLotes": "Total Lotes",
+      "conformesNAM": "Conformes (NA.M)",
+      "lotesAvaliados": "Lotes evaluados"
+    },
+    "conformityPanel": "Conformidad NA.M por Clase",
+    "nAmassadas": "Amasadas",
+    "nProvetes": "Probetas 28d",
+    "fcmMedio": "fcm medio (MPa)",
+    "criterio": "Criterio",
+    "resultado": "Resultado"
   },
   "compaction": {
     "title": "Control de Compactación",

@@ -193,9 +193,9 @@ function LotsTab({
     <div className="space-y-4">
       {/* KPI */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-        <ModuleKPICard label="Total Lotes" value={total} icon={Package} />
-        <ModuleKPICard label="Conformes (NA.M)" value={conformes} icon={CheckCircle2} color="hsl(158,45%,32%)" />
-        <ModuleKPICard label="Lotes avaliados" value={`${conformes}/${total}`} icon={FlaskConical} />
+        <ModuleKPICard label={t("concrete.kpi.totalLotes")} value={total} icon={Package} />
+        <ModuleKPICard label={t("concrete.kpi.conformesNAM")} value={conformes} icon={CheckCircle2} color="hsl(158,45%,32%)" />
+        <ModuleKPICard label={t("concrete.kpi.lotesAvaliados")} value={`${conformes}/${total}`} icon={FlaskConical} />
       </div>
 
       <div className="flex justify-end">

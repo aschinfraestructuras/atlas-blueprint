@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
+import { supabase } from "@/integrations/supabase/client";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
@@ -277,19 +278,50 @@ export default function MonthlyReportPage() {
               <Label>{t("monthlyReport.nextMonthPlan")}</Label>
               <Textarea value={nextMonthPlan} onChange={e => setNextMonthPlan(e.target.value)} rows={4} />
             </div>
-            <div className="flex items-center gap-2 justify-end">
-              <Button variant="outline" onClick={handleSave} disabled={saving}>
-                {t("common.save")}
-              </Button>
-              <Button onClick={() => handleSubmit(r)} disabled={saving}>
-                <Send className="h-3.5 w-3.5 mr-1.5" />
-                {t("monthlyReport.submit")}
-              </Button>
-              <Button variant="outline" onClick={() => doPdf(r)}>
-                <FileText className="h-3.5 w-3.5 mr-1.5" />
-                PDF
-              </Button>
-            </div>
+             <div className="flex items-center gap-2 justify-end">
+               <Button variant="outline" size="sm" onClick={async () => {
+                 if (!activeProject || !selectedReport) return;
+                 try {
+                   const { data, error } = await supabase.rpc("fn_monthly_kpi_autofill" as any, {
+                     p_project_id: activeProject.id,
+                     p_reference_month: selectedReport.reference_month,
+                   });
+                   if (error) throw error;
+                   const kpis = data as any;
+                   // Direct update via supabase since service type is narrow
+                   await (supabase as any).from("monthly_quality_reports").update({
+                     kpi_tests_pass_rate: kpis.kpi_tests_pass_rate,
+                     kpi_nc_open: kpis.kpi_nc_open,
+                     kpi_nc_closed_month: kpis.kpi_nc_closed_month,
+                     kpi_hp_approved: kpis.kpi_hp_approved,
+                     kpi_hp_total: kpis.kpi_hp_total,
+                     kpi_mat_approved: kpis.kpi_mat_approved,
+                     kpi_mat_pending: kpis.kpi_mat_pending,
+                     kpi_ppi_completed: kpis.kpi_ppi_completed,
+                     kpi_emes_expiring: kpis.kpi_emes_expiring,
+                   }).eq("id", selectedReport.id);
+                   toast({ title: t("monthlyReport.autofillDone") });
+                   await fetchReports();
+                   const updated = (await monthlyReportService.listByProject(activeProject.id)).find(r => r.id === selectedReport.id);
+                   if (updated) openDetail(updated);
+                 } catch (err: any) {
+                   toast({ title: "Erro", description: err.message, variant: "destructive" });
+                 }
+               }}>
+                 {t("monthlyReport.autofillKpis")}
+               </Button>
+               <Button variant="outline" onClick={handleSave} disabled={saving}>
+                 {t("common.save")}
+               </Button>
+               <Button onClick={() => handleSubmit(r)} disabled={saving}>
+                 <Send className="h-3.5 w-3.5 mr-1.5" />
+                 {t("monthlyReport.submit")}
+               </Button>
+               <Button variant="outline" onClick={() => doPdf(r)}>
+                 <FileText className="h-3.5 w-3.5 mr-1.5" />
+                 PDF
+               </Button>
+             </div>
           </div>
         ) : (
           <div className="space-y-4">

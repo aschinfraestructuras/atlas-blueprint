@@ -914,6 +914,14 @@
         "waived": "Dispensado"
       }
     },
+    "schedule": {
+      "title": "Programação Semanal de Ensaios",
+      "subtitle": "Calendário semanal com ensaios programados",
+      "totalWeek": "Total semana",
+      "pending": "Pendentes",
+      "done": "Realizados",
+      "weekSummary": "{{total}} ensaios · {{pending}} pendentes"
+    },
     "export": {
       "acceptanceCriteria": "Critérios de aceitação",
       "approvalRate": "Taxa de aprovação",
@@ -1422,6 +1430,13 @@
       "closed": "Fechada",
       "archived": "Arquivada",
       "under_review": "Em Análise"
+    },
+    "statusFlow": {
+      "draft": "Rascunho",
+      "open": "Aberta",
+      "in_progress": "Em curso",
+      "pending_verification": "Em verificação",
+      "closed": "Fechada"
     },
     "transitions": {
       "label": "Alterar estado",
@@ -2203,8 +2218,9 @@
         "ncs": "NCs",
         "planning": "Planeamento",
         "ppi": "PPIs",
-        "tests": "Ensaios"
-      },
+         "tests": "Ensaios",
+         "physicalTests": "Ensaios físicos"
+       },
       "testsTab": {
         "suggestion": "Sugestão de ensaio"
       },
@@ -3809,7 +3825,11 @@
       "onSiteEquipment": "equipamentos em obra",
       "safetyOk": "Formação OK",
       "noSafety": "Sem formação"
-    }
+    },
+    "contextBanner": "Atenção — elemento tem pendências",
+    "ncOpen": "{{count}} NC(s) abertas",
+    "hpPending": "{{count}} HP(s) pendentes",
+    "testsOverdue": "{{count}} ensaio(s) em atraso"
   },
   "recycled": {
     "exportPpgrcd": "Exportar Ficha PPGRCD",
@@ -3859,8 +3879,11 @@
     "title": "Materiais Reciclados",
     "toast": {
       "created": "Material reciclado criado",
-      "updated": "Material reciclado atualizado"
+      "updated": "Material reciclado atualizado",
+      "deleted": "Material reciclado eliminado"
     },
+    "delete": "Eliminar",
+    "deleteConfirm": "Confirmar eliminação do registo",
     "types": {
       "FAM": "FAM",
       "PAP": "PAP",
@@ -3992,6 +4015,15 @@
       "surveillance": "Vigilância",
       "closing": "Encerramento"
     },
+    "types": {
+      "internal": "Interna",
+      "external": "Externa",
+      "surveillance": "Vigilância",
+      "closing": "Encerramento"
+    },
+    "statuses": {
+      "transitionSuccess": "Estado actualizado para {{status}}"
+    },
     "status": {
       "planned": "Planeada",
       "in_progress": "Em Curso",
@@ -4088,6 +4120,9 @@
       "emesExpiring": "EMEs a Expirar"
     },
     "ensaiosSection": "Ensaios e Controlo",
+    "testsSection": "Ensaios e Controlo de Qualidade",
+    "autofillKpis": "Auto-preencher KPIs",
+    "autofillDone": "KPIs preenchidos automaticamente",
     "concrete": "Betão",
     "welds": "Soldaduras",
     "soils": "Solos e Compactação",
@@ -4125,8 +4160,17 @@
       "total": "Total Amassadas",
       "pass": "Conformes",
       "fail": "Não Conformes",
-      "pendingSpecimens": "Provetes Pendentes"
-    }
+      "pendingSpecimens": "Provetes Pendentes",
+      "totalLotes": "Total Lotes",
+      "conformesNAM": "Conformes (NA.M)",
+      "lotesAvaliados": "Lotes avaliados"
+    },
+    "conformityPanel": "Conformidade NA.M por Classe",
+    "nAmassadas": "Amassadas",
+    "nProvetes": "Provetes 28d",
+    "fcmMedio": "fcm médio (MPa)",
+    "criterio": "Critério",
+    "resultado": "Resultado"
   },
   "compaction": {
     "title": "Controlo de Compactação",

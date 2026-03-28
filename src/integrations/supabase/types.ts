@@ -10294,7 +10294,7 @@ export type Database = {
         }
       }
       fn_monthly_kpi_autofill: {
-        Args: { p_project_id: string; p_reference_month?: string }
+        Args: { p_project_id: string; p_reference_month: string }
         Returns: Json
       }
       fn_next_audit_code: { Args: { p_project_id: string }; Returns: string }

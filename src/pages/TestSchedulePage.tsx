@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
-import { useTests } from "@/hooks/useTests";
+import { useTestDueItems } from "@/hooks/useTestDueItems";
 import { useTestPlans } from "@/hooks/useTestPlans";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { PageHeader } from "@/components/ui/page-header";
@@ -33,7 +33,7 @@ export default function TestSchedulePage() {
   const { t, i18n } = useTranslation();
   const { activeProject } = useProject();
   const { logoBase64 } = useProjectLogo();
-  const { data: tests, loading } = useTests();
+  const { data: dueItems, loading } = useTestDueItems();
   const isEs = i18n.language?.startsWith("es");
   const locale = isEs ? es : pt;
 
@@ -45,28 +45,28 @@ export default function TestSchedulePage() {
 
   // Group tests by date within week
   const testsByDay = useMemo(() => {
-    const map: Record<string, typeof tests> = {};
+    const map: Record<string, typeof dueItems> = {};
     for (const day of days) {
       const key = format(day, "yyyy-MM-dd");
       map[key] = [];
     }
-    for (const test of tests) {
-      const testDate = test.date;
-      if (!testDate) continue;
+    for (const item of dueItems) {
+      const dateStr = item.scheduled_for ?? item.due_at_date;
+      if (!dateStr) continue;
       try {
-        const d = parseISO(testDate);
+        const d = parseISO(dateStr);
         if (isWithinInterval(d, { start: weekStart, end: weekEnd })) {
           const key = format(d, "yyyy-MM-dd");
-          if (map[key]) map[key]!.push(test);
+          if (map[key]) map[key]!.push(item);
         }
       } catch { /* skip */ }
     }
     return map;
-  }, [tests, days, weekStart, weekEnd]);
+  }, [dueItems, days, weekStart, weekEnd]);
 
   const totalThisWeek = useMemo(() => Object.values(testsByDay).reduce((s, v) => s + v.length, 0), [testsByDay]);
   const pendingThisWeek = useMemo(() =>
-    Object.values(testsByDay).flat().filter(t => ["draft", "pending", "in_progress"].includes(t.status ?? "")).length,
+    Object.values(testsByDay).flat().filter(i => ["due", "overdue", "scheduled"].includes(i.status ?? "")).length,
     [testsByDay]
   );
 
@@ -110,10 +110,11 @@ export default function TestSchedulePage() {
       if (dayTests.length === 0) {
         html += `<span style="color:#ccc;font-size:8px;">—</span>`;
       } else {
-        for (const t of dayTests) {
-          const statusCls = t.status === "pass" || t.status === "approved" || t.status === "completed" ? "status-pass" :
-                           t.status === "fail" ? "status-fail" : "status-pending";
-          html += `<div class="test-item ${statusCls}"><strong>${t.code ?? "—"}</strong><br/>${(t as any).test_name ?? (t as any).location ?? ""}<br/><span style="color:#888">${t.status ?? ""}</span></div>`;
+        for (const item of dayTests) {
+          const testName = item.test_plan_rules?.tests_catalog?.name ?? "—";
+          const statusCls = item.status === "done" ? "status-pass" :
+                           item.status === "overdue" ? "status-fail" : "status-pending";
+          html += `<div class="test-item ${statusCls}"><strong>${testName}</strong><br/><span style="color:#888">${t(`tests.due.status.${item.status}`, { defaultValue: item.status })}</span></div>`;
         }
       }
       html += `</td>`;
@@ -230,22 +231,29 @@ export default function TestSchedulePage() {
                   {dayTests.length === 0 ? (
                     <p className="text-[10px] text-muted-foreground/50 text-center mt-6">—</p>
                   ) : (
-                    dayTests.map((test) => (
-                      <div
-                        key={test.id}
-                        className={cn(
-                          "rounded-lg px-2 py-1.5 text-[10px] border-l-[3px]",
-                          test.status === "pass" || test.status === "approved" || test.status === "completed"
-                            ? "bg-chart-2/5 border-l-chart-2"
-                            : test.status === "fail"
-                            ? "bg-destructive/5 border-l-destructive"
-                            : "bg-amber-500/5 border-l-amber-500",
-                        )}
-                      >
-                        <p className="font-bold truncate">{test.code ?? "—"}</p>
-                        <p className="text-muted-foreground truncate">{(test as any).test_name ?? (test as any).location ?? ""}</p>
-                      </div>
-                    ))
+                    dayTests.map((item) => {
+                      const testName = item.test_plan_rules?.tests_catalog?.name ?? "—";
+                      const isDone = item.status === "done";
+                      const isOverdue = item.status === "overdue";
+                      return (
+                        <div
+                          key={item.id}
+                          className={cn(
+                            "rounded-lg px-2 py-1.5 text-[10px] border-l-[3px]",
+                            isDone
+                              ? "bg-chart-2/5 border-l-chart-2"
+                              : isOverdue
+                              ? "bg-destructive/5 border-l-destructive"
+                              : "bg-amber-500/5 border-l-amber-500",
+                          )}
+                        >
+                          <p className="font-bold truncate">{testName}</p>
+                          <p className="text-muted-foreground truncate">
+                            {t(`tests.due.status.${item.status}`, { defaultValue: item.status })}
+                          </p>
+                        </div>
+                      );
+                    })
                   )}
                 </div>
               </div>

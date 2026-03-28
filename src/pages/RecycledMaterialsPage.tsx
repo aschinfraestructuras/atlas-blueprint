@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Leaf, Plus, Search, Hash, CheckCircle, Clock, Percent } from "lucide-react";
+import { Leaf, Plus, Search, Hash, CheckCircle, Clock, Percent, Trash2 } from "lucide-react";
 import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { FilterBar } from "@/components/ui/filter-bar";
 import { ModuleKPICard } from "@/components/ModuleKPICard";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
@@ -19,6 +20,8 @@ import { useArchivedProject } from "@/hooks/useArchivedProject";
 import { useRecycledMaterials } from "@/hooks/useRecycledMaterials";
 import { RecycledMaterialFormDialog } from "@/components/recycled/RecycledMaterialFormDialog";
 import { RecycledMaterialDetailSheet } from "@/components/recycled/RecycledMaterialDetailSheet";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 const STATUS_COLORS: Record<string, string> = {
   pending: "bg-muted text-muted-foreground",
@@ -40,6 +43,7 @@ export default function RecycledMaterialsPage() {
   const [typeFilter, setTypeFilter] = useState("all");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [detailId, setDetailId] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
     let list = data;
@@ -141,7 +145,8 @@ export default function RecycledMaterialsPage() {
                   <TableHead className="text-right">{t("recycled.fields.quantityPlanned")}</TableHead>
                   <TableHead className="text-right">{t("recycled.fields.quantityUsed")}</TableHead>
                   <TableHead>{t("recycled.fields.documentRef")}</TableHead>
-                  <TableHead>{t("common.status")}</TableHead>
+                   <TableHead>{t("common.status")}</TableHead>
+                   <TableHead className="w-[40px]" />
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -154,11 +159,18 @@ export default function RecycledMaterialsPage() {
                     <TableCell className="text-right tabular-nums">{r.quantity_planned != null ? `${r.quantity_planned} ${r.unit ?? ""}` : "—"}</TableCell>
                     <TableCell className="text-right tabular-nums">{r.quantity_used != null ? `${r.quantity_used} ${r.unit ?? ""}` : "—"}</TableCell>
                     <TableCell className="text-xs">{r.document_ref ?? "—"}</TableCell>
-                    <TableCell>
-                      <Badge className={STATUS_COLORS[r.status] ?? ""} variant="secondary">
-                        {t(`recycled.status.${r.status}`)}
-                      </Badge>
-                    </TableCell>
+                     <TableCell>
+                       <Badge className={STATUS_COLORS[r.status] ?? ""} variant="secondary">
+                         {t(`recycled.status.${r.status}`)}
+                       </Badge>
+                     </TableCell>
+                     <TableCell onClick={e => e.stopPropagation()}>
+                       {!isArchived && (
+                         <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => setDeleteTarget(r.id)}>
+                           <Trash2 className="h-3.5 w-3.5" />
+                         </Button>
+                       )}
+                     </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -169,6 +181,30 @@ export default function RecycledMaterialsPage() {
 
       <RecycledMaterialFormDialog open={dialogOpen} onOpenChange={setDialogOpen} onSuccess={refetch} />
       <RecycledMaterialDetailSheet open={!!detailId} onOpenChange={v => { if (!v) setDetailId(null); }} materialId={detailId} onUpdated={refetch} />
+
+      <AlertDialog open={!!deleteTarget} onOpenChange={v => !v && setDeleteTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("common.deleteConfirmTitle")}</AlertDialogTitle>
+            <AlertDialogDescription>{t("recycled.deleteConfirm")}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+            <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={async () => {
+              if (!deleteTarget) return;
+              try {
+                await (supabase as any).from("recycled_materials").update({ is_deleted: true }).eq("id", deleteTarget);
+                toast({ title: t("recycled.toast.deleted") });
+                refetch();
+              } catch {
+                toast({ title: t("common.deleteError"), variant: "destructive" });
+              } finally {
+                setDeleteTarget(null);
+              }
+            }}>{t("common.confirm")}</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
