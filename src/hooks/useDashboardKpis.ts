@@ -23,6 +23,7 @@ export interface DashboardKpis {
   testsTotal: number;
   matApproved: number;
   matTotal: number;
+  weldsPendingUt: number;
   recentActivity: RecentItem[];
 }
 
@@ -30,7 +31,7 @@ const EMPTY: DashboardKpis = {
   ncOpen: 0, pamePending: 0, emesExpiring30d: 0, nextAudit: null,
   ppiInProgress: 0, testsOverdue: 0,
   ppiApproved: 0, ppiTotal: 0, testsCompleted: 0, testsTotal: 0,
-  matApproved: 0, matTotal: 0, recentActivity: [],
+  matApproved: 0, matTotal: 0, weldsPendingUt: 0, recentActivity: [],
 };
 
 export function useDashboardKpis() {
@@ -52,7 +53,7 @@ export function useDashboardKpis() {
         testsCompletedRes, testsTotalRes,
         matApprovedRes, matTotalRes,
         recentNcRes, recentLotRes, recentPpiRes, recentTestRes,
-        ppiInProgressRes, testsOverdueRes,
+        ppiInProgressRes, testsOverdueRes, weldsPendingUtRes,
       ] = await Promise.all([
         // NCs abertas (not closed, not archived)
         (supabase as any).from("non_conformities")
@@ -123,6 +124,10 @@ export function useDashboardKpis() {
         (supabase as any).from("test_due_items")
           .select("id", { count: "exact", head: true })
           .eq("project_id", pid).in("status", ["due", "overdue"]).lt("due_at_date", today),
+        // Soldaduras sem US
+        (supabase as any).from("weld_records")
+          .select("id", { count: "exact", head: true })
+          .eq("project_id", pid).eq("has_ut", false),
       ]);
 
       const recent: RecentItem[] = [];
@@ -149,6 +154,7 @@ export function useDashboardKpis() {
         testsTotal: testsTotalRes.count ?? 0,
         matApproved: matApprovedRes.count ?? 0,
         matTotal: matTotalRes.count ?? 0,
+        weldsPendingUt: weldsPendingUtRes.count ?? 0,
         recentActivity: recent.slice(0, 8),
       });
     } catch (err) {

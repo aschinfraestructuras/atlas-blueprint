@@ -99,6 +99,72 @@ function TestStatusIcon({ status, passFail }: { status: string; passFail?: strin
   return <FlaskConical className={cls} style={{ color: "hsl(215, 15%, 65%)" }} />;
 }
 
+// ─── Readiness Card with real counters ────────────────────────────────────────
+
+function ReadinessCard({ itemId, readinessStatus, hasOpenNc, hasPendingPpi, hasPendingTests }: {
+  itemId: string; readinessStatus?: string | null; hasOpenNc?: boolean; hasPendingPpi?: boolean; hasPendingTests?: boolean;
+}) {
+  const { t } = useTranslation();
+  const [qualitySummary, setQualitySummary] = useState<any>(null);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await (supabase as any)
+        .from("vw_work_item_quality_summary")
+        .select("*")
+        .eq("work_item_id", itemId)
+        .maybeSingle();
+      if (data) setQualitySummary(data);
+    })();
+  }, [itemId]);
+
+  const qs = qualitySummary;
+
+  return (
+    <Card className="shadow-card">
+      <CardContent className="px-5 py-4 flex items-center gap-4 flex-wrap">
+        <div className="flex items-center gap-2">
+          {readinessStatus === "blocked" ? (
+            <ShieldAlert className="h-5 w-5 text-destructive" />
+          ) : (
+            <ShieldCheck className="h-5 w-5 text-primary" />
+          )}
+          <span className={cn(
+            "text-sm font-bold",
+            readinessStatus === "blocked" ? "text-destructive" : "text-primary",
+          )}>
+            {t(`workItems.readiness.${readinessStatus ?? "not_ready"}`)}
+          </span>
+        </div>
+        <div className="flex items-center gap-3 flex-wrap">
+          {(hasOpenNc || (qs && qs.nc_open > 0)) && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-destructive/10 border border-destructive/20 px-2.5 py-0.5 text-xs font-medium text-destructive">
+              <AlertTriangle className="h-3 w-3" />
+              {qs ? `${qs.nc_open} NC${qs.nc_open > 1 ? "s" : ""} ${t("workItems.readiness.openNc").toLowerCase().replace("ncs ", "")}` : t("workItems.readiness.openNc")}
+            </span>
+          )}
+          {(hasPendingPpi || (qs && qs.ppi_total > 0)) && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 border border-amber-500/20 px-2.5 py-0.5 text-xs font-medium text-amber-700 dark:text-amber-400">
+              <ClipboardCheck className="h-3 w-3" />
+              {qs ? `${qs.ppi_total} PPI (${qs.ppi_approved} ${t("workItems.readiness.ready").toLowerCase()})` : t("workItems.readiness.pendingPpi")}
+            </span>
+          )}
+          {(hasPendingTests || (qs && qs.tests_total > 0)) && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/10 border border-blue-500/20 px-2.5 py-0.5 text-xs font-medium text-blue-700 dark:text-blue-400">
+              <FlaskConical className="h-3 w-3" />
+              {qs ? `${qs.tests_total} ${t("workItems.detail.tabs.tests")} (${qs.tests_fail ?? 0} fail)` : t("workItems.readiness.pendingTests")}
+            </span>
+          )}
+          {qs && qs.welds_total > 0 && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 border border-primary/20 px-2.5 py-0.5 text-xs font-medium text-primary">
+              {`${qs.welds_total} ${t("sgq.welds", { defaultValue: "Soldaduras" })} (${qs.welds_fail ?? 0} fail)`}
+            </span>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
 // ─── Info row ─────────────────────────────────────────────────────────────────
 
@@ -1226,44 +1292,8 @@ export default function WorkItemDetailPage() {
         </CardContent>
       </Card>
 
-      {/* ── Readiness card ───────────────────────────────────────────── */}
-      <Card className="shadow-card">
-        <CardContent className="px-5 py-4 flex items-center gap-4 flex-wrap">
-          <div className="flex items-center gap-2">
-            {item.readiness_status === "blocked" ? (
-              <ShieldAlert className="h-5 w-5 text-destructive" />
-            ) : (
-              <ShieldCheck className="h-5 w-5 text-primary" />
-            )}
-            <span className={cn(
-              "text-sm font-bold",
-              item.readiness_status === "blocked" ? "text-destructive" : "text-primary",
-            )}>
-              {t(`workItems.readiness.${item.readiness_status ?? "not_ready"}`)}
-            </span>
-          </div>
-          <div className="flex items-center gap-3 flex-wrap">
-            {item.has_open_nc && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-destructive/10 border border-destructive/20 px-2.5 py-0.5 text-xs font-medium text-destructive">
-                <AlertTriangle className="h-3 w-3" />
-                {t("workItems.readiness.openNc")}
-              </span>
-            )}
-            {item.has_pending_ppi && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 border border-amber-500/20 px-2.5 py-0.5 text-xs font-medium text-amber-700 dark:text-amber-400">
-                <ClipboardCheck className="h-3 w-3" />
-                {t("workItems.readiness.pendingPpi")}
-              </span>
-            )}
-            {item.has_pending_tests && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/10 border border-blue-500/20 px-2.5 py-0.5 text-xs font-medium text-blue-700 dark:text-blue-400">
-                <FlaskConical className="h-3 w-3" />
-                {t("workItems.readiness.pendingTests")}
-              </span>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+      {/* ── Readiness card with real counters ────────────────────── */}
+      <ReadinessCard itemId={item.id} readinessStatus={item.readiness_status} hasOpenNc={item.has_open_nc} hasPendingPpi={item.has_pending_ppi} hasPendingTests={item.has_pending_tests} />
 
       <Tabs defaultValue="ppi">
         <TabsList className="flex-wrap">

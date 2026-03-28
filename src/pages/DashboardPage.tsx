@@ -10,7 +10,7 @@ import { useRealtimeProject } from "@/hooks/useRealtimeProject";
 import {
   AlertTriangle, Package, Crosshair, CalendarClock,
   ClipboardCheck, FlaskConical, Clock, ArrowRight, Leaf, FileBarChart2, Bell,
-  Calendar,
+  Calendar, Zap,
 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
@@ -253,7 +253,7 @@ export default function DashboardPage() {
         </Card>
         <HealthScoreSheet open={healthSheetOpen} onOpenChange={setHealthSheetOpen} health={health} loading={healthLoading} />
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
           <SparklineKPI
             label={t("dashboard.kpi.ncOpen", { defaultValue: "NCs Abertas" })}
             value={kpis.ncOpen}
@@ -285,6 +285,14 @@ export default function DashboardPage() {
             icon={FlaskConical}
             color={testsOverdueSemaphore(kpis.testsOverdue)}
             onClick={() => navigate("/deadlines")}
+            loading={kpiLoading}
+          />
+          <SparklineKPI
+            label={t("dashboard.kpi.weldsPendingUt", { defaultValue: "Soldaduras sem US" })}
+            value={kpis.weldsPendingUt}
+            icon={Zap}
+            color={kpis.weldsPendingUt > 0 ? "38 85% 50%" : "145 55% 42%"}
+            onClick={() => navigate("/tests")}
             loading={kpiLoading}
           />
         </div>
