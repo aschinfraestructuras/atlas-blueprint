@@ -276,6 +276,7 @@ function SidebarContent({ collapsed, onClose }: { collapsed: boolean; onClose?: 
   const { health, loading: healthLoading } = useProjectHealth(activeProject?.id);
   const isViewer = role === "viewer";
   const [healthSheetOpen, setHealthSheetOpen] = useState(false);
+  const { canInstall, install } = usePWAInstall();
 
   const isActive = useCallback(
     (url: string, exact?: boolean) =>
