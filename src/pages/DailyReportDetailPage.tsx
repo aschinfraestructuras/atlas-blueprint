@@ -303,6 +303,9 @@ export default function DailyReportDetailPage() {
         </div>
       </div>
 
+      {/* Quality context banner */}
+      <QualityContextBanner reportId={id!} />
+
       {/* Section 1: Identification — editable */}
       <Card>
         <CardHeader><CardTitle className="text-sm">{t("dailyReports.sections.identification")}</CardTitle></CardHeader>
