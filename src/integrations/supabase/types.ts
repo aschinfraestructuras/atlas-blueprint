@@ -80,6 +80,13 @@ export type Database = {
             foreignKeyName: "attachments_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "attachments_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -152,6 +159,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "audit_log_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -245,6 +259,13 @@ export type Database = {
             foreignKeyName: "compaction_nuclear_points_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "compaction_nuclear_points_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -324,6 +345,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "compaction_plate_tests_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -466,6 +494,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "compaction_zones_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -692,6 +727,13 @@ export type Database = {
             foreignKeyName: "concrete_batches_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "concrete_batches_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -854,6 +896,13 @@ export type Database = {
             foreignKeyName: "concrete_lots_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "concrete_lots_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -948,6 +997,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "concrete_specimens_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -1326,6 +1382,13 @@ export type Database = {
             foreignKeyName: "daily_reports_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "daily_reports_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -1443,6 +1506,13 @@ export type Database = {
             foreignKeyName: "dfo_items_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "dfo_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -1507,6 +1577,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "dfo_volumes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -1615,6 +1692,13 @@ export type Database = {
             foreignKeyName: "distribution_lists_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "distribution_lists_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -1694,6 +1778,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "document_files_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -1921,6 +2012,13 @@ export type Database = {
             foreignKeyName: "documents_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "documents_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -2016,6 +2114,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "equipment_calibrations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -2212,6 +2317,13 @@ export type Database = {
             foreignKeyName: "field_records_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "field_records_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -2345,6 +2457,13 @@ export type Database = {
             foreignKeyName: "hp_notifications_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "hp_notifications_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -2432,6 +2551,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "laboratories_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -2560,6 +2686,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "material_documents_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -2711,6 +2844,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "material_lots_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -2904,6 +3044,13 @@ export type Database = {
             foreignKeyName: "materials_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "materials_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -3012,6 +3159,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "monthly_quality_reports_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -3299,6 +3453,13 @@ export type Database = {
             foreignKeyName: "non_conformities_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "non_conformities_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -3499,6 +3660,13 @@ export type Database = {
             foreignKeyName: "notifications_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "notifications_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -3581,6 +3749,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "notifications_log_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -3672,6 +3847,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "plan_controlled_copies_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -3777,6 +3959,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "planning_activities_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -3920,6 +4109,13 @@ export type Database = {
             foreignKeyName: "planning_wbs_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "planning_wbs_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -4017,6 +4213,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "plans_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -4251,6 +4454,13 @@ export type Database = {
             foreignKeyName: "ppi_instances_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "ppi_instances_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -4474,6 +4684,13 @@ export type Database = {
             foreignKeyName: "ppi_templates_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "ppi_templates_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -4596,6 +4813,13 @@ export type Database = {
             foreignKeyName: "project_contacts_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_contacts_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -4662,6 +4886,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_invites_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -4752,6 +4983,13 @@ export type Database = {
             foreignKeyName: "project_machinery_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_machinery_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -4813,6 +5051,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_members_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -4901,6 +5146,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_workers_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -5069,6 +5321,13 @@ export type Database = {
             foreignKeyName: "quality_audits_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "quality_audits_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -5215,6 +5474,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "recycled_materials_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -5414,6 +5680,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "rfis_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -5677,6 +5950,13 @@ export type Database = {
             foreignKeyName: "soil_samples_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "soil_samples_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -5825,6 +6105,13 @@ export type Database = {
             foreignKeyName: "subcontractor_documents_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "subcontractor_documents_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -5928,6 +6215,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "subcontractors_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -6041,6 +6335,13 @@ export type Database = {
             foreignKeyName: "supplier_documents_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "supplier_documents_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -6138,6 +6439,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "supplier_evaluations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -6262,6 +6570,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "supplier_materials_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -6413,6 +6728,13 @@ export type Database = {
             foreignKeyName: "suppliers_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "suppliers_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -6482,6 +6804,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "survey_records_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -6607,6 +6936,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "technical_office_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -6845,6 +7181,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "test_due_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -7127,6 +7470,13 @@ export type Database = {
             foreignKeyName: "test_plans_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "test_plans_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -7353,6 +7703,13 @@ export type Database = {
             foreignKeyName: "test_results_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "test_results_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -7526,6 +7883,13 @@ export type Database = {
             foreignKeyName: "test_templates_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "test_templates_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -7676,6 +8040,13 @@ export type Database = {
             foreignKeyName: "tests_catalog_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "tests_catalog_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -7807,6 +8178,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "topography_controls_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -7945,6 +8323,13 @@ export type Database = {
             foreignKeyName: "topography_equipment_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "topography_equipment_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -8026,6 +8411,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "topography_requests_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -8183,6 +8575,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "training_sessions_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -8405,6 +8804,13 @@ export type Database = {
             foreignKeyName: "weld_records_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "weld_records_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -8527,6 +8933,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "work_item_materials_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -8710,6 +9123,13 @@ export type Database = {
             foreignKeyName: "work_items_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "work_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -8765,6 +9185,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "test_results_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -8831,6 +9258,13 @@ export type Database = {
             foreignKeyName: "concrete_lots_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "concrete_lots_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -8879,6 +9313,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "concrete_batches_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -8955,6 +9396,13 @@ export type Database = {
             foreignKeyName: "documents_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "documents_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -8997,6 +9445,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "test_due_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -9075,6 +9530,13 @@ export type Database = {
             foreignKeyName: "materials_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "materials_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -9117,6 +9579,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "materials_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -9210,6 +9679,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "tests_catalog_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -9336,6 +9812,13 @@ export type Database = {
             foreignKeyName: "suppliers_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "suppliers_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -9386,6 +9869,13 @@ export type Database = {
             foreignKeyName: "suppliers_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "suppliers_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -9425,6 +9915,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "test_results_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -9484,6 +9981,13 @@ export type Database = {
             foreignKeyName: "audit_log_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "audit_log_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -9531,6 +10035,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "concrete_batches_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -9599,6 +10110,13 @@ export type Database = {
             foreignKeyName: "daily_reports_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "daily_reports_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -9659,6 +10177,137 @@ export type Database = {
         }
         Relationships: []
       }
+      vw_dfo_completeness: {
+        Row: {
+          auto_complete: boolean | null
+          code: string | null
+          document_type: string | null
+          effective_status: string | null
+          id: string | null
+          linked_doc_id: string | null
+          project_id: string | null
+          sort_order: number | null
+          status: string | null
+          support_count: string | null
+          title: string | null
+          volume_id: string | null
+          volume_no: number | null
+          volume_title: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dfo_items_linked_doc_id_fkey"
+            columns: ["linked_doc_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dfo_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dfo_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "dfo_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "dfo_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "dfo_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "dfo_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_sgq_matrix_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "dfo_items_volume_id_fkey"
+            columns: ["volume_id"]
+            isOneToOne: false
+            referencedRelation: "dfo_volumes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vw_dfo_volume_progress: {
+        Row: {
+          complete_items: number | null
+          completion_pct: number | null
+          pending_items: number | null
+          project_id: string | null
+          total_items: number | null
+          volume_no: number | null
+          volume_title: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dfo_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dfo_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "dfo_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "dfo_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "dfo_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "dfo_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_sgq_matrix_summary"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
       vw_hp_calendar: {
         Row: {
           activity: string | null
@@ -9708,6 +10357,13 @@ export type Database = {
             foreignKeyName: "hp_notifications_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "hp_notifications_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -9719,6 +10375,63 @@ export type Database = {
             referencedColumns: ["project_id"]
           },
         ]
+      }
+      vw_monthly_quality_summary: {
+        Row: {
+          concrete_batches_month: number | null
+          current_month: string | null
+          daily_reports_month: number | null
+          deadlines_critical_30d: number | null
+          hp_confirmed_this_month: number | null
+          hp_pending: number | null
+          nc_closed_this_month: number | null
+          nc_critical_open: number | null
+          nc_open: number | null
+          ppi_approved_this_month: number | null
+          ppi_in_progress: number | null
+          project_id: string | null
+          topo_controls_month: number | null
+          topo_fail_month: number | null
+          welds_fail_month: number | null
+          welds_month: number | null
+        }
+        Insert: {
+          concrete_batches_month?: never
+          current_month?: never
+          daily_reports_month?: never
+          deadlines_critical_30d?: never
+          hp_confirmed_this_month?: never
+          hp_pending?: never
+          nc_closed_this_month?: never
+          nc_critical_open?: never
+          nc_open?: never
+          ppi_approved_this_month?: never
+          ppi_in_progress?: never
+          project_id?: string | null
+          topo_controls_month?: never
+          topo_fail_month?: never
+          welds_fail_month?: never
+          welds_month?: never
+        }
+        Update: {
+          concrete_batches_month?: never
+          current_month?: never
+          daily_reports_month?: never
+          deadlines_critical_30d?: never
+          hp_confirmed_this_month?: never
+          hp_pending?: never
+          nc_closed_this_month?: never
+          nc_critical_open?: never
+          nc_open?: never
+          ppi_approved_this_month?: never
+          ppi_in_progress?: never
+          project_id?: string | null
+          topo_controls_month?: never
+          topo_fail_month?: never
+          welds_fail_month?: never
+          welds_month?: never
+        }
+        Relationships: []
       }
       vw_nc_aging: {
         Row: {
@@ -9753,6 +10466,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "non_conformities_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -9813,6 +10533,13 @@ export type Database = {
             foreignKeyName: "ppi_instances_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "ppi_instances_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -9861,6 +10588,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "ppi_templates_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -10023,6 +10757,13 @@ export type Database = {
             foreignKeyName: "suppliers_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "suppliers_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -10032,6 +10773,111 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_sgq_matrix_summary"
             referencedColumns: ["project_id"]
+          },
+        ]
+      }
+      vw_topography_cycle: {
+        Row: {
+          control_date: string | null
+          control_element: string | null
+          control_id: string | null
+          control_result: string | null
+          cycle_status: string | null
+          days_to_execute: number | null
+          deviation: string | null
+          equipment_code: string | null
+          measured_value: string | null
+          parte: string | null
+          priority: string | null
+          project_id: string | null
+          request_date: string | null
+          request_description: string | null
+          request_id: string | null
+          request_status: string | null
+          request_type: string | null
+          request_zone: string | null
+          sector: string | null
+          technician: string | null
+          tolerance: string | null
+          work_item_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "topography_requests_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "topography_requests_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "topography_requests_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "topography_requests_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "topography_requests_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "topography_requests_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_sgq_matrix_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "topography_requests_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_hp_calendar"
+            referencedColumns: ["work_item_id"]
+          },
+          {
+            foreignKeyName: "topography_requests_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_traceability_matrix"
+            referencedColumns: ["work_item_id"]
+          },
+          {
+            foreignKeyName: "topography_requests_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_work_item_quality_summary"
+            referencedColumns: ["work_item_id"]
+          },
+          {
+            foreignKeyName: "topography_requests_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_work_item_readiness_detail"
+            referencedColumns: ["work_item_id"]
+          },
+          {
+            foreignKeyName: "topography_requests_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -10092,6 +10938,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "materials_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -10163,6 +11016,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "work_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -10253,6 +11113,13 @@ export type Database = {
             foreignKeyName: "work_items_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "work_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_health"
             referencedColumns: ["project_id"]
           },
@@ -10299,6 +11166,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "work_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
             referencedColumns: ["project_id"]
           },
           {
