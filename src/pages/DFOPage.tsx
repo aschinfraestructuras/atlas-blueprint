@@ -265,9 +265,20 @@ export default function DFOPage() {
       ) : (
         <div className="space-y-3">
           {volumes.map(vol => {
-            const cItems = completenessMap.get(vol.id) ?? vol.items ?? [];
-            const applicable = cItems.filter(i => (i.status ?? i.effective_status) !== "not_applicable");
-            const completed = applicable.filter(i => (i.effective_status ?? i.status) === "received" || (i.effective_status ?? i.status) === "auto_complete" || i.status === "complete").length;
+            const cItems = completenessMap.get(vol.id) ?? [];
+            const useCompleteness = cItems.length > 0;
+            const displayItems = useCompleteness ? cItems : (vol.items ?? []);
+            const applicable = displayItems.filter(i => {
+              const st = 'effective_status' in i ? (i as CompletenessItem).effective_status : i.status;
+              return st !== "not_applicable";
+            });
+            const completed = applicable.filter(i => {
+              if ('effective_status' in i) {
+                const es = (i as CompletenessItem).effective_status;
+                return es === "received" || es === "auto_complete";
+              }
+              return i.status === "complete";
+            }).length;
             const pct = applicable.length > 0 ? Math.round((completed / applicable.length) * 100) : 0;
             const isOpen = openVols.has(vol.id);
 
