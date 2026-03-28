@@ -3154,6 +3154,14 @@
     "newRequest": "Novo Pedido",
     "newControl": "Novo Controlo",
     "calibrationBlocked": "Equipamento com calibração inválida. Atualize o certificado antes de registar medições.",
+    "cycle": {
+      "closed_ok": "Executado",
+      "closed_nok": "Não conforme",
+      "overdue": "Em atraso",
+      "pending": "Pendente",
+      "executedBy": "Executado por",
+      "deviation": "Desvio medido"
+    },
     "calibrationHistory": "Histórico de Calibrações",
     "noCalibrationsYet": "Sem calibrações registadas.",
     "noLinked": "Sem registos topográficos ligados a esta atividade.",
