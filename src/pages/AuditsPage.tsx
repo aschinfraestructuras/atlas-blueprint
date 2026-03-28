@@ -427,19 +427,34 @@ export default function AuditsPage() {
       <AlertDialog open={!!deleteTarget} onOpenChange={v => !v && setDeleteTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirmar</AlertDialogTitle>
+            <AlertDialogTitle>{t("common.deleteConfirmTitle")}</AlertDialogTitle>
             <AlertDialogDescription>
-              Tem a certeza que pretende cancelar esta auditoria?
+              {t("common.deleteConfirmDesc")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Confirmar
+              {t("common.confirm")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* NC from Audit Dialog */}
+      {ncAudit && (
+        <NCFormDialog
+          open={ncDialogOpen}
+          onOpenChange={setNcDialogOpen}
+          originOverride="auditoria"
+          onSuccess={() => {
+            setNcDialogOpen(false);
+            setNcAudit(null);
+            toast.success(t("audits.ncRegistered"));
+            load();
+          }}
+        />
+      )}
     </div>
   );
 }
