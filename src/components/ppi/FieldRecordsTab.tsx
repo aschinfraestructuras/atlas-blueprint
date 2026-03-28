@@ -53,6 +53,8 @@ export function FieldRecordsTab({ instanceId, ppiCode, disciplina }: Props) {
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [ncDialogOpen, setNcDialogOpen] = useState(false);
+  const [ncRecord, setNcRecord] = useState<FieldRecord | null>(null);
 
   // Form state
   const [formData, setFormData] = useState({
