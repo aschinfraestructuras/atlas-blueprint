@@ -76,66 +76,49 @@ export default function MyTasksPage() {
     setLoading(true);
 
     try {
-      // 1. PPIs
+      // 1. PPIs — single batched query instead of N+1
       const { data: ppiData } = await (supabase as any)
         .from("ppi_instances")
-        .select("id, code, status, updated_at, work_item_id")
+        .select(`
+          id, code, status, updated_at, work_item_id,
+          ppi_instance_items(id, result),
+          hp_notifications(id, status)
+        `)
         .eq("project_id", activeProject.id)
         .eq("is_deleted", false)
         .not("status", "in", '("approved","archived")');
 
-      const ppiResults: MyPpi[] = [];
-      if (ppiData) {
-        for (const inst of ppiData) {
-          const { count: totalItems } = await (supabase as any)
-            .from("ppi_instance_items")
-            .select("*", { count: "exact", head: true })
-            .eq("instance_id", inst.id);
-
-          const { count: okItems } = await (supabase as any)
-            .from("ppi_instance_items")
-            .select("*", { count: "exact", head: true })
-            .eq("instance_id", inst.id)
-            .eq("result", "ok");
-
-          const { count: hpPending } = await (supabase as any)
-            .from("hp_notifications")
-            .select("*", { count: "exact", head: true })
-            .eq("instance_id", inst.id)
-            .eq("status", "pending");
-
-          let workItemName: string | null = null;
-          let disciplina: string | null = null;
-          if (inst.work_item_id) {
-            const { data: wi } = await (supabase as any)
-              .from("work_items")
-              .select("sector, disciplina")
-              .eq("id", inst.work_item_id)
-              .single();
-            if (wi) {
-              workItemName = wi.sector;
-              disciplina = wi.disciplina;
-            }
-          }
-
-          ppiResults.push({
-            id: inst.id,
-            code: inst.code,
-            status: inst.status,
-            work_item_name: workItemName,
-            disciplina,
-            total_items: totalItems ?? 0,
-            ok_items: okItems ?? 0,
-            hp_pending_count: hpPending ?? 0,
-            updated_at: inst.updated_at,
-          });
-        }
+      // Batch-fetch work items for all PPIs in one query
+      const wiIds = [...new Set((ppiData ?? []).map((p: any) => p.work_item_id).filter(Boolean))];
+      const wiMap: Record<string, { sector: string; disciplina: string }> = {};
+      if (wiIds.length > 0) {
+        const { data: wiData } = await (supabase as any)
+          .from("work_items")
+          .select("id, sector, disciplina")
+          .in("id", wiIds);
+        (wiData ?? []).forEach((wi: any) => { wiMap[wi.id] = { sector: wi.sector, disciplina: wi.disciplina }; });
       }
+
+      const ppiResults: MyPpi[] = (ppiData ?? []).map((inst: any) => {
+        const items = inst.ppi_instance_items ?? [];
+        const hps = inst.hp_notifications ?? [];
+        const wi = inst.work_item_id ? wiMap[inst.work_item_id] : null;
+        return {
+          id: inst.id,
+          code: inst.code,
+          status: inst.status,
+          work_item_name: wi?.sector ?? null,
+          disciplina: wi?.disciplina ?? null,
+          total_items: items.length,
+          ok_items: items.filter((it: any) => it.result === "pass" || it.result === "ok").length,
+          hp_pending_count: hps.filter((h: any) => h.status === "pending").length,
+          updated_at: inst.updated_at,
+        };
+      });
+
       ppiResults.sort((a, b) => {
-        // HP pending first
         if (a.hp_pending_count > 0 && b.hp_pending_count === 0) return -1;
         if (a.hp_pending_count === 0 && b.hp_pending_count > 0) return 1;
-        // Then by progress ascending (less complete first)
         const pctA = a.total_items > 0 ? a.ok_items / a.total_items : 0;
         const pctB = b.total_items > 0 ? b.ok_items / b.total_items : 0;
         return pctA - pctB;
