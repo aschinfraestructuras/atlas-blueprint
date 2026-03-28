@@ -387,7 +387,7 @@ export default function AuditsPage() {
                   <Textarea value={fFindings} onChange={e => setFFindings(e.target.value)} rows={3} className="text-sm resize-none" />
                 </div>
                 <div>
-                  <Label className="text-xs">Observações</Label>
+                  <Label className="text-xs">{t("common.observations")}</Label>
                   <Textarea value={fObservations} onChange={e => setFObservations(e.target.value)} rows={2} className="text-sm resize-none" />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
