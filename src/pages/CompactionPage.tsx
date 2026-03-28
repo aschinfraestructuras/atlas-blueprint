@@ -294,7 +294,7 @@ export default function CompactionPage() {
                             if (d) compactionService.exportPdf(d.zone, d.nuclear, d.plates, activeProject?.name ?? "PF17A", logoBase64);
                           });
                         }},
-                        { key: "delete", label: t("common.delete"), icon: Trash2, onClick: () => handleDelete(z.id), variant: "destructive" as const },
+                        { key: "delete", label: t("common.delete"), icon: Trash2, onClick: () => setDeleteTargetId(z.id), variant: "destructive" as const },
                       ]} />
                     </TableCell>
                   </TableRow>
