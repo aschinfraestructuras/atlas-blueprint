@@ -56,7 +56,9 @@ export default function DailyReportsPage() {
       toast({ title: t("common.softDeleted") });
       refetch();
     } catch {
-      toast({ title: "Erro ao eliminar", variant: "destructive" });
+      toast({ title: t("common.deleteError"), variant: "destructive" });
+    } finally {
+      setDeleteTargetId(null);
     }
   };
 
