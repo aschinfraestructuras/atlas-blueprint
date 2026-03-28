@@ -4,7 +4,8 @@ import { useProject } from "@/contexts/ProjectContext";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import { useReportMeta } from "@/hooks/useReportMeta";
 import { useDocuments } from "@/hooks/useDocuments";
-import { dfoService, type DfoVolume, type DfoItem } from "@/lib/services/dfoService";
+import { dfoService, type DfoVolume } from "@/lib/services/dfoService";
+import { supabase } from "@/integrations/supabase/client";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
@@ -19,18 +21,35 @@ import {
   Collapsible, CollapsibleContent, CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import {
-  Archive, ChevronDown, FileDown, Loader2, Plus, CheckCircle2, Clock,
-  AlertCircle, Minus, FileText, Link2, RefreshCw,
+  Archive, ChevronDown, FileDown, Loader2, Plus, Link2, RefreshCw,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
-const STATUS_BADGE: Record<string, { label: string; cls: string }> = {
-  pending: { label: "Pendente", cls: "bg-muted text-muted-foreground" },
-  in_progress: { label: "Em Curso", cls: "bg-primary/10 text-primary" },
-  complete: { label: "Completo", cls: "bg-emerald-500/10 text-emerald-600" },
-  not_applicable: { label: "N/A", cls: "bg-muted/50 text-muted-foreground" },
-};
+interface VolumeProgress {
+  volume_no: number | null;
+  volume_title: string | null;
+  total_items: number | null;
+  complete_items: number | null;
+  pending_items: number | null;
+  completion_pct: number | null;
+}
+
+interface CompletenessItem {
+  id: string | null;
+  code: string | null;
+  title: string | null;
+  status: string | null;
+  effective_status: string | null;
+  auto_complete: boolean | null;
+  support_count: string | null;
+  linked_doc_id: string | null;
+  volume_id: string | null;
+  volume_no: number | null;
+  volume_title: string | null;
+  document_type: string | null;
+  sort_order: number | null;
+}
 
 export default function DFOPage() {
   const { t } = useTranslation();
@@ -40,6 +59,8 @@ export default function DFOPage() {
   const { data: allDocs } = useDocuments();
 
   const [volumes, setVolumes] = useState<DfoVolume[]>([]);
+  const [volumeProgress, setVolumeProgress] = useState<VolumeProgress[]>([]);
+  const [completenessItems, setCompletenessItems] = useState<CompletenessItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [initializing, setInitializing] = useState(false);
   const [syncing, setSyncing] = useState(false);
@@ -49,10 +70,15 @@ export default function DFOPage() {
     if (!activeProject) return;
     setLoading(true);
     try {
-      // Auto-sync statuses before loading
       try { await dfoService.syncItemStatuses(activeProject.id); } catch { /* ignore */ }
-      const data = await dfoService.getVolumes(activeProject.id);
-      setVolumes(data);
+      const [volData, { data: progressData }, { data: completenessData }] = await Promise.all([
+        dfoService.getVolumes(activeProject.id),
+        supabase.from("vw_dfo_volume_progress").select("*").eq("project_id", activeProject.id),
+        supabase.from("vw_dfo_completeness").select("*").eq("project_id", activeProject.id),
+      ]);
+      setVolumes(volData);
+      setVolumeProgress((progressData as VolumeProgress[]) ?? []);
+      setCompletenessItems((completenessData as CompletenessItem[]) ?? []);
     } catch {
       setVolumes([]);
     } finally {
@@ -76,18 +102,18 @@ export default function DFOPage() {
     }
   };
 
-  const handleStatusChange = async (item: DfoItem, status: string) => {
+  const handleStatusChange = async (itemId: string, status: string) => {
     try {
-      await dfoService.updateItemStatus(item.id, status);
+      await dfoService.updateItemStatus(itemId, status);
       load();
     } catch {
       toast({ title: "Erro ao atualizar estado", variant: "destructive" });
     }
   };
 
-  const handleLinkDoc = async (item: DfoItem, docId: string | null) => {
+  const handleLinkDoc = async (itemId: string, docId: string | null) => {
     try {
-      await dfoService.linkDocument(item.id, docId === "__none" ? null : docId);
+      await dfoService.linkDocument(itemId, docId === "__none" ? null : docId);
       load();
     } catch {
       toast({ title: "Erro ao vincular documento", variant: "destructive" });
@@ -105,9 +131,44 @@ export default function DFOPage() {
   if (!activeProject) return <NoProjectBanner />;
 
   // Overall stats
-  const totalItems = volumes.reduce((s, v) => s + (v.items?.filter(i => i.status !== "not_applicable").length ?? 0), 0);
-  const completedItems = volumes.reduce((s, v) => s + (v.completed_count ?? 0), 0);
+  const totalItems = volumeProgress.reduce((s, v) => s + (v.total_items ?? 0), 0);
+  const completedItems = volumeProgress.reduce((s, v) => s + (v.complete_items ?? 0), 0);
   const overallPct = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
+
+  // Build completeness map by volume_id
+  const completenessMap = new Map<string, CompletenessItem[]>();
+  for (const ci of completenessItems) {
+    if (!ci.volume_id) continue;
+    const arr = completenessMap.get(ci.volume_id) ?? [];
+    arr.push(ci);
+    completenessMap.set(ci.volume_id, arr);
+  }
+
+  function getProgressColor(pct: number) {
+    if (pct >= 80) return "text-emerald-600";
+    if (pct >= 40) return "text-amber-600";
+    return "text-destructive";
+  }
+
+  function EffectiveStatusBadge({ item }: { item: CompletenessItem }) {
+    const es = item.effective_status;
+    if (es === "auto_complete") {
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Badge className="bg-blue-500/10 text-blue-600 border-0 text-[9px]">{t("dfo.status.auto_complete")}</Badge>
+            </TooltipTrigger>
+            <TooltipContent>{t("dfo.tooltip.autoComplete", { count: item.support_count ?? "0" })}</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    }
+    if (es === "received") {
+      return <Badge className="bg-emerald-500/10 text-emerald-600 border-0 text-[9px]">{t("dfo.status.received")}</Badge>;
+    }
+    return <Badge className="bg-muted text-muted-foreground border-0 text-[9px]">{t("dfo.status.pending")}</Badge>;
+  }
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
@@ -129,37 +190,56 @@ export default function DFOPage() {
                   } catch { /* ignore */ } finally { setSyncing(false); }
                 }} disabled={syncing}>
                   <RefreshCw className={cn("h-3.5 w-3.5", syncing && "animate-spin")} />
-                  Sincronizar
+                  {t("common.sync", { defaultValue: "Sincronizar" })}
                 </Button>
                 <Button variant="outline" size="sm" className="gap-1.5" onClick={async () => {
                   if (!reportMeta) return;
                   await dfoService.exportDfoIndex(volumes, reportMeta);
                 }}>
                   <FileDown className="h-3.5 w-3.5" />
-                  Exportar Índice DFO
+                  {t("common.export", { defaultValue: "Exportar" })} DFO
                 </Button>
               </>
             )}
             {isAdmin && volumes.length === 0 && (
               <Button size="sm" className="gap-1.5" onClick={handleInit} disabled={initializing}>
                 {initializing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Plus className="h-3.5 w-3.5" />}
-                Inicializar DFO
+                {t("common.create", { defaultValue: "Inicializar" })} DFO
               </Button>
             )}
           </div>
         }
       />
 
-      {/* Overall progress */}
+      {/* Overall progress + per-volume bars */}
       {volumes.length > 0 && (
         <Card className="border-0 bg-card shadow-card">
-          <CardContent className="p-5">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-semibold text-foreground">Progresso Global</span>
-              <span className="text-lg font-black tabular-nums text-primary">{overallPct}%</span>
+          <CardContent className="p-5 space-y-4">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-semibold text-foreground">{t("dfo.progress")}</span>
+                <span className="text-lg font-black tabular-nums text-primary">{overallPct}%</span>
+              </div>
+              <Progress value={overallPct} className="h-2.5" />
+              <p className="text-xs text-muted-foreground mt-1.5">{t("dfo.volumeComplete", { complete: completedItems, total: totalItems })}</p>
             </div>
-            <Progress value={overallPct} className="h-2.5" />
-            <p className="text-xs text-muted-foreground mt-1.5">{completedItems} de {totalItems} itens aplicáveis completos</p>
+            {volumeProgress.length > 0 && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pt-2 border-t border-border">
+                {volumeProgress.map(vp => {
+                  const pct = vp.completion_pct ?? 0;
+                  return (
+                    <div key={vp.volume_no} className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-medium text-foreground truncate">Vol. {vp.volume_no} — {vp.volume_title}</span>
+                        <span className={cn("text-xs font-bold tabular-nums", getProgressColor(pct))}>{pct}%</span>
+                      </div>
+                      <Progress value={pct} className="h-1.5" />
+                      <p className="text-[10px] text-muted-foreground">{t("dfo.volumeComplete", { complete: vp.complete_items ?? 0, total: vp.total_items ?? 0 })}</p>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </CardContent>
         </Card>
       )}
@@ -178,16 +258,16 @@ export default function DFOPage() {
           {isAdmin && (
             <Button size="sm" className="mt-6" onClick={handleInit} disabled={initializing}>
               {initializing ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> : <Plus className="h-3.5 w-3.5 mr-1.5" />}
-              Inicializar DFO
+              {t("common.create", { defaultValue: "Inicializar" })} DFO
             </Button>
           )}
         </div>
       ) : (
         <div className="space-y-3">
           {volumes.map(vol => {
-            const items = vol.items ?? [];
-            const applicable = items.filter(i => i.status !== "not_applicable");
-            const completed = applicable.filter(i => i.status === "complete").length;
+            const cItems = completenessMap.get(vol.id) ?? vol.items ?? [];
+            const applicable = cItems.filter(i => (i.status ?? i.effective_status) !== "not_applicable");
+            const completed = applicable.filter(i => (i.effective_status ?? i.status) === "received" || (i.effective_status ?? i.status) === "auto_complete" || i.status === "complete").length;
             const pct = applicable.length > 0 ? Math.round((completed / applicable.length) * 100) : 0;
             const isOpen = openVols.has(vol.id);
 
@@ -208,7 +288,7 @@ export default function DFOPage() {
                             {completed}/{applicable.length}
                           </span>
                           <Progress value={pct} className="h-1.5 w-20" />
-                          <span className="text-xs font-bold text-primary tabular-nums">{pct}%</span>
+                          <span className={cn("text-xs font-bold tabular-nums", getProgressColor(pct))}>{pct}%</span>
                           <ChevronDown className={cn("h-4 w-4 text-muted-foreground transition-transform", isOpen && "rotate-180")} />
                         </div>
                       </div>
@@ -217,35 +297,30 @@ export default function DFOPage() {
                   <CollapsibleContent>
                     <CardContent className="px-5 pb-4 pt-0">
                       <div className="divide-y divide-border">
-                        {items.map(item => {
-                          const badge = STATUS_BADGE[item.status] ?? STATUS_BADGE.pending;
+                        {cItems.map(item => {
+                          if (!item.id) return null;
                           return (
                             <div key={item.id} className="flex items-center gap-3 py-2.5">
                               <span className="font-mono text-[10px] text-muted-foreground w-12 flex-shrink-0">{item.code}</span>
                               <span className="text-sm text-foreground flex-1 min-w-0 truncate">{item.title}</span>
-                              {item.linked_doc && (
-                                <Badge variant="outline" className="gap-1 text-[9px] flex-shrink-0">
-                                  <Link2 className="h-2.5 w-2.5" />
-                                  {item.linked_doc.code ?? item.linked_doc.title.slice(0, 15)}
-                                </Badge>
-                              )}
-                              <Select value={item.status} onValueChange={(v) => handleStatusChange(item, v)}>
+                              {item.effective_status && <EffectiveStatusBadge item={item} />}
+                              <Select value={item.status ?? "pending"} onValueChange={(v) => handleStatusChange(item.id!, v)}>
                                 <SelectTrigger className="h-7 w-[120px] text-xs flex-shrink-0">
                                   <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value="pending">Pendente</SelectItem>
-                                  <SelectItem value="in_progress">Em Curso</SelectItem>
-                                  <SelectItem value="complete">Completo</SelectItem>
+                                  <SelectItem value="pending">{t("common.pending")}</SelectItem>
+                                  <SelectItem value="in_progress">{t("nc.statusFlow.in_progress", { defaultValue: "Em Curso" })}</SelectItem>
+                                  <SelectItem value="complete">{t("nc.statusFlow.closed", { defaultValue: "Completo" })}</SelectItem>
                                   <SelectItem value="not_applicable">N/A</SelectItem>
                                 </SelectContent>
                               </Select>
-                              <Select value={item.linked_doc_id ?? "__none"} onValueChange={(v) => handleLinkDoc(item, v)}>
+                              <Select value={item.linked_doc_id ?? "__none"} onValueChange={(v) => handleLinkDoc(item.id!, v)}>
                                 <SelectTrigger className="h-7 w-[140px] text-xs flex-shrink-0">
                                   <SelectValue placeholder={t("common.linkDoc")} />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value="__none">Nenhum</SelectItem>
+                                  <SelectItem value="__none">{t("common.no", { defaultValue: "Nenhum" })}</SelectItem>
                                   {allDocs.slice(0, 50).map(d => (
                                     <SelectItem key={d.id} value={d.id}>
                                       {d.code ?? d.title.slice(0, 20)}
