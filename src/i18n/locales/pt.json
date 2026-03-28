@@ -4013,6 +4013,13 @@
       "function": "Função",
       "company": "Empresa"
     },
+    "sessionTypes": {
+      "initial": "Formação Inicial",
+      "new_personnel": "Novos Colaboradores",
+      "specific": "Específica",
+      "subcontractor": "Subempreiteiro",
+      "other": "Outra"
+    },
     "toast": {
       "created": "Sessão de formação criada",
       "deleted": "Sessão eliminada"
