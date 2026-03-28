@@ -3883,8 +3883,7 @@
       "deleted": "Material reciclado eliminado"
     },
     "delete": "Eliminar",
-    "deleteConfirm": "Confirmar eliminação do registo"
-    },
+    "deleteConfirm": "Confirmar eliminação do registo",
     "types": {
       "FAM": "FAM",
       "PAP": "PAP",
