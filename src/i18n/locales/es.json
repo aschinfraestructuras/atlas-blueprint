@@ -3248,6 +3248,7 @@
     "noDrawingsInTechOffice": "Sin dibujos topográficos registrados. Cree piezas dibujadas en el Archivo Topográfico para que aparezcan aquí.",
     "deleteConfirm": "Este registro será eliminado permanentemente. ¿Está seguro?",
     "searchPlaceholder": "Buscar código, tipo, zona…",
+    "exportReq": "Exportar REQ",
     "status": {
       "valid": "Válido",
       "expiring_soon": "Expira pronto",
