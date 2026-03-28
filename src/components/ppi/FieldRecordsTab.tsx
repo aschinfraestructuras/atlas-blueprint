@@ -27,8 +27,9 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/EmptyState";
-import { Plus, FileDown, Eye, FileText, Loader2 } from "lucide-react";
+import { Plus, FileDown, Eye, FileText, Loader2, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { NCFormDialog } from "@/components/nc/NCFormDialog";
 
 const RESULT_COLORS: Record<string, string> = {
   conforme: "bg-primary/15 text-primary",
