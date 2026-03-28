@@ -1,3 +1,4 @@
+/// <reference types="vite-plugin-pwa/react" />
 import { useEffect } from "react";
 import { useRegisterSW } from "virtual:pwa-register/react";
 import { useTranslation } from "react-i18next";

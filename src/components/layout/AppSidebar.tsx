@@ -416,7 +416,10 @@ function SidebarContent({ collapsed, onClose }: { collapsed: boolean; onClose?: 
         })}
       </nav>
 
-      {/* ── Health Score Indicator ────────────────────────────── */}
+      {/* ── PWA Install ─────────────────────────────────── */}
+      <PWAInstallButton collapsed={collapsed} />
+
+      {/* ── Health Score Indicator ────────────────────────── */}
       {activeProject && (
         <div className="flex-shrink-0 px-3 py-2 border-t border-sidebar-border/40">
           <button
