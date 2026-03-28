@@ -53,7 +53,7 @@ export function useDashboardKpis() {
         testsCompletedRes, testsTotalRes,
         matApprovedRes, matTotalRes,
         recentNcRes, recentLotRes, recentPpiRes, recentTestRes,
-        ppiInProgressRes, testsOverdueRes,
+        ppiInProgressRes, testsOverdueRes, weldsPendingUtRes,
       ] = await Promise.all([
         // NCs abertas (not closed, not archived)
         (supabase as any).from("non_conformities")
