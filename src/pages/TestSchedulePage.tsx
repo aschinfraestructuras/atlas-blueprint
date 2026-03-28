@@ -66,7 +66,7 @@ export default function TestSchedulePage() {
 
   const totalThisWeek = useMemo(() => Object.values(testsByDay).reduce((s, v) => s + v.length, 0), [testsByDay]);
   const pendingThisWeek = useMemo(() =>
-    Object.values(testsByDay).flat().filter(t => ["draft", "pending", "in_progress"].includes(t.status ?? "")).length,
+    Object.values(testsByDay).flat().filter(i => ["due", "overdue", "scheduled"].includes(i.status ?? "")).length,
     [testsByDay]
   );
 
