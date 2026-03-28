@@ -62,6 +62,7 @@ export default function WeldPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [deleteTargetIdState, setDeleteTargetIdState] = useState<string | null>(null);
 
   // Form state
   const [form, setForm] = useState<Partial<WeldInput>>({
