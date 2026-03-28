@@ -124,6 +124,10 @@ export function useDashboardKpis() {
         (supabase as any).from("test_due_items")
           .select("id", { count: "exact", head: true })
           .eq("project_id", pid).in("status", ["due", "overdue"]).lt("due_at_date", today),
+        // Soldaduras sem US
+        (supabase as any).from("weld_records")
+          .select("id", { count: "exact", head: true })
+          .eq("project_id", pid).eq("has_ut", false),
       ]);
 
       const recent: RecentItem[] = [];
