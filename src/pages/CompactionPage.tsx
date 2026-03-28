@@ -479,7 +479,6 @@ export default function CompactionPage() {
           )}
         </DialogContent>
       </Dialog>
-      </Dialog>
       <AlertDialog open={!!deleteTargetId} onOpenChange={(v) => !v && setDeleteTargetId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader><AlertDialogTitle>{t("common.deleteConfirmTitle")}</AlertDialogTitle><AlertDialogDescription>{t("common.deleteConfirmDesc")}</AlertDialogDescription></AlertDialogHeader>
