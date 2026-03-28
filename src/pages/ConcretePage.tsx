@@ -926,7 +926,7 @@ export default function ConcretePage() {
                     <TableHead className="w-10">#</TableHead>
                     <TableHead>Moldagem</TableHead>
                     <TableHead>Cura (dias)</TableHead>
-                    <TableHead>Data Ensaio</TableHead>
+                    <TableHead>{t("concrete.specimens.testDate")}</TableHead>
                     <TableHead>Ref. Lab</TableHead>
                     <TableHead>Carga (kN)</TableHead>
                     <TableHead>Rotura</TableHead>

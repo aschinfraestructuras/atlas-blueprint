@@ -311,7 +311,7 @@ export default function WeldPage() {
                     <SelectContent>{TRACK_SIDES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
                   </Select>
                 </div>
-                <div><Label>Tipo soldadura</Label>
+                <div><Label>{t("welding.form.weldType")}</Label>
                   <Select value={form.weld_type ?? "aluminotermica"} onValueChange={v => setField("weld_type", v)}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>{WELD_TYPES.map(w => <SelectItem key={w} value={w}>{w}</SelectItem>)}</SelectContent>

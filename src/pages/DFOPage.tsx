@@ -242,7 +242,7 @@ export default function DFOPage() {
                               </Select>
                               <Select value={item.linked_doc_id ?? "__none"} onValueChange={(v) => handleLinkDoc(item, v)}>
                                 <SelectTrigger className="h-7 w-[140px] text-xs flex-shrink-0">
-                                  <SelectValue placeholder="Vincular doc..." />
+                                  <SelectValue placeholder={t("common.linkDoc")} />
                                 </SelectTrigger>
                                 <SelectContent>
                                   <SelectItem value="__none">Nenhum</SelectItem>

@@ -61,7 +61,10 @@
     "created": "Criado com sucesso",
     "allDisciplines": "Todas as disciplinas",
     "allSeverities": "Todas as gravidades",
-    "allSubcontractors": "Todos os subempreiteiros"
+    "allSubcontractors": "Todos os subempreiteiros",
+    "selectPlaceholder": "Selecionar...",
+    "selectTypePlaceholder": "Selecionar tipo...",
+    "linkDoc": "Vincular documento..."
   },
   "auth": {
     "signIn": "Iniciar sessão",
