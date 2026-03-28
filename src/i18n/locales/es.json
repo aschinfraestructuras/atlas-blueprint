@@ -4656,5 +4656,17 @@
     "rmm": {
       "defaultName": "Instrumento"
     }
+  },
+  "dfo": {
+    "progress": "Progreso DFO",
+    "volumeComplete": "{{complete}} de {{total}} ítems",
+    "status": {
+      "received": "Recibido",
+      "auto_complete": "Detectado",
+      "pending": "Pendiente"
+    },
+    "tooltip": {
+      "autoComplete": "{{count}} registros encontrados en la BD"
+    }
   }
 }
