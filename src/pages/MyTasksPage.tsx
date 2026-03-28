@@ -137,11 +137,10 @@ export default function MyTasksPage() {
         .order("due_at_date", { ascending: true });
 
       // Batch-fetch work items for test due items
-      const testWiIds = [...new Set((testData ?? []).map((td: any) => td.work_item_id).filter(Boolean))];
+      const testWiIds: string[] = [...new Set((testData ?? []).map((td: any) => td.work_item_id).filter(Boolean) as string[])];
       const testWiMap: Record<string, string> = {};
       if (testWiIds.length > 0) {
-        // Reuse wiMap if IDs overlap, otherwise fetch
-        const missingIds = testWiIds.filter(id => !wiMap[id]);
+        const missingIds = testWiIds.filter((id: string) => !wiMap[id]);
         if (missingIds.length > 0) {
           const { data: moreWi } = await (supabase as any)
             .from("work_items")
@@ -149,7 +148,7 @@ export default function MyTasksPage() {
             .in("id", missingIds);
           (moreWi ?? []).forEach((wi: any) => { testWiMap[wi.id] = wi.sector; });
         }
-        testWiIds.forEach(id => { if (wiMap[id]) testWiMap[id] = wiMap[id].sector; });
+        testWiIds.forEach((id: string) => { if (wiMap[id]) testWiMap[id] = wiMap[id].sector; });
       }
 
       const testResults: MyTestDue[] = (testData ?? []).map((td: any) => ({
