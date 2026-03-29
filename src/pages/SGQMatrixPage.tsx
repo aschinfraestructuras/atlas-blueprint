@@ -109,191 +109,47 @@ type CoverageLevel = "full" | "partial" | "planned" | "external";
 
 interface SGQRequirement {
   chapter: string;
-  requirement: string;
-  atlasModule: string;
+  requirementKey: string;
+  moduleKey: string;
   route: string;
   icon: React.ElementType;
   coverage: CoverageLevel;
-  details: string;
+  detailsKey: string;
   registryTypes?: string[];
   dataKey?: keyof RealData;
   dataTotalKey?: keyof RealData;
 }
 
 const SGQ_REQUIREMENTS: SGQRequirement[] = [
-  {
-    chapter: "1", requirement: "Organograma / Equipas", atlasModule: "Definições do Projeto",
-    route: "/settings", icon: ShieldCheck, coverage: "full",
-    details: "Membros do projeto com papéis (Admin, Engenheiro, Inspector, Viewer). Gestão na página de Definições.",
-  },
-  {
-    chapter: "2", requirement: "Controlo de Documentos (distribuição, revisões, aprovações)",
-    atlasModule: "Documentos", route: "/documents", icon: FileText, coverage: "full",
-    details: "Workflow draft→review→approved. Versões sequenciais, LinkedDocumentsPanel, exportação PDF com capa.",
-    registryTypes: ["DOC", "FORM"],
-    dataKey: "docsApproved", dataTotalKey: "docsTotal",
-  },
-  {
-    chapter: "2.1", requirement: "Planos Técnicos de Obra (MS, PIE, PQO, Planos de Topografia)",
-    atlasModule: "Planos", route: "/plans", icon: BookOpen, coverage: "full",
-    details: "Repositório auditável com tipos: MS, PlanEsc, PlanBet, PlanMont, PlanTraf, PlanSeg, PlanTopo, PlanEns, PlanInsp, PlanAmb, PlanQual.",
-    registryTypes: ["MS", "PlanTopo", "PlanEns", "PlanInsp", "PlanQual"],
-  },
-  {
-    chapter: "3", requirement: "Planeamento de Obra (WBS, faseamento, cronograma)",
-    atlasModule: "Planeamento", route: "/planning", icon: CalendarClock, coverage: "full",
-    details: "WBS hierárquico, atividades ligadas a Work Items e Subempreiteiros. Motor de prontidão com bloqueios automáticos.",
-  },
-  {
-    chapter: "3.1", requirement: "Work Items / Frentes de Obra (stationing PK)",
-    atlasModule: "Atividades", route: "/work-items", icon: Construction, coverage: "full",
-    details: "Sector + Obra + Parte + Disciplina, pk_inicio/pk_fim. Readiness Engine: blocked se NC aberta, PPI pendente ou ensaio em curso.",
-  },
-  {
-    chapter: "4", requirement: "Planos de Inspeção e Ensaio (PIE/PPI)",
-    atlasModule: "Inspeções PPI", route: "/ppi", icon: ClipboardCheck, coverage: "full",
-    details: "Templates reutilizáveis por disciplina. Instâncias com checklists, resultados pass/fail/na, criação automática de NC em itens fail.",
-    registryTypes: ["PPI Instance", "PPI Template"],
-    dataKey: "ppiCompleted", dataTotalKey: "ppiTotal",
-  },
-  {
-    chapter: "4.1", requirement: "Ensaios Laboratoriais e In-Situ",
-    atlasModule: "Ensaios", route: "/tests", icon: FlaskConical, coverage: "full",
-    details: "Catálogo de ensaios, resultados com workflow (draft→approved), pass/fail, rastreabilidade a work item e fornecedor.",
-    registryTypes: ["Test Result"],
-    dataKey: "testsPass", dataTotalKey: "testsTotal",
-  },
-  {
-    chapter: "4.2", requirement: "Laboratórios (acreditação, âmbito)",
-    atlasModule: "Laboratórios", route: "/laboratories", icon: Building2, coverage: "full",
-    details: "Registo de laboratórios com código de acreditação, entidade, âmbito e contactos.",
-  },
-  {
-    chapter: "5", requirement: "Registo e Tratamento de NC (RNC)",
-    atlasModule: "Não Conformidades", route: "/non-conformities", icon: AlertTriangle, coverage: "full",
-    details: "Codificação RNC-PF17A-NNN. Workflow open→in_progress→pending_verification→closed. Ações corretivas, verificação de eficácia.",
-    registryTypes: ["RNC"],
-    dataKey: "ncsClosed", dataTotalKey: "ncsOpen",
-  },
-  {
-    chapter: "6", requirement: "Aprovação de Materiais (PAME)",
-    atlasModule: "Materiais", route: "/materials", icon: Package, coverage: "full",
-    details: "Fichas PAME com workflow de aprovação, lotes com receção, marcação CE, rastreabilidade a fornecedor e ensaios.",
-    registryTypes: ["PAME", "Material Lot"],
-    dataKey: "materialsApproved", dataTotalKey: "materialsTotal",
-  },
-  {
-    chapter: "6.1", requirement: "Gestão de Fornecedores (avaliação, qualificação)",
-    atlasModule: "Fornecedores", route: "/suppliers", icon: Truck, coverage: "full",
-    details: "Cadastro com NIF, avaliação ponderada (qualidade, prazos, NCs, cooperação SGQ), documentos com validade.",
-  },
-  {
-    chapter: "7", requirement: "Gestão de Subempreiteiros (docs, validade, seguro)",
-    atlasModule: "Subempreiteiros", route: "/subcontractors", icon: HardHat, coverage: "full",
-    details: "Documentos obrigatórios com validade, bloqueio automático de atribuição se documentação expirada.",
-  },
-  {
-    chapter: "8", requirement: "Controlo Topográfico e Geométrico",
-    atlasModule: "Medições & Equipamentos", route: "/topography", icon: Crosshair, coverage: "full",
-    details: "Levantamentos, equipamentos com calibração, pedidos, controlo geométrico e repositório de documentos de topografia (MDJ, cartografia, perfis). Bloqueio por calibração expirada.",
-    registryTypes: ["Survey", "Equipment", "Control", "MDJ", "Drawing"],
-    dataKey: "calibrationsValid", dataTotalKey: "calibrationsTotal",
-  },
-  {
-    chapter: "9", requirement: "Partes Diárias de Obra (RDO)",
-    atlasModule: "Parte Diária", route: "/daily-reports", icon: ClipboardList, coverage: "full",
-    details: "Mão-de-obra, equipamentos, materiais, RMM, resíduos, condições meteorológicas, assinaturas.",
-    registryTypes: ["Daily Report"],
-  },
-  {
-    chapter: "10", requirement: "PPGRCD — Gestão de Resíduos e Materiais Reciclados",
-    atlasModule: "Reciclados / PPGRCD", route: "/recycled-materials", icon: Leaf, coverage: "full",
-    details: "FAM, PAP, BAM com percentagens de reciclagem, certificados e rastreabilidade por lote.",
-  },
-  {
-    chapter: "11", requirement: "Pedidos de Informação (RFI) e Submittals",
-    atlasModule: "Escritório Técnico", route: "/technical-office", icon: FileText, coverage: "full",
-    details: "RFI codificados (RFI-PF17A-NNN), submittals e clarificações com workflow de aprovação.",
-    registryTypes: ["RFI", "Submittal"],
-  },
-  {
-    chapter: "12", requirement: "Auditorias Internas e Externas",
-    atlasModule: "Auditorias", route: "/audits", icon: ShieldCheck, coverage: "full",
-    details: "Registo de auditorias com tipo (interna/externa/fiscalização), equipa, constatações e ligação a NC.",
-    dataKey: "auditsDone", dataTotalKey: "auditsTotal",
-  },
-  {
-    chapter: "13", requirement: "Rastreabilidade e Audit Trail",
-    atlasModule: "Registo de Auditoria", route: "/audit-log", icon: BarChart3, coverage: "full",
-    details: "Todas as ações (INSERT, UPDATE, STATUS_CHANGE, DELETE) são registadas automaticamente com diff, user_id e timestamp.",
-  },
-  {
-    chapter: "14", requirement: "PSS — Plano de Segurança e Saúde",
-    atlasModule: "Documentos / Planos", route: "/plans", icon: BookOpen, coverage: "partial",
-    details: "Registável como documento ou plano (PlanSeg), sem workflow específico de SST. Gestão documental completa.",
-  },
-  {
-    chapter: "15", requirement: "Correspondência Formal com Dono de Obra",
-    atlasModule: "RFI (parcial)", route: "/technical-office", icon: FileText, coverage: "partial",
-    details: "RFIs cobrem pedidos de informação. Correspondência formal genérica pode ser registada como documentos.",
-  },
-  {
-    chapter: "V00", requirement: "Vol. 00 — Cartografia / Topografia (MDJ, peças desenhadas)",
-    atlasModule: "Documentos + Topografia", route: "/documents", icon: Crosshair, coverage: "full",
-    details: "MDJ e peças desenhadas registáveis como documentos tipo MDJ/Drawing com disciplina Topografia. Perfis transversais e cartografia.",
-    registryTypes: ["MDJ", "Drawing"],
-  },
-  {
-    chapter: "V01.1", requirement: "Vol. 01.01 — Terraplenagem e Via (MDJ, MED, CTE, DPU)",
-    atlasModule: "Documentos", route: "/documents", icon: Construction, coverage: "full",
-    details: "Peças escritas (MDJ, Medições, CTE, DPU) e desenhadas registáveis como documentos com disciplina Terraplenagem.",
-    registryTypes: ["MDJ", "MED", "CTE", "DPU"],
-  },
-  {
-    chapter: "V01.2", requirement: "Vol. 01.02 — Drenagem (MDJ, MED, CTE, DPU)",
-    atlasModule: "Documentos", route: "/documents", icon: Construction, coverage: "full",
-    details: "Bacias hidrográficas, perfis longitudinais, passagens hidráulicas e pormenores de drenagem.",
-    registryTypes: ["MDJ", "MED", "CTE", "DPU", "Drawing"],
-  },
-  {
-    chapter: "V01.6", requirement: "Vol. 01.06 — Restabelecimentos, Serventias e Caminhos Paralelos",
-    atlasModule: "Documentos", route: "/documents", icon: Construction, coverage: "full",
-    details: "Restabelecimentos rodoviários (PK 31+175, etc.), rotundas, ramos, perfis longitudinais e transversais.",
-    registryTypes: ["MDJ", "MED", "CTE", "DPU", "Drawing"],
-  },
-  {
-    chapter: "V01.7", requirement: "Vol. 01.07 — Geologia e Geotecnia (EGT)",
-    atlasModule: "Documentos", route: "/documents", icon: Construction, coverage: "full",
-    details: "Estudo Geológico e Geotécnico, cartas geológicas, perfis longitudinais por trecho (CACHOFARRA, SADOPORT, TOPO T1).",
-    registryTypes: ["EGT", "Drawing"],
-  },
-  {
-    chapter: "V01.8", requirement: "Vol. 01.08 — Muros de Suporte (MDJ, MED, CTE, DPU)",
-    atlasModule: "Documentos", route: "/documents", icon: Construction, coverage: "full",
-    details: "Muros M31.1, M31.2, M31.3, M32.1 — plantas, alçados, secções tipo com geometria e armaduras.",
-    registryTypes: ["MDJ", "MED", "CTE", "DPU", "Drawing"],
-  },
-  {
-    chapter: "E1", requirement: "Betão — Amassadas, Lotes e Conformidade NA.M",
-    atlasModule: "Ensaios — Betão", route: "/tests", icon: FlaskConical, coverage: "full",
-    details: "Amassadas com controlo de slump e temperatura, lotes NA.M com avaliação fcm/fc,min, provetes a 7/28 dias.",
-    registryTypes: ["Batch", "Lot", "Specimen"],
-    dataKey: "concreteLots", dataTotalKey: "concreteBatches",
-  },
-  {
-    chapter: "E2", requirement: "Soldaduras — Registos e Controlo US",
-    atlasModule: "Ensaios — Soldaduras", route: "/tests", icon: Zap, coverage: "full",
-    details: "Registo de soldaduras com tipo (topo, ângulo), controlo US, rastreabilidade a soldador e PPI.",
-    registryTypes: ["Weld"],
-    dataKey: "weldsWithUT", dataTotalKey: "weldsTotal",
-  },
-  {
-    chapter: "E3", requirement: "Solos e Compactação — Caracterização e Controlo In-Situ",
-    atlasModule: "Ensaios — Solos", route: "/tests", icon: Layers, coverage: "full",
-    details: "Granulometria, Proctor, CBR, gamadensímetro nuclear, ensaios de carga com placa. Classificação AASHTO automática.",
-    registryTypes: ["Soil", "Compaction"],
-    dataKey: "soilsConform", dataTotalKey: "soilsTotal",
-  },
+  { chapter: "1", requirementKey: "sgqMatrix.req.ch1", moduleKey: "sgqMatrix.modules.projectSettings", route: "/settings", icon: ShieldCheck, coverage: "full", detailsKey: "sgqMatrix.det.ch1" },
+  { chapter: "2", requirementKey: "sgqMatrix.req.ch2", moduleKey: "sgqMatrix.modules.documents", route: "/documents", icon: FileText, coverage: "full", detailsKey: "sgqMatrix.det.ch2", registryTypes: ["DOC", "FORM"], dataKey: "docsApproved", dataTotalKey: "docsTotal" },
+  { chapter: "2.1", requirementKey: "sgqMatrix.req.ch2_1", moduleKey: "sgqMatrix.modules.plans", route: "/plans", icon: BookOpen, coverage: "full", detailsKey: "sgqMatrix.det.ch2_1", registryTypes: ["MS", "PlanTopo", "PlanEns", "PlanInsp", "PlanQual"] },
+  { chapter: "3", requirementKey: "sgqMatrix.req.ch3", moduleKey: "sgqMatrix.modules.planning", route: "/planning", icon: CalendarClock, coverage: "full", detailsKey: "sgqMatrix.det.ch3" },
+  { chapter: "3.1", requirementKey: "sgqMatrix.req.ch3_1", moduleKey: "sgqMatrix.modules.workItems", route: "/work-items", icon: Construction, coverage: "full", detailsKey: "sgqMatrix.det.ch3_1" },
+  { chapter: "4", requirementKey: "sgqMatrix.req.ch4", moduleKey: "sgqMatrix.modules.ppi", route: "/ppi", icon: ClipboardCheck, coverage: "full", detailsKey: "sgqMatrix.det.ch4", registryTypes: ["PPI Instance", "PPI Template"], dataKey: "ppiCompleted", dataTotalKey: "ppiTotal" },
+  { chapter: "4.1", requirementKey: "sgqMatrix.req.ch4_1", moduleKey: "sgqMatrix.modules.tests", route: "/tests", icon: FlaskConical, coverage: "full", detailsKey: "sgqMatrix.det.ch4_1", registryTypes: ["Test Result"], dataKey: "testsPass", dataTotalKey: "testsTotal" },
+  { chapter: "4.2", requirementKey: "sgqMatrix.req.ch4_2", moduleKey: "sgqMatrix.modules.laboratories", route: "/laboratories", icon: Building2, coverage: "full", detailsKey: "sgqMatrix.det.ch4_2" },
+  { chapter: "5", requirementKey: "sgqMatrix.req.ch5", moduleKey: "sgqMatrix.modules.nc", route: "/non-conformities", icon: AlertTriangle, coverage: "full", detailsKey: "sgqMatrix.det.ch5", registryTypes: ["RNC"], dataKey: "ncsClosed", dataTotalKey: "ncsOpen" },
+  { chapter: "6", requirementKey: "sgqMatrix.req.ch6", moduleKey: "sgqMatrix.modules.materials", route: "/materials", icon: Package, coverage: "full", detailsKey: "sgqMatrix.det.ch6", registryTypes: ["PAME", "Material Lot"], dataKey: "materialsApproved", dataTotalKey: "materialsTotal" },
+  { chapter: "6.1", requirementKey: "sgqMatrix.req.ch6_1", moduleKey: "sgqMatrix.modules.suppliers", route: "/suppliers", icon: Truck, coverage: "full", detailsKey: "sgqMatrix.det.ch6_1" },
+  { chapter: "7", requirementKey: "sgqMatrix.req.ch7", moduleKey: "sgqMatrix.modules.subcontractors", route: "/subcontractors", icon: HardHat, coverage: "full", detailsKey: "sgqMatrix.det.ch7" },
+  { chapter: "8", requirementKey: "sgqMatrix.req.ch8", moduleKey: "sgqMatrix.modules.topography", route: "/topography", icon: Crosshair, coverage: "full", detailsKey: "sgqMatrix.det.ch8", registryTypes: ["Survey", "Equipment", "Control", "MDJ", "Drawing"], dataKey: "calibrationsValid", dataTotalKey: "calibrationsTotal" },
+  { chapter: "9", requirementKey: "sgqMatrix.req.ch9", moduleKey: "sgqMatrix.modules.dailyReports", route: "/daily-reports", icon: ClipboardList, coverage: "full", detailsKey: "sgqMatrix.det.ch9", registryTypes: ["Daily Report"] },
+  { chapter: "10", requirementKey: "sgqMatrix.req.ch10", moduleKey: "sgqMatrix.modules.recycled", route: "/recycled-materials", icon: Leaf, coverage: "full", detailsKey: "sgqMatrix.det.ch10" },
+  { chapter: "11", requirementKey: "sgqMatrix.req.ch11", moduleKey: "sgqMatrix.modules.technicalOffice", route: "/technical-office", icon: FileText, coverage: "full", detailsKey: "sgqMatrix.det.ch11", registryTypes: ["RFI", "Submittal"] },
+  { chapter: "12", requirementKey: "sgqMatrix.req.ch12", moduleKey: "sgqMatrix.modules.audits", route: "/audits", icon: ShieldCheck, coverage: "full", detailsKey: "sgqMatrix.det.ch12", dataKey: "auditsDone", dataTotalKey: "auditsTotal" },
+  { chapter: "13", requirementKey: "sgqMatrix.req.ch13", moduleKey: "sgqMatrix.modules.auditLog", route: "/audit-log", icon: BarChart3, coverage: "full", detailsKey: "sgqMatrix.det.ch13" },
+  { chapter: "14", requirementKey: "sgqMatrix.req.ch14", moduleKey: "sgqMatrix.modules.pss", route: "/plans", icon: BookOpen, coverage: "partial", detailsKey: "sgqMatrix.det.ch14" },
+  { chapter: "15", requirementKey: "sgqMatrix.req.ch15", moduleKey: "sgqMatrix.modules.rfi", route: "/technical-office", icon: FileText, coverage: "partial", detailsKey: "sgqMatrix.det.ch15" },
+  { chapter: "V00", requirementKey: "sgqMatrix.req.v00", moduleKey: "sgqMatrix.modules.docsTopography", route: "/documents", icon: Crosshair, coverage: "full", detailsKey: "sgqMatrix.det.v00", registryTypes: ["MDJ", "Drawing"] },
+  { chapter: "V01.1", requirementKey: "sgqMatrix.req.v01_1", moduleKey: "sgqMatrix.modules.documents", route: "/documents", icon: Construction, coverage: "full", detailsKey: "sgqMatrix.det.v01_1", registryTypes: ["MDJ", "MED", "CTE", "DPU"] },
+  { chapter: "V01.2", requirementKey: "sgqMatrix.req.v01_2", moduleKey: "sgqMatrix.modules.documents", route: "/documents", icon: Construction, coverage: "full", detailsKey: "sgqMatrix.det.v01_2", registryTypes: ["MDJ", "MED", "CTE", "DPU", "Drawing"] },
+  { chapter: "V01.6", requirementKey: "sgqMatrix.req.v01_6", moduleKey: "sgqMatrix.modules.documents", route: "/documents", icon: Construction, coverage: "full", detailsKey: "sgqMatrix.det.v01_6", registryTypes: ["MDJ", "MED", "CTE", "DPU", "Drawing"] },
+  { chapter: "V01.7", requirementKey: "sgqMatrix.req.v01_7", moduleKey: "sgqMatrix.modules.documents", route: "/documents", icon: Construction, coverage: "full", detailsKey: "sgqMatrix.det.v01_7", registryTypes: ["EGT", "Drawing"] },
+  { chapter: "V01.8", requirementKey: "sgqMatrix.req.v01_8", moduleKey: "sgqMatrix.modules.documents", route: "/documents", icon: Construction, coverage: "full", detailsKey: "sgqMatrix.det.v01_8", registryTypes: ["MDJ", "MED", "CTE", "DPU", "Drawing"] },
+  { chapter: "E1", requirementKey: "sgqMatrix.req.e1", moduleKey: "sgqMatrix.modules.concreteTesting", route: "/tests", icon: FlaskConical, coverage: "full", detailsKey: "sgqMatrix.det.e1", registryTypes: ["Batch", "Lot", "Specimen"], dataKey: "concreteLots", dataTotalKey: "concreteBatches" },
+  { chapter: "E2", requirementKey: "sgqMatrix.req.e2", moduleKey: "sgqMatrix.modules.weldTesting", route: "/tests", icon: Zap, coverage: "full", detailsKey: "sgqMatrix.det.e2", registryTypes: ["Weld"], dataKey: "weldsWithUT", dataTotalKey: "weldsTotal" },
+  { chapter: "E3", requirementKey: "sgqMatrix.req.e3", moduleKey: "sgqMatrix.modules.soilTesting", route: "/tests", icon: Layers, coverage: "full", detailsKey: "sgqMatrix.det.e3", registryTypes: ["Soil", "Compaction"], dataKey: "soilsConform", dataTotalKey: "soilsTotal" },
 ];
 
 // ─── Coverage helpers ────────────────────────────────────────────────────────
