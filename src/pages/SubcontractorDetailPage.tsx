@@ -240,7 +240,8 @@ export default function SubcontractorDetailPage() {
     fetchWorkItems();
     fetchAudit();
     fetchNcs();
-  }, [fetchSub, fetchDocs, fetchActivities, fetchWorkItems, fetchAudit, fetchNcs]);
+    fetchQualifications();
+  }, [fetchSub, fetchDocs, fetchActivities, fetchWorkItems, fetchAudit, fetchNcs, fetchQualifications]);
 
   // Fetch tests after workItems are loaded
   useEffect(() => {
