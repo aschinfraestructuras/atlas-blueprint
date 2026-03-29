@@ -59,6 +59,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     }
     await supabase.auth.signOut();
+    posthog.reset();
     queryClient.clear();
   };
 

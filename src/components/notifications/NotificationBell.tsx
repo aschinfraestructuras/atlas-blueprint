@@ -82,9 +82,12 @@ export function NotificationBell() {
       setUnreadCount((prev) => Math.max(0, prev - 1));
       setNotifications((prev) => prev.map((x) => (x.id === n.id ? { ...x, is_read: true } : x)));
     }
-    if (n.link_entity_type && n.link_entity_id) {
-      const base = SOURCE_ROUTES[n.link_entity_type] ?? "/deadlines";
+    const entityType = n.link_entity_type ?? "";
+    const base = SOURCE_ROUTES[entityType] ?? "/deadlines";
+    if (n.link_entity_id && HAS_DETAIL[entityType]) {
       navigate(`${base}/${n.link_entity_id}`);
+    } else {
+      navigate(base);
     }
   };
 
