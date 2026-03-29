@@ -179,7 +179,7 @@ export default function OrgChartPage() {
 
           {members.length === 0 && (
             <div className="text-center text-muted-foreground py-12 text-sm">
-              {isEs ? "Sin miembros en el proyecto" : "Sem membros no projeto"}
+              {t("common.noData")}
             </div>
           )}
         </div>
