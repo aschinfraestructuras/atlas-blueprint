@@ -512,6 +512,11 @@ export default function ConcretePage() {
   const filtered = batches.filter((b) => {
     if (filterStatus !== "all" && b.overall_result !== filterStatus) return false;
     if (filterWI !== "all" && b.work_item_id !== filterWI) return false;
+    if (filterClass !== "all" && b.concrete_class !== filterClass) return false;
+    if (searchQ) {
+      const q = searchQ.toLowerCase();
+      if (!b.code.toLowerCase().includes(q) && !b.element_betonado.toLowerCase().includes(q) && !(b.pk_location ?? "").toLowerCase().includes(q)) return false;
+    }
     return true;
   });
 
