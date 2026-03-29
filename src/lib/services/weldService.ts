@@ -48,6 +48,15 @@ export interface WeldRecord {
   created_by: string | null;
   created_at: string;
   updated_at: string;
+  // FS fields
+  wps_ref: string | null;
+  preheat_equipment: string | null;
+  post_weld_checks: any[] | null;
+  // FUS fields
+  us_equipment_serial: string | null;
+  us_frequency_mhz: number | null;
+  us_norm_class: string | null;
+  us_inspection_zones: any[] | null;
 }
 
 export type WeldInput = Omit<WeldRecord, "id" | "code" | "created_at" | "updated_at" | "overall_result" | "alignment_pass" | "hv_pass">;

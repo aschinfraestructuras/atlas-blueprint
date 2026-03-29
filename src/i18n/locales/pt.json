@@ -4520,7 +4520,13 @@
       "hvCenter": "HV Centro",
       "hvRight": "HV Direita",
       "hvCriteriaMin": "Critério mín.",
-      "hvCriteriaMax": "Critério máx."
+      "hvCriteriaMax": "Critério máx.",
+      "wpsRef": "Ref. WPS",
+      "preheatEquipment": "Equipamento pré-aquecimento",
+      "preheatEquipmentPlaceholder": "Marca, modelo, n.º série",
+      "utSerial": "N.º Série Equipamento",
+      "utFrequency": "Frequência (MHz)",
+      "utNormClass": "Norma / Classe"
     },
     "utStatus": {
       "aceite": "Aceite",
@@ -4892,5 +4898,23 @@
     "title": "Organigrama de Obra",
     "subtitle": "Estrutura organizativa do projeto",
     "pdfTitle": "ORGANIGRAMA DE OBRA"
+  },
+  "topographyFt": {
+    "title": "Ficha Topográfica",
+    "addPoint": "Adicionar Ponto",
+    "pointNo": "Ponto N.º",
+    "pkElement": "PK / Elemento",
+    "projected": "Projetado",
+    "measured": "Medido",
+    "delta": "Desvio",
+    "okNc": "OK / NC",
+    "noPoints": "Sem pontos registados. Adicione o primeiro ponto de controlo.",
+    "saved": "Ponto guardado",
+    "deleted": "Ponto eliminado"
+  },
+  "dcq": {
+    "badge": "DCQ ✓",
+    "missing": "DCQ em falta",
+    "missingDesc": "Declaração de Conhecimento SGQ não vinculada"
   }
 }

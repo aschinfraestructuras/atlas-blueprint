@@ -349,6 +349,11 @@ export default function SubcontractorDetailPage() {
               <Badge variant="secondary" className={cn("text-xs", DOC_STATUS_COLORS[sub.status] ?? "")}>
                 {t(`subcontractors.status.${sub.status}`, { defaultValue: sub.status })}
               </Badge>
+              {docs.some(d => d.doc_type === "qualidade" && d.title.toUpperCase().includes("DCQ")) ? (
+                <Badge className="bg-primary/15 text-primary border-0 text-[10px]">{t("dcq.badge")}</Badge>
+              ) : (
+                <Badge className="bg-destructive/10 text-destructive border-0 text-[10px]">{t("dcq.missing")}</Badge>
+              )}
             </div>
             <p className="text-sm text-muted-foreground mt-0.5">{sub.trade ?? "—"} · {sub.contact_email ?? "—"}</p>
           </div>
