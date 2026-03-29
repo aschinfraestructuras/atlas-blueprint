@@ -885,7 +885,7 @@ export default function ConcretePage() {
                   </Select>
                 </div>
                 <div>
-                  <Label>Código MQT</Label>
+                  <Label>{t("concrete.form.mqtCode")}</Label>
                   <Input value={form.structural_element_mqt_code} onChange={(e) => setForm((f) => ({ ...f, structural_element_mqt_code: e.target.value }))} placeholder="F-02.05.03.03.07" />
                 </div>
               </div>
