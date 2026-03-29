@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
-  Gauge, Plus, FileDown, Trash2, Eye, Pencil, CheckCircle2, XCircle, Clock, Loader2, AlertTriangle, Link2,
+  Gauge, Plus, FileDown, Trash2, Eye, Pencil, CheckCircle2, XCircle, Clock, Loader2, AlertTriangle, Link2, Search,
 } from "lucide-react";
 import { compactionService, type CompactionZoneWithCounts, type CompactionZone, type NuclearPoint, type PlateTest } from "@/lib/services/compactionService";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
@@ -29,9 +29,10 @@ import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
 function ResultBadge({ result }: { result: string }) {
-  if (result === "pass") return <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-0">Conforme</Badge>;
-  if (result === "fail") return <Badge variant="destructive">Não Conforme</Badge>;
-  return <Badge variant="outline" className="text-amber-600">Pendente</Badge>;
+  const { t } = useTranslation();
+  if (result === "pass") return <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-0">{t("common.compliant")}</Badge>;
+  if (result === "fail") return <Badge variant="destructive">{t("common.nonCompliant")}</Badge>;
+  return <Badge variant="outline" className="text-amber-600">{t("common.pendingStatus")}</Badge>;
 }
 
 export default function CompactionPage() {
@@ -49,6 +50,7 @@ export default function CompactionPage() {
   const [saving, setSaving] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [filterResult, setFilterResult] = useState("all");
+  const [searchQ, setSearchQ] = useState("");
 
   // Linked concrete lots
   const [concreteLots, setConcreteLots] = useState<Record<string, { lot_code: string; id: string }>>({});
@@ -103,6 +105,10 @@ export default function CompactionPage() {
 
   const filtered = zones.filter((z) => {
     if (filterResult !== "all" && z.overall_result !== filterResult) return false;
+    if (searchQ) {
+      const q = searchQ.toLowerCase();
+      if (!z.code.toLowerCase().includes(q) && !z.zone_description.toLowerCase().includes(q) && !(z.pk_start ?? "").toLowerCase().includes(q)) return false;
+    }
     return true;
   });
 
@@ -231,13 +237,17 @@ export default function CompactionPage() {
       </div>
 
       <FilterBar>
+        <div className="relative flex-1 min-w-[180px]">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+          <Input value={searchQ} onChange={e => setSearchQ(e.target.value)} placeholder={t("compaction.searchPlaceholder")} className="pl-8 h-9 text-sm" />
+        </div>
         <Select value={filterResult} onValueChange={setFilterResult}>
           <SelectTrigger className="w-[160px] h-9"><SelectValue /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todos</SelectItem>
-            <SelectItem value="pass">Conforme</SelectItem>
-            <SelectItem value="fail">Não Conforme</SelectItem>
-            <SelectItem value="pending">Pendente</SelectItem>
+            <SelectItem value="all">{t("common.allResults")}</SelectItem>
+            <SelectItem value="pass">{t("common.compliant")}</SelectItem>
+            <SelectItem value="fail">{t("common.nonCompliant")}</SelectItem>
+            <SelectItem value="pending">{t("common.pendingStatus")}</SelectItem>
           </SelectContent>
         </Select>
       </FilterBar>

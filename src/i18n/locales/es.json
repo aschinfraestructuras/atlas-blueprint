@@ -76,7 +76,13 @@
     "apto": "Apto",
     "inapto": "No apto",
     "other": "Otro",
-    "add": "Añadir"
+    "add": "Añadir",
+    "allResults": "Todos los resultados",
+    "compliant": "Conforme",
+    "nonCompliant": "No Conforme",
+    "pendingStatus": "Pendiente",
+    "allActivities": "Todas las actividades",
+    "searchPlaceholder": "Buscar..."
   },
   "auth": {
     "signIn": "Iniciar sesión",
@@ -743,9 +749,9 @@
       "createBtn": "Crear Documento",
       "titleCreate": "Crear Documento",
       "titleEdit": "Editar Documento",
-      "template": "Plantilla",
-      "templatePlaceholder": "Seleccionar plantilla...",
-      "noTemplate": "Sin plantilla",
+      "template": "Modelo",
+      "templatePlaceholder": "Seleccionar modelo...",
+      "noTemplate": "Sin modelo",
       "titlePlaceholder": "Título del documento",
       "code": "Código",
       "issuedAt": "Fecha de emisión",
@@ -760,7 +766,10 @@
         "typeRequired": "El tipo es obligatorio",
         "disciplinaRequired": "La disciplina es obligatoria"
       },
-      "typeOutro": "Especificar tipo"
+      "typeOutro": "Especificar tipo",
+      "attachFile": "Adjuntar archivo",
+      "replaceFile": "Reemplazar archivo",
+      "disciplinaOutro": "Especificar disciplina"
     },
     "status": {
       "draft": "Borrador",
@@ -772,10 +781,20 @@
     "detail": {
       "code": "Código",
       "createdAt": "Creado en",
-      "approvedAt": "Aprobado en"
+      "approvedAt": "Aprobado en",
+      "info": "Información del documento",
+      "breadcrumb": "Documento",
+      "tabs": {
+        "versions": "Versiones",
+        "links": "Vínculos",
+        "form": "Formulario",
+        "attachments": "Anexos"
+      }
     },
     "versions": {
-      "title": "Historial de versiones"
+      "title": "Historial de versiones",
+      "noVersions": "Sin versiones registradas",
+      "current": "Actual"
     },
     "bulk": {
       "archive": "Archivar seleccionados",
@@ -783,7 +802,8 @@
       "exportSelected": "Exportar seleccionados"
     },
     "deleteConfirm": {
-      "title": "Eliminar documento"
+      "title": "Eliminar documento",
+      "description": "¿Está seguro de que desea eliminar este documento? Esta acción no se puede deshacer."
     },
     "export": {
       "reportTitle": "Informe de Documento",
@@ -794,12 +814,22 @@
       "version": "Versión",
       "versionNo": "Rev.",
       "page": "Página",
-      "of": "de"
+      "of": "de",
+      "exportPdf": "Exportar PDF"
     },
     "toast": {
       "deleted": "Documento eliminado",
       "deleteError": "Error al eliminar documento",
-      "error": "Error al cargar documentos"
+      "error": "Error al cargar documentos",
+      "updated": "Documento actualizado",
+      "created": "Documento creado",
+      "fileUploaded": "Archivo \"{{name}}\" subido",
+      "bulkArchived": "{{count}} documento(s) archivado(s)",
+      "status_draft": "Documento revertido a borrador",
+      "status_in_review": "Documento enviado a revisión",
+      "status_approved": "Documento aprobado",
+      "status_obsolete": "Documento marcado como obsoleto",
+      "status_archived": "Documento archivado"
     },
     "rdc": {
       "title": "Distribución Controlada",
@@ -835,8 +865,72 @@
     },
     "links": {
       "added": "Documento vinculado",
-      "removed": "Vínculo eliminado"
-    }
+      "removed": "Vínculo eliminado",
+      "title": "Documentos vinculados",
+      "addLink": "Vincular",
+      "entityType": "Tipo de entidad",
+      "noLinks": "Sin vínculos",
+      "entityTypes": {
+        "work_item": "Actividad",
+        "ppi_instance": "PPI",
+        "test_result": "Ensayo",
+        "non_conformity": "No Conformidad",
+        "supplier": "Proveedor"
+      }
+    },
+    "noFile": "Sin archivo",
+    "actions": {
+      "submit": "Enviar",
+      "approve": "Aprobar",
+      "backToDraft": "Volver a borrador",
+      "obsolete": "Marcar obsoleto",
+      "newVersion": "Nueva versión",
+      "view": "Ver archivo",
+      "download": "Descargar"
+    },
+    "docTypes": {
+      "procedure": "Procedimiento",
+      "instruction": "Instrucción",
+      "plan": "Plan",
+      "report": "Informe",
+      "certificate": "Certificado",
+      "drawing": "Dibujo",
+      "specification": "Especificación",
+      "form": "Formulario",
+      "record": "Registro",
+      "index": "Índice",
+      "mdj": "MDJ",
+      "med": "MED",
+      "dpu": "DPU",
+      "cte": "CTE",
+      "egt": "EGT",
+      "interoperability_report": "Informe Interoperabilidad",
+      "other": "Otro"
+    },
+    "disciplinas": {
+      "geral": "General",
+      "estruturas": "Estructuras",
+      "geotecnia": "Geotecnia",
+      "hidraulica": "Hidráulica",
+      "estradas": "Carreteras",
+      "ambiente": "Medio Ambiente",
+      "seguranca": "Seguridad",
+      "eletrica": "Eléctrica",
+      "mecanica": "Mecánica",
+      "topografia": "Topografía",
+      "drenagem": "Drenaje",
+      "restabelecimentos": "Reposiciones",
+      "geologia_geotecnia": "Geología / Geotecnia",
+      "muros_suporte": "Muros de Contención",
+      "terraplenagem": "Movimientos de Tierra",
+      "ferrovia": "Ferrocarril",
+      "catenaria": "Catenaria",
+      "sinalizacao": "Señalización",
+      "outro": "Otro"
+    },
+    "editWarningApproved": "Este documento está aprobado. Para editarlo, cambie primero el estado.",
+    "editWarningUnderReview": "Este documento está en revisión. Los cambios pueden afectar el proceso de aprobación.",
+    "exportLmd": "Exportar LMD"
   },
   "tests": {
     "openRnc": "Abrir RNC",
@@ -4362,7 +4456,12 @@
       "fabRef": "Ref. FAB",
       "mqtCode": "Código MQT",
       "hour": "Hora"
-    }
+    },
+    "filterStatus": "Resultado",
+    "filterWI": "Actividad",
+    "filterClass": "Clase",
+    "allClasses": "Todas las clases",
+    "searchPlaceholder": "Buscar amasadas..."
   },
   "compaction": {
     "workItem": "Elemento de Obra",
@@ -4405,7 +4504,10 @@
       "nuclearPoints": "Puntos Nucleares",
       "plateTests": "Ensayos de Placa",
       "linkedConcreteLot": "Lote de Hormigón asociado:"
-    }
+    },
+    "searchPlaceholder": "Buscar zonas...",
+    "filterMaterial": "Material",
+    "allMaterials": "Todos los materiales"
   },
   "soils": {
     "laboratory": "Laboratorio",
@@ -4443,7 +4545,10 @@
       "sampleRef": "Ref. Muestra",
       "depth": "Prof.",
       "sections": "Secciones"
-    }
+    },
+    "searchPlaceholder": "Buscar muestras...",
+    "filterMaterial": "Material",
+    "allMaterials": "Todos los materiales"
   },
   "welding": {
     "title": "Control de Soldadura Aluminotérmica",
@@ -4489,7 +4594,7 @@
   "weld": {
     "certExpired": "Cert. expirado",
     "certExpiresIn": "Cert. expira en {{days}}d",
-    "searchPlaceholder": "Buscar material, proveedor, lote…",
+    "searchPlaceholder": "Buscar soldaduras...",
     "fusPending": "US pend.",
     "toast": {
       "pkRequired": "PK obligatorio",

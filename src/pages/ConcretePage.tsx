@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Layers, Plus, FileDown, Trash2, Eye, CheckCircle2, XCircle, Clock,
-  FlaskConical, Loader2, X, Info, Package,
+  FlaskConical, Loader2, X, Info, Package, Search,
 } from "lucide-react";
 import { concreteService, computeBatchResult, type ConcreteBatchWithCounts, type ConcreteBatch, type ConcreteSpecimen } from "@/lib/services/concreteService";
 import { concreteLotService, type ConcreteLotConformity } from "@/lib/services/concreteLotService";
@@ -60,9 +60,10 @@ function makeDefaultSpecimen(no: number) {
 }
 
 function ResultBadge({ result }: { result: string }) {
-  if (result === "pass") return <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-0">Conforme</Badge>;
-  if (result === "fail") return <Badge variant="destructive">Não Conforme</Badge>;
-  return <Badge variant="outline" className="text-amber-600">Pendente</Badge>;
+  const { t } = useTranslation();
+  if (result === "pass") return <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-0">{t("common.compliant")}</Badge>;
+  if (result === "fail") return <Badge variant="destructive">{t("common.nonCompliant")}</Badge>;
+  return <Badge variant="outline" className="text-amber-600">{t("common.pendingStatus")}</Badge>;
 }
 
 function LotResultBadge({ result, criterion }: { result: string; criterion: string }) {
@@ -456,6 +457,8 @@ export default function ConcretePage() {
   const [detailData, setDetailData] = useState<{ batch: ConcreteBatch; specimens: ConcreteSpecimen[] } | null>(null);
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterWI, setFilterWI] = useState("all");
+  const [filterClass, setFilterClass] = useState("all");
+  const [searchQ, setSearchQ] = useState("");
   const [saving, setSaving] = useState(false);
   const [pageTab, setPageTab] = useState("batches");
 
@@ -510,6 +513,11 @@ export default function ConcretePage() {
   const filtered = batches.filter((b) => {
     if (filterStatus !== "all" && b.overall_result !== filterStatus) return false;
     if (filterWI !== "all" && b.work_item_id !== filterWI) return false;
+    if (filterClass !== "all" && b.concrete_class !== filterClass) return false;
+    if (searchQ) {
+      const q = searchQ.toLowerCase();
+      if (!b.code.toLowerCase().includes(q) && !b.element_betonado.toLowerCase().includes(q) && !(b.pk_location ?? "").toLowerCase().includes(q)) return false;
+    }
     return true;
   });
 
@@ -708,19 +716,30 @@ export default function ConcretePage() {
 
           {/* Filters */}
           <FilterBar>
+            <div className="relative flex-1 min-w-[180px]">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+              <Input value={searchQ} onChange={e => setSearchQ(e.target.value)} placeholder={t("concrete.searchPlaceholder")} className="pl-8 h-9 text-sm" />
+            </div>
             <Select value={filterStatus} onValueChange={setFilterStatus}>
               <SelectTrigger className="w-[160px] h-9"><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">{t("common.status")}: Todos</SelectItem>
-                <SelectItem value="pass">Conforme</SelectItem>
-                <SelectItem value="fail">Não Conforme</SelectItem>
-                <SelectItem value="pending">Pendente</SelectItem>
+                <SelectItem value="all">{t("common.allResults")}</SelectItem>
+                <SelectItem value="pass">{t("common.compliant")}</SelectItem>
+                <SelectItem value="fail">{t("common.nonCompliant")}</SelectItem>
+                <SelectItem value="pending">{t("common.pendingStatus")}</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={filterClass} onValueChange={setFilterClass}>
+              <SelectTrigger className="w-[140px] h-9"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t("concrete.allClasses")}</SelectItem>
+                {CONCRETE_CLASSES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
               </SelectContent>
             </Select>
             <Select value={filterWI} onValueChange={setFilterWI}>
               <SelectTrigger className="w-[200px] h-9"><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Atividade: Todas</SelectItem>
+                <SelectItem value="all">{t("common.allActivities")}</SelectItem>
                 {workItems.map((wi) => (
                   <SelectItem key={wi.id} value={wi.id}>{wi.sector} — {wi.elemento ?? wi.obra ?? wi.disciplina}</SelectItem>
                 ))}
