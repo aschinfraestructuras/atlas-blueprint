@@ -331,8 +331,7 @@ export default function SubcontractorDetailPage() {
   };
 
   const docTypeLabel = (v: string) => {
-    const found = SUB_DOC_TYPES.find(dt => dt.value === v) ?? DOC_TYPES.find(dt => dt.value === v);
-    return found?.label ?? v;
+    return t(`subcontractors.docTypes.${v}`, { defaultValue: v });
   };
 
   return (
