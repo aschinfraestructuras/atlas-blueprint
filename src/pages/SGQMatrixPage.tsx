@@ -283,12 +283,12 @@ export default function SGQMatrixPage() {
                         {req.chapter}
                       </TableCell>
                       <TableCell className="font-medium text-sm text-foreground">
-                        {req.requirement}
+                        {t(req.requirementKey)}
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-1.5">
                           <Icon className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-                          <span className="text-sm">{req.atlasModule}</span>
+                          <span className="text-sm">{t(req.moduleKey)}</span>
                         </div>
                         {req.registryTypes && (
                           <div className="flex flex-wrap gap-1 mt-1">
@@ -306,12 +306,12 @@ export default function SGQMatrixPage() {
                           className={cn("text-xs gap-1", coverageCfg.className)}
                         >
                           <coverageCfg.icon className="h-3 w-3" />
-                          {coverageCfg.label}
+                          {t(`sgqMatrix.coverage.${req.coverage}`)}
                         </Badge>
                       </TableCell>
                       <TableCell>{progressCell}</TableCell>
                       <TableCell className="text-xs text-muted-foreground max-w-[300px]">
-                        {req.details}
+                        {t(req.detailsKey)}
                       </TableCell>
                       <TableCell>
                         <Button
