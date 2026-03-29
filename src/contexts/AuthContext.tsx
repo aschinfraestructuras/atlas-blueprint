@@ -25,6 +25,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+        if (session?.user) {
+          posthog.identify(session.user.id, {
+            email: session.user.email,
+            name: session.user.user_metadata?.full_name ?? session.user.email,
+          });
+        }
       }
     );
 
