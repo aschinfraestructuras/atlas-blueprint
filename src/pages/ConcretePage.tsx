@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Layers, Plus, FileDown, Trash2, Eye, CheckCircle2, XCircle, Clock,
-  FlaskConical, Loader2, X, Info, Package,
+  FlaskConical, Loader2, X, Info, Package, Search,
 } from "lucide-react";
 import { concreteService, computeBatchResult, type ConcreteBatchWithCounts, type ConcreteBatch, type ConcreteSpecimen } from "@/lib/services/concreteService";
 import { concreteLotService, type ConcreteLotConformity } from "@/lib/services/concreteLotService";
