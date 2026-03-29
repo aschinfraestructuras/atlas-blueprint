@@ -213,7 +213,7 @@ export function ControlledCopiesPanel({ planId, projectId, canEdit = true }: Pro
               </select>
             </div>
             <div>
-              <label className="text-xs font-medium text-foreground">{isEs ? "Notas" : "Notas"}</label>
+              <label className="text-xs font-medium text-foreground">{t("common.notes")}</label>
               <Input value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} />
             </div>
           </div>
