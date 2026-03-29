@@ -165,7 +165,7 @@ export function ControlledCopiesPanel({ planId, projectId, canEdit = true }: Pro
                   <TableCell>
                     {c.received_confirmed ? (
                       <Badge className="bg-chart-2/10 text-chart-2 border-chart-2/20 text-[10px]">
-                        <CheckCircle2 className="h-3 w-3 mr-1" />{isEs ? "Confirmada" : "Confirmada"}
+                        <CheckCircle2 className="h-3 w-3 mr-1" />{t("plans.controlledCopies.confirmed")}
                       </Badge>
                     ) : (
                       <Badge className="bg-amber-500/10 text-amber-600 border-amber-500/20 text-[10px]">
