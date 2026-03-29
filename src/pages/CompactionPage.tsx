@@ -415,10 +415,10 @@ export default function CompactionPage() {
 
                 {detailData.nuclear.length > 0 && (
                   <>
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mt-4">Pontos Nucleares</h4>
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mt-4">{t("compaction.form.nuclearPoints")}</h4>
                     <Table>
                       <TableHeader><TableRow>
-                        <TableHead>Pto</TableHead><TableHead>PK</TableHead><TableHead>γd</TableHead><TableHead>w%</TableHead><TableHead>GC%</TableHead><TableHead>Result.</TableHead>
+                        <TableHead>{t("common.point")}</TableHead><TableHead>{t("common.pk")}</TableHead><TableHead>{t("compaction.table.gammaDry")}</TableHead><TableHead>w%</TableHead><TableHead>GC%</TableHead><TableHead>{t("common.result")}</TableHead>
                       </TableRow></TableHeader>
                       <TableBody>
                         {detailData.nuclear.map((n) => (
