@@ -697,6 +697,7 @@ function PhysicalTestsGroupedTab({ workItemId, projectId }: { workItemId: string
 // ─── Concrete (Betão) tab ─────────────────────────────────────────────────────
 
 function WorkItemConcreteTab({ workItemId, projectId }: { workItemId: string; projectId: string }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [batches, setBatches] = useState<ConcreteBatch[]>([]);
   const [loading, setLoading] = useState(true);
