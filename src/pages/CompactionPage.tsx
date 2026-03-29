@@ -315,7 +315,7 @@ export default function CompactionPage() {
           <Tabs defaultValue="identification">
             <TabsList className="grid grid-cols-2 w-full">
               <TabsTrigger value="identification">{t("concrete.tabs.identification")}</TabsTrigger>
-              <TabsTrigger value="proctor">Proctor / Critérios</TabsTrigger>
+              <TabsTrigger value="proctor">{t("compaction.form.proctorCriteria")}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="identification" className="space-y-3 mt-4">
