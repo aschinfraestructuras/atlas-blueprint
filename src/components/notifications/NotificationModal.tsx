@@ -82,6 +82,10 @@ export function NotificationModal({
     if (defaultSubject) setSubject(defaultSubject);
   }, [defaultSubject]);
 
+  useEffect(() => {
+    if (defaultMessage !== undefined) setMessage(defaultMessage);
+  }, [defaultMessage]);
+
   // Reset attachments when modal opens
   useEffect(() => {
     if (open) {
