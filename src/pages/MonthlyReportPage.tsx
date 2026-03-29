@@ -150,7 +150,7 @@ export default function MonthlyReportPage() {
     setCreating(true);
     try {
       const report = await monthlyReportService.createDraft(activeProject.id, selectedMonth);
-      toast({ title: `Relatório ${report.code} criado` });
+      toast({ title: t("monthlyReport.toast.created", { defaultValue: `Relatório ${report.code} criado` }) });
       setCreateOpen(false);
       await fetchReports();
       openDetail(report);
