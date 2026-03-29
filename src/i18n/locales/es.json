@@ -544,7 +544,21 @@
           "edit": "Editar",
           "matrixTitle": "Matriz de permisos",
           "module": "Módulo",
-          "view": "Ver"
+          "view": "Ver",
+          "modules": {
+            "documents": "Documentos",
+            "tests": "Ensayos",
+            "nc": "No Conformidades",
+            "ppi": "Inspecciones PPI",
+            "materials": "Materiales",
+            "suppliers": "Proveedores",
+            "subcontractors": "Subcontratistas",
+            "plans": "Planos",
+            "planning": "Planificación",
+            "daily_reports": "Parte Diario",
+            "topography": "Topografía",
+            "recycled": "Reciclados"
+          }
         },
         "preferences": {
           "title": "Preferencias",
@@ -3239,7 +3253,13 @@
       "subtitle": "Control de acceso basado en roles (RBAC)",
       "matrix": "Matriz de Permisos",
       "module": "Módulo"
-    }
+    },
+    "contactsTab": "Contactos y Notificaciones",
+    "contactsTabDesc": "Gestionar contactos del proyecto y listas de distribución para notificaciones",
+    "usageMembers": "Miembros",
+    "usagePpis": "PPIs activos",
+    "usageNcs": "NCs abiertas",
+    "usageTests": "Ensayos pendientes"
   },
   "topography": {
     "cycle": {
@@ -4124,7 +4144,33 @@
     "concrete": "Hormigón",
     "welds": "Soldaduras",
     "soils": "Suelos",
-    "pendingUT": "Pendientes US"
+    "pendingUT": "Pendientes US",
+    "modules": {
+      "projectSettings": "Configuración del Proyecto",
+      "documents": "Documentos",
+      "plans": "Planos",
+      "planning": "Planificación",
+      "workItems": "Actividades",
+      "ppi": "Inspecciones PPI",
+      "tests": "Ensayos",
+      "laboratories": "Laboratorios",
+      "nc": "No Conformidades",
+      "materials": "Materiales",
+      "suppliers": "Proveedores",
+      "subcontractors": "Subcontratistas",
+      "topography": "Mediciones y Equipos",
+      "dailyReports": "Parte Diario",
+      "recycled": "Reciclados / PPGRCD",
+      "technicalOffice": "Oficina Técnica",
+      "audits": "Auditorías",
+      "auditLog": "Registro de Auditoría",
+      "pss": "Documentos / Planos",
+      "rfi": "RFI (parcial)",
+      "docsTopography": "Documentos + Topografía",
+      "concreteTesting": "Ensayos — Hormigón",
+      "weldTesting": "Ensayos — Soldaduras",
+      "soilTesting": "Ensayos — Suelos"
+    }
   },
   "monthlyReport": {
     "currentMonth": "Resumen del mes actual",
@@ -4144,7 +4190,19 @@
     "createTitle": "Crear Informe Mensual",
     "createReport": "Crear Informe",
     "emptyTitle": "Sin Informes",
-    "emptySubtitle": "Cree el primer informe mensual SGQ para este proyecto."
+    "emptySubtitle": "Cree el primer informe mensual SGQ para este proyecto.",
+    "title": "Informe Mensual SGC",
+    "subtitle": "CE Cláusula 35.ª §11 — Informe mensual de calidad",
+    "onTime": "A tiempo",
+    "late": "Atrasado",
+    "autofillDone": "KPIs rellenados automáticamente",
+    "autofillKpis": "Rellenar KPIs",
+    "observations": "Observaciones",
+    "correctiveActions": "Acciones Correctivas",
+    "nextMonthPlan": "Plan del Mes Siguiente",
+    "submitted": "Informe enviado",
+    "exportPdf": "Exportar PDF",
+    "submit": "Enviar"
   },
   "concrete": {
     "title": "Control de Hormigón — Fichas de Hormigonado",
