@@ -63,11 +63,11 @@ export default function OrgChartPage() {
 
   const levels = Object.keys(grouped).map(Number).sort();
 
-  const levelLabels: Record<number, { pt: string; es: string }> = {
-    0: { pt: "Direção", es: "Dirección" },
-    1: { pt: "Coordenação", es: "Coordinación" },
-    2: { pt: "Equipa Técnica", es: "Equipo Técnico" },
-    3: { pt: "Consultores / Observadores", es: "Consultores / Observadores" },
+  const levelLabels: Record<number, string> = {
+    0: t("orgChart.levels.direction"),
+    1: t("orgChart.levels.coordination"),
+    2: t("orgChart.levels.technical"),
+    3: t("orgChart.levels.observers"),
   };
 
   const handleExportPdf = () => {
