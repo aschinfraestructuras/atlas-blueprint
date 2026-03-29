@@ -10,7 +10,7 @@ import { useRealtimeProject } from "@/hooks/useRealtimeProject";
 import {
   AlertTriangle, Package, Crosshair, CalendarClock,
   ClipboardCheck, FlaskConical, Clock, ArrowRight, Leaf, FileBarChart2, Bell,
-  Calendar, Zap,
+  Calendar, Zap, ShieldCheck,
 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
