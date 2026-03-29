@@ -581,8 +581,8 @@ export function NCFormDialog({
                         {ROOT_CAUSE_METHODS.map(m => (
                           <div key={m} className="flex items-center gap-2">
                             <RadioGroupItem value={m} id={`rcm-${m}`} />
-                            <Label htmlFor={`rcm-${m}`} className="text-sm">
-                              {m === "5whys" ? "5 Porquês" : m === "ishikawa" ? "Ishikawa" : "Outro"}
+                             <Label htmlFor={`rcm-${m}`} className="text-sm">
+                               {t(`nc.rootCauseMethod.${m}`, { defaultValue: m === "5whys" ? "5 Porquês" : m === "ishikawa" ? "Ishikawa" : t("common.other") })}
                             </Label>
                           </div>
                         ))}

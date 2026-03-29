@@ -655,6 +655,19 @@ export default function PPIDetailPage() {
                 </span>
               }
             />
+            {/* Location fields */}
+            {((instance as any).pk_inicio || (instance as any).pk_fim) && (
+              <InfoRow
+                label={t("common.pk")}
+                value={`${(instance as any).pk_inicio ?? "—"} → ${(instance as any).pk_fim ?? "—"}`}
+              />
+            )}
+            {(instance as any).zone && (
+              <InfoRow label={t("ppi.location.zone")} value={(instance as any).zone} />
+            )}
+            {(instance as any).element_ref && (
+              <InfoRow label={t("ppi.location.elementRef")} value={(instance as any).element_ref} />
+            )}
             {instance.closed_at && (
               <InfoRow
                 label={t("ppi.instances.detail.closedAt")}

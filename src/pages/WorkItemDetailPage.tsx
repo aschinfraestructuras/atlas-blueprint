@@ -697,6 +697,7 @@ function PhysicalTestsGroupedTab({ workItemId, projectId }: { workItemId: string
 // ─── Concrete (Betão) tab ─────────────────────────────────────────────────────
 
 function WorkItemConcreteTab({ workItemId, projectId }: { workItemId: string; projectId: string }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [batches, setBatches] = useState<ConcreteBatch[]>([]);
   const [loading, setLoading] = useState(true);
@@ -737,7 +738,7 @@ function WorkItemConcreteTab({ workItemId, projectId }: { workItemId: string; pr
                   <p className="text-xs text-muted-foreground truncate">{b.element_betonado} · {b.concrete_class}</p>
                 </div>
                 <Badge variant={b.status === "pass" ? "default" : b.status === "fail" ? "destructive" : "outline"} className="text-[10px]">
-                  {b.status === "pass" ? "Conforme" : b.status === "fail" ? "Não Conforme" : "Pendente"}
+                  {b.status === "pass" ? t("common.conform") : b.status === "fail" ? t("common.nonConform") : t("common.pending")}
                 </Badge>
               </li>
             );
@@ -751,6 +752,7 @@ function WorkItemConcreteTab({ workItemId, projectId }: { workItemId: string; pr
 // ─── Weld (Soldaduras) tab ────────────────────────────────────────────────────
 
 function WorkItemWeldTab({ workItemId }: { workItemId: string }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [welds, setWelds] = useState<WeldRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -792,7 +794,7 @@ function WorkItemWeldTab({ workItemId }: { workItemId: string }) {
                 variant={w.overall_result === "pass" ? "default" : w.overall_result === "fail" ? "destructive" : "outline"}
                 className="text-[10px]"
               >
-                {w.overall_result === "pass" ? "OK" : w.overall_result === "fail" ? "NOK" : "Pendente"}
+                {w.overall_result === "pass" ? t("common.ok") : w.overall_result === "fail" ? t("common.nok") : t("common.pending")}
               </Badge>
             </li>
           ))}
@@ -805,6 +807,7 @@ function WorkItemWeldTab({ workItemId }: { workItemId: string }) {
 // ─── Soil (Solos) tab ─────────────────────────────────────────────────────────
 
 function WorkItemSoilTab({ workItemId }: { workItemId: string }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [samples, setSamples] = useState<SoilSample[]>([]);
   const [loading, setLoading] = useState(true);
@@ -846,7 +849,7 @@ function WorkItemSoilTab({ workItemId }: { workItemId: string }) {
                 variant={s.overall_result === "apto" ? "default" : s.overall_result === "inapto" ? "destructive" : "outline"}
                 className="text-[10px]"
               >
-                {s.overall_result === "apto" ? "Apto" : s.overall_result === "inapto" ? "Inapto" : "Pendente"}
+                {s.overall_result === "apto" ? t("common.apto") : s.overall_result === "inapto" ? t("common.inapto") : t("common.pending")}
               </Badge>
             </li>
           ))}
@@ -924,7 +927,7 @@ function WorkItemTopoTab({ workItemId, projectId }: { workItemId: string; projec
                     <li key={c.id} className="flex items-center justify-between text-sm">
                       <span>{c.element} — {c.zone ?? "—"}</span>
                       <Badge variant={c.result === "conforme" ? "default" : "destructive"} className="text-xs">
-                        {c.result === "conforme" ? "Conforme" : "Não conforme"}
+                        {c.result === "conforme" ? t("common.conform") : t("common.nonConform")}
                       </Badge>
                     </li>
                   ))}

@@ -16,21 +16,21 @@ import { fullPdfHeader } from "@/lib/services/pdfProjectHeader";
 import { signatureBlockHtml } from "@/lib/services/pdfSignatureBlocks";
 import jsPDF from "jspdf";
 
-const ROLE_META: Record<string, { label: string; labelEs: string; color: string; icon: React.ElementType; level: number }> = {
-  admin:            { label: "Diretor de Obra",       labelEs: "Director de Obra",       color: "hsl(2, 60%, 44%)",    icon: Building2,    level: 0 },
-  project_manager:  { label: "Gestor de Projeto",     labelEs: "Gestor de Proyecto",     color: "hsl(215, 70%, 38%)",  icon: UserCheck,    level: 1 },
-  quality_manager:  { label: "Responsável Qualidade", labelEs: "Responsable Calidad",   color: "hsl(158, 45%, 32%)",  icon: ShieldCheck,  level: 1 },
-  quality_tech:     { label: "Técnico de Qualidade",  labelEs: "Técnico de Calidad",    color: "hsl(252, 55%, 45%)",  icon: FlaskConical, level: 2 },
-  site_manager:     { label: "Encarregado",           labelEs: "Encargado",             color: "hsl(32, 70%, 45%)",   icon: HardHat,      level: 2 },
-  lab_tech:         { label: "Técnico de Laboratório",labelEs: "Técnico de Laboratorio",color: "hsl(188, 55%, 32%)",  icon: FlaskConical, level: 2 },
-  surveyor:         { label: "Topógrafo",             labelEs: "Topógrafo",             color: "hsl(280, 50%, 45%)",  icon: Crosshair,    level: 2 },
-  inspector:        { label: "Inspetor",              labelEs: "Inspector",             color: "hsl(45, 70%, 45%)",   icon: Eye,          level: 2 },
-  technician:       { label: "Técnico",               labelEs: "Técnico",               color: "hsl(200, 50%, 40%)",  icon: Wrench,       level: 2 },
-  viewer:           { label: "Consultor / Observador",labelEs: "Consultor / Observador",color: "hsl(215, 15%, 55%)",  icon: Eye,          level: 3 },
+const ROLE_META: Record<string, { labelKey: string; color: string; icon: React.ElementType; level: number }> = {
+  admin:            { labelKey: "orgChart.roles.admin",            color: "hsl(2, 60%, 44%)",    icon: Building2,    level: 0 },
+  project_manager:  { labelKey: "orgChart.roles.project_manager",  color: "hsl(215, 70%, 38%)",  icon: UserCheck,    level: 1 },
+  quality_manager:  { labelKey: "orgChart.roles.quality_manager",  color: "hsl(158, 45%, 32%)",  icon: ShieldCheck,  level: 1 },
+  quality_tech:     { labelKey: "orgChart.roles.quality_tech",     color: "hsl(252, 55%, 45%)",  icon: FlaskConical, level: 2 },
+  site_manager:     { labelKey: "orgChart.roles.site_manager",     color: "hsl(32, 70%, 45%)",   icon: HardHat,      level: 2 },
+  lab_tech:         { labelKey: "orgChart.roles.lab_tech",         color: "hsl(188, 55%, 32%)",  icon: FlaskConical, level: 2 },
+  surveyor:         { labelKey: "orgChart.roles.surveyor",         color: "hsl(280, 50%, 45%)",  icon: Crosshair,    level: 2 },
+  inspector:        { labelKey: "orgChart.roles.inspector",        color: "hsl(45, 70%, 45%)",   icon: Eye,          level: 2 },
+  technician:       { labelKey: "orgChart.roles.technician",       color: "hsl(200, 50%, 40%)",  icon: Wrench,       level: 2 },
+  viewer:           { labelKey: "orgChart.roles.viewer",           color: "hsl(215, 15%, 55%)",  icon: Eye,          level: 3 },
 };
 
 function getRoleMeta(role: string) {
-  return ROLE_META[role] ?? { label: role, labelEs: role, color: "hsl(215,15%,55%)", icon: Users, level: 3 };
+  return ROLE_META[role] ?? { labelKey: role, color: "hsl(215,15%,55%)", icon: Users, level: 3 };
 }
 
 export default function OrgChartPage() {
@@ -39,7 +39,7 @@ export default function OrgChartPage() {
   const { logoBase64 } = useProjectLogo();
   const [members, setMembers] = useState<ProjectMember[]>([]);
   const [loading, setLoading] = useState(true);
-  const isEs = i18n.language?.startsWith("es");
+  
 
   useEffect(() => {
     if (!activeProject) return;
@@ -63,11 +63,11 @@ export default function OrgChartPage() {
 
   const levels = Object.keys(grouped).map(Number).sort();
 
-  const levelLabels: Record<number, { pt: string; es: string }> = {
-    0: { pt: "Direção", es: "Dirección" },
-    1: { pt: "Coordenação", es: "Coordinación" },
-    2: { pt: "Equipa Técnica", es: "Equipo Técnico" },
-    3: { pt: "Consultores / Observadores", es: "Consultores / Observadores" },
+  const levelLabels: Record<number, string> = {
+    0: t("orgChart.levels.direction"),
+    1: t("orgChart.levels.coordination"),
+    2: t("orgChart.levels.technical"),
+    3: t("orgChart.levels.observers"),
   };
 
   const handleExportPdf = () => {
@@ -87,14 +87,14 @@ export default function OrgChartPage() {
     </style></head><body>`;
 
     html += fullPdfHeader(logoBase64, projectName, "ORG-" + activeProject.code, "0", date);
-    html += `<h2 style="text-align:center;font-size:14px;color:#192F48;margin:12px 0;">ORGANIGRAMA DE OBRA</h2>`;
+    html += `<h2 style="text-align:center;font-size:14px;color:#192F48;margin:12px 0;">${t("orgChart.pdfTitle")}</h2>`;
 
     for (const lvl of levels) {
-      const label = isEs ? levelLabels[lvl]?.es : levelLabels[lvl]?.pt;
+      const label = levelLabels[lvl];
       html += `<div class="level"><div class="level-title">${label ?? `Nível ${lvl}`}</div><div class="members">`;
       for (const m of grouped[lvl]) {
         const name = m.profile?.full_name || m.profile?.email || m.user_id.slice(0, 8);
-        const roleLabel = isEs ? m.meta.labelEs : m.meta.label;
+        const roleLabel = t(m.meta.labelKey);
         html += `<div class="card"><div class="card-name">${name}</div><div class="card-role">${roleLabel}</div>${m.profile?.email ? `<div class="card-email">${m.profile.email}</div>` : ""}</div>`;
       }
       html += `</div></div>`;
@@ -112,8 +112,8 @@ export default function OrgChartPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title={isEs ? "Organigrama de Obra" : "Organigrama de Obra"}
-        subtitle={isEs ? "Estructura organizativa del proyecto" : "Estrutura organizativa do projeto"}
+        title={t("orgChart.title")}
+        subtitle={t("orgChart.subtitle")}
         icon={Users}
         actions={
           <Button variant="outline" size="sm" onClick={handleExportPdf}>
@@ -127,7 +127,7 @@ export default function OrgChartPage() {
       ) : (
         <div className="space-y-8">
           {levels.map((lvl) => {
-            const label = isEs ? levelLabels[lvl]?.es : levelLabels[lvl]?.pt;
+            const label = levelLabels[lvl];
             return (
               <div key={lvl}>
                 <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
@@ -144,7 +144,7 @@ export default function OrgChartPage() {
                   {grouped[lvl].map((m) => {
                     const Icon = m.meta.icon;
                     const name = m.profile?.full_name || m.profile?.email?.split("@")[0] || "—";
-                    const roleLabel = isEs ? m.meta.labelEs : m.meta.label;
+                    const roleLabel = t(m.meta.labelKey);
                     return (
                       <Card key={m.user_id} className="group border bg-card hover:shadow-md transition-shadow">
                         <CardContent className="p-4 flex items-start gap-3">
@@ -179,7 +179,7 @@ export default function OrgChartPage() {
 
           {members.length === 0 && (
             <div className="text-center text-muted-foreground py-12 text-sm">
-              {isEs ? "Sin miembros en el proyecto" : "Sem membros no projeto"}
+              {t("common.noData")}
             </div>
           )}
         </div>

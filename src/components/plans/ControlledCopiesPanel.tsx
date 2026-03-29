@@ -126,21 +126,21 @@ export function ControlledCopiesPanel({ planId, projectId, canEdit = true }: Pro
         <div className="flex items-center gap-2">
           <Copy className="h-4 w-4 text-muted-foreground" />
           <span className="text-sm font-semibold text-foreground">
-            {isEs ? "Copias Controladas" : "Cópias Controladas"}
+            {t("plans.controlledCopies.title")}
           </span>
           <Badge variant="secondary" className="text-[10px]">{copies.length}</Badge>
         </div>
         {canEdit && (
           <Button variant="outline" size="sm" onClick={() => setDialogOpen(true)}>
             <Plus className="h-3.5 w-3.5 mr-1" />
-            {isEs ? "Añadir" : "Adicionar"}
+            {t("common.add")}
           </Button>
         )}
       </div>
 
       {copies.length === 0 && !loading ? (
         <p className="text-xs text-muted-foreground text-center py-4">
-          {isEs ? "Sin copias controladas registradas" : "Sem cópias controladas registadas"}
+          {isEs ? "Sin copias controladas registradas" : t("plans.controlledCopies.noRecords")}
         </p>
       ) : (
         <div className="rounded-lg border overflow-hidden">
@@ -148,10 +148,10 @@ export function ControlledCopiesPanel({ planId, projectId, canEdit = true }: Pro
             <TableHeader>
               <TableRow>
                 <TableHead className="w-16 text-[10px]">N.º</TableHead>
-                <TableHead className="text-[10px]">{isEs ? "Destinatario" : "Destinatário"}</TableHead>
-                <TableHead className="text-[10px]">{isEs ? "Entidad" : "Entidade"}</TableHead>
-                <TableHead className="text-[10px]">{isEs ? "Entrega" : "Entrega"}</TableHead>
-                <TableHead className="text-[10px]">{isEs ? "Estado" : "Estado"}</TableHead>
+                 <TableHead className="text-[10px]">{t("plans.controlledCopies.recipient")}</TableHead>
+                 <TableHead className="text-[10px]">{t("plans.controlledCopies.entity")}</TableHead>
+                 <TableHead className="text-[10px]">{t("plans.controlledCopies.delivery")}</TableHead>
+                 <TableHead className="text-[10px]">{t("common.status")}</TableHead>
                 <TableHead className="w-20" />
               </TableRow>
             </TableHeader>
@@ -165,18 +165,18 @@ export function ControlledCopiesPanel({ planId, projectId, canEdit = true }: Pro
                   <TableCell>
                     {c.received_confirmed ? (
                       <Badge className="bg-chart-2/10 text-chart-2 border-chart-2/20 text-[10px]">
-                        <CheckCircle2 className="h-3 w-3 mr-1" />{isEs ? "Confirmada" : "Confirmada"}
+                        <CheckCircle2 className="h-3 w-3 mr-1" />{t("plans.controlledCopies.confirmed")}
                       </Badge>
                     ) : (
                       <Badge className="bg-amber-500/10 text-amber-600 border-amber-500/20 text-[10px]">
-                        <Clock className="h-3 w-3 mr-1" />{isEs ? "Pendiente" : "Pendente"}
+                        <Clock className="h-3 w-3 mr-1" />{t("common.pending")}
                       </Badge>
                     )}
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-1">
                       {!c.received_confirmed && canEdit && (
-                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleConfirm(c)} title={isEs ? "Confirmar recepción" : "Confirmar receção"}>
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleConfirm(c)} title={t("plans.controlledCopies.confirmReceipt")}>
                           <CheckCircle2 className="h-3.5 w-3.5 text-chart-2" />
                         </Button>
                       )}
@@ -198,22 +198,22 @@ export function ControlledCopiesPanel({ planId, projectId, canEdit = true }: Pro
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{isEs ? "Nova Copia Controlada" : "Nova Cópia Controlada"}</DialogTitle>
+            <DialogTitle>{t("plans.controlledCopies.new")}</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 py-2">
             <div>
-              <label className="text-xs font-medium text-foreground">{isEs ? "Destinatario" : "Destinatário"} *</label>
-              <Input value={form.recipient_name} onChange={e => setForm(f => ({ ...f, recipient_name: e.target.value }))} placeholder={isEs ? "Nombre del destinatario" : "Nome do destinatário"} />
+               <label className="text-xs font-medium text-foreground">{t("plans.controlledCopies.recipient")} *</label>
+               <Input value={form.recipient_name} onChange={e => setForm(f => ({ ...f, recipient_name: e.target.value }))} placeholder={t("plans.controlledCopies.recipientPlaceholder")} />
             </div>
             <div>
-              <label className="text-xs font-medium text-foreground">{isEs ? "Entidad" : "Entidade"}</label>
+              <label className="text-xs font-medium text-foreground">{t("plans.controlledCopies.entity")}</label>
               <select className="w-full rounded-md border bg-background px-3 py-2 text-sm" value={form.recipient_entity} onChange={e => setForm(f => ({ ...f, recipient_entity: e.target.value }))}>
                 <option value="">—</option>
                 {ENTITIES.map(e => <option key={e} value={e}>{e}</option>)}
               </select>
             </div>
             <div>
-              <label className="text-xs font-medium text-foreground">{isEs ? "Notas" : "Notas"}</label>
+              <label className="text-xs font-medium text-foreground">{t("common.notes")}</label>
               <Input value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} />
             </div>
           </div>

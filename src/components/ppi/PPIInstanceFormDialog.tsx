@@ -36,6 +36,10 @@ const makeSchema = (t: (k: string) => string) =>
     auto_code:         z.boolean().optional(),
     inspector_id:      z.string().optional(),
     inspection_date:   z.string().optional(),
+    pk_inicio:         z.string().optional(),
+    pk_fim:            z.string().optional(),
+    zone:              z.string().optional(),
+    element_ref:       z.string().optional(),
   });
 
 type FormValues = z.infer<ReturnType<typeof makeSchema>>;
@@ -98,6 +102,10 @@ export function PPIInstanceFormDialog({
       auto_code:       true,
       inspector_id:    "",
       inspection_date: format(new Date(), "yyyy-MM-dd"),
+      pk_inicio:       "",
+      pk_fim:          "",
+      zone:            "",
+      element_ref:     "",
     });
     setNoActiveTemplates(false);
     setPreviewCode(null);
@@ -197,13 +205,17 @@ export function PPIInstanceFormDialog({
           ? values.template_id
           : null;
 
-      const input = {
+      const input: any = {
         project_id:      activeProject.id,
         work_item_id:    values.work_item_id,
         code:            values.code?.trim() || "",
         inspector_id:    values.inspector_id || null,
         created_by:      user.id,
         inspection_date: values.inspection_date || null,
+        pk_inicio:       values.pk_inicio?.trim() || null,
+        pk_fim:          values.pk_fim?.trim() || null,
+        zone:            values.zone?.trim() || null,
+        element_ref:     values.element_ref?.trim() || null,
       };
 
       let instanceId: string;
@@ -413,6 +425,52 @@ export function PPIInstanceFormDialog({
                 </FormItem>
               )}
             />
+
+            {/* Location fields */}
+            <div className="grid grid-cols-2 gap-3">
+              <FormField
+                control={form.control}
+                name="pk_inicio"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("ppi.location.pkStart")}</FormLabel>
+                    <FormControl><Input placeholder="30+125" {...field} /></FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="pk_fim"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("ppi.location.pkEnd")}</FormLabel>
+                    <FormControl><Input placeholder="30+250" {...field} /></FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <FormField
+                control={form.control}
+                name="zone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("ppi.location.zone")}</FormLabel>
+                    <FormControl><Input placeholder="OA-01, Troço T2" {...field} /></FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="element_ref"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("ppi.location.elementRef")}</FormLabel>
+                    <FormControl><Input placeholder="Viga V1, Pilar P3" {...field} /></FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
 
             {/* Code — auto-generated with discipline prefix, or manual override */}
             <div className="space-y-2">

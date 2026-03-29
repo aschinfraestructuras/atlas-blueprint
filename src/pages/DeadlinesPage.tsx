@@ -256,7 +256,7 @@ export default function DeadlinesPage() {
                 label: t("deadlines.exportCsv"),
                 icon: "csv",
                 action: () => {
-                  const headers = ["Tipo", "Entidade", "Data", "Dias", "Estado", "Urgência"];
+                  const headers = [t("deadlines.col.type"), t("deadlines.col.entity"), t("deadlines.col.date"), t("deadlines.col.days"), t("common.status"), t("deadlines.col.urgency")];
                   const rows = filtered.map(i => [
                     t(`deadlines.sources.${i.source}`),
                     `"${(i.entity_label ?? "").replace(/"/g, '""')}"`,

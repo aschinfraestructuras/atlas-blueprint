@@ -64,7 +64,19 @@
     "allSubcontractors": "Todos los subcontratistas",
     "selectPlaceholder": "Seleccionar...",
     "selectTypePlaceholder": "Seleccionar tipo...",
-    "linkDoc": "Vincular documento..."
+    "linkDoc": "Vincular documento...",
+    "activity": "Actividad",
+    "point": "Pto",
+    "pk": "PK",
+    "material": "Material",
+    "conform": "Conforme",
+    "nonConform": "No conforme",
+    "ok": "OK",
+    "nok": "NOK",
+    "apto": "Apto",
+    "inapto": "No apto",
+    "other": "Otro",
+    "add": "Añadir"
   },
   "auth": {
     "signIn": "Iniciar sesión",
@@ -682,218 +694,16 @@
     }
   },
   "documents": {
-    "editWarningApproved": "Este documento está aprobado. Cualquier edición debe registrarse con nueva revisión.",
-    "editWarningUnderReview": "Este documento está en revisión. Las ediciones se guardarán pero no cambian el estado.",
-    "newDocument": "Nuevo Documento",
-    "noFile": "Sin archivo",
-    "allFiles": "documentos",
-    "searchPlaceholder": "Buscar por título, código, tipo o revisión…",
-    "filterAll": "Todos los módulos",
-    "filterAllStatus": "Todos los estados",
-    "filterAllTypes": "Todos los tipos",
-    "filterAllDisciplinas": "Todas las disciplinas",
-    "table": {
-      "title": "Título",
-      "code": "Código",
-      "type": "Tipo",
-      "disciplina": "Disciplina",
-      "revision": "Revisión",
-      "file": "Archivo",
-      "fileName": "Archivo",
-      "module": "Módulo",
-      "size": "Tamaño"
-    },
-    "entityTypes": {
-      "documents": "Documentos",
-      "tests": "Ensayos",
-      "non_conformities": "No Conformidades",
-      "suppliers": "Proveedores",
-      "subcontractors": "Subcontratistas",
-      "survey": "Topografía",
-      "technical_office": "Of. Técnica",
-      "ppi": "PPI"
-    },
-    "disciplinas": {
-      "geral": "General",
-      "estruturas": "Estructuras",
-      "geotecnia": "Geotecnia",
-      "hidraulica": "Hidráulica",
-      "estradas": "Carreteras",
-      "ambiente": "Medio Ambiente",
-      "seguranca": "Seguridad",
-      "eletrica": "Eléctrica",
-      "mecanica": "Mecánica",
-      "outro": "Otro",
-      "catenaria": "Catenaria",
-      "drenagem": "Drenaje",
-      "ferrovia": "Ferrocarril / Vía Férrea",
-      "geologia_geotecnia": "Geología y Geotecnia",
-      "muros_suporte": "Muros de Contención",
-      "restabelecimentos": "Restituciones / Servidumbres",
-      "sinalizacao": "Señalización Ferroviaria",
-      "terraplenagem": "Explanación / Vía",
-      "topografia": "Cartografía / Topografía"
-    },
-    "actions": {
-      "upload": "Subir archivo",
-      "replace": "Reemplazar archivo",
-      "download": "Descargar archivo",
-      "view": "Ver en nueva pestaña",
-      "submit": "Enviar a revisión",
-      "approve": "Aprobar",
-      "reject": "Rechazar",
-      "backToDraft": "Volver a Borrador",
-      "obsolete": "Marcar como Obsoleto",
-      "archive": "Archivar",
-      "newVersion": "Nueva Versión"
-    },
-    "status": {
-      "draft": "Borrador",
-      "in_review": "En Revisión",
-      "approved": "Aprobado",
-      "obsolete": "Obsoleto",
-      "archived": "Archivado"
-    },
-    "docTypes": {
-      "procedure": "Procedimiento",
-      "instruction": "Instrucción",
-      "plan": "Plan",
-      "report": "Informe",
-      "certificate": "Certificado",
-      "drawing": "Plano",
-      "specification": "Especificación",
-      "form": "Impreso",
-      "record": "Registro",
-      "other": "Otro",
-      "cte": "Condiciones Técnicas Especiales (CTE)",
-      "dpu": "Definición de Precios Unitarios (DPU)",
-      "egt": "Estudio Geológico y Geotécnico (EGT)",
-      "index": "Índice",
-      "interoperability_report": "Informe de Interoperabilidad",
-      "mdj": "Memoria Descriptiva y Justificativa (MDJ)",
-      "med": "Mediciones Detalladas (MED)"
-    },
-    "form": {
-      "titleCreate": "Nuevo Documento",
-      "titleEdit": "Editar Documento",
-      "title": "Título del documento",
-      "titlePlaceholder": "ej: Plan de Control de Calidad",
-      "type": "Tipo de documento",
-      "typePlaceholder": "Seleccionar tipo…",
-      "disciplina": "Disciplina",
-      "disciplinaPlaceholder": "Seleccionar disciplina…",
-      "revision": "Revisión",
-      "revisionPlaceholder": "ej: A, 1, 01",
-      "fileUrl": "URL del archivo",
-      "fileUrlPlaceholder": "https://…",
-      "mainFile": "Archivo principal",
-      "attachFile": "Adjuntar archivo…",
-      "replaceFile": "Nueva versión del archivo…",
-      "createBtn": "Crear documento",
-      "lockedNotice": "Este documento está bloqueado para edición. Solo se pueden añadir adjuntos.",
-      "changeDescription": "Descripción del cambio",
-      "changeDescriptionPlaceholder": "Describa lo que cambió en esta versión…",
-      "template": "Modelo de formulario",
-      "templatePlaceholder": "Seleccionar modelo…",
-      "noTemplate": "Sin modelo (documento en blanco)",
-      "code": "Código del documento",
-      "issuedAt": "Fecha de emisión",
-      "tags": "Etiquetas",
-      "tagsPlaceholder": "ej: calidad, hormigón, seguridad",
-      "validation": {
-        "titleRequired": "El título es obligatorio.",
-        "typeRequired": "El tipo es obligatorio.",
-        "disciplinaRequired": "La disciplina es obligatoria.",
-        "fileUrlInvalid": "Introduzca una URL válida."
-      },
-      "disciplinaOutro": "Otra disciplina",
-      "typeOutro": "Otro tipo"
-    },
-    "detail": {
-      "breadcrumb": "Documentos",
-      "info": "Información General",
-      "code": "Código",
-      "createdAt": "Creado el",
-      "approvedAt": "Aprobado el",
-      "tabs": {
-        "versions": "Versiones",
-        "links": "Enlaces",
-        "attachments": "Adjuntos",
-        "form": "Formulario"
-      }
-    },
-    "versions": {
-      "title": "Historial de Versiones",
-      "version": "Versión {{n}}",
-      "current": "Actual",
-      "noVersions": "Sin versiones registradas.",
-      "uploadedBy": "Subido por",
-      "changeDescription": "Cambio"
-    },
-    "links": {
-      "title": "Entidades Enlazadas",
-      "addLink": "Enlazar entidad",
-      "entityType": "Tipo de Entidad",
-      "noLinks": "Sin enlaces.",
-      "added": "Enlace creado.",
-      "removed": "Enlace eliminado.",
-      "entityTypes": {
-        "work_item": "Actividad",
-        "ppi_instance": "PPI",
-        "test_result": "Ensayo",
-        "non_conformity": "NC",
-        "supplier": "Proveedor"
-      }
-    },
-    "linkedPanel": {
-      "title": "Documentos Asociados",
-      "addDoc": "Asociar documento",
-      "selectDoc": "Seleccionar documento",
-      "empty": "Sin documentos asociados.",
-      "noAvailable": "Ningún documento disponible."
-    },
-    "bulk": {
-      "selected": "{{count}} seleccionado(s)",
-      "archive": "Archivar seleccionados",
-      "exportSelected": "Exportar seleccionados",
-      "clear": "Limpiar selección"
-    },
-    "export": {
-      "reportTitle": "Ficha de Documento",
-      "listReportTitle": "Lista de Documentos",
-      "generatedOn": "Generado el",
-      "page": "Página",
-      "of": "de",
+    "externalApproval": {
+      "title": "Aprobación externa",
+      "entity": "Entidad aprobadora",
       "approvedBy": "Aprobado por",
-      "version": "Versión",
-      "versionNo": "Nº",
-      "uploadedAt": "Fecha de carga",
-      "exportPdf": "Exportar PDF"
-    },
-    "dynamicForm": {
-      "title": "Formulario"
-    },
-    "toast": {
-      "created": "Documento creado con éxito.",
-      "updated": "Documento actualizado con éxito.",
-      "deleted": "Documento eliminado.",
-      "deleteError": "Error al eliminar el documento.",
-      "fileUploaded": "Archivo «{{name}}» subido con éxito.",
-      "uploaded": "Archivo «{{name}}» subido con éxito.",
-      "uploadError": "Error al subir el archivo",
-      "downloadError": "Error al descargar el archivo",
-      "error": "Ocurrió un error. Inténtelo de nuevo.",
-      "status_in_review": "Documento enviado a revisión.",
-      "status_approved": "Documento aprobado.",
-      "status_draft": "Documento vuelto a Borrador.",
-      "status_obsolete": "Documento marcado como obsoleto.",
-      "status_archived": "Documento archivado.",
-      "versionCreated": "Nueva versión creada con éxito.",
-      "bulkArchived": "{{count}} documento(s) archivado(s)."
-    },
-    "deleteConfirm": {
-      "title": "¿Eliminar documento?",
-      "description": "El documento «{{name}}» y su archivo serán eliminados permanentemente. Esta acción no se puede revertir."
+      "approvedAt": "Fecha de aprobación",
+      "ref": "Referencia / Nº oficio",
+      "badge": "Aprobado externamente",
+      "entityPlaceholder": "ej: IP — Fiscalización PF17A",
+      "approvedByPlaceholder": "ej: Ing. Fernanda Costa",
+      "refPlaceholder": "ej: Oficio nº 2026/PF17A/045"
     }
   },
   "tests": {
@@ -1256,7 +1066,8 @@
       "titleEdit": "Editar Laboratorio",
       "createBtn": "Crear Laboratorio",
       "saveBtn": "Guardar"
-    }
+    },
+    "accreditationValidity": "Validez de la Acreditación"
   },
   "suppliers": {
     "newSupplier": "Nuevo Proveedor",
@@ -1535,7 +1346,7 @@
     },
     "correctionType": {
       "accept": "Aceptar (derogación F/IP)",
-      "repair": "Reparar/retrabajar",
+      "repair": "Reparar",
       "demolish": "Demoler y rehacer",
       "reject": "Rechazar/devolver"
     },
@@ -1698,6 +1509,10 @@
       "fieldsUpdated": "Campos actualizados",
       "statusChanged": "Estado cambiado",
       "updated": "Actualizada"
+    },
+    "rootCauseMethod": {
+      "5whys": "5 Porqués",
+      "ishikawa": "Ishikawa"
     }
   },
   "technicalOffice": {
@@ -2021,7 +1836,18 @@
       "status_archived": "Plan archivado.",
       "imported": "Planos importados con éxito"
     },
-    "importPF17A": "Importar PF17A"
+    "importPF17A": "Importar PF17A",
+    "controlledCopies": {
+      "title": "Copias Controladas",
+      "new": "Nueva Copia Controlada",
+      "recipient": "Destinatario",
+      "recipientPlaceholder": "Nombre del destinatario",
+      "entity": "Entidad",
+      "confirmed": "Confirmada",
+      "confirmReceipt": "Confirmar recepción",
+      "noRecords": "Sin copias controladas registradas",
+      "delivery": "Entrega"
+    }
   },
   "survey": {
     "newRecord": "Nuevo Levantamiento",
@@ -2821,6 +2647,12 @@
       "statusPending": "Pendiente",
       "timeLabel": "Hora",
       "unnotifiedWarning": "Existen ítems HP sin notificación"
+    },
+    "location": {
+      "pkStart": "PK inicio",
+      "pkEnd": "PK fin",
+      "zone": "Zona / Ubicación",
+      "elementRef": "Elemento"
     }
   },
   "attachments": {
@@ -3147,248 +2979,26 @@
     }
   },
   "settings": {
-    "importPpiTemplates": "Importar Templates PPI PF17A",
-    "importPpiDesc": "Cargar los 12 templates de PPI con contenido técnico real de la obra PF17A",
-    "ppiAlreadyImported": "Templates PPI ya existen en este proyecto.",
-    "ppiImportSuccess": "Templates PPI importados con éxito.",
-    "ppiImported": "Importado",
-    "importPpiDone": "12 plantillas PPI importadas con éxito",
-    "importPpiExists": "Las plantillas ya existen para este proyecto",
-    "ownResources": "Recursos Propios",
-    "ownResourcesDesc": "Personal y Equipos — ASCH Infraestructuras",
-    "contactsTab": "Contactos del Proyecto",
-    "contactsTabDesc": "Gestionar contactos y listas de distribución",
-    "usageMembers": "Miembros",
-    "usagePpis": "PPIs activos",
-    "usageNcs": "NCs abiertas",
-    "usageTests": "Ensayos pendientes",
-    "usage": {
-      "activeMembers": "Miembros Activos",
-      "activePpis": "PPIs Activos",
-      "openNcs": "NCs Abiertas",
-      "pendingTests": "Ensayos Pendientes"
-    },
-    "project": {
-      "contractor": "Contratista",
-      "client": "Propietario",
-      "location": "Ubicación",
-      "contractNumber": "Nº de Contrato",
-      "metadata": "Datos del Proyecto (PDF)"
-    },
-    "members": {
-      "inviteBtn": "Invitar Miembro",
-      "inviteTitle": "Añadir Miembro",
-      "colName": "Nombre",
-      "colEmail": "Email",
-      "colRole": "Perfil",
-      "you": "usted",
-      "noMembers": "Sin miembros",
-      "roleLabel": "Perfil",
-      "emailLabel": "Email",
-      "emailPlaceholder": "email@ejemplo.com",
-      "sendInvite": "Enviar Invitación",
-      "createBtn": "Crear Cuenta",
-      "createAccount": "Crear cuenta directamente",
-      "passwordLabel": "Contraseña temporal",
-      "passwordPlaceholder": "Mín. 6 caracteres",
-      "passwordHint": "El usuario puede cambiarla después en su perfil.",
-      "passwordTooShort": "La contraseña debe tener al menos 6 caracteres.",
-      "inviteToken": "Token de invitación",
-      "inviteEmailSent": "Invitación enviada por email.",
-      "accountCreated": "Cuenta creada con éxito.",
-      "addedDirectly": "Usuario existente añadido al proyecto.",
-      "alreadyMember": "Este usuario ya es miembro activo de este proyecto.",
-      "roleUpdated": "Perfil actualizado.",
-      "memberRemoved": "Miembro eliminado.",
-      "inviteDeleted": "Invitación eliminada.",
-      "removeTitle": "Eliminar Miembro",
-      "removeDesc": "¿Está seguro de que desea eliminar a {{name}} del proyecto?",
-      "removeConfirm": "Confirmar eliminación",
-      "pendingInvites": "Invitaciones Pendientes",
-      "expires": "Expira"
-    },
-    "roles": {
-      "admin": "Administrador",
-      "project_manager": "Director de Obra",
-      "quality_manager": "Resp. Calidad",
-      "technician": "Técnico",
-      "viewer": "Fiscalización"
-    },
-    "roleDescriptions": {
-      "admin": "Acceso total. Gestiona miembros, configuraciones y todos los módulos.",
-      "project_manager": "Crea, edita y aprueba en todos los módulos. Sin gestión de miembros.",
-      "quality_manager": "Crea, edita y valida. Enfoque en calidad y conformidad.",
-      "technician": "Crea y edita registros. Sin validación ni aprobación.",
-      "viewer": "Solo consulta. Puede exportar informes PDF."
-    },
-    "password": {
-      "changeBtn": "Cambiar Contraseña",
-      "newPasswordLabel": "Nueva contraseña",
-      "newPasswordPlaceholder": "Introduzca la nueva contraseña",
-      "success": "Contraseña cambiada con éxito.",
-      "error": "Error al cambiar la contraseña."
+    "integrations": {
+      "title": "Integraciones y Herramientas",
+      "subtitle": "Acceso directo a las herramientas de desarrollo",
+      "analytics": "Analytics de Uso",
+      "analyticsDesc": "Informes de uso, sesiones y comportamiento de los usuarios en Atlas QMS.",
+      "github": "Repositorio de Código",
+      "githubDesc": "Código fuente, historial de versiones y registro de cambios de Atlas QMS.",
+      "database": "Base de Datos",
+      "databaseDesc": "Gestión de la base de datos, migraciones, Edge Functions y configuraciones de seguridad.",
+      "open": "Abrir",
+      "external": "Externo"
     }
   },
   "topography": {
-    "title": "Mediciones & Equipos",
-    "subtitle": "EMEs, calibraciones, solicitudes y controles topográficos",
-    "surveys": "Levantamientos",
-    "equipment": "Equipos",
-    "calibrations": "Calibraciones",
-    "requests": "Solicitudes",
-    "controls": "Control Geométrico",
-    "newEquipment": "Nuevo Equipo",
-    "newCalibration": "Registrar Calibración",
-    "newRequest": "Nueva Solicitud",
-    "newControl": "Nuevo Control",
-    "calibrationBlocked": "Equipo con calibración inválida. Actualice el certificado antes de registrar mediciones.",
     "cycle": {
-      "closed_ok": "Ejecutado",
-      "closed_nok": "No conforme",
-      "overdue": "En retraso",
-      "pending": "Pendiente",
-      "executedBy": "Ejecutado por",
-      "deviation": "Desviación medida"
-    },
-    "calibrationHistory": "Historial de Calibraciones",
-    "noCalibrationsYet": "Sin calibraciones registradas.",
-    "noLinked": "Sin registros topográficos vinculados a esta actividad.",
-    "documents": "Documentos",
-    "archiveTab": "Archivo Topográfico",
-    "archiveSubtitle": "MDJs, Anexos, Fichas y Piezas Dibujadas de la disciplina de Topografía",
-    "newDocument": "Nuevo Documento",
-    "noDocuments": "Sin documentos en el Archivo Topográfico. Cree el primer documento o cargue los documentos estándar del proyecto.",
-    "seedDocs": "Cargar {{count}} docs del proyecto",
-    "seedSuccess": "{{count}} documentos de topografía creados con éxito",
-    "seedError": "Error al crear documentos de topografía",
-    "topoDrawings": "Dibujos Topográficos",
-    "noDrawingsInTechOffice": "Sin dibujos topográficos registrados. Cree piezas dibujadas en el Archivo Topográfico para que aparezcan aquí.",
-    "deleteConfirm": "Este registro será eliminado permanentemente. ¿Está seguro?",
-    "searchPlaceholder": "Buscar código, tipo, zona…",
-    "exportReq": "Exportar REQ",
-    "status": {
-      "valid": "Válido",
-      "expiring_soon": "Expira pronto",
-      "expired": "Expirado"
-    },
-    "kpi": {
-      "totalEmes": "Total EMEs",
-      "calibrated": "Calibrados",
-      "expiring30d": "Expira en 30d",
-      "expired": "Expirados",
-      "pendingRequests": "Solicitudes Pendientes",
-      "ncControls": "Controles NC"
-    },
-    "alert": {
-      "expiringTitle": "{{count}} equipo(s) con calibración por expirar en los próximos 30 días",
-      "expiringDesc": "verificar antes de usar en campo"
-    },
-    "expiredAgo": "Expirado hace {{days}} días",
-    "expiresIn": "{{days}} días",
-    "requestStatus": {
-      "pending": "Pendiente",
-      "assigned": "Asignado",
-      "in_progress": "En curso",
-      "completed": "Completado",
-      "cancelled": "Cancelado"
-    },
-    "requestType": {
-      "implantacao": "Implantación",
-      "levantamento": "Levantamiento",
-      "controlo": "Control",
-      "verificacao": "Verificación"
-    },
-    "priority": {
-      "low": "Baja",
-      "normal": "Normal",
-      "high": "Alta",
-      "urgent": "Urgente"
-    },
-    "result": {
-      "conforme": "Conforme",
-      "nao_conforme": "No conforme"
-    },
-    "equipmentType": {
-      "estacao_total": "Estación Total",
-      "gnss": "GNSS",
-      "nivel_otico": "Nivel Óptico",
-      "drone": "Drone",
-      "scanner_3d": "Scanner 3D",
-      "outros": "Otros"
-    },
-    "eqStatus": {
-      "active": "Activo",
-      "inactive": "Inactivo",
-      "archived": "Archivado"
-    },
-    "filters": {
-      "allStatuses": "Todos los estados",
-      "allResults": "Todos los resultados",
-      "allCalStatuses": "Todas las calibraciones"
-    },
-    "table": {
-      "code": "Código",
-      "type": "Tipo",
-      "brandModel": "Marca/Modelo",
-      "serial": "Nº Serie",
-      "responsible": "Responsable",
-      "calibration": "Calibración",
-      "validity": "Validez",
-      "requestType": "Tipo",
-      "zone": "Zona",
-      "priority": "Prioridad",
+      "viewDetail": "Ver levantamiento",
       "element": "Elemento",
       "tolerance": "Tolerancia",
-      "measuredValue": "Valor Medido",
-      "deviation": "Desviación",
-      "result": "Resultado",
-      "technician": "Técnico",
+      "measured": "Valor medido",
       "equipment": "Equipo"
-    },
-    "form": {
-      "editEquipment": "Editar Equipo",
-      "newEquipment": "Nuevo Equipo Topográfico",
-      "editCalibration": "Editar Calibración",
-      "newCalibration": "Registrar Calibración",
-      "editRequest": "Editar Solicitud de Topografía",
-      "newRequest": "Nueva Solicitud de Topografía",
-      "editControl": "Editar Control Geométrico",
-      "newControl": "Nuevo Control Geométrico",
-      "controlDescription": "Registro de medición topográfica con verificación de calibración",
-      "blocked": "Bloqueado",
-      "selectEquipment": "Seleccione equipo",
-      "elementRequired": "Elemento es obligatorio",
-      "elementPlaceholder": "Ej: Eje vía, Cota plataforma",
-      "codeRequired": "Código es obligatorio",
-      "descriptionRequired": "Descripción es obligatoria",
-      "certEntity": "Entidad Certificadora",
-      "certEntityRequired": "Entidad certificadora es obligatoria",
-      "certEntityPlaceholder": "Ej: ISQ, CATIM",
-      "certNumber": "Nº Certificado",
-      "issueDate": "Fecha Emisión",
-      "validUntil": "Fecha Validez",
-      "validUntilRequired": "Fecha de validez es obligatoria",
-      "brand": "Marca",
-      "model": "Modelo",
-      "location": "Ubicación Actual",
-      "notes": "Notas",
-      "links": "Vínculos",
-      "workItem": "Actividad (Work Item)",
-      "ncLinked": "NC asociada",
-      "none": "Ninguna"
-    },
-    "toast": {
-      "equipmentCreated": "Equipo creado con éxito",
-      "equipmentUpdated": "Equipo actualizado",
-      "calibrationCreated": "Calibración registrada con éxito",
-      "calibrationUpdated": "Calibración actualizada",
-      "requestCreated": "Solicitud creada con éxito",
-      "requestUpdated": "Solicitud actualizada con éxito",
-      "controlCreated": "Control geométrico registrado con éxito",
-      "controlUpdated": "Control actualizado con éxito",
-      "deleted": "Eliminado con éxito",
-      "deleteError": "Error al eliminar",
-      "error": "Error al guardar"
     }
   },
   "planning": {
@@ -3722,7 +3332,14 @@
     },
     "noEntityLink": "Sin entidad asociada — redirigiendo a la lista.",
     "exportPdf": "Exportar PDF",
-    "exportCsv": "Exportar CSV"
+    "exportCsv": "Exportar CSV",
+    "col": {
+      "type": "Tipo",
+      "entity": "Entidad",
+      "date": "Fecha",
+      "days": "Días",
+      "urgency": "Urgencia"
+    }
   },
   "notifications": {
     "title": "Notificaciones",
@@ -4001,57 +3618,9 @@
     "newRecord": "Nuevo registro (N)"
   },
   "training": {
-    "title": "Formación",
-    "subtitle": "Registro de sesiones de formación y sensibilización",
-    "newSession": "Nueva Sesión",
-    "empty": "Aún no hay sesiones de formación registradas.",
-    "kpi": {
-      "total": "Total",
-      "thisMonth": "Este Mes",
-      "attendees": "Asistentes",
-      "types": "Tipos",
-      "coverage": "Cobertura del Equipo"
-    },
-    "noSafetyTraining": "Trabajadores sin formación",
-    "registerTraining": "Registrar formación",
-    "validUntil": "Válida hasta",
-    "expired": "Expirada",
-    "table": {
-      "code": "Código",
-      "type": "Tipo",
-      "title": "Título",
-      "attendees": "Asistentes"
-    },
-    "form": {
-      "type": "Tipo",
-      "title": "Título",
-      "location": "Lugar",
-      "startTime": "Inicio",
-      "endTime": "Fin",
-      "trainer": "Formador",
-      "topics": "Contenidos / Temas",
-      "attendees": "Asistentes",
-      "addAttendee": "Añadir",
-      "function": "Función",
-      "company": "Empresa"
-    },
-    "sessionTypes": {
-      "initial": "Formación Inicial",
-      "new_personnel": "Nuevos Colaboradores",
-      "specific": "Específica",
-      "subcontractor": "Subcontratista",
-      "other": "Otra"
-    },
-    "toast": {
-      "created": "Sesión de formación creada",
-      "deleted": "Sesión eliminada"
-    },
-    "types": {
-      "initial": "Formación Inicial",
-      "new_personnel": "Nuevos Colaboradores",
-      "specific": "Específica",
-      "subcontractor": "Subcontratista",
-      "other": "Otra"
+    "status": {
+      "attended_not_signed": "Presente, no firmó",
+      "no_training": "Sin formación"
     }
   },
   "audits": {
@@ -4099,7 +3668,8 @@
     "toast": {
       "created": "Auditoría creada",
       "updated": "Auditoría actualizada",
-      "deleted": "Auditoría cancelada"
+      "deleted": "Auditoría cancelada",
+      "loadError": "Error al cargar auditorías"
     },
     "exportPdf": "Exportar PAI (PDF)",
     "exportListPdf": "Lista Auditorías (PDF)",
@@ -4135,61 +3705,12 @@
     "pendingUT": "Pendientes US"
   },
   "monthlyReport": {
-    "title": "Informe Mensual SGQ",
-    "subtitle": "CE Cláusula 35.ª §11 — Informe mensual de calidad",
-    "create": "Nuevo Informe",
-    "createTitle": "Nuevo Informe Mensual SGQ",
-    "refMonth": "Mes de referencia",
-    "kpiAutoFill": "Los KPIs se rellenarán automáticamente con los datos actuales del proyecto.",
-    "submit": "Enviar informe",
-    "submitConfirm": "¿Confirmar envío del informe mensual?",
-    "submitted": "Informe enviado correctamente",
-    "observations": "Observaciones",
-    "correctiveActions": "Acciones Correctivas",
-    "nextMonthPlan": "Plan para el Próximo Mes",
-    "exportPdf": "Exportar PDF",
-    "onTime": "A tiempo",
-    "late": "Fuera de plazo",
-    "submittedAt": "Enviado",
-    "deadline": "Plazo",
-    "deleteConfirm": "¿Seguro que desea eliminar el informe {{code}}?",
-    "deadlineAlert": "⚠️ Informe Mensual SGQ — entregar hasta {{date}} ({{days}} días)",
-    "deadlineOverdue": "🔴 Informe Mensual SGQ atrasado — {{days}} días de atraso",
-    "createReport": "Crear Informe",
-    "emptyTitle": "Ningún informe mensual",
-    "emptySubtitle": "Cree el primer informe mensual para iniciar el registro de KPIs.",
-    "status": {
-      "draft": "Borrador",
-      "submitted": "Enviado",
-      "accepted": "Aceptado"
-    },
-    "kpi": {
-      "testsPass": "Ensayos Conformes",
-      "ncOpen": "NCs Abiertas",
-      "ncClosed": "NCs Cerradas",
-      "hpConfirmed": "HPs Confirmados",
-      "matApproved": "Mat. Aprobados",
-      "matPending": "Mat. Pendientes",
-      "ppiCompleted": "PPIs Completados",
-      "emesExpiring": "EMEs por Expirar"
-    },
-    "ensaiosSection": "Ensayos y Control",
-    "testsSection": "Ensayos y Control de Calidad",
-    "autofillKpis": "Auto-rellenar KPIs",
-    "autofillDone": "KPIs rellenados automáticamente",
-    "concrete": "Hormigón",
-    "welds": "Soldaduras",
-    "soils": "Suelos y Compactación",
-    "topography": "Topografía",
-    "conformRate": "% Conformes",
-    "withUT": "Con US",
-    "pendingUT": "Sin US",
-    "batches": "Amasadas",
-    "lots": "Lotes",
-    "soilSamples": "Muestras suelo",
-    "compactionTests": "Ensayos compactación",
-    "controls": "Levantamientos",
-    "expiringEquip": "Equip. por expirar"
+    "currentMonth": "Resumen del mes actual",
+    "hpConfirmed": "HPs confirmados",
+    "betonagem": "Amasadas este mes",
+    "soldaduras": "Soldaduras este mes",
+    "topografia": "Controles topo. mes",
+    "partesDiarios": "Partes diarios mes"
   },
   "concrete": {
     "title": "Control de Hormigón — Fichas de Hormigonado",
@@ -4203,7 +3724,12 @@
       "specimens": "Probetas"
     },
     "specimens": {
-      "testDate": "Fecha Ensayo"
+      "testDate": "Fecha Ensayo",
+      "molding": "Moldeo",
+      "cureDays": "Curado (días)",
+      "labRef": "Ref. Lab",
+      "loadKn": "Carga (kN)",
+      "fracture": "Rotura"
     },
     "fields": {
       "code": "Código",
@@ -4241,6 +3767,23 @@
         "criterion": "Criterio NA.M",
         "result": "Resultado"
       }
+    },
+    "form": {
+      "class": "Clase de Hormigón",
+      "excClass": "Clase de Ejecución",
+      "exposureClass": "Clase de Exposición",
+      "ppiAssociated": "PPI asociado",
+      "slump": "Asentamiento (mm)",
+      "tempConcrete": "Temp. Hormigón (°C)",
+      "tempAmbient": "Temp. Ambiente (°C)",
+      "cementType": "Tipo de Cemento",
+      "maxAggregate": "Máx. Árido (mm)",
+      "deliveryNote": "Albarán",
+      "truckPlate": "Matrícula",
+      "labCentral": "Central / Lab",
+      "fabRef": "Ref. FAB",
+      "mqtCode": "Código MQT",
+      "hour": "Hora"
     }
   },
   "compaction": {
@@ -4259,6 +3802,31 @@
       "pass": "Conformes",
       "fail": "No Conformes",
       "pending": "Pendientes"
+    },
+    "table": {
+      "nuclear": "Nuclear",
+      "placa": "Placa",
+      "gammaDry": "γd seco",
+      "ev1": "Ev1",
+      "ev2": "Ev2",
+      "ka": "ka"
+    },
+    "form": {
+      "zoneDesc": "Descripción de la Zona",
+      "pkStart": "PK Inicio",
+      "pkEnd": "PK Fin",
+      "layer": "Capa",
+      "materialType": "Tipo Material",
+      "materialRef": "Ref. PAME",
+      "proctorCriteria": "Proctor / Criterios",
+      "gammaDryMax": "γd máx (kN/m³)",
+      "wOptimum": "w óptimo (%)",
+      "gcCriteria": "Criterio GC (%)",
+      "ev2Min": "Ev2 mín. (MPa)",
+      "ev2Ev1Max": "Ev2/Ev1 máx.",
+      "nuclearPoints": "Puntos Nucleares",
+      "plateTests": "Ensayos de Placa",
+      "linkedConcreteLot": "Lote de Hormigón asociado:"
     }
   },
   "soils": {
@@ -4292,6 +3860,11 @@
       "gravel": "Grava",
       "fill": "Relleno seleccionado",
       "other": "Otro"
+    },
+    "table": {
+      "sampleRef": "Ref. Muestra",
+      "depth": "Prof.",
+      "sections": "Secciones"
     }
   },
   "welding": {
@@ -4329,7 +3902,9 @@
       "editTitle": "Editar Soldadura",
       "newTitle": "Nueva Soldadura",
       "trackSide": "Lado vía",
-      "weldType": "Tipo soldadura"
+      "weldType": "Tipo soldadura",
+      "certValidity": "Validez Cert. EN ISO 9712",
+      "utResult": "Resultado US"
     }
   },
   "traceability": {
@@ -4675,54 +4250,27 @@
     "updateAvailable": "Nueva versión disponible — pulse para actualizar",
     "updateNow": "Actualizar ahora"
   },
-  "training": {
-    "status": {
-      "attended_not_signed": "Presente, no firmó",
-      "no_training": "Sin formación"
-    }
-  },
-  "topography": {
-    "cycle": {
-      "viewDetail": "Ver levantamiento",
-      "element": "Elemento",
-      "tolerance": "Tolerancia",
-      "measured": "Valor medido",
-      "equipment": "Equipo"
-    }
-  },
-  "monthlyReport": {
-    "currentMonth": "Resumen del mes actual",
-    "hpConfirmed": "HPs confirmados",
-    "betonagem": "Amasadas este mes",
-    "soldaduras": "Soldaduras este mes",
-    "topografia": "Controles topo. mes",
-    "partesDiarios": "Partes diarios mes"
-  },
-  "settings": {
-    "integrations": {
-      "title": "Integraciones y Herramientas",
-      "subtitle": "Acceso directo a las herramientas de desarrollo",
-      "analytics": "Analytics de Uso",
-      "analyticsDesc": "Informes de uso, sesiones y comportamiento de los usuarios en Atlas QMS.",
-      "github": "Repositorio de Código",
-      "githubDesc": "Código fuente, historial de versiones y registro de cambios de Atlas QMS.",
-      "database": "Base de Datos",
-      "databaseDesc": "Gestión de la base de datos, migraciones, Edge Functions y configuraciones de seguridad.",
-      "open": "Abrir",
-      "external": "Externo"
-    }
-  },
-  "documents": {
-    "externalApproval": {
-      "title": "Aprobación externa",
-      "entity": "Entidad aprobadora",
-      "approvedBy": "Aprobado por",
-      "approvedAt": "Fecha de aprobación",
-      "ref": "Referencia / Nº oficio",
-      "badge": "Aprobado externamente",
-      "entityPlaceholder": "ej: IP — Fiscalización PF17A",
-      "approvedByPlaceholder": "ej: Ing. Fernanda Costa",
-      "refPlaceholder": "ej: Oficio nº 2026/PF17A/045"
-    }
+  "orgChart": {
+    "roles": {
+      "admin": "Director de Obra",
+      "project_manager": "Gestor de Proyecto",
+      "quality_manager": "Responsable Calidad",
+      "quality_tech": "Técnico de Calidad",
+      "site_manager": "Encargado",
+      "lab_tech": "Técnico de Laboratorio",
+      "surveyor": "Topógrafo",
+      "inspector": "Inspector",
+      "technician": "Técnico",
+      "viewer": "Consultor / Observador"
+    },
+    "levels": {
+      "direction": "Dirección",
+      "coordination": "Coordinación",
+      "technical": "Equipo Técnico",
+      "observers": "Consultores / Observadores"
+    },
+    "title": "Organigrama de Obra",
+    "subtitle": "Estructura organizativa del proyecto",
+    "pdfTitle": "ORGANIGRAMA DE OBRA"
   }
 }

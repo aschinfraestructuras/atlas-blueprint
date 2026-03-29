@@ -255,10 +255,10 @@ export default function CompactionPage() {
                   <TableHead>{t("concrete.fields.code")}</TableHead>
                   <TableHead>{t("compaction.fields.description")}</TableHead>
                   <TableHead>{t("compaction.workItem", { defaultValue: "Elemento" })}</TableHead>
-                  <TableHead>PK</TableHead>
+                  <TableHead>{t("common.pk")}</TableHead>
                   <TableHead>{t("compaction.fields.material")}</TableHead>
-                  <TableHead>Nuclear</TableHead>
-                  <TableHead>Placa</TableHead>
+                  <TableHead>{t("compaction.table.nuclear")}</TableHead>
+                  <TableHead>{t("compaction.table.placa")}</TableHead>
                   <TableHead>{t("concrete.fields.result")}</TableHead>
                   <TableHead className="w-10" />
                 </TableRow>
@@ -315,13 +315,13 @@ export default function CompactionPage() {
           <Tabs defaultValue="identification">
             <TabsList className="grid grid-cols-2 w-full">
               <TabsTrigger value="identification">{t("concrete.tabs.identification")}</TabsTrigger>
-              <TabsTrigger value="proctor">Proctor / Critérios</TabsTrigger>
+              <TabsTrigger value="proctor">{t("compaction.form.proctorCriteria")}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="identification" className="space-y-3 mt-4">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label>Atividade</Label>
+                  <Label>{t("common.activity")}</Label>
                   <Select value={form.work_item_id} onValueChange={(v) => setForm((f) => ({ ...f, work_item_id: v, ppi_instance_id: "" }))}>
                     <SelectTrigger><SelectValue placeholder={t("common.selectPlaceholder")} /></SelectTrigger>
                     <SelectContent>
@@ -339,28 +339,28 @@ export default function CompactionPage() {
                   </Select>
                 </div>
               </div>
-              <div><Label>Descrição da Zona *</Label><Input value={form.zone_description} onChange={(e) => setForm((f) => ({ ...f, zone_description: e.target.value }))} placeholder="Aterro camada 3" /></div>
+              <div><Label>{t("compaction.form.zoneDesc")} *</Label><Input value={form.zone_description} onChange={(e) => setForm((f) => ({ ...f, zone_description: e.target.value }))} placeholder="Aterro camada 3" /></div>
               <div className="grid grid-cols-3 gap-3">
-                <div><Label>PK Início</Label><Input value={form.pk_start} onChange={(e) => setForm((f) => ({ ...f, pk_start: e.target.value }))} /></div>
-                <div><Label>PK Fim</Label><Input value={form.pk_end} onChange={(e) => setForm((f) => ({ ...f, pk_end: e.target.value }))} /></div>
-                <div><Label>Camada</Label><Input type="number" value={form.layer_no} onChange={(e) => setForm((f) => ({ ...f, layer_no: e.target.value }))} /></div>
+                <div><Label>{t("compaction.form.pkStart")}</Label><Input value={form.pk_start} onChange={(e) => setForm((f) => ({ ...f, pk_start: e.target.value }))} /></div>
+                <div><Label>{t("compaction.form.pkEnd")}</Label><Input value={form.pk_end} onChange={(e) => setForm((f) => ({ ...f, pk_end: e.target.value }))} /></div>
+                <div><Label>{t("compaction.form.layer")}</Label><Input type="number" value={form.layer_no} onChange={(e) => setForm((f) => ({ ...f, layer_no: e.target.value }))} /></div>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <div><Label>Tipo Material</Label><Input value={form.material_type} onChange={(e) => setForm((f) => ({ ...f, material_type: e.target.value }))} placeholder="tout-venant" /></div>
-                <div><Label>Ref. PAME</Label><Input value={form.material_ref} onChange={(e) => setForm((f) => ({ ...f, material_ref: e.target.value }))} /></div>
+                <div><Label>{t("compaction.form.materialType")}</Label><Input value={form.material_type} onChange={(e) => setForm((f) => ({ ...f, material_type: e.target.value }))} placeholder="tout-venant" /></div>
+                <div><Label>{t("compaction.form.materialRef")}</Label><Input value={form.material_ref} onChange={(e) => setForm((f) => ({ ...f, material_ref: e.target.value }))} /></div>
               </div>
               <div><Label>{t("common.date")}</Label><Input type="date" value={form.test_date} onChange={(e) => setForm((f) => ({ ...f, test_date: e.target.value }))} /></div>
             </TabsContent>
 
             <TabsContent value="proctor" className="space-y-3 mt-4">
               <div className="grid grid-cols-2 gap-3">
-                <div><Label>γd máx (kN/m³)</Label><Input type="number" step="0.1" value={form.proctor_gamma_max} onChange={(e) => setForm((f) => ({ ...f, proctor_gamma_max: e.target.value }))} /></div>
-                <div><Label>w óptimo (%)</Label><Input type="number" step="0.1" value={form.proctor_wopt} onChange={(e) => setForm((f) => ({ ...f, proctor_wopt: e.target.value }))} /></div>
+                <div><Label>{t("compaction.form.gammaDryMax")}</Label><Input type="number" step="0.1" value={form.proctor_gamma_max} onChange={(e) => setForm((f) => ({ ...f, proctor_gamma_max: e.target.value }))} /></div>
+                <div><Label>{t("compaction.form.wOptimum")}</Label><Input type="number" step="0.1" value={form.proctor_wopt} onChange={(e) => setForm((f) => ({ ...f, proctor_wopt: e.target.value }))} /></div>
               </div>
               <div className="grid grid-cols-3 gap-3">
-                <div><Label>Critério GC (%)</Label><Input type="number" step="0.1" value={form.compaction_criteria} onChange={(e) => setForm((f) => ({ ...f, compaction_criteria: e.target.value }))} /></div>
-                <div><Label>Ev2 mín. (MPa)</Label><Input type="number" step="0.1" value={form.ev2_criteria} onChange={(e) => setForm((f) => ({ ...f, ev2_criteria: e.target.value }))} /></div>
-                <div><Label>Ev2/Ev1 máx.</Label><Input type="number" step="0.1" value={form.ev2_ev1_criteria} onChange={(e) => setForm((f) => ({ ...f, ev2_ev1_criteria: e.target.value }))} /></div>
+                <div><Label>{t("compaction.form.gcCriteria")}</Label><Input type="number" step="0.1" value={form.compaction_criteria} onChange={(e) => setForm((f) => ({ ...f, compaction_criteria: e.target.value }))} /></div>
+                <div><Label>{t("compaction.form.ev2Min")}</Label><Input type="number" step="0.1" value={form.ev2_criteria} onChange={(e) => setForm((f) => ({ ...f, ev2_criteria: e.target.value }))} /></div>
+                <div><Label>{t("compaction.form.ev2Ev1Max")}</Label><Input type="number" step="0.1" value={form.ev2_ev1_criteria} onChange={(e) => setForm((f) => ({ ...f, ev2_ev1_criteria: e.target.value }))} /></div>
               </div>
             </TabsContent>
           </Tabs>
@@ -402,7 +402,7 @@ export default function CompactionPage() {
                 {detailData.zone.work_item_id && concreteLots[detailData.zone.work_item_id] && (
                   <div className="flex items-center gap-2 p-2 rounded-lg border border-border bg-muted/30">
                     <Link2 className="h-4 w-4 text-primary" />
-                    <span className="text-xs font-semibold">Lote de Betão associado:</span>
+                    <span className="text-xs font-semibold">{t("compaction.form.linkedConcreteLot")}</span>
                     <Badge
                       variant="outline"
                       className="cursor-pointer hover:bg-primary/10"
@@ -415,10 +415,10 @@ export default function CompactionPage() {
 
                 {detailData.nuclear.length > 0 && (
                   <>
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mt-4">Pontos Nucleares</h4>
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mt-4">{t("compaction.form.nuclearPoints")}</h4>
                     <Table>
                       <TableHeader><TableRow>
-                        <TableHead>Pto</TableHead><TableHead>PK</TableHead><TableHead>γd</TableHead><TableHead>w%</TableHead><TableHead>GC%</TableHead><TableHead>Result.</TableHead>
+                        <TableHead>{t("common.point")}</TableHead><TableHead>{t("common.pk")}</TableHead><TableHead>{t("compaction.table.gammaDry")}</TableHead><TableHead>w%</TableHead><TableHead>GC%</TableHead><TableHead>{t("common.result")}</TableHead>
                       </TableRow></TableHeader>
                       <TableBody>
                         {detailData.nuclear.map((n) => (
@@ -438,10 +438,10 @@ export default function CompactionPage() {
 
                 {detailData.plates.length > 0 && (
                   <>
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mt-4">Ensaios de Placa</h4>
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mt-4">{t("compaction.form.plateTests")}</h4>
                     <Table>
                       <TableHeader><TableRow>
-                        <TableHead>Pto</TableHead><TableHead>PK</TableHead><TableHead>Ev1</TableHead><TableHead>Ev2</TableHead><TableHead>Ev2/Ev1</TableHead><TableHead>Result.</TableHead>
+                        <TableHead>{t("common.point")}</TableHead><TableHead>{t("common.pk")}</TableHead><TableHead>{t("compaction.table.ev1")}</TableHead><TableHead>{t("compaction.table.ev2")}</TableHead><TableHead>Ev2/Ev1</TableHead><TableHead>{t("common.result")}</TableHead>
                       </TableRow></TableHeader>
                       <TableBody>
                         {detailData.plates.map((p) => (

@@ -814,7 +814,7 @@ export default function ConcretePage() {
             <TabsContent value="identification" className="space-y-3 mt-4">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label>Atividade</Label>
+                  <Label>{t("common.activity")}</Label>
                   <Select value={form.work_item_id} onValueChange={(v) => setForm((f) => ({ ...f, work_item_id: v, ppi_instance_id: "" }))}>
                     <SelectTrigger><SelectValue placeholder={t("common.selectPlaceholder")} /></SelectTrigger>
                     <SelectContent>
@@ -823,7 +823,7 @@ export default function ConcretePage() {
                   </Select>
                 </div>
                 <div>
-                  <Label>PPI associado</Label>
+                  <Label>{t("concrete.form.ppiAssociated")}</Label>
                   <Select value={form.ppi_instance_id} onValueChange={(v) => setForm((f) => ({ ...f, ppi_instance_id: v }))}>
                     <SelectTrigger><SelectValue placeholder={t("common.optional")} /></SelectTrigger>
                     <SelectContent>
@@ -837,20 +837,20 @@ export default function ConcretePage() {
                 <Input value={form.element_betonado} onChange={(e) => setForm((f) => ({ ...f, element_betonado: e.target.value }))} placeholder="Muro M1 — PK 30+500" />
               </div>
               <div className="grid grid-cols-3 gap-3">
-                <div><Label>PK</Label><Input value={form.pk_location} onChange={(e) => setForm((f) => ({ ...f, pk_location: e.target.value }))} /></div>
+                <div><Label>{t("common.pk")}</Label><Input value={form.pk_location} onChange={(e) => setForm((f) => ({ ...f, pk_location: e.target.value }))} /></div>
                 <div><Label>{t("common.date")}</Label><Input type="date" value={form.batch_date} onChange={(e) => setForm((f) => ({ ...f, batch_date: e.target.value }))} /></div>
-                <div><Label>Hora</Label><Input type="time" value={form.batch_time} onChange={(e) => setForm((f) => ({ ...f, batch_time: e.target.value }))} /></div>
+                <div><Label>{t("concrete.form.hour")}</Label><Input type="time" value={form.batch_time} onChange={(e) => setForm((f) => ({ ...f, batch_time: e.target.value }))} /></div>
               </div>
               <div className="grid grid-cols-3 gap-3">
-                <div><Label>Guia Remessa</Label><Input value={form.delivery_note_ref} onChange={(e) => setForm((f) => ({ ...f, delivery_note_ref: e.target.value }))} /></div>
-                <div><Label>Matrícula</Label><Input value={form.truck_plate} onChange={(e) => setForm((f) => ({ ...f, truck_plate: e.target.value }))} /></div>
-                <div><Label>Central / Lab</Label><Input value={form.lab_name} onChange={(e) => setForm((f) => ({ ...f, lab_name: e.target.value }))} /></div>
+                <div><Label>{t("concrete.form.deliveryNote")}</Label><Input value={form.delivery_note_ref} onChange={(e) => setForm((f) => ({ ...f, delivery_note_ref: e.target.value }))} /></div>
+                <div><Label>{t("concrete.form.truckPlate")}</Label><Input value={form.truck_plate} onChange={(e) => setForm((f) => ({ ...f, truck_plate: e.target.value }))} /></div>
+                <div><Label>{t("concrete.form.labCentral")}</Label><Input value={form.lab_name} onChange={(e) => setForm((f) => ({ ...f, lab_name: e.target.value }))} /></div>
               </div>
               {/* EXC, FAB, exposure, MQT */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <div className="flex items-center gap-1.5">
-                    <Label>Classe de Execução</Label>
+                    <Label>{t("concrete.form.excClass")}</Label>
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild><Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" /></TooltipTrigger>
@@ -868,7 +868,7 @@ export default function ConcretePage() {
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5">
-                    <Label>Ref. FAB</Label>
+                    <Label>{t("concrete.form.fabRef")}</Label>
                     {(form.exc_class === "EXC2" || form.exc_class === "EXC3") && (
                       <span className="text-xs text-destructive font-medium">(obrigatório EXC2/EXC3)</span>
                     )}
@@ -878,14 +878,14 @@ export default function ConcretePage() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label>Classe de Exposição</Label>
+                  <Label>{t("concrete.form.exposureClass")}</Label>
                   <Select value={form.exposure_class} onValueChange={(v) => setForm((f) => ({ ...f, exposure_class: v }))}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>{EXPOSURE_CLASSES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
                   </Select>
                 </div>
                 <div>
-                  <Label>Código MQT</Label>
+                  <Label>{t("concrete.form.mqtCode")}</Label>
                   <Input value={form.structural_element_mqt_code} onChange={(e) => setForm((f) => ({ ...f, structural_element_mqt_code: e.target.value }))} placeholder="F-02.05.03.03.07" />
                 </div>
               </div>
@@ -909,13 +909,13 @@ export default function ConcretePage() {
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-3">
-                <div><Label>Abaixamento (mm)</Label><Input type="number" value={form.slump_mm} onChange={(e) => setForm((f) => ({ ...f, slump_mm: e.target.value }))} /></div>
-                <div><Label>Temp. Betão (°C)</Label><Input type="number" value={form.temp_concrete} onChange={(e) => setForm((f) => ({ ...f, temp_concrete: e.target.value }))} /></div>
-                <div><Label>Temp. Ambiente (°C)</Label><Input type="number" value={form.temp_ambient} onChange={(e) => setForm((f) => ({ ...f, temp_ambient: e.target.value }))} /></div>
+                <div><Label>{t("concrete.form.slump")}</Label><Input type="number" value={form.slump_mm} onChange={(e) => setForm((f) => ({ ...f, slump_mm: e.target.value }))} /></div>
+                <div><Label>{t("concrete.form.tempConcrete")}</Label><Input type="number" value={form.temp_concrete} onChange={(e) => setForm((f) => ({ ...f, temp_concrete: e.target.value }))} /></div>
+                <div><Label>{t("concrete.form.tempAmbient")}</Label><Input type="number" value={form.temp_ambient} onChange={(e) => setForm((f) => ({ ...f, temp_ambient: e.target.value }))} /></div>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <div><Label>Tipo de Cimento</Label><Input value={form.cement_type} onChange={(e) => setForm((f) => ({ ...f, cement_type: e.target.value }))} placeholder="CEM II/B-L 32.5N" /></div>
-                <div><Label>Máx. Agregado (mm)</Label><Input type="number" value={form.max_aggregate} onChange={(e) => setForm((f) => ({ ...f, max_aggregate: e.target.value }))} /></div>
+                <div><Label>{t("concrete.form.cementType")}</Label><Input value={form.cement_type} onChange={(e) => setForm((f) => ({ ...f, cement_type: e.target.value }))} placeholder="CEM II/B-L 32.5N" /></div>
+                <div><Label>{t("concrete.form.maxAggregate")}</Label><Input type="number" value={form.max_aggregate} onChange={(e) => setForm((f) => ({ ...f, max_aggregate: e.target.value }))} /></div>
               </div>
             </TabsContent>
 
@@ -924,12 +924,12 @@ export default function ConcretePage() {
                 <TableHeader>
                   <TableRow>
                     <TableHead className="w-10">#</TableHead>
-                    <TableHead>Moldagem</TableHead>
-                    <TableHead>Cura (dias)</TableHead>
+                    <TableHead>{t("concrete.specimens.molding")}</TableHead>
+                    <TableHead>{t("concrete.specimens.cureDays")}</TableHead>
                     <TableHead>{t("concrete.specimens.testDate")}</TableHead>
-                    <TableHead>Ref. Lab</TableHead>
-                    <TableHead>Carga (kN)</TableHead>
-                    <TableHead>Rotura</TableHead>
+                    <TableHead>{t("concrete.specimens.labRef")}</TableHead>
+                    <TableHead>{t("concrete.specimens.loadKn")}</TableHead>
+                    <TableHead>{t("concrete.specimens.fracture")}</TableHead>
                     <TableHead className="w-10" />
                   </TableRow>
                 </TableHeader>

@@ -136,7 +136,7 @@ function LabFormDialog({ open, onOpenChange, lab, onSuccess }: {
             </div>
           </div>
           <div className="space-y-1.5">
-            <Label>Validade da Acreditação</Label>
+            <Label>{t("laboratories.accreditationValidity")}</Label>
             <Input type="date" value={accValidUntil} onChange={(e) => setAccValidUntil(e.target.value)} />
           </div>
           <div className="space-y-1.5">
