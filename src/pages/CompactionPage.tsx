@@ -354,13 +354,13 @@ export default function CompactionPage() {
 
             <TabsContent value="proctor" className="space-y-3 mt-4">
               <div className="grid grid-cols-2 gap-3">
-                <div><Label>γd máx (kN/m³)</Label><Input type="number" step="0.1" value={form.proctor_gamma_max} onChange={(e) => setForm((f) => ({ ...f, proctor_gamma_max: e.target.value }))} /></div>
-                <div><Label>w óptimo (%)</Label><Input type="number" step="0.1" value={form.proctor_wopt} onChange={(e) => setForm((f) => ({ ...f, proctor_wopt: e.target.value }))} /></div>
+                <div><Label>{t("compaction.form.gammaDryMax")}</Label><Input type="number" step="0.1" value={form.proctor_gamma_max} onChange={(e) => setForm((f) => ({ ...f, proctor_gamma_max: e.target.value }))} /></div>
+                <div><Label>{t("compaction.form.wOptimum")}</Label><Input type="number" step="0.1" value={form.proctor_wopt} onChange={(e) => setForm((f) => ({ ...f, proctor_wopt: e.target.value }))} /></div>
               </div>
               <div className="grid grid-cols-3 gap-3">
-                <div><Label>Critério GC (%)</Label><Input type="number" step="0.1" value={form.compaction_criteria} onChange={(e) => setForm((f) => ({ ...f, compaction_criteria: e.target.value }))} /></div>
-                <div><Label>Ev2 mín. (MPa)</Label><Input type="number" step="0.1" value={form.ev2_criteria} onChange={(e) => setForm((f) => ({ ...f, ev2_criteria: e.target.value }))} /></div>
-                <div><Label>Ev2/Ev1 máx.</Label><Input type="number" step="0.1" value={form.ev2_ev1_criteria} onChange={(e) => setForm((f) => ({ ...f, ev2_ev1_criteria: e.target.value }))} /></div>
+                <div><Label>{t("compaction.form.gcCriteria")}</Label><Input type="number" step="0.1" value={form.compaction_criteria} onChange={(e) => setForm((f) => ({ ...f, compaction_criteria: e.target.value }))} /></div>
+                <div><Label>{t("compaction.form.ev2Min")}</Label><Input type="number" step="0.1" value={form.ev2_criteria} onChange={(e) => setForm((f) => ({ ...f, ev2_criteria: e.target.value }))} /></div>
+                <div><Label>{t("compaction.form.ev2Ev1Max")}</Label><Input type="number" step="0.1" value={form.ev2_ev1_criteria} onChange={(e) => setForm((f) => ({ ...f, ev2_ev1_criteria: e.target.value }))} /></div>
               </div>
             </TabsContent>
           </Tabs>
