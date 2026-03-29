@@ -752,6 +752,7 @@ function WorkItemConcreteTab({ workItemId, projectId }: { workItemId: string; pr
 // ─── Weld (Soldaduras) tab ────────────────────────────────────────────────────
 
 function WorkItemWeldTab({ workItemId }: { workItemId: string }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [welds, setWelds] = useState<WeldRecord[]>([]);
   const [loading, setLoading] = useState(true);
