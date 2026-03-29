@@ -681,6 +681,31 @@
       "deleted": "Documento eliminado",
       "deleteError": "Erro ao eliminar documento",
       "error": "Erro ao carregar documentos"
+    },
+    "rdc": {
+      "title": "Distribuição Controlada",
+      "subtitle": "Registo de distribuição de cópias controladas (RDC)",
+      "register": "Registar Distribuição",
+      "new": "Novo Registo de Distribuição",
+      "docCode": "Código do documento",
+      "docRevision": "Revisão",
+      "copyNumber": "N.º Cópia",
+      "recipientName": "Destinatário",
+      "recipientEntity": "Entidade",
+      "deliveredAt": "Data de entrega",
+      "deliveryMethod": "Método de entrega",
+      "ackRef": "Ref. Acuse",
+      "receivedConfirmed": "Receção confirmada",
+      "methods": {
+        "email": "Email",
+        "fisico": "Físico",
+        "portal": "Portal",
+        "outro": "Outro"
+      },
+      "toast": {
+        "created": "Registo RDC criado",
+        "error": "Erro ao registar distribuição"
+      }
     }
   },
   "tests": {
@@ -1984,7 +2009,41 @@
       "docAdded": "Documento adicionado",
       "docRemoved": "Documento removido"
     },
-    "fipPending": "Aprovação F/IP pendente"
+    "fipPending": "Aprovação F/IP pendente",
+    "qualifications": {
+      "title": "Habilitações",
+      "add": "Adicionar Habilitação",
+      "new": "Nova Habilitação",
+      "code": "Código",
+      "technician": "Técnico",
+      "qualification": "Habilitação",
+      "certificate": "Certificado",
+      "issuedBy": "Emitido por",
+      "validUntil": "Válido até",
+      "status": "Estado",
+      "types": {
+        "IET77_DIR_TECNICO": "IET 77 — Diretor Técnico",
+        "IET77_RESP_SEGURANCA": "IET 77 — Resp. Segurança",
+        "IET77_RESP_TRABALHOS": "IET 77 — Resp. Trabalhos",
+        "RGSXII_CHEFE_TRABALHOS": "RGS XII — Chefe dos Trabalhos",
+        "RGSXII_CONTROLADOR_VI": "RGS XII — Controlador Via Interdita",
+        "EN14730_ALUMINOTERMICO": "EN 14730-1 — Soldadura Aluminotérmica",
+        "EN_ISO_9712_NII_FERROVIARIO": "EN ISO 9712 Nível II — Ferroviário",
+        "TOPOGRAFO_CERTIFICADO": "Topógrafo Certificado"
+      },
+      "validity": {
+        "ok": "Válido",
+        "alerta": "Alerta",
+        "urgente": "Urgente",
+        "expirado": "Expirado",
+        "sem_data": "Sem data"
+      },
+      "toast": {
+        "created": "Habilitação adicionada",
+        "deleted": "Habilitação eliminada",
+        "error": "Erro ao guardar habilitação"
+      }
+    }
   },
   "audit": {
     "table": {
@@ -3960,7 +4019,14 @@
     "betonagem": "Amassadas este mês",
     "soldaduras": "Soldaduras este mês",
     "topografia": "Controlos topo. mês",
-    "partesDiarios": "Partes diários mês"
+    "partesDiarios": "Partes diários mês",
+    "kpi": {
+      "ncOverdue15d": "RNCs >15 dias",
+      "rmOnTime": "RM no prazo",
+      "ncOverdue15dDesc": "RNCs em aberto há mais de 15 dias úteis (meta: 0)",
+      "rmOnTimeDesc": "Relatório entregue no prazo",
+      "rmLateWarning": "Relatório em atraso — CE Cl.ª 35.ª §11"
+    }
   },
   "concrete": {
     "title": "Controlo de Betão — Fichas de Betonagem",
