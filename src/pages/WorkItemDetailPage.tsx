@@ -807,6 +807,7 @@ function WorkItemWeldTab({ workItemId }: { workItemId: string }) {
 // ─── Soil (Solos) tab ─────────────────────────────────────────────────────────
 
 function WorkItemSoilTab({ workItemId }: { workItemId: string }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [samples, setSamples] = useState<SoilSample[]>([]);
   const [loading, setLoading] = useState(true);
