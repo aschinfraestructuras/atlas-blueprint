@@ -33,6 +33,7 @@ interface Props {
   entityId?: string;
   entityCode?: string;
   defaultSubject?: string;
+  defaultMessage?: string;
   pdfBase64?: string;
   pdfFilename?: string;
 }
