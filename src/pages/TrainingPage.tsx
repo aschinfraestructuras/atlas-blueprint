@@ -6,6 +6,8 @@ import { useProjectRole } from "@/hooks/useProjectRole";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { trainingService, type TrainingSession, type TrainingAttendee } from "@/lib/services/trainingService";
 import { projectWorkerService, type ProjectWorker } from "@/lib/services/projectWorkerService";
+import { supabase } from "@/integrations/supabase/client";
+import { cn } from "@/lib/utils";
 import { GraduationCap, Plus, FileText, Trash2, Eye, X, Users, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
