@@ -154,11 +154,11 @@ const SGQ_REQUIREMENTS: SGQRequirement[] = [
 
 // ─── Coverage helpers ────────────────────────────────────────────────────────
 
-const COVERAGE_CONFIG: Record<CoverageLevel, { label: string; icon: React.ElementType; className: string }> = {
-  full:     { label: "Cobertura Total",   icon: CheckCircle2, className: "text-emerald-600 bg-emerald-500/10" },
-  partial:  { label: "Cobertura Parcial", icon: AlertCircle,  className: "text-amber-600 bg-amber-500/10" },
-  planned:  { label: "Planeado",          icon: Circle,       className: "text-blue-500 bg-blue-500/10" },
-  external: { label: "Externo ao SGQ",    icon: Circle,       className: "text-muted-foreground bg-muted" },
+const COVERAGE_KEYS: Record<CoverageLevel, { icon: React.ElementType; className: string }> = {
+  full:     { icon: CheckCircle2, className: "text-emerald-600 bg-emerald-500/10" },
+  partial:  { icon: AlertCircle,  className: "text-amber-600 bg-amber-500/10" },
+  planned:  { icon: Circle,       className: "text-blue-500 bg-blue-500/10" },
+  external: { icon: Circle,       className: "text-muted-foreground bg-muted" },
 };
 
 // ─── Progress indicator ──────────────────────────────────────────────────────
