@@ -4898,5 +4898,23 @@
     "title": "Organigrama de Obra",
     "subtitle": "Estructura organizativa del proyecto",
     "pdfTitle": "ORGANIGRAMA DE OBRA"
+  },
+  "topographyFt": {
+    "title": "Ficha Topográfica",
+    "addPoint": "Añadir Punto",
+    "pointNo": "Punto N.º",
+    "pkElement": "PK / Elemento",
+    "projected": "Proyectado",
+    "measured": "Medido",
+    "delta": "Desviación",
+    "okNc": "OK / NC",
+    "noPoints": "Sin puntos registrados. Añada el primer punto de control.",
+    "saved": "Punto guardado",
+    "deleted": "Punto eliminado"
+  },
+  "dcq": {
+    "badge": "DCQ ✓",
+    "missing": "DCQ pendiente",
+    "missingDesc": "Declaración de Conocimiento SGC no vinculada"
   }
 }
