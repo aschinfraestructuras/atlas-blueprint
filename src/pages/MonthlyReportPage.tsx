@@ -302,17 +302,19 @@ export default function MonthlyReportPage() {
                    if (error) throw error;
                    const kpis = data as any;
                    // Direct update via supabase since service type is narrow
-                   await (supabase as any).from("monthly_quality_reports").update({
-                     kpi_tests_pass_rate: kpis.kpi_tests_pass_rate,
-                     kpi_nc_open: kpis.kpi_nc_open,
-                     kpi_nc_closed_month: kpis.kpi_nc_closed_month,
-                     kpi_hp_approved: kpis.kpi_hp_approved,
-                     kpi_hp_total: kpis.kpi_hp_total,
-                     kpi_mat_approved: kpis.kpi_mat_approved,
-                     kpi_mat_pending: kpis.kpi_mat_pending,
-                     kpi_ppi_completed: kpis.kpi_ppi_completed,
-                     kpi_emes_expiring: kpis.kpi_emes_expiring,
-                   }).eq("id", selectedReport.id);
+                    await (supabase as any).from("monthly_quality_reports").update({
+                      kpi_tests_pass_rate: kpis.kpi_tests_pass_rate,
+                      kpi_nc_open: kpis.kpi_nc_open,
+                      kpi_nc_closed_month: kpis.kpi_nc_closed_month,
+                      kpi_hp_approved: kpis.kpi_hp_approved,
+                      kpi_hp_total: kpis.kpi_hp_total,
+                      kpi_mat_approved: kpis.kpi_mat_approved,
+                      kpi_mat_pending: kpis.kpi_mat_pending,
+                      kpi_ppi_completed: kpis.kpi_ppi_completed,
+                      kpi_emes_expiring: kpis.kpi_emes_expiring,
+                      kpi_nc_overdue_15d: kpis.kpi_nc_overdue_15d ?? null,
+                      kpi_rm_on_time: kpis.kpi_rm_on_time ?? null,
+                    }).eq("id", selectedReport.id);
                    toast({ title: t("monthlyReport.autofillDone") });
                    await fetchReports();
                    const updated = (await monthlyReportService.listByProject(activeProject.id)).find(r => r.id === selectedReport.id);
