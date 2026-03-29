@@ -202,8 +202,8 @@ export function ControlledCopiesPanel({ planId, projectId, canEdit = true }: Pro
           </DialogHeader>
           <div className="space-y-3 py-2">
             <div>
-              <label className="text-xs font-medium text-foreground">{isEs ? "Destinatario" : "Destinatário"} *</label>
-              <Input value={form.recipient_name} onChange={e => setForm(f => ({ ...f, recipient_name: e.target.value }))} placeholder={isEs ? "Nombre del destinatario" : "Nome do destinatário"} />
+               <label className="text-xs font-medium text-foreground">{t("plans.controlledCopies.recipient")} *</label>
+               <Input value={form.recipient_name} onChange={e => setForm(f => ({ ...f, recipient_name: e.target.value }))} placeholder={t("plans.controlledCopies.recipientPlaceholder")} />
             </div>
             <div>
               <label className="text-xs font-medium text-foreground">{isEs ? "Entidad" : "Entidade"}</label>
