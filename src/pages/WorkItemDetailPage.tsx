@@ -737,7 +737,7 @@ function WorkItemConcreteTab({ workItemId, projectId }: { workItemId: string; pr
                   <p className="text-xs text-muted-foreground truncate">{b.element_betonado} · {b.concrete_class}</p>
                 </div>
                 <Badge variant={b.status === "pass" ? "default" : b.status === "fail" ? "destructive" : "outline"} className="text-[10px]">
-                  {b.status === "pass" ? "Conforme" : b.status === "fail" ? "Não Conforme" : "Pendente"}
+                  {b.status === "pass" ? t("common.conform") : b.status === "fail" ? t("common.nonConform") : t("common.pending")}
                 </Badge>
               </li>
             );
