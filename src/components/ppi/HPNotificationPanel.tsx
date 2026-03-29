@@ -538,14 +538,27 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
       )}
 
       {/* Notification Modal */}
-      <NotificationModal
-        open={notifyModalOpen}
-        onOpenChange={setNotifyModalOpen}
-        entityType="hp"
-        entityId={instance.id}
-        entityCode={instance.code}
-        defaultSubject={`NOT-HP — ${instance.code} — ${(instance as any).description ?? instance.code}`}
-      />
+      {(() => {
+        // Build default message from HP notifications
+        const hpTexts = notifications.map(n => {
+          const dateStr = n.planned_datetime
+            ? new Date(n.planned_datetime).toLocaleString("pt-PT", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })
+            : "—";
+          return `Notificação Prévia de Hold Point — 48 horas\n${n.code}\n\nPPI de referência: ${n.ppi_ref}\nPonto n.º: ${n.point_no}\nActividade: ${n.activity}\nLocalização / PK: ${n.location_pk || "—"}\nData e hora previstas: ${dateStr}\n${n.notes ? `\n${n.notes}\n` : ""}\nNos termos do PQO-PF17A-001 Sec. 10 e do CE Cláusula 35.ª, solicitamos a presença da Fiscalização/IP na data e hora indicadas para aprovação do ponto de controlo.\n\nACE ASCH Infraestructuras + Cimontubo\nEmpreitada PF17A — Linha do Sul · Porto de Setúbal`;
+        });
+        const defaultBody = hpTexts.length > 0 ? hpTexts[hpTexts.length - 1] : "";
+        return (
+          <NotificationModal
+            open={notifyModalOpen}
+            onOpenChange={setNotifyModalOpen}
+            entityType="hp"
+            entityId={instance.id}
+            entityCode={instance.code}
+            defaultSubject={`NOT-HP — ${instance.code} — ${(instance as any).description ?? instance.code}`}
+            defaultMessage={defaultBody}
+          />
+        );
+      })()}
 
       {/* ── Create notification dialog ─────────────────────────────── */}
       <Dialog open={dialogOpen} onOpenChange={(v) => { if (!v) setDialogOpen(false); }}>
