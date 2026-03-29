@@ -339,15 +339,15 @@ export default function CompactionPage() {
                   </Select>
                 </div>
               </div>
-              <div><Label>Descrição da Zona *</Label><Input value={form.zone_description} onChange={(e) => setForm((f) => ({ ...f, zone_description: e.target.value }))} placeholder="Aterro camada 3" /></div>
+              <div><Label>{t("compaction.form.zoneDesc")} *</Label><Input value={form.zone_description} onChange={(e) => setForm((f) => ({ ...f, zone_description: e.target.value }))} placeholder="Aterro camada 3" /></div>
               <div className="grid grid-cols-3 gap-3">
-                <div><Label>PK Início</Label><Input value={form.pk_start} onChange={(e) => setForm((f) => ({ ...f, pk_start: e.target.value }))} /></div>
-                <div><Label>PK Fim</Label><Input value={form.pk_end} onChange={(e) => setForm((f) => ({ ...f, pk_end: e.target.value }))} /></div>
-                <div><Label>Camada</Label><Input type="number" value={form.layer_no} onChange={(e) => setForm((f) => ({ ...f, layer_no: e.target.value }))} /></div>
+                <div><Label>{t("compaction.form.pkStart")}</Label><Input value={form.pk_start} onChange={(e) => setForm((f) => ({ ...f, pk_start: e.target.value }))} /></div>
+                <div><Label>{t("compaction.form.pkEnd")}</Label><Input value={form.pk_end} onChange={(e) => setForm((f) => ({ ...f, pk_end: e.target.value }))} /></div>
+                <div><Label>{t("compaction.form.layer")}</Label><Input type="number" value={form.layer_no} onChange={(e) => setForm((f) => ({ ...f, layer_no: e.target.value }))} /></div>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <div><Label>Tipo Material</Label><Input value={form.material_type} onChange={(e) => setForm((f) => ({ ...f, material_type: e.target.value }))} placeholder="tout-venant" /></div>
-                <div><Label>Ref. PAME</Label><Input value={form.material_ref} onChange={(e) => setForm((f) => ({ ...f, material_ref: e.target.value }))} /></div>
+                <div><Label>{t("compaction.form.materialType")}</Label><Input value={form.material_type} onChange={(e) => setForm((f) => ({ ...f, material_type: e.target.value }))} placeholder="tout-venant" /></div>
+                <div><Label>{t("compaction.form.materialRef")}</Label><Input value={form.material_ref} onChange={(e) => setForm((f) => ({ ...f, material_ref: e.target.value }))} /></div>
               </div>
               <div><Label>{t("common.date")}</Label><Input type="date" value={form.test_date} onChange={(e) => setForm((f) => ({ ...f, test_date: e.target.value }))} /></div>
             </TabsContent>
