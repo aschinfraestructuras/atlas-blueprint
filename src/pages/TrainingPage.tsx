@@ -103,11 +103,21 @@ export default function TrainingPage() {
 
   useEffect(() => { fetchSessions(); }, [fetchSessions]);
 
-  // Fetch workers coverage
+  // Fetch workers coverage — try view first, fallback to service
   useEffect(() => {
     if (!activeProject) return;
     (async () => {
       try {
+        // Try vw_workers_training_status view
+        const { data: viewData } = await supabase
+          .from("vw_workers_training_status" as any)
+          .select("*")
+          .eq("project_id", activeProject.id)
+          .neq("training_status", "trained");
+        if (viewData && viewData.length >= 0) {
+          setUntrainedView(viewData);
+        }
+        // Also get coverage from worker service
         const workers = await projectWorkerService.list(activeProject.id);
         const active = workers.filter(w => w.status === "active");
         const trained = active.filter(w => w.has_safety_training);
