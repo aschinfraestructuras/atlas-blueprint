@@ -23,6 +23,7 @@ const DashboardPage = lazy(() => import("./pages/DashboardPage"));
 const ProjectsPage = lazy(() => import("./pages/ProjectsPage"));
 const DocumentsPage = lazy(() => import("./pages/DocumentsPage"));
 const DocumentDetailPage = lazy(() => import("./pages/DocumentDetailPage"));
+const ControlledDistributionPage = lazy(() => import("./pages/ControlledDistributionPage"));
 const TestsPage = lazy(() => import("./pages/TestsPage"));
 const SuppliersPage = lazy(() => import("./pages/SuppliersPage"));
 const SupplierDetailPage = lazy(() => import("./pages/SupplierDetailPage"));
