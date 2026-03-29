@@ -8925,6 +8925,130 @@ export type Database = {
           },
         ]
       }
+      topography_ft_points: {
+        Row: {
+          control_id: string
+          created_at: string | null
+          delta_x: number | null
+          delta_y: number | null
+          delta_z: number | null
+          id: string
+          notes: string | null
+          ok_nc: string | null
+          pk_element: string | null
+          point_no: number
+          project_id: string
+          x_med: number | null
+          x_proj: number | null
+          y_med: number | null
+          y_proj: number | null
+          z_med: number | null
+          z_proj: number | null
+        }
+        Insert: {
+          control_id: string
+          created_at?: string | null
+          delta_x?: number | null
+          delta_y?: number | null
+          delta_z?: number | null
+          id?: string
+          notes?: string | null
+          ok_nc?: string | null
+          pk_element?: string | null
+          point_no: number
+          project_id: string
+          x_med?: number | null
+          x_proj?: number | null
+          y_med?: number | null
+          y_proj?: number | null
+          z_med?: number | null
+          z_proj?: number | null
+        }
+        Update: {
+          control_id?: string
+          created_at?: string | null
+          delta_x?: number | null
+          delta_y?: number | null
+          delta_z?: number | null
+          id?: string
+          notes?: string | null
+          ok_nc?: string | null
+          pk_element?: string | null
+          point_no?: number
+          project_id?: string
+          x_med?: number | null
+          x_proj?: number | null
+          y_med?: number | null
+          y_proj?: number | null
+          z_med?: number | null
+          z_proj?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "topography_ft_points_control_id_fkey"
+            columns: ["control_id"]
+            isOneToOne: false
+            referencedRelation: "topography_controls"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "topography_ft_points_control_id_fkey"
+            columns: ["control_id"]
+            isOneToOne: false
+            referencedRelation: "vw_topography_cycle"
+            referencedColumns: ["control_id"]
+          },
+          {
+            foreignKeyName: "topography_ft_points_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "topography_ft_points_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "topography_ft_points_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "topography_ft_points_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "topography_ft_points_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "topography_ft_points_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_rm_kpis"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "topography_ft_points_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_sgq_matrix_summary"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
       topography_requests: {
         Row: {
           created_at: string
@@ -9271,8 +9395,10 @@ export type Database = {
           pk_location: string
           portion_brand: string | null
           portion_lot: string | null
+          post_weld_checks: Json | null
           ppi_instance_id: string | null
           preheat_duration_min: number | null
+          preheat_equipment: string | null
           preheat_pass: boolean | null
           preheat_temp_c: number | null
           project_id: string
@@ -9280,6 +9406,11 @@ export type Database = {
           rejection_reason: string | null
           track_side: string | null
           updated_at: string
+          us_equipment_code: string | null
+          us_equipment_serial: string | null
+          us_frequency_mhz: number | null
+          us_inspection_zones: Json | null
+          us_norm_class: string | null
           ut_calibration_date: string | null
           ut_defect_desc: string | null
           ut_equipment_code: string | null
@@ -9290,6 +9421,7 @@ export type Database = {
           weld_date: string
           weld_type: string
           work_item_id: string | null
+          wps_ref: string | null
         }
         Insert: {
           alignment_criteria?: number | null
@@ -9319,8 +9451,10 @@ export type Database = {
           pk_location: string
           portion_brand?: string | null
           portion_lot?: string | null
+          post_weld_checks?: Json | null
           ppi_instance_id?: string | null
           preheat_duration_min?: number | null
+          preheat_equipment?: string | null
           preheat_pass?: boolean | null
           preheat_temp_c?: number | null
           project_id: string
@@ -9328,6 +9462,11 @@ export type Database = {
           rejection_reason?: string | null
           track_side?: string | null
           updated_at?: string
+          us_equipment_code?: string | null
+          us_equipment_serial?: string | null
+          us_frequency_mhz?: number | null
+          us_inspection_zones?: Json | null
+          us_norm_class?: string | null
           ut_calibration_date?: string | null
           ut_defect_desc?: string | null
           ut_equipment_code?: string | null
@@ -9338,6 +9477,7 @@ export type Database = {
           weld_date?: string
           weld_type?: string
           work_item_id?: string | null
+          wps_ref?: string | null
         }
         Update: {
           alignment_criteria?: number | null
@@ -9367,8 +9507,10 @@ export type Database = {
           pk_location?: string
           portion_brand?: string | null
           portion_lot?: string | null
+          post_weld_checks?: Json | null
           ppi_instance_id?: string | null
           preheat_duration_min?: number | null
+          preheat_equipment?: string | null
           preheat_pass?: boolean | null
           preheat_temp_c?: number | null
           project_id?: string
@@ -9376,6 +9518,11 @@ export type Database = {
           rejection_reason?: string | null
           track_side?: string | null
           updated_at?: string
+          us_equipment_code?: string | null
+          us_equipment_serial?: string | null
+          us_frequency_mhz?: number | null
+          us_inspection_zones?: Json | null
+          us_norm_class?: string | null
           ut_calibration_date?: string | null
           ut_defect_desc?: string | null
           ut_equipment_code?: string | null
@@ -9386,6 +9533,7 @@ export type Database = {
           weld_date?: string
           weld_type?: string
           work_item_id?: string | null
+          wps_ref?: string | null
         }
         Relationships: [
           {
