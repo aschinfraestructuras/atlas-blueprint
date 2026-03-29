@@ -878,7 +878,7 @@ export default function ConcretePage() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label>Classe de Exposição</Label>
+                  <Label>{t("concrete.form.exposureClass")}</Label>
                   <Select value={form.exposure_class} onValueChange={(v) => setForm((f) => ({ ...f, exposure_class: v }))}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>{EXPOSURE_CLASSES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
