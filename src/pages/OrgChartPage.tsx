@@ -87,7 +87,7 @@ export default function OrgChartPage() {
     </style></head><body>`;
 
     html += fullPdfHeader(logoBase64, projectName, "ORG-" + activeProject.code, "0", date);
-    html += `<h2 style="text-align:center;font-size:14px;color:#192F48;margin:12px 0;">ORGANIGRAMA DE OBRA</h2>`;
+    html += `<h2 style="text-align:center;font-size:14px;color:#192F48;margin:12px 0;">${t("orgChart.pdfTitle")}</h2>`;
 
     for (const lvl of levels) {
       const label = isEs ? levelLabels[lvl]?.es : levelLabels[lvl]?.pt;
