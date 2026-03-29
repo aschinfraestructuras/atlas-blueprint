@@ -839,7 +839,7 @@ export default function ConcretePage() {
               <div className="grid grid-cols-3 gap-3">
                 <div><Label>{t("common.pk")}</Label><Input value={form.pk_location} onChange={(e) => setForm((f) => ({ ...f, pk_location: e.target.value }))} /></div>
                 <div><Label>{t("common.date")}</Label><Input type="date" value={form.batch_date} onChange={(e) => setForm((f) => ({ ...f, batch_date: e.target.value }))} /></div>
-                <div><Label>Hora</Label><Input type="time" value={form.batch_time} onChange={(e) => setForm((f) => ({ ...f, batch_time: e.target.value }))} /></div>
+                <div><Label>{t("concrete.form.hour")}</Label><Input type="time" value={form.batch_time} onChange={(e) => setForm((f) => ({ ...f, batch_time: e.target.value }))} /></div>
               </div>
               <div className="grid grid-cols-3 gap-3">
                 <div><Label>Guia Remessa</Label><Input value={form.delivery_note_ref} onChange={(e) => setForm((f) => ({ ...f, delivery_note_ref: e.target.value }))} /></div>
