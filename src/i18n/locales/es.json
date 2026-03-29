@@ -4523,7 +4523,13 @@
       "hvCenter": "HV Centro",
       "hvRight": "HV Derecha",
       "hvCriteriaMin": "Criterio mín.",
-      "hvCriteriaMax": "Criterio máx."
+      "hvCriteriaMax": "Criterio máx.",
+      "wpsRef": "Ref. WPS",
+      "preheatEquipment": "Equipo precalentamiento",
+      "preheatEquipmentPlaceholder": "Marca, modelo, n.º serie",
+      "utSerial": "N.º Serie Equipo",
+      "utFrequency": "Frecuencia (MHz)",
+      "utNormClass": "Norma / Clase"
     },
     "utStatus": {
       "aceite": "Aceptado",
