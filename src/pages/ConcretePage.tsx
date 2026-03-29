@@ -914,8 +914,8 @@ export default function ConcretePage() {
                 <div><Label>{t("concrete.form.tempAmbient")}</Label><Input type="number" value={form.temp_ambient} onChange={(e) => setForm((f) => ({ ...f, temp_ambient: e.target.value }))} /></div>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <div><Label>Tipo de Cimento</Label><Input value={form.cement_type} onChange={(e) => setForm((f) => ({ ...f, cement_type: e.target.value }))} placeholder="CEM II/B-L 32.5N" /></div>
-                <div><Label>Máx. Agregado (mm)</Label><Input type="number" value={form.max_aggregate} onChange={(e) => setForm((f) => ({ ...f, max_aggregate: e.target.value }))} /></div>
+                <div><Label>{t("concrete.form.cementType")}</Label><Input value={form.cement_type} onChange={(e) => setForm((f) => ({ ...f, cement_type: e.target.value }))} placeholder="CEM II/B-L 32.5N" /></div>
+                <div><Label>{t("concrete.form.maxAggregate")}</Label><Input type="number" value={form.max_aggregate} onChange={(e) => setForm((f) => ({ ...f, max_aggregate: e.target.value }))} /></div>
               </div>
             </TabsContent>
 
