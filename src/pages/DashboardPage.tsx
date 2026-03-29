@@ -30,6 +30,7 @@ import { ModuleShortcuts } from "@/components/dashboard/ModuleShortcuts";
 import { ConformityByFrenteChart } from "@/components/dashboard/ConformityByFrenteChart";
 import { TestStatusCard } from "@/components/dashboard/TestStatusCard";
 import { ConcreteByClassCard } from "@/components/dashboard/ConcreteByClassCard";
+import { SgqKpiCards } from "@/components/dashboard/SgqKpiCards";
 import { cn } from "@/lib/utils";
 
 // ── Semaphore logic ───────────────────────────────────────────────
