@@ -90,11 +90,11 @@ export default function OrgChartPage() {
     html += `<h2 style="text-align:center;font-size:14px;color:#192F48;margin:12px 0;">${t("orgChart.pdfTitle")}</h2>`;
 
     for (const lvl of levels) {
-      const label = isEs ? levelLabels[lvl]?.es : levelLabels[lvl]?.pt;
+      const label = levelLabels[lvl];
       html += `<div class="level"><div class="level-title">${label ?? `Nível ${lvl}`}</div><div class="members">`;
       for (const m of grouped[lvl]) {
         const name = m.profile?.full_name || m.profile?.email || m.user_id.slice(0, 8);
-        const roleLabel = isEs ? m.meta.labelEs : m.meta.label;
+        const roleLabel = t(m.meta.labelKey);
         html += `<div class="card"><div class="card-name">${name}</div><div class="card-role">${roleLabel}</div>${m.profile?.email ? `<div class="card-email">${m.profile.email}</div>` : ""}</div>`;
       }
       html += `</div></div>`;
