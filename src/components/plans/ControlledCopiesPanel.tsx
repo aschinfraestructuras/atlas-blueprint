@@ -206,7 +206,7 @@ export function ControlledCopiesPanel({ planId, projectId, canEdit = true }: Pro
                <Input value={form.recipient_name} onChange={e => setForm(f => ({ ...f, recipient_name: e.target.value }))} placeholder={t("plans.controlledCopies.recipientPlaceholder")} />
             </div>
             <div>
-              <label className="text-xs font-medium text-foreground">{isEs ? "Entidad" : "Entidade"}</label>
+              <label className="text-xs font-medium text-foreground">{t("plans.controlledCopies.entity")}</label>
               <select className="w-full rounded-md border bg-background px-3 py-2 text-sm" value={form.recipient_entity} onChange={e => setForm(f => ({ ...f, recipient_entity: e.target.value }))}>
                 <option value="">—</option>
                 {ENTITIES.map(e => <option key={e} value={e}>{e}</option>)}
