@@ -98,6 +98,7 @@ const NAV_SECTIONS: SidebarSection[] = [
       { labelKey: "nav.plans",           url: "/plans",            icon: BookOpen },
       { labelKey: "nav.dfo",             url: "/dfo",              icon: FolderKanban },
       { labelKey: "nav.documents",       url: "/documents",        icon: FileText, viewerVisible: true },
+      { labelKey: "nav.controlledDistribution", url: "/controlled-distribution", icon: FileCheck },
       { labelKey: "nav.submittals",      url: "/submittals",       icon: FileCheck },
       { labelKey: "nav.audits",          url: "/audits",           icon: FileCheck },
       { labelKey: "nav.training",        url: "/training",         icon: GraduationCap },
