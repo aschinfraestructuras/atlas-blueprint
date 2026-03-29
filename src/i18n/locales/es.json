@@ -3905,9 +3905,52 @@
       "weldType": "Tipo soldadura",
       "certValidity": "Validez Cert. EN ISO 9712",
       "utResult": "Resultado US"
-    }
+    },
+    "newWeld": "Nueva Soldadura"
   },
-  "traceability": {
+  "weld": {
+    "certExpired": "Cert. expirado",
+    "certExpiresIn": "Cert. expira en {{days}}d",
+    "searchPlaceholder": "Buscar soldaduras...",
+    "fusPending": "US pend.",
+    "toast": {
+      "pkRequired": "PK obligatorio",
+      "updated": "Soldadura actualizada",
+      "created": "Soldadura registrada"
+    },
+    "tabs": {
+      "identification": "Identificación",
+      "materials": "Materiales",
+      "inspection": "Inspección",
+      "utHv": "UT y Dureza"
+    },
+    "form": {
+      "calibrationBlock": "Bloque calibración (ref.)",
+      "moldType": "Tipo de molde",
+      "preheatTemp": "Temp. precalentamiento (°C)",
+      "duration": "Duración (min)",
+      "excessMaterial": "Exceso material OK",
+      "criteria": "Criterio (mm)",
+      "visualNotes": "Notas visuales",
+      "utOperator": "Operador UT",
+      "utEquipment": "Equipo",
+      "utCalibration": "Calibración",
+      "utResult": "Resultado UT",
+      "utDefect": "Defecto (si rechazado)",
+      "fusCode": "Código FUS",
+      "fusDate": "Fecha US",
+      "certOperatorUs": "Cert. Operador US",
+      "certOperatorUsPlaceholder": "ej: EN ISO 9712 NII · IPAC L0415 · válido hasta 12/2026",
+      "hvLeft": "HV Izquierda",
+      "hvCenter": "HV Centro",
+      "hvRight": "HV Derecha",
+      "hvCriteriaMin": "Criterio mín.",
+      "hvCriteriaMax": "Criterio máx."
+    },
+    "utStatus": {
+      "aceite": "Aceptado",
+      "rejeitado": "Rechazado"
+    }
     "status": {
       "approved": "Aprobado",
       "pass": "Conforme",
