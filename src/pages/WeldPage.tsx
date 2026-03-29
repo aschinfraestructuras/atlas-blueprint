@@ -44,12 +44,13 @@ function resultColor(r: string) {
 }
 
 function CertExpiryBadge({ date }: { date: string | null | undefined }) {
+  const { t } = useTranslation();
   if (!date) return null;
   const today = new Date();
   const expiry = new Date(date);
   const diff = Math.ceil((expiry.getTime() - today.getTime()) / 86400000);
-  if (diff < 0) return <Badge variant="destructive" className="text-[10px] ml-1">Cert. expirado</Badge>;
-  if (diff <= 30) return <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border-0 text-[10px] ml-1">Cert. expira em {diff}d</Badge>;
+  if (diff < 0) return <Badge variant="destructive" className="text-[10px] ml-1">{t("weld.certExpired", { defaultValue: "Cert. expirado" })}</Badge>;
+  if (diff <= 30) return <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border-0 text-[10px] ml-1">{t("weld.certExpiresIn", { defaultValue: "Cert. expira em {{days}}d", days: diff })}</Badge>;
   return null;
 }
 
@@ -136,12 +137,12 @@ export default function WeldPage() {
   };
 
   const handleSave = async () => {
-    if (!form.pk_location) { toast({ title: "PK obrigatório", variant: "destructive" }); return; }
+    if (!form.pk_location) { toast({ title: t("weld.toast.pkRequired", { defaultValue: "PK obrigatório" }), variant: "destructive" }); return; }
     setSaving(true);
     try {
       if (editingId) {
         await weldService.update(editingId, { ...form } as Partial<WeldRecord>);
-        toast({ title: "Soldadura atualizada" });
+        toast({ title: t("weld.toast.updated", { defaultValue: "Soldadura atualizada" }) });
       } else {
         const { data: userData } = await supabase.auth.getUser();
         await weldService.create({
@@ -158,7 +159,7 @@ export default function WeldPage() {
           has_ut: form.has_ut ?? false,
           has_hardness: form.has_hardness ?? false,
         } as WeldInput);
-        toast({ title: "Soldadura registada" });
+        toast({ title: t("weld.toast.created", { defaultValue: "Soldadura registada" }) });
       }
       setDialogOpen(false);
       setEditingId(null);
@@ -211,12 +212,12 @@ export default function WeldPage() {
       <FilterBar>
         <div className="relative flex-1 min-w-[180px]">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-          <Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Pesquisar soldaduras..." className="pl-8 h-8 text-sm" />
+          <Input value={search} onChange={e => setSearch(e.target.value)} placeholder={t("weld.searchPlaceholder", { defaultValue: "Pesquisar soldaduras..." })} className="pl-8 h-8 text-sm" />
         </div>
         <Select value={filterResult} onValueChange={setFilterResult}>
           <SelectTrigger className="h-8 w-[140px] text-sm"><SelectValue /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todos</SelectItem>
+            <SelectItem value="all">{t("common.all", { defaultValue: "Todos" })}</SelectItem>
             <SelectItem value="pass">{t("welding.result.pass")}</SelectItem>
             <SelectItem value="fail">{t("welding.result.fail")}</SelectItem>
             <SelectItem value="repair_needed">{t("welding.result.repair_needed")}</SelectItem>
@@ -224,7 +225,7 @@ export default function WeldPage() {
           </SelectContent>
         </Select>
         <Button size="sm" className="h-8 gap-1.5 ml-auto" onClick={() => { setEditingId(null); setForm(defaultForm); setDialogOpen(true); }}>
-          <Plus className="h-3.5 w-3.5" />Nova Soldadura
+          <Plus className="h-3.5 w-3.5" />{t("welding.newWeld", { defaultValue: "Nova Soldadura" })}
         </Button>
       </FilterBar>
 
@@ -241,10 +242,11 @@ export default function WeldPage() {
               <TableHead className="text-xs font-semibold uppercase">{t("common.date")}</TableHead>
               <TableHead className="text-xs font-semibold uppercase">{t("welds.workItem", { defaultValue: "Elemento" })}</TableHead>
               <TableHead className="text-xs font-semibold uppercase">{t("welding.fields.operator")}</TableHead>
-              <TableHead className="text-xs font-semibold uppercase">Visual</TableHead>
+              <TableHead className="text-xs font-semibold uppercase">{t("welding.fields.visual")}</TableHead>
               <TableHead className="text-xs font-semibold uppercase">UT</TableHead>
               <TableHead className="text-xs font-semibold uppercase">HV</TableHead>
               <TableHead className="text-xs font-semibold uppercase">{t("concrete.fields.result")}</TableHead>
+              <TableHead className="text-xs font-semibold uppercase">FUS</TableHead>
               <TableHead className="w-20" />
             </TableRow></TableHeader>
             <TableBody>
@@ -262,6 +264,13 @@ export default function WeldPage() {
                   <TableCell>{!w.has_ut ? "—" : w.ut_result === "aceite" ? <CheckCircle2 className="h-3.5 w-3.5 text-primary" /> : w.ut_result === "rejeitado" ? <XCircle className="h-3.5 w-3.5 text-destructive" /> : <Clock className="h-3.5 w-3.5 text-muted-foreground" />}</TableCell>
                   <TableCell>{!w.has_hardness ? "—" : w.hv_pass === true ? <CheckCircle2 className="h-3.5 w-3.5 text-primary" /> : w.hv_pass === false ? <XCircle className="h-3.5 w-3.5 text-destructive" /> : <Clock className="h-3.5 w-3.5 text-muted-foreground" />}</TableCell>
                   <TableCell><Badge variant="secondary" className={resultColor(w.overall_result)}>{t(`welding.result.${w.overall_result}`, { defaultValue: w.overall_result })}</Badge></TableCell>
+                  <TableCell>
+                    {(w as any).fus_code && w.ut_result === "aceite" ? (
+                      <Badge className="bg-primary/15 text-primary border-0 text-[10px]">FUS ✓</Badge>
+                    ) : w.has_ut && !(w as any).fus_code ? (
+                      <Badge className="bg-amber-500/10 text-amber-600 border-0 text-[10px]">{t("weld.fusPending", { defaultValue: "US pend." })}</Badge>
+                    ) : "—"}
+                  </TableCell>
                   <TableCell>
                     <div className="flex gap-1">
                       <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(w)}><Pencil className="h-3.5 w-3.5" /></Button>
@@ -282,20 +291,20 @@ export default function WeldPage() {
           <DialogHeader><DialogTitle>{editingId ? t("welding.form.editTitle") : t("welding.form.newTitle")}</DialogTitle></DialogHeader>
           <Tabs defaultValue="id">
             <TabsList className="w-full">
-              <TabsTrigger value="id">Identificação</TabsTrigger>
-              <TabsTrigger value="materials">Materiais</TabsTrigger>
-              <TabsTrigger value="inspection">Inspecção</TabsTrigger>
-              <TabsTrigger value="ut_hv">UT e Dureza</TabsTrigger>
+              <TabsTrigger value="id">{t("weld.tabs.identification", { defaultValue: "Identificação" })}</TabsTrigger>
+              <TabsTrigger value="materials">{t("weld.tabs.materials", { defaultValue: "Materiais" })}</TabsTrigger>
+              <TabsTrigger value="inspection">{t("weld.tabs.inspection", { defaultValue: "Inspecção" })}</TabsTrigger>
+              <TabsTrigger value="ut_hv">{t("weld.tabs.utHv", { defaultValue: "UT e Dureza" })}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="id" className="space-y-3 mt-3">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label>{t("welding.fields.pk")} Início</Label>
+                  <Label>{t("welding.fields.pk")} {t("common.start", { defaultValue: "Início" })}</Label>
                   <Input value={form.pk_location ?? ""} onChange={e => setField("pk_location", e.target.value)} placeholder="PK 30+500" />
                 </div>
                 <div>
-                  <Label>PK Fim</Label>
+                  <Label>PK {t("common.end", { defaultValue: "Fim" })}</Label>
                   <Input value={(form as any).pk_end ?? ""} onChange={e => setField("pk_end", e.target.value)} placeholder="PK 30+520" />
                 </div>
                 <div><Label>{t("common.date")}</Label><Input type="date" value={form.weld_date ?? new Date().toISOString().split("T")[0]} onChange={e => setField("weld_date", e.target.value)} /></div>
@@ -330,30 +339,30 @@ export default function WeldPage() {
                   <CertExpiryBadge date={(form as any).operator_cert_expiry} />
                 </div>
                 <div>
-                  <Label>Bloco calibração (ref.)</Label>
-                  <Input value={(form as any).bloco_calibracao_ref ?? ""} onChange={e => setField("bloco_calibracao_ref", e.target.value)} placeholder="V1, V2, IIW..." />
-                </div>
+                   <Label>{t("weld.form.calibrationBlock", { defaultValue: "Bloco calibração (ref.)" })}</Label>
+                   <Input value={(form as any).bloco_calibracao_ref ?? ""} onChange={e => setField("bloco_calibracao_ref", e.target.value)} placeholder="V1, V2, IIW..." />
+                 </div>
                 <div><Label>{t("welding.fields.portionBrand")}</Label><Input value={form.portion_brand ?? ""} onChange={e => setField("portion_brand", e.target.value)} /></div>
                 <div><Label>{t("welding.fields.portionLot")}</Label><Input value={form.portion_lot ?? ""} onChange={e => setField("portion_lot", e.target.value)} /></div>
-                <div><Label>Tipo de molde</Label><Input value={form.mold_type ?? ""} onChange={e => setField("mold_type", e.target.value)} /></div>
+                <div><Label>{t("weld.form.moldType", { defaultValue: "Tipo de molde" })}</Label><Input value={form.mold_type ?? ""} onChange={e => setField("mold_type", e.target.value)} /></div>
               </div>
             </TabsContent>
 
             <TabsContent value="inspection" className="space-y-3 mt-3">
               <div className="grid grid-cols-2 gap-3">
-                <div><Label>Temp. pré-aquecimento (°C)</Label><Input type="number" value={form.preheat_temp_c ?? ""} onChange={e => setField("preheat_temp_c", e.target.value ? Number(e.target.value) : null)} /></div>
-                <div><Label>Duração (min)</Label><Input type="number" value={form.preheat_duration_min ?? ""} onChange={e => setField("preheat_duration_min", e.target.value ? Number(e.target.value) : null)} /></div>
+                <div><Label>{t("weld.form.preheatTemp", { defaultValue: "Temp. pré-aquecimento (°C)" })}</Label><Input type="number" value={form.preheat_temp_c ?? ""} onChange={e => setField("preheat_temp_c", e.target.value ? Number(e.target.value) : null)} /></div>
+                <div><Label>{t("weld.form.duration", { defaultValue: "Duração (min)" })}</Label><Input type="number" value={form.preheat_duration_min ?? ""} onChange={e => setField("preheat_duration_min", e.target.value ? Number(e.target.value) : null)} /></div>
               </div>
               <div className="flex items-center gap-6">
                 <label className="flex items-center gap-2 text-sm"><Checkbox checked={form.visual_pass ?? false} onCheckedChange={v => setField("visual_pass", v)} />{t("welding.fields.visual")} OK</label>
-                <label className="flex items-center gap-2 text-sm"><Checkbox checked={form.excess_material_ok ?? false} onCheckedChange={v => setField("excess_material_ok", v)} />Excesso material OK</label>
+                <label className="flex items-center gap-2 text-sm"><Checkbox checked={form.excess_material_ok ?? false} onCheckedChange={v => setField("excess_material_ok", v)} />{t("weld.form.excessMaterial", { defaultValue: "Excesso material OK" })}</label>
                 <label className="flex items-center gap-2 text-sm"><Checkbox checked={form.preheat_pass ?? false} onCheckedChange={v => setField("preheat_pass", v)} />{t("welding.fields.preheat")} OK</label>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div><Label>{t("welding.fields.alignment")}</Label><Input type="number" step="0.1" value={form.alignment_mm ?? ""} onChange={e => setField("alignment_mm", e.target.value ? Number(e.target.value) : null)} /></div>
-                <div><Label>Critério (mm)</Label><Input type="number" step="0.1" value={form.alignment_criteria ?? 0.5} onChange={e => setField("alignment_criteria", Number(e.target.value))} /></div>
+                <div><Label>{t("weld.form.criteria", { defaultValue: "Critério (mm)" })}</Label><Input type="number" step="0.1" value={form.alignment_criteria ?? 0.5} onChange={e => setField("alignment_criteria", Number(e.target.value))} /></div>
               </div>
-              <div><Label>Notas visuais</Label><Input value={form.visual_notes ?? ""} onChange={e => setField("visual_notes", e.target.value)} /></div>
+              <div><Label>{t("weld.form.visualNotes", { defaultValue: "Notas visuais" })}</Label><Input value={form.visual_notes ?? ""} onChange={e => setField("visual_notes", e.target.value)} /></div>
             </TabsContent>
 
             <TabsContent value="ut_hv" className="space-y-4 mt-3">
@@ -361,20 +370,24 @@ export default function WeldPage() {
                 <label className="flex items-center gap-2 text-sm font-medium"><Checkbox checked={form.has_ut ?? false} onCheckedChange={v => setField("has_ut", v)} />{t("welding.fields.ut")}</label>
                 {form.has_ut && (
                   <div className="grid grid-cols-2 gap-3">
-                    <div><Label>Operador UT</Label><Input value={form.ut_operator ?? ""} onChange={e => setField("ut_operator", e.target.value)} /></div>
-                    <div><Label>Equipamento</Label><Input value={form.ut_equipment_code ?? ""} onChange={e => setField("ut_equipment_code", e.target.value)} /></div>
-                    <div><Label>Calibração</Label><Input type="date" value={form.ut_calibration_date ?? ""} onChange={e => setField("ut_calibration_date", e.target.value)} /></div>
-                    <div><Label>Resultado UT</Label>
+                    <div><Label>{t("weld.form.utOperator", { defaultValue: "Operador UT" })}</Label><Input value={form.ut_operator ?? ""} onChange={e => setField("ut_operator", e.target.value)} /></div>
+                    <div><Label>{t("weld.form.utEquipment", { defaultValue: "Equipamento" })}</Label><Input value={form.ut_equipment_code ?? ""} onChange={e => setField("ut_equipment_code", e.target.value)} /></div>
+                    <div><Label>{t("weld.form.utCalibration", { defaultValue: "Calibração" })}</Label><Input type="date" value={form.ut_calibration_date ?? ""} onChange={e => setField("ut_calibration_date", e.target.value)} /></div>
+                    <div><Label>{t("weld.form.utResult", { defaultValue: "Resultado UT" })}</Label>
                       <Select value={form.ut_result ?? "pendente"} onValueChange={v => setField("ut_result", v)}>
                         <SelectTrigger><SelectValue /></SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="aceite">Aceite</SelectItem>
-                          <SelectItem value="rejeitado">Rejeitado</SelectItem>
-                          <SelectItem value="pendente">Pendente</SelectItem>
+                          <SelectItem value="aceite">{t("weld.utStatus.aceite", { defaultValue: "Aceite" })}</SelectItem>
+                          <SelectItem value="rejeitado">{t("weld.utStatus.rejeitado", { defaultValue: "Rejeitado" })}</SelectItem>
+                          <SelectItem value="pendente">{t("common.pending")}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
-                    <div className="col-span-2"><Label>Defeito (se rejeitado)</Label><Input value={form.ut_defect_desc ?? ""} onChange={e => setField("ut_defect_desc", e.target.value)} /></div>
+                    <div className="col-span-2"><Label>{t("weld.form.utDefect", { defaultValue: "Defeito (se rejeitado)" })}</Label><Input value={form.ut_defect_desc ?? ""} onChange={e => setField("ut_defect_desc", e.target.value)} /></div>
+                    {/* FUS fields */}
+                    {(form as any).fus_code && <div><Label>{t("weld.form.fusCode", { defaultValue: "Código FUS" })}</Label><Input value={(form as any).fus_code ?? ""} readOnly className="bg-muted/30" /></div>}
+                    <div><Label>{t("weld.form.fusDate", { defaultValue: "Data US" })}</Label><Input type="date" value={(form as any).fus_date ?? ""} onChange={e => setField("fus_date", e.target.value)} /></div>
+                    <div className="col-span-2"><Label>{t("weld.form.certOperatorUs", { defaultValue: "Cert. Operador US" })}</Label><Input value={(form as any).cert_operator_us ?? ""} onChange={e => setField("cert_operator_us", e.target.value)} placeholder={t("weld.form.certOperatorUsPlaceholder", { defaultValue: "ex: EN ISO 9712 NII · IPAC L0415 · válido até 12/2026" })} /></div>
                   </div>
                 )}
               </div>
@@ -382,12 +395,12 @@ export default function WeldPage() {
               <div className="space-y-3 p-3 rounded-lg border border-border">
                 <label className="flex items-center gap-2 text-sm font-medium"><Checkbox checked={form.has_hardness ?? false} onCheckedChange={v => setField("has_hardness", v)} />{t("welding.fields.hardness")}</label>
                 {form.has_hardness && (
-                  <div className="grid grid-cols-3 gap-3">
-                    <div><Label>HV Esquerda</Label><Input type="number" value={form.hv_rail_left ?? ""} onChange={e => setField("hv_rail_left", e.target.value ? Number(e.target.value) : null)} /></div>
-                    <div><Label>HV Centro</Label><Input type="number" value={form.hv_weld_center ?? ""} onChange={e => setField("hv_weld_center", e.target.value ? Number(e.target.value) : null)} /></div>
-                    <div><Label>HV Direita</Label><Input type="number" value={form.hv_rail_right ?? ""} onChange={e => setField("hv_rail_right", e.target.value ? Number(e.target.value) : null)} /></div>
-                    <div><Label>Critério mín.</Label><Input type="number" value={form.hv_criteria_min ?? 260} onChange={e => setField("hv_criteria_min", Number(e.target.value))} /></div>
-                    <div><Label>Critério máx.</Label><Input type="number" value={form.hv_criteria_max ?? 380} onChange={e => setField("hv_criteria_max", Number(e.target.value))} /></div>
+                   <div className="grid grid-cols-3 gap-3">
+                    <div><Label>{t("weld.form.hvLeft", { defaultValue: "HV Esquerda" })}</Label><Input type="number" value={form.hv_rail_left ?? ""} onChange={e => setField("hv_rail_left", e.target.value ? Number(e.target.value) : null)} /></div>
+                    <div><Label>{t("weld.form.hvCenter", { defaultValue: "HV Centro" })}</Label><Input type="number" value={form.hv_weld_center ?? ""} onChange={e => setField("hv_weld_center", e.target.value ? Number(e.target.value) : null)} /></div>
+                    <div><Label>{t("weld.form.hvRight", { defaultValue: "HV Direita" })}</Label><Input type="number" value={form.hv_rail_right ?? ""} onChange={e => setField("hv_rail_right", e.target.value ? Number(e.target.value) : null)} /></div>
+                    <div><Label>{t("weld.form.hvCriteriaMin", { defaultValue: "Critério mín." })}</Label><Input type="number" value={form.hv_criteria_min ?? 260} onChange={e => setField("hv_criteria_min", Number(e.target.value))} /></div>
+                    <div><Label>{t("weld.form.hvCriteriaMax", { defaultValue: "Critério máx." })}</Label><Input type="number" value={form.hv_criteria_max ?? 380} onChange={e => setField("hv_criteria_max", Number(e.target.value))} /></div>
                   </div>
                 )}
               </div>
@@ -407,7 +420,7 @@ export default function WeldPage() {
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setDialogOpen(false)}>{t("common.cancel")}</Button>
-            <Button onClick={handleSave} disabled={saving}>{saving ? "A guardar..." : t("common.save")}</Button>
+            <Button onClick={handleSave} disabled={saving}>{saving ? t("common.saving", { defaultValue: "A guardar..." }) : t("common.save")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

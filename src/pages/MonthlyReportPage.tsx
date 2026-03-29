@@ -150,12 +150,12 @@ export default function MonthlyReportPage() {
     setCreating(true);
     try {
       const report = await monthlyReportService.createDraft(activeProject.id, selectedMonth);
-      toast({ title: `Relatório ${report.code} criado` });
+      toast({ title: t("monthlyReport.toast.created", { defaultValue: `Relatório ${report.code} criado` }) });
       setCreateOpen(false);
       await fetchReports();
       openDetail(report);
     } catch (err: any) {
-      toast({ title: "Erro", description: err.message, variant: "destructive" });
+      toast({ title: t("common.error"), description: err.message, variant: "destructive" });
     } finally {
       setCreating(false);
     }
@@ -173,7 +173,7 @@ export default function MonthlyReportPage() {
       toast({ title: t("common.saved", { defaultValue: "Guardado" }) });
       await fetchReports();
     } catch (err: any) {
-      toast({ title: "Erro", description: err.message, variant: "destructive" });
+      toast({ title: t("common.error"), description: err.message, variant: "destructive" });
     } finally {
       setSaving(false);
     }
@@ -187,7 +187,7 @@ export default function MonthlyReportPage() {
       setSelectedReport(null);
       await fetchReports();
     } catch (err: any) {
-      toast({ title: "Erro", description: err.message, variant: "destructive" });
+      toast({ title: t("common.error"), description: err.message, variant: "destructive" });
     } finally {
       setSaving(false);
     }
@@ -201,7 +201,7 @@ export default function MonthlyReportPage() {
       if (selectedReport?.id === deleteTarget.id) setSelectedReport(null);
       await fetchReports();
     } catch (err: any) {
-      toast({ title: "Erro", description: err.message, variant: "destructive" });
+      toast({ title: t("common.error"), description: err.message, variant: "destructive" });
     } finally {
       setDeleteTarget(null);
     }

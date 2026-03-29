@@ -201,7 +201,7 @@ export default function TrainingPage() {
       setDetailAttendees(attendees);
       setDetailOpen(true);
     } catch {
-      toast({ title: "Erro ao carregar detalhes", variant: "destructive" });
+      toast({ title: t("training.toast.loadError", { defaultValue: "Erro ao carregar detalhes" }), variant: "destructive" });
     }
   };
 
@@ -210,7 +210,7 @@ export default function TrainingPage() {
       const { attendees } = await trainingService.getById(session.id);
       trainingService.exportPdf(session, attendees, activeProject.name, logoBase64);
     } catch {
-      toast({ title: "Erro ao exportar", variant: "destructive" });
+      toast({ title: t("training.toast.exportError", { defaultValue: "Erro ao exportar" }), variant: "destructive" });
     }
   };
 

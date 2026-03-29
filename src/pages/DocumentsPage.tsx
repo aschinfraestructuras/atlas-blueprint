@@ -195,7 +195,7 @@ export default function DocumentsPage() {
               await exportLMD(documents.filter(d => !d.is_deleted), meta);
             }}>
               <FileDown className="h-3.5 w-3.5" />
-              Exportar LMD
+              {t("documents.exportLmd", { defaultValue: "Exportar LMD" })}
             </Button>
             <ShareButton />
             {canCreate && (
