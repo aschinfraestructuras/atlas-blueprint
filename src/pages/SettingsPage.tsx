@@ -1069,6 +1069,36 @@ ${usageStats ? `
           </div>
         </SettingsSection>
       )}
+
+      {/* ── 10. Integrations ─────────────────────────────────────── */}
+      {isAdmin && (
+        <SettingsSection icon={Wrench} title={t("settings.integrations.title")} subtitle={t("settings.integrations.subtitle")} color="hsl(252, 55%, 45%)">
+          <div className="grid gap-3 sm:grid-cols-3">
+            {[
+              { icon: BarChart3, label: t("settings.integrations.analytics"), desc: t("settings.integrations.analyticsDesc"), url: "https://eu.posthog.com/project/149344" },
+              { icon: GitBranch, label: t("settings.integrations.github"), desc: t("settings.integrations.githubDesc"), url: "https://github.com/aschinfraestructuras/atlas-blueprint" },
+              { icon: Database, label: t("settings.integrations.database"), desc: t("settings.integrations.databaseDesc"), url: "https://supabase.com/dashboard/project/qrsdpsugfjmrdeychxzf" },
+            ].map((card, i) => (
+              <Card key={i} className="border bg-card">
+                <CardContent className="p-4 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <card.icon className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-[12.5px] font-semibold text-foreground">{card.label}</span>
+                    <Badge variant="outline" className="text-[9px] ml-auto">{t("settings.integrations.external")}</Badge>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground leading-snug">{card.desc}</p>
+                  <Button size="sm" variant="outline" className="gap-1.5 h-7 text-xs w-full" asChild>
+                    <a href={card.url} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="h-3 w-3" />
+                      {t("settings.integrations.open")}
+                    </a>
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </SettingsSection>
+      )}
     </div>
   );
 }

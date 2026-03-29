@@ -405,6 +405,31 @@ export default function MonthlyReportPage() {
         </div>
       )}
 
+      {/* Monthly Quality Summary */}
+      {monthlySummary && (
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">{t("monthlyReport.currentMonth")}</p>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {[
+              { label: t("monthlyReport.kpi.ncOpen"), value: monthlySummary.nc_open ?? 0 },
+              { label: t("monthlyReport.kpi.ncClosed"), value: monthlySummary.nc_closed_this_month ?? 0 },
+              { label: t("monthlyReport.hpConfirmed"), value: monthlySummary.hp_confirmed_this_month ?? 0 },
+              { label: t("monthlyReport.betonagem"), value: monthlySummary.concrete_batches_month ?? 0 },
+              { label: t("monthlyReport.soldaduras"), value: monthlySummary.welds_month ?? 0 },
+              { label: t("monthlyReport.topografia"), value: monthlySummary.topo_controls_month ?? 0 },
+              { label: t("monthlyReport.partesDiarios"), value: monthlySummary.daily_reports_month ?? 0 },
+            ].map((k, i) => (
+              <Card key={i} className="border-0 bg-card shadow-card">
+                <CardContent className="p-4 text-center">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{k.label}</p>
+                  <p className="text-2xl font-black tabular-nums mt-1 text-foreground">{k.value}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
+
       {loading ? (
         <div className="space-y-3">
           {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-20 w-full" />)}
