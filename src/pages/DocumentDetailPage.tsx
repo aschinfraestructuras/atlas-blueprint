@@ -575,7 +575,7 @@ export default function DocumentDetailPage() {
       </Card>
 
       {/* ── External Approval ─────────────────────────────────────────── */}
-      {(doc.approval_required || ["pqo", "ppi", "pame", "procedure"].includes(doc.doc_type)) && (
+      {((doc as any).approval_required || ["pqo", "ppi", "pame", "procedure"].includes(doc.doc_type)) && (
         <Card className="shadow-card">
           <CardHeader className="pb-2 pt-5 px-5">
             <CardTitle className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground flex items-center gap-2">
