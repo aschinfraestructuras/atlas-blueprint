@@ -334,11 +334,11 @@ export default function SGQMatrixPage() {
 
       {/* Legend */}
       <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
-        {Object.entries(COVERAGE_CONFIG).map(([key, cfg]) => (
+        {(Object.entries(COVERAGE_KEYS) as [CoverageLevel, typeof COVERAGE_KEYS[CoverageLevel]][]).map(([key, cfg]) => (
           <div key={key} className="flex items-center gap-1.5">
             <Badge variant="secondary" className={cn("text-[10px] gap-1 px-1.5", cfg.className)}>
               <cfg.icon className="h-2.5 w-2.5" />
-              {cfg.label}
+              {t(`sgqMatrix.coverage.${key}`)}
             </Badge>
           </div>
         ))}
