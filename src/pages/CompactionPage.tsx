@@ -29,9 +29,10 @@ import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
 function ResultBadge({ result }: { result: string }) {
-  if (result === "pass") return <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-0">Conforme</Badge>;
-  if (result === "fail") return <Badge variant="destructive">Não Conforme</Badge>;
-  return <Badge variant="outline" className="text-amber-600">Pendente</Badge>;
+  const { t } = useTranslation();
+  if (result === "pass") return <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-0">{t("common.compliant")}</Badge>;
+  if (result === "fail") return <Badge variant="destructive">{t("common.nonCompliant")}</Badge>;
+  return <Badge variant="outline" className="text-amber-600">{t("common.pendingStatus")}</Badge>;
 }
 
 export default function CompactionPage() {
