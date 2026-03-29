@@ -205,13 +205,17 @@ export function PPIInstanceFormDialog({
           ? values.template_id
           : null;
 
-      const input = {
+      const input: any = {
         project_id:      activeProject.id,
         work_item_id:    values.work_item_id,
         code:            values.code?.trim() || "",
         inspector_id:    values.inspector_id || null,
         created_by:      user.id,
         inspection_date: values.inspection_date || null,
+        pk_inicio:       values.pk_inicio?.trim() || null,
+        pk_fim:          values.pk_fim?.trim() || null,
+        zone:            values.zone?.trim() || null,
+        element_ref:     values.element_ref?.trim() || null,
       };
 
       let instanceId: string;
