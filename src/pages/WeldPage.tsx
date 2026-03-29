@@ -265,6 +265,13 @@ export default function WeldPage() {
                   <TableCell>{!w.has_hardness ? "—" : w.hv_pass === true ? <CheckCircle2 className="h-3.5 w-3.5 text-primary" /> : w.hv_pass === false ? <XCircle className="h-3.5 w-3.5 text-destructive" /> : <Clock className="h-3.5 w-3.5 text-muted-foreground" />}</TableCell>
                   <TableCell><Badge variant="secondary" className={resultColor(w.overall_result)}>{t(`welding.result.${w.overall_result}`, { defaultValue: w.overall_result })}</Badge></TableCell>
                   <TableCell>
+                    {(w as any).fus_code && w.ut_result === "aceite" ? (
+                      <Badge className="bg-primary/15 text-primary border-0 text-[10px]">FUS ✓</Badge>
+                    ) : w.has_ut && !(w as any).fus_code ? (
+                      <Badge className="bg-amber-500/10 text-amber-600 border-0 text-[10px]">{t("weld.fusPending", { defaultValue: "US pend." })}</Badge>
+                    ) : "—"}
+                  </TableCell>
+                  <TableCell>
                     <div className="flex gap-1">
                       <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(w)}><Pencil className="h-3.5 w-3.5" /></Button>
                       <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => weldService.exportPdf(w, activeProject.name ?? "Atlas", logoBase64)}><FileDown className="h-3.5 w-3.5" /></Button>
