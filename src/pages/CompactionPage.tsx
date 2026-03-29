@@ -104,6 +104,10 @@ export default function CompactionPage() {
 
   const filtered = zones.filter((z) => {
     if (filterResult !== "all" && z.overall_result !== filterResult) return false;
+    if (searchQ) {
+      const q = searchQ.toLowerCase();
+      if (!z.code.toLowerCase().includes(q) && !z.zone_description.toLowerCase().includes(q) && !(z.pk_start ?? "").toLowerCase().includes(q)) return false;
+    }
     return true;
   });
 
