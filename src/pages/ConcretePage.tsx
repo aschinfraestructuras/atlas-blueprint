@@ -823,7 +823,7 @@ export default function ConcretePage() {
                   </Select>
                 </div>
                 <div>
-                  <Label>PPI associado</Label>
+                  <Label>{t("concrete.form.ppiAssociated")}</Label>
                   <Select value={form.ppi_instance_id} onValueChange={(v) => setForm((f) => ({ ...f, ppi_instance_id: v }))}>
                     <SelectTrigger><SelectValue placeholder={t("common.optional")} /></SelectTrigger>
                     <SelectContent>
