@@ -43,17 +43,9 @@ const DOC_STATUS_COLORS: Record<string, string> = {
   pending: "bg-muted text-muted-foreground",
 };
 
-const SUB_DOC_TYPES = [
-  { value: "seguros", label: "Seguros" },
-  { value: "sst", label: "SST" },
-  { value: "qualidade", label: "Qualidade" },
-  { value: "certificados", label: "Certificados" },
-  { value: "formacao", label: "Formação" },
-  { value: "seguro", label: "Seguro" },
-  { value: "alvara", label: "Alvará" },
-  { value: "contrato", label: "Contrato" },
-  { value: "certificacao", label: "Certificação" },
-  { value: "other", label: "Outro" },
+const SUB_DOC_TYPE_KEYS = [
+  "seguros", "sst", "qualidade", "certificados", "formacao",
+  "seguro", "alvara", "contrato", "certificacao", "other",
 ];
 
 export default function SubcontractorDetailPage() {
@@ -339,8 +331,7 @@ export default function SubcontractorDetailPage() {
   };
 
   const docTypeLabel = (v: string) => {
-    const found = SUB_DOC_TYPES.find(dt => dt.value === v) ?? DOC_TYPES.find(dt => dt.value === v);
-    return found?.label ?? v;
+    return t(`subcontractors.docTypes.${v}`, { defaultValue: v });
   };
 
   return (
@@ -394,7 +385,7 @@ export default function SubcontractorDetailPage() {
 
       {/* Tabs */}
       <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList>
+        <TabsList className="flex-wrap h-auto gap-1 justify-start">
           <TabsTrigger value="overview">{t("subcontractors.detail.tabs.overview")}</TabsTrigger>
           <TabsTrigger value="docs">
             {t("subcontractors.detail.tabs.docs")}
@@ -512,7 +503,7 @@ export default function SubcontractorDetailPage() {
                     <Select value={newDoc.doc_type} onValueChange={v => setNewDoc(d => ({ ...d, doc_type: v }))}>
                       <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
                       <SelectContent>
-                        {SUB_DOC_TYPES.map(dt => <SelectItem key={dt.value} value={dt.value}>{dt.label}</SelectItem>)}
+                        {SUB_DOC_TYPE_KEYS.map(k => <SelectItem key={k} value={k}>{t(`subcontractors.docTypes.${k}`, { defaultValue: k })}</SelectItem>)}
                       </SelectContent>
                     </Select>
                   </div>

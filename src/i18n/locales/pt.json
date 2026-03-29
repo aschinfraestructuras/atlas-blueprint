@@ -641,7 +641,27 @@
       "disciplina": "Disciplina",
       "revision": "Revisão",
       "changeDescription": "Descrição da alteração",
-      "createBtn": "Criar Documento"
+      "createBtn": "Criar Documento",
+      "titleCreate": "Criar Documento",
+      "titleEdit": "Editar Documento",
+      "template": "Modelo",
+      "templatePlaceholder": "Selecionar modelo...",
+      "noTemplate": "Sem modelo",
+      "titlePlaceholder": "Título do documento",
+      "code": "Código",
+      "issuedAt": "Data de emissão",
+      "fileUrl": "URL do ficheiro",
+      "tags": "Etiquetas",
+      "tagsPlaceholder": "tag1, tag2, ...",
+      "mainFile": "Ficheiro principal",
+      "revisionPlaceholder": "Ex: 0, A, 01",
+      "lockedNotice": "Este documento está bloqueado para edição.",
+      "validation": {
+        "titleRequired": "O título é obrigatório",
+        "typeRequired": "O tipo é obrigatório",
+        "disciplinaRequired": "A disciplina é obrigatória"
+      },
+      "typeOutro": "Especificar tipo"
     },
     "status": {
       "draft": "Rascunho",
@@ -706,6 +726,17 @@
         "created": "Registo RDC criado",
         "error": "Erro ao registar distribuição"
       }
+    },
+    "linkedPanel": {
+      "title": "Documentos Vinculados",
+      "addDoc": "Vincular",
+      "selectDoc": "Selecionar documento",
+      "noAvailable": "Todos os documentos já estão vinculados",
+      "empty": "Sem documentos vinculados"
+    },
+    "links": {
+      "added": "Documento vinculado",
+      "removed": "Vínculo removido"
     }
   },
   "tests": {
@@ -2043,6 +2074,18 @@
         "deleted": "Habilitação eliminada",
         "error": "Erro ao guardar habilitação"
       }
+    },
+    "docTypes": {
+      "seguros": "Seguros",
+      "sst": "SST",
+      "qualidade": "Qualidade",
+      "certificados": "Certificados",
+      "formacao": "Formação",
+      "seguro": "Seguro",
+      "alvara": "Alvará",
+      "contrato": "Contrato",
+      "certificacao": "Certificação",
+      "other": "Outro"
     }
   },
   "audit": {
@@ -2270,7 +2313,12 @@
       "geotecnia": "Geotecnia",
       "terraplenagem": "Terraplenagem",
       "pavimentacao": "Pavimentação",
-      "outros": "Outros"
+      "outros": "Outros",
+      "terras": "Terras",
+      "firmes": "Firmes",
+      "betao": "Betão",
+      "ferrovia": "Ferrovia",
+      "instalacoes": "Instalações"
     },
     "status": {
       "planned": "Planeado",
@@ -3177,6 +3225,68 @@
     "toast": {
       "deleted": "Eliminado com sucesso",
       "deleteError": "Erro ao eliminar"
+    },
+    "form": {
+      "newControl": "Novo Controlo",
+      "editControl": "Editar Controlo",
+      "controlDescription": "Registo de controlo topográfico",
+      "selectEquipment": "Selecionar equipamento",
+      "elementPlaceholder": "Ex: Eixo via, Estaca 12",
+      "elementRequired": "O elemento é obrigatório",
+      "links": "Ligações",
+      "workItem": "Elemento de Obra",
+      "ncLinked": "NC associada",
+      "notes": "Observações",
+      "none": "Nenhum",
+      "blocked": "Bloqueado",
+      "descriptionRequired": "A descrição é obrigatória",
+      "newRequest": "Nova Solicitação",
+      "editRequest": "Editar Solicitação",
+      "newEquipment": "Novo Equipamento",
+      "editEquipment": "Editar Equipamento",
+      "codeRequired": "O código é obrigatório",
+      "brand": "Marca",
+      "model": "Modelo",
+      "location": "Localização",
+      "certEntity": "Entidade certificadora",
+      "certNumber": "N.º certificado",
+      "issueDate": "Data emissão"
+    },
+    "equipmentType": {
+      "estacao_total": "Estação Total",
+      "gnss": "GNSS",
+      "nivel_otico": "Nível Óptico",
+      "drone": "Drone",
+      "scanner_3d": "Scanner 3D",
+      "outros": "Outros"
+    },
+    "requestType": {
+      "implantacao": "Implantação",
+      "levantamento": "Levantamento",
+      "controlo": "Controlo",
+      "verificacao": "Verificação"
+    },
+    "priority": {
+      "low": "Baixa",
+      "normal": "Normal",
+      "high": "Alta",
+      "urgent": "Urgente"
+    },
+    "eqStatus": {
+      "active": "Activo",
+      "inactive": "Inactivo",
+      "archived": "Arquivado"
+    },
+    "expiresIn": "Expira em {{days}} dias",
+    "calibrationHistory": "Histórico de Calibrações",
+    "noCalibrationsYet": "Sem calibrações registadas",
+    "calibrationBlocked": "Equipamento com calibração expirada — controlo bloqueado",
+    "requestStatus": {
+      "pending": "Pendente",
+      "assigned": "Atribuído",
+      "in_progress": "Em curso",
+      "completed": "Concluído",
+      "cancelled": "Cancelado"
     }
   },
   "planning": {
@@ -4026,7 +4136,12 @@
       "ncOverdue15dDesc": "RNCs em aberto há mais de 15 dias úteis (meta: 0)",
       "rmOnTimeDesc": "Relatório entregue no prazo",
       "rmLateWarning": "Relatório em atraso — CE Cl.ª 35.ª §11"
-    }
+    },
+    "create": "Criar Relatório",
+    "createTitle": "Criar Relatório Mensal",
+    "createReport": "Criar Relatório",
+    "emptyTitle": "Sem Relatórios",
+    "emptySubtitle": "Crie o primeiro relatório mensal SGQ para este projeto."
   },
   "concrete": {
     "title": "Controlo de Betão — Fichas de Betonagem",

@@ -726,7 +726,27 @@
       "disciplina": "Disciplina",
       "revision": "Revisión",
       "changeDescription": "Descripción del cambio",
-      "createBtn": "Crear Documento"
+      "createBtn": "Crear Documento",
+      "titleCreate": "Crear Documento",
+      "titleEdit": "Editar Documento",
+      "template": "Plantilla",
+      "templatePlaceholder": "Seleccionar plantilla...",
+      "noTemplate": "Sin plantilla",
+      "titlePlaceholder": "Título del documento",
+      "code": "Código",
+      "issuedAt": "Fecha de emisión",
+      "fileUrl": "URL del archivo",
+      "tags": "Etiquetas",
+      "tagsPlaceholder": "tag1, tag2, ...",
+      "mainFile": "Archivo principal",
+      "revisionPlaceholder": "Ej: 0, A, 01",
+      "lockedNotice": "Este documento está bloqueado para edición.",
+      "validation": {
+        "titleRequired": "El título es obligatorio",
+        "typeRequired": "El tipo es obligatorio",
+        "disciplinaRequired": "La disciplina es obligatoria"
+      },
+      "typeOutro": "Especificar tipo"
     },
     "status": {
       "draft": "Borrador",
@@ -791,6 +811,17 @@
         "created": "Registro RDC creado",
         "error": "Error al registrar distribución"
       }
+    },
+    "linkedPanel": {
+      "title": "Documentos Vinculados",
+      "addDoc": "Vincular",
+      "selectDoc": "Seleccionar documento",
+      "noAvailable": "Todos los documentos ya están vinculados",
+      "empty": "Sin documentos vinculados"
+    },
+    "links": {
+      "added": "Documento vinculado",
+      "removed": "Vínculo eliminado"
     }
   },
   "tests": {
@@ -2128,6 +2159,18 @@
         "deleted": "Habilitación eliminada",
         "error": "Error al guardar habilitación"
       }
+    },
+    "docTypes": {
+      "seguros": "Seguros",
+      "sst": "SST",
+      "qualidade": "Calidad",
+      "certificados": "Certificados",
+      "formacao": "Formación",
+      "seguro": "Seguro",
+      "alvara": "Licencia",
+      "contrato": "Contrato",
+      "certificacao": "Certificación",
+      "other": "Otro"
     }
   },
   "audit": {
@@ -2353,9 +2396,14 @@
       "telecomunicacoes": "Telecomunicaciones",
       "drenagem": "Drenaje",
       "geotecnia": "Geotecnia",
-      "terraplenagem": "Explanación",
+      "terraplenagem": "Movimiento de tierras",
       "pavimentacao": "Pavimentación",
-      "outros": "Otros"
+      "outros": "Otros",
+      "terras": "Tierras",
+      "firmes": "Firmes",
+      "betao": "Hormigón",
+      "ferrovia": "Ferroviario",
+      "instalacoes": "Instalaciones"
     },
     "status": {
       "planned": "Planificado",
@@ -3265,6 +3313,68 @@
     "toast": {
       "deleted": "Eliminado con éxito",
       "deleteError": "Error al eliminar"
+    },
+    "form": {
+      "newControl": "Nuevo Control",
+      "editControl": "Editar Control",
+      "controlDescription": "Registro de control topográfico",
+      "selectEquipment": "Seleccionar equipo",
+      "elementPlaceholder": "Ej: Eje vía, Estaca 12",
+      "elementRequired": "El elemento es obligatorio",
+      "links": "Vínculos",
+      "workItem": "Elemento de Obra",
+      "ncLinked": "NC asociada",
+      "notes": "Observaciones",
+      "none": "Ninguno",
+      "blocked": "Bloqueado",
+      "descriptionRequired": "La descripción es obligatoria",
+      "newRequest": "Nueva Solicitud",
+      "editRequest": "Editar Solicitud",
+      "newEquipment": "Nuevo Equipo",
+      "editEquipment": "Editar Equipo",
+      "codeRequired": "El código es obligatorio",
+      "brand": "Marca",
+      "model": "Modelo",
+      "location": "Ubicación",
+      "certEntity": "Entidad certificadora",
+      "certNumber": "N.º certificado",
+      "issueDate": "Fecha emisión"
+    },
+    "equipmentType": {
+      "estacao_total": "Estación Total",
+      "gnss": "GNSS",
+      "nivel_otico": "Nivel Óptico",
+      "drone": "Drone",
+      "scanner_3d": "Escáner 3D",
+      "outros": "Otros"
+    },
+    "requestType": {
+      "implantacao": "Implantación",
+      "levantamento": "Levantamiento",
+      "controlo": "Control",
+      "verificacao": "Verificación"
+    },
+    "priority": {
+      "low": "Baja",
+      "normal": "Normal",
+      "high": "Alta",
+      "urgent": "Urgente"
+    },
+    "eqStatus": {
+      "active": "Activo",
+      "inactive": "Inactivo",
+      "archived": "Archivado"
+    },
+    "expiresIn": "Expira en {{days}} días",
+    "calibrationHistory": "Historial de Calibraciones",
+    "noCalibrationsYet": "Sin calibraciones registradas",
+    "calibrationBlocked": "Equipo con calibración expirada — control bloqueado",
+    "requestStatus": {
+      "pending": "Pendiente",
+      "assigned": "Asignado",
+      "in_progress": "En curso",
+      "completed": "Completado",
+      "cancelled": "Cancelado"
     }
   },
   "planning": {
@@ -4029,7 +4139,12 @@
       "ncOverdue15dDesc": "RNCs abiertas hace más de 15 días hábiles (meta: 0)",
       "rmOnTimeDesc": "Informe entregado a tiempo",
       "rmLateWarning": "Informe atrasado — CE Cl.ª 35.ª §11"
-    }
+    },
+    "create": "Crear Informe",
+    "createTitle": "Crear Informe Mensual",
+    "createReport": "Crear Informe",
+    "emptyTitle": "Sin Informes",
+    "emptySubtitle": "Cree el primer informe mensual SGQ para este proyecto."
   },
   "concrete": {
     "title": "Control de Hormigón — Fichas de Hormigonado",
