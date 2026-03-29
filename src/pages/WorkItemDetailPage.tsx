@@ -846,7 +846,7 @@ function WorkItemSoilTab({ workItemId }: { workItemId: string }) {
                 variant={s.overall_result === "apto" ? "default" : s.overall_result === "inapto" ? "destructive" : "outline"}
                 className="text-[10px]"
               >
-                {s.overall_result === "apto" ? "Apto" : s.overall_result === "inapto" ? "Inapto" : "Pendente"}
+                {s.overall_result === "apto" ? t("common.apto") : s.overall_result === "inapto" ? t("common.inapto") : t("common.pending")}
               </Badge>
             </li>
           ))}
