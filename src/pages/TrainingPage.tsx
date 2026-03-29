@@ -74,6 +74,7 @@ export default function TrainingPage() {
   const [detailOpen, setDetailOpen] = useState(false);
   const [workersSheetOpen, setWorkersSheetOpen] = useState(false);
   const [untrained, setUntrained] = useState<ProjectWorker[]>([]);
+  const [untrainedView, setUntrainedView] = useState<any[]>([]);
   const [coverageData, setCoverageData] = useState({ trained: 0, total: 0 });
 
   // Form state
