@@ -792,7 +792,7 @@ function WorkItemWeldTab({ workItemId }: { workItemId: string }) {
                 variant={w.overall_result === "pass" ? "default" : w.overall_result === "fail" ? "destructive" : "outline"}
                 className="text-[10px]"
               >
-                {w.overall_result === "pass" ? "OK" : w.overall_result === "fail" ? "NOK" : "Pendente"}
+                {w.overall_result === "pass" ? t("common.ok") : w.overall_result === "fail" ? t("common.nok") : t("common.pending")}
               </Badge>
             </li>
           ))}
