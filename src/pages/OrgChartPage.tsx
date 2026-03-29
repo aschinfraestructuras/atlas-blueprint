@@ -144,7 +144,7 @@ export default function OrgChartPage() {
                   {grouped[lvl].map((m) => {
                     const Icon = m.meta.icon;
                     const name = m.profile?.full_name || m.profile?.email?.split("@")[0] || "—";
-                    const roleLabel = isEs ? m.meta.labelEs : m.meta.label;
+                    const roleLabel = t(m.meta.labelKey);
                     return (
                       <Card key={m.user_id} className="group border bg-card hover:shadow-md transition-shadow">
                         <CardContent className="p-4 flex items-start gap-3">
