@@ -283,10 +283,10 @@ export default function WeldPage() {
           <DialogHeader><DialogTitle>{editingId ? t("welding.form.editTitle") : t("welding.form.newTitle")}</DialogTitle></DialogHeader>
           <Tabs defaultValue="id">
             <TabsList className="w-full">
-              <TabsTrigger value="id">Identificação</TabsTrigger>
-              <TabsTrigger value="materials">Materiais</TabsTrigger>
-              <TabsTrigger value="inspection">Inspecção</TabsTrigger>
-              <TabsTrigger value="ut_hv">UT e Dureza</TabsTrigger>
+              <TabsTrigger value="id">{t("weld.tabs.identification", { defaultValue: "Identificação" })}</TabsTrigger>
+              <TabsTrigger value="materials">{t("weld.tabs.materials", { defaultValue: "Materiais" })}</TabsTrigger>
+              <TabsTrigger value="inspection">{t("weld.tabs.inspection", { defaultValue: "Inspecção" })}</TabsTrigger>
+              <TabsTrigger value="ut_hv">{t("weld.tabs.utHv", { defaultValue: "UT e Dureza" })}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="id" className="space-y-3 mt-3">
