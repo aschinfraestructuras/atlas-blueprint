@@ -387,12 +387,12 @@ export default function WeldPage() {
               <div className="space-y-3 p-3 rounded-lg border border-border">
                 <label className="flex items-center gap-2 text-sm font-medium"><Checkbox checked={form.has_hardness ?? false} onCheckedChange={v => setField("has_hardness", v)} />{t("welding.fields.hardness")}</label>
                 {form.has_hardness && (
-                  <div className="grid grid-cols-3 gap-3">
-                    <div><Label>HV Esquerda</Label><Input type="number" value={form.hv_rail_left ?? ""} onChange={e => setField("hv_rail_left", e.target.value ? Number(e.target.value) : null)} /></div>
-                    <div><Label>HV Centro</Label><Input type="number" value={form.hv_weld_center ?? ""} onChange={e => setField("hv_weld_center", e.target.value ? Number(e.target.value) : null)} /></div>
-                    <div><Label>HV Direita</Label><Input type="number" value={form.hv_rail_right ?? ""} onChange={e => setField("hv_rail_right", e.target.value ? Number(e.target.value) : null)} /></div>
-                    <div><Label>Critério mín.</Label><Input type="number" value={form.hv_criteria_min ?? 260} onChange={e => setField("hv_criteria_min", Number(e.target.value))} /></div>
-                    <div><Label>Critério máx.</Label><Input type="number" value={form.hv_criteria_max ?? 380} onChange={e => setField("hv_criteria_max", Number(e.target.value))} /></div>
+                   <div className="grid grid-cols-3 gap-3">
+                    <div><Label>{t("weld.form.hvLeft", { defaultValue: "HV Esquerda" })}</Label><Input type="number" value={form.hv_rail_left ?? ""} onChange={e => setField("hv_rail_left", e.target.value ? Number(e.target.value) : null)} /></div>
+                    <div><Label>{t("weld.form.hvCenter", { defaultValue: "HV Centro" })}</Label><Input type="number" value={form.hv_weld_center ?? ""} onChange={e => setField("hv_weld_center", e.target.value ? Number(e.target.value) : null)} /></div>
+                    <div><Label>{t("weld.form.hvRight", { defaultValue: "HV Direita" })}</Label><Input type="number" value={form.hv_rail_right ?? ""} onChange={e => setField("hv_rail_right", e.target.value ? Number(e.target.value) : null)} /></div>
+                    <div><Label>{t("weld.form.hvCriteriaMin", { defaultValue: "Critério mín." })}</Label><Input type="number" value={form.hv_criteria_min ?? 260} onChange={e => setField("hv_criteria_min", Number(e.target.value))} /></div>
+                    <div><Label>{t("weld.form.hvCriteriaMax", { defaultValue: "Critério máx." })}</Label><Input type="number" value={form.hv_criteria_max ?? 380} onChange={e => setField("hv_criteria_max", Number(e.target.value))} /></div>
                   </div>
                 )}
               </div>
