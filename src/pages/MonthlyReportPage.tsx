@@ -85,6 +85,7 @@ export default function MonthlyReportPage() {
   const [creating, setCreating] = useState(false);
   const [saving, setSaving] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState(getMonthOptions()[1]?.value ?? "");
+  const [monthlySummary, setMonthlySummary] = useState<any>(null);
 
   // Detail editing
   const [observations, setObservations] = useState("");
