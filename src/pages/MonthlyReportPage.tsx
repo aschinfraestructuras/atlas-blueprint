@@ -187,7 +187,7 @@ export default function MonthlyReportPage() {
       setSelectedReport(null);
       await fetchReports();
     } catch (err: any) {
-      toast({ title: "Erro", description: err.message, variant: "destructive" });
+      toast({ title: t("common.error"), description: err.message, variant: "destructive" });
     } finally {
       setSaving(false);
     }
