@@ -25,11 +25,27 @@ const SOURCE_ROUTES: Record<string, string> = {
   nc_due: "/non-conformities",
   rfi_due: "/technical-office/rfis",
   tech_office_due: "/technical-office/items",
-  planning_due: "/planning/activities",
+  planning_due: "/planning",
   ppi_pending: "/ppi",
   ppi_approval: "/ppi",
   expiration_overdue: "/deadlines",
   expiration_warning: "/deadlines",
+  nc: "/non-conformities",
+  ppi: "/ppi",
+  supplier: "/suppliers",
+  subcontractor: "/subcontractors",
+  rfi: "/technical-office",
+  audit: "/audits",
+  warning: "/deadlines",
+  info: "/deadlines",
+};
+
+const HAS_DETAIL: Record<string, boolean> = {
+  nc: true, nc_due: true,
+  ppi: true, ppi_pending: true, ppi_approval: true,
+  supplier: true, supplier_doc: true,
+  subcontractor: true, subcontractor_doc: true,
+  rfi: true, rfi_due: true,
 };
 
 export function NotificationBell() {
@@ -66,9 +82,12 @@ export function NotificationBell() {
       setUnreadCount((prev) => Math.max(0, prev - 1));
       setNotifications((prev) => prev.map((x) => (x.id === n.id ? { ...x, is_read: true } : x)));
     }
-    if (n.link_entity_type && n.link_entity_id) {
-      const base = SOURCE_ROUTES[n.link_entity_type] ?? "/deadlines";
+    const entityType = n.link_entity_type ?? "";
+    const base = SOURCE_ROUTES[entityType] ?? "/deadlines";
+    if (n.link_entity_id && HAS_DETAIL[entityType]) {
       navigate(`${base}/${n.link_entity_id}`);
+    } else {
+      navigate(base);
     }
   };
 

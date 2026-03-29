@@ -1,6 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { Session, User } from "@supabase/supabase-js";
+import posthog from "posthog-js";
 import { supabase } from "@/integrations/supabase/client";
 import { queryClient } from "@/lib/queryClient";
 
@@ -24,6 +25,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+        if (session?.user) {
+          posthog.identify(session.user.id, {
+            email: session.user.email,
+            name: session.user.user_metadata?.full_name ?? session.user.email,
+          });
+        }
       }
     );
 
@@ -52,6 +59,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     }
     await supabase.auth.signOut();
+    posthog.reset();
     queryClient.clear();
   };
 

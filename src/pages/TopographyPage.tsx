@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
@@ -131,6 +132,8 @@ export default function TopographyPage() {
   const [editDoc, setEditDoc] = useState<any>(null);
   const [seeding, setSeeding] = useState(false);
   const [cycleData, setCycleData] = useState<any[]>([]);
+  const [detailSheetOpen, setDetailSheetOpen] = useState(false);
+  const [selectedCycle, setSelectedCycle] = useState<any>(null);
 
   // Load topography cycle data
   useEffect(() => {
@@ -435,10 +438,11 @@ export default function TopographyPage() {
                               {t(`topography.cycle.${cycleStatus}`, { defaultValue: cycleStatus })}
                             </Badge>
                             {(cycleStatus === "closed_ok" || cycleStatus === "closed_nok") && cycle && (
-                              <div className="text-[10px] text-muted-foreground space-y-0.5">
-                                {cycle.control_date && <div>{cycle.control_date}</div>}
-                                {cycle.deviation && <div>{t("topography.cycle.deviation")}: {cycle.deviation}</div>}
-                                {cycle.technician && <div>{t("topography.cycle.executedBy")}: {cycle.technician}</div>}
+                              <div className="flex items-center gap-1 mt-0.5">
+                                <Button variant="ghost" size="sm" className="h-5 px-1.5 text-[10px] text-primary"
+                                  onClick={(e) => { e.stopPropagation(); setSelectedCycle(cycle); setDetailSheetOpen(true); }}>
+                                  {t("topography.cycle.viewDetail")}
+                                </Button>
                               </div>
                             )}
                           </div>
@@ -654,6 +658,53 @@ export default function TopographyPage() {
         defaultValues={{ disciplina: "topografia" }}
         onSuccess={() => { refetchDocs(); setDocDialogOpen(false); }}
       />
+
+      {/* Cycle Detail Sheet */}
+      <Sheet open={detailSheetOpen} onOpenChange={setDetailSheetOpen}>
+        <SheetContent className="sm:max-w-lg">
+          <SheetHeader>
+            <SheetTitle>{t("topography.cycle.viewDetail")}</SheetTitle>
+          </SheetHeader>
+          {selectedCycle && (
+            <div className="space-y-3 mt-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{t("topography.cycle.element")}</p>
+                  <p className="text-sm text-foreground">{selectedCycle.control_element ?? "—"}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{t("common.date")}</p>
+                  <p className="text-sm text-foreground">{selectedCycle.control_date ?? "—"}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{t("topography.cycle.tolerance")}</p>
+                  <p className="text-sm text-foreground">{selectedCycle.tolerance ?? "—"}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{t("topography.cycle.measured")}</p>
+                  <p className="text-sm text-foreground">{selectedCycle.measured_value ?? "—"}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{t("topography.cycle.deviation")}</p>
+                  <p className="text-sm text-foreground">{selectedCycle.deviation ?? "—"}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{t("common.status")}</p>
+                  <p className="text-sm text-foreground">{t(`topography.cycle.${selectedCycle.cycle_status}`, { defaultValue: selectedCycle.cycle_status })}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{t("topography.cycle.executedBy")}</p>
+                  <p className="text-sm text-foreground">{selectedCycle.technician ?? "—"}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{t("topography.cycle.equipment")}</p>
+                  <p className="text-sm text-foreground">{selectedCycle.equipment_code ?? "—"}</p>
+                </div>
+              </div>
+            </div>
+          )}
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }

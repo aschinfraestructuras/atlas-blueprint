@@ -85,6 +85,7 @@ export default function MonthlyReportPage() {
   const [creating, setCreating] = useState(false);
   const [saving, setSaving] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState(getMonthOptions()[1]?.value ?? "");
+  const [monthlySummary, setMonthlySummary] = useState<any>(null);
 
   // Detail editing
   const [observations, setObservations] = useState("");
@@ -105,6 +106,13 @@ export default function MonthlyReportPage() {
   }, [activeProject]);
 
   useEffect(() => { fetchReports(); }, [fetchReports]);
+
+  // Fetch monthly quality summary
+  useEffect(() => {
+    if (!activeProject) return;
+    supabase.from("vw_monthly_quality_summary").select("*").eq("project_id", activeProject.id).single()
+      .then(({ data }) => setMonthlySummary(data));
+  }, [activeProject]);
 
   // Deadline alert logic
   const deadlineAlert = useMemo(() => {
@@ -394,6 +402,31 @@ export default function MonthlyReportPage() {
           }}>
             {t("monthlyReport.createReport")}
           </Button>
+        </div>
+      )}
+
+      {/* Monthly Quality Summary */}
+      {monthlySummary && (
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">{t("monthlyReport.currentMonth")}</p>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {[
+              { label: t("monthlyReport.kpi.ncOpen"), value: monthlySummary.nc_open ?? 0 },
+              { label: t("monthlyReport.kpi.ncClosed"), value: monthlySummary.nc_closed_this_month ?? 0 },
+              { label: t("monthlyReport.hpConfirmed"), value: monthlySummary.hp_confirmed_this_month ?? 0 },
+              { label: t("monthlyReport.betonagem"), value: monthlySummary.concrete_batches_month ?? 0 },
+              { label: t("monthlyReport.soldaduras"), value: monthlySummary.welds_month ?? 0 },
+              { label: t("monthlyReport.topografia"), value: monthlySummary.topo_controls_month ?? 0 },
+              { label: t("monthlyReport.partesDiarios"), value: monthlySummary.daily_reports_month ?? 0 },
+            ].map((k, i) => (
+              <Card key={i} className="border-0 bg-card shadow-card">
+                <CardContent className="p-4 text-center">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{k.label}</p>
+                  <p className="text-2xl font-black tabular-nums mt-1 text-foreground">{k.value}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
       )}
 

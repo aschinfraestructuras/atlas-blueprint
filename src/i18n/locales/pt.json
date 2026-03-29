@@ -4671,5 +4671,55 @@
     "update": "Actualizar App",
     "updateAvailable": "Nova versão disponível — clique para actualizar",
     "updateNow": "Actualizar agora"
+  },
+  "training": {
+    "status": {
+      "attended_not_signed": "Presente, não assinou",
+      "no_training": "Sem formação"
+    }
+  },
+  "topography": {
+    "cycle": {
+      "viewDetail": "Ver levantamento",
+      "element": "Elemento",
+      "tolerance": "Tolerância",
+      "measured": "Valor medido",
+      "equipment": "Equipamento"
+    }
+  },
+  "monthlyReport": {
+    "currentMonth": "Resumo do mês actual",
+    "hpConfirmed": "HPs confirmadas",
+    "betonagem": "Amassadas este mês",
+    "soldaduras": "Soldaduras este mês",
+    "topografia": "Controlos topo. mês",
+    "partesDiarios": "Partes diários mês"
+  },
+  "settings": {
+    "integrations": {
+      "title": "Integrações e Ferramentas",
+      "subtitle": "Acesso directo às ferramentas de desenvolvimento",
+      "analytics": "Analytics de Uso",
+      "analyticsDesc": "Relatórios de utilização, sessões e comportamento dos utilizadores no Atlas QMS.",
+      "github": "Repositório de Código",
+      "githubDesc": "Código fonte, histórico de versões e registo de alterações do Atlas QMS.",
+      "database": "Base de Dados",
+      "databaseDesc": "Gestão da base de dados, migrações, Edge Functions e configurações de segurança.",
+      "open": "Abrir",
+      "external": "Externo"
+    }
+  },
+  "documents": {
+    "externalApproval": {
+      "title": "Aprovação externa",
+      "entity": "Entidade aprovadora",
+      "approvedBy": "Aprovado por",
+      "approvedAt": "Data de aprovação",
+      "ref": "Referência / Nº ofício",
+      "badge": "Aprovado externamente",
+      "entityPlaceholder": "ex: IP — Fiscalização PF17A",
+      "approvedByPlaceholder": "ex: Eng. Fernanda Costa",
+      "refPlaceholder": "ex: Ofício nº 2026/PF17A/045"
+    }
   }
 }

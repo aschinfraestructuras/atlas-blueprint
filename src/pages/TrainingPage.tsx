@@ -6,6 +6,8 @@ import { useProjectRole } from "@/hooks/useProjectRole";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { trainingService, type TrainingSession, type TrainingAttendee } from "@/lib/services/trainingService";
 import { projectWorkerService, type ProjectWorker } from "@/lib/services/projectWorkerService";
+import { supabase } from "@/integrations/supabase/client";
+import { cn } from "@/lib/utils";
 import { GraduationCap, Plus, FileText, Trash2, Eye, X, Users, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -74,6 +76,7 @@ export default function TrainingPage() {
   const [detailOpen, setDetailOpen] = useState(false);
   const [workersSheetOpen, setWorkersSheetOpen] = useState(false);
   const [untrained, setUntrained] = useState<ProjectWorker[]>([]);
+  const [untrainedView, setUntrainedView] = useState<any[]>([]);
   const [coverageData, setCoverageData] = useState({ trained: 0, total: 0 });
 
   // Form state
@@ -102,11 +105,21 @@ export default function TrainingPage() {
 
   useEffect(() => { fetchSessions(); }, [fetchSessions]);
 
-  // Fetch workers coverage
+  // Fetch workers coverage — try view first, fallback to service
   useEffect(() => {
     if (!activeProject) return;
     (async () => {
       try {
+        // Try vw_workers_training_status view
+        const { data: viewData } = await supabase
+          .from("vw_workers_training_status" as any)
+          .select("*")
+          .eq("project_id", activeProject.id)
+          .neq("training_status", "trained");
+        if (viewData && viewData.length >= 0) {
+          setUntrainedView(viewData);
+        }
+        // Also get coverage from worker service
         const workers = await projectWorkerService.list(activeProject.id);
         const active = workers.filter(w => w.status === "active");
         const trained = active.filter(w => w.has_safety_training);
@@ -505,10 +518,47 @@ export default function TrainingPage() {
             </SheetTitle>
           </SheetHeader>
           <div className="mt-4 space-y-2">
-            {untrained.length === 0 ? (
+            {(untrainedView.length > 0 ? untrainedView : untrained).length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-8">
                 {t("common.noData")}
               </p>
+            ) : untrainedView.length > 0 ? (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>{t("common.name")}</TableHead>
+                    <TableHead>{t("training.form.company", { defaultValue: "Empresa" })}</TableHead>
+                    <TableHead>{t("common.status")}</TableHead>
+                    <TableHead>{t("common.date")}</TableHead>
+                    <TableHead className="w-20" />
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {untrainedView.map((w: any, idx: number) => (
+                    <TableRow key={w.worker_id ?? idx}>
+                      <TableCell className="text-sm font-medium">{w.worker_name ?? "—"}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{w.company ?? w.subcontractor_name ?? "—"}</TableCell>
+                      <TableCell>
+                        <Badge variant="secondary" className={cn("text-[10px]",
+                          w.training_status === "attended_not_signed" ? "bg-amber-500/10 text-amber-600" : "bg-destructive/10 text-destructive"
+                        )}>
+                          {t(`training.status.${w.training_status}`, { defaultValue: w.training_status })}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-xs text-muted-foreground">{w.last_training_date ? new Date(w.last_training_date).toLocaleDateString("pt-PT") : "—"}</TableCell>
+                      <TableCell>
+                        <Button variant="ghost" size="sm" className="text-xs gap-1" onClick={() => {
+                          setWorkersSheetOpen(false); resetForm();
+                          setFormAttendees([{ name: w.worker_name ?? "", role_function: "", company: w.company ?? "" }]);
+                          setDialogOpen(true);
+                        }}>
+                          <Plus className="h-3 w-3" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             ) : (
               <Table>
                 <TableHeader>
@@ -526,19 +576,12 @@ export default function TrainingPage() {
                       <TableCell className="text-sm text-muted-foreground">{w.company ?? "—"}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">{w.role_function ?? "—"}</TableCell>
                       <TableCell>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-xs gap-1"
-                          onClick={() => {
-                            setWorkersSheetOpen(false);
-                            resetForm();
-                            setFormAttendees([{ name: w.name, role_function: w.role_function ?? "", company: w.company ?? "" }]);
-                            setDialogOpen(true);
-                          }}
-                        >
+                        <Button variant="ghost" size="sm" className="text-xs gap-1" onClick={() => {
+                          setWorkersSheetOpen(false); resetForm();
+                          setFormAttendees([{ name: w.name, role_function: w.role_function ?? "", company: w.company ?? "" }]);
+                          setDialogOpen(true);
+                        }}>
                           <Plus className="h-3 w-3" />
-                          {t("training.registerTraining", { defaultValue: "Registar formação" })}
                         </Button>
                       </TableCell>
                     </TableRow>

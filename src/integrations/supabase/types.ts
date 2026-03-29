@@ -1899,6 +1899,12 @@ export type Database = {
           disciplina: string
           disciplina_outro: string | null
           doc_type: string
+          drive_file_name: string | null
+          drive_url: string | null
+          external_approval_entity: string | null
+          external_approval_ref: string | null
+          external_approved_at: string | null
+          external_approved_by: string | null
           file_name: string | null
           file_path: string | null
           file_size: number | null
@@ -1929,6 +1935,12 @@ export type Database = {
           disciplina?: string
           disciplina_outro?: string | null
           doc_type: string
+          drive_file_name?: string | null
+          drive_url?: string | null
+          external_approval_entity?: string | null
+          external_approval_ref?: string | null
+          external_approved_at?: string | null
+          external_approved_by?: string | null
           file_name?: string | null
           file_path?: string | null
           file_size?: number | null
@@ -1959,6 +1971,12 @@ export type Database = {
           disciplina?: string
           disciplina_outro?: string | null
           doc_type?: string
+          drive_file_name?: string | null
+          drive_url?: string | null
+          external_approval_entity?: string | null
+          external_approval_ref?: string | null
+          external_approved_at?: string | null
+          external_approved_by?: string | null
           file_name?: string | null
           file_path?: string | null
           file_size?: number | null
@@ -2487,6 +2505,7 @@ export type Database = {
           created_at: string
           deleted_at: string | null
           deleted_by: string | null
+          drive_url: string | null
           id: string
           is_deleted: boolean
           notes: string | null
@@ -2505,6 +2524,7 @@ export type Database = {
           created_at?: string
           deleted_at?: string | null
           deleted_by?: string | null
+          drive_url?: string | null
           id?: string
           is_deleted?: boolean
           notes?: string | null
@@ -2523,6 +2543,7 @@ export type Database = {
           created_at?: string
           deleted_at?: string | null
           deleted_by?: string | null
+          drive_url?: string | null
           id?: string
           is_deleted?: boolean
           notes?: string | null
@@ -2720,6 +2741,7 @@ export type Database = {
           deleted_at: string | null
           deleted_by: string | null
           delivery_note_ref: string | null
+          drive_url: string | null
           id: string
           is_deleted: boolean
           lot_code: string
@@ -2748,6 +2770,7 @@ export type Database = {
           deleted_at?: string | null
           deleted_by?: string | null
           delivery_note_ref?: string | null
+          drive_url?: string | null
           id?: string
           is_deleted?: boolean
           lot_code: string
@@ -2776,6 +2799,7 @@ export type Database = {
           deleted_at?: string | null
           deleted_by?: string | null
           delivery_note_ref?: string | null
+          drive_url?: string | null
           id?: string
           is_deleted?: boolean
           lot_code?: string
@@ -3070,6 +3094,7 @@ export type Database = {
           corrective_actions: string | null
           created_at: string
           created_by: string | null
+          drive_url: string | null
           id: string
           kpi_emes_expiring: number | null
           kpi_hp_approved: number | null
@@ -3095,6 +3120,7 @@ export type Database = {
           corrective_actions?: string | null
           created_at?: string
           created_by?: string | null
+          drive_url?: string | null
           id?: string
           kpi_emes_expiring?: number | null
           kpi_hp_approved?: number | null
@@ -3120,6 +3146,7 @@ export type Database = {
           corrective_actions?: string | null
           created_at?: string
           created_by?: string | null
+          drive_url?: string | null
           id?: string
           kpi_emes_expiring?: number | null
           kpi_hp_approved?: number | null
@@ -4137,6 +4164,7 @@ export type Database = {
           discipline: string | null
           doc_reference: string | null
           document_id: string | null
+          drive_url: string | null
           file_url: string | null
           id: string
           notes: string | null
@@ -4156,6 +4184,7 @@ export type Database = {
           discipline?: string | null
           doc_reference?: string | null
           document_id?: string | null
+          drive_url?: string | null
           file_url?: string | null
           id?: string
           notes?: string | null
@@ -4175,6 +4204,7 @@ export type Database = {
           discipline?: string | null
           doc_reference?: string | null
           document_id?: string | null
+          drive_url?: string | null
           file_url?: string | null
           id?: string
           notes?: string | null
@@ -4832,6 +4862,82 @@ export type Database = {
           },
         ]
       }
+      project_integrations: {
+        Row: {
+          config: Json
+          created_at: string
+          created_by: string | null
+          id: string
+          is_active: boolean
+          project_id: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          config?: Json
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          project_id: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          config?: Json
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          project_id?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_integrations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_integrations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_integrations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_integrations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_integrations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_integrations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_sgq_matrix_summary"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
       project_invites: {
         Row: {
           accepted_at: string | null
@@ -5245,6 +5351,7 @@ export type Database = {
           completed_date: string | null
           created_at: string
           created_by: string | null
+          drive_url: string | null
           findings: string | null
           id: string
           nc_count: number
@@ -5264,6 +5371,7 @@ export type Database = {
           completed_date?: string | null
           created_at?: string
           created_by?: string | null
+          drive_url?: string | null
           findings?: string | null
           id?: string
           nc_count?: number
@@ -5283,6 +5391,7 @@ export type Database = {
           completed_date?: string | null
           created_at?: string
           created_by?: string | null
+          drive_url?: string | null
           findings?: string | null
           id?: string
           nc_count?: number
@@ -6037,6 +6146,7 @@ export type Database = {
           created_at: string
           doc_type: string
           document_id: string | null
+          drive_url: string | null
           id: string
           project_id: string
           status: string
@@ -6050,6 +6160,7 @@ export type Database = {
           created_at?: string
           doc_type?: string
           document_id?: string | null
+          drive_url?: string | null
           id?: string
           project_id: string
           status?: string
@@ -6063,6 +6174,7 @@ export type Database = {
           created_at?: string
           doc_type?: string
           document_id?: string | null
+          drive_url?: string | null
           id?: string
           project_id?: string
           status?: string
@@ -6273,6 +6385,7 @@ export type Database = {
           created_at: string
           doc_type: string
           document_id: string
+          drive_url: string | null
           id: string
           project_id: string
           status: string
@@ -6284,6 +6397,7 @@ export type Database = {
           created_at?: string
           doc_type?: string
           document_id: string
+          drive_url?: string | null
           id?: string
           project_id: string
           status?: string
@@ -6295,6 +6409,7 @@ export type Database = {
           created_at?: string
           doc_type?: string
           document_id?: string
+          drive_url?: string | null
           id?: string
           project_id?: string
           status?: string
@@ -8479,6 +8594,7 @@ export type Database = {
           role_function: string | null
           session_id: string
           signed: boolean
+          worker_id: string | null
         }
         Insert: {
           company?: string | null
@@ -8487,6 +8603,7 @@ export type Database = {
           role_function?: string | null
           session_id: string
           signed?: boolean
+          worker_id?: string | null
         }
         Update: {
           company?: string | null
@@ -8495,6 +8612,7 @@ export type Database = {
           role_function?: string | null
           session_id?: string
           signed?: boolean
+          worker_id?: string | null
         }
         Relationships: [
           {
@@ -8503,6 +8621,27 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "training_sessions"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "training_attendees_worker_id_fkey"
+            columns: ["worker_id"]
+            isOneToOne: false
+            referencedRelation: "project_workers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "training_attendees_worker_id_fkey"
+            columns: ["worker_id"]
+            isOneToOne: false
+            referencedRelation: "vw_worker_training_gap"
+            referencedColumns: ["worker_id"]
+          },
+          {
+            foreignKeyName: "training_attendees_worker_id_fkey"
+            columns: ["worker_id"]
+            isOneToOne: false
+            referencedRelation: "vw_workers_training_status"
+            referencedColumns: ["worker_id"]
           },
         ]
       }
@@ -11191,6 +11330,145 @@ export type Database = {
           },
         ]
       }
+      vw_worker_training_gap: {
+        Row: {
+          all_signed: boolean | null
+          company: string | null
+          days_since_last_training: number | null
+          has_safety_training: boolean | null
+          last_training_date: string | null
+          name: string | null
+          project_id: string | null
+          role_function: string | null
+          sessions_attended: number | null
+          status: string | null
+          subcontractor_id: string | null
+          subcontractor_name: string | null
+          training_status: string | null
+          training_types: string | null
+          worker_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_workers_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_workers_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_workers_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_workers_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_workers_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_workers_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_sgq_matrix_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_workers_subcontractor_id_fkey"
+            columns: ["subcontractor_id"]
+            isOneToOne: false
+            referencedRelation: "subcontractors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vw_workers_training_status: {
+        Row: {
+          company: string | null
+          has_safety_training: boolean | null
+          last_training_date: string | null
+          name: string | null
+          project_id: string | null
+          role_function: string | null
+          sessions_attended: number | null
+          sessions_signed: number | null
+          subcontractor_id: string | null
+          subcontractor_name: string | null
+          training_status: string | null
+          training_types: string | null
+          worker_id: string | null
+          worker_status: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_workers_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_workers_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_workers_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_workers_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_workers_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_workers_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_sgq_matrix_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_workers_subcontractor_id_fkey"
+            columns: ["subcontractor_id"]
+            isOneToOne: false
+            referencedRelation: "subcontractors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       fn_accept_project_invite: { Args: { p_token: string }; Returns: Json }
@@ -11244,6 +11522,12 @@ export type Database = {
           disciplina: string
           disciplina_outro: string | null
           doc_type: string
+          drive_file_name: string | null
+          drive_url: string | null
+          external_approval_entity: string | null
+          external_approval_ref: string | null
+          external_approved_at: string | null
+          external_approved_by: string | null
           file_name: string | null
           file_path: string | null
           file_size: number | null

@@ -574,6 +574,80 @@ export default function DocumentDetailPage() {
         )}
       </Card>
 
+      {/* ── External Approval ─────────────────────────────────────────── */}
+      {((doc as any).approval_required || ["pqo", "ppi", "pame", "procedure"].includes(doc.doc_type)) && (
+        <Card className="shadow-card">
+          <CardHeader className="pb-2 pt-5 px-5">
+            <CardTitle className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground flex items-center gap-2">
+              {t("documents.externalApproval.title")}
+              {(doc as any).external_approved_at && (
+                <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-600 text-[10px]">
+                  <CheckCircle2 className="h-3 w-3 mr-1" />
+                  {t("documents.externalApproval.badge")}
+                </Badge>
+              )}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="px-5 pb-5">
+            {editable ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-semibold uppercase text-muted-foreground">{t("documents.externalApproval.entity")}</label>
+                  <Input
+                    className="h-8 text-xs"
+                    placeholder={t("documents.externalApproval.entityPlaceholder")}
+                    defaultValue={(doc as any).external_approval_entity ?? ""}
+                    onBlur={async (e) => {
+                      await supabase.from("documents").update({ external_approval_entity: e.target.value || null } as any).eq("id", doc.id);
+                    }}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-semibold uppercase text-muted-foreground">{t("documents.externalApproval.approvedBy")}</label>
+                  <Input
+                    className="h-8 text-xs"
+                    placeholder={t("documents.externalApproval.approvedByPlaceholder")}
+                    defaultValue={(doc as any).external_approved_by ?? ""}
+                    onBlur={async (e) => {
+                      await supabase.from("documents").update({ external_approved_by: e.target.value || null } as any).eq("id", doc.id);
+                    }}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-semibold uppercase text-muted-foreground">{t("documents.externalApproval.approvedAt")}</label>
+                  <Input
+                    type="date"
+                    className="h-8 text-xs"
+                    defaultValue={(doc as any).external_approved_at?.slice(0, 10) ?? ""}
+                    onBlur={async (e) => {
+                      await supabase.from("documents").update({ external_approved_at: e.target.value || null } as any).eq("id", doc.id);
+                    }}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-semibold uppercase text-muted-foreground">{t("documents.externalApproval.ref")}</label>
+                  <Input
+                    className="h-8 text-xs"
+                    placeholder={t("documents.externalApproval.refPlaceholder")}
+                    defaultValue={(doc as any).external_approval_ref ?? ""}
+                    onBlur={async (e) => {
+                      await supabase.from("documents").update({ external_approval_ref: e.target.value || null } as any).eq("id", doc.id);
+                    }}
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8">
+                <InfoRow label={t("documents.externalApproval.entity")} value={(doc as any).external_approval_entity ?? "—"} />
+                <InfoRow label={t("documents.externalApproval.approvedBy")} value={(doc as any).external_approved_by ?? "—"} />
+                <InfoRow label={t("documents.externalApproval.approvedAt")} value={(doc as any).external_approved_at ? new Date((doc as any).external_approved_at).toLocaleDateString("pt-PT") : "—"} />
+                <InfoRow label={t("documents.externalApproval.ref")} value={(doc as any).external_approval_ref ?? "—"} />
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
       {/* ── Tabs ──────────────────────────────────────────────────────── */}
       <Tabs defaultValue="versions">
         <TabsList>
