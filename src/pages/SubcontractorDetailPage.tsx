@@ -43,17 +43,9 @@ const DOC_STATUS_COLORS: Record<string, string> = {
   pending: "bg-muted text-muted-foreground",
 };
 
-const SUB_DOC_TYPES = [
-  { value: "seguros", label: "Seguros" },
-  { value: "sst", label: "SST" },
-  { value: "qualidade", label: "Qualidade" },
-  { value: "certificados", label: "Certificados" },
-  { value: "formacao", label: "Formação" },
-  { value: "seguro", label: "Seguro" },
-  { value: "alvara", label: "Alvará" },
-  { value: "contrato", label: "Contrato" },
-  { value: "certificacao", label: "Certificação" },
-  { value: "other", label: "Outro" },
+const SUB_DOC_TYPE_KEYS = [
+  "seguros", "sst", "qualidade", "certificados", "formacao",
+  "seguro", "alvara", "contrato", "certificacao", "other",
 ];
 
 export default function SubcontractorDetailPage() {
