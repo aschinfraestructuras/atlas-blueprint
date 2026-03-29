@@ -133,7 +133,7 @@ export function ControlledCopiesPanel({ planId, projectId, canEdit = true }: Pro
         {canEdit && (
           <Button variant="outline" size="sm" onClick={() => setDialogOpen(true)}>
             <Plus className="h-3.5 w-3.5 mr-1" />
-            {isEs ? "Añadir" : "Adicionar"}
+            {t("common.add")}
           </Button>
         )}
       </div>
