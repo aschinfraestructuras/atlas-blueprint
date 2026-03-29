@@ -173,7 +173,7 @@ export default function MonthlyReportPage() {
       toast({ title: t("common.saved", { defaultValue: "Guardado" }) });
       await fetchReports();
     } catch (err: any) {
-      toast({ title: "Erro", description: err.message, variant: "destructive" });
+      toast({ title: t("common.error"), description: err.message, variant: "destructive" });
     } finally {
       setSaving(false);
     }
