@@ -112,8 +112,8 @@ export default function OrgChartPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title={isEs ? "Organigrama de Obra" : "Organigrama de Obra"}
-        subtitle={isEs ? "Estructura organizativa del proyecto" : "Estrutura organizativa do projeto"}
+        title={t("orgChart.title")}
+        subtitle={t("orgChart.subtitle")}
         icon={Users}
         actions={
           <Button variant="outline" size="sm" onClick={handleExportPdf}>
