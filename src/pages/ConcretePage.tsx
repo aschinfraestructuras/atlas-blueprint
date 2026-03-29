@@ -837,7 +837,7 @@ export default function ConcretePage() {
                 <Input value={form.element_betonado} onChange={(e) => setForm((f) => ({ ...f, element_betonado: e.target.value }))} placeholder="Muro M1 — PK 30+500" />
               </div>
               <div className="grid grid-cols-3 gap-3">
-                <div><Label>PK</Label><Input value={form.pk_location} onChange={(e) => setForm((f) => ({ ...f, pk_location: e.target.value }))} /></div>
+                <div><Label>{t("common.pk")}</Label><Input value={form.pk_location} onChange={(e) => setForm((f) => ({ ...f, pk_location: e.target.value }))} /></div>
                 <div><Label>{t("common.date")}</Label><Input type="date" value={form.batch_date} onChange={(e) => setForm((f) => ({ ...f, batch_date: e.target.value }))} /></div>
                 <div><Label>Hora</Label><Input type="time" value={form.batch_time} onChange={(e) => setForm((f) => ({ ...f, batch_time: e.target.value }))} /></div>
               </div>
