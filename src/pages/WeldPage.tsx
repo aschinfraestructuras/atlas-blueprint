@@ -44,12 +44,13 @@ function resultColor(r: string) {
 }
 
 function CertExpiryBadge({ date }: { date: string | null | undefined }) {
+  const { t } = useTranslation();
   if (!date) return null;
   const today = new Date();
   const expiry = new Date(date);
   const diff = Math.ceil((expiry.getTime() - today.getTime()) / 86400000);
-  if (diff < 0) return <Badge variant="destructive" className="text-[10px] ml-1">Cert. expirado</Badge>;
-  if (diff <= 30) return <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border-0 text-[10px] ml-1">Cert. expira em {diff}d</Badge>;
+  if (diff < 0) return <Badge variant="destructive" className="text-[10px] ml-1">{t("weld.certExpired", { defaultValue: "Cert. expirado" })}</Badge>;
+  if (diff <= 30) return <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border-0 text-[10px] ml-1">{t("weld.certExpiresIn", { defaultValue: "Cert. expira em {{days}}d", days: diff })}</Badge>;
   return null;
 }
 
