@@ -342,19 +342,19 @@ export default function WeldPage() {
 
             <TabsContent value="inspection" className="space-y-3 mt-3">
               <div className="grid grid-cols-2 gap-3">
-                <div><Label>Temp. pré-aquecimento (°C)</Label><Input type="number" value={form.preheat_temp_c ?? ""} onChange={e => setField("preheat_temp_c", e.target.value ? Number(e.target.value) : null)} /></div>
-                <div><Label>Duração (min)</Label><Input type="number" value={form.preheat_duration_min ?? ""} onChange={e => setField("preheat_duration_min", e.target.value ? Number(e.target.value) : null)} /></div>
+                <div><Label>{t("weld.form.preheatTemp", { defaultValue: "Temp. pré-aquecimento (°C)" })}</Label><Input type="number" value={form.preheat_temp_c ?? ""} onChange={e => setField("preheat_temp_c", e.target.value ? Number(e.target.value) : null)} /></div>
+                <div><Label>{t("weld.form.duration", { defaultValue: "Duração (min)" })}</Label><Input type="number" value={form.preheat_duration_min ?? ""} onChange={e => setField("preheat_duration_min", e.target.value ? Number(e.target.value) : null)} /></div>
               </div>
               <div className="flex items-center gap-6">
                 <label className="flex items-center gap-2 text-sm"><Checkbox checked={form.visual_pass ?? false} onCheckedChange={v => setField("visual_pass", v)} />{t("welding.fields.visual")} OK</label>
-                <label className="flex items-center gap-2 text-sm"><Checkbox checked={form.excess_material_ok ?? false} onCheckedChange={v => setField("excess_material_ok", v)} />Excesso material OK</label>
+                <label className="flex items-center gap-2 text-sm"><Checkbox checked={form.excess_material_ok ?? false} onCheckedChange={v => setField("excess_material_ok", v)} />{t("weld.form.excessMaterial", { defaultValue: "Excesso material OK" })}</label>
                 <label className="flex items-center gap-2 text-sm"><Checkbox checked={form.preheat_pass ?? false} onCheckedChange={v => setField("preheat_pass", v)} />{t("welding.fields.preheat")} OK</label>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div><Label>{t("welding.fields.alignment")}</Label><Input type="number" step="0.1" value={form.alignment_mm ?? ""} onChange={e => setField("alignment_mm", e.target.value ? Number(e.target.value) : null)} /></div>
-                <div><Label>Critério (mm)</Label><Input type="number" step="0.1" value={form.alignment_criteria ?? 0.5} onChange={e => setField("alignment_criteria", Number(e.target.value))} /></div>
+                <div><Label>{t("weld.form.criteria", { defaultValue: "Critério (mm)" })}</Label><Input type="number" step="0.1" value={form.alignment_criteria ?? 0.5} onChange={e => setField("alignment_criteria", Number(e.target.value))} /></div>
               </div>
-              <div><Label>Notas visuais</Label><Input value={form.visual_notes ?? ""} onChange={e => setField("visual_notes", e.target.value)} /></div>
+              <div><Label>{t("weld.form.visualNotes", { defaultValue: "Notas visuais" })}</Label><Input value={form.visual_notes ?? ""} onChange={e => setField("visual_notes", e.target.value)} /></div>
             </TabsContent>
 
             <TabsContent value="ut_hv" className="space-y-4 mt-3">
