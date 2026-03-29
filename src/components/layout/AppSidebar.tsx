@@ -13,7 +13,7 @@ import {
   Inbox, BookOpen, HardHat, Construction, ClipboardCheck, Crosshair, CalendarClock,
   Clock, FileCheck, BarChart3, Building2, ClipboardList, Leaf, GraduationCap, FileBarChart2,
   Users, Link2, Hammer, CheckSquare, FileStack, PieChart, Cog, CalendarCheck, Activity,
-  Download,
+  Download, Zap,
 } from "lucide-react";
 import { usePWAInstall } from "@/hooks/usePWAInstall";
 import { NavLink } from "@/components/NavLink";
