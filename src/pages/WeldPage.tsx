@@ -331,12 +331,12 @@ export default function WeldPage() {
                   <CertExpiryBadge date={(form as any).operator_cert_expiry} />
                 </div>
                 <div>
-                  <Label>Bloco calibração (ref.)</Label>
-                  <Input value={(form as any).bloco_calibracao_ref ?? ""} onChange={e => setField("bloco_calibracao_ref", e.target.value)} placeholder="V1, V2, IIW..." />
-                </div>
+                   <Label>{t("weld.form.calibrationBlock", { defaultValue: "Bloco calibração (ref.)" })}</Label>
+                   <Input value={(form as any).bloco_calibracao_ref ?? ""} onChange={e => setField("bloco_calibracao_ref", e.target.value)} placeholder="V1, V2, IIW..." />
+                 </div>
                 <div><Label>{t("welding.fields.portionBrand")}</Label><Input value={form.portion_brand ?? ""} onChange={e => setField("portion_brand", e.target.value)} /></div>
                 <div><Label>{t("welding.fields.portionLot")}</Label><Input value={form.portion_lot ?? ""} onChange={e => setField("portion_lot", e.target.value)} /></div>
-                <div><Label>Tipo de molde</Label><Input value={form.mold_type ?? ""} onChange={e => setField("mold_type", e.target.value)} /></div>
+                <div><Label>{t("weld.form.moldType", { defaultValue: "Tipo de molde" })}</Label><Input value={form.mold_type ?? ""} onChange={e => setField("mold_type", e.target.value)} /></div>
               </div>
             </TabsContent>
 
