@@ -909,9 +909,9 @@ export default function ConcretePage() {
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-3">
-                <div><Label>Abaixamento (mm)</Label><Input type="number" value={form.slump_mm} onChange={(e) => setForm((f) => ({ ...f, slump_mm: e.target.value }))} /></div>
-                <div><Label>Temp. Betão (°C)</Label><Input type="number" value={form.temp_concrete} onChange={(e) => setForm((f) => ({ ...f, temp_concrete: e.target.value }))} /></div>
-                <div><Label>Temp. Ambiente (°C)</Label><Input type="number" value={form.temp_ambient} onChange={(e) => setForm((f) => ({ ...f, temp_ambient: e.target.value }))} /></div>
+                <div><Label>{t("concrete.form.slump")}</Label><Input type="number" value={form.slump_mm} onChange={(e) => setForm((f) => ({ ...f, slump_mm: e.target.value }))} /></div>
+                <div><Label>{t("concrete.form.tempConcrete")}</Label><Input type="number" value={form.temp_concrete} onChange={(e) => setForm((f) => ({ ...f, temp_concrete: e.target.value }))} /></div>
+                <div><Label>{t("concrete.form.tempAmbient")}</Label><Input type="number" value={form.temp_ambient} onChange={(e) => setForm((f) => ({ ...f, temp_ambient: e.target.value }))} /></div>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div><Label>Tipo de Cimento</Label><Input value={form.cement_type} onChange={(e) => setForm((f) => ({ ...f, cement_type: e.target.value }))} placeholder="CEM II/B-L 32.5N" /></div>
