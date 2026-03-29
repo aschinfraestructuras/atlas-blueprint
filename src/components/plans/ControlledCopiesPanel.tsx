@@ -140,7 +140,7 @@ export function ControlledCopiesPanel({ planId, projectId, canEdit = true }: Pro
 
       {copies.length === 0 && !loading ? (
         <p className="text-xs text-muted-foreground text-center py-4">
-          {isEs ? "Sin copias controladas registradas" : "Sem cópias controladas registadas"}
+          {isEs ? "Sin copias controladas registradas" : t("plans.controlledCopies.noRecords")}
         </p>
       ) : (
         <div className="rounded-lg border overflow-hidden">
