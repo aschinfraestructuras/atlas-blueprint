@@ -503,7 +503,7 @@ export default function SubcontractorDetailPage() {
                     <Select value={newDoc.doc_type} onValueChange={v => setNewDoc(d => ({ ...d, doc_type: v }))}>
                       <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
                       <SelectContent>
-                        {SUB_DOC_TYPES.map(dt => <SelectItem key={dt.value} value={dt.value}>{dt.label}</SelectItem>)}
+                        {SUB_DOC_TYPE_KEYS.map(k => <SelectItem key={k} value={k}>{t(`subcontractors.docTypes.${k}`, { defaultValue: k })}</SelectItem>)}
                       </SelectContent>
                     </Select>
                   </div>
