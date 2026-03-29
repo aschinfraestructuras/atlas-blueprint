@@ -176,7 +176,7 @@ export function ControlledCopiesPanel({ planId, projectId, canEdit = true }: Pro
                   <TableCell>
                     <div className="flex gap-1">
                       {!c.received_confirmed && canEdit && (
-                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleConfirm(c)} title={isEs ? "Confirmar recepción" : "Confirmar receção"}>
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleConfirm(c)} title={t("plans.controlledCopies.confirmReceipt")}>
                           <CheckCircle2 className="h-3.5 w-3.5 text-chart-2" />
                         </Button>
                       )}
