@@ -198,7 +198,7 @@ export function ControlledCopiesPanel({ planId, projectId, canEdit = true }: Pro
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{isEs ? "Nova Copia Controlada" : "Nova Cópia Controlada"}</DialogTitle>
+            <DialogTitle>{t("plans.controlledCopies.new")}</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 py-2">
             <div>
