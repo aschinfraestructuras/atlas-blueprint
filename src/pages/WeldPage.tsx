@@ -344,7 +344,9 @@ export default function WeldPage() {
                  </div>
                 <div><Label>{t("welding.fields.portionBrand")}</Label><Input value={form.portion_brand ?? ""} onChange={e => setField("portion_brand", e.target.value)} /></div>
                 <div><Label>{t("welding.fields.portionLot")}</Label><Input value={form.portion_lot ?? ""} onChange={e => setField("portion_lot", e.target.value)} /></div>
-                <div><Label>{t("weld.form.moldType", { defaultValue: "Tipo de molde" })}</Label><Input value={form.mold_type ?? ""} onChange={e => setField("mold_type", e.target.value)} /></div>
+                <div><Label>{t("weld.form.moldType")}</Label><Input value={form.mold_type ?? ""} onChange={e => setField("mold_type", e.target.value)} /></div>
+                <div><Label>{t("weld.form.wpsRef")}</Label><Input value={(form as any).wps_ref ?? ""} onChange={e => setField("wps_ref", e.target.value)} placeholder="WPS-001" /></div>
+                <div><Label>{t("weld.form.preheatEquipment")}</Label><Input value={(form as any).preheat_equipment ?? ""} onChange={e => setField("preheat_equipment", e.target.value)} placeholder={t("weld.form.preheatEquipmentPlaceholder")} /></div>
               </div>
             </TabsContent>
 
