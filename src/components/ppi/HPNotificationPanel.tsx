@@ -447,7 +447,7 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
                       onClick={() => navigate(`/technical-office?type=rfi&ppi_ref=${encodeURIComponent(n.code)}&subject=${encodeURIComponent(`HP ${n.point_no} ${n.activity.slice(0, 50)}`)}`)}
                     >
                       <ExternalLink className="h-3 w-3" />
-                      Criar RFI
+                      {t("ppi.hpNotification.createRfi", { defaultValue: "Criar RFI" })}
                     </Button>
                   )}
                   <span className="text-[10px] text-muted-foreground">
