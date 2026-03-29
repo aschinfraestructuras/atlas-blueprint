@@ -107,6 +107,13 @@ export default function MonthlyReportPage() {
 
   useEffect(() => { fetchReports(); }, [fetchReports]);
 
+  // Fetch monthly quality summary
+  useEffect(() => {
+    if (!activeProject) return;
+    supabase.from("vw_monthly_quality_summary").select("*").eq("project_id", activeProject.id).single()
+      .then(({ data }) => setMonthlySummary(data));
+  }, [activeProject]);
+
   // Deadline alert logic
   const deadlineAlert = useMemo(() => {
     if (!activeProject) return null;
