@@ -148,10 +148,10 @@ export function ControlledCopiesPanel({ planId, projectId, canEdit = true }: Pro
             <TableHeader>
               <TableRow>
                 <TableHead className="w-16 text-[10px]">N.º</TableHead>
-                <TableHead className="text-[10px]">{isEs ? "Destinatario" : "Destinatário"}</TableHead>
-                <TableHead className="text-[10px]">{isEs ? "Entidad" : "Entidade"}</TableHead>
-                <TableHead className="text-[10px]">{isEs ? "Entrega" : "Entrega"}</TableHead>
-                <TableHead className="text-[10px]">{isEs ? "Estado" : "Estado"}</TableHead>
+                 <TableHead className="text-[10px]">{t("plans.controlledCopies.recipient")}</TableHead>
+                 <TableHead className="text-[10px]">{t("plans.controlledCopies.entity")}</TableHead>
+                 <TableHead className="text-[10px]">{t("plans.controlledCopies.delivery")}</TableHead>
+                 <TableHead className="text-[10px]">{t("common.status")}</TableHead>
                 <TableHead className="w-20" />
               </TableRow>
             </TableHeader>
