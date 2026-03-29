@@ -126,7 +126,7 @@ export function ControlledCopiesPanel({ planId, projectId, canEdit = true }: Pro
         <div className="flex items-center gap-2">
           <Copy className="h-4 w-4 text-muted-foreground" />
           <span className="text-sm font-semibold text-foreground">
-            {isEs ? "Copias Controladas" : "Cópias Controladas"}
+            {t("plans.controlledCopies.title")}
           </span>
           <Badge variant="secondary" className="text-[10px]">{copies.length}</Badge>
         </div>
