@@ -160,3 +160,63 @@ export const ATA_TEMPLATE: DocumentTemplate = {
 // Add ATA-Q to main list
 DOCUMENT_TEMPLATES.push(ATA_TEMPLATE);
 
+// ─── DCQ — Declaração de Conhecimento SGQ ──────────────────────────────────
+export const DCQ_TEMPLATE: DocumentTemplate = {
+  id: "tpl-dcq",
+  code: "DCQ",
+  title_pt: "DCQ — Declaração de Conhecimento do SGQ",
+  title_es: "DCQ — Declaración de Conocimiento del SGC",
+  doc_type: "record",
+  disciplina: "geral",
+  description_pt: "Declaração formal de conhecimento e aceitação do Sistema de Gestão da Qualidade pelo subempreiteiro",
+  description_es: "Declaración formal de conocimiento y aceptación del Sistema de Gestión de Calidad por el subcontratista",
+  form_schema: {
+    title_pt: "Declaração de Conhecimento do SGQ",
+    title_es: "Declaración de Conocimiento del SGC",
+    fields: [
+      { key: "empresa", label_pt: "Empresa / Subempreiteiro", label_es: "Empresa / Subcontratista", type: "text", required: true },
+      { key: "nif", label_pt: "NIF / CIF", label_es: "NIF / CIF", type: "text", required: true },
+      { key: "representante", label_pt: "Representante Legal", label_es: "Representante Legal", type: "text", required: true },
+      { key: "funcao", label_pt: "Função", label_es: "Función", type: "text", required: true },
+      { key: "ambito_trabalhos", label_pt: "Âmbito dos Trabalhos", label_es: "Ámbito de los Trabajos", type: "textarea", required: true, placeholder_pt: "Descrição dos trabalhos subcontratados…", placeholder_es: "Descripción de los trabajos subcontratados…" },
+      { key: "data_entrada_obra", label_pt: "Data de Entrada em Obra", label_es: "Fecha de Entrada en Obra", type: "date", required: true },
+      { key: "docs_entregues", label_pt: "Documentos Entregues", label_es: "Documentos Entregados", type: "textarea", required: true, placeholder_pt: "• PQO — Plano de Qualidade da Obra\n• PSS — Plano de Segurança e Saúde\n• PGA — Plano de Gestão Ambiental\n• Procedimentos de Execução aplicáveis", placeholder_es: "• PQO — Plan de Calidad de la Obra\n• PSS — Plan de Seguridad y Salud\n• PGA — Plan de Gestión Ambiental\n• Procedimientos de Ejecución aplicables" },
+      { key: "declaracao_texto", label_pt: "Declaração", label_es: "Declaración", type: "textarea", required: true, placeholder_pt: "Declaro que tomei conhecimento do SGQ da empreitada, comprometendo-me a cumprir os procedimentos e instruções de trabalho aplicáveis à minha atividade.", placeholder_es: "Declaro que tomé conocimiento del SGC de la obra, comprometiéndome a cumplir los procedimientos e instrucciones de trabajo aplicables a mi actividad." },
+      { key: "assinatura_representante", label_pt: "Assinatura do Representante", label_es: "Firma del Representante", type: "text", required: true },
+      { key: "assinatura_gq", label_pt: "Assinatura do GQ (Gestor da Qualidade)", label_es: "Firma del GQ (Gestor de Calidad)", type: "text" },
+      { key: "data_assinatura", label_pt: "Data de Assinatura", label_es: "Fecha de Firma", type: "date", required: true },
+      { key: "observacoes", label_pt: "Observações", label_es: "Observaciones", type: "textarea" },
+    ],
+  },
+};
+DOCUMENT_TEMPLATES.push(DCQ_TEMPLATE);
+
+// ─── LAS — Lista de Assinaturas Rubricadas ─────────────────────────────────
+export const LAS_TEMPLATE: DocumentTemplate = {
+  id: "tpl-las",
+  code: "LAS",
+  title_pt: "LAS — Lista de Assinaturas Rubricadas",
+  title_es: "LAS — Lista de Firmas Rubricadas",
+  doc_type: "record",
+  disciplina: "geral",
+  description_pt: "Registo formal da equipa técnica da obra com siglas, funções e base legal",
+  description_es: "Registro formal del equipo técnico de la obra con siglas, funciones y base legal",
+  form_schema: {
+    title_pt: "Lista de Assinaturas Rubricadas",
+    title_es: "Lista de Firmas Rubricadas",
+    fields: [
+      { key: "sigla", label_pt: "Sigla / Rubrica", label_es: "Sigla / Rúbrica", type: "text", required: true, placeholder_pt: "Ex: GQ, TQ, RT, DO", placeholder_es: "Ej: GQ, TQ, RT, DO" },
+      { key: "nome_completo", label_pt: "Nome Completo", label_es: "Nombre Completo", type: "text", required: true },
+      { key: "funcao", label_pt: "Função / Cargo", label_es: "Función / Cargo", type: "text", required: true, placeholder_pt: "Ex: Gestor da Qualidade", placeholder_es: "Ej: Gestor de Calidad" },
+      { key: "entidade", label_pt: "Entidade", label_es: "Entidad", type: "text", required: true, placeholder_pt: "Ex: Empreiteiro, Fiscalização, Dono de Obra", placeholder_es: "Ej: Contratista, Fiscalización, Propietario" },
+      { key: "base_legal", label_pt: "Base Legal / Habilitação", label_es: "Base Legal / Habilitación", type: "text", placeholder_pt: "Ex: Cédula profissional n.º …", placeholder_es: "Ej: Cédula profesional n.º …" },
+      { key: "afetacao", label_pt: "Afetação", label_es: "Afectación", type: "select", options: ["Tempo integral", "Tempo parcial", "Pontual"], required: true },
+      { key: "data_entrada", label_pt: "Data de Entrada", label_es: "Fecha de Entrada", type: "date", required: true },
+      { key: "data_saida", label_pt: "Data de Saída", label_es: "Fecha de Salida", type: "date" },
+      { key: "contacto", label_pt: "Contacto (email/telefone)", label_es: "Contacto (email/teléfono)", type: "text" },
+      { key: "observacoes", label_pt: "Observações", label_es: "Observaciones", type: "textarea" },
+    ],
+  },
+};
+DOCUMENT_TEMPLATES.push(LAS_TEMPLATE);
+
