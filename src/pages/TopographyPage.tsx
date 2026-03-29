@@ -133,7 +133,6 @@ export default function TopographyPage() {
   const [cycleData, setCycleData] = useState<any[]>([]);
   const [detailSheetOpen, setDetailSheetOpen] = useState(false);
   const [selectedCycle, setSelectedCycle] = useState<any>(null);
-  const [cycleData, setCycleData] = useState<any[]>([]);
 
   // Load topography cycle data
   useEffect(() => {
