@@ -169,7 +169,7 @@ export function ControlledCopiesPanel({ planId, projectId, canEdit = true }: Pro
                       </Badge>
                     ) : (
                       <Badge className="bg-amber-500/10 text-amber-600 border-amber-500/20 text-[10px]">
-                        <Clock className="h-3 w-3 mr-1" />{isEs ? "Pendiente" : "Pendente"}
+                        <Clock className="h-3 w-3 mr-1" />{t("common.pending")}
                       </Badge>
                     )}
                   </TableCell>
