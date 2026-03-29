@@ -102,6 +102,10 @@ export function PPIInstanceFormDialog({
       auto_code:       true,
       inspector_id:    "",
       inspection_date: format(new Date(), "yyyy-MM-dd"),
+      pk_inicio:       "",
+      pk_fim:          "",
+      zone:            "",
+      element_ref:     "",
     });
     setNoActiveTemplates(false);
     setPreviewCode(null);
