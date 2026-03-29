@@ -39,7 +39,7 @@ export default function OrgChartPage() {
   const { logoBase64 } = useProjectLogo();
   const [members, setMembers] = useState<ProjectMember[]>([]);
   const [loading, setLoading] = useState(true);
-  const isEs = i18n.language?.startsWith("es");
+  
 
   useEffect(() => {
     if (!activeProject) return;
