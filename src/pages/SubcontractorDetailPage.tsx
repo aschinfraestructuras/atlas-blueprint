@@ -385,7 +385,7 @@ export default function SubcontractorDetailPage() {
 
       {/* Tabs */}
       <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList>
+        <TabsList className="flex-wrap h-auto gap-1 justify-start">
           <TabsTrigger value="overview">{t("subcontractors.detail.tabs.overview")}</TabsTrigger>
           <TabsTrigger value="docs">
             {t("subcontractors.detail.tabs.docs")}
