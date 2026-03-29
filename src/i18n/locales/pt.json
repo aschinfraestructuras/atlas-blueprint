@@ -278,6 +278,18 @@
       "empty": "Sem actividade recente"
     },
     "modules": "Módulos",
+    "sgqKpi": {
+      "title": "KPIs do SGQ — Anx. D",
+      "testsConformity": "Conformidade Ensaios",
+      "hpApproved": "HPs Aprovados",
+      "pameStatus": "PAME s/ Pendentes",
+      "ncOverdue": "RNCs >15 dias",
+      "usWelds": "US Soldaduras",
+      "noPending": "0 pendentes",
+      "allInspected": "Todas inspecionadas",
+      "noData": "Sem dados ainda",
+      "target": "Meta"
+    },
     "hpPending": "HPs Sem Confirmação",
     "noData": "Sem dados",
     "expirations": {
