@@ -422,6 +422,50 @@ export function PPIInstanceFormDialog({
               )}
             />
 
+            {/* Location fields */}
+            <div className="grid grid-cols-2 gap-3">
+              <FormField
+                control={form.control}
+                name="pk_inicio"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("ppi.location.pkStart")}</FormLabel>
+                    <FormControl><Input placeholder="30+125" {...field} /></FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="pk_fim"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("ppi.location.pkEnd")}</FormLabel>
+                    <FormControl><Input placeholder="30+250" {...field} /></FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <FormField
+                control={form.control}
+                name="zone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("ppi.location.zone")}</FormLabel>
+                    <FormControl><Input placeholder="OA-01, Troço T2" {...field} /></FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="element_ref"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("ppi.location.elementRef")}</FormLabel>
+                    <FormControl><Input placeholder="Viga V1, Pilar P3" {...field} /></FormControl>
+                  </FormItem>
+                )}
+              />
             {/* Code — auto-generated with discipline prefix, or manual override */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
