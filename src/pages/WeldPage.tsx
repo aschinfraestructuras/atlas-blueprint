@@ -132,6 +132,8 @@ export default function WeldPage() {
       has_hardness: w.has_hardness, hv_rail_left: w.hv_rail_left, hv_rail_right: w.hv_rail_right,
       hv_weld_center: w.hv_weld_center, hv_criteria_min: w.hv_criteria_min, hv_criteria_max: w.hv_criteria_max,
       notes: w.notes,
+      wps_ref: w.wps_ref, preheat_equipment: w.preheat_equipment,
+      us_equipment_serial: w.us_equipment_serial, us_frequency_mhz: w.us_frequency_mhz, us_norm_class: w.us_norm_class,
     } as any);
     setDialogOpen(true);
   };
