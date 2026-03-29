@@ -137,12 +137,12 @@ export default function WeldPage() {
   };
 
   const handleSave = async () => {
-    if (!form.pk_location) { toast({ title: "PK obrigatório", variant: "destructive" }); return; }
+    if (!form.pk_location) { toast({ title: t("weld.toast.pkRequired", { defaultValue: "PK obrigatório" }), variant: "destructive" }); return; }
     setSaving(true);
     try {
       if (editingId) {
         await weldService.update(editingId, { ...form } as Partial<WeldRecord>);
-        toast({ title: "Soldadura atualizada" });
+        toast({ title: t("weld.toast.updated", { defaultValue: "Soldadura atualizada" }) });
       } else {
         const { data: userData } = await supabase.auth.getUser();
         await weldService.create({
@@ -159,7 +159,7 @@ export default function WeldPage() {
           has_ut: form.has_ut ?? false,
           has_hardness: form.has_hardness ?? false,
         } as WeldInput);
-        toast({ title: "Soldadura registada" });
+        toast({ title: t("weld.toast.created", { defaultValue: "Soldadura registada" }) });
       }
       setDialogOpen(false);
       setEditingId(null);
