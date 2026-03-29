@@ -30,7 +30,7 @@ const ROLE_META: Record<string, { labelKey: string; color: string; icon: React.E
 };
 
 function getRoleMeta(role: string) {
-  return ROLE_META[role] ?? { label: role, labelEs: role, color: "hsl(215,15%,55%)", icon: Users, level: 3 };
+  return ROLE_META[role] ?? { labelKey: role, color: "hsl(215,15%,55%)", icon: Users, level: 3 };
 }
 
 export default function OrgChartPage() {
