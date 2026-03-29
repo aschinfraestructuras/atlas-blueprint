@@ -658,6 +658,53 @@ export default function TopographyPage() {
         defaultValues={{ disciplina: "topografia" }}
         onSuccess={() => { refetchDocs(); setDocDialogOpen(false); }}
       />
+
+      {/* Cycle Detail Sheet */}
+      <Sheet open={detailSheetOpen} onOpenChange={setDetailSheetOpen}>
+        <SheetContent className="sm:max-w-lg">
+          <SheetHeader>
+            <SheetTitle>{t("topography.cycle.viewDetail")}</SheetTitle>
+          </SheetHeader>
+          {selectedCycle && (
+            <div className="space-y-3 mt-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{t("topography.cycle.element")}</p>
+                  <p className="text-sm text-foreground">{selectedCycle.control_element ?? "—"}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{t("common.date")}</p>
+                  <p className="text-sm text-foreground">{selectedCycle.control_date ?? "—"}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{t("topography.cycle.tolerance")}</p>
+                  <p className="text-sm text-foreground">{selectedCycle.tolerance ?? "—"}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{t("topography.cycle.measured")}</p>
+                  <p className="text-sm text-foreground">{selectedCycle.measured_value ?? "—"}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{t("topography.cycle.deviation")}</p>
+                  <p className="text-sm text-foreground">{selectedCycle.deviation ?? "—"}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{t("common.status")}</p>
+                  <p className="text-sm text-foreground">{t(`topography.cycle.${selectedCycle.cycle_status}`, { defaultValue: selectedCycle.cycle_status })}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{t("topography.cycle.executedBy")}</p>
+                  <p className="text-sm text-foreground">{selectedCycle.technician ?? "—"}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{t("topography.cycle.equipment")}</p>
+                  <p className="text-sm text-foreground">{selectedCycle.equipment_code ?? "—"}</p>
+                </div>
+              </div>
+            </div>
+          )}
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }
