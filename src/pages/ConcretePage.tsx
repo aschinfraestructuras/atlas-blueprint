@@ -868,7 +868,7 @@ export default function ConcretePage() {
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5">
-                    <Label>Ref. FAB</Label>
+                    <Label>{t("concrete.form.fabRef")}</Label>
                     {(form.exc_class === "EXC2" || form.exc_class === "EXC3") && (
                       <span className="text-xs text-destructive font-medium">(obrigatório EXC2/EXC3)</span>
                     )}
