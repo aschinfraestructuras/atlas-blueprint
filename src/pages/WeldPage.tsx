@@ -412,7 +412,7 @@ export default function WeldPage() {
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setDialogOpen(false)}>{t("common.cancel")}</Button>
-            <Button onClick={handleSave} disabled={saving}>{saving ? "A guardar..." : t("common.save")}</Button>
+            <Button onClick={handleSave} disabled={saving}>{saving ? t("common.saving", { defaultValue: "A guardar..." }) : t("common.save")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
