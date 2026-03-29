@@ -438,10 +438,11 @@ export default function TopographyPage() {
                               {t(`topography.cycle.${cycleStatus}`, { defaultValue: cycleStatus })}
                             </Badge>
                             {(cycleStatus === "closed_ok" || cycleStatus === "closed_nok") && cycle && (
-                              <div className="text-[10px] text-muted-foreground space-y-0.5">
-                                {cycle.control_date && <div>{cycle.control_date}</div>}
-                                {cycle.deviation && <div>{t("topography.cycle.deviation")}: {cycle.deviation}</div>}
-                                {cycle.technician && <div>{t("topography.cycle.executedBy")}: {cycle.technician}</div>}
+                              <div className="flex items-center gap-1 mt-0.5">
+                                <Button variant="ghost" size="sm" className="h-5 px-1.5 text-[10px] text-primary"
+                                  onClick={(e) => { e.stopPropagation(); setSelectedCycle(cycle); setDetailSheetOpen(true); }}>
+                                  {t("topography.cycle.viewDetail")}
+                                </Button>
                               </div>
                             )}
                           </div>
