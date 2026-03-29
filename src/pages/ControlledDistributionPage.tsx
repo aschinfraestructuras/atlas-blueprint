@@ -132,7 +132,7 @@ export default function ControlledDistributionPage() {
       {loading ? (
         <div className="py-12 text-center text-muted-foreground">{t("common.loading")}</div>
       ) : records.length === 0 ? (
-        <EmptyState icon={FileCheck} title={t("common.noData")} />
+        <EmptyState icon={FileCheck} titleKey="common.noData" />
       ) : (
         <Card className="border-0 bg-card shadow-card">
           <CardContent className="p-0">
