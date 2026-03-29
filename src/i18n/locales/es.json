@@ -203,7 +203,9 @@
     "traceability": "Trazabilidad",
     "actionPlan": "Plan de Acciones",
     "submittals": "Submittals",
-    "myTasks": "Mi Día"
+    "myTasks": "Mi Día",
+    "ppiTemplates": "Modelos PPI",
+    "controlledDistribution": "Distribución Controlada"
   },
   "topbar": {
     "language": "Idioma",
@@ -361,6 +363,18 @@
       "empty": "Sin actividad reciente"
     },
     "modules": "Módulos",
+    "sgqKpi": {
+      "title": "KPIs del SGC — Anx. D",
+      "testsConformity": "Conformidad Ensayos",
+      "hpApproved": "HPs Aprobados",
+      "pameStatus": "PAME s/ Pendientes",
+      "ncOverdue": "RNCs >15 días",
+      "usWelds": "US Soldaduras",
+      "noPending": "0 pendientes",
+      "allInspected": "Todas inspeccionadas",
+      "noData": "Sin datos aún",
+      "target": "Meta"
+    },
     "hpPending": "HPs Sin Confirmación",
     "noData": "Sin datos",
     "expirations": {

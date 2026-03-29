@@ -7,8 +7,8 @@ import { toast } from "sonner";
 export function PWAInstallBanner() {
   const { t } = useTranslation();
   const { needRefresh, updateServiceWorker } = useRegisterSW({
-    onRegistered(r) {
-      console.log("SW registado", r);
+    onRegistered() {
+      // SW registered
     },
   });
 

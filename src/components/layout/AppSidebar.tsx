@@ -13,7 +13,7 @@ import {
   Inbox, BookOpen, HardHat, Construction, ClipboardCheck, Crosshair, CalendarClock,
   Clock, FileCheck, BarChart3, Building2, ClipboardList, Leaf, GraduationCap, FileBarChart2,
   Users, Link2, Hammer, CheckSquare, FileStack, PieChart, Cog, CalendarCheck, Activity,
-  Download,
+  Download, Zap,
 } from "lucide-react";
 import { usePWAInstall } from "@/hooks/usePWAInstall";
 import { NavLink } from "@/components/NavLink";
@@ -65,6 +65,7 @@ const NAV_SECTIONS: SidebarSection[] = [
       { labelKey: "nav.planning",     url: "/planning",      icon: CalendarClock },
       { labelKey: "nav.workItems",    url: "/work-items",    icon: Construction },
       { labelKey: "nav.ppi",          url: "/ppi",           icon: ClipboardCheck, viewerVisible: true },
+      { labelKey: "nav.ppiTemplates", url: "/ppi/templates", icon: ClipboardCheck },
       { labelKey: "nav.dailyReports", url: "/daily-reports", icon: ClipboardList },
       { labelKey: "nav.topography",   url: "/topography",    icon: Crosshair },
     ],
@@ -81,6 +82,10 @@ const NAV_SECTIONS: SidebarSection[] = [
       { labelKey: "nav.laboratories",    url: "/laboratories",     icon: Building2 },
       { labelKey: "nav.tests",           url: "/tests",            icon: FlaskConical },
       { labelKey: "nav.testSchedule",    url: "/tests/schedule",   icon: CalendarClock },
+      { labelKey: "nav.concrete",        url: "/tests/concrete",   icon: FlaskConical },
+      { labelKey: "nav.compaction",      url: "/tests/compaction", icon: FlaskConical },
+      { labelKey: "nav.soils",           url: "/tests/soils",      icon: FlaskConical },
+      { labelKey: "nav.welding",         url: "/tests/welding",    icon: Zap },
       { labelKey: "nav.nonConformities", url: "/non-conformities", icon: AlertTriangle, viewerVisible: true },
       { labelKey: "nav.actionPlan",      url: "/action-plan",      icon: ClipboardList },
     ],
@@ -94,6 +99,7 @@ const NAV_SECTIONS: SidebarSection[] = [
       { labelKey: "nav.plans",           url: "/plans",            icon: BookOpen },
       { labelKey: "nav.dfo",             url: "/dfo",              icon: FolderKanban },
       { labelKey: "nav.documents",       url: "/documents",        icon: FileText, viewerVisible: true },
+      { labelKey: "nav.controlledDistribution", url: "/controlled-distribution", icon: FileCheck },
       { labelKey: "nav.submittals",      url: "/submittals",       icon: FileCheck },
       { labelKey: "nav.audits",          url: "/audits",           icon: FileCheck },
       { labelKey: "nav.training",        url: "/training",         icon: GraduationCap },
