@@ -456,6 +456,8 @@ export default function ConcretePage() {
   const [detailData, setDetailData] = useState<{ batch: ConcreteBatch; specimens: ConcreteSpecimen[] } | null>(null);
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterWI, setFilterWI] = useState("all");
+  const [filterClass, setFilterClass] = useState("all");
+  const [searchQ, setSearchQ] = useState("");
   const [saving, setSaving] = useState(false);
   const [pageTab, setPageTab] = useState("batches");
 
