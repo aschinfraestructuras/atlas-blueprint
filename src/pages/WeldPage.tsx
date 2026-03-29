@@ -212,12 +212,12 @@ export default function WeldPage() {
       <FilterBar>
         <div className="relative flex-1 min-w-[180px]">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-          <Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Pesquisar soldaduras..." className="pl-8 h-8 text-sm" />
+          <Input value={search} onChange={e => setSearch(e.target.value)} placeholder={t("weld.searchPlaceholder", { defaultValue: "Pesquisar soldaduras..." })} className="pl-8 h-8 text-sm" />
         </div>
         <Select value={filterResult} onValueChange={setFilterResult}>
           <SelectTrigger className="h-8 w-[140px] text-sm"><SelectValue /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todos</SelectItem>
+            <SelectItem value="all">{t("common.all", { defaultValue: "Todos" })}</SelectItem>
             <SelectItem value="pass">{t("welding.result.pass")}</SelectItem>
             <SelectItem value="fail">{t("welding.result.fail")}</SelectItem>
             <SelectItem value="repair_needed">{t("welding.result.repair_needed")}</SelectItem>
@@ -225,7 +225,7 @@ export default function WeldPage() {
           </SelectContent>
         </Select>
         <Button size="sm" className="h-8 gap-1.5 ml-auto" onClick={() => { setEditingId(null); setForm(defaultForm); setDialogOpen(true); }}>
-          <Plus className="h-3.5 w-3.5" />Nova Soldadura
+          <Plus className="h-3.5 w-3.5" />{t("welding.newWeld", { defaultValue: "Nova Soldadura" })}
         </Button>
       </FilterBar>
 
