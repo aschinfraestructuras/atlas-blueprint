@@ -215,6 +215,9 @@ export default function MonthlyReportPage() {
     const refLabel = new Date(r.reference_month).toLocaleDateString("pt-PT", { year: "numeric", month: "long" });
     const onTime = isOnTime(r);
 
+    const ncOverdue15d = (r as any).kpi_nc_overdue_15d ?? null;
+    const rmOnTime = (r as any).kpi_rm_on_time ?? null;
+
     const kpis = [
       { label: t("monthlyReport.kpi.testsPass"), value: r.kpi_tests_pass_rate !== null ? `${r.kpi_tests_pass_rate}%` : "—", ok: r.kpi_tests_pass_rate !== null && r.kpi_tests_pass_rate >= 95 },
       { label: t("monthlyReport.kpi.ncOpen"), value: String(r.kpi_nc_open ?? 0), ok: (r.kpi_nc_open ?? 0) === 0 },
@@ -224,6 +227,8 @@ export default function MonthlyReportPage() {
       { label: t("monthlyReport.kpi.matPending"), value: String(r.kpi_mat_pending ?? 0), ok: (r.kpi_mat_pending ?? 0) === 0 },
       { label: t("monthlyReport.kpi.ppiCompleted"), value: String(r.kpi_ppi_completed ?? 0), ok: true },
       { label: t("monthlyReport.kpi.emesExpiring"), value: String(r.kpi_emes_expiring ?? 0), ok: (r.kpi_emes_expiring ?? 0) === 0 },
+      { label: t("monthlyReport.kpi.ncOverdue15d"), value: ncOverdue15d !== null ? String(ncOverdue15d) : "—", ok: ncOverdue15d === null || ncOverdue15d === 0 },
+      { label: t("monthlyReport.kpi.rmOnTime"), value: rmOnTime === true ? t("common.yes") : rmOnTime === false ? t("common.no") : "—", ok: rmOnTime !== false },
     ];
 
     return (
@@ -297,17 +302,19 @@ export default function MonthlyReportPage() {
                    if (error) throw error;
                    const kpis = data as any;
                    // Direct update via supabase since service type is narrow
-                   await (supabase as any).from("monthly_quality_reports").update({
-                     kpi_tests_pass_rate: kpis.kpi_tests_pass_rate,
-                     kpi_nc_open: kpis.kpi_nc_open,
-                     kpi_nc_closed_month: kpis.kpi_nc_closed_month,
-                     kpi_hp_approved: kpis.kpi_hp_approved,
-                     kpi_hp_total: kpis.kpi_hp_total,
-                     kpi_mat_approved: kpis.kpi_mat_approved,
-                     kpi_mat_pending: kpis.kpi_mat_pending,
-                     kpi_ppi_completed: kpis.kpi_ppi_completed,
-                     kpi_emes_expiring: kpis.kpi_emes_expiring,
-                   }).eq("id", selectedReport.id);
+                    await (supabase as any).from("monthly_quality_reports").update({
+                      kpi_tests_pass_rate: kpis.kpi_tests_pass_rate,
+                      kpi_nc_open: kpis.kpi_nc_open,
+                      kpi_nc_closed_month: kpis.kpi_nc_closed_month,
+                      kpi_hp_approved: kpis.kpi_hp_approved,
+                      kpi_hp_total: kpis.kpi_hp_total,
+                      kpi_mat_approved: kpis.kpi_mat_approved,
+                      kpi_mat_pending: kpis.kpi_mat_pending,
+                      kpi_ppi_completed: kpis.kpi_ppi_completed,
+                      kpi_emes_expiring: kpis.kpi_emes_expiring,
+                      kpi_nc_overdue_15d: kpis.kpi_nc_overdue_15d ?? null,
+                      kpi_rm_on_time: kpis.kpi_rm_on_time ?? null,
+                    }).eq("id", selectedReport.id);
                    toast({ title: t("monthlyReport.autofillDone") });
                    await fetchReports();
                    const updated = (await monthlyReportService.listByProject(activeProject.id)).find(r => r.id === selectedReport.id);

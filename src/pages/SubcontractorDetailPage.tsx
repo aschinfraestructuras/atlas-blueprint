@@ -16,6 +16,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle,
+} from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -24,7 +28,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { ArrowLeft, HardHat, Plus, Trash2, FileCheck, AlertTriangle, ClipboardList, Briefcase, History, AlertCircle, FlaskConical, Package, Leaf, Eye, Users, Wrench } from "lucide-react";
+import { ArrowLeft, HardHat, Plus, Trash2, FileCheck, AlertTriangle, ClipboardList, Briefcase, History, AlertCircle, FlaskConical, Package, Leaf, Eye, Users, Wrench, Award } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { WorkersPanel } from "@/components/workers/WorkersPanel";
 import { MachineryPanel } from "@/components/workers/MachineryPanel";
@@ -77,6 +81,9 @@ export default function SubcontractorDetailPage() {
   const [ncs, setNcs] = useState<any[]>([]);
   const [tests, setTests] = useState<any[]>([]);
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
+  const [qualifications, setQualifications] = useState<any[]>([]);
+  const [qualDialogOpen, setQualDialogOpen] = useState(false);
+  const [newQual, setNewQual] = useState({ worker_name: "", qualification: "IET77_DIR_TECNICO", certificate_ref: "", issued_by: "", valid_until: "" });
 
   // New doc form
   const [newDoc, setNewDoc] = useState({ doc_type: "seguros", title: "", valid_from: "", valid_to: "", status: "valid" });
@@ -176,6 +183,60 @@ export default function SubcontractorDetailPage() {
     } catch { /* swallow */ }
   }, [id, activeProject]);
 
+  const fetchQualifications = useCallback(async () => {
+    if (!activeProject || !id) return;
+    try {
+      const { data } = await supabase
+        .from("worker_qualifications" as any)
+        .select("*")
+        .eq("project_id", activeProject.id)
+        .eq("subcontractor_id", id)
+        .order("created_at", { ascending: false });
+      setQualifications((data as any[]) ?? []);
+    } catch { setQualifications([]); }
+  }, [id, activeProject]);
+
+  const getValidityStatus = (validUntil: string | null) => {
+    if (!validUntil) return "sem_data";
+    const d = new Date(validUntil);
+    const now = new Date();
+    const diff = Math.ceil((d.getTime() - now.getTime()) / 86400000);
+    if (diff < 0) return "expirado";
+    if (diff <= 30) return "urgente";
+    if (diff <= 60) return "alerta";
+    return "ok";
+  };
+
+  const VALIDITY_COLORS: Record<string, string> = {
+    ok: "bg-primary/15 text-primary",
+    alerta: "bg-amber-500/10 text-amber-600",
+    urgente: "bg-orange-500/10 text-orange-600",
+    expirado: "bg-destructive/10 text-destructive",
+    sem_data: "bg-muted text-muted-foreground",
+  };
+
+  const handleAddQualification = async () => {
+    if (!activeProject || !id) return;
+    try {
+      await (supabase as any).from("worker_qualifications").insert({
+        project_id: activeProject.id,
+        subcontractor_id: id,
+        worker_name: newQual.worker_name,
+        qualification: newQual.qualification,
+        certificate_ref: newQual.certificate_ref || null,
+        issued_by: newQual.issued_by || null,
+        valid_until: newQual.valid_until || null,
+        created_by: user?.id,
+      });
+      toast({ title: t("subcontractors.qualifications.toast.created") });
+      setQualDialogOpen(false);
+      setNewQual({ worker_name: "", qualification: "IET77_DIR_TECNICO", certificate_ref: "", issued_by: "", valid_until: "" });
+      fetchQualifications();
+    } catch (err: any) {
+      toast({ title: t("subcontractors.qualifications.toast.error"), description: err.message, variant: "destructive" });
+    }
+  };
+
   useEffect(() => {
     fetchSub();
     fetchDocs();
@@ -183,7 +244,8 @@ export default function SubcontractorDetailPage() {
     fetchWorkItems();
     fetchAudit();
     fetchNcs();
-  }, [fetchSub, fetchDocs, fetchActivities, fetchWorkItems, fetchAudit, fetchNcs]);
+    fetchQualifications();
+  }, [fetchSub, fetchDocs, fetchActivities, fetchWorkItems, fetchAudit, fetchNcs, fetchQualifications]);
 
   // Fetch tests after workItems are loaded
   useEffect(() => {
@@ -363,6 +425,11 @@ export default function SubcontractorDetailPage() {
           <TabsTrigger value="machinery" className="gap-1">
             <Wrench className="h-3.5 w-3.5" />
             {t("machinery.title")}
+          </TabsTrigger>
+          <TabsTrigger value="qualifications" className="gap-1">
+            <Award className="h-3.5 w-3.5" />
+            {t("subcontractors.qualifications.title")}
+            {qualifications.length > 0 && <Badge variant="secondary" className="ml-1.5 text-[10px] px-1.5 py-0">{qualifications.length}</Badge>}
           </TabsTrigger>
         </TabsList>
 
@@ -681,6 +748,98 @@ export default function SubcontractorDetailPage() {
         {/* Machinery */}
         <TabsContent value="machinery">
           <MachineryPanel projectId={activeProject.id} subcontractorId={sub.id} company={sub.name} />
+        </TabsContent>
+
+        {/* Qualifications Tab */}
+        <TabsContent value="qualifications">
+          <Card>
+            <CardContent className="p-4 space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-semibold">{t("subcontractors.qualifications.title")}</h3>
+                <Button size="sm" onClick={() => setQualDialogOpen(true)}>
+                  <Plus className="h-3.5 w-3.5 mr-1.5" />
+                  {t("subcontractors.qualifications.add")}
+                </Button>
+              </div>
+              {qualifications.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-8 text-center">{t("common.noData")}</p>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>{t("subcontractors.qualifications.technician")}</TableHead>
+                      <TableHead>{t("subcontractors.qualifications.qualification")}</TableHead>
+                      <TableHead>{t("subcontractors.qualifications.certificate")}</TableHead>
+                      <TableHead>{t("subcontractors.qualifications.issuedBy")}</TableHead>
+                      <TableHead>{t("subcontractors.qualifications.validUntil")}</TableHead>
+                      <TableHead>{t("subcontractors.qualifications.status")}</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {qualifications.map((q: any) => {
+                      const vs = (q as any).estado_validade ?? getValidityStatus(q.valid_until);
+                      return (
+                        <TableRow key={q.id}>
+                          <TableCell className="text-sm font-medium">{q.worker_name}</TableCell>
+                          <TableCell className="text-xs">{t(`subcontractors.qualifications.types.${q.qualification}`, { defaultValue: q.qualification })}</TableCell>
+                          <TableCell className="text-xs font-mono">{q.certificate_ref || "—"}</TableCell>
+                          <TableCell className="text-xs">{q.issued_by || "—"}</TableCell>
+                          <TableCell className="text-xs">{q.valid_until ? new Date(q.valid_until).toLocaleDateString() : "—"}</TableCell>
+                          <TableCell>
+                            <Badge variant="secondary" className={cn("text-[10px]", VALIDITY_COLORS[vs] ?? "")}>
+                              {t(`subcontractors.qualifications.validity.${vs}`, { defaultValue: vs })}
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Add qualification dialog */}
+          <Dialog open={qualDialogOpen} onOpenChange={setQualDialogOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>{t("subcontractors.qualifications.new")}</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-3">
+                <div>
+                  <Label>{t("subcontractors.qualifications.technician")}</Label>
+                  <Input value={newQual.worker_name} onChange={e => setNewQual(p => ({ ...p, worker_name: e.target.value }))} />
+                </div>
+                <div>
+                  <Label>{t("subcontractors.qualifications.qualification")}</Label>
+                  <Select value={newQual.qualification} onValueChange={v => setNewQual(p => ({ ...p, qualification: v }))}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {["IET77_DIR_TECNICO","IET77_RESP_SEGURANCA","IET77_RESP_TRABALHOS","RGSXII_CHEFE_TRABALHOS","RGSXII_CONTROLADOR_VI","EN14730_ALUMINOTERMICO","EN_ISO_9712_NII_FERROVIARIO","TOPOGRAFO_CERTIFICADO"].map(q => (
+                        <SelectItem key={q} value={q}>{t(`subcontractors.qualifications.types.${q}`)}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>{t("subcontractors.qualifications.certificate")}</Label>
+                  <Input value={newQual.certificate_ref} onChange={e => setNewQual(p => ({ ...p, certificate_ref: e.target.value }))} />
+                </div>
+                <div>
+                  <Label>{t("subcontractors.qualifications.issuedBy")}</Label>
+                  <Input value={newQual.issued_by} onChange={e => setNewQual(p => ({ ...p, issued_by: e.target.value }))} />
+                </div>
+                <div>
+                  <Label>{t("subcontractors.qualifications.validUntil")}</Label>
+                  <Input type="date" value={newQual.valid_until} onChange={e => setNewQual(p => ({ ...p, valid_until: e.target.value }))} />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setQualDialogOpen(false)}>{t("common.cancel")}</Button>
+                <Button onClick={handleAddQualification} disabled={!newQual.worker_name.trim()}>{t("common.save")}</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </TabsContent>
       </Tabs>
 
