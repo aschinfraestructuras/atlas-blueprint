@@ -708,19 +708,30 @@ export default function ConcretePage() {
 
           {/* Filters */}
           <FilterBar>
+            <div className="relative flex-1 min-w-[180px]">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+              <Input value={searchQ} onChange={e => setSearchQ(e.target.value)} placeholder={t("concrete.searchPlaceholder")} className="pl-8 h-9 text-sm" />
+            </div>
             <Select value={filterStatus} onValueChange={setFilterStatus}>
               <SelectTrigger className="w-[160px] h-9"><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">{t("common.status")}: Todos</SelectItem>
-                <SelectItem value="pass">Conforme</SelectItem>
-                <SelectItem value="fail">Não Conforme</SelectItem>
-                <SelectItem value="pending">Pendente</SelectItem>
+                <SelectItem value="all">{t("common.allResults")}</SelectItem>
+                <SelectItem value="pass">{t("common.compliant")}</SelectItem>
+                <SelectItem value="fail">{t("common.nonCompliant")}</SelectItem>
+                <SelectItem value="pending">{t("common.pendingStatus")}</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={filterClass} onValueChange={setFilterClass}>
+              <SelectTrigger className="w-[140px] h-9"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t("concrete.allClasses")}</SelectItem>
+                {CONCRETE_CLASSES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
               </SelectContent>
             </Select>
             <Select value={filterWI} onValueChange={setFilterWI}>
               <SelectTrigger className="w-[200px] h-9"><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Atividade: Todas</SelectItem>
+                <SelectItem value="all">{t("common.allActivities")}</SelectItem>
                 {workItems.map((wi) => (
                   <SelectItem key={wi.id} value={wi.id}>{wi.sector} — {wi.elemento ?? wi.obra ?? wi.disciplina}</SelectItem>
                 ))}
