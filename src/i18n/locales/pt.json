@@ -619,6 +619,68 @@
       "entityPlaceholder": "ex: IP — Fiscalização PF17A",
       "approvedByPlaceholder": "ex: Eng. Fernanda Costa",
       "refPlaceholder": "ex: Ofício nº 2026/PF17A/045"
+    },
+    "title": "Documentos",
+    "subtitle": "Gestão documental do projeto",
+    "searchPlaceholder": "Pesquisar documentos...",
+    "filterAllTypes": "Todos os tipos",
+    "filterAllStatus": "Todos os estados",
+    "filterAllDisciplinas": "Todas as disciplinas",
+    "table": {
+      "code": "Código",
+      "title": "Título",
+      "type": "Tipo",
+      "disciplina": "Disciplina",
+      "revision": "Revisão",
+      "fileName": "Ficheiro",
+      "size": "Tamanho"
+    },
+    "form": {
+      "title": "Título",
+      "type": "Tipo",
+      "disciplina": "Disciplina",
+      "revision": "Revisão",
+      "changeDescription": "Descrição da alteração",
+      "createBtn": "Criar Documento"
+    },
+    "status": {
+      "draft": "Rascunho",
+      "in_review": "Em revisão",
+      "approved": "Aprovado",
+      "obsolete": "Obsoleto",
+      "archived": "Arquivado"
+    },
+    "detail": {
+      "code": "Código",
+      "createdAt": "Criado em",
+      "approvedAt": "Aprovado em"
+    },
+    "versions": {
+      "title": "Histórico de versões"
+    },
+    "bulk": {
+      "archive": "Arquivar selecionados",
+      "clear": "Limpar seleção",
+      "exportSelected": "Exportar selecionados"
+    },
+    "deleteConfirm": {
+      "title": "Eliminar documento"
+    },
+    "export": {
+      "reportTitle": "Relatório de Documento",
+      "listReportTitle": "Lista de Documentos",
+      "approvedBy": "Aprovado por",
+      "generatedOn": "Gerado em",
+      "uploadedAt": "Carregado em",
+      "version": "Versão",
+      "versionNo": "Rev.",
+      "page": "Página",
+      "of": "de"
+    },
+    "toast": {
+      "deleted": "Documento eliminado",
+      "deleteError": "Erro ao eliminar documento",
+      "error": "Erro ao carregar documentos"
     }
   },
   "tests": {
@@ -2902,6 +2964,86 @@
       "databaseDesc": "Gestão da base de dados, migrações, Edge Functions e configurações de segurança.",
       "open": "Abrir",
       "external": "Externo"
+    },
+    "ownResources": "Recursos Próprios",
+    "ownResourcesDesc": "Pessoal e Equipamentos — ASCH",
+    "project": {
+      "title": "Projeto",
+      "subtitle": "Detalhes e configurações do projeto",
+      "contractor": "Empreiteiro",
+      "client": "Dono de Obra",
+      "location": "Localização",
+      "contractNumber": "N.º Contrato",
+      "metadata": "Dados do Projecto (PDF)",
+      "activeProject": "Projeto ativo",
+      "noProject": "Nenhum projeto selecionado",
+      "badgeActive": "Ativo",
+      "notifications": "Notificações",
+      "notificationsDesc": "Configurar alertas e emails",
+      "exportData": "Exportar dados",
+      "exportDataDesc": "Exportar todos os dados do projeto"
+    },
+    "members": {
+      "title": "Gestão de Utilizadores",
+      "subtitle": "Membros da equipa e convites",
+      "inviteBtn": "Convidar Membro",
+      "inviteTitle": "Adicionar Membro",
+      "colName": "Nome",
+      "colEmail": "Email",
+      "colRole": "Função",
+      "emailLabel": "Email",
+      "emailPlaceholder": "email@exemplo.com",
+      "roleLabel": "Função",
+      "sendInvite": "Enviar convite",
+      "you": "você",
+      "noMembers": "Sem membros",
+      "pendingInvites": "Convites pendentes",
+      "expires": "Expira",
+      "roleUpdated": "Função atualizada",
+      "memberRemoved": "Membro removido",
+      "inviteDeleted": "Convite eliminado",
+      "removeConfirm": "Tem a certeza que deseja remover este membro?",
+      "removeTitle": "Remover membro",
+      "createAccount": "Criar Conta",
+      "inviteToken": "Convite (Token)",
+      "passwordLabel": "Senha de acesso",
+      "passwordPlaceholder": "Mínimo 6 caracteres",
+      "passwordTooShort": "A senha deve ter pelo menos 6 caracteres.",
+      "addedDirectly": "Utilizador existente adicionado ao projecto.",
+      "accountCreated": "Conta criada com sucesso. O membro pode agora aceder com o email e senha definidos.",
+      "inviteEmailSent": "Convite enviado por email. O utilizador receberá um link para configurar a sua conta.",
+      "alreadyMember": "Este utilizador já é membro activo deste projecto."
+    },
+    "roles": {
+      "admin": "Admin",
+      "project_manager": "Diretor de Obra",
+      "quality_manager": "Resp. Qualidade",
+      "technician": "Técnico",
+      "viewer": "Consultor",
+      "site_manager": "Encarregado",
+      "inspector": "Inspetor"
+    },
+    "roleDescriptions": {
+      "admin": "Acesso total a todas as funcionalidades e configurações do projeto.",
+      "project_manager": "Gestão global do projeto, planeamento e relatórios.",
+      "quality_manager": "Gestão do SGQ, PPIs, NCs, ensaios e auditorias.",
+      "technician": "Registo de ensaios, inspeções e relatórios de campo.",
+      "viewer": "Acesso de consulta apenas — sem edição.",
+      "site_manager": "Gestão das frentes de obra e partes diárias.",
+      "inspector": "Inspeções de campo e verificações de qualidade."
+    },
+    "password": {
+      "changeBtn": "Alterar senha",
+      "newPasswordLabel": "Nova senha",
+      "newPasswordPlaceholder": "Introduza a nova senha",
+      "success": "Senha alterada com sucesso",
+      "error": "Erro ao alterar senha"
+    },
+    "permissions": {
+      "title": "Perfis e Permissões",
+      "subtitle": "Controlo de acesso baseado em funções (RBAC)",
+      "matrix": "Matriz de Permissões",
+      "module": "Módulo"
     }
   },
   "topography": {
@@ -2911,6 +3053,71 @@
       "tolerance": "Tolerância",
       "measured": "Valor medido",
       "equipment": "Equipamento"
+    },
+    "title": "Topografia",
+    "subtitle": "Equipamentos, calibrações, pedidos e controlos topográficos",
+    "equipment": "Equipamentos",
+    "requests": "Pedidos",
+    "controls": "Controlos",
+    "surveys": "Levantamentos",
+    "calibrations": "Calibrações",
+    "archiveTab": "Arquivo",
+    "searchPlaceholder": "Pesquisar equipamentos...",
+    "newEquipment": "Novo Equipamento",
+    "newRequest": "Novo Pedido",
+    "newControl": "Novo Controlo",
+    "newDocument": "Novo Documento",
+    "noDocuments": "Sem documentos",
+    "deleteConfirm": "Tem a certeza que deseja eliminar?",
+    "seedError": "Erro ao inicializar dados",
+    "exportReq": "Exportar REQ",
+    "kpi": {
+      "totalEmes": "Total EMEs",
+      "calibrated": "Calibrados",
+      "expiring30d": "A expirar (30d)",
+      "expired": "Expirados",
+      "pendingRequests": "Pedidos pendentes",
+      "ncControls": "Controlos NC"
+    },
+    "table": {
+      "code": "Código",
+      "type": "Tipo",
+      "brandModel": "Marca/Modelo",
+      "serial": "N.º Série",
+      "responsible": "Responsável",
+      "calibration": "Calibração",
+      "validity": "Validade",
+      "zone": "Zona",
+      "element": "Elemento",
+      "deviation": "Desvio",
+      "tolerance": "Tolerância",
+      "measuredValue": "Valor medido",
+      "result": "Resultado",
+      "requestType": "Tipo de pedido",
+      "priority": "Prioridade",
+      "technician": "Técnico",
+      "equipment": "Equipamento"
+    },
+    "filters": {
+      "allCalStatuses": "Todas as calibrações",
+      "allStatuses": "Todos os estados",
+      "allResults": "Todos os resultados"
+    },
+    "status": {
+      "valid": "Válido",
+      "expiring_soon": "A expirar",
+      "expired": "Expirado"
+    },
+    "result": {
+      "conforme": "Conforme",
+      "nao_conforme": "Não conforme"
+    },
+    "alert": {
+      "expiringDesc": "Existem calibrações a expirar nos próximos 30 dias"
+    },
+    "toast": {
+      "deleted": "Eliminado com sucesso",
+      "deleteError": "Erro ao eliminar"
     }
   },
   "planning": {
@@ -3232,7 +3439,8 @@
       "subcontractor_doc": "Doc. Subcontratado",
       "ppi_pending": "PPI Pendente",
       "ppi_approval": "PPI Aguarda Aprovação",
-      "hp_notification": "Notificação HP"
+      "hp_notification": "Notificação HP",
+      "quarantine_lot": "Lote em Quarentena"
     },
     "table": {
       "date": "Data",
@@ -3321,8 +3529,8 @@
     "open": "Abertas",
     "overdue": "Em Atraso",
     "closed30d": "Fechadas (30d)",
-    "major": "Major",
-    "minor": "Minor",
+    "major": "Maior",
+    "minor": "Menor",
     "linkedToTests": "Ligadas a Ensaios",
     "linkedToPPI": "Ligadas a PPI",
     "planned": "Planeadas",
@@ -3618,6 +3826,51 @@
     "status": {
       "attended_not_signed": "Presente, não assinou",
       "no_training": "Sem formação"
+    },
+    "title": "Formação",
+    "subtitle": "Sessões de formação e sensibilização",
+    "newSession": "Nova Sessão",
+    "expired": "Expirada",
+    "validUntil": "Válida até",
+    "noSafetyTraining": "Sem formação de segurança",
+    "sessionTypes": {
+      "initial": "Inicial (Acolhimento)",
+      "new_personnel": "Novo Pessoal",
+      "specific": "Específica",
+      "subcontractor": "Subempreiteiro",
+      "other": "Outra"
+    },
+    "kpi": {
+      "total": "Total sessões",
+      "thisMonth": "Este mês",
+      "attendees": "Participantes",
+      "coverage": "Cobertura",
+      "types": "Por tipo"
+    },
+    "table": {
+      "code": "Código",
+      "title": "Título",
+      "type": "Tipo",
+      "attendees": "Participantes"
+    },
+    "form": {
+      "title": "Título da sessão",
+      "type": "Tipo",
+      "trainer": "Formador",
+      "location": "Local",
+      "topics": "Tópicos",
+      "startTime": "Início",
+      "endTime": "Fim",
+      "attendees": "Participantes",
+      "addAttendee": "Adicionar participante",
+      "company": "Empresa",
+      "function": "Função"
+    },
+    "toast": {
+      "created": "Sessão criada com sucesso",
+      "deleted": "Sessão eliminada",
+      "loadError": "Erro ao carregar sessões",
+      "exportError": "Erro ao exportar"
     }
   },
   "audits": {
