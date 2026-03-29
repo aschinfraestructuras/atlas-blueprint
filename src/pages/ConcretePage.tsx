@@ -814,7 +814,7 @@ export default function ConcretePage() {
             <TabsContent value="identification" className="space-y-3 mt-4">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label>Atividade</Label>
+                  <Label>{t("common.activity")}</Label>
                   <Select value={form.work_item_id} onValueChange={(v) => setForm((f) => ({ ...f, work_item_id: v, ppi_instance_id: "" }))}>
                     <SelectTrigger><SelectValue placeholder={t("common.selectPlaceholder")} /></SelectTrigger>
                     <SelectContent>
