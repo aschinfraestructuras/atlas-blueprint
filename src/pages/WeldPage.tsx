@@ -246,6 +246,7 @@ export default function WeldPage() {
               <TableHead className="text-xs font-semibold uppercase">UT</TableHead>
               <TableHead className="text-xs font-semibold uppercase">HV</TableHead>
               <TableHead className="text-xs font-semibold uppercase">{t("concrete.fields.result")}</TableHead>
+              <TableHead className="text-xs font-semibold uppercase">FUS</TableHead>
               <TableHead className="w-20" />
             </TableRow></TableHeader>
             <TableBody>
