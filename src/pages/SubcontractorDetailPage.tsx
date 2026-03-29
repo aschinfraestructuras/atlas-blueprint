@@ -422,6 +422,11 @@ export default function SubcontractorDetailPage() {
             <Wrench className="h-3.5 w-3.5" />
             {t("machinery.title")}
           </TabsTrigger>
+          <TabsTrigger value="qualifications" className="gap-1">
+            <Award className="h-3.5 w-3.5" />
+            {t("subcontractors.qualifications.title")}
+            {qualifications.length > 0 && <Badge variant="secondary" className="ml-1.5 text-[10px] px-1.5 py-0">{qualifications.length}</Badge>}
+          </TabsTrigger>
         </TabsList>
 
         {/* Overview */}
