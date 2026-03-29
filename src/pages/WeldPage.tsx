@@ -242,7 +242,7 @@ export default function WeldPage() {
               <TableHead className="text-xs font-semibold uppercase">{t("common.date")}</TableHead>
               <TableHead className="text-xs font-semibold uppercase">{t("welds.workItem", { defaultValue: "Elemento" })}</TableHead>
               <TableHead className="text-xs font-semibold uppercase">{t("welding.fields.operator")}</TableHead>
-              <TableHead className="text-xs font-semibold uppercase">Visual</TableHead>
+              <TableHead className="text-xs font-semibold uppercase">{t("welding.fields.visual")}</TableHead>
               <TableHead className="text-xs font-semibold uppercase">UT</TableHead>
               <TableHead className="text-xs font-semibold uppercase">HV</TableHead>
               <TableHead className="text-xs font-semibold uppercase">{t("concrete.fields.result")}</TableHead>
