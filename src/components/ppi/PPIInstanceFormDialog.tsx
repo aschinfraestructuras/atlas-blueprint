@@ -466,6 +466,8 @@ export function PPIInstanceFormDialog({
                   </FormItem>
                 )}
               />
+            </div>
+
             {/* Code — auto-generated with discipline prefix, or manual override */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
