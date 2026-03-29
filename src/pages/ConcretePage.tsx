@@ -924,12 +924,12 @@ export default function ConcretePage() {
                 <TableHeader>
                   <TableRow>
                     <TableHead className="w-10">#</TableHead>
-                    <TableHead>Moldagem</TableHead>
-                    <TableHead>Cura (dias)</TableHead>
+                    <TableHead>{t("concrete.specimens.molding")}</TableHead>
+                    <TableHead>{t("concrete.specimens.cureDays")}</TableHead>
                     <TableHead>{t("concrete.specimens.testDate")}</TableHead>
-                    <TableHead>Ref. Lab</TableHead>
-                    <TableHead>Carga (kN)</TableHead>
-                    <TableHead>Rotura</TableHead>
+                    <TableHead>{t("concrete.specimens.labRef")}</TableHead>
+                    <TableHead>{t("concrete.specimens.loadKn")}</TableHead>
+                    <TableHead>{t("concrete.specimens.fracture")}</TableHead>
                     <TableHead className="w-10" />
                   </TableRow>
                 </TableHeader>

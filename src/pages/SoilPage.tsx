@@ -347,11 +347,11 @@ export default function SoilPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>{t("concrete.fields.code")}</TableHead>
-                  <TableHead>Ref. Amostra</TableHead>
-                  <TableHead>PK</TableHead>
-                  <TableHead>Prof.</TableHead>
-                  <TableHead>Material</TableHead>
-                  <TableHead>Secções</TableHead>
+                  <TableHead>{t("soils.table.sampleRef")}</TableHead>
+                  <TableHead>{t("common.pk")}</TableHead>
+                  <TableHead>{t("soils.table.depth")}</TableHead>
+                  <TableHead>{t("common.material")}</TableHead>
+                  <TableHead>{t("soils.table.sections")}</TableHead>
                   <TableHead>{t("concrete.fields.result")}</TableHead>
                   <TableHead className="w-10" />
                 </TableRow>

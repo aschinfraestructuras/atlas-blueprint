@@ -325,7 +325,7 @@ export default function WeldPage() {
                 <div><Label>{t("welding.fields.operator")}</Label><Input value={form.operator_name ?? ""} onChange={e => setField("operator_name", e.target.value)} /></div>
                 <div><Label>{t("welding.fields.certRef")}</Label><Input value={form.operator_cert_ref ?? ""} onChange={e => setField("operator_cert_ref", e.target.value)} /></div>
                 <div>
-                  <Label>Validade Cert. EN ISO 9712</Label>
+                  <Label>{t("welding.form.certValidity")}</Label>
                   <Input type="date" value={(form as any).operator_cert_expiry ?? ""} onChange={e => setField("operator_cert_expiry", e.target.value)} />
                   <CertExpiryBadge date={(form as any).operator_cert_expiry} />
                 </div>

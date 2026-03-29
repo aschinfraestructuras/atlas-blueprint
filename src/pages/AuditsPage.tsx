@@ -101,7 +101,7 @@ export default function AuditsPage() {
       const data = await qualityAuditService.listByProject(activeProject.id);
       setAudits(data);
     } catch {
-      toast.error("Erro ao carregar auditorias");
+      toast.error(t("audits.toast.loadError"));
     } finally {
       setLoading(false);
     }
