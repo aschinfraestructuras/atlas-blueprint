@@ -36,6 +36,10 @@ const makeSchema = (t: (k: string) => string) =>
     auto_code:         z.boolean().optional(),
     inspector_id:      z.string().optional(),
     inspection_date:   z.string().optional(),
+    pk_inicio:         z.string().optional(),
+    pk_fim:            z.string().optional(),
+    zone:              z.string().optional(),
+    element_ref:       z.string().optional(),
   });
 
 type FormValues = z.infer<ReturnType<typeof makeSchema>>;
