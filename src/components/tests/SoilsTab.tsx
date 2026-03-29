@@ -61,7 +61,7 @@ export function SoilsTab({ projectId }: Props) {
             </TableRow></TableHeader>
             <TableBody>
               {data.slice(0, 20).map(s => {
-                const resultLabel = s.overall_result === "apto" ? "Apto" : s.overall_result === "inapto" ? "Inapto" : s.overall_result === "conditional" ? "Condicional" : "Pendente";
+                const resultLabel = s.overall_result === "apto" ? t("common.apto") : s.overall_result === "inapto" ? t("common.inapto") : s.overall_result === "conditional" ? "Condicional" : t("common.pending");
                 const resultClass = s.overall_result === "apto" ? "bg-primary/15 text-primary" : s.overall_result === "inapto" ? "bg-destructive/10 text-destructive" : s.overall_result === "conditional" ? "bg-amber-500/10 text-amber-600" : "bg-muted text-muted-foreground";
                 return (
                 <TableRow key={s.id} className="hover:bg-muted/20 cursor-pointer" onClick={() => navigate("/tests/soils")}>

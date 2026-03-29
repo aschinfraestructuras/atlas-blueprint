@@ -61,7 +61,7 @@ export function CompactionTab({ projectId }: Props) {
             </TableRow></TableHeader>
             <TableBody>
               {data.slice(0, 20).map(z => {
-                const resultLabel = z.overall_result === "pass" ? "Conforme" : z.overall_result === "fail" ? "Não Conforme" : "Pendente";
+                const resultLabel = z.overall_result === "pass" ? t("common.conform") : z.overall_result === "fail" ? t("common.nonConform") : t("common.pending");
                 const resultClass = z.overall_result === "pass" ? "bg-primary/15 text-primary" : z.overall_result === "fail" ? "bg-destructive/10 text-destructive" : "bg-muted text-muted-foreground";
                 return (
                 <TableRow key={z.id} className="hover:bg-muted/20 cursor-pointer" onClick={() => navigate("/tests/compaction")}>

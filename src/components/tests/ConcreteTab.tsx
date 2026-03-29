@@ -62,7 +62,7 @@ export function ConcreteTab({ projectId }: Props) {
             <TableBody>
               {data.slice(0, 20).map(b => {
                 const result = (b as any).overall_result ?? b.status;
-                const resultLabel = result === "pass" ? "Conforme" : result === "fail" ? "Não Conforme" : result === "approved" ? "Conforme" : result === "rejected" ? "Não Conforme" : "Pendente";
+                const resultLabel = result === "pass" ? t("common.conform") : result === "fail" ? t("common.nonConform") : result === "approved" ? t("common.conform") : result === "rejected" ? t("common.nonConform") : t("common.pending");
                 const resultClass = result === "pass" || result === "approved" ? "bg-primary/15 text-primary" : result === "fail" || result === "rejected" ? "bg-destructive/10 text-destructive" : "bg-muted text-muted-foreground";
                 return (
                 <TableRow key={b.id} className="hover:bg-muted/20 cursor-pointer" onClick={() => navigate("/tests/concrete")}>

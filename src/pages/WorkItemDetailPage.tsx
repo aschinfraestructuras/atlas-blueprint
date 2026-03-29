@@ -924,7 +924,7 @@ function WorkItemTopoTab({ workItemId, projectId }: { workItemId: string; projec
                     <li key={c.id} className="flex items-center justify-between text-sm">
                       <span>{c.element} — {c.zone ?? "—"}</span>
                       <Badge variant={c.result === "conforme" ? "default" : "destructive"} className="text-xs">
-                        {c.result === "conforme" ? "Conforme" : "Não conforme"}
+                        {c.result === "conforme" ? t("common.conform") : t("common.nonConform")}
                       </Badge>
                     </li>
                   ))}
