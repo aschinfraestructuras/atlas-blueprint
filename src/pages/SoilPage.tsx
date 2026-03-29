@@ -71,6 +71,7 @@ export default function SoilPage() {
   const [saving, setSaving] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [filterResult, setFilterResult] = useState("all");
+  const [searchQ, setSearchQ] = useState("");
 
   const [form, setForm] = useState({
     work_item_id: "",
