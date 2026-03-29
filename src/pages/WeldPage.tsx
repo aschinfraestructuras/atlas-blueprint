@@ -372,24 +372,27 @@ export default function WeldPage() {
                 <label className="flex items-center gap-2 text-sm font-medium"><Checkbox checked={form.has_ut ?? false} onCheckedChange={v => setField("has_ut", v)} />{t("welding.fields.ut")}</label>
                 {form.has_ut && (
                   <div className="grid grid-cols-2 gap-3">
-                    <div><Label>{t("weld.form.utOperator", { defaultValue: "Operador UT" })}</Label><Input value={form.ut_operator ?? ""} onChange={e => setField("ut_operator", e.target.value)} /></div>
-                    <div><Label>{t("weld.form.utEquipment", { defaultValue: "Equipamento" })}</Label><Input value={form.ut_equipment_code ?? ""} onChange={e => setField("ut_equipment_code", e.target.value)} /></div>
-                    <div><Label>{t("weld.form.utCalibration", { defaultValue: "Calibração" })}</Label><Input type="date" value={form.ut_calibration_date ?? ""} onChange={e => setField("ut_calibration_date", e.target.value)} /></div>
-                    <div><Label>{t("weld.form.utResult", { defaultValue: "Resultado UT" })}</Label>
+                    <div><Label>{t("weld.form.utOperator")}</Label><Input value={form.ut_operator ?? ""} onChange={e => setField("ut_operator", e.target.value)} /></div>
+                    <div><Label>{t("weld.form.utEquipment")}</Label><Input value={form.ut_equipment_code ?? ""} onChange={e => setField("ut_equipment_code", e.target.value)} /></div>
+                    <div><Label>{t("weld.form.utSerial")}</Label><Input value={(form as any).us_equipment_serial ?? ""} onChange={e => setField("us_equipment_serial", e.target.value)} /></div>
+                    <div><Label>{t("weld.form.utCalibration")}</Label><Input type="date" value={form.ut_calibration_date ?? ""} onChange={e => setField("ut_calibration_date", e.target.value)} /></div>
+                    <div><Label>{t("weld.form.utFrequency")}</Label><Input type="number" step="0.1" value={(form as any).us_frequency_mhz ?? ""} onChange={e => setField("us_frequency_mhz", e.target.value ? Number(e.target.value) : null)} placeholder="2.25" /></div>
+                    <div><Label>{t("weld.form.utNormClass")}</Label><Input value={(form as any).us_norm_class ?? ""} onChange={e => setField("us_norm_class", e.target.value)} placeholder="EN 14587-1" /></div>
+                    <div><Label>{t("weld.form.utResult")}</Label>
                       <Select value={form.ut_result ?? "pendente"} onValueChange={v => setField("ut_result", v)}>
                         <SelectTrigger><SelectValue /></SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="aceite">{t("weld.utStatus.aceite", { defaultValue: "Aceite" })}</SelectItem>
-                          <SelectItem value="rejeitado">{t("weld.utStatus.rejeitado", { defaultValue: "Rejeitado" })}</SelectItem>
+                          <SelectItem value="aceite">{t("weld.utStatus.aceite")}</SelectItem>
+                          <SelectItem value="rejeitado">{t("weld.utStatus.rejeitado")}</SelectItem>
                           <SelectItem value="pendente">{t("common.pending")}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
-                    <div className="col-span-2"><Label>{t("weld.form.utDefect", { defaultValue: "Defeito (se rejeitado)" })}</Label><Input value={form.ut_defect_desc ?? ""} onChange={e => setField("ut_defect_desc", e.target.value)} /></div>
+                    <div className="col-span-2"><Label>{t("weld.form.utDefect")}</Label><Input value={form.ut_defect_desc ?? ""} onChange={e => setField("ut_defect_desc", e.target.value)} /></div>
                     {/* FUS fields */}
-                    {(form as any).fus_code && <div><Label>{t("weld.form.fusCode", { defaultValue: "Código FUS" })}</Label><Input value={(form as any).fus_code ?? ""} readOnly className="bg-muted/30" /></div>}
-                    <div><Label>{t("weld.form.fusDate", { defaultValue: "Data US" })}</Label><Input type="date" value={(form as any).fus_date ?? ""} onChange={e => setField("fus_date", e.target.value)} /></div>
-                    <div className="col-span-2"><Label>{t("weld.form.certOperatorUs", { defaultValue: "Cert. Operador US" })}</Label><Input value={(form as any).cert_operator_us ?? ""} onChange={e => setField("cert_operator_us", e.target.value)} placeholder={t("weld.form.certOperatorUsPlaceholder", { defaultValue: "ex: EN ISO 9712 NII · IPAC L0415 · válido até 12/2026" })} /></div>
+                    {(form as any).fus_code && <div><Label>{t("weld.form.fusCode")}</Label><Input value={(form as any).fus_code ?? ""} readOnly className="bg-muted/30" /></div>}
+                    <div><Label>{t("weld.form.fusDate")}</Label><Input type="date" value={(form as any).fus_date ?? ""} onChange={e => setField("fus_date", e.target.value)} /></div>
+                    <div className="col-span-2"><Label>{t("weld.form.certOperatorUs")}</Label><Input value={(form as any).cert_operator_us ?? ""} onChange={e => setField("cert_operator_us", e.target.value)} placeholder={t("weld.form.certOperatorUsPlaceholder")} /></div>
                   </div>
                 )}
               </div>
