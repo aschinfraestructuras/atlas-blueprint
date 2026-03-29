@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  Mountain, Plus, FileDown, Trash2, Eye, Pencil, CheckCircle2, XCircle, Clock, Loader2, AlertTriangle,
+  Mountain, Plus, FileDown, Trash2, Eye, Pencil, CheckCircle2, XCircle, Clock, Loader2, AlertTriangle, Search,
 } from "lucide-react";
 import { soilService, computeOverallResult, computeAashtoClass, type SoilSample, type CreateSoilInput } from "@/lib/services/soilService";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
