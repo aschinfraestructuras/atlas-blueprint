@@ -296,7 +296,7 @@ export default function WeldPage() {
                   <Input value={form.pk_location ?? ""} onChange={e => setField("pk_location", e.target.value)} placeholder="PK 30+500" />
                 </div>
                 <div>
-                  <Label>PK Fim</Label>
+                  <Label>PK {t("common.end", { defaultValue: "Fim" })}</Label>
                   <Input value={(form as any).pk_end ?? ""} onChange={e => setField("pk_end", e.target.value)} placeholder="PK 30+520" />
                 </div>
                 <div><Label>{t("common.date")}</Label><Input type="date" value={form.weld_date ?? new Date().toISOString().split("T")[0]} onChange={e => setField("weld_date", e.target.value)} /></div>
