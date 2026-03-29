@@ -633,7 +633,7 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
             </div>
             <div>
               <Label className="text-xs">
-                Referência RFI (se aplicável)
+                {t("ppi.hpNotification.rfiRef", { defaultValue: "Referência RFI (se aplicável)" })}
               </Label>
               <Input
                 value={rfiRef}

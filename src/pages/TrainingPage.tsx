@@ -210,7 +210,7 @@ export default function TrainingPage() {
       const { attendees } = await trainingService.getById(session.id);
       trainingService.exportPdf(session, attendees, activeProject.name, logoBase64);
     } catch {
-      toast({ title: "Erro ao exportar", variant: "destructive" });
+      toast({ title: t("training.toast.exportError", { defaultValue: "Erro ao exportar" }), variant: "destructive" });
     }
   };
 

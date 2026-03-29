@@ -201,7 +201,7 @@ export default function MonthlyReportPage() {
       if (selectedReport?.id === deleteTarget.id) setSelectedReport(null);
       await fetchReports();
     } catch (err: any) {
-      toast({ title: "Erro", description: err.message, variant: "destructive" });
+      toast({ title: t("common.error"), description: err.message, variant: "destructive" });
     } finally {
       setDeleteTarget(null);
     }
