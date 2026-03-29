@@ -516,10 +516,47 @@ export default function TrainingPage() {
             </SheetTitle>
           </SheetHeader>
           <div className="mt-4 space-y-2">
-            {untrained.length === 0 ? (
+            {(untrainedView.length > 0 ? untrainedView : untrained).length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-8">
                 {t("common.noData")}
               </p>
+            ) : untrainedView.length > 0 ? (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>{t("common.name")}</TableHead>
+                    <TableHead>{t("training.form.company", { defaultValue: "Empresa" })}</TableHead>
+                    <TableHead>{t("common.status")}</TableHead>
+                    <TableHead>{t("common.date")}</TableHead>
+                    <TableHead className="w-20" />
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {untrainedView.map((w: any, idx: number) => (
+                    <TableRow key={w.worker_id ?? idx}>
+                      <TableCell className="text-sm font-medium">{w.worker_name ?? "—"}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{w.company ?? w.subcontractor_name ?? "—"}</TableCell>
+                      <TableCell>
+                        <Badge variant="secondary" className={cn("text-[10px]",
+                          w.training_status === "attended_not_signed" ? "bg-amber-500/10 text-amber-600" : "bg-destructive/10 text-destructive"
+                        )}>
+                          {t(`training.status.${w.training_status}`, { defaultValue: w.training_status })}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-xs text-muted-foreground">{w.last_training_date ? new Date(w.last_training_date).toLocaleDateString("pt-PT") : "—"}</TableCell>
+                      <TableCell>
+                        <Button variant="ghost" size="sm" className="text-xs gap-1" onClick={() => {
+                          setWorkersSheetOpen(false); resetForm();
+                          setFormAttendees([{ name: w.worker_name ?? "", role_function: "", company: w.company ?? "" }]);
+                          setDialogOpen(true);
+                        }}>
+                          <Plus className="h-3 w-3" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             ) : (
               <Table>
                 <TableHeader>
@@ -537,19 +574,12 @@ export default function TrainingPage() {
                       <TableCell className="text-sm text-muted-foreground">{w.company ?? "—"}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">{w.role_function ?? "—"}</TableCell>
                       <TableCell>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-xs gap-1"
-                          onClick={() => {
-                            setWorkersSheetOpen(false);
-                            resetForm();
-                            setFormAttendees([{ name: w.name, role_function: w.role_function ?? "", company: w.company ?? "" }]);
-                            setDialogOpen(true);
-                          }}
-                        >
+                        <Button variant="ghost" size="sm" className="text-xs gap-1" onClick={() => {
+                          setWorkersSheetOpen(false); resetForm();
+                          setFormAttendees([{ name: w.name, role_function: w.role_function ?? "", company: w.company ?? "" }]);
+                          setDialogOpen(true);
+                        }}>
                           <Plus className="h-3 w-3" />
-                          {t("training.registerTraining", { defaultValue: "Registar formação" })}
                         </Button>
                       </TableCell>
                     </TableRow>
