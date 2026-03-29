@@ -385,6 +385,7 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
                               >
                                 <ExternalLink className="h-3 w-3" />
                                 Criar RFI
+387:                       </Button>
                               </Button>
                             </>
                           )}
