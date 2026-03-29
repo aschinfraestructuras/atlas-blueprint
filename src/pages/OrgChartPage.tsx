@@ -127,7 +127,7 @@ export default function OrgChartPage() {
       ) : (
         <div className="space-y-8">
           {levels.map((lvl) => {
-            const label = isEs ? levelLabels[lvl]?.es : levelLabels[lvl]?.pt;
+            const label = levelLabels[lvl];
             return (
               <div key={lvl}>
                 <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
