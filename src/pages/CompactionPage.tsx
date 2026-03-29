@@ -438,10 +438,10 @@ export default function CompactionPage() {
 
                 {detailData.plates.length > 0 && (
                   <>
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mt-4">Ensaios de Placa</h4>
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mt-4">{t("compaction.form.plateTests")}</h4>
                     <Table>
                       <TableHeader><TableRow>
-                        <TableHead>Pto</TableHead><TableHead>PK</TableHead><TableHead>Ev1</TableHead><TableHead>Ev2</TableHead><TableHead>Ev2/Ev1</TableHead><TableHead>Result.</TableHead>
+                        <TableHead>{t("common.point")}</TableHead><TableHead>{t("common.pk")}</TableHead><TableHead>{t("compaction.table.ev1")}</TableHead><TableHead>{t("compaction.table.ev2")}</TableHead><TableHead>Ev2/Ev1</TableHead><TableHead>{t("common.result")}</TableHead>
                       </TableRow></TableHeader>
                       <TableBody>
                         {detailData.plates.map((p) => (
