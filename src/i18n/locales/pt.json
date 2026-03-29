@@ -76,7 +76,13 @@
     "apto": "Apto",
     "inapto": "Inapto",
     "other": "Outro",
-    "add": "Adicionar"
+    "add": "Adicionar",
+    "allResults": "Todos os resultados",
+    "compliant": "Conforme",
+    "nonCompliant": "Não Conforme",
+    "pendingStatus": "Pendente",
+    "allActivities": "Todas as atividades",
+    "searchPlaceholder": "Pesquisar..."
   },
   "auth": {
     "signIn": "Iniciar sessão",
@@ -675,7 +681,10 @@
         "typeRequired": "O tipo é obrigatório",
         "disciplinaRequired": "A disciplina é obrigatória"
       },
-      "typeOutro": "Especificar tipo"
+      "typeOutro": "Especificar tipo",
+      "attachFile": "Anexar ficheiro",
+      "replaceFile": "Substituir ficheiro",
+      "disciplinaOutro": "Especificar disciplina"
     },
     "status": {
       "draft": "Rascunho",
@@ -687,10 +696,20 @@
     "detail": {
       "code": "Código",
       "createdAt": "Criado em",
-      "approvedAt": "Aprovado em"
+      "approvedAt": "Aprovado em",
+      "info": "Informações do documento",
+      "breadcrumb": "Documento",
+      "tabs": {
+        "versions": "Versões",
+        "links": "Vínculos",
+        "form": "Formulário",
+        "attachments": "Anexos"
+      }
     },
     "versions": {
-      "title": "Histórico de versões"
+      "title": "Histórico de versões",
+      "noVersions": "Sem versões registadas",
+      "current": "Atual"
     },
     "bulk": {
       "archive": "Arquivar selecionados",
@@ -698,7 +717,8 @@
       "exportSelected": "Exportar selecionados"
     },
     "deleteConfirm": {
-      "title": "Eliminar documento"
+      "title": "Eliminar documento",
+      "description": "Tem a certeza de que pretende eliminar este documento? Esta ação não pode ser desfeita."
     },
     "export": {
       "reportTitle": "Relatório de Documento",
@@ -709,12 +729,22 @@
       "version": "Versão",
       "versionNo": "Rev.",
       "page": "Página",
-      "of": "de"
+      "of": "de",
+      "exportPdf": "Exportar PDF"
     },
     "toast": {
       "deleted": "Documento eliminado",
       "deleteError": "Erro ao eliminar documento",
-      "error": "Erro ao carregar documentos"
+      "error": "Erro ao carregar documentos",
+      "updated": "Documento atualizado",
+      "created": "Documento criado",
+      "fileUploaded": "Ficheiro \"{{name}}\" carregado",
+      "bulkArchived": "{{count}} documento(s) arquivado(s)",
+      "status_draft": "Documento revertido a rascunho",
+      "status_in_review": "Documento submetido para revisão",
+      "status_approved": "Documento aprovado",
+      "status_obsolete": "Documento marcado como obsoleto",
+      "status_archived": "Documento arquivado"
     },
     "rdc": {
       "title": "Distribuição Controlada",
@@ -750,8 +780,72 @@
     },
     "links": {
       "added": "Documento vinculado",
-      "removed": "Vínculo removido"
-    }
+      "removed": "Vínculo removido",
+      "title": "Documentos vinculados",
+      "addLink": "Vincular",
+      "entityType": "Tipo de entidade",
+      "noLinks": "Sem vínculos",
+      "entityTypes": {
+        "work_item": "Atividade",
+        "ppi_instance": "PPI",
+        "test_result": "Ensaio",
+        "non_conformity": "Não Conformidade",
+        "supplier": "Fornecedor"
+      }
+    },
+    "noFile": "Sem ficheiro",
+    "actions": {
+      "submit": "Submeter",
+      "approve": "Aprovar",
+      "backToDraft": "Voltar a rascunho",
+      "obsolete": "Marcar obsoleto",
+      "newVersion": "Nova versão",
+      "view": "Ver ficheiro",
+      "download": "Descarregar"
+    },
+    "docTypes": {
+      "procedure": "Procedimento",
+      "instruction": "Instrução",
+      "plan": "Plano",
+      "report": "Relatório",
+      "certificate": "Certificado",
+      "drawing": "Desenho",
+      "specification": "Especificação",
+      "form": "Formulário",
+      "record": "Registo",
+      "index": "Índice",
+      "mdj": "MDJ",
+      "med": "MED",
+      "dpu": "DPU",
+      "cte": "CTE",
+      "egt": "EGT",
+      "interoperability_report": "Relatório Interoperabilidade",
+      "other": "Outro"
+    },
+    "disciplinas": {
+      "geral": "Geral",
+      "estruturas": "Estruturas",
+      "geotecnia": "Geotecnia",
+      "hidraulica": "Hidráulica",
+      "estradas": "Estradas",
+      "ambiente": "Ambiente",
+      "seguranca": "Segurança",
+      "eletrica": "Elétrica",
+      "mecanica": "Mecânica",
+      "topografia": "Topografia",
+      "drenagem": "Drenagem",
+      "restabelecimentos": "Restabelecimentos",
+      "geologia_geotecnia": "Geologia / Geotecnia",
+      "muros_suporte": "Muros de Suporte",
+      "terraplenagem": "Terraplenagem",
+      "ferrovia": "Ferrovia",
+      "catenaria": "Catenária",
+      "sinalizacao": "Sinalização",
+      "outro": "Outro"
+    },
+    "editWarningApproved": "Este documento está aprovado. Para editá-lo, altere primeiro o estado.",
+    "editWarningUnderReview": "Este documento está em revisão. Alterações podem afetar o processo de aprovação.",
+    "exportLmd": "Exportar LMD"
   },
   "tests": {
     "openRnc": "Abrir RNC",
@@ -4359,7 +4453,12 @@
       "fabRef": "Ref. FAB",
       "mqtCode": "Código MQT",
       "hour": "Hora"
-    }
+    },
+    "filterStatus": "Resultado",
+    "filterWI": "Atividade",
+    "filterClass": "Classe",
+    "allClasses": "Todas as classes",
+    "searchPlaceholder": "Pesquisar amassadas..."
   },
   "compaction": {
     "workItem": "Elemento de Obra",
@@ -4402,7 +4501,10 @@
       "nuclearPoints": "Pontos Nucleares",
       "plateTests": "Ensaios de Placa",
       "linkedConcreteLot": "Lote de Betão associado:"
-    }
+    },
+    "searchPlaceholder": "Pesquisar zonas...",
+    "filterMaterial": "Material",
+    "allMaterials": "Todos os materiais"
   },
   "soils": {
     "laboratory": "Laboratório",
@@ -4440,7 +4542,10 @@
       "sampleRef": "Ref. Amostra",
       "depth": "Prof.",
       "sections": "Secções"
-    }
+    },
+    "searchPlaceholder": "Pesquisar amostras...",
+    "filterMaterial": "Material",
+    "allMaterials": "Todos os materiais"
   },
   "welding": {
     "title": "Controlo de Soldadura Aluminotérmica",
