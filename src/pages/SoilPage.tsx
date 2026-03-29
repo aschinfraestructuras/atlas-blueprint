@@ -120,6 +120,10 @@ export default function SoilPage() {
 
   const filtered = samples.filter((s) => {
     if (filterResult !== "all" && s.overall_result !== filterResult) return false;
+    if (searchQ) {
+      const q = searchQ.toLowerCase();
+      if (!s.code.toLowerCase().includes(q) && !s.sample_ref.toLowerCase().includes(q) && !(s.pk_location ?? "").toLowerCase().includes(q)) return false;
+    }
     return true;
   });
 
