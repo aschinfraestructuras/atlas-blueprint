@@ -850,7 +850,7 @@ export default function ConcretePage() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <div className="flex items-center gap-1.5">
-                    <Label>Classe de Execução</Label>
+                    <Label>{t("concrete.form.excClass")}</Label>
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild><Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" /></TooltipTrigger>
