@@ -77,6 +77,9 @@ export default function SubcontractorDetailPage() {
   const [ncs, setNcs] = useState<any[]>([]);
   const [tests, setTests] = useState<any[]>([]);
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
+  const [qualifications, setQualifications] = useState<any[]>([]);
+  const [qualDialogOpen, setQualDialogOpen] = useState(false);
+  const [newQual, setNewQual] = useState({ worker_name: "", qualification: "IET77_DIR_TECNICO", certificate_ref: "", issued_by: "", valid_until: "" });
 
   // New doc form
   const [newDoc, setNewDoc] = useState({ doc_type: "seguros", title: "", valid_from: "", valid_to: "", status: "valid" });
