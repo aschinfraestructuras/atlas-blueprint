@@ -179,6 +179,60 @@ export default function SubcontractorDetailPage() {
     } catch { /* swallow */ }
   }, [id, activeProject]);
 
+  const fetchQualifications = useCallback(async () => {
+    if (!activeProject || !id) return;
+    try {
+      const { data } = await supabase
+        .from("worker_qualifications" as any)
+        .select("*")
+        .eq("project_id", activeProject.id)
+        .eq("subcontractor_id", id)
+        .order("created_at", { ascending: false });
+      setQualifications((data as any[]) ?? []);
+    } catch { setQualifications([]); }
+  }, [id, activeProject]);
+
+  const getValidityStatus = (validUntil: string | null) => {
+    if (!validUntil) return "sem_data";
+    const d = new Date(validUntil);
+    const now = new Date();
+    const diff = Math.ceil((d.getTime() - now.getTime()) / 86400000);
+    if (diff < 0) return "expirado";
+    if (diff <= 30) return "urgente";
+    if (diff <= 60) return "alerta";
+    return "ok";
+  };
+
+  const VALIDITY_COLORS: Record<string, string> = {
+    ok: "bg-primary/15 text-primary",
+    alerta: "bg-amber-500/10 text-amber-600",
+    urgente: "bg-orange-500/10 text-orange-600",
+    expirado: "bg-destructive/10 text-destructive",
+    sem_data: "bg-muted text-muted-foreground",
+  };
+
+  const handleAddQualification = async () => {
+    if (!activeProject || !id) return;
+    try {
+      await (supabase as any).from("worker_qualifications").insert({
+        project_id: activeProject.id,
+        subcontractor_id: id,
+        worker_name: newQual.worker_name,
+        qualification: newQual.qualification,
+        certificate_ref: newQual.certificate_ref || null,
+        issued_by: newQual.issued_by || null,
+        valid_until: newQual.valid_until || null,
+        created_by: user?.id,
+      });
+      toast({ title: t("subcontractors.qualifications.toast.created") });
+      setQualDialogOpen(false);
+      setNewQual({ worker_name: "", qualification: "IET77_DIR_TECNICO", certificate_ref: "", issued_by: "", valid_until: "" });
+      fetchQualifications();
+    } catch (err: any) {
+      toast({ title: t("subcontractors.qualifications.toast.error"), description: err.message, variant: "destructive" });
+    }
+  };
+
   useEffect(() => {
     fetchSub();
     fetchDocs();
