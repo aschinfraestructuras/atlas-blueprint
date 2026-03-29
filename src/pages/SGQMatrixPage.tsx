@@ -264,7 +264,7 @@ export default function SGQMatrixPage() {
               </TableHeader>
               <TableBody>
                 {SGQ_REQUIREMENTS.map((req, idx) => {
-                  const coverageCfg = COVERAGE_CONFIG[req.coverage];
+                  const coverageCfg = COVERAGE_KEYS[req.coverage];
                   const Icon = req.icon;
 
                   // Progress from real data
