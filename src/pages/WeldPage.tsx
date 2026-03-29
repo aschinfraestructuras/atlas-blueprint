@@ -292,7 +292,7 @@ export default function WeldPage() {
             <TabsContent value="id" className="space-y-3 mt-3">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label>{t("welding.fields.pk")} Início</Label>
+                  <Label>{t("welding.fields.pk")} {t("common.start", { defaultValue: "Início" })}</Label>
                   <Input value={form.pk_location ?? ""} onChange={e => setField("pk_location", e.target.value)} placeholder="PK 30+500" />
                 </div>
                 <div>
