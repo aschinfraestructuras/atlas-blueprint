@@ -302,6 +302,15 @@ export default function DashboardPage() {
       {/* ══ HP Pending Alert ════════════════════════════════ */}
       <HPPendingAlert projectId={activeProject.id} />
 
+      {/* ══ ROW 2b — SGQ KPI Cards (vw_rm_kpis) ════════════ */}
+      <div className="animate-fade-in" style={{ animationDelay: "90ms", animationFillMode: "both" }}>
+        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground mb-2.5 flex items-center gap-1.5">
+          <ShieldCheck className="h-3.5 w-3.5" />
+          {t("dashboard.sgqKpi.title", { defaultValue: "KPIs do SGQ — Anx. D" })}
+        </p>
+        <SgqKpiCards projectId={activeProject.id} />
+      </div>
+
       {/* ══ ROW 3 — 3 Main Charts ═══════════════════════════ */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 animate-fade-in" style={{ animationDelay: "120ms", animationFillMode: "both" }}>
         <NCTrendChart data={filteredNcMonthly} loading={viewsLoading} />
