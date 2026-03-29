@@ -155,7 +155,7 @@ export default function MonthlyReportPage() {
       await fetchReports();
       openDetail(report);
     } catch (err: any) {
-      toast({ title: "Erro", description: err.message, variant: "destructive" });
+      toast({ title: t("common.error"), description: err.message, variant: "destructive" });
     } finally {
       setCreating(false);
     }
