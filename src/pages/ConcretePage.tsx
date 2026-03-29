@@ -842,9 +842,9 @@ export default function ConcretePage() {
                 <div><Label>{t("concrete.form.hour")}</Label><Input type="time" value={form.batch_time} onChange={(e) => setForm((f) => ({ ...f, batch_time: e.target.value }))} /></div>
               </div>
               <div className="grid grid-cols-3 gap-3">
-                <div><Label>Guia Remessa</Label><Input value={form.delivery_note_ref} onChange={(e) => setForm((f) => ({ ...f, delivery_note_ref: e.target.value }))} /></div>
-                <div><Label>Matrícula</Label><Input value={form.truck_plate} onChange={(e) => setForm((f) => ({ ...f, truck_plate: e.target.value }))} /></div>
-                <div><Label>Central / Lab</Label><Input value={form.lab_name} onChange={(e) => setForm((f) => ({ ...f, lab_name: e.target.value }))} /></div>
+                <div><Label>{t("concrete.form.deliveryNote")}</Label><Input value={form.delivery_note_ref} onChange={(e) => setForm((f) => ({ ...f, delivery_note_ref: e.target.value }))} /></div>
+                <div><Label>{t("concrete.form.truckPlate")}</Label><Input value={form.truck_plate} onChange={(e) => setForm((f) => ({ ...f, truck_plate: e.target.value }))} /></div>
+                <div><Label>{t("concrete.form.labCentral")}</Label><Input value={form.lab_name} onChange={(e) => setForm((f) => ({ ...f, lab_name: e.target.value }))} /></div>
               </div>
               {/* EXC, FAB, exposure, MQT */}
               <div className="grid grid-cols-2 gap-3">
