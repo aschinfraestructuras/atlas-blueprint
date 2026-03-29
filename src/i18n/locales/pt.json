@@ -203,7 +203,9 @@
     "traceability": "Rastreabilidade",
     "actionPlan": "Plano de Ações",
     "submittals": "Submittals",
-    "myTasks": "O Meu Dia"
+    "myTasks": "O Meu Dia",
+    "ppiTemplates": "Modelos PPI",
+    "controlledDistribution": "Distribuição Controlada"
   },
   "topbar": {
     "language": "Idioma",
