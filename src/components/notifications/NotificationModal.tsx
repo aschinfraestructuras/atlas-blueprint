@@ -63,7 +63,7 @@ function fileToBase64(file: File): Promise<string> {
 
 export function NotificationModal({
   open, onOpenChange, entityType, entityId, entityCode,
-  defaultSubject, pdfBase64, pdfFilename,
+  defaultSubject, defaultMessage, pdfBase64, pdfFilename,
 }: Props) {
   const { t } = useTranslation();
   const { activeProject } = useProject();
@@ -72,7 +72,7 @@ export function NotificationModal({
   const [selectedListId, setSelectedListId] = useState<string>("");
   const [recipients, setRecipients] = useState<{ email: string; name: string; checked: boolean }[]>([]);
   const [subject, setSubject] = useState(defaultSubject ?? "");
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState(defaultMessage ?? "");
   const [sending, setSending] = useState(false);
   const [addEmail, setAddEmail] = useState("");
   const [addName, setAddName] = useState("");
