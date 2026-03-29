@@ -201,7 +201,7 @@ export default function TrainingPage() {
       setDetailAttendees(attendees);
       setDetailOpen(true);
     } catch {
-      toast({ title: "Erro ao carregar detalhes", variant: "destructive" });
+      toast({ title: t("training.toast.loadError", { defaultValue: "Erro ao carregar detalhes" }), variant: "destructive" });
     }
   };
 
