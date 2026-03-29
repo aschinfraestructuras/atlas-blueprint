@@ -466,7 +466,7 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
                             : "border-border text-muted-foreground"
                     )}
                   >
-                    {n.status}
+                    {t(`ppi.hpNotification.status_${n.status}`, { defaultValue: n.status })}
                   </Badge>
                 </div>
               </div>
