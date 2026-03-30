@@ -469,11 +469,12 @@ export default function TopographyPage() {
           <div className="rounded-md border">
             <Table>
               <TableHeader><TableRow>
+                <TableHead>{t("topography.table.ftCode")}</TableHead>
                 <TableHead>{t("topography.table.element")}</TableHead>
                 <TableHead>{t("topography.table.zone")}</TableHead>
                 <TableHead>{t("topography.table.equipment")}</TableHead>
-                <TableHead>{t("topography.table.tolerance")}</TableHead>
-                <TableHead>{t("topography.table.measuredValue")}</TableHead>
+                <TableHead>{t("topography.table.cotaProjeto")}</TableHead>
+                <TableHead>{t("topography.table.cotaExecutado")}</TableHead>
                 <TableHead>{t("topography.table.deviation")}</TableHead>
                 <TableHead>{t("topography.table.result")}</TableHead>
                 <TableHead>{t("common.date")}</TableHead>
