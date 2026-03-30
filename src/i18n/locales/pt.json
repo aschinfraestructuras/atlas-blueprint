@@ -3331,7 +3331,10 @@
       "requestType": "Tipo de pedido",
       "priority": "Prioridade",
       "technician": "Técnico",
-      "equipment": "Equipamento"
+      "equipment": "Equipamento",
+      "ftCode": "Cód. FT",
+      "cotaProjeto": "Cota Projeto",
+      "cotaExecutado": "Cota Executado"
     },
     "filters": {
       "allCalStatuses": "Todas as calibrações",
