@@ -80,6 +80,9 @@ export interface TopographyControl {
   test_id: string | null;
   nc_id: string | null;
   work_item_id: string | null;
+  ft_code: string | null;
+  cota_projeto: number | null;
+  cota_executado: number | null;
   notes: string | null;
   created_by: string | null;
   created_at: string;

@@ -3419,7 +3419,10 @@
       "requestType": "Tipo de solicitud",
       "priority": "Prioridad",
       "technician": "Técnico",
-      "equipment": "Equipo"
+      "equipment": "Equipo",
+      "ftCode": "Cód. FT",
+      "cotaProjeto": "Cota Proyecto",
+      "cotaExecutado": "Cota Ejecutado"
     },
     "filters": {
       "allCalStatuses": "Todas las calibraciones",

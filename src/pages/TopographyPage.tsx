@@ -469,11 +469,12 @@ export default function TopographyPage() {
           <div className="rounded-md border">
             <Table>
               <TableHeader><TableRow>
+                <TableHead>{t("topography.table.ftCode")}</TableHead>
                 <TableHead>{t("topography.table.element")}</TableHead>
                 <TableHead>{t("topography.table.zone")}</TableHead>
                 <TableHead>{t("topography.table.equipment")}</TableHead>
-                <TableHead>{t("topography.table.tolerance")}</TableHead>
-                <TableHead>{t("topography.table.measuredValue")}</TableHead>
+                <TableHead>{t("topography.table.cotaProjeto")}</TableHead>
+                <TableHead>{t("topography.table.cotaExecutado")}</TableHead>
                 <TableHead>{t("topography.table.deviation")}</TableHead>
                 <TableHead>{t("topography.table.result")}</TableHead>
                 <TableHead>{t("common.date")}</TableHead>
@@ -485,11 +486,12 @@ export default function TopographyPage() {
                   const eq = equipment.find(e => e.id === ctrl.equipment_id);
                   return (
                     <TableRow key={ctrl.id}>
+                      <TableCell className="font-mono text-xs">{(ctrl as any).ft_code || "—"}</TableCell>
                       <TableCell className="font-medium">{ctrl.element}</TableCell>
                       <TableCell>{ctrl.zone || "—"}</TableCell>
                       <TableCell className="font-mono text-xs">{eq?.code || "—"}</TableCell>
-                      <TableCell>{ctrl.tolerance || "—"}</TableCell>
-                      <TableCell>{ctrl.measured_value || "—"}</TableCell>
+                      <TableCell>{(ctrl as any).cota_projeto != null ? (ctrl as any).cota_projeto : "—"}</TableCell>
+                      <TableCell>{(ctrl as any).cota_executado != null ? (ctrl as any).cota_executado : "—"}</TableCell>
                       <TableCell>{ctrl.deviation || "—"}</TableCell>
                       <TableCell><Badge variant={ctrl.result === "conforme" ? "default" : "destructive"}>{t(`topography.result.${ctrl.result}`)}</Badge></TableCell>
                       <TableCell>{ctrl.execution_date}</TableCell>
@@ -503,7 +505,7 @@ export default function TopographyPage() {
                     </TableRow>
                   );
                 })}
-                {filteredControls.length === 0 && <TableRow><TableCell colSpan={10} className="text-center text-muted-foreground py-8">{t("common.noData")}</TableCell></TableRow>}
+                {filteredControls.length === 0 && <TableRow><TableCell colSpan={11} className="text-center text-muted-foreground py-8">{t("common.noData")}</TableCell></TableRow>}
               </TableBody>
             </Table>
           </div>
