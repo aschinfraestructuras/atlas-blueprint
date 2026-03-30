@@ -486,11 +486,12 @@ export default function TopographyPage() {
                   const eq = equipment.find(e => e.id === ctrl.equipment_id);
                   return (
                     <TableRow key={ctrl.id}>
+                      <TableCell className="font-mono text-xs">{(ctrl as any).ft_code || "—"}</TableCell>
                       <TableCell className="font-medium">{ctrl.element}</TableCell>
                       <TableCell>{ctrl.zone || "—"}</TableCell>
                       <TableCell className="font-mono text-xs">{eq?.code || "—"}</TableCell>
-                      <TableCell>{ctrl.tolerance || "—"}</TableCell>
-                      <TableCell>{ctrl.measured_value || "—"}</TableCell>
+                      <TableCell>{(ctrl as any).cota_projeto != null ? (ctrl as any).cota_projeto : "—"}</TableCell>
+                      <TableCell>{(ctrl as any).cota_executado != null ? (ctrl as any).cota_executado : "—"}</TableCell>
                       <TableCell>{ctrl.deviation || "—"}</TableCell>
                       <TableCell><Badge variant={ctrl.result === "conforme" ? "default" : "destructive"}>{t(`topography.result.${ctrl.result}`)}</Badge></TableCell>
                       <TableCell>{ctrl.execution_date}</TableCell>

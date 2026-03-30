@@ -1,4 +1,10 @@
 project_id = "qrsdpsugfjmrdeychxzf"
 
 [functions.create-project-member]
-verify_jwt = false
+verify_jwt = true
+
+[functions.send-notification]
+verify_jwt = true
+
+[functions.migrate-storage-paths]
+verify_jwt = true
