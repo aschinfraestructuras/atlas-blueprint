@@ -505,7 +505,7 @@ export default function TopographyPage() {
                     </TableRow>
                   );
                 })}
-                {filteredControls.length === 0 && <TableRow><TableCell colSpan={10} className="text-center text-muted-foreground py-8">{t("common.noData")}</TableCell></TableRow>}
+                {filteredControls.length === 0 && <TableRow><TableCell colSpan={11} className="text-center text-muted-foreground py-8">{t("common.noData")}</TableCell></TableRow>}
               </TableBody>
             </Table>
           </div>
