@@ -3370,6 +3370,7 @@
     "usageTests": "Ensayos pendientes"
   },
   "topography": {
+    "topoDrawings": "Dibujos Topográficos",
     "cycle": {
       "viewDetail": "Ver levantamiento",
       "element": "Elemento",
@@ -4656,7 +4657,9 @@
     "utStatus": {
       "aceite": "Aceptado",
       "rejeitado": "Rechazado"
-    },
+    }
+  },
+  "traceability": {
     "status": {
       "approved": "Aprobado",
       "pass": "Conforme",
@@ -4670,6 +4673,7 @@
     },
     "title": "Matriz de Trazabilidad",
     "subtitle": "Vista integrada: Proveedor → Material → Lote → Ensayo → PPI → Actividad",
+    "searchPlaceholder": "Buscar material, proveedor, lote…",
     "empty": "Sin datos de trazabilidad para este proyecto.",
     "kpi": {
       "materials": "Materiales",
@@ -5038,5 +5042,36 @@
     "badge": "DCQ ✓",
     "missing": "DCQ pendiente",
     "missingDesc": "Declaración de Conocimiento SGC no vinculada"
+  },
+  "plans": {
+    "externalApproval": {
+      "title": "Aprobación Fiscalización / IP",
+      "badge": "Aprobado externamente",
+      "entity": "Entidad",
+      "entityPlaceholder": "ej: Fiscalización, IP",
+      "approvedBy": "Aprobado por",
+      "approvedByPlaceholder": "Nombre del responsable",
+      "approvedAt": "Fecha aprobación",
+      "ref": "Referencia oficio",
+      "refPlaceholder": "ej: OF-FIS-2026-045",
+      "sentAt": "Fecha de envío",
+      "responseAt": "Fecha de respuesta",
+      "status": "Estado",
+      "statusOptions": {
+        "pending": "Pendiente",
+        "approved": "Aprobado",
+        "approved_comments": "Aprobado con comentarios",
+        "rejected": "Rechazado"
+      },
+      "observations": "Observaciones"
+    }
+  },
+  "monthlyReport": {
+    "productionExecuted": "Producción ejecutada en el mes",
+    "productionExecutedPlaceholder": "Describa las actividades ejecutadas…",
+    "testsPerformed": "Ensayos realizados en el mes",
+    "testsPerformedPlaceholder": "ej: 12 compactación, 4 hormigón, 2 suelos",
+    "trainingSessions": "Formaciones realizadas",
+    "trainingSessionsPlaceholder": "ej: 2 sesiones, 15 participantes"
   }
 }

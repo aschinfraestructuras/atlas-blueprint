@@ -91,6 +91,9 @@ export default function MonthlyReportPage() {
   const [observations, setObservations] = useState("");
   const [correctiveActions, setCorrectiveActions] = useState("");
   const [nextMonthPlan, setNextMonthPlan] = useState("");
+  const [productionExecuted, setProductionExecuted] = useState("");
+  const [testsPerformed, setTestsPerformed] = useState("");
+  const [trainingSessions, setTrainingSessions] = useState("");
 
   const fetchReports = useCallback(async () => {
     if (!activeProject) return;
@@ -143,6 +146,9 @@ export default function MonthlyReportPage() {
     setObservations(report.observations ?? "");
     setCorrectiveActions(report.corrective_actions ?? "");
     setNextMonthPlan(report.next_month_plan ?? "");
+    setProductionExecuted((report as any).production_executed ?? "");
+    setTestsPerformed((report as any).tests_performed ?? "");
+    setTrainingSessions((report as any).training_sessions ?? "");
   };
 
   const handleCreate = async () => {
@@ -170,6 +176,12 @@ export default function MonthlyReportPage() {
         corrective_actions: correctiveActions || null,
         next_month_plan: nextMonthPlan || null,
       });
+      // Save extra CE §35 fields
+      await (supabase as any).from("monthly_quality_reports").update({
+        production_executed: productionExecuted || null,
+        tests_performed: testsPerformed || null,
+        training_sessions: trainingSessions || null,
+      }).eq("id", selectedReport.id);
       toast({ title: t("common.saved", { defaultValue: "Guardado" }) });
       await fetchReports();
     } catch (err: any) {
@@ -291,6 +303,18 @@ export default function MonthlyReportPage() {
               <Label>{t("monthlyReport.nextMonthPlan")}</Label>
               <Textarea value={nextMonthPlan} onChange={e => setNextMonthPlan(e.target.value)} rows={4} />
             </div>
+            <div className="grid gap-1.5">
+              <Label>{t("monthlyReport.productionExecuted")}</Label>
+              <Textarea value={productionExecuted} onChange={e => setProductionExecuted(e.target.value)} rows={3} placeholder={t("monthlyReport.productionExecutedPlaceholder")} />
+            </div>
+            <div className="grid gap-1.5">
+              <Label>{t("monthlyReport.testsPerformed")}</Label>
+              <Textarea value={testsPerformed} onChange={e => setTestsPerformed(e.target.value)} rows={2} placeholder={t("monthlyReport.testsPerformedPlaceholder")} />
+            </div>
+            <div className="grid gap-1.5">
+              <Label>{t("monthlyReport.trainingSessions")}</Label>
+              <Textarea value={trainingSessions} onChange={e => setTrainingSessions(e.target.value)} rows={2} placeholder={t("monthlyReport.trainingSessionsPlaceholder")} />
+            </div>
              <div className="flex items-center gap-2 justify-end">
                <Button variant="outline" size="sm" onClick={async () => {
                  if (!activeProject || !selectedReport) return;
@@ -356,6 +380,24 @@ export default function MonthlyReportPage() {
               <Card><CardContent className="p-4">
                 <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">{t("monthlyReport.nextMonthPlan")}</p>
                 <p className="text-sm text-foreground whitespace-pre-wrap">{r.next_month_plan}</p>
+              </CardContent></Card>
+            )}
+            {(r as any).production_executed && (
+              <Card><CardContent className="p-4">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">{t("monthlyReport.productionExecuted")}</p>
+                <p className="text-sm text-foreground whitespace-pre-wrap">{(r as any).production_executed}</p>
+              </CardContent></Card>
+            )}
+            {(r as any).tests_performed && (
+              <Card><CardContent className="p-4">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">{t("monthlyReport.testsPerformed")}</p>
+                <p className="text-sm text-foreground whitespace-pre-wrap">{(r as any).tests_performed}</p>
+              </CardContent></Card>
+            )}
+            {(r as any).training_sessions && (
+              <Card><CardContent className="p-4">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">{t("monthlyReport.trainingSessions")}</p>
+                <p className="text-sm text-foreground whitespace-pre-wrap">{(r as any).training_sessions}</p>
               </CardContent></Card>
             )}
             <div className="flex items-center gap-2 justify-end">
