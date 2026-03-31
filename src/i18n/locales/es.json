@@ -3370,6 +3370,7 @@
     "usageTests": "Ensayos pendientes"
   },
   "topography": {
+    "topoDrawings": "Dibujos Topográficos",
     "cycle": {
       "viewDetail": "Ver levantamiento",
       "element": "Elemento",

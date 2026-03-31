@@ -3282,6 +3282,7 @@
     "usageTests": "Ensaios pendentes"
   },
   "topography": {
+    "topoDrawings": "Desenhos Topográficos",
     "cycle": {
       "viewDetail": "Ver levantamento",
       "element": "Elemento",
