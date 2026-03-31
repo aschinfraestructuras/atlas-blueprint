@@ -382,6 +382,24 @@ export default function MonthlyReportPage() {
                 <p className="text-sm text-foreground whitespace-pre-wrap">{r.next_month_plan}</p>
               </CardContent></Card>
             )}
+            {(r as any).production_executed && (
+              <Card><CardContent className="p-4">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">{t("monthlyReport.productionExecuted")}</p>
+                <p className="text-sm text-foreground whitespace-pre-wrap">{(r as any).production_executed}</p>
+              </CardContent></Card>
+            )}
+            {(r as any).tests_performed && (
+              <Card><CardContent className="p-4">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">{t("monthlyReport.testsPerformed")}</p>
+                <p className="text-sm text-foreground whitespace-pre-wrap">{(r as any).tests_performed}</p>
+              </CardContent></Card>
+            )}
+            {(r as any).training_sessions && (
+              <Card><CardContent className="p-4">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">{t("monthlyReport.trainingSessions")}</p>
+                <p className="text-sm text-foreground whitespace-pre-wrap">{(r as any).training_sessions}</p>
+              </CardContent></Card>
+            )}
             <div className="flex items-center gap-2 justify-end">
               <Button variant="outline" onClick={() => doPdf(r)}>
                 <FileText className="h-3.5 w-3.5 mr-1.5" />

@@ -376,7 +376,74 @@ export default function PlanDetailPage() {
         </CardContent>
       </Card>
 
-      {/* Upload section */}
+      {/* External Approval — Fiscalização / IP */}
+      <Card>
+        <CardHeader className="pb-2 pt-5 px-5">
+          <CardTitle className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground flex items-center gap-2">
+            {t("plans.externalApproval.title")}
+            {(plan as any).external_approved_at && (
+              <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-600 text-[10px]">
+                <CheckCircle2 className="h-3 w-3 mr-1" />
+                {t("plans.externalApproval.badge")}
+              </Badge>
+            )}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="px-5 pb-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <label className="text-[10px] font-semibold uppercase text-muted-foreground">{t("plans.externalApproval.sentAt")}</label>
+              <Input
+                type="date"
+                className="h-8 text-xs"
+                defaultValue={(plan as any).external_sent_at?.slice(0, 10) ?? ""}
+                onBlur={async (e) => {
+                  await supabase.from("plans").update({ external_sent_at: e.target.value || null } as any).eq("id", plan.id);
+                }}
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-semibold uppercase text-muted-foreground">{t("plans.externalApproval.responseAt")}</label>
+              <Input
+                type="date"
+                className="h-8 text-xs"
+                defaultValue={(plan as any).external_response_at?.slice(0, 10) ?? ""}
+                onBlur={async (e) => {
+                  await supabase.from("plans").update({ external_response_at: e.target.value || null } as any).eq("id", plan.id);
+                }}
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-semibold uppercase text-muted-foreground">{t("plans.externalApproval.status")}</label>
+              <Select
+                defaultValue={(plan as any).external_approval_status ?? ""}
+                onValueChange={async (val) => {
+                  await supabase.from("plans").update({ external_approval_status: val || null } as any).eq("id", plan.id);
+                }}
+              >
+                <SelectTrigger className="h-8 text-xs">
+                  <SelectValue placeholder="—" />
+                </SelectTrigger>
+                <SelectContent>
+                  {["pending", "approved", "approved_comments", "rejected"].map(s => (
+                    <SelectItem key={s} value={s}>{t(`plans.externalApproval.statusOptions.${s}`)}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-semibold uppercase text-muted-foreground">{t("plans.externalApproval.observations")}</label>
+              <Input
+                className="h-8 text-xs"
+                defaultValue={(plan as any).external_approval_observations ?? ""}
+                onBlur={async (e) => {
+                  await supabase.from("plans").update({ external_approval_observations: e.target.value || null } as any).eq("id", plan.id);
+                }}
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-sm">{t("plans.detail.uploadTitle", { defaultValue: "Carregar nova versão" })}</CardTitle>
