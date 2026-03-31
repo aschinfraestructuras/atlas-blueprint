@@ -5038,5 +5038,36 @@
     "badge": "DCQ ✓",
     "missing": "DCQ em falta",
     "missingDesc": "Declaração de Conhecimento SGQ não vinculada"
+  },
+  "plans": {
+    "externalApproval": {
+      "title": "Aprovação Fiscalização / IP",
+      "badge": "Aprovado externamente",
+      "entity": "Entidade",
+      "entityPlaceholder": "ex: Fiscalização, IP",
+      "approvedBy": "Aprovado por",
+      "approvedByPlaceholder": "Nome do responsável",
+      "approvedAt": "Data aprovação",
+      "ref": "Referência ofício",
+      "refPlaceholder": "ex: OF-FIS-2026-045",
+      "sentAt": "Data de envio",
+      "responseAt": "Data de resposta",
+      "status": "Estado",
+      "statusOptions": {
+        "pending": "Pendente",
+        "approved": "Aprovado",
+        "approved_comments": "Aprovado com comentários",
+        "rejected": "Rejeitado"
+      },
+      "observations": "Observações"
+    }
+  },
+  "monthlyReport": {
+    "productionExecuted": "Produção executada no mês",
+    "productionExecutedPlaceholder": "Descreva as actividades executadas…",
+    "testsPerformed": "Ensaios realizados no mês",
+    "testsPerformedPlaceholder": "ex: 12 compactação, 4 betão, 2 solos",
+    "trainingSessions": "Formações realizadas",
+    "trainingSessionsPlaceholder": "ex: 2 sessões, 15 participantes"
   }
 }
