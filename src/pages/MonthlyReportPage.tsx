@@ -303,7 +303,18 @@ export default function MonthlyReportPage() {
               <Label>{t("monthlyReport.nextMonthPlan")}</Label>
               <Textarea value={nextMonthPlan} onChange={e => setNextMonthPlan(e.target.value)} rows={4} />
             </div>
-             <div className="flex items-center gap-2 justify-end">
+            <div className="grid gap-1.5">
+              <Label>{t("monthlyReport.productionExecuted")}</Label>
+              <Textarea value={productionExecuted} onChange={e => setProductionExecuted(e.target.value)} rows={3} placeholder={t("monthlyReport.productionExecutedPlaceholder")} />
+            </div>
+            <div className="grid gap-1.5">
+              <Label>{t("monthlyReport.testsPerformed")}</Label>
+              <Textarea value={testsPerformed} onChange={e => setTestsPerformed(e.target.value)} rows={2} placeholder={t("monthlyReport.testsPerformedPlaceholder")} />
+            </div>
+            <div className="grid gap-1.5">
+              <Label>{t("monthlyReport.trainingSessions")}</Label>
+              <Textarea value={trainingSessions} onChange={e => setTrainingSessions(e.target.value)} rows={2} placeholder={t("monthlyReport.trainingSessionsPlaceholder")} />
+            </div>
                <Button variant="outline" size="sm" onClick={async () => {
                  if (!activeProject || !selectedReport) return;
                  try {
