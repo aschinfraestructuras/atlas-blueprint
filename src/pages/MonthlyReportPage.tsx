@@ -315,6 +315,7 @@ export default function MonthlyReportPage() {
               <Label>{t("monthlyReport.trainingSessions")}</Label>
               <Textarea value={trainingSessions} onChange={e => setTrainingSessions(e.target.value)} rows={2} placeholder={t("monthlyReport.trainingSessionsPlaceholder")} />
             </div>
+             <div className="flex items-center gap-2 justify-end">
                <Button variant="outline" size="sm" onClick={async () => {
                  if (!activeProject || !selectedReport) return;
                  try {
