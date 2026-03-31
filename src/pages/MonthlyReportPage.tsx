@@ -176,6 +176,12 @@ export default function MonthlyReportPage() {
         corrective_actions: correctiveActions || null,
         next_month_plan: nextMonthPlan || null,
       });
+      // Save extra CE §35 fields
+      await (supabase as any).from("monthly_quality_reports").update({
+        production_executed: productionExecuted || null,
+        tests_performed: testsPerformed || null,
+        training_sessions: trainingSessions || null,
+      }).eq("id", selectedReport.id);
       toast({ title: t("common.saved", { defaultValue: "Guardado" }) });
       await fetchReports();
     } catch (err: any) {
