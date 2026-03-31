@@ -91,6 +91,9 @@ export default function MonthlyReportPage() {
   const [observations, setObservations] = useState("");
   const [correctiveActions, setCorrectiveActions] = useState("");
   const [nextMonthPlan, setNextMonthPlan] = useState("");
+  const [productionExecuted, setProductionExecuted] = useState("");
+  const [testsPerformed, setTestsPerformed] = useState("");
+  const [trainingSessions, setTrainingSessions] = useState("");
 
   const fetchReports = useCallback(async () => {
     if (!activeProject) return;
