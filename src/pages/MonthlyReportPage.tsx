@@ -146,6 +146,9 @@ export default function MonthlyReportPage() {
     setObservations(report.observations ?? "");
     setCorrectiveActions(report.corrective_actions ?? "");
     setNextMonthPlan(report.next_month_plan ?? "");
+    setProductionExecuted((report as any).production_executed ?? "");
+    setTestsPerformed((report as any).tests_performed ?? "");
+    setTrainingSessions((report as any).training_sessions ?? "");
   };
 
   const handleCreate = async () => {
