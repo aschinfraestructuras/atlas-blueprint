@@ -3267,11 +3267,14 @@ export type Database = {
           kpi_tests_pass_rate: number | null
           next_month_plan: string | null
           observations: string | null
+          production_executed: string | null
           project_id: string
           reference_month: string
           status: string
           submitted_at: string | null
           submitted_by: string | null
+          tests_performed: string | null
+          training_sessions: string | null
           updated_at: string
         }
         Insert: {
@@ -3297,11 +3300,14 @@ export type Database = {
           kpi_tests_pass_rate?: number | null
           next_month_plan?: string | null
           observations?: string | null
+          production_executed?: string | null
           project_id: string
           reference_month: string
           status?: string
           submitted_at?: string | null
           submitted_by?: string | null
+          tests_performed?: string | null
+          training_sessions?: string | null
           updated_at?: string
         }
         Update: {
@@ -3327,11 +3333,14 @@ export type Database = {
           kpi_tests_pass_rate?: number | null
           next_month_plan?: string | null
           observations?: string | null
+          production_executed?: string | null
           project_id?: string
           reference_month?: string
           status?: string
           submitted_at?: string | null
           submitted_by?: string | null
+          tests_performed?: string | null
+          training_sessions?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -4407,6 +4416,10 @@ export type Database = {
           doc_reference: string | null
           document_id: string | null
           drive_url: string | null
+          external_approval_observations: string | null
+          external_approval_status: string | null
+          external_response_at: string | null
+          external_sent_at: string | null
           file_url: string | null
           id: string
           notes: string | null
@@ -4427,6 +4440,10 @@ export type Database = {
           doc_reference?: string | null
           document_id?: string | null
           drive_url?: string | null
+          external_approval_observations?: string | null
+          external_approval_status?: string | null
+          external_response_at?: string | null
+          external_sent_at?: string | null
           file_url?: string | null
           id?: string
           notes?: string | null
@@ -4447,6 +4464,10 @@ export type Database = {
           doc_reference?: string | null
           document_id?: string | null
           drive_url?: string | null
+          external_approval_observations?: string | null
+          external_approval_status?: string | null
+          external_response_at?: string | null
+          external_sent_at?: string | null
           file_url?: string | null
           id?: string
           notes?: string | null
