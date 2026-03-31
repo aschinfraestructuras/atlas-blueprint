@@ -20,6 +20,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { supabase } from "@/integrations/supabase/client";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { ControlledCopiesPanel } from "@/components/plans/ControlledCopiesPanel";
 import { PlanFormDialog } from "@/components/plans/PlanFormDialog";
