@@ -95,6 +95,15 @@ export default function MaterialsPage() {
       refetch();
     } catch { toast({ title: t("materials.toast.error"), variant: "destructive" }); }
   };
+  const handleDelete = async () => {
+    if (!deleteTarget || !activeProject) return;
+    try {
+      await materialService.softDelete(deleteTarget.id, activeProject.id);
+      toast({ title: t("common.deleted") });
+      refetch();
+    } catch { toast({ title: t("common.deleteError"), variant: "destructive" }); }
+    finally { setDeleteTarget(null); }
+  };
 
   const exportHeaders = [t("materials.table.code"), t("common.name"), t("materials.form.category"), t("materials.form.specification"), t("materials.form.unit"), t("common.status")];
   const exportRows = filtered.map(m => [
