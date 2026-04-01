@@ -42,6 +42,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import type { WbsNode, Activity } from "@/lib/services/planningService";
 import { seedWbsPF17A } from "@/lib/services/wbsSeedService";
+import { compareWbsCodes } from "@/lib/utils/wbsSort";
 
 const STATUS_COLORS: Record<string, string> = {
   planned: "bg-muted text-muted-foreground",
