@@ -378,6 +378,11 @@ export default function MaterialsPage() {
                               </Button>
                             </>
                           )}
+                          {(canDelete || isManager) && (
+                            <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => setDeleteTarget(m)} title={t("common.delete")}>
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          )}
                         </div>
                       </TableCell>
                     </TableRow>
