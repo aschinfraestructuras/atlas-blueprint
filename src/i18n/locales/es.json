@@ -1056,14 +1056,16 @@
         "area_reached": "Área alcanzada",
         "time_interval": "Intervalo de tiempo",
         "manual": "Manual",
-        "lot_complete": "Lote completo"
+        "lot_complete": "Lote completo",
+        "distance_reached": "Distancia alcanzada"
       },
       "reasons": {
         "quantity_reached": "Cantidad alcanzada",
         "area_reached": "Área alcanzada",
         "time_interval": "Intervalo de tiempo",
         "manual": "Manual",
-        "lot_complete": "Lote completo"
+        "lot_complete": "Lote completo",
+        "distance_reached": "Distancia alcanzada"
       }
     },
     "schedule": {
@@ -1150,7 +1152,18 @@
         "requiresPhotos": "Requiere fotos",
         "requiresReport": "Requiere informe",
         "title": "Reglas del Plan",
-        "witness": "Testimonio"
+        "witness": "Testimonio",
+        "appliesOptions": {
+          "work_item": "Elemento de obra",
+          "activity": "Actividad",
+          "both": "Ambos"
+        },
+        "frequencyOptions": {
+          "quantity": "Por cantidad",
+          "time": "Por tiempo",
+          "event": "Por evento",
+          "manual": "Manual"
+        }
       },
       "title": "Planes de Ensayos",
       "toast": {
@@ -1937,156 +1950,26 @@
     }
   },
   "plans": {
-    "newPlan": "Nuevo Plan",
-    "searchPlaceholder": "Buscar título, revisión…",
-    "kpi": {
-      "total": "Total",
-      "draft": "Borrador",
-      "inReview": "En Revisión",
-      "approved": "Aprobados",
-      "obsoleteArchived": "Obsoletos / Archivados"
-    },
-    "table": {
-      "type": "Tipo",
-      "code": "Código",
-      "title": "Título",
-      "revision": "Rev.",
-      "discipline": "Disciplina"
-    },
-    "types": {
-      "MS": "Method Statement",
-      "PlanEsc": "Plan de Excavación / Explanación",
-      "PlanBet": "Programa de Hormigonados",
-      "PlanMont": "Plan de Montaje",
-      "PlanTraf": "Plan de Tráfico / Desvíos",
-      "PlanSeg": "Plan de Seguridad de Frente",
-      "Schedule": "Programa de Trabajos",
-      "Drawing": "Plano / Planta de Obra",
-      "Other": "Otro",
-      "PQO": "PQO",
-      "PIE": "PIE",
-      "PPI": "PPI",
-      "ITP": "ITP",
-      "MethodStatement": "Method Statement",
-      "TestPlan": "Plan de Ensayos",
-      "PlanAmb": "Plan Ambiental / PPGRCD",
-      "PlanEns": "Plan de Ensayos",
-      "PlanInsp": "Plan de Inspección y Ensayo (PIE)",
-      "PlanQual": "Plan de Calidad (PCC)",
-      "PlanTopo": "Plan de Topografía"
-    },
-    "disciplines": {
-      "geral": "General",
-      "terras": "Movimiento de tierras",
-      "betao": "Hormigón",
-      "ferrovia": "Ferroviario",
-      "catenaria": "Catenaria",
-      "st": "Señalización / Telecom",
-      "drenagem": "Drenaje",
-      "estruturas": "Estructuras",
-      "outros": "Otros",
-      "ambiente": "Medio Ambiente / Seguridad",
-      "edificacoes": "Edificaciones",
-      "eletrica": "Eléctrica / Energía",
-      "estradas": "Carreteras / Pavimentos",
-      "geologia_geotecnia": "Geología y Geotecnia",
-      "geotecnia": "Geología / Geotecnia",
-      "hidraulica": "Hidráulica",
-      "mecanica": "Mecánica",
-      "muros_suporte": "Muros de Contención",
-      "restabelecimentos": "Restituciones / Servidumbres",
-      "seguranca": "Seguridad",
-      "sinalizacao": "Señalización Ferroviaria",
-      "telecom": "Telecomunicaciones",
-      "terraplenagem": "Explanación / Vía",
-      "topografia": "Cartografía / Topografía",
-      "via": "Superestructura de Vía"
-    },
-    "status": {
-      "draft": "Borrador",
-      "under_review": "En Revisión",
-      "approved": "Aprobado",
-      "obsolete": "Obsoleto",
-      "archived": "Archivado",
-      "superseded": "Superado"
-    },
-    "filters": {
-      "allTypes": "Todos los tipos",
-      "allStatuses": "Todos los estados",
-      "allDisciplines": "Todas las disciplinas"
-    },
-    "form": {
-      "titleCreate": "Nuevo Plan",
-      "titleEdit": "Editar Plan",
-      "planType": "Tipo de plan",
-      "title": "Título",
-      "titlePlaceholder": "ej: Plan de Calidad de Obra",
-      "revision": "Revisión",
-      "fileUrl": "URL del archivo",
-      "createBtn": "Crear plan",
-      "code": "Código del Documento",
-      "discipline": "Disciplina",
-      "responsible": "Responsable",
-      "approvalDate": "Fecha de Aprobación",
-      "docReference": "Referencia Documental",
-      "notes": "Notas",
-      "notesPlaceholder": "Observaciones adicionales…",
-      "type": "Tipo"
-    },
-    "detail": {
-      "breadcrumb": "Planes",
-      "info": "Información General",
-      "workflow": "Workflow:",
-      "createdAt": "Creado el",
-      "updatedAt": "Actualizado el",
-      "currentFile": "Archivo actual",
-      "uploadTitle": "Subir nueva versión",
-      "changeDescPlaceholder": "Descripción del cambio (opcional)…",
-      "uploadBtn": "Seleccionar archivo",
-      "versionsTitle": "Historial de Versiones",
-      "noVersions": "Sin versiones registradas. Suba el primer archivo.",
-      "current": "Actual",
-      "attachments": "Adjuntos",
-      "timeline": "Línea temporal",
-      "linkedWorkItems": "Trabajos Enlazados",
-      "linkedActivities": "Actividades Enlazadas",
-      "relatedItems": "Ítems Relacionados",
-      "attachFile": "Adjuntar archivo",
-      "downloadDwg": "Descargar DWG",
-      "openPdf": "Abrir PDF",
-      "pdfPreview": "Vista previa PDF",
-      "pdfPreviewError": "Error al cargar PDF"
-    },
-    "deleteConfirm": {
-      "title": "¿Eliminar plan?",
-      "description": "El plan «{{name}}» se eliminará permanentemente."
-    },
-    "toast": {
-      "created": "Plan creado con éxito.",
-      "updated": "Plan actualizado con éxito.",
-      "deleted": "Plan eliminado.",
-      "error": "Ocurrió un error. Inténtelo de nuevo.",
-      "fileUploaded": "Archivo «{{name}}» subido con éxito.",
-      "uploadError": "Error al subir el archivo",
-      "downloadError": "Error al descargar",
-      "status_draft": "Plan vuelto a Borrador.",
-      "status_under_review": "Plan enviado a revisión.",
-      "status_approved": "Plan aprobado.",
-      "status_obsolete": "Plan marcado como obsoleto.",
-      "status_archived": "Plan archivado.",
-      "imported": "Planos importados con éxito"
-    },
-    "importPF17A": "Importar PF17A",
-    "controlledCopies": {
-      "title": "Copias Controladas",
-      "new": "Nueva Copia Controlada",
-      "recipient": "Destinatario",
-      "recipientPlaceholder": "Nombre del destinatario",
+    "externalApproval": {
+      "title": "Aprobación Fiscalización / IP",
+      "badge": "Aprobado externamente",
       "entity": "Entidad",
-      "confirmed": "Confirmada",
-      "confirmReceipt": "Confirmar recepción",
-      "noRecords": "Sin copias controladas registradas",
-      "delivery": "Entrega"
+      "entityPlaceholder": "ej: Fiscalización, IP",
+      "approvedBy": "Aprobado por",
+      "approvedByPlaceholder": "Nombre del responsable",
+      "approvedAt": "Fecha aprobación",
+      "ref": "Referencia oficio",
+      "refPlaceholder": "ej: OF-FIS-2026-045",
+      "sentAt": "Fecha de envío",
+      "responseAt": "Fecha de respuesta",
+      "status": "Estado",
+      "statusOptions": {
+        "pending": "Pendiente",
+        "approved": "Aprobado",
+        "approved_comments": "Aprobado con comentarios",
+        "rejected": "Rechazado"
+      },
+      "observations": "Observaciones"
     }
   },
   "survey": {
@@ -2532,7 +2415,10 @@
       "in_progress": "En Ejecución",
       "completed": "Completado",
       "blocked": "Bloqueado",
-      "cancelled": "Cancelado"
+      "cancelled": "Cancelado",
+      "hold": "En espera",
+      "approved": "Aprobado",
+      "archived": "Archivado"
     },
     "groups": {
       "baseActivity": "Actividad base",
@@ -2944,7 +2830,8 @@
       "pkEnd": "PK fin",
       "zone": "Zona / Ubicación",
       "elementRef": "Elemento"
-    }
+    },
+    "deleteConfirm": "Esta acción elimina la instancia PPI y todos sus puntos de inspección. ¿Confirmar?"
   },
   "attachments": {
     "title": "Adjuntos / Evidencias",
@@ -3045,7 +2932,7 @@
     "status": {
       "active": "Activo",
       "discontinued": "Descatalogado",
-      "archived": "Archivado"
+      "archived": "Catálogo (pre-obra)"
     },
     "categories": {
       "betao": "Hormigón",
@@ -3267,7 +3154,9 @@
     },
     "quarantine": {
       "printLabel": "Imprimir etiqueta"
-    }
+    },
+    "deleteConfirm": "¿Está seguro de que desea eliminar este material?",
+    "deleteConfirmTitle": "Eliminar Material"
   },
   "settings": {
     "integrations": {
@@ -4239,7 +4128,8 @@
     "completedDate": "Fecha Conclusión",
     "reportRef": "Ref. Informe",
     "ncCount": "Nº NCs",
-    "obsCount": "Nº Observaciones"
+    "obsCount": "Nº Observaciones",
+    "deleteConfirm": "¿Está seguro de que desea eliminar esta auditoría?"
   },
   "sgqMatrix": {
     "title": "Matriz de Conformidad SGC",
@@ -4353,54 +4243,14 @@
     }
   },
   "monthlyReport": {
-    "currentMonth": "Resumen del mes actual",
-    "hpConfirmed": "HPs confirmados",
-    "betonagem": "Amasadas este mes",
-    "soldaduras": "Soldaduras este mes",
-    "topografia": "Controles topo. mes",
-    "partesDiarios": "Partes diarios mes",
-    "kpi": {
-      "testsPass": "Ensayos conformes",
-      "ncOpen": "NC abiertas",
-      "ncClosed": "NC cerradas mes",
-      "hpConfirmed": "HPs confirmados",
-      "matApproved": "Materiales aprobados",
-      "matPending": "Materiales pendientes",
-      "ppiCompleted": "PPI completados",
-      "emesExpiring": "EMEs por expirar",
-      "ncOverdue15d": "RNCs >15 días",
-      "rmOnTime": "RM a tiempo",
-      "ncOverdue15dDesc": "RNCs abiertas hace más de 15 días hábiles (meta: 0)",
-      "rmOnTimeDesc": "Informe entregado a tiempo",
-      "rmLateWarning": "Informe atrasado — CE Cl.ª 35.ª §11"
-    },
-    "submittedAt": "Enviado el",
-    "deadline": "Plazo de entrega",
-    "refMonth": "Mes de referencia",
-    "kpiAutoFill": "Los KPIs se rellenarán automáticamente con los datos del proyecto.",
-    "deleteConfirm": "¿Está seguro de que desea eliminar el informe {{code}}?",
-    "status": {
-      "draft": "Borrador",
-      "submitted": "Enviado",
-      "accepted": "Aceptado"
-    },
-    "create": "Crear Informe",
-    "createTitle": "Crear Informe Mensual",
-    "createReport": "Crear Informe",
-    "emptyTitle": "Sin Informes",
-    "emptySubtitle": "Cree el primer informe mensual SGQ para este proyecto.",
-    "title": "Informe Mensual SGC",
-    "subtitle": "CE Cláusula 35.ª §11 — Informe mensual de calidad",
-    "onTime": "A tiempo",
-    "late": "Atrasado",
-    "autofillDone": "KPIs rellenados automáticamente",
-    "autofillKpis": "Rellenar KPIs",
-    "observations": "Observaciones",
-    "correctiveActions": "Acciones Correctivas",
-    "nextMonthPlan": "Plan del Mes Siguiente",
-    "submitted": "Informe enviado",
-    "exportPdf": "Exportar PDF",
-    "submit": "Enviar"
+    "productionExecuted": "Producción ejecutada en el mes",
+    "productionExecutedPlaceholder": "Describa las actividades ejecutadas…",
+    "testsPerformed": "Ensayos realizados en el mes",
+    "testsPerformedPlaceholder": "ej: 12 compactación, 4 hormigón, 2 suelos",
+    "trainingSessions": "Formaciones realizadas",
+    "trainingSessionsPlaceholder": "ej: 2 sesiones, 15 participantes",
+    "deleteConfirm": "Atención: al eliminar este informe, los KPIs registrados se perderán.",
+    "deleteConfirmTitle": "Eliminar Informe Mensual"
   },
   "concrete": {
     "title": "Control de Hormigón — Fichas de Hormigonado",
@@ -5043,35 +4893,25 @@
     "missing": "DCQ pendiente",
     "missingDesc": "Declaración de Conocimiento SGC no vinculada"
   },
-  "plans": {
-    "externalApproval": {
-      "title": "Aprobación Fiscalización / IP",
-      "badge": "Aprobado externamente",
-      "entity": "Entidad",
-      "entityPlaceholder": "ej: Fiscalización, IP",
-      "approvedBy": "Aprobado por",
-      "approvedByPlaceholder": "Nombre del responsable",
-      "approvedAt": "Fecha aprobación",
-      "ref": "Referencia oficio",
-      "refPlaceholder": "ej: OF-FIS-2026-045",
-      "sentAt": "Fecha de envío",
-      "responseAt": "Fecha de respuesta",
-      "status": "Estado",
-      "statusOptions": {
-        "pending": "Pendiente",
-        "approved": "Aprobado",
-        "approved_comments": "Aprobado con comentarios",
-        "rejected": "Rechazado"
-      },
-      "observations": "Observaciones"
-    }
-  },
-  "monthlyReport": {
-    "productionExecuted": "Producción ejecutada en el mes",
-    "productionExecutedPlaceholder": "Describa las actividades ejecutadas…",
-    "testsPerformed": "Ensayos realizados en el mes",
-    "testsPerformedPlaceholder": "ej: 12 compactación, 4 hormigón, 2 suelos",
-    "trainingSessions": "Formaciones realizadas",
-    "trainingSessionsPlaceholder": "ej: 2 sesiones, 15 participantes"
+  "status": {
+    "pending": "Pendiente",
+    "submitted": "Enviado",
+    "in_review": "En revisión",
+    "approved": "Aprobado",
+    "rejected": "Rechazado",
+    "conditional": "Aprobado con condiciones",
+    "archived": "Archivado",
+    "draft": "Borrador",
+    "in_progress": "En curso",
+    "completed": "Completado",
+    "planned": "Planificado",
+    "open": "Abierto",
+    "closed": "Cerrado",
+    "answered": "Respondido",
+    "active": "Activo",
+    "discontinued": "Descatalogado",
+    "cancelled": "Cancelado",
+    "blocked": "Bloqueado",
+    "hold": "En espera"
   }
 }

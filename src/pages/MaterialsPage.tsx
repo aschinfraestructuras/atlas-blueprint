@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useProject } from "@/contexts/ProjectContext";
@@ -19,6 +19,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EmptyState } from "@/components/EmptyState";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { MaterialFormDialog } from "@/components/materials/MaterialFormDialog";
 import { FilterBar } from "@/components/ui/filter-bar";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
@@ -44,7 +48,7 @@ export default function MaterialsPage() {
   const navigate = useNavigate();
   const { activeProject } = useProject();
   const { data: materials, kpis, loading, error, refetch } = useMaterials();
-  const { canCreate, canEdit } = useProjectRole();
+  const { canCreate, canEdit, canDelete, isManager } = useProjectRole();
   const { logoBase64 } = useProjectLogo();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingMaterial, setEditingMaterial] = useState<Material | null>(null);
@@ -54,6 +58,7 @@ export default function MaterialsPage() {
   const [activeTab, setActiveTab] = useState("materials");
 
   const [filterApproval, setFilterApproval] = useState("all");
+  const [deleteTarget, setDeleteTarget] = useState<Material | null>(null);
 
   const filtered = useMemo(() => {
     let result = materials;
@@ -89,6 +94,15 @@ export default function MaterialsPage() {
       }
       refetch();
     } catch { toast({ title: t("materials.toast.error"), variant: "destructive" }); }
+  };
+  const handleDelete = async () => {
+    if (!deleteTarget || !activeProject) return;
+    try {
+      await materialService.softDelete(deleteTarget.id, activeProject.id);
+      toast({ title: t("common.deleted") });
+      refetch();
+    } catch { toast({ title: t("common.deleteError"), variant: "destructive" }); }
+    finally { setDeleteTarget(null); }
   };
 
   const exportHeaders = [t("materials.table.code"), t("common.name"), t("materials.form.category"), t("materials.form.specification"), t("materials.form.unit"), t("common.status")];
@@ -364,6 +378,11 @@ export default function MaterialsPage() {
                               </Button>
                             </>
                           )}
+                          {(canDelete || isManager) && (
+                            <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => setDeleteTarget(m)} title={t("common.delete")}>
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          )}
                         </div>
                       </TableCell>
                     </TableRow>
@@ -374,6 +393,18 @@ export default function MaterialsPage() {
           )}
 
           <MaterialFormDialog open={dialogOpen} onOpenChange={setDialogOpen} material={editingMaterial} onSuccess={refetch} />
+          <AlertDialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>{t("materials.deleteConfirmTitle")}</AlertDialogTitle>
+                <AlertDialogDescription>{t("materials.deleteConfirm")}</AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">{t("common.delete")}</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </TabsContent>
 
         <TabsContent value="pame" className="mt-4">
