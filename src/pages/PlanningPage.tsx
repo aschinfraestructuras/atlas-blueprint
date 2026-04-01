@@ -130,6 +130,10 @@ export default function PlanningPage() {
         roots.push(node);
       }
     });
+    // Sort all children + roots numerically
+    const sortNodes = (arr: TreeNode[]) => arr.sort((a, b) => compareWbsCodes(a.wbs_code, b.wbs_code));
+    sortNodes(roots);
+    map.forEach(node => sortNodes(node.children));
     const flat: TreeNode[] = [];
     const walk = (nodes: TreeNode[]) => {
       for (const n of nodes) {
