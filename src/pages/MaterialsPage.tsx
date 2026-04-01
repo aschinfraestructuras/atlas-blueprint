@@ -58,6 +58,7 @@ export default function MaterialsPage() {
   const [activeTab, setActiveTab] = useState("materials");
 
   const [filterApproval, setFilterApproval] = useState("all");
+  const [deleteTarget, setDeleteTarget] = useState<Material | null>(null);
 
   const filtered = useMemo(() => {
     let result = materials;
