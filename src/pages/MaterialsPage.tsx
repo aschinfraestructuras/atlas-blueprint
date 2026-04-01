@@ -48,7 +48,7 @@ export default function MaterialsPage() {
   const navigate = useNavigate();
   const { activeProject } = useProject();
   const { data: materials, kpis, loading, error, refetch } = useMaterials();
-  const { canCreate, canEdit } = useProjectRole();
+  const { canCreate, canEdit, canDelete, isManager } = useProjectRole();
   const { logoBase64 } = useProjectLogo();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingMaterial, setEditingMaterial] = useState<Material | null>(null);
