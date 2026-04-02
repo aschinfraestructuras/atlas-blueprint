@@ -630,6 +630,19 @@
     },
     "archivedBanner": "Projeto arquivado — apenas leitura. Reative o projeto para efetuar alterações.",
     "deleteConfirm": "Tem a certeza que deseja eliminar este projeto?",
+    "deleteWarning": {
+      "title": "Eliminar projeto — ação irreversível",
+      "subtitle": "Ao eliminar este projeto, serão perdidos permanentemente:",
+      "c1": "Todos os PPIs e instâncias de inspeção",
+      "c2": "Todos os ensaios, soldaduras e topografias",
+      "c3": "Todas as Não Conformidades e registos",
+      "c4": "Todos os materiais e aprovações PAME",
+      "c5": "Todos os documentos e ficheiros",
+      "c6": "Todo o historial de qualidade",
+      "irreversible": "Esta ação NÃO PODE SER DESFEITA",
+      "typeToConfirm": "Para confirmar, escreva o nome do projeto:",
+      "confirmButton": "Eliminar definitivamente"
+    },
     "fields": {
       "client": "Cliente",
       "location": "Localização",

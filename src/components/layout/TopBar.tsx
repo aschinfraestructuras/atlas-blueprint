@@ -61,7 +61,7 @@ export function TopBar({ onMobileMenuOpen }: TopBarProps) {
   }, []);
 
   // Only show active (non-archived) projects in the selector
-  const activeProjects = projects.filter((p) => p.status !== "archived");
+  const activeProjects = projects.filter((p) => p.status !== "archived" && p.status !== "inactive");
 
   const currentLang = LANGUAGES.find((l) => l.code === i18n.language) ?? LANGUAGES[0];
   const initials = user?.email?.slice(0, 2).toUpperCase() ?? "—";

@@ -715,6 +715,19 @@
     },
     "archivedBanner": "Proyecto archivado — solo lectura. Reactive el proyecto para realizar cambios.",
     "deleteConfirm": "¿Está seguro de que desea eliminar este proyecto?",
+    "deleteWarning": {
+      "title": "Eliminar proyecto — acción irreversible",
+      "subtitle": "Al eliminar este proyecto, se perderán permanentemente:",
+      "c1": "Todos los PPIs e instancias de inspección",
+      "c2": "Todos los ensayos, soldaduras y topografías",
+      "c3": "Todas las No Conformidades y registros",
+      "c4": "Todos los materiales y aprobaciones PAME",
+      "c5": "Todos los documentos y ficheros",
+      "c6": "Todo el historial de calidad",
+      "irreversible": "Esta acción NO SE PUEDE DESHACER",
+      "typeToConfirm": "Para confirmar, escriba el nombre del proyecto:",
+      "confirmButton": "Eliminar definitivamente"
+    },
     "fields": {
       "client": "Cliente",
       "location": "Ubicación",
