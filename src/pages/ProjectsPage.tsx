@@ -504,18 +504,57 @@ export default function ProjectsPage() {
 
         <ProjectFormDialog open={dialogOpen} onOpenChange={setDialogOpen} project={editingProject} onSuccess={refetch} />
 
-        <AlertDialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
-          <AlertDialogContent>
+        <AlertDialog open={!!deleteTarget} onOpenChange={(o) => { if (!o) { setDeleteTarget(null); setConfirmText(""); } }}>
+          <AlertDialogContent className="bg-destructive/5 border-destructive/20">
             <AlertDialogHeader>
-              <AlertDialogTitle>{t("common.deleteConfirmTitle", { defaultValue: "Confirmar eliminação" })}</AlertDialogTitle>
-              <AlertDialogDescription>
-                {t("projects.deleteConfirm", { defaultValue: "Tem a certeza que deseja eliminar o projeto \"{{name}}\"? Esta ação é irreversível.", name: deleteTarget?.name })}
+              <div className="flex items-center gap-3 mb-2">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10">
+                  <AlertTriangle className="h-5 w-5 text-destructive" />
+                </div>
+                <AlertDialogTitle className="text-destructive text-lg">
+                  {t("projects.deleteWarning.title", { defaultValue: "Eliminar projeto — ação irreversível" })}
+                </AlertDialogTitle>
+              </div>
+              <AlertDialogDescription asChild>
+                <div className="space-y-3">
+                  <p className="text-sm text-muted-foreground">
+                    {t("projects.deleteWarning.subtitle", { defaultValue: "Ao eliminar este projeto, serão perdidos permanentemente:" })}
+                  </p>
+                  <ul className="space-y-1.5 text-sm text-destructive/90">
+                    <li className="flex items-center gap-2"><AlertTriangle className="h-3.5 w-3.5 flex-shrink-0" />{t("projects.deleteWarning.c1", { defaultValue: "Todos os PPIs e instâncias de inspeção" })}</li>
+                    <li className="flex items-center gap-2"><AlertTriangle className="h-3.5 w-3.5 flex-shrink-0" />{t("projects.deleteWarning.c2", { defaultValue: "Todos os ensaios, soldaduras e topografias" })}</li>
+                    <li className="flex items-center gap-2"><AlertTriangle className="h-3.5 w-3.5 flex-shrink-0" />{t("projects.deleteWarning.c3", { defaultValue: "Todas as Não Conformidades e registos" })}</li>
+                    <li className="flex items-center gap-2"><AlertTriangle className="h-3.5 w-3.5 flex-shrink-0" />{t("projects.deleteWarning.c4", { defaultValue: "Todos os materiais e aprovações PAME" })}</li>
+                    <li className="flex items-center gap-2"><AlertTriangle className="h-3.5 w-3.5 flex-shrink-0" />{t("projects.deleteWarning.c5", { defaultValue: "Todos os documentos e ficheiros" })}</li>
+                    <li className="flex items-center gap-2"><AlertTriangle className="h-3.5 w-3.5 flex-shrink-0" />{t("projects.deleteWarning.c6", { defaultValue: "Todo o historial de qualidade" })}</li>
+                  </ul>
+                  <p className="text-sm font-bold text-destructive">
+                    ⚠ {t("projects.deleteWarning.irreversible", { defaultValue: "Esta ação NÃO PODE SER DESFEITA" })}
+                  </p>
+                  <div className="pt-2 border-t border-destructive/10">
+                    <p className="text-sm font-medium text-foreground">
+                      {t("projects.deleteWarning.typeToConfirm", { defaultValue: "Para confirmar, escreva o nome do projeto:" })}
+                      <span className="font-mono font-bold ml-1">{deleteTarget?.name}</span>
+                    </p>
+                    <Input
+                      value={confirmText}
+                      onChange={(e) => setConfirmText(e.target.value)}
+                      placeholder={deleteTarget?.name ?? ""}
+                      className="mt-2 border-destructive/50 focus-visible:ring-destructive"
+                      autoComplete="off"
+                    />
+                  </div>
+                </div>
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
-              <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={() => deleteTarget && handleDelete(deleteTarget)}>
-                {t("common.delete")}
+              <AlertDialogCancel onClick={() => setConfirmText("")}>{t("common.cancel")}</AlertDialogCancel>
+              <AlertDialogAction
+                disabled={confirmText !== deleteTarget?.name}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90 disabled:opacity-30"
+                onClick={() => deleteTarget && handleDelete(deleteTarget)}
+              >
+                {t("projects.deleteWarning.confirmButton", { defaultValue: "Eliminar definitivamente" })}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
