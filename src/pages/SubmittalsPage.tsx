@@ -106,6 +106,7 @@ export default function SubmittalsPage() {
   const [filterApproval, setFilterApproval] = useState("all");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<SubmittalRow | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   // Form state
   const [formTitle, setFormTitle] = useState("");
