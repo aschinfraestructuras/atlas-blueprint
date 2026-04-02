@@ -381,6 +381,9 @@ export default function SubmittalsPage() {
                               openEditDialog({ item, desc: visibleDescription, meta: parsedMeta });
                             } },
                           ] : []),
+                          ...((canDelete || isManager) ? [
+                            { key: "delete", label: t("common.delete"), icon: Trash2, onClick: () => setDeleteTarget(item.id), variant: "destructive" as const },
+                          ] : []),
                         ]}
                       />
                     </TableCell>
