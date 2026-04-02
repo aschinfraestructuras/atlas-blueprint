@@ -1459,7 +1459,7 @@ export default function WorkItemDetailPage() {
                         <TableCell className="text-xs font-mono">{wm.lot_ref ?? "—"}</TableCell>
                         <TableCell>
                           <Badge variant={wm.materials?.approval_status === "approved" ? "default" : "outline"} className="text-[10px]">
-                            {wm.materials?.approval_status ?? "—"}
+                            {wm.materials?.approval_status ? t(`materials.status.${wm.materials.approval_status}`, { defaultValue: wm.materials.approval_status }) : "—"}
                           </Badge>
                         </TableCell>
                         <TableCell>
