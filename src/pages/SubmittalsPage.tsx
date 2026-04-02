@@ -43,6 +43,11 @@ import {
   Send, XCircle, ShieldCheck, ShieldAlert, RotateCcw, Pencil,
 } from "lucide-react";
 import { useProjectRole } from "@/hooks/useProjectRole";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Trash2 } from "lucide-react";
 import type { TechnicalOfficeItem } from "@/lib/services/technicalOfficeService";
 
 /* ─── Status Styles ─────────────────────────────────────────────────── */
