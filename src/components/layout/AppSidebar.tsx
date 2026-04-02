@@ -365,7 +365,7 @@ function SidebarContent({ collapsed, onClose }: { collapsed: boolean; onClose?: 
       <nav className="flex-1 overflow-y-auto py-2 space-y-0.5" style={{ scrollbarWidth: "none" }}>
         {NAV_SECTIONS.map((section) => {
           const filteredItems = section.items.filter(item => {
-            if (item.adminOnly && !isAdmin) return false;
+            if (item.adminOnly && !isAdmin && !!activeProject) return false;
             if (item.requiredAction && !can(item.requiredAction)) return false;
             // Viewer role: only show items explicitly marked as viewerVisible
             if (isViewer && !item.viewerVisible) return false;

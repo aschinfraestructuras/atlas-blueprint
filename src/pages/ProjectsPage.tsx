@@ -115,6 +115,7 @@ export default function ProjectsPage() {
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [archiving, setArchiving] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Project | null>(null);
+  const [confirmText, setConfirmText] = useState("");
 
   const filtered = projects.filter((p) =>
     tab === "active" ? p.status !== "archived" && p.status !== "inactive" : p.status === "archived"
