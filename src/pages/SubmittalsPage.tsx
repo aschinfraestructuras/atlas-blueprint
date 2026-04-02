@@ -43,6 +43,11 @@ import {
   Send, XCircle, ShieldCheck, ShieldAlert, RotateCcw, Pencil,
 } from "lucide-react";
 import { useProjectRole } from "@/hooks/useProjectRole";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Trash2 } from "lucide-react";
 import type { TechnicalOfficeItem } from "@/lib/services/technicalOfficeService";
 
 /* ─── Status Styles ─────────────────────────────────────────────────── */
@@ -82,7 +87,7 @@ export default function SubmittalsPage() {
   const { data: suppliers } = useSuppliers();
   const { data: subcontractors } = useSubcontractors();
   const { data: workItems } = useWorkItems();
-  const { canCreate } = useProjectRole();
+  const { canCreate, canDelete, isManager } = useProjectRole();
 
   // Parse submittals with metadata
   const submittals: SubmittalRow[] = useMemo(() =>
@@ -101,6 +106,7 @@ export default function SubmittalsPage() {
   const [filterApproval, setFilterApproval] = useState("all");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<SubmittalRow | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   // Form state
   const [formTitle, setFormTitle] = useState("");
@@ -375,6 +381,9 @@ export default function SubmittalsPage() {
                               openEditDialog({ item, desc: visibleDescription, meta: parsedMeta });
                             } },
                           ] : []),
+                          ...((canDelete || isManager) ? [
+                            { key: "delete", label: t("common.delete"), icon: Trash2, onClick: () => setDeleteTarget(item.id), variant: "destructive" as const },
+                          ] : []),
                         ]}
                       />
                     </TableCell>
@@ -546,6 +555,27 @@ export default function SubmittalsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Confirmation */}
+      <AlertDialog open={!!deleteTarget} onOpenChange={v => { if (!v) setDeleteTarget(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("common.deleteConfirmTitle", { defaultValue: "Confirmar eliminação" })}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("submittals.deleteConfirm", { defaultValue: "Esta acção elimina o submittal. Confirmar?" })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => { if (deleteTarget) handleSoftDelete(deleteTarget); }}
+            >
+              {t("common.delete")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

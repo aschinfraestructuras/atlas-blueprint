@@ -2795,7 +2795,13 @@
     "status": {
       "active": "Ativo",
       "discontinued": "Descontinuado",
-      "archived": "Catálogo (pré-obra)"
+      "archived": "Catálogo (pré-obra)",
+      "pending": "Pendente",
+      "submitted": "Submetido",
+      "in_review": "Em revisão",
+      "approved": "Aprovado",
+      "rejected": "Rejeitado",
+      "conditional": "Aprovado com condições"
     },
     "categories": {
       "betao": "Betão",
@@ -2953,7 +2959,7 @@
         "approved": "Aprovado",
         "rejected": "Rejeitado",
         "conditional": "Condicional",
-        "archived": "Arquivado"
+        "archived": "Catálogo (pré-obra)"
       },
       "actions": {
         "submit": "Submeter",
