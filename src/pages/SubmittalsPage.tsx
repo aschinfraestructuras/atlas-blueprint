@@ -87,7 +87,7 @@ export default function SubmittalsPage() {
   const { data: suppliers } = useSuppliers();
   const { data: subcontractors } = useSubcontractors();
   const { data: workItems } = useWorkItems();
-  const { canCreate } = useProjectRole();
+  const { canCreate, canDelete, isManager } = useProjectRole();
 
   // Parse submittals with metadata
   const submittals: SubmittalRow[] = useMemo(() =>
