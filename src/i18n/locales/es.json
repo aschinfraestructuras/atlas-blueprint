@@ -2931,8 +2931,14 @@
     },
     "status": {
       "active": "Activo",
-      "discontinued": "Descatalogado",
-      "archived": "Catálogo (pre-obra)"
+      "discontinued": "Descontinuado",
+      "archived": "Catálogo (pre-obra)",
+      "pending": "Pendiente",
+      "submitted": "Enviado",
+      "in_review": "En revisión",
+      "approved": "Aprobado",
+      "rejected": "Rechazado",
+      "conditional": "Aprobado con condiciones"
     },
     "categories": {
       "betao": "Hormigón",
@@ -3033,12 +3039,12 @@
       "notesPlaceholder": "Motivo de rechazo o condiciones de aprobación…",
       "statuses": {
         "pending": "Pendiente",
-        "submitted": "Sometido",
+        "submitted": "Enviado",
         "in_review": "En revisión",
         "approved": "Aprobado",
         "rejected": "Rechazado",
         "conditional": "Condicional",
-        "archived": "Archivado"
+        "archived": "Catálogo (pre-obra)"
       },
       "actions": {
         "submit": "Someter",
