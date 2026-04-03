@@ -3349,6 +3349,7 @@
     "usageTests": "Ensayos pendientes"
   },
   "topography": {
+    "archiveSubtitle": "Dibujos topográficos asociados al proyecto",
     "topoDrawings": "Dibujos Topográficos",
     "cycle": {
       "viewDetail": "Ver levantamiento",
