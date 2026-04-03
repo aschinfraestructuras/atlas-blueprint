@@ -1878,6 +1878,77 @@
     }
   },
   "plans": {
+    "newPlan": "Novo Plano",
+    "searchPlaceholder": "Pesquisar código, título, revisão…",
+    "kpi": {
+      "total": "Total",
+      "draft": "Rascunho",
+      "inReview": "Em revisão",
+      "approved": "Aprovados",
+      "obsoleteArchived": "Obsoletos / Arquivo"
+    },
+    "filters": {
+      "allTypes": "Todos os tipos",
+      "allStatuses": "Todos os estados",
+      "allDisciplines": "Todas as disciplinas"
+    },
+    "table": {
+      "code": "Código",
+      "type": "Tipo",
+      "title": "Título",
+      "discipline": "Disciplina",
+      "revision": "Revisão"
+    },
+    "form": {
+      "type": "Tipo de plano"
+    },
+    "types": {
+      "MS": "Method Statement",
+      "PlanEsc": "Plano de Escoramento",
+      "PlanBet": "Programa de Betonagens",
+      "PlanMont": "Plano de Montagem",
+      "PlanTraf": "Plano de Tráfego",
+      "PlanSeg": "Plano de Segurança",
+      "PlanTopo": "Plano Topográfico",
+      "PlanEns": "Plano de Ensaios",
+      "PlanInsp": "Plano de Inspeção",
+      "PlanAmb": "Plano Ambiental",
+      "PlanQual": "Plano de Qualidade",
+      "Schedule": "Cronograma",
+      "Drawing": "Desenho",
+      "Other": "Outro"
+    },
+    "status": {
+      "draft": "Rascunho",
+      "under_review": "Em revisão",
+      "approved": "Aprovado",
+      "obsolete": "Obsoleto",
+      "archived": "Arquivado",
+      "superseded": "Substituído"
+    },
+    "disciplines": {
+      "geral": "Geral",
+      "terras": "Terraplanagens",
+      "betao": "Betão",
+      "ferrovia": "Ferrovia",
+      "catenaria": "Catenária",
+      "st": "S&T",
+      "drenagem": "Drenagem",
+      "estruturas": "Estruturas",
+      "telecom": "Telecomunicações",
+      "edificacoes": "Edificações",
+      "ambiente": "Ambiente",
+      "via": "Via",
+      "geotecnia": "Geotecnia",
+      "outros": "Outros"
+    },
+    "deleteConfirm": {
+      "title": "Eliminar plano",
+      "description": "Tem a certeza que deseja eliminar o plano \"{{name}}\"? Esta acção não pode ser desfeita."
+    },
+    "toast": {
+      "deleted": "Plano eliminado com sucesso"
+    },
     "externalApproval": {
       "title": "Aprovação Fiscalização / IP",
       "badge": "Aprovado externamente",
