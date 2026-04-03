@@ -1963,6 +1963,77 @@
     }
   },
   "plans": {
+    "newPlan": "Nuevo Plan",
+    "searchPlaceholder": "Buscar código, título, revisión…",
+    "kpi": {
+      "total": "Total",
+      "draft": "Borrador",
+      "inReview": "En revisión",
+      "approved": "Aprobados",
+      "obsoleteArchived": "Obsoletos / Archivo"
+    },
+    "filters": {
+      "allTypes": "Todos los tipos",
+      "allStatuses": "Todos los estados",
+      "allDisciplines": "Todas las disciplinas"
+    },
+    "table": {
+      "code": "Código",
+      "type": "Tipo",
+      "title": "Título",
+      "discipline": "Disciplina",
+      "revision": "Revisión"
+    },
+    "form": {
+      "type": "Tipo de plan"
+    },
+    "types": {
+      "MS": "Method Statement",
+      "PlanEsc": "Plan de Apuntalamiento",
+      "PlanBet": "Programa de Hormigonados",
+      "PlanMont": "Plan de Montaje",
+      "PlanTraf": "Plan de Tráfico",
+      "PlanSeg": "Plan de Seguridad",
+      "PlanTopo": "Plan Topográfico",
+      "PlanEns": "Plan de Ensayos",
+      "PlanInsp": "Plan de Inspección",
+      "PlanAmb": "Plan Ambiental",
+      "PlanQual": "Plan de Calidad",
+      "Schedule": "Cronograma",
+      "Drawing": "Dibujo",
+      "Other": "Otro"
+    },
+    "status": {
+      "draft": "Borrador",
+      "under_review": "En revisión",
+      "approved": "Aprobado",
+      "obsolete": "Obsoleto",
+      "archived": "Archivado",
+      "superseded": "Sustituido"
+    },
+    "disciplines": {
+      "geral": "General",
+      "terras": "Movimiento de Tierras",
+      "betao": "Hormigón",
+      "ferrovia": "Ferrocarril",
+      "catenaria": "Catenaria",
+      "st": "S&T",
+      "drenagem": "Drenaje",
+      "estruturas": "Estructuras",
+      "telecom": "Telecomunicaciones",
+      "edificacoes": "Edificaciones",
+      "ambiente": "Medio Ambiente",
+      "via": "Vía",
+      "geotecnia": "Geotecnia",
+      "outros": "Otros"
+    },
+    "deleteConfirm": {
+      "title": "Eliminar plan",
+      "description": "¿Está seguro de que desea eliminar el plan \"{{name}}\"? Esta acción no se puede deshacer."
+    },
+    "toast": {
+      "deleted": "Plan eliminado con éxito"
+    },
     "externalApproval": {
       "title": "Aprobación Fiscalización / IP",
       "badge": "Aprobado externamente",
