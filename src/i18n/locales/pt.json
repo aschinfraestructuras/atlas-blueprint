@@ -1878,6 +1878,77 @@
     }
   },
   "plans": {
+    "newPlan": "Novo Plano",
+    "searchPlaceholder": "Pesquisar código, título, revisão…",
+    "kpi": {
+      "total": "Total",
+      "draft": "Rascunho",
+      "inReview": "Em revisão",
+      "approved": "Aprovados",
+      "obsoleteArchived": "Obsoletos / Arquivo"
+    },
+    "filters": {
+      "allTypes": "Todos os tipos",
+      "allStatuses": "Todos os estados",
+      "allDisciplines": "Todas as disciplinas"
+    },
+    "table": {
+      "code": "Código",
+      "type": "Tipo",
+      "title": "Título",
+      "discipline": "Disciplina",
+      "revision": "Revisão"
+    },
+    "form": {
+      "type": "Tipo de plano"
+    },
+    "types": {
+      "MS": "Method Statement",
+      "PlanEsc": "Plano de Escoramento",
+      "PlanBet": "Programa de Betonagens",
+      "PlanMont": "Plano de Montagem",
+      "PlanTraf": "Plano de Tráfego",
+      "PlanSeg": "Plano de Segurança",
+      "PlanTopo": "Plano Topográfico",
+      "PlanEns": "Plano de Ensaios",
+      "PlanInsp": "Plano de Inspeção",
+      "PlanAmb": "Plano Ambiental",
+      "PlanQual": "Plano de Qualidade",
+      "Schedule": "Cronograma",
+      "Drawing": "Desenho",
+      "Other": "Outro"
+    },
+    "status": {
+      "draft": "Rascunho",
+      "under_review": "Em revisão",
+      "approved": "Aprovado",
+      "obsolete": "Obsoleto",
+      "archived": "Arquivado",
+      "superseded": "Substituído"
+    },
+    "disciplines": {
+      "geral": "Geral",
+      "terras": "Terraplanagens",
+      "betao": "Betão",
+      "ferrovia": "Ferrovia",
+      "catenaria": "Catenária",
+      "st": "S&T",
+      "drenagem": "Drenagem",
+      "estruturas": "Estruturas",
+      "telecom": "Telecomunicações",
+      "edificacoes": "Edificações",
+      "ambiente": "Ambiente",
+      "via": "Via",
+      "geotecnia": "Geotecnia",
+      "outros": "Outros"
+    },
+    "deleteConfirm": {
+      "title": "Eliminar plano",
+      "description": "Tem a certeza que deseja eliminar o plano \"{{name}}\"? Esta acção não pode ser desfeita."
+    },
+    "toast": {
+      "deleted": "Plano eliminado com sucesso"
+    },
     "externalApproval": {
       "title": "Aprovação Fiscalização / IP",
       "badge": "Aprovado externamente",
@@ -3190,6 +3261,7 @@
     "usageTests": "Ensaios pendentes"
   },
   "topography": {
+    "archiveSubtitle": "Desenhos topográficos associados ao projeto",
     "topoDrawings": "Desenhos Topográficos",
     "cycle": {
       "viewDetail": "Ver levantamento",
@@ -4259,6 +4331,30 @@
     }
   },
   "monthlyReport": {
+    "title": "Relatório Mensal SGQ",
+    "subtitle": "CE Cláusula 35.ª §11 — Relatório mensal de qualidade",
+    "create": "Novo Relatório",
+    "createTitle": "Criar Relatório Mensal",
+    "createReport": "Criar Relatório",
+    "refMonth": "Mês de referência",
+    "kpiAutoFill": "Os KPIs serão preenchidos automaticamente a partir dos dados do projeto.",
+    "currentMonth": "Mês corrente",
+    "submit": "Submeter",
+    "submitted": "Relatório submetido",
+    "submittedAt": "Submetido a",
+    "onTime": "Dentro do prazo",
+    "late": "Atrasado",
+    "deadline": "Prazo",
+    "deadlineOverdue": "Relatório Mensal SGQ em atraso — {{days}} dias",
+    "deadlineAlert": "Entregar Relatório Mensal até {{date}} ({{days}} dias)",
+    "autofillKpis": "Preencher KPIs automaticamente",
+    "autofillDone": "KPIs preenchidos automaticamente",
+    "observations": "Observações",
+    "correctiveActions": "Ações corretivas",
+    "nextMonthPlan": "Planeamento mês seguinte",
+    "exportPdf": "Exportar PDF",
+    "emptyTitle": "Sem relatórios mensais",
+    "emptySubtitle": "Crie o primeiro relatório mensal de qualidade.",
     "productionExecuted": "Produção executada no mês",
     "productionExecutedPlaceholder": "Descreva as actividades executadas…",
     "testsPerformed": "Ensaios realizados no mês",
@@ -4266,7 +4362,29 @@
     "trainingSessions": "Formações realizadas",
     "trainingSessionsPlaceholder": "ex: 2 sessões, 15 participantes",
     "deleteConfirm": "Atenção: ao eliminar este relatório, os KPIs registados serão perdidos.",
-    "deleteConfirmTitle": "Eliminar Relatório Mensal"
+    "deleteConfirmTitle": "Eliminar Relatório Mensal",
+    "hpConfirmed": "HP confirmados",
+    "betonagem": "Betonagens",
+    "soldaduras": "Soldaduras",
+    "topografia": "Topografia",
+    "partesDiarios": "Partes Diários",
+    "status": {
+      "draft": "Rascunho",
+      "submitted": "Submetido",
+      "accepted": "Aceite"
+    },
+    "kpi": {
+      "testsPass": "Ensaios Conformes",
+      "ncOpen": "NC Abertas",
+      "ncClosed": "NC Encerradas",
+      "hpConfirmed": "HP Confirmados",
+      "matApproved": "Mat. Aprovados",
+      "matPending": "Mat. Pendentes",
+      "ppiCompleted": "PPI Concluídos",
+      "emesExpiring": "EMEs a Expirar",
+      "ncOverdue15d": "NC > 15 dias",
+      "rmOnTime": "RM dentro do prazo"
+    }
   },
   "concrete": {
     "title": "Controlo de Betão — Fichas de Betonagem",

@@ -1963,6 +1963,77 @@
     }
   },
   "plans": {
+    "newPlan": "Nuevo Plan",
+    "searchPlaceholder": "Buscar código, título, revisión…",
+    "kpi": {
+      "total": "Total",
+      "draft": "Borrador",
+      "inReview": "En revisión",
+      "approved": "Aprobados",
+      "obsoleteArchived": "Obsoletos / Archivo"
+    },
+    "filters": {
+      "allTypes": "Todos los tipos",
+      "allStatuses": "Todos los estados",
+      "allDisciplines": "Todas las disciplinas"
+    },
+    "table": {
+      "code": "Código",
+      "type": "Tipo",
+      "title": "Título",
+      "discipline": "Disciplina",
+      "revision": "Revisión"
+    },
+    "form": {
+      "type": "Tipo de plan"
+    },
+    "types": {
+      "MS": "Method Statement",
+      "PlanEsc": "Plan de Apuntalamiento",
+      "PlanBet": "Programa de Hormigonados",
+      "PlanMont": "Plan de Montaje",
+      "PlanTraf": "Plan de Tráfico",
+      "PlanSeg": "Plan de Seguridad",
+      "PlanTopo": "Plan Topográfico",
+      "PlanEns": "Plan de Ensayos",
+      "PlanInsp": "Plan de Inspección",
+      "PlanAmb": "Plan Ambiental",
+      "PlanQual": "Plan de Calidad",
+      "Schedule": "Cronograma",
+      "Drawing": "Dibujo",
+      "Other": "Otro"
+    },
+    "status": {
+      "draft": "Borrador",
+      "under_review": "En revisión",
+      "approved": "Aprobado",
+      "obsolete": "Obsoleto",
+      "archived": "Archivado",
+      "superseded": "Sustituido"
+    },
+    "disciplines": {
+      "geral": "General",
+      "terras": "Movimiento de Tierras",
+      "betao": "Hormigón",
+      "ferrovia": "Ferrocarril",
+      "catenaria": "Catenaria",
+      "st": "S&T",
+      "drenagem": "Drenaje",
+      "estruturas": "Estructuras",
+      "telecom": "Telecomunicaciones",
+      "edificacoes": "Edificaciones",
+      "ambiente": "Medio Ambiente",
+      "via": "Vía",
+      "geotecnia": "Geotecnia",
+      "outros": "Otros"
+    },
+    "deleteConfirm": {
+      "title": "Eliminar plan",
+      "description": "¿Está seguro de que desea eliminar el plan \"{{name}}\"? Esta acción no se puede deshacer."
+    },
+    "toast": {
+      "deleted": "Plan eliminado con éxito"
+    },
     "externalApproval": {
       "title": "Aprobación Fiscalización / IP",
       "badge": "Aprobado externamente",
@@ -3278,6 +3349,7 @@
     "usageTests": "Ensayos pendientes"
   },
   "topography": {
+    "archiveSubtitle": "Dibujos topográficos asociados al proyecto",
     "topoDrawings": "Dibujos Topográficos",
     "cycle": {
       "viewDetail": "Ver levantamiento",
@@ -4262,6 +4334,30 @@
     }
   },
   "monthlyReport": {
+    "title": "Informe Mensual SGC",
+    "subtitle": "CE Cláusula 35.ª §11 — Informe mensual de calidad",
+    "create": "Nuevo Informe",
+    "createTitle": "Crear Informe Mensual",
+    "createReport": "Crear Informe",
+    "refMonth": "Mes de referencia",
+    "kpiAutoFill": "Los KPIs se rellenarán automáticamente a partir de los datos del proyecto.",
+    "currentMonth": "Mes actual",
+    "submit": "Enviar",
+    "submitted": "Informe enviado",
+    "submittedAt": "Enviado el",
+    "onTime": "En plazo",
+    "late": "Retrasado",
+    "deadline": "Plazo",
+    "deadlineOverdue": "Informe Mensual SGC atrasado — {{days}} días",
+    "deadlineAlert": "Entregar Informe Mensual hasta {{date}} ({{days}} días)",
+    "autofillKpis": "Rellenar KPIs automáticamente",
+    "autofillDone": "KPIs rellenados automáticamente",
+    "observations": "Observaciones",
+    "correctiveActions": "Acciones correctivas",
+    "nextMonthPlan": "Planificación mes siguiente",
+    "exportPdf": "Exportar PDF",
+    "emptyTitle": "Sin informes mensuales",
+    "emptySubtitle": "Cree el primer informe mensual de calidad.",
     "productionExecuted": "Producción ejecutada en el mes",
     "productionExecutedPlaceholder": "Describa las actividades ejecutadas…",
     "testsPerformed": "Ensayos realizados en el mes",
@@ -4269,7 +4365,29 @@
     "trainingSessions": "Formaciones realizadas",
     "trainingSessionsPlaceholder": "ej: 2 sesiones, 15 participantes",
     "deleteConfirm": "Atención: al eliminar este informe, los KPIs registrados se perderán.",
-    "deleteConfirmTitle": "Eliminar Informe Mensual"
+    "deleteConfirmTitle": "Eliminar Informe Mensual",
+    "hpConfirmed": "HP confirmados",
+    "betonagem": "Hormigonados",
+    "soldaduras": "Soldaduras",
+    "topografia": "Topografía",
+    "partesDiarios": "Partes Diarios",
+    "status": {
+      "draft": "Borrador",
+      "submitted": "Enviado",
+      "accepted": "Aceptado"
+    },
+    "kpi": {
+      "testsPass": "Ensayos Conformes",
+      "ncOpen": "NC Abiertas",
+      "ncClosed": "NC Cerradas",
+      "hpConfirmed": "HP Confirmados",
+      "matApproved": "Mat. Aprobados",
+      "matPending": "Mat. Pendientes",
+      "ppiCompleted": "PPI Completados",
+      "emesExpiring": "EMEs por Expirar",
+      "ncOverdue15d": "NC > 15 días",
+      "rmOnTime": "RM en plazo"
+    }
   },
   "concrete": {
     "title": "Control de Hormigón — Fichas de Hormigonado",
