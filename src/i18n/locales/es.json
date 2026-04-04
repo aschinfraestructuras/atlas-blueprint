@@ -3101,10 +3101,12 @@
         "rejected": "Rechazado"
       },
       "priority": {
+        "label": "Prioridad",
         "high": "Alta",
         "medium": "Media",
         "low": "Baja"
       },
+      "norm": "Norma",
       "allPriorities": "Todas las prioridades",
       "allDisciplines": "Todas las disciplinas"
     },
