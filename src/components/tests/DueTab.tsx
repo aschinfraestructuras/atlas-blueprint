@@ -359,6 +359,32 @@ export function DueTab() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Dialog */}
+      <AlertDialog open={!!deleteTarget} onOpenChange={v => !v && setDeleteTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("common.deleteConfirmTitle")}</AlertDialogTitle>
+            <AlertDialogDescription>{t("common.deleteConfirmDesc")}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+            <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={async () => {
+              if (!deleteTarget) return;
+              try {
+                await supabase.from("test_due_items" as any).delete().eq("id", deleteTarget);
+                toast({ title: t("common.deleted") });
+                refetch();
+              } catch (err) {
+                const info = classifySupabaseError(err, t);
+                toast({ title: info.title, description: info.description ?? info.raw, variant: "destructive" });
+              } finally {
+                setDeleteTarget(null);
+              }
+            }}>{t("common.delete")}</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
