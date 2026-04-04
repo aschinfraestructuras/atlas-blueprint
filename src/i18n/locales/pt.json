@@ -4988,7 +4988,7 @@
   },
   "orgChart": {
     "roles": {
-      "admin": "Diretor de Obra",
+      "admin": "Administrador",
       "project_manager": "Gestor de Projeto",
       "quality_manager": "Responsável Qualidade",
       "quality_tech": "Técnico de Qualidade",
