@@ -531,7 +531,7 @@ export default function MonthlyReportPage() {
                         { key: "view", labelKey: "common.view", onClick: () => openDetail(r) },
                         { key: "pdf", labelKey: "common.export", onClick: () => doPdf(r) },
                         ...(r.status === "draft" && canEdit ? [{ key: "submit", labelKey: "monthlyReport.submit", onClick: () => handleSubmit(r) }] : []),
-                        ...(r.status === "draft" && canDelete ? [{ key: "delete", labelKey: "common.delete", onClick: () => setDeleteTarget(r), variant: "destructive" as const }] : []),
+                        ...(canDelete ? [{ key: "delete", labelKey: "common.delete", onClick: () => setDeleteTarget(r), variant: "destructive" as const }] : []),
                       ]}
                     />
                   </div>
