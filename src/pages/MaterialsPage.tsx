@@ -473,13 +473,13 @@ function PameTab({ materials }: { materials: Material[] }) {
           <Table>
             <TableHeader>
               <TableRow className="bg-muted/40">
-                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Código PAME</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Material</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Disciplina</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Norma</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Prioridade</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("materials.pameCode")}</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("materials.table.material")}</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.discipline")}</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("materials.pame.norm")}</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("materials.pame.priority.label")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">PPI</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Estado</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.status")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
