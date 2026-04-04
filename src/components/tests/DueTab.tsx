@@ -62,6 +62,7 @@ export function DueTab() {
   const [scheduleId, setScheduleId] = useState<string | null>(null);
   const [scheduleDate, setScheduleDate] = useState("");
   const [scheduling, setScheduling] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   const filters = filterStatus !== "all" ? { status: filterStatus } : undefined;
   const { data, loading, refetch } = useTestDueItems(filters);
