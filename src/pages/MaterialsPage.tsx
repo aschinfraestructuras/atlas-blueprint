@@ -458,10 +458,10 @@ function PameTab({ materials }: { materials: Material[] }) {
         <Select value={filterPriority} onValueChange={setFilterPriority}>
           <SelectTrigger className="w-[140px] h-9 text-sm"><SelectValue placeholder="Prioridade" /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todas</SelectItem>
-            <SelectItem value="high">Alta</SelectItem>
-            <SelectItem value="medium">Média</SelectItem>
-            <SelectItem value="low">Baixa</SelectItem>
+            <SelectItem value="all">{t("common.all")}</SelectItem>
+            <SelectItem value="high">{t("materials.pame.priority.high")}</SelectItem>
+            <SelectItem value="medium">{t("materials.pame.priority.medium")}</SelectItem>
+            <SelectItem value="low">{t("materials.pame.priority.low")}</SelectItem>
           </SelectContent>
         </Select>
       </FilterBar>
