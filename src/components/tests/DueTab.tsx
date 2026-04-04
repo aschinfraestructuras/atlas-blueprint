@@ -28,7 +28,7 @@ import { cn } from "@/lib/utils";
 import {
   Clock, Search, Filter, CalendarPlus, Play, Ban, RefreshCw,
   Loader2, AlertTriangle, CheckCircle2, XCircle, CalendarClock,
-  ListChecks, Timer,
+  ListChecks, Timer, Trash2,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
