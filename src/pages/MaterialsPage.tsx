@@ -492,7 +492,7 @@ function PameTab({ materials }: { materials: Material[] }) {
                   <TableCell>
                     {(m as any).pame_prioridade ? (
                       <Badge variant="secondary" className={cn("text-xs", PAME_PRIORITY_COLORS[(m as any).pame_prioridade] ?? "")}>
-                        {(m as any).pame_prioridade === "high" ? "Alta" : (m as any).pame_prioridade === "medium" ? "Média" : "Baixa"}
+                        {t(`materials.pame.priority.${(m as any).pame_prioridade}`)}
                       </Badge>
                     ) : "—"}
                   </TableCell>
