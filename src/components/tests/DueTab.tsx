@@ -22,13 +22,17 @@ import {
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import {
   Clock, Search, Filter, CalendarPlus, Play, Ban, RefreshCw,
   Loader2, AlertTriangle, CheckCircle2, XCircle, CalendarClock,
-  ListChecks, Timer,
+  ListChecks, Timer, Trash2,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -58,6 +62,7 @@ export function DueTab() {
   const [scheduleId, setScheduleId] = useState<string | null>(null);
   const [scheduleDate, setScheduleDate] = useState("");
   const [scheduling, setScheduling] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   const filters = filterStatus !== "all" ? { status: filterStatus } : undefined;
   const { data, loading, refetch } = useTestDueItems(filters);
@@ -298,6 +303,11 @@ export function DueTab() {
                             onClick={() => { setWaiveId(item.id); setWaiveReason(""); }}>
                             <Ban className="h-3.5 w-3.5" />
                           </Button>
+                          <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                            title={t("common.delete")}
+                            onClick={() => setDeleteTarget(item.id)}>
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </Button>
                         </div>
                       )}
                     </TableCell>
@@ -349,6 +359,32 @@ export function DueTab() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Dialog */}
+      <AlertDialog open={!!deleteTarget} onOpenChange={v => !v && setDeleteTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("common.deleteConfirmTitle")}</AlertDialogTitle>
+            <AlertDialogDescription>{t("common.deleteConfirmDesc")}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+            <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={async () => {
+              if (!deleteTarget) return;
+              try {
+                await supabase.from("test_due_items" as any).delete().eq("id", deleteTarget);
+                toast({ title: t("common.deleted") });
+                refetch();
+              } catch (err) {
+                const info = classifySupabaseError(err, t);
+                toast({ title: info.title, description: info.description ?? info.raw, variant: "destructive" });
+              } finally {
+                setDeleteTarget(null);
+              }
+            }}>{t("common.delete")}</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

@@ -49,8 +49,10 @@ interface WiReadiness {
 }
 
 const DISCIPLINE_CODES = [
-  "geral", "terras", "firmes", "betao", "drenagem",
-  "estruturas", "ferrovia", "instalacoes", "outros",
+  "geral", "estruturas", "via", "catenaria", "sinalizacao",
+  "telecomunicacoes", "drenagem", "geotecnia", "terraplenagem",
+  "pavimentacao", "outros", "terras", "firmes", "betao",
+  "ferrovia", "instalacoes",
 ] as const;
 
 // ─── Component ────────────────────────────────────────────────────────────────

@@ -3101,10 +3101,12 @@
         "rejected": "Rechazado"
       },
       "priority": {
+        "label": "Prioridad",
         "high": "Alta",
         "medium": "Media",
         "low": "Baja"
       },
+      "norm": "Norma",
       "allPriorities": "Todas las prioridades",
       "allDisciplines": "Todas las disciplinas"
     },
@@ -4991,7 +4993,7 @@
   },
   "orgChart": {
     "roles": {
-      "admin": "Director de Obra",
+      "admin": "Administrador",
       "project_manager": "Gestor de Proyecto",
       "quality_manager": "Responsable Calidad",
       "quality_tech": "Técnico de Calidad",

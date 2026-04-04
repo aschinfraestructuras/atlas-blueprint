@@ -458,10 +458,10 @@ function PameTab({ materials }: { materials: Material[] }) {
         <Select value={filterPriority} onValueChange={setFilterPriority}>
           <SelectTrigger className="w-[140px] h-9 text-sm"><SelectValue placeholder="Prioridade" /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todas</SelectItem>
-            <SelectItem value="high">Alta</SelectItem>
-            <SelectItem value="medium">Média</SelectItem>
-            <SelectItem value="low">Baixa</SelectItem>
+            <SelectItem value="all">{t("common.all")}</SelectItem>
+            <SelectItem value="high">{t("materials.pame.priority.high")}</SelectItem>
+            <SelectItem value="medium">{t("materials.pame.priority.medium")}</SelectItem>
+            <SelectItem value="low">{t("materials.pame.priority.low")}</SelectItem>
           </SelectContent>
         </Select>
       </FilterBar>
@@ -473,13 +473,13 @@ function PameTab({ materials }: { materials: Material[] }) {
           <Table>
             <TableHeader>
               <TableRow className="bg-muted/40">
-                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Código PAME</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Material</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Disciplina</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Norma</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Prioridade</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("materials.pameCode")}</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("materials.table.material")}</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.discipline")}</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("materials.pame.norm")}</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("materials.pame.priority.label")}</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">PPI</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Estado</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.status")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -492,7 +492,7 @@ function PameTab({ materials }: { materials: Material[] }) {
                   <TableCell>
                     {(m as any).pame_prioridade ? (
                       <Badge variant="secondary" className={cn("text-xs", PAME_PRIORITY_COLORS[(m as any).pame_prioridade] ?? "")}>
-                        {(m as any).pame_prioridade === "high" ? "Alta" : (m as any).pame_prioridade === "medium" ? "Média" : "Baixa"}
+                        {t(`materials.pame.priority.${(m as any).pame_prioridade}`)}
                       </Badge>
                     ) : "—"}
                   </TableCell>
