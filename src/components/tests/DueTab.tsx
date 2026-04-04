@@ -303,6 +303,11 @@ export function DueTab() {
                             onClick={() => { setWaiveId(item.id); setWaiveReason(""); }}>
                             <Ban className="h-3.5 w-3.5" />
                           </Button>
+                          <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                            title={t("common.delete")}
+                            onClick={() => setDeleteTarget(item.id)}>
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </Button>
                         </div>
                       )}
                     </TableCell>
