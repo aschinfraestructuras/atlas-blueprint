@@ -82,7 +82,12 @@
     "nonCompliant": "No Conforme",
     "pendingStatus": "Pendiente",
     "allActivities": "Todas las actividades",
-    "searchPlaceholder": "Buscar..."
+    "searchPlaceholder": "Buscar...",
+    "deleteWarning": "Atención: esta acción es irreversible.",
+    "end": "Fin",
+    "import": "Importar",
+    "start": "Inicio",
+    "sync": "Sincronizar"
   },
   "auth": {
     "signIn": "Iniciar sesión",
@@ -826,7 +831,8 @@
     "bulk": {
       "archive": "Archivar seleccionados",
       "clear": "Limpiar selección",
-      "exportSelected": "Exportar seleccionados"
+      "exportSelected": "Exportar seleccionados",
+      "selected": "seleccionado(s)"
     },
     "deleteConfirm": {
       "title": "Eliminar documento",
@@ -957,7 +963,10 @@
     },
     "editWarningApproved": "Este documento está aprobado. Para editarlo, cambie primero el estado.",
     "editWarningUnderReview": "Este documento está en revisión. Los cambios pueden afectar el proceso de aprobación.",
-    "exportLmd": "Exportar LMD"
+    "exportLmd": "Exportar LMD",
+    "dynamicForm": {
+      "title": "Formulario Dinámico"
+    }
   },
   "tests": {
     "openRnc": "Abrir RNC",
@@ -1193,7 +1202,13 @@
     "ppiTab": {
       "compaction": "Compactación",
       "concrete": "Hormigón",
-      "empty": "Sin ensayos asociados"
+      "empty": "Sin ensayos asociados",
+      "conform": "Conforme",
+      "emptyHint": "Sin datos de inspección asociados.",
+      "nonConform": "No Conforme",
+      "soils": "Suelos",
+      "tests": "Ensayos",
+      "welds": "Soldaduras"
     },
     "results": {
       "filters": {
@@ -1567,7 +1582,8 @@
       "critical": "Crítica",
       "low": "Baja",
       "medium": "Media",
-      "high": "Alta"
+      "high": "Alta",
+      "label": "Severidad"
     },
     "category": {
       "qualidade": "Calidad",
@@ -1793,6 +1809,9 @@
     "rootCauseMethod": {
       "5whys": "5 Porqués",
       "ishikawa": "Ishikawa"
+    },
+    "actions": {
+      "reopen": "Reabrir"
     }
   },
   "technicalOffice": {
@@ -1999,7 +2018,22 @@
       "revision": "Revisión"
     },
     "form": {
-      "type": "Tipo de plan"
+      "type": "Tipo de plan",
+      "approvalDate": "Fecha de Aprobación",
+      "code": "Código del Plano",
+      "createBtn": "Crear Plano",
+      "discipline": "Disciplina",
+      "docReference": "Referencia Documental",
+      "fileUrl": "URL del Archivo",
+      "notes": "Notas",
+      "notesPlaceholder": "Observaciones sobre este plano...",
+      "planType": "Tipo de Plano",
+      "responsible": "Responsable",
+      "revision": "Revisión",
+      "title": "Título",
+      "titleCreate": "Nuevo Plano",
+      "titleEdit": "Editar Plano",
+      "titlePlaceholder": "Título del plano..."
     },
     "types": {
       "MS": "Method Statement",
@@ -2046,7 +2080,13 @@
       "description": "¿Está seguro de que desea eliminar el plan \"{{name}}\"? Esta acción no se puede deshacer."
     },
     "toast": {
-      "deleted": "Plan eliminado con éxito"
+      "deleted": "Plan eliminado con éxito",
+      "created": "Plano creado con éxito.",
+      "downloadError": "Error al descargar archivo.",
+      "error": "Error al guardar el plano.",
+      "fileUploaded": "Archivo cargado con éxito.",
+      "updated": "Plano actualizado con éxito.",
+      "uploadError": "Error al cargar el archivo."
     },
     "externalApproval": {
       "title": "Aprobación Fiscalización / IP",
@@ -2068,6 +2108,37 @@
         "rejected": "Rechazado"
       },
       "observations": "Observaciones"
+    },
+    "controlledCopies": {
+      "confirmReceipt": "Confirmar Recepción",
+      "confirmed": "Confirmado",
+      "delivery": "Entrega",
+      "entity": "Entidad",
+      "new": "Nueva Copia Controlada",
+      "noRecords": "Sin copias controladas registradas.",
+      "recipient": "Destinatario",
+      "recipientPlaceholder": "Nombre del destinatario...",
+      "title": "Copias Controladas"
+    },
+    "detail": {
+      "attachFile": "Adjuntar Archivo",
+      "attachments": "Anexos",
+      "breadcrumb": "Detalle del Plano",
+      "changeDescPlaceholder": "Descripción de los cambios de esta revisión...",
+      "createdAt": "Creado en",
+      "current": "Actual",
+      "currentFile": "Archivo actual",
+      "downloadDwg": "Descargar DWG",
+      "info": "Información",
+      "noVersions": "Sin versiones registradas.",
+      "openPdf": "Abrir PDF",
+      "pdfPreview": "Vista previa PDF",
+      "pdfPreviewError": "Error al cargar PDF",
+      "updatedAt": "Actualizado en",
+      "uploadBtn": "Cargar Archivo",
+      "uploadTitle": "Cargar nueva versión",
+      "versionsTitle": "Historial de Revisiones",
+      "workflow": "Flujo de Aprobación"
     }
   },
   "survey": {
@@ -2929,7 +3000,9 @@
       "statusNone": "No notificado",
       "statusPending": "Pendiente",
       "timeLabel": "Hora",
-      "unnotifiedWarning": "Existen ítems HP sin notificación"
+      "unnotifiedWarning": "Existen ítems HP sin notificación",
+      "createRfi": "Crear RFI",
+      "rfiRef": "Ref. RFI"
     },
     "location": {
       "pkStart": "PK inicio",
@@ -2976,7 +3049,8 @@
     "newMaterial": "Nuevo Material",
     "searchPlaceholder": "Buscar código, nombre, especificación…",
     "table": {
-      "code": "Código"
+      "code": "Código",
+      "material": "Material"
     },
     "pameCode": "Código PAME",
     "pameStatus": "Estado PAME",
@@ -3332,7 +3406,16 @@
       "addedDirectly": "Usuario existente añadido al proyecto.",
       "accountCreated": "Cuenta creada con éxito. El miembro puede acceder con el email y contraseña definidos.",
       "inviteEmailSent": "Invitación enviada por email. El usuario recibirá un enlace para configurar su cuenta.",
-      "alreadyMember": "Este usuario ya es miembro activo de este proyecto."
+      "alreadyMember": "Este usuario ya es miembro activo de este proyecto.",
+      "acceptInviteLoading": "Procesando invitación...",
+      "createBtn": "Crear Cuenta",
+      "invalidInviteToken": "Invitación inválida o expirada.",
+      "inviteAccepted": "¡Invitación aceptada con éxito!",
+      "noProjectsEmpty": "Sin proyectos asignados",
+      "noProjectsEmptySub": "Contacte al administrador para obtener acceso a un proyecto.",
+      "passwordHint": "Mínimo 6 caracteres",
+      "removeDesc": "El usuario perderá el acceso a este proyecto.",
+      "requestAccess": "Solicitar Acceso"
     },
     "roles": {
       "admin": "Admin",
@@ -3370,7 +3453,12 @@
     "usageMembers": "Miembros",
     "usagePpis": "PPIs activos",
     "usageNcs": "NCs abiertas",
-    "usageTests": "Ensayos pendientes"
+    "usageTests": "Ensayos pendientes",
+    "importPpiDesc": "Importar plantillas PPI del proyecto modelo PF17A",
+    "importPpiTemplates": "Importar Plantillas PPI",
+    "ppiAlreadyImported": "Las plantillas PPI ya fueron importadas a este proyecto.",
+    "ppiImportSuccess": "Plantillas PPI importadas con éxito.",
+    "ppiImported": "PPI Importados"
   },
   "topography": {
     "archiveSubtitle": "Dibujos topográficos asociados al proyecto",
@@ -3380,7 +3468,10 @@
       "element": "Elemento",
       "tolerance": "Tolerancia",
       "measured": "Valor medido",
-      "equipment": "Equipo"
+      "equipment": "Equipo",
+      "deviation": "Desviación",
+      "executedBy": "Ejecutado por",
+      "status": "Estado"
     },
     "title": "Topografía",
     "subtitle": "Equipos, calibraciones, solicitudes y controles topográficos",
@@ -3444,11 +3535,21 @@
       "nao_conforme": "No conforme"
     },
     "alert": {
-      "expiringDesc": "Existen calibraciones por expirar en los próximos 30 días"
+      "expiringDesc": "Existen calibraciones por expirar en los próximos 30 días",
+      "expiringTitle": "Equipos con calibración por expirar"
     },
     "toast": {
       "deleted": "Eliminado con éxito",
-      "deleteError": "Error al eliminar"
+      "deleteError": "Error al eliminar",
+      "calibrationCreated": "Calibración registrada con éxito.",
+      "calibrationUpdated": "Calibración actualizada con éxito.",
+      "controlCreated": "Control topográfico registrado.",
+      "controlUpdated": "Control topográfico actualizado.",
+      "equipmentCreated": "Equipo registrado con éxito.",
+      "equipmentUpdated": "Equipo actualizado con éxito.",
+      "error": "Error al guardar. Inténtelo de nuevo.",
+      "requestCreated": "Solicitud registrada con éxito.",
+      "requestUpdated": "Solicitud actualizada con éxito."
     },
     "form": {
       "newControl": "Nuevo Control",
@@ -3474,7 +3575,13 @@
       "location": "Ubicación",
       "certEntity": "Entidad certificadora",
       "certNumber": "N.º certificado",
-      "issueDate": "Fecha emisión"
+      "issueDate": "Fecha emisión",
+      "certEntityPlaceholder": "Entidad certificadora...",
+      "certEntityRequired": "Entidad certificadora obligatoria.",
+      "editCalibration": "Editar Calibración",
+      "newCalibration": "Nueva Calibración",
+      "validUntil": "Válido hasta",
+      "validUntilRequired": "Fecha de validez obligatoria."
     },
     "equipmentType": {
       "estacao_total": "Estación Total",
@@ -3511,7 +3618,12 @@
       "in_progress": "En curso",
       "completed": "Completado",
       "cancelled": "Cancelado"
-    }
+    },
+    "expiredAgo": "Expiró hace",
+    "noLinked": "Sin registros asociados.",
+    "newCalibration": "Nueva Calibración",
+    "seedDocs": "Inicializar Documentos",
+    "seedSuccess": "Documentos inicializados con éxito."
   },
   "planning": {
     "createWorkItem": "Crear elemento de obra",
@@ -4190,12 +4302,7 @@
     "empty": "Ninguna auditoría registrada. El programa anual de auditorías debe definirse en el PQO.",
     "emptyTitle": "Sin auditorías",
     "emptyDescription": "Ninguna auditoría registrada",
-    "type": {
-      "internal": "Interna",
-      "external": "Externa",
-      "surveillance": "Vigilancia",
-      "closing": "Cierre"
-    },
+    "type": "Tipo de Auditoría",
     "types": {
       "internal": "Interna",
       "external": "Externa",
@@ -4411,7 +4518,24 @@
       "emesExpiring": "EMEs por Expirar",
       "ncOverdue15d": "NC > 15 días",
       "rmOnTime": "RM en plazo"
-    }
+    },
+    "batches": "Amasadas",
+    "compactionTests": "Ensayos de Compactación",
+    "concrete": "Hormigón",
+    "conformRate": "Tasa de Conformidad",
+    "controls": "Controles",
+    "ensaiosSection": "Ensayos Realizados",
+    "expiringEquip": "Equipos por Expirar",
+    "lots": "Lotes",
+    "pendingUT": "US Pendientes",
+    "soilSamples": "Muestras de Suelo",
+    "soils": "Suelos",
+    "toast": {
+      "created": "Informe creado con éxito."
+    },
+    "topography": "Topografía",
+    "welds": "Soldaduras",
+    "withUT": "Con US"
   },
   "concrete": {
     "title": "Control de Hormigón — Fichas de Hormigonado",
@@ -4422,7 +4546,9 @@
     "tabs": {
       "identification": "Identificación",
       "fresh": "Hormigón Fresco",
-      "specimens": "Probetas"
+      "specimens": "Probetas",
+      "batches": "Amasadas",
+      "lots": "Lotes"
     },
     "specimens": {
       "testDate": "Fecha Ensayo",
@@ -4490,7 +4616,8 @@
     "filterWI": "Actividad",
     "filterClass": "Clase",
     "allClasses": "Todas las clases",
-    "searchPlaceholder": "Buscar amasadas..."
+    "searchPlaceholder": "Buscar amasadas...",
+    "class": "Clase"
   },
   "compaction": {
     "workItem": "Elemento de Obra",
@@ -4825,7 +4952,8 @@
       "created": "Submittal creado con éxito",
       "updated": "Submittal actualizado",
       "deleted": "Submittal eliminado"
-    }
+    },
+    "deleteConfirm": "¿Está seguro de que desea eliminar este submittal?"
   },
   "fieldRecords": {
     "empty": "Sin fichas de registro asociadas a esta inspección.",
@@ -5074,5 +5202,8 @@
     "cancelled": "Cancelado",
     "blocked": "Bloqueado",
     "hold": "En espera"
+  },
+  "sgq": {
+    "welds": "Soldaduras"
   }
 }

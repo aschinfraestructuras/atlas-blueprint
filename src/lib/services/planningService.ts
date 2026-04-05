@@ -155,6 +155,7 @@ export const planningService = {
       .from("planning_activities")
       .select("*, planning_wbs(wbs_code), work_items(sector), subcontractors(name)")
       .eq("project_id", projectId)
+      .eq("is_deleted", false)
       .order("planned_start", { ascending: true, nullsFirst: false });
     if (error) throw error;
     return (data as any[]).map((row) => ({

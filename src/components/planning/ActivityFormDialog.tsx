@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { compareWbsCodes } from "@/lib/utils/wbsSort";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProject } from "@/contexts/ProjectContext";
 import { planningService, type Activity, type WbsNode } from "@/lib/services/planningService";
@@ -162,7 +163,7 @@ export function ActivityFormDialog({ open, onOpenChange, wbsNodes, editActivity,
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="__none__">—</SelectItem>
-                    {[...wbsNodes].sort((a, b) => { const pA = a.wbs_code.split('.').map(Number); const pB = b.wbs_code.split('.').map(Number); for (let i = 0; i < Math.max(pA.length, pB.length); i++) { const d = (pA[i]||0) - (pB[i]||0); if (d !== 0) return d; } return 0; }).map(n => <SelectItem key={n.id} value={n.id}>{n.wbs_code}</SelectItem>)}
+                    {[...wbsNodes].sort((a, b) => compareWbsCodes(a.wbs_code, b.wbs_code)).map(n => <SelectItem key={n.id} value={n.id}>{n.wbs_code}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
