@@ -204,7 +204,7 @@ export default function ProjectsPage() {
             <MoreHorizontal className="h-3.5 w-3.5" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-44">
+        <DropdownMenuContent align="end" className="w-44" onClick={(e) => e.stopPropagation()}>
           {project.status !== "archived" && (
             <DropdownMenuItem onClick={() => handleSetActive(project)} className="gap-2 text-sm" disabled={isActive}>
               <FolderKanban className="h-3.5 w-3.5" />{t("projects.actions.setActive")}
@@ -217,7 +217,7 @@ export default function ProjectsPage() {
           <DropdownMenuItem onClick={() => handleArchiveToggle(project)} disabled={archiving === project.id} className="gap-2 text-sm text-muted-foreground">
             {project.status === "archived" ? <><ArchiveRestore className="h-3.5 w-3.5" />{t("projects.actions.unarchive")}</> : <><Archive className="h-3.5 w-3.5" />{t("projects.actions.archive")}</>}
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setDeleteTarget(project)} className="gap-2 text-sm text-destructive">
+          <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setDeleteTarget(project); }} className="gap-2 text-sm text-destructive">
             <Trash2 className="h-3.5 w-3.5" />{t("common.delete")}
           </DropdownMenuItem>
         </DropdownMenuContent>
