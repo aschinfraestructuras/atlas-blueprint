@@ -21,7 +21,7 @@ import {
   AlertTriangle, Calendar, Plus, Pencil, ChevronDown, Trash2,
   Eye, Loader2, Database, Search, X, CheckSquare, Square, FileDown,
   Clock, CheckCircle2, FlaskConical, ClipboardCheck, Timer,
-  PieChart,
+  PieChart, RotateCcw,
 } from "lucide-react";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
