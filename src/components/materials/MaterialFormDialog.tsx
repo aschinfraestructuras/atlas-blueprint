@@ -151,7 +151,7 @@ export function MaterialFormDialog({ open, onOpenChange, material, onSuccess }: 
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     {CATEGORIES.map(c => (
-                      <SelectItem key={c} value={c}>{t(`materials.categories.${c}`)}</SelectItem>
+                      <SelectItem key={c} value={c}>{t(`materials.categories.${c}`, { defaultValue: c })}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -204,7 +204,7 @@ export function MaterialFormDialog({ open, onOpenChange, material, onSuccess }: 
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     {(["pending", "submitted", "approved", "conditional", "rejected"] as const).map(status => (
-                      <SelectItem key={status} value={status}>{t(`materials.pameStatuses.${status}`)}</SelectItem>
+                      <SelectItem key={status} value={status}>{t(`materials.pameStatuses.${status}`, { defaultValue: status })}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>

@@ -196,7 +196,7 @@ export function ActivityFormDialog({ open, onOpenChange, wbsNodes, editActivity,
                 <Select value={form.status} onValueChange={v => setForm(f => ({ ...f, status: v }))}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    {STATUSES.map(s => <SelectItem key={s} value={s}>{t(`planning.status.${s}`)}</SelectItem>)}
+                    {STATUSES.map(s => <SelectItem key={s} value={s}>{t(`planning.status.${s}`, { defaultValue: s })}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>

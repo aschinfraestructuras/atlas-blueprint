@@ -195,7 +195,7 @@ export function DueTab() {
           <SelectContent>
             <SelectItem value="all">{t("tests.results.filters.allStatuses")}</SelectItem>
             {DUE_STATUSES.map(s => (
-              <SelectItem key={s} value={s}>{t(`tests.due.status.${s}`)}</SelectItem>
+              <SelectItem key={s} value={s}>{t(`tests.due.status.${s}`, { defaultValue: s })}</SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -281,7 +281,7 @@ export function DueTab() {
                     </TableCell>
                     <TableCell>
                       <Badge variant="secondary" className={cn("text-xs", DUE_STATUS_COLORS[item.status] ?? "")}>
-                        {t(`tests.due.status.${item.status}`)}
+                        {t(`tests.due.status.${item.status}`, { defaultValue: item.status })}
                       </Badge>
                     </TableCell>
                     <TableCell>
