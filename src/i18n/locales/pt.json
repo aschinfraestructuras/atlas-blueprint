@@ -3560,7 +3560,8 @@
     "activity": {
       "add": "Nova atividade",
       "createTitle": "Criar Atividade",
-      "editTitle": "Editar Atividade"
+      "editTitle": "Editar Atividade",
+      "code": "Código"
     },
     "completion": {
       "blocked": "Bloqueada — requisitos não cumpridos",
