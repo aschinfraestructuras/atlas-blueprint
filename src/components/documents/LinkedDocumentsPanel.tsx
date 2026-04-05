@@ -195,7 +195,7 @@ export function LinkedDocumentsPanel({ entityType, entityId, projectId }: Linked
                     {t(`documents.status.${doc.status}`, { defaultValue: doc.status })}
                   </Badge>
                   <Button variant="ghost" size="icon"
-                    className="h-7 w-7 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
+                    className="h-7 w-7 text-muted-foreground hover:text-destructive flex-shrink-0"
                     onClick={(e) => { e.stopPropagation(); handleRemove(link.id); }}>
                     <Trash2 className="h-3.5 w-3.5" />
                   </Button>
