@@ -4527,16 +4527,17 @@
       "accepted": "Aceite"
     },
     "kpi": {
-      "testsPass": "Ensaios Conformes",
-      "ncOpen": "NC Abertas",
-      "ncClosed": "NC Encerradas",
-      "hpConfirmed": "HP Confirmados",
-      "matApproved": "Mat. Aprovados",
+      "testsPass": "Taxa de conformidade de ensaios",
+      "ncOpen": "NCs abertas no período",
+      "ncClosed": "NCs encerradas no período",
+      "hpConfirmed": "HPs com aprovação escrita",
+      "matApproved": "Materiais aprovados",
       "matPending": "Mat. Pendentes",
-      "ppiCompleted": "PPI Concluídos",
-      "emesExpiring": "EMEs a Expirar",
+      "ppiCompleted": "PPIs concluídos",
+      "emesExpiring": "EMEs a expirar (30d)",
       "ncOverdue15d": "NC > 15 dias",
-      "rmOnTime": "RM dentro do prazo"
+      "rmOnTime": "RM dentro do prazo",
+      "threshold": "Limiar"
     },
     "batches": "Amassadas",
     "compactionTests": "Ensaios de Compactação",
