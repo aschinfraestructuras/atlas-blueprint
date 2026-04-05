@@ -372,7 +372,7 @@ export function DueTab() {
             <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={async () => {
               if (!deleteTarget) return;
               try {
-                await supabase.from("test_due_items" as any).delete().eq("id", deleteTarget);
+              await testDueService.softDelete(deleteTarget, activeProject?.id ?? "");
                 toast({ title: t("common.deleted") });
                 refetch();
               } catch (err) {

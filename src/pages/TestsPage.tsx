@@ -685,8 +685,8 @@ function ResultsTab() {
                           onClick={async () => {
                             if (!activeProject) return;
                             try {
-                              await testService.archiveResult(r.id, activeProject.id);
-                              toast({ title: t("tests.results.toast.archived") });
+                              await testService.softDelete(r.id, activeProject.id);
+                              toast({ title: t("common.deleted") });
                               load();
                             } catch (err) {
                               const info = classifySupabaseError(err);
@@ -694,7 +694,7 @@ function ResultsTab() {
                             }
                           }}
                         >
-                          <Archive className="h-3.5 w-3.5" />
+                          <Trash2 className="h-3.5 w-3.5" />
                         </Button>
                       </div>
                     </TableCell>
