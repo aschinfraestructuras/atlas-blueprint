@@ -15,8 +15,7 @@ import { RoleGate } from "@/components/RoleGate";
 import {
   Plus, Pencil, Network, ListChecks, ShieldCheck, Trash2, Search, Eye,
   ChevronRight, ChevronDown, FolderPlus, ChevronsUpDown, AlertTriangle,
-  CheckCircle2, Clock, Ban, PieChart as PieChartIcon,
-} from "lucide-react";
+  CheckCircle2, Clock, Ban, PieChart as PieChartIcon,, Filter, X} from "lucide-react";
 import { StackedBar } from "@/components/dashboard/DistributionBar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -93,6 +92,7 @@ export default function PlanningPage() {
   const [editAct, setEditAct] = useState<Activity | null>(null);
   const [checkDialog, setCheckDialog] = useState<{ open: boolean; id: string; desc: string }>({ open: false, id: "", desc: "" });
   const [expandedWbs, setExpandedWbs] = useState<Set<string>>(new Set());
+  const [selectedWbsId, setSelectedWbsId] = useState<string | null>(null);
 
   // Filters
   const [search, setSearch] = useState("");
@@ -108,6 +108,19 @@ export default function PlanningPage() {
     const avgProgress = totalAct > 0 ? Math.round(activities.reduce((s, a) => s + a.progress_pct, 0) / totalAct) : 0;
     return { totalWbs, totalAct, inProgress, completed, blocked, avgProgress };
   }, [wbs, activities]);
+
+  // Helper: get all descendant IDs of a WBS node (including itself)
+  const getWbsDescendantIds = (wbsId: string): Set<string> => {
+    const ids = new Set<string>([wbsId]);
+    const addChildren = (id: string) => {
+      wbs.filter(w => w.parent_id === id).forEach(child => {
+        ids.add(child.id);
+        addChildren(child.id);
+      });
+    };
+    addChildren(wbsId);
+    return ids;
+  };
 
   // Build WBS tree
   type TreeNode = WbsNode & { children: TreeNode[]; depth: number };
@@ -147,13 +160,17 @@ export default function PlanningPage() {
 
   const filteredActivities = useMemo(() => {
     let list = activities;
+    if (selectedWbsId) {
+      const ids = getWbsDescendantIds(selectedWbsId);
+      list = list.filter(a => a.wbs_id != null && ids.has(a.wbs_id));
+    }
     if (search) {
       const q = search.toLowerCase();
       list = list.filter(a => a.description.toLowerCase().includes(q) || (a.zone ?? "").toLowerCase().includes(q) || (a.wbs_code ?? "").toLowerCase().includes(q));
     }
     if (filterStatus !== "__all__") list = list.filter(a => a.status === filterStatus);
     return list;
-  }, [activities, search, filterStatus]);
+  }, [activities, search, filterStatus, selectedWbsId, wbs]);
 
   const wbsCodes = useMemo(() => new Set(wbs.map(w => w.wbs_code.toLowerCase())), [wbs]);
 
@@ -165,6 +182,16 @@ export default function PlanningPage() {
   const handleEditWbs = (n: WbsNode) => { setEditWbs(n); setParentWbs(null); setWbsDialogOpen(true); };
   const handleNewAct = () => { setEditAct(null); setActDialogOpen(true); };
   const handleEditAct = (a: Activity) => { setEditAct(a); setActDialogOpen(true); };
+
+  const handleWbsSelect = (node: TreeNode) => {
+    setSelectedWbsId(prev => prev === node.id ? null : node.id);
+    setActiveTab("activities");
+  };
+
+  const selectedWbsNode = useMemo(
+    () => wbs.find(w => w.id === selectedWbsId),
+    [wbs, selectedWbsId]
+  );
 
   const toggleWbsExpand = (id: string) => {
     setExpandedWbs(prev => {
@@ -352,6 +379,17 @@ export default function PlanningPage() {
           ) : (
             <div className="rounded-xl border border-border overflow-hidden">
               <Table>
+                {selectedWbsNode && (
+                  <div className="flex items-center gap-2 px-1 py-2 mb-2 text-sm bg-primary/5 border border-primary/20 rounded-lg">
+                    <Filter className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+                    <span className="text-muted-foreground">{t("planning.wbs.filterBy", { defaultValue: "A filtrar por:" })}</span>
+                    <span className="font-mono text-primary font-semibold">{selectedWbsNode.wbs_code}</span>
+                    <span className="text-foreground truncate">{selectedWbsNode.description}</span>
+                    <Button variant="ghost" size="icon" className="h-5 w-5 ml-auto flex-shrink-0" onClick={() => setSelectedWbsId(null)} title={t("common.clear", { defaultValue: "Limpar" })}>
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                )}
                 <TableHeader>
                   <TableRow className="bg-muted/40">
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground w-8"></TableHead>
@@ -367,7 +405,7 @@ export default function PlanningPage() {
                 </TableHeader>
                 <TableBody>
                   {wbsTree.map((n: any) => (
-                    <TableRow key={n.id} className="hover:bg-muted/20 transition-colors">
+                    <TableRow key={n.id} className={cn("hover:bg-muted/20 transition-colors cursor-pointer", selectedWbsId === n.id && "bg-primary/8 border-l-2 border-primary")} onClick={() => handleWbsSelect(n)}>
                       <TableCell className="w-8 px-1">
                         {hasChildren(n.id) ? (
                           <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => toggleWbsExpand(n.id)}>
@@ -405,7 +443,7 @@ export default function PlanningPage() {
         <TabsContent value="activities" className="space-y-4">
           <div className="flex justify-end">
             <RoleGate action="create">
-              <Button size="sm" className="gap-1.5" onClick={handleNewAct}><Plus className="h-3.5 w-3.5" /> {t("planning.activity.add")}</Button>
+              <Button size="sm" className="gap-1.5" onClick={handleNewAct}><Plus className="h-3.5 w-3.5" /> {t("planning.activity.add")}{selectedWbsNode ? ` (${selectedWbsNode.wbs_code})` : ""}</Button>
             </RoleGate>
           </div>
           {loading ? (
@@ -417,6 +455,17 @@ export default function PlanningPage() {
           ) : (
             <div className="rounded-xl border border-border overflow-hidden">
               <Table>
+                {selectedWbsNode && (
+                  <div className="flex items-center gap-2 px-1 py-2 mb-2 text-sm bg-primary/5 border border-primary/20 rounded-lg">
+                    <Filter className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+                    <span className="text-muted-foreground">{t("planning.wbs.filterBy", { defaultValue: "A filtrar por:" })}</span>
+                    <span className="font-mono text-primary font-semibold">{selectedWbsNode.wbs_code}</span>
+                    <span className="text-foreground truncate">{selectedWbsNode.description}</span>
+                    <Button variant="ghost" size="icon" className="h-5 w-5 ml-auto flex-shrink-0" onClick={() => setSelectedWbsId(null)} title={t("common.clear", { defaultValue: "Limpar" })}>
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                )}
                 <TableHeader>
                   <TableRow className="bg-muted/40">
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.description")}</TableHead>
@@ -477,7 +526,7 @@ export default function PlanningPage() {
       </Tabs>
 
       <WbsFormDialog open={wbsDialogOpen} onOpenChange={setWbsDialogOpen} wbsNodes={wbs} editNode={editWbs} defaultParentId={parentWbs} onSuccess={refetch} />
-      <ActivityFormDialog open={actDialogOpen} onOpenChange={setActDialogOpen} wbsNodes={wbs} editActivity={editAct} onSuccess={refetch} />
+      <ActivityFormDialog open={actDialogOpen} onOpenChange={setActDialogOpen} wbsNodes={wbs} editActivity={editAct} onSuccess={refetch} preselectedWbsId={editAct ? null : selectedWbsId} />
       <CompletionCheckDialog open={checkDialog.open} onOpenChange={(v) => setCheckDialog(p => ({ ...p, open: v }))} activityId={checkDialog.id} activityDesc={checkDialog.desc} />
     </div>
   );

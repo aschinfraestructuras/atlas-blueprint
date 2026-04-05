@@ -199,7 +199,7 @@ export const ppiService = {
       .from("ppi_templates")
       .select("*")
       .eq("project_id", projectId)
-      .order("disciplina", { ascending: true })
+      .order("sort_order", { ascending: true, nullsFirst: false })
       .order("code", { ascending: true });
 
     if (!opts?.includeInactive) {

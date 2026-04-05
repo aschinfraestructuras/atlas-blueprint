@@ -34,10 +34,11 @@ interface Props {
   wbsNodes: WbsNode[];
   editActivity?: Activity | null;
   onSuccess: () => void;
+  preselectedWbsId?: string | null;
 }
 
 const EMPTY = {
-  wbs_id: "__none__", work_item_id: "__none__", subcontractor_id: "__none__",
+  wbs_id: preselectedWbsId ?? "__none__", work_item_id: "__none__", subcontractor_id: "__none__",
   zone: "", description: "", planned_start: "", planned_end: "",
   actual_start: "", actual_end: "", progress_pct: 0, status: "planned" as string,
   constraints_text: "",
@@ -48,7 +49,7 @@ const EMPTY_WI = {
   sector: "", disciplina: "geral", pk_inicio: "", pk_fim: "",
 };
 
-export function ActivityFormDialog({ open, onOpenChange, wbsNodes, editActivity, onSuccess }: Props) {
+export function ActivityFormDialog({ open, onOpenChange, wbsNodes, editActivity, onSuccess, preselectedWbsId }: Props) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { activeProject } = useProject();
@@ -163,7 +164,7 @@ export function ActivityFormDialog({ open, onOpenChange, wbsNodes, editActivity,
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="__none__">—</SelectItem>
-                    {[...wbsNodes].sort((a, b) => compareWbsCodes(a.wbs_code, b.wbs_code)).map(n => <SelectItem key={n.id} value={n.id}>{n.wbs_code}</SelectItem>)}
+                    {[...wbsNodes].sort((a, b) => compareWbsCodes(a.wbs_code, b.wbs_code)).map(n => <SelectItem key={n.id} value={n.id}>{n.wbs_code} — {n.description}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
