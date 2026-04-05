@@ -4955,6 +4955,7 @@ export type Database = {
           project_id: string
           project_volume?: string | null
           revision?: string | null
+          sort_order?: number | null
           title: string
           updated_at?: string
           version?: number
