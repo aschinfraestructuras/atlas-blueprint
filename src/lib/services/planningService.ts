@@ -228,7 +228,12 @@ export const planningService = {
   },
 
   async deleteActivity(id: string, projectId: string): Promise<void> {
-    const { error } = await (supabase as any).from("planning_activities").delete().eq("id", id);
+    const { data: { user } } = await supabase.auth.getUser();
+    const { error } = await (supabase as any)
+      .from("planning_activities")
+      .update({ is_deleted: true, deleted_at: new Date().toISOString(), deleted_by: user?.id ?? null })
+      .eq("id", id)
+      .eq("project_id", projectId);
     if (error) throw error;
     await auditService.log({ projectId, entity: "planning_activities", entityId: id, action: "DELETE", module: "planning" });
   },
