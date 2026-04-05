@@ -1240,6 +1240,12 @@
       "topografia": "Topografia",
       "compactacao": "Compactação",
       "solos": "Solos"
+    },
+    "passFail": {
+      "pass": "Aprovado",
+      "fail": "Reprovado",
+      "pending": "Pendente",
+      "inconclusive": "Inconclusivo"
     }
   },
   "laboratories": {
@@ -2553,7 +2559,12 @@
       "sector": "Sector",
       "status": "Estado"
     },
-    "filterAll": "Todos os elementos"
+    "filterAll": "Todos os elementos",
+    "result": {
+      "conforme": "Conforme",
+      "nao_conforme": "Não Conforme",
+      "nao_aplicavel": "N/A"
+    }
   },
   "ppi": {
     "title": "Planos de Pontos de Inspeção (PPI)",
@@ -4002,7 +4013,13 @@
     "awaitingConfirm": "Aguarda confirmação",
     "confirmedAt": "Confirmado {{date}}",
     "resend": "Reenviar",
-    "failed": "Falhou"
+    "failed": "Falhou",
+    "sentStatus": {
+      "pending": "Pendente",
+      "sent": "Enviado",
+      "failed": "Falhou",
+      "read": "Lido"
+    }
   },
   "pagination": {
     "showing": "{{from}}-{{to}} de {{total}}",
@@ -4162,7 +4179,9 @@
       "approved": "Aprovado",
       "pending": "Pendente",
       "rejected": "Rejeitado",
-      "submitted": "Submetido"
+      "submitted": "Submetido",
+      "in_use": "Em Uso",
+      "depleted": "Esgotado"
     },
     "subtitle": "Gestão de materiais reciclados — PPGRCD",
     "title": "Materiais Reciclados",
@@ -5040,10 +5059,12 @@
       "nc": "Não Conformidade"
     },
     "status": {
-      "closed": "Fechada",
+      "closed": "Encerrada",
       "inProgress": "Em curso",
       "open": "Aberta",
-      "overdue": "Em atraso"
+      "overdue": "Em Atraso",
+      "in_progress": "Em Curso",
+      "cancelled": "Cancelada"
     },
     "subtitle": "Vista consolidada de todas as ações corretivas e preventivas",
     "title": "Plano de Ações",
@@ -5082,7 +5103,10 @@
     "status": {
       "on_site": "Em Obra",
       "off_site": "Fora de Obra",
-      "maintenance": "Manutenção"
+      "maintenance": "Em Manutenção",
+      "active": "Activo",
+      "inactive": "Inactivo",
+      "rented": "Alugado"
     }
   },
   "contacts": {
@@ -5121,6 +5145,12 @@
     "testsOverdue": "{{count}} ensaio(s) em atraso",
     "rmm": {
       "defaultName": "Instrumento"
+    },
+    "status": {
+      "draft": "Rascunho",
+      "submitted": "Enviada",
+      "approved": "Aprovada",
+      "rejected": "Rejeitada"
     }
   },
   "dfo": {

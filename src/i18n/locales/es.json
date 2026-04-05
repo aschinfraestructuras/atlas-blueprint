@@ -1325,6 +1325,12 @@
       "topografia": "Topografía",
       "compactacao": "Compactación",
       "solos": "Suelos"
+    },
+    "passFail": {
+      "pass": "Aprobado",
+      "fail": "Reprobado",
+      "pending": "Pendiente",
+      "inconclusive": "Inconclusivo"
     }
   },
   "laboratories": {
@@ -2638,7 +2644,12 @@
       "sector": "Sector",
       "status": "Estado"
     },
-    "filterAll": "Todos los elementos"
+    "filterAll": "Todos los elementos",
+    "result": {
+      "conforme": "Conforme",
+      "nao_conforme": "No Conforme",
+      "nao_aplicavel": "N/A"
+    }
   },
   "ppi": {
     "title": "Planes de Puntos de Inspección (PPI)",
@@ -4002,7 +4013,13 @@
     "awaitingConfirm": "Pendiente de confirmación",
     "confirmedAt": "Confirmado {{date}}",
     "resend": "Reenviar",
-    "failed": "Falló"
+    "failed": "Falló",
+    "sentStatus": {
+      "pending": "Pendiente",
+      "sent": "Enviado",
+      "failed": "Falló",
+      "read": "Leído"
+    }
   },
   "pagination": {
     "showing": "{{from}}-{{to}} de {{total}}",
@@ -4162,7 +4179,9 @@
       "approved": "Aprobado",
       "pending": "Pendiente",
       "rejected": "Rechazado",
-      "submitted": "Enviado"
+      "submitted": "Enviado",
+      "in_use": "En Uso",
+      "depleted": "Agotado"
     },
     "subtitle": "Gestión de materiales reciclados — PPGRCD",
     "title": "Materiales Reciclados",
@@ -5043,7 +5062,9 @@
       "closed": "Cerrada",
       "inProgress": "En curso",
       "open": "Abierta",
-      "overdue": "Atrasada"
+      "overdue": "En Retraso",
+      "in_progress": "En Curso",
+      "cancelled": "Cancelada"
     },
     "subtitle": "Vista consolidada de todas las acciones correctivas y preventivas",
     "title": "Plan de Acciones",
@@ -5082,7 +5103,10 @@
     "status": {
       "on_site": "En Obra",
       "off_site": "Fuera de Obra",
-      "maintenance": "Mantenimiento"
+      "maintenance": "En Mantenimiento",
+      "active": "Activo",
+      "inactive": "Inactivo",
+      "rented": "Alquilado"
     }
   },
   "contacts": {
@@ -5121,6 +5145,12 @@
     "testsOverdue": "{{count}} ensayo(s) atrasados",
     "rmm": {
       "defaultName": "Instrumento"
+    },
+    "status": {
+      "draft": "Borrador",
+      "submitted": "Enviada",
+      "approved": "Aprobada",
+      "rejected": "Rechazada"
     }
   },
   "dfo": {

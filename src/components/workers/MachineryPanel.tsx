@@ -188,7 +188,7 @@ export function MachineryPanel({ projectId, subcontractorId, company }: Machiner
                     <TableCell className="text-sm text-muted-foreground">{m.sound_power_db != null ? `${m.sound_power_db} dB` : "—"}</TableCell>
                     <TableCell>
                       <Badge variant="secondary" className={cn("text-xs", STATUS_COLORS[m.status] ?? "")}>
-                        {t(`machinery.status.${m.status}`, { defaultValue: m.status })}
+                        {t(`machinery.status.${t(`machinery.status.${m.status}`, { defaultValue: m.status })}`, { defaultValue: m.status })}
                       </Badge>
                     </TableCell>
                     <TableCell>

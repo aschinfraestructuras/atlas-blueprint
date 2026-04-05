@@ -128,7 +128,7 @@ export function WorkItemReportPreview({ data, onClose }: { data: WorkItemReportD
                   <div className="flex items-center gap-2">
                     <span className="font-medium text-xs">{ppi.code}</span>
                     <span className="text-xs text-muted-foreground">{ppi.template_name}</span>
-                    <Badge variant="outline" className="text-[10px] py-0">{ppi.status}</Badge>
+                    <Badge variant="outline" className="text-[10px] py-0">{t(`ppi.status.${ppi.status}`, { defaultValue: ppi.status })}</Badge>
                   </div>
 
                   {ppi.items?.length > 0 && (

@@ -281,7 +281,7 @@ export function DueTab() {
                     </TableCell>
                     <TableCell>
                       <Badge variant="secondary" className={cn("text-xs", DUE_STATUS_COLORS[item.status] ?? "")}>
-                        {t(`tests.due.status.${item.status}`, { defaultValue: item.status })}
+                        {t(`tests.due.status.${t(`tests.status.${item.status}`, { defaultValue: item.status })}`, { defaultValue: item.status })}
                       </Badge>
                     </TableCell>
                     <TableCell>

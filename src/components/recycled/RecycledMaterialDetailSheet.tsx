@@ -96,7 +96,7 @@ export function RecycledMaterialDetailSheet({ open, onOpenChange, materialId, on
             <div className="flex items-center gap-2">
               <SheetTitle className="flex-1">{item.reference_number}</SheetTitle>
               <Badge className={STATUS_COLORS[item.status]} variant="secondary">
-                {t(`recycled.status.${item.status}`)}
+                {t(`recycled.status.${t(`recycled.status.${item.status}`, { defaultValue: item.status })}`)}
               </Badge>
               <Button variant="outline" size="sm" onClick={() => exportRecycledMaterialPdf(item, logoBase64, activeProject?.name ?? "")}>
                 <FileDown className="h-3.5 w-3.5 mr-1" /> PDF

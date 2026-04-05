@@ -70,7 +70,11 @@ export default function TraceabilityMatrixPage() {
     }
   }, [activeProject]);
 
-  useEffect(() => { fetch(); }, [fetch]);
+  useEffect(() => {
+    let cancelled = false;
+    fetch().catch(() => {});
+    return () => { cancelled = true; };
+  }, [fetch]);
 
   // Unique values for filters
   const suppliers = useMemo(() => [...new Set(data.filter(r => r.supplier_name).map(r => r.supplier_name!))].sort(), [data]);

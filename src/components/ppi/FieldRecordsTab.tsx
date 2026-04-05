@@ -167,7 +167,7 @@ export function FieldRecordsTab({ instanceId, ppiCode, disciplina }: Props) {
                   <TableCell className="text-xs max-w-[200px] truncate">{r.activity}</TableCell>
                   <TableCell>
                     <Badge variant="secondary" className={cn("text-xs", RESULT_COLORS[r.result] ?? "")}>
-                      {t(`fieldRecords.results.${r.result}`, { defaultValue: r.result })}
+                      {t(`fieldRecords.results.${t(`workItems.result.${r.result}`, { defaultValue: r.result })}`, { defaultValue: r.result })}
                     </Badge>
                   </TableCell>
                   <TableCell>

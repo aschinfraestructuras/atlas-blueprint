@@ -99,7 +99,11 @@ function useRealSGQData(projectId: string | undefined) {
     }
   }, [projectId]);
 
-  useEffect(() => { fetch(); }, [fetch]);
+  useEffect(() => {
+    let cancelled = false;
+    fetch().catch(() => {});
+    return () => { cancelled = true; };
+  }, [fetch]);
   return { data, loading };
 }
 

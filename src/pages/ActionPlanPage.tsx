@@ -84,7 +84,11 @@ export default function ActionPlanPage() {
     }
   }, [activeProject]);
 
-  useEffect(() => { fetch(); }, [fetch]);
+  useEffect(() => {
+    let cancelled = false;
+    fetch().catch(() => {});
+    return () => { cancelled = true; };
+  }, [fetch]);
 
   const filtered = useMemo(() => {
     return data.filter(item => {
@@ -228,7 +232,7 @@ export default function ActionPlanPage() {
                         STATUS_STYLES[item.status]
                       )}>
                         <span className="h-1.5 w-1.5 rounded-full flex-shrink-0" style={{ background: STATUS_DOTS[item.status] }} />
-                        {t(`actionPlan.status.${item.status}`, { defaultValue: item.status })}
+                        {t(`actionPlan.status.${t(`actionPlan.status.${item.status}`, { defaultValue: item.status })}`, { defaultValue: item.status })}
                       </span>
                     </TableCell>
                     <TableCell>

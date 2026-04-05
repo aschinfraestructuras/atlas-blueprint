@@ -72,7 +72,11 @@ export default function ExpirationsPage() {
     finally { setLoading(false); }
   }, [activeProject]);
 
-  useEffect(() => { fetch(); }, [fetch]);
+  useEffect(() => {
+    let cancelled = false;
+    fetch().catch(() => {});
+    return () => { cancelled = true; };
+  }, [fetch]);
 
   const filtered = useMemo(() => {
     let result = items;

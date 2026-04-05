@@ -517,7 +517,7 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
                     {log.recipients.map(r => (
                       <div key={r.id} className="flex items-center gap-2 text-xs">
                         <Badge variant="outline" className={r.sent_status === "sent" ? "border-emerald-400/40 bg-emerald-50 text-emerald-700 text-[9px]" : "border-destructive/40 bg-destructive/10 text-destructive text-[9px]"}>
-                          {r.sent_status}
+                          {t(`notifications.sentStatus.${r.sent_status}`, { defaultValue: r.sent_status })}
                         </Badge>
                         <span>{r.name ?? r.email}</span>
                         <span className="text-muted-foreground">{r.email}</span>
