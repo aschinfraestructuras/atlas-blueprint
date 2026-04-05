@@ -254,7 +254,8 @@ export default function ActivityDetailPage() {
         <div className="flex-1 min-w-0">
           <h1 className="text-xl font-bold tracking-tight text-foreground truncate">{activity.description}</h1>
           <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
-            {activity.wbs_code && <span className="font-mono">WBS: {activity.wbs_code}</span>}
+            {(activity as any).code && <span className="font-mono font-semibold text-primary">{(activity as any).code}</span>}
+            {activity.wbs_code && <><span>•</span><span className="font-mono text-muted-foreground">WBS: {activity.wbs_code}</span></>}
             {activity.zone && <><span>•</span><span>{activity.zone}</span></>}
           </div>
         </div>
