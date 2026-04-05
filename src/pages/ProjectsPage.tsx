@@ -1,7 +1,6 @@
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
-import { useProjectRole } from "@/hooks/useProjectRole";
 import { useProjects } from "@/hooks/useProjects";
 import { useAllProjectsHealth, type ProjectHealth } from "@/hooks/useProjectHealth";
 import { projectService } from "@/lib/services/projectService";
@@ -108,7 +107,6 @@ export default function ProjectsPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { activeProject, setActiveProject } = useProject();
-  const { isAdmin } = useProjectRole();
   const { data: projects, loading, error, refetch } = useProjects();
   const { healthMap } = useAllProjectsHealth();
 
@@ -219,11 +217,9 @@ export default function ProjectsPage() {
           <DropdownMenuItem onClick={() => handleArchiveToggle(project)} disabled={archiving === project.id} className="gap-2 text-sm text-muted-foreground">
             {project.status === "archived" ? <><ArchiveRestore className="h-3.5 w-3.5" />{t("projects.actions.unarchive")}</> : <><Archive className="h-3.5 w-3.5" />{t("projects.actions.archive")}</>}
           </DropdownMenuItem>
-          {isAdmin && (
-            <DropdownMenuItem onClick={() => setDeleteTarget(project)} className="gap-2 text-sm text-destructive">
-              <Trash2 className="h-3.5 w-3.5" />{t("common.delete")}
-            </DropdownMenuItem>
-          )}
+          <DropdownMenuItem onClick={() => setDeleteTarget(project)} className="gap-2 text-sm text-destructive">
+            <Trash2 className="h-3.5 w-3.5" />{t("common.delete")}
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     );
