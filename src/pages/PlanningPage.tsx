@@ -173,6 +173,7 @@ export default function PlanningPage() {
   }, [activities, search, filterStatus, selectedWbsId, wbs]);
 
   const wbsCodes = useMemo(() => new Set(wbs.map(w => w.wbs_code.toLowerCase())), [wbs]);
+  const wbsById = useMemo(() => new Map(wbs.map(w => [w.id, w])), [wbs]);
 
   if (!activeProject) return <NoProjectBanner />;
 
@@ -408,7 +409,7 @@ export default function PlanningPage() {
                     <TableRow key={n.id} className={cn("hover:bg-muted/20 transition-colors cursor-pointer", selectedWbsId === n.id && "bg-primary/8 border-l-2 border-primary")} onClick={() => handleWbsSelect(n)}>
                       <TableCell className="w-8 px-1">
                         {hasChildren(n.id) ? (
-                          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => toggleWbsExpand(n.id)}>
+                          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => { e.stopPropagation(); toggleWbsExpand(n.id); }}>
                             {expandedWbs.has(n.id) ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
                           </Button>
                         ) : <span className="w-6 inline-block" />}
@@ -485,7 +486,11 @@ export default function PlanningPage() {
                       <TableRow key={a.id} className="hover:bg-muted/20 transition-colors">
                         <TableCell className="text-xs font-mono font-semibold text-primary w-24">{a.code || "—"}</TableCell>
                         <TableCell className="text-sm font-medium text-foreground max-w-[200px] truncate">{a.description}</TableCell>
-                        <TableCell className="text-xs font-mono text-muted-foreground">{a.wbs_code || "—"}</TableCell>
+                        <TableCell className="text-xs text-muted-foreground">
+                          {a.wbs_id && wbsById.get(a.wbs_id)
+                            ? <span><span className="font-mono">{a.wbs_code}</span> — {wbsById.get(a.wbs_id)!.description}</span>
+                            : <span className="font-mono">{a.wbs_code || "—"}</span>}
+                        </TableCell>
                         <TableCell className="text-sm text-muted-foreground">{a.zone || "—"}</TableCell>
                         <TableCell>
                           <Badge variant="secondary" className={cn("text-xs", STATUS_COLORS[a.status] ?? "")}>

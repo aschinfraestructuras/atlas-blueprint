@@ -21,7 +21,14 @@ export function usePPITemplates(includeInactive = false) {
     setError(null);
     try {
       const result = await ppiService.listTemplates(activeProject.id, { includeInactive });
-      setData(result);
+      // garantir ordenação 01→12 no frontend mesmo que DB order falhe
+      const sorted = [...result].sort((a, b) => {
+        const ao = a.sort_order ?? 999;
+        const bo = b.sort_order ?? 999;
+        if (ao !== bo) return ao - bo;
+        return a.code.localeCompare(b.code);
+      });
+      setData(sorted);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error loading PPI templates");
     } finally {
