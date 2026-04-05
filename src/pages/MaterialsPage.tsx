@@ -48,7 +48,7 @@ export default function MaterialsPage() {
   const navigate = useNavigate();
   const { activeProject } = useProject();
   const { data: materials, kpis, loading, error, refetch } = useMaterials();
-  const { canCreate, canEdit, canDelete, isManager } = useProjectRole();
+  const { canCreate, canEdit, canDelete, isManager, isAdmin } = useProjectRole();
   const { logoBase64 } = useProjectLogo();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingMaterial, setEditingMaterial] = useState<Material | null>(null);
@@ -378,7 +378,7 @@ export default function MaterialsPage() {
                               </Button>
                             </>
                           )}
-                          {(canDelete || isManager) && (
+                          {(canDelete || isManager || isAdmin) && (
                             <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => setDeleteTarget(m)} title={t("common.delete")}>
                               <Trash2 className="h-3.5 w-3.5" />
                             </Button>

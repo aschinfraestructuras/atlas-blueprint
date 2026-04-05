@@ -1296,6 +1296,20 @@
       "createTest": "Crear ensayo",
       "empty": "Sin ensayos",
       "exportSummary": "Exportar resumen"
+    },
+    "disciplines": {
+      "geral": "General",
+      "betao": "Hormigón",
+      "terras": "Terraplén",
+      "ferrovia": "Vía Férrea",
+      "drenagem": "Drenaje",
+      "estruturas": "Estructuras",
+      "instalacoes": "Instalaciones",
+      "outros": "Otros",
+      "soldadura": "Soldadura",
+      "topografia": "Topografía",
+      "compactacao": "Compactación",
+      "solos": "Suelos"
     }
   },
   "laboratories": {

@@ -1211,6 +1211,20 @@
       "createTest": "Criar ensaio",
       "empty": "Sem ensaios",
       "exportSummary": "Exportar resumo"
+    },
+    "disciplines": {
+      "geral": "Geral",
+      "betao": "Betão",
+      "terras": "Terraplenagem",
+      "ferrovia": "Via Férrea",
+      "drenagem": "Drenagem",
+      "estruturas": "Estruturas",
+      "instalacoes": "Instalações",
+      "outros": "Outros",
+      "soldadura": "Soldadura",
+      "topografia": "Topografia",
+      "compactacao": "Compactação",
+      "solos": "Solos"
     }
   },
   "laboratories": {
