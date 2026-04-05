@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { compareWbsCodes } from "@/lib/utils/wbsSort";
 import { useAuth } from "@/contexts/AuthContext";
@@ -55,7 +55,32 @@ export function ActivityFormDialog({ open, onOpenChange, wbsNodes, editActivity,
   const { activeProject } = useProject();
   const { data: workItems } = useWorkItems();
   const { data: subcontractors } = useSubcontractors();
+
+  // Mapa wbs_id → nó WBS
+  const wbsMap = useMemo(() => new Map(wbsNodes.map(n => [n.id, n])), [wbsNodes]);
+
   const [form, setForm] = useState(EMPTY);
+
+  // Filtrar work_items pela disciplina do WBS seleccionado
+  const filteredWorkItems = useMemo(() => {
+    const wbsId = form.wbs_id !== "__none__" ? form.wbs_id : null;
+    if (!wbsId) return workItems;
+    const node = wbsMap.get(wbsId);
+    if (!node) return workItems;
+    const rootCode = parseInt(node.wbs_code.split(".")[0]);
+    const discMap: Record<number, string[]> = {
+      1: ["geral"], 2: ["terras", "geotecnia"], 3: ["drenagem"],
+      4: ["betao", "estruturas"], 5: ["estruturas", "betao"],
+      6: ["ferrovia", "via"], 7: ["catenaria", "eletrica"],
+      8: ["st", "sinalizacao"], 9: ["geral", "outros"],
+      10: ["eletrica", "geral"], 11: ["geral"],
+    };
+    const discs = discMap[rootCode];
+    if (!discs) return workItems;
+    const filtered = workItems.filter(wi => discs.includes(wi.disciplina));
+    return filtered.length > 0 ? filtered : workItems;
+  }, [workItems, form.wbs_id, wbsMap]);
+
   const [submitting, setSubmitting] = useState(false);
   const isEdit = !!editActivity;
 
@@ -157,6 +182,10 @@ export function ActivityFormDialog({ open, onOpenChange, wbsNodes, editActivity,
           <div className="space-y-4 pb-1">
             <div><Label>{t("common.description")} *</Label><Textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} rows={2} /></div>
 
+            <div className="flex items-center gap-2 my-1">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{t("planning.form.sectionLinks", { defaultValue: "Ligações" })}</span>
+              <div className="flex-1 h-px bg-border" />
+            </div>
             <div className="grid grid-cols-3 gap-4">
               <div>
                 <Label>WBS</Label>
@@ -174,7 +203,19 @@ export function ActivityFormDialog({ open, onOpenChange, wbsNodes, editActivity,
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="__none__">—</SelectItem>
-                    {workItems.map(wi => <SelectItem key={wi.id} value={wi.id}>{wi.sector}{wi.elemento ? ` — ${wi.elemento}` : ""}{wi.parte ? ` (${wi.parte})` : ""}</SelectItem>)}
+                    {filteredWorkItems.map(wi => (
+                      <SelectItem key={wi.id} value={wi.id}>
+                        {wi.sector}{wi.elemento ? ` — ${wi.elemento}` : ""}{wi.parte ? ` (${wi.parte})` : ""}
+                        <span className="ml-1 text-[10px] text-muted-foreground">
+                          · {t(`workItems.disciplines.${wi.disciplina}`, { defaultValue: wi.disciplina })}
+                        </span>
+                      </SelectItem>
+                    ))}
+                    {filteredWorkItems.length < workItems.length && (
+                      <SelectItem value="__show_all__" disabled className="text-xs text-muted-foreground italic">
+                        {workItems.length - filteredWorkItems.length} {t("common.more", { defaultValue: "mais (outras disciplinas)" })}
+                      </SelectItem>
+                    )}
                   </SelectContent>
                 </Select>
               </div>
@@ -203,6 +244,10 @@ export function ActivityFormDialog({ open, onOpenChange, wbsNodes, editActivity,
               </div>
             </div>
 
+            <div className="flex items-center gap-2 my-1">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{t("planning.form.sectionDates", { defaultValue: "Datas" })}</span>
+              <div className="flex-1 h-px bg-border" />
+            </div>
             <div className="grid grid-cols-2 gap-4">
               <div><Label>{t("planning.fields.plannedStart")}</Label><Input type="date" value={form.planned_start} onChange={e => setForm(f => ({ ...f, planned_start: e.target.value }))} /></div>
               <div><Label>{t("planning.fields.plannedEnd")}</Label><Input type="date" value={form.planned_end} onChange={e => setForm(f => ({ ...f, planned_end: e.target.value }))} /></div>
@@ -219,6 +264,10 @@ export function ActivityFormDialog({ open, onOpenChange, wbsNodes, editActivity,
 
             <div><Label>{t("planning.fields.constraints")}</Label><Textarea value={form.constraints_text} onChange={e => setForm(f => ({ ...f, constraints_text: e.target.value }))} rows={2} placeholder={t("planning.fields.constraintsPlaceholder")} /></div>
 
+            <div className="flex items-center gap-2 my-1">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{t("planning.form.sectionRequirements", { defaultValue: "Requisitos" })}</span>
+              <div className="flex-1 h-px bg-border" />
+            </div>
             <div className="flex flex-wrap gap-6">
               <div className="flex items-center gap-2">
                 <Checkbox id="req-topo" checked={form.requires_topography} onCheckedChange={v => setForm(f => ({ ...f, requires_topography: !!v }))} />

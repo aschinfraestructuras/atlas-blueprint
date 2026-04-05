@@ -173,6 +173,26 @@ export default function PlanningPage() {
   }, [activities, search, filterStatus, selectedWbsId, wbs]);
 
   const wbsCodes = useMemo(() => new Set(wbs.map(w => w.wbs_code.toLowerCase())), [wbs]);
+
+  // Contador de actividades por WBS (incluindo filhos)
+  const actCountByWbs = useMemo(() => {
+    const direct = new Map<string, number>();
+    activities.forEach(a => {
+      if (a.wbs_id) direct.set(a.wbs_id, (direct.get(a.wbs_id) ?? 0) + 1);
+    });
+    // Propagar para os pais
+    const total = new Map<string, number>();
+    const calcTotal = (id: string): number => {
+      if (total.has(id)) return total.get(id)!;
+      const own = direct.get(id) ?? 0;
+      const childSum = wbs.filter(w => w.parent_id === id).reduce((s, c) => s + calcTotal(c.id), 0);
+      const t = own + childSum;
+      total.set(id, t);
+      return t;
+    };
+    wbs.forEach(w => calcTotal(w.id));
+    return total;
+  }, [activities, wbs]);
   const wbsById = useMemo(() => new Map(wbs.map(w => [w.id, w])), [wbs]);
 
   if (!activeProject) return <NoProjectBanner />;
@@ -415,7 +435,14 @@ export default function PlanningPage() {
                         ) : <span className="w-6 inline-block" />}
                       </TableCell>
                       <TableCell className="font-mono text-xs font-medium" style={{ paddingLeft: `${(n.depth || 0) * 20 + 4}px` }}>
-                        {n.wbs_code}
+                        <span className="flex items-center gap-2">
+                          {n.wbs_code}
+                          {(actCountByWbs.get(n.id) ?? 0) > 0 && (
+                            <span className="rounded-full bg-primary/15 text-primary text-[10px] font-semibold px-1.5 py-0.5">
+                              {actCountByWbs.get(n.id)}
+                            </span>
+                          )}
+                        </span>
                       </TableCell>
                       <TableCell className="text-sm text-foreground">{n.description}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">{n.zone || "—"}</TableCell>

@@ -3644,6 +3644,11 @@
       "parent": "Nó pai",
       "responsible": "Responsável",
       "zone": "Zona"
+    },
+    "form": {
+      "sectionLinks": "Ligações",
+      "sectionDates": "Datas e Progresso",
+      "sectionRequirements": "Requisitos de Qualidade"
     }
   },
   "mapMas": {

@@ -3729,6 +3729,11 @@
       "parent": "Nodo padre",
       "responsible": "Responsable",
       "zone": "Zona"
+    },
+    "form": {
+      "sectionLinks": "Vínculos",
+      "sectionDates": "Fechas y Progreso",
+      "sectionRequirements": "Requisitos de Calidad"
     }
   },
   "mapMas": {

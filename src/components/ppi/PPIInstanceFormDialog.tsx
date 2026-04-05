@@ -154,6 +154,26 @@ export function PPIInstanceFormDialog({
     }
   }, [selectedWI, matchingTemplates, loadingTpl, watchedTemplateId, form]);
 
+  // ── Auto-fill location from work_item ──────────────────────────────────────
+  useEffect(() => {
+    if (!selectedWI) return;
+    const fmt = (pk: number) => {
+      const km = Math.floor(pk / 1000);
+      const m  = String(pk % 1000).padStart(3, "0");
+      return `${km}+${m}`;
+    };
+    if (selectedWI.pk_inicio != null && !form.getValues("pk_inicio")) {
+      form.setValue("pk_inicio", fmt(selectedWI.pk_inicio));
+    }
+    if (selectedWI.pk_fim != null && !form.getValues("pk_fim")) {
+      form.setValue("pk_fim", fmt(selectedWI.pk_fim));
+    }
+    if (!form.getValues("element_ref")) {
+      const parts = [selectedWI.sector, selectedWI.elemento, selectedWI.parte].filter(Boolean);
+      if (parts.length > 0) form.setValue("element_ref", parts.join(" — "));
+    }
+  }, [selectedWI, form]);
+
   // ── Preview auto-generated code ────────────────────────────────────────────
 
   useEffect(() => {
@@ -288,10 +308,16 @@ export function PPIInstanceFormDialog({
                     <SelectContent>
                       {workItems.map((wi) => (
                         <SelectItem key={wi.id} value={wi.id}>
-                          {wi.sector}
-                          {wi.obra ? ` · ${wi.obra}` : ""}
-                          {wi.parte ? ` · ${wi.parte}` : ""}
-                          {` (${t(`workItems.disciplines.${wi.disciplina}`, { defaultValue: wi.disciplina })})`}
+                          <span className="flex items-center gap-2 w-full">
+                            <span className="flex-1 truncate">
+                              {wi.sector}
+                              {wi.elemento ? ` — ${wi.elemento}` : ""}
+                              {wi.parte ? ` (${wi.parte})` : ""}
+                            </span>
+                            <span className="text-[10px] font-mono text-muted-foreground shrink-0">
+                              {t(`workItems.disciplines.${wi.disciplina}`, { defaultValue: wi.disciplina })}
+                            </span>
+                          </span>
                         </SelectItem>
                       ))}
                     </SelectContent>
