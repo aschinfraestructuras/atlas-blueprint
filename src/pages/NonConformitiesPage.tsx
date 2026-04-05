@@ -21,7 +21,7 @@ import {
   AlertTriangle, Calendar, Plus, Pencil, ChevronDown, Trash2,
   Eye, Loader2, Database, Search, X, CheckSquare, Square, FileDown,
   Clock, CheckCircle2, FlaskConical, ClipboardCheck, Timer,
-  PieChart,
+  PieChart, RotateCcw,
 } from "lucide-react";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -750,23 +750,43 @@ export default function NonConformitiesPage() {
                               </DropdownMenuContent>
                             </DropdownMenu>
                           )}
-                          <Button
-                            variant="ghost" size="icon"
-                            className="h-7 w-7 text-destructive hover:text-destructive"
-                            onClick={async () => {
-                              try {
-                                await ncService.updateStatus(nc.id, "archived");
-                                toast({ title: t("nc.toast.statusChanged", { status: t("nc.status.archived") }) });
-                                refetch();
-                              } catch (err) {
-                                const info = classifySupabaseError(err, t);
-                                toast({ title: info.title, description: info.description ?? info.raw, variant: "destructive" });
-                              }
-                            }}
-                            title={t("common.delete")}
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </Button>
+                          {nc.status === "archived" ? (
+                            <Button
+                              variant="ghost" size="icon"
+                              className="h-7 w-7 text-primary hover:text-primary"
+                              onClick={async () => {
+                                try {
+                                  await ncService.updateStatus(nc.id, "open");
+                                  toast({ title: t("nc.toast.statusChanged", { status: t("nc.status.open") }) });
+                                  refetch();
+                                } catch (err) {
+                                  const info = classifySupabaseError(err, t);
+                                  toast({ title: info.title, description: info.description ?? info.raw, variant: "destructive" });
+                                }
+                              }}
+                              title={t("nc.actions.reopen", { defaultValue: "Reabrir" })}
+                            >
+                              <RotateCcw className="h-3.5 w-3.5" />
+                            </Button>
+                          ) : (
+                            <Button
+                              variant="ghost" size="icon"
+                              className="h-7 w-7 text-destructive hover:text-destructive"
+                              onClick={async () => {
+                                try {
+                                  await ncService.updateStatus(nc.id, "archived");
+                                  toast({ title: t("nc.toast.statusChanged", { status: t("nc.status.archived") }) });
+                                  refetch();
+                                } catch (err) {
+                                  const info = classifySupabaseError(err, t);
+                                  toast({ title: info.title, description: info.description ?? info.raw, variant: "destructive" });
+                                }
+                              }}
+                              title={t("common.archive")}
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          )}
                         </div>
                     </TableCell>
                   </TableRow>

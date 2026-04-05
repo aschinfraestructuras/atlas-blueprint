@@ -2805,7 +2805,15 @@
       "drenagem": "Drenaje",
       "ferrovia": "Ferroviario",
       "instalacoes": "Instalaciones",
-      "outros": "Otros"
+      "outros": "Otros",
+      "soldadura": "Soldadura",
+      "topografia": "Topografía",
+      "aco_pre_esforco": "Acero Pretensado",
+      "catenaria_rct": "Catenaria / RCT",
+      "sst_pn": "SST / PN",
+      "telecomunicacoes": "Telecomunicaciones",
+      "pavimentos": "Pavimentos",
+      "reposicao_servicos": "Reposición de Servicios"
     },
     "status": {
       "draft": "Borrador",
