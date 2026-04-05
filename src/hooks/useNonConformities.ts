@@ -25,7 +25,11 @@ export function useNonConformities() {
     }
   }, [activeProject]);
 
-  useEffect(() => { fetch(); }, [fetch]);
+  useEffect(() => {
+    let cancelled = false;
+    fetch().catch(() => {});
+    return () => { cancelled = true; };
+  }, [fetch]);
 
   return { data, loading, error, refetch: fetch };
 }

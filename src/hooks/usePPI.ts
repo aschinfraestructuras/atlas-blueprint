@@ -29,7 +29,11 @@ export function usePPITemplates(includeInactive = false) {
     }
   }, [activeProject, includeInactive]);
 
-  useEffect(() => { fetch(); }, [fetch]);
+  useEffect(() => {
+    let cancelled = false;
+    fetch().catch(() => {});
+    return () => { cancelled = true; };
+  }, [fetch]);
   return { data, loading, error, refetch: fetch };
 }
 
@@ -58,6 +62,10 @@ export function usePPIInstances(filters?: PpiInstanceFilters) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeProject]);
 
-  useEffect(() => { fetch(); }, [fetch]);
+  useEffect(() => {
+    let cancelled = false;
+    fetch().catch(() => {});
+    return () => { cancelled = true; };
+  }, [fetch]);
   return { data, loading, error, refetch: fetch };
 }

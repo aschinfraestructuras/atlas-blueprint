@@ -26,7 +26,11 @@ export function useTestDueItems(filters?: {
     }
   }, [activeProject, filters?.status, filters?.work_item_id, filters?.activity_id]);
 
-  useEffect(() => { fetch(); }, [fetch]);
+  useEffect(() => {
+    let cancelled = false;
+    fetch().catch(() => {});
+    return () => { cancelled = true; };
+  }, [fetch]);
 
   return { data, loading, error, refetch: fetch };
 }

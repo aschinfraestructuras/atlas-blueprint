@@ -27,7 +27,11 @@ export function usePlanning() {
     }
   }, [activeProject]);
 
-  useEffect(() => { fetch(); }, [fetch]);
+  useEffect(() => {
+    let cancelled = false;
+    fetch().catch(() => {});
+    return () => { cancelled = true; };
+  }, [fetch]);
 
   return { wbs, activities, loading, error, refetch: fetch };
 }

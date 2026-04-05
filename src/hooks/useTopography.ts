@@ -30,7 +30,11 @@ export function useTopographyEquipment() {
     }
   }, [activeProject]);
 
-  useEffect(() => { fetch(); }, [fetch]);
+  useEffect(() => {
+    let cancelled = false;
+    fetch().catch(() => {});
+    return () => { cancelled = true; };
+  }, [fetch]);
   return { data, loading, error, refetch: fetch };
 }
 
@@ -53,7 +57,11 @@ export function useCalibrations(equipmentId?: string) {
     }
   }, [activeProject, equipmentId]);
 
-  useEffect(() => { fetch(); }, [fetch]);
+  useEffect(() => {
+    let cancelled = false;
+    fetch().catch(() => {});
+    return () => { cancelled = true; };
+  }, [fetch]);
   return { data, loading, refetch: fetch };
 }
 
@@ -72,7 +80,11 @@ export function useTopographyRequests() {
     }
   }, [activeProject]);
 
-  useEffect(() => { fetch(); }, [fetch]);
+  useEffect(() => {
+    let cancelled = false;
+    fetch().catch(() => {});
+    return () => { cancelled = true; };
+  }, [fetch]);
   return { data, loading, refetch: fetch };
 }
 
@@ -91,6 +103,10 @@ export function useTopographyControls() {
     }
   }, [activeProject]);
 
-  useEffect(() => { fetch(); }, [fetch]);
+  useEffect(() => {
+    let cancelled = false;
+    fetch().catch(() => {});
+    return () => { cancelled = true; };
+  }, [fetch]);
   return { data, loading, refetch: fetch };
 }
