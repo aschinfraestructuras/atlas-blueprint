@@ -352,7 +352,7 @@ export const documentService = {
   async softDelete(id: string, projectId: string): Promise<void> {
     const { error } = await supabase
       .from("documents")
-      .update({ is_deleted: true, updated_by: (await supabase.auth.getUser()).data.user?.id })
+      .update({ is_deleted: true, deleted_at: new Date().toISOString(), updated_by: (await supabase.auth.getUser()).data.user?.id })
       .eq("id", id);
     if (error) throw error;
 

@@ -51,6 +51,7 @@ export interface Activity {
   created_by: string | null;
   created_at: string;
   updated_at: string;
+  code?: string | null;
   // Joined
   wbs_code?: string;
   work_item_sector?: string;
@@ -160,6 +161,7 @@ export const planningService = {
     if (error) throw error;
     return (data as any[]).map((row) => ({
       ...row,
+      code: row.code ?? null,
       wbs_code: row.planning_wbs?.wbs_code ?? null,
       work_item_sector: row.work_items?.sector ?? null,
       subcontractor_name: row.subcontractors?.name ?? null,

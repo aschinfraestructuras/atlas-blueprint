@@ -355,6 +355,7 @@ export default function PlanningPage() {
                 <TableHeader>
                   <TableRow className="bg-muted/40">
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground w-8"></TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground w-24">{t("planning.activity.code", { defaultValue: "Código" })}</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("planning.wbs.code")}</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.description")}</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("planning.wbs.zone")}</TableHead>
@@ -433,6 +434,7 @@ export default function PlanningPage() {
                     const reqBadges = getRequirementBadges(a);
                     return (
                       <TableRow key={a.id} className="hover:bg-muted/20 transition-colors">
+                        <TableCell className="text-xs font-mono font-semibold text-primary w-24">{a.code || "—"}</TableCell>
                         <TableCell className="text-sm font-medium text-foreground max-w-[200px] truncate">{a.description}</TableCell>
                         <TableCell className="text-xs font-mono text-muted-foreground">{a.wbs_code || "—"}</TableCell>
                         <TableCell className="text-sm text-muted-foreground">{a.zone || "—"}</TableCell>
