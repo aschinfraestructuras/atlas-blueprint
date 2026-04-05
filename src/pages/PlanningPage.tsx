@@ -15,7 +15,7 @@ import { RoleGate } from "@/components/RoleGate";
 import {
   Plus, Pencil, Network, ListChecks, ShieldCheck, Trash2, Search, Eye,
   ChevronRight, ChevronDown, FolderPlus, ChevronsUpDown, AlertTriangle,
-  CheckCircle2, Clock, Ban, PieChart as PieChartIcon,, Filter, X} from "lucide-react";
+  CheckCircle2, Clock, Ban, PieChart as PieChartIcon, Filter, X} from "lucide-react";
 import { StackedBar } from "@/components/dashboard/DistributionBar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
