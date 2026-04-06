@@ -125,7 +125,7 @@ export const concreteLotService = {
     // Soft delete
     const { error } = await supabase
       .from("concrete_lots" as any)
-      .update({ is_deleted: true } as any)
+      .update({ is_deleted: true, deleted_at: new Date().toISOString() } as any)
       .eq("id", id);
     if (error) throw error;
   },

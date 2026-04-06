@@ -193,7 +193,7 @@ export const monthlyReportService = {
   async deleteDraft(id: string): Promise<void> {
     const { error } = await db
       .from("monthly_quality_reports")
-      .update({ is_deleted: true } as any)
+      .update({ is_deleted: true, deleted_at: new Date().toISOString() } as any)
       .eq("id", id);
     if (error) throw error;
   },

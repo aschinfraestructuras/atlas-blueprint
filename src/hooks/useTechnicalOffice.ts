@@ -22,7 +22,11 @@ export function useTechnicalOffice() {
     }
   }, [activeProject]);
 
-  useEffect(() => { fetch(); }, [fetch]);
+  useEffect(() => {
+    let cancelled = false;
+    fetch().catch(() => {});
+    return () => { cancelled = true; };
+  }, [fetch]);
 
   return { data, loading, error, refetch: fetch };
 }
@@ -44,7 +48,11 @@ export function useTechOfficeMessages(itemId: string | null) {
     }
   }, [itemId]);
 
-  useEffect(() => { fetch(); }, [fetch]);
+  useEffect(() => {
+    let cancelled = false;
+    fetch().catch(() => {});
+    return () => { cancelled = true; };
+  }, [fetch]);
 
   return { messages, loading, refetch: fetch };
 }

@@ -164,6 +164,10 @@ export function useDashboardKpis() {
     }
   }, [activeProject]);
 
-  useEffect(() => { fetch(); }, [fetch]);
+  useEffect(() => {
+    let cancelled = false;
+    fetch().catch(() => {});
+    return () => { cancelled = true; };
+  }, [fetch]);
   return { data, loading, refetch: fetch };
 }

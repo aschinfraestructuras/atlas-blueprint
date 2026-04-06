@@ -101,7 +101,7 @@ export const recycledMaterialService = {
 
   async softDelete(id: string): Promise<void> {
     const { error } = await db.from("recycled_materials")
-      .update({ is_deleted: true, updated_at: new Date().toISOString() })
+      .update({ is_deleted: true, deleted_at: new Date().toISOString(), updated_at: new Date().toISOString() })
       .eq("id", id);
     if (error) throw error;
   },

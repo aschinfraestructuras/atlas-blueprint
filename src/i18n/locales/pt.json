@@ -87,7 +87,9 @@
     "end": "Fim",
     "import": "Importar",
     "start": "Início",
-    "sync": "Sincronizar"
+    "sync": "Sincronizar",
+    "clear": "Limpar",
+    "more": "mais"
   },
   "auth": {
     "signIn": "Iniciar sessão",
@@ -3643,7 +3645,8 @@
       "expandAll": "Expandir todos",
       "parent": "Nó pai",
       "responsible": "Responsável",
-      "zone": "Zona"
+      "zone": "Zona",
+      "filterBy": "A filtrar por:"
     },
     "form": {
       "sectionLinks": "Ligações",

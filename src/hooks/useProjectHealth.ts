@@ -63,7 +63,11 @@ export function useProjectHealth(projectId?: string) {
     }
   }, [projectId]);
 
-  useEffect(() => { fetch(); }, [fetch]);
+  useEffect(() => {
+    let cancelled = false;
+    fetch().catch(() => {});
+    return () => { cancelled = true; };
+  }, [fetch]);
 
   return { health: data, loading, refetch: fetch };
 }
@@ -101,7 +105,11 @@ export function useAllProjectsHealth() {
     }
   }, []);
 
-  useEffect(() => { fetch(); }, [fetch]);
+  useEffect(() => {
+    let cancelled = false;
+    fetch().catch(() => {});
+    return () => { cancelled = true; };
+  }, [fetch]);
 
   return { healthMap: data, loading, refetch: fetch };
 }

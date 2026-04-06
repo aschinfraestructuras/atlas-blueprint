@@ -28,7 +28,11 @@ export function useAttachments(entityType: EntityType, entityId: string | null |
     }
   }, [entityType, entityId]);
 
-  useEffect(() => { fetch(); }, [fetch]);
+  useEffect(() => {
+    let cancelled = false;
+    fetch().catch(() => {});
+    return () => { cancelled = true; };
+  }, [fetch]);
 
   return { data, loading, error, refetch: fetch };
 }

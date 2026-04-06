@@ -32,7 +32,11 @@ export function useAuditLog(filters?: AuditFilters) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeProject, filters?.module, filters?.dateFrom, filters?.dateTo]);
 
-  useEffect(() => { fetch(); }, [fetch]);
+  useEffect(() => {
+    let cancelled = false;
+    fetch().catch(() => {});
+    return () => { cancelled = true; };
+  }, [fetch]);
 
   return { data, loading, error, refetch: fetch };
 }

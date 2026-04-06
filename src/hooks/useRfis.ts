@@ -22,7 +22,11 @@ export function useRfis() {
     }
   }, [activeProject]);
 
-  useEffect(() => { fetch(); }, [fetch]);
+  useEffect(() => {
+    let cancelled = false;
+    fetch().catch(() => {});
+    return () => { cancelled = true; };
+  }, [fetch]);
 
   return { data, loading, error, refetch: fetch };
 }
@@ -44,7 +48,11 @@ export function useRfiMessages(rfiId: string | null) {
     }
   }, [rfiId]);
 
-  useEffect(() => { fetch(); }, [fetch]);
+  useEffect(() => {
+    let cancelled = false;
+    fetch().catch(() => {});
+    return () => { cancelled = true; };
+  }, [fetch]);
 
   return { messages, loading, refetch: fetch };
 }
