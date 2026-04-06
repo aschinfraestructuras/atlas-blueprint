@@ -38,7 +38,7 @@ interface Props {
 }
 
 const EMPTY = {
-  wbs_id: preselectedWbsId ?? "__none__", work_item_id: "__none__", subcontractor_id: "__none__",
+  wbs_id: "__none__", work_item_id: "__none__", subcontractor_id: "__none__",
   zone: "", description: "", planned_start: "", planned_end: "",
   actual_start: "", actual_end: "", progress_pct: 0, status: "planned" as string,
   constraints_text: "",
@@ -109,11 +109,11 @@ export function ActivityFormDialog({ open, onOpenChange, wbsNodes, editActivity,
         requires_ppi: editActivity.requires_ppi,
       });
     } else {
-      setForm(EMPTY);
+      setForm({ ...EMPTY, wbs_id: preselectedWbsId ?? "__none__" });
       setWiForm(EMPTY_WI);
       setCreateWI(true);
     }
-  }, [editActivity, open]);
+  }, [editActivity, open, preselectedWbsId]);
 
   const handleSubmit = async () => {
     if (!activeProject || !user || !form.description.trim()) return;
