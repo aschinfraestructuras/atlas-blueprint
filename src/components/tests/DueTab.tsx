@@ -266,7 +266,7 @@ export function DueTab() {
                       <div className="text-xs text-muted-foreground font-mono">{catalog?.code ?? ""}</div>
                     </TableCell>
                     <TableCell className="text-xs text-muted-foreground">
-                      {wi && <div>{wi.sector}{wi.disciplina ? ` — ${t(`ppi.disciplinas.${wi.disciplina}`, { defaultValue: wi.disciplina })}` : ""}</div>}
+                      {wi && <div>{wi.sector}{wi.disciplina ? ` — ${t(`ppi.disciplinas.${t(`workItems.disciplines.${wi.disciplina}`, { defaultValue: wi.disciplina })}`, { defaultValue: wi.disciplina })}` : ""}</div>}
                       {act && <div>{act.description}{act.zone ? ` (${act.zone})` : ""}</div>}
                       {!wi && !act && "—"}
                     </TableCell>

@@ -207,7 +207,7 @@ export function ActivityFormDialog({ open, onOpenChange, wbsNodes, editActivity,
                       <SelectItem key={wi.id} value={wi.id}>
                         {wi.sector}{wi.elemento ? ` — ${wi.elemento}` : ""}{wi.parte ? ` (${wi.parte})` : ""}
                         <span className="ml-1 text-[10px] text-muted-foreground">
-                          · {t(`workItems.disciplines.${wi.disciplina}`, { defaultValue: wi.disciplina })}
+                          · {t(`workItems.disciplines.${t(`workItems.disciplines.${wi.disciplina}`, { defaultValue: wi.disciplina })}`, { defaultValue: wi.disciplina })}
                         </span>
                       </SelectItem>
                     ))}

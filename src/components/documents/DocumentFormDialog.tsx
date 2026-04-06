@@ -314,7 +314,7 @@ export function DocumentFormDialog({ open, onOpenChange, document: doc, onSucces
             </DialogTitle>
             {doc && (
               <Badge variant="secondary" className={cn("text-xs shrink-0", STATUS_COLORS[doc.status] ?? "")}>
-                {t(`documents.status.${doc.status}`)}
+                {t(`documents.status.${t(`documents.status.${doc.status}`, { defaultValue: doc.status })}`)}
               </Badge>
             )}
           </div>

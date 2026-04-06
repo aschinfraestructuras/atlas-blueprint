@@ -193,7 +193,7 @@ export default function DailyReportsPage() {
                     <TableCell>{r.weather ?? "—"}</TableCell>
                     <TableCell>
                       <Badge className={STATUS_COLORS[r.status] ?? ""} variant="secondary">
-                        {t(`dailyReports.status.${t(`dailyReport.status.${r.status}`, { defaultValue: r.status })}`)}
+                        {t(`dailyReports.status.${r.status}`, { defaultValue: r.status })}
                       </Badge>
                     </TableCell>
                     <TableCell>

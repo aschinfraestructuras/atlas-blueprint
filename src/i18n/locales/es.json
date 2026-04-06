@@ -4043,8 +4043,8 @@
     "new": "Nuevo Parte Diario",
     "status": {
       "draft": "Borrador",
-      "submitted": "Enviado",
-      "validated": "Validado"
+      "submitted": "Enviada",
+      "validated": "Validada"
     },
     "sections": {
       "identification": "1. Identificación",
@@ -5156,6 +5156,7 @@
     "status": {
       "draft": "Borrador",
       "submitted": "Enviada",
+      "validated": "Validada",
       "approved": "Aprobada",
       "rejected": "Rechazada"
     }

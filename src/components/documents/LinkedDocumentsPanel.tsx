@@ -192,7 +192,7 @@ export function LinkedDocumentsPanel({ entityType, entityId, projectId }: Linked
                     </div>
                   </div>
                   <Badge variant="outline" className="text-[10px] py-0 flex-shrink-0">
-                    {t(`documents.status.${doc.status}`, { defaultValue: doc.status })}
+                    {t(`documents.status.${t(`documents.status.${doc.status}`, { defaultValue: doc.status })}`, { defaultValue: doc.status })}
                   </Badge>
                   <Button variant="ghost" size="icon"
                     className="h-7 w-7 text-muted-foreground hover:text-destructive flex-shrink-0"

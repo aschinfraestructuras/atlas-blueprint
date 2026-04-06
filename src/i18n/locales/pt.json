@@ -5155,7 +5155,8 @@
     },
     "status": {
       "draft": "Rascunho",
-      "submitted": "Enviada",
+      "submitted": "Submetida",
+      "validated": "Validada",
       "approved": "Aprovada",
       "rejected": "Rejeitada"
     }

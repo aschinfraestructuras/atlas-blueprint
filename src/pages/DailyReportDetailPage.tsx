@@ -331,7 +331,7 @@ export default function DailyReportDetailPage() {
           <h1 className="text-xl font-bold truncate">{report.report_number}</h1>
           <p className="text-sm text-muted-foreground">{report.report_date} · IP.MOD.102</p>
         </div>
-        <Badge className={STATUS_COLORS[report.status]}>{t(`dailyReports.status.${t(`dailyReport.status.${report.status}`, { defaultValue: report.status })}`)}</Badge>
+        <Badge className={STATUS_COLORS[report.status]}>{t(`dailyReports.status.${report.status}`, { defaultValue: report.status })}</Badge>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={exportPdf}>
             <FileText className="h-4 w-4 mr-1" /> {t("common.exportPdf")}

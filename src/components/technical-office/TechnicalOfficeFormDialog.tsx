@@ -349,7 +349,7 @@ export function TechnicalOfficeFormDialog({ open, onOpenChange, item, onSuccess 
                         <SelectItem value="__none__">—</SelectItem>
                         {workItems.map(wi => (
                           <SelectItem key={wi.id} value={wi.id}>
-                            {wi.sector} — {wi.disciplina}{wi.elemento ? ` — ${wi.elemento}` : ""}{wi.parte ? ` (${wi.parte})` : ""}
+                            {wi.sector} — {t(`workItems.disciplines.${wi.disciplina}`, { defaultValue: wi.disciplina })}{wi.elemento ? ` — ${wi.elemento}` : ""}{wi.parte ? ` (${wi.parte})` : ""}
                           </SelectItem>
                         ))}
                       </SelectContent>
