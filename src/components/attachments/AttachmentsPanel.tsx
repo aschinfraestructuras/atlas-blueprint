@@ -580,6 +580,20 @@ export function AttachmentsPanel({
                     {formatBytes(previewFile.size)}
                   </p>
                 )}
+                {previewGeo && (
+                  <div className="flex items-center justify-center gap-1 text-xs text-primary">
+                    <MapPin className="h-3 w-3" />
+                    <span>
+                      {previewGeo.latitude.toFixed(5)}, {previewGeo.longitude.toFixed(5)}
+                      {previewGeo.accuracy_m != null && ` (±${Math.round(previewGeo.accuracy_m)}m)`}
+                    </span>
+                  </div>
+                )}
+                {!previewGeo && (
+                  <p className="text-[10px] text-muted-foreground text-center italic">
+                    {t("attachments.geo.unavailable")}
+                  </p>
+                )}
               </div>
             )}
             <DialogFooter className="gap-2">
