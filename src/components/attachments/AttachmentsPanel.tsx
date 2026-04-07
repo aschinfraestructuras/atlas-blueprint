@@ -467,6 +467,33 @@ export function AttachmentsPanel({
                       {" · "}
                       {new Date(att.created_at).toLocaleDateString()}
                     </p>
+                    {att.latitude != null && att.longitude != null && (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <a
+                            href={`https://www.google.com/maps?q=${att.latitude},${att.longitude}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-0.5 text-[10px] text-primary hover:underline mt-0.5"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <MapPin className="h-2.5 w-2.5" />
+                            {att.latitude.toFixed(5)}, {att.longitude.toFixed(5)}
+                            {att.accuracy_m != null && (
+                              <span className="text-muted-foreground"> (±{Math.round(att.accuracy_m)}m)</span>
+                            )}
+                          </a>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom">
+                          {t("attachments.geo.openMap")}
+                          {att.captured_at && (
+                            <span className="block text-[10px] text-muted-foreground">
+                              {new Date(att.captured_at).toLocaleString()}
+                            </span>
+                          )}
+                        </TooltipContent>
+                      </Tooltip>
+                    )}
                   </div>
 
                   {/* Actions */}
