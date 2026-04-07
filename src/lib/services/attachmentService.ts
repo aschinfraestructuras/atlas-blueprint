@@ -30,6 +30,13 @@ export type EntityType =
   | "recycled_materials"
   | "daily_reports";
 
+export interface GeoData {
+  latitude: number;
+  longitude: number;
+  accuracy_m: number | null;
+  captured_at: string;
+}
+
 export interface Attachment {
   id: string;
   project_id: string;
@@ -42,6 +49,10 @@ export interface Attachment {
   uploaded_by: string | null;
   created_by: string | null;  // legacy
   created_at: string;
+  latitude: number | null;
+  longitude: number | null;
+  accuracy_m: number | null;
+  captured_at: string | null;
 }
 
 const BUCKET = "qms-files";
