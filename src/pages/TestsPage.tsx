@@ -327,6 +327,8 @@ function ResultsTab() {
   const [dialogOpen, setDialogOpen]     = useState(false);
   const [editing, setEditing]           = useState<TestResult | null>(null);
   const [selected, setSelected]         = useState<Set<string>>(new Set());
+  const [pkFrom, setPkFrom]             = useState<number | null>(null);
+  const [pkTo, setPkTo]                 = useState<number | null>(null);
 
   const load = useCallback(async () => {
     if (!activeProject) return;
