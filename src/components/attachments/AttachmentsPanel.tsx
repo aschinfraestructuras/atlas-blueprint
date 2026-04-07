@@ -220,10 +220,14 @@ export function AttachmentsPanel({
 
     setCompressing(true);
     try {
-      const compressed = await compressImage(file);
+      const [compressed, geo] = await Promise.all([
+        compressImage(file),
+        captureGeo(),
+      ]);
       const url = URL.createObjectURL(compressed);
       setPreviewFile(compressed);
       setPreviewUrl(url);
+      setPreviewGeo(geo);
     } catch {
       toast({ title: t("attachments.compressing"), variant: "destructive" });
     } finally {
