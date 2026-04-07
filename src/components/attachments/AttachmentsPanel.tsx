@@ -34,7 +34,7 @@ import {
 import {
   Paperclip, Upload, Download, Trash2, Loader2,
   FileText, FileSpreadsheet, FileImage, FileArchive, File,
-  Camera,
+  Camera, MapPin,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Attachment } from "@/lib/services/attachmentService";
