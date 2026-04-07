@@ -215,7 +215,8 @@
     "submittals": "Submittals",
     "myTasks": "O Meu Dia",
     "ppiTemplates": "Modelos PPI",
-    "controlledDistribution": "Distribuição Controlada"
+    "controlledDistribution": "Distribuição Controlada",
+    "contractKpis": "KPIs de Contrato"
   },
   "topbar": {
     "language": "Idioma",
@@ -5251,5 +5252,35 @@
   },
   "sgq": {
     "welds": "Soldaduras"
+  },
+  "kpis": {
+    "title": "KPIs de Contrato",
+    "subtitle": "Indicadores de qualidade exigidos pelo dono de obra",
+    "testsConformity": "Conformidade de Ensaios",
+    "hpApproved": "HPs com Aprovação Escrita",
+    "ppiApproved": "PPIs Aprovados",
+    "ncOverdue": "NCs em Atraso (+15d)",
+    "ncTrend": "Evolução de Não Conformidades (12 meses)",
+    "testsEvolution": "Evolução de Ensaios (12 meses)",
+    "ncAging": "NCs Abertas por Disciplina",
+    "testsByType": "Conformidade por Tipo de Ensaio",
+    "target": "Objectivo",
+    "conform": "Conformes",
+    "nonConform": "Não Conformes",
+    "conformes": "conformes",
+    "total": "Total",
+    "rate": "Taxa",
+    "testName": "Ensaio",
+    "totalOpen": "abertas no total",
+    "ncOpened": "Abertas",
+    "ncClosed": "Fechadas",
+    "empty": "Ainda sem dados suficientes para gerar os KPIs de contrato.",
+    "emptySub": "Os indicadores aparecem automaticamente à medida que os dados são registados.",
+    "status": {
+      "ok": "Conforme",
+      "alert": "Alerta",
+      "critical": "Crítico",
+      "noData": "Sem dados"
+    }
   }
 }

@@ -60,6 +60,7 @@ const DailyReportsPage = lazy(() => import("./pages/DailyReportsPage"));
 const DailyReportDetailPage = lazy(() => import("./pages/DailyReportDetailPage"));
 const RecycledMaterialsPage = lazy(() => import("./pages/RecycledMaterialsPage"));
 const SGQMatrixPage = lazy(() => import("./pages/SGQMatrixPage"));
+const ContractKPIsPage = lazy(() => import("./pages/ContractKPIsPage"));
 const TrainingPage = lazy(() => import("./pages/TrainingPage"));
 const MonthlyReportPage = lazy(() => import("./pages/MonthlyReportPage"));
 const DFOPage = lazy(() => import("./pages/DFOPage"));
@@ -155,6 +156,7 @@ const App = () => (
                 <Route path="/recycled-materials" element={<ProtectedLayout><RecycledMaterialsPage /></ProtectedLayout>} />
                 <Route path="/admin/health" element={<ProtectedLayout><HealthCheckPage /></ProtectedLayout>} />
                 <Route path="/sgq-matrix" element={<ProtectedLayout><SGQMatrixPage /></ProtectedLayout>} />
+                <Route path="/contract-kpis" element={<ProtectedLayout><ContractKPIsPage /></ProtectedLayout>} />
                 <Route path="/training" element={<ProtectedLayout><TrainingPage /></ProtectedLayout>} />
                 <Route path="/reports/monthly" element={<ProtectedLayout><MonthlyReportPage /></ProtectedLayout>} />
                 <Route path="/dfo" element={<ProtectedLayout><DFOPage /></ProtectedLayout>} />

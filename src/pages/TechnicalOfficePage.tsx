@@ -1,6 +1,6 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useProject } from "@/contexts/ProjectContext";
 import { useReportMeta } from "@/hooks/useReportMeta";
 import { useTechnicalOffice } from "@/hooks/useTechnicalOffice";
@@ -259,6 +259,23 @@ export default function TechnicalOfficePage() {
     try { await rfiService.softDelete(rfi.id, activeProject.id); toast.success(t("technicalOffice.toast.rfiDeleted")); refetchRfis(); }
     catch { toast.error(t("common.deleteError", { defaultValue: "Erro ao eliminar" })); }
   };
+
+  const [searchParams] = useSearchParams();
+
+  // Abrir RFI pré-preenchido quando vem do HPNotificationPanel
+  useEffect(() => {
+    const type = searchParams.get("type");
+    const ppiRef = searchParams.get("ppi_ref");
+    const subject = searchParams.get("subject");
+    if (type === "rfi" && (ppiRef || subject)) {
+      setEditingRfi({
+        id: "", project_id: "", code: "", subject: subject ?? "",
+        status: "open", created_at: "", updated_at: "",
+        ppi_ref: ppiRef ?? "",
+      } as any);
+      setRfiFormOpen(true);
+    }
+  }, [searchParams]);
 
   const handleNewRfi = () => { setEditingRfi(null); setRfiFormOpen(true); };
 
