@@ -137,7 +137,8 @@ export const attachmentService = {
     projectId: string,
     entityType: EntityType,
     entityId: string,
-    uploadedBy: string
+    uploadedBy: string,
+    geo?: GeoData | null
   ): Promise<Attachment> {
     // Defensive: prefer authenticated user; fall back to caller-provided ID
     // TODO(tech-debt): remove uploadedBy param once all callers use auth context
