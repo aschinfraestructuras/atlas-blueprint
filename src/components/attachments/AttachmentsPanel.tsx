@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAttachments } from "@/hooks/useAttachments";
-import { attachmentService, type EntityType } from "@/lib/services/attachmentService";
+import { attachmentService, type EntityType, type GeoData } from "@/lib/services/attachmentService";
 import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -34,7 +34,7 @@ import {
 import {
   Paperclip, Upload, Download, Trash2, Loader2,
   FileText, FileSpreadsheet, FileImage, FileArchive, File,
-  Camera,
+  Camera, MapPin,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Attachment } from "@/lib/services/attachmentService";
@@ -58,6 +58,25 @@ function isFileAllowed(fileName: string): boolean {
 
 function isTouchDevice(): boolean {
   return "ontouchstart" in window || navigator.maxTouchPoints > 0;
+}
+
+// ─── Geolocation helper ─────────────────────────────────────────────────────
+
+function captureGeo(timeoutMs = 8000): Promise<GeoData | null> {
+  if (!navigator.geolocation) return Promise.resolve(null);
+  return new Promise((resolve) => {
+    navigator.geolocation.getCurrentPosition(
+      (pos) =>
+        resolve({
+          latitude: pos.coords.latitude,
+          longitude: pos.coords.longitude,
+          accuracy_m: pos.coords.accuracy ?? null,
+          captured_at: new Date().toISOString(),
+        }),
+      () => resolve(null),
+      { enableHighAccuracy: true, timeout: timeoutMs, maximumAge: 30_000 }
+    );
+  });
 }
 
 // ─── Image compression ──────────────────────────────────────────────────────
@@ -175,6 +194,7 @@ export function AttachmentsPanel({
   // Camera preview state
   const [previewFile, setPreviewFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewGeo, setPreviewGeo] = useState<GeoData | null>(null);
   const [compressing, setCompressing] = useState(false);
 
   const showCamera = isTouchDevice();
@@ -200,10 +220,14 @@ export function AttachmentsPanel({
 
     setCompressing(true);
     try {
-      const compressed = await compressImage(file);
+      const [compressed, geo] = await Promise.all([
+        compressImage(file),
+        captureGeo(),
+      ]);
       const url = URL.createObjectURL(compressed);
       setPreviewFile(compressed);
       setPreviewUrl(url);
+      setPreviewGeo(geo);
     } catch {
       toast({ title: t("attachments.compressing"), variant: "destructive" });
     } finally {
@@ -215,7 +239,7 @@ export function AttachmentsPanel({
     if (!previewFile || !entityId || !user) return;
     setUploading(true);
     try {
-      await attachmentService.upload(previewFile, projectId, entityType, entityId, user.id);
+      await attachmentService.upload(previewFile, projectId, entityType, entityId, user.id, previewGeo);
       toast({ title: t("attachments.toast.uploaded", { name: previewFile.name }) });
       refetch();
     } catch (err) {
@@ -229,6 +253,7 @@ export function AttachmentsPanel({
       if (previewUrl) URL.revokeObjectURL(previewUrl);
       setPreviewFile(null);
       setPreviewUrl(null);
+      setPreviewGeo(null);
     }
   };
 
@@ -236,6 +261,7 @@ export function AttachmentsPanel({
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     setPreviewFile(null);
     setPreviewUrl(null);
+    setPreviewGeo(null);
   };
 
   // ── Upload ────────────────────────────────────────────────────────────────
@@ -256,7 +282,9 @@ export function AttachmentsPanel({
 
     setUploading(true);
     try {
-      await attachmentService.upload(file, projectId, entityType, entityId, user.id);
+      // Capture GPS for image files uploaded via file picker too
+      const geo = isImageFile(file.name) ? await captureGeo(5000) : null;
+      await attachmentService.upload(file, projectId, entityType, entityId, user.id, geo);
       toast({ title: t("attachments.toast.uploaded", { name: file.name }) });
       refetch();
     } catch (err) {
@@ -439,6 +467,33 @@ export function AttachmentsPanel({
                       {" · "}
                       {new Date(att.created_at).toLocaleDateString()}
                     </p>
+                    {att.latitude != null && att.longitude != null && (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <a
+                            href={`https://www.google.com/maps?q=${att.latitude},${att.longitude}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-0.5 text-[10px] text-primary hover:underline mt-0.5"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <MapPin className="h-2.5 w-2.5" />
+                            {att.latitude.toFixed(5)}, {att.longitude.toFixed(5)}
+                            {att.accuracy_m != null && (
+                              <span className="text-muted-foreground"> (±{Math.round(att.accuracy_m)}m)</span>
+                            )}
+                          </a>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom">
+                          {t("attachments.geo.openMap")}
+                          {att.captured_at && (
+                            <span className="block text-[10px] text-muted-foreground">
+                              {new Date(att.captured_at).toLocaleString()}
+                            </span>
+                          )}
+                        </TooltipContent>
+                      </Tooltip>
+                    )}
                   </div>
 
                   {/* Actions */}
@@ -523,6 +578,20 @@ export function AttachmentsPanel({
                 {previewFile && (
                   <p className="text-xs text-muted-foreground text-center">
                     {formatBytes(previewFile.size)}
+                  </p>
+                )}
+                {previewGeo && (
+                  <div className="flex items-center justify-center gap-1 text-xs text-primary">
+                    <MapPin className="h-3 w-3" />
+                    <span>
+                      {previewGeo.latitude.toFixed(5)}, {previewGeo.longitude.toFixed(5)}
+                      {previewGeo.accuracy_m != null && ` (±${Math.round(previewGeo.accuracy_m)}m)`}
+                    </span>
+                  </div>
+                )}
+                {!previewGeo && (
+                  <p className="text-[10px] text-muted-foreground text-center italic">
+                    {t("attachments.geo.unavailable")}
                   </p>
                 )}
               </div>

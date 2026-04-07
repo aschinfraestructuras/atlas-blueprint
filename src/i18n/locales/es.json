@@ -3051,7 +3051,11 @@
     "previewTitle": "Confirmar foto",
     "compressing": "Comprimiendo...",
     "typeNotAllowed": "Tipo de archivo no permitido",
-    "confirmUpload": "Confirmar"
+    "confirmUpload": "Confirmar",
+    "geo": {
+      "openMap": "Abrir en Google Maps",
+      "unavailable": "GPS no disponible"
+    }
   },
   "report": {
     "generatedOn": "Generado el",

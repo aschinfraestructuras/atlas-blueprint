@@ -16,6 +16,8 @@ export type Database = {
     Tables: {
       attachments: {
         Row: {
+          accuracy_m: number | null
+          captured_at: string | null
           created_at: string
           created_by: string | null
           entity_id: string
@@ -24,11 +26,15 @@ export type Database = {
           file_path: string
           file_size: number | null
           id: string
+          latitude: number | null
+          longitude: number | null
           mime_type: string | null
           project_id: string
           uploaded_by: string | null
         }
         Insert: {
+          accuracy_m?: number | null
+          captured_at?: string | null
           created_at?: string
           created_by?: string | null
           entity_id: string
@@ -37,11 +43,15 @@ export type Database = {
           file_path: string
           file_size?: number | null
           id?: string
+          latitude?: number | null
+          longitude?: number | null
           mime_type?: string | null
           project_id: string
           uploaded_by?: string | null
         }
         Update: {
+          accuracy_m?: number | null
+          captured_at?: string | null
           created_at?: string
           created_by?: string | null
           entity_id?: string
@@ -50,6 +60,8 @@ export type Database = {
           file_path?: string
           file_size?: number | null
           id?: string
+          latitude?: number | null
+          longitude?: number | null
           mime_type?: string | null
           project_id?: string
           uploaded_by?: string | null
