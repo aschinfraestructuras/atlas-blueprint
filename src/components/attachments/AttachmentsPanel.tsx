@@ -253,6 +253,7 @@ export function AttachmentsPanel({
       if (previewUrl) URL.revokeObjectURL(previewUrl);
       setPreviewFile(null);
       setPreviewUrl(null);
+      setPreviewGeo(null);
     }
   };
 
