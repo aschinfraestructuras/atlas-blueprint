@@ -4140,11 +4140,15 @@ export type Database = {
         Row: {
           actual_end: string | null
           actual_start: string | null
+          code: string | null
           constraints_text: string | null
           created_at: string
           created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           description: string
           id: string
+          is_deleted: boolean
           planned_end: string | null
           planned_start: string | null
           progress_pct: number
@@ -4162,11 +4166,15 @@ export type Database = {
         Insert: {
           actual_end?: string | null
           actual_start?: string | null
+          code?: string | null
           constraints_text?: string | null
           created_at?: string
           created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           description: string
           id?: string
+          is_deleted?: boolean
           planned_end?: string | null
           planned_start?: string | null
           progress_pct?: number
@@ -4184,11 +4192,15 @@ export type Database = {
         Update: {
           actual_end?: string | null
           actual_start?: string | null
+          code?: string | null
           constraints_text?: string | null
           created_at?: string
           created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           description?: string
           id?: string
+          is_deleted?: boolean
           planned_end?: string | null
           planned_start?: string | null
           progress_pct?: number
@@ -4975,6 +4987,7 @@ export type Database = {
           project_id?: string
           project_volume?: string | null
           revision?: string | null
+          sort_order?: number | null
           title?: string
           updated_at?: string
           version?: number

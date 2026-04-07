@@ -100,7 +100,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <PWAInstallBanner />
-      <BrowserRouter>
+      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <AuthProvider>
           <ProjectProvider>
             <Suspense fallback={<PageLoader />}>
