@@ -282,7 +282,9 @@ export function AttachmentsPanel({
 
     setUploading(true);
     try {
-      await attachmentService.upload(file, projectId, entityType, entityId, user.id);
+      // Capture GPS for image files uploaded via file picker too
+      const geo = isImageFile(file.name) ? await captureGeo(5000) : null;
+      await attachmentService.upload(file, projectId, entityType, entityId, user.id, geo);
       toast({ title: t("attachments.toast.uploaded", { name: file.name }) });
       refetch();
     } catch (err) {
