@@ -15,6 +15,7 @@ import { exportLNC } from "@/lib/services/sgqListExportService";
 import { useReportMeta } from "@/hooks/useReportMeta";
 import type { NonConformity } from "@/lib/services/ncService";
 import { toast } from "@/hooks/use-toast";
+import { PKRangeFilter } from "@/components/ui/pk-range-filter";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { getNCTransitions } from "@/lib/stateMachines";
 import {
@@ -119,6 +120,8 @@ export default function NonConformitiesPage() {
   const { logoBase64 } = useProjectLogo();
   // Filters
   const [search, setSearch]             = useState("");
+  const [pkFrom, setPkFrom]             = useState<number | null>(null);
+  const [pkTo, setPkTo]                 = useState<number | null>(null);
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterSeverity, setFilterSeverity] = useState("all");
   const [filterOrigin, setFilterOrigin] = useState("all");
@@ -155,6 +158,15 @@ export default function NonConformitiesPage() {
   const filtered = useMemo(() => {
     if (!activeProject) return [];
     return ncs.filter(nc => {
+      // Filtro por intervalo de PK
+      if (pkFrom !== null && nc.location_pk) {
+        const pkNum = parseInt((nc.location_pk ?? "").replace("+", ""), 10);
+        if (!isNaN(pkNum) && pkNum < pkFrom) return false;
+      }
+      if (pkTo !== null && nc.location_pk) {
+        const pkNum = parseInt((nc.location_pk ?? "").replace("+", ""), 10);
+        if (!isNaN(pkNum) && pkNum > pkTo) return false;
+      }
       const q = search.toLowerCase();
       const matchesSearch = !q ||
         (nc.code ?? "").toLowerCase().includes(q) ||
@@ -513,6 +525,7 @@ export default function NonConformitiesPage() {
         <span className="ml-auto text-xs text-muted-foreground tabular-nums">
           {filtered.length} {t("nc.filters.results")}
         </span>
+        <PKRangeFilter onFilter={(f, t) => { setPkFrom(f); setPkTo(t); }} />
       </FilterBar>
 
 

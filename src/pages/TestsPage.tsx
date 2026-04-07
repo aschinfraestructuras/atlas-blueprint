@@ -12,6 +12,7 @@ import {
 } from "@/lib/services/testExportService";
 import { exportBeCampoPdf } from "@/lib/services/beCampoExportService";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
+import { PKRangeFilter } from "@/components/ui/pk-range-filter";
 import { toast } from "@/hooks/use-toast";
 import {
   FlaskConical, Plus, Pencil, Search, Filter, Archive, Copy, Trash2,
@@ -345,6 +346,9 @@ function ResultsTab() {
   useEffect(() => { load(); }, [load]);
 
   const filtered = results.filter((r) => {
+    // Filtro por PK
+    if (pkFrom !== null && r.pk_inicio !== null && r.pk_inicio < pkFrom) return false;
+    if (pkTo   !== null && r.pk_inicio !== null && r.pk_inicio > pkTo)   return false;
     const q = search.toLowerCase();
     const tc = r.tests_catalog as any;
     const matchSearch = !q
@@ -432,6 +436,9 @@ function ResultsTab() {
             ))}
           </SelectContent>
         </Select>
+
+        {/* Filtro por PK */}
+        <PKRangeFilter onFilter={(f, t) => { setPkFrom(f); setPkTo(t); }} />
 
         {/* Export bulk — only when something selected */}
         {someSelected && (

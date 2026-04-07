@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { PKRangeFilter } from "@/components/ui/pk-range-filter";
 import { Plus, Search, ClipboardCheck, Eye, Archive, CheckSquare, Square, Trash2, RotateCcw, Clock, CheckCircle2, XCircle, AlertTriangle, Send, BarChart3 } from "lucide-react";
 import { usePPIInstances } from "@/hooks/usePPI";
 import { useProject } from "@/contexts/ProjectContext";
@@ -48,6 +49,8 @@ export default function PPIPage() {
   const [search,      setSearch]      = useState("");
   const [filterDiscipline, setFilterDiscipline] = useState("all");
   const [filterStatus,     setFilterStatus]     = useState("all");
+  const [pkFrom, setPkFrom] = useState<number | null>(null);
+  const [pkTo, setPkTo]   = useState<number | null>(null);
   const [showDeleted,  setShowDeleted]  = useState(false);
   const [archiveItem, setArchiveItem] = useState<string | null>(null);
   const [archiving,   setArchiving]   = useState(false);
@@ -69,6 +72,16 @@ export default function PPIPage() {
   // ── Filtering ──────────────────────────────────────────────────────────────
   const filtered = useMemo(() => {
     let rows = data;
+    // Filtro por PK
+    if (pkFrom !== null || pkTo !== null) {
+      rows = rows.filter(r => {
+        const pk = (r as any).pk_inicio ?? null;
+        if (pk === null) return true; // sem PK definido — mostrar sempre
+        if (pkFrom !== null && pk < pkFrom) return false;
+        if (pkTo   !== null && pk > pkTo)   return false;
+        return true;
+      });
+    }
     if (search.trim()) {
       const q = search.toLowerCase();
       rows = rows.filter((r) => r.code.toLowerCase().includes(q));
@@ -80,7 +93,7 @@ export default function PPIPage() {
       rows = rows.filter((r) => r.status === filterStatus);
     }
     return rows;
-  }, [data, search, filterDiscipline, filterStatus]);
+  }, [data, search, filterDiscipline, filterStatus, pkFrom, pkTo]);
 
   // ── Selection helpers ──────────────────────────────────────────────────────
   const allSelected   = filtered.length > 0 && filtered.every((r) => selected.has(r.id));
@@ -268,6 +281,7 @@ export default function PPIPage() {
           </SelectContent>
         </Select>
 
+        <PKRangeFilter onFilter={(f, t) => { setPkFrom(f); setPkTo(t); }} />
         {/* Export menu — appears when rows exist */}
         {filtered.length > 0 && (
           <div className="ml-auto flex items-center gap-2">

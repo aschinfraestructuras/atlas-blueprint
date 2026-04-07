@@ -89,7 +89,10 @@
     "start": "Início",
     "sync": "Sincronizar",
     "clear": "Limpar",
-    "more": "mais"
+    "more": "mais",
+    "pkFrom": "PK Início",
+    "pkTo": "PK Fim",
+    "apply": "Aplicar"
   },
   "auth": {
     "signIn": "Iniciar sessão",
@@ -3575,7 +3578,7 @@
       "met": "Cumprido",
       "noLinks": "Sem documentos associados",
       "noRequirements": "Sem requisitos definidos",
-      "notMet": "Não cumprido",
+      "notMet": "Pendente",
       "reqMet": "Requisito cumprido",
       "reqNotMet": "Requisito não cumprido",
       "tabs": {
@@ -3583,7 +3586,9 @@
         "links": "Documentos",
         "overview": "Resumo",
         "requirements": "Requisitos"
-      }
+      },
+      "openNcs": "NCs Abertas no Elemento",
+      "warning": "Atenção"
     },
     "fields": {
       "actualEnd": "Data real fim",

@@ -39,6 +39,7 @@ interface RequirementStatus {
   label: string;
   required: boolean;
   met: boolean;
+  warning?: boolean; // aviso (amarelo) — não bloqueia mas deve ser verificado
   details: string;
   icon: React.ReactNode;
   link?: string;
@@ -68,6 +69,7 @@ export default function ActivityDetailPage() {
   // Requirement data
   const [topoRequests, setTopoRequests] = useState<any[]>([]);
   const [ppiInstances, setPpiInstances] = useState<any[]>([]);
+  const [openNcs, setOpenNcs] = useState<any[]>([]);
   const [testResults, setTestResults] = useState<any[]>([]);
   const [subcontractor, setSubcontractor] = useState<any>(null);
 
@@ -130,6 +132,21 @@ export default function ActivityDetailPage() {
           .from("ppi_instances").select("id, code, status, inspection_date")
           .eq("project_id", act.project_id).eq("work_item_id", act.work_item_id);
         setPpiInstances(data ?? []);
+      })());
+    }
+
+    // NCs abertas no work_item (sempre verificar, independente de flags)
+    if (act.work_item_id) {
+      promises.push((async () => {
+        const { data } = await supabase
+          .from("non_conformities")
+          .select("id, code, status, severity, title")
+          .eq("project_id", act.project_id)
+          .eq("work_item_id", act.work_item_id)
+          .eq("is_deleted", false)
+          .in("status", ["open", "in_progress", "pending_verification"])
+          .order("created_at", { ascending: false });
+        setOpenNcs(data ?? []);
       })());
     }
 
@@ -218,8 +235,25 @@ export default function ActivityDetailPage() {
       });
     }
 
+    // NCs abertas — sempre mostrar se existirem (aviso, não bloqueio)
+    if (openNcs.length > 0) {
+      const majorNcs = openNcs.filter(n => n.severity === 'major');
+      reqs.push({
+        key: "open_ncs",
+        label: t("planning.detail.openNcs", { defaultValue: "Não Conformidades Abertas" }),
+        required: false,
+        met: false,
+        warning: true,
+        details: majorNcs.length > 0
+          ? `${openNcs.length} NC(s) abertas — ${majorNcs.length} major(s). Verificar antes de concluir.`
+          : `${openNcs.length} NC(s) abertas. Verificar estado antes de concluir a actividade.`,
+        icon: <AlertTriangle className="h-4 w-4" />,
+        link: `/non-conformities?work_item=${activity.work_item_id}`,
+      });
+    }
+
     return reqs;
-  }, [activity, topoRequests, ppiInstances, testResults, t]);
+  }, [activity, topoRequests, ppiInstances, testResults, openNcs, t]);
 
   if (!activeProject) return <NoProjectBanner />;
 
@@ -408,15 +442,26 @@ export default function ActivityDetailPage() {
               <Card key={req.key}>
                 <CardContent className="py-4">
                   <div className="flex items-start gap-3">
-                    <div className={cn("mt-0.5 rounded-full p-1.5", req.met ? "bg-primary/10 text-primary" : "bg-destructive/10 text-destructive")}>
-                      {req.met ? <CheckCircle2 className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
+                    <div className={cn("mt-0.5 rounded-full p-1.5",
+                      req.met ? "bg-primary/10 text-primary" :
+                      req.warning ? "bg-amber-500/10 text-amber-600" :
+                      "bg-destructive/10 text-destructive"
+                    )}>
+                      {req.met ? <CheckCircle2 className="h-4 w-4" /> :
+                       req.warning ? <AlertTriangle className="h-4 w-4" /> :
+                       <XCircle className="h-4 w-4" />}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         {req.icon}
                         <span className="text-sm font-medium text-foreground">{req.label}</span>
-                        <Badge variant={req.met ? "default" : "destructive"} className="text-[10px]">
-                          {req.met ? t("planning.detail.met", { defaultValue: "Cumprido" }) : t("planning.detail.notMet", { defaultValue: "Pendente" })}
+                        <Badge
+                          variant={req.met ? "default" : req.warning ? "outline" : "destructive"}
+                          className={cn("text-[10px]", req.warning && !req.met && "border-amber-500 text-amber-600")}
+                        >
+                          {req.met ? t("planning.detail.met", { defaultValue: "Cumprido" }) :
+                           req.warning ? t("planning.detail.warning", { defaultValue: "Atenção" }) :
+                           t("planning.detail.notMet", { defaultValue: "Pendente" })}
                         </Badge>
                       </div>
                       <p className="text-xs text-muted-foreground mt-1">{req.details}</p>
