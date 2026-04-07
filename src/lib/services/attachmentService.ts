@@ -160,19 +160,27 @@ export const attachmentService = {
     }
 
     // 2. DB insert
+    const row: Record<string, unknown> = {
+      project_id: projectId,
+      entity_type: entityType,
+      entity_id: entityId,
+      file_path: storagePath,
+      file_name: file.name,
+      file_size: file.size,
+      mime_type: file.type || null,
+      uploaded_by: resolvedUser,
+      created_by: resolvedUser,
+    };
+    if (geo) {
+      row.latitude = geo.latitude;
+      row.longitude = geo.longitude;
+      row.accuracy_m = geo.accuracy_m;
+      row.captured_at = geo.captured_at;
+    }
+
     const { data, error: dbErr } = await supabase
       .from("attachments")
-      .insert({
-        project_id: projectId,
-        entity_type: entityType,
-        entity_id: entityId,
-        file_path: storagePath,
-        file_name: file.name,
-        file_size: file.size,
-        mime_type: file.type || null,
-        uploaded_by: resolvedUser,
-        created_by: resolvedUser,
-      })
+      .insert(row as any)
       .select()
       .single();
 
