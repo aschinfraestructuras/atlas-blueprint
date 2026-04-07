@@ -108,6 +108,7 @@ export default function DailyReportDetailPage() {
   const [waste, setWaste] = useState<WasteRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [approvedMaterials, setApprovedMaterials] = useState<ApprovedMaterial[]>([]);
+  const [linkedWorkItem, setLinkedWorkItem] = useState<{ id: string; sector: string; disciplina: string; elemento: string | null; parte: string | null; readiness_status: string } | null>(null);
 
   const reload = useCallback(async () => {
     if (!id) return;
@@ -122,6 +123,17 @@ export default function DailyReportDetailPage() {
         dailyReportService.getWaste(id),
       ]);
       setReport(dr); setLabour(lb); setEquipment(eq); setMaterials(mt); setRmm(rm); setWaste(ws);
+      // Fetch linked work item if present
+      if (dr?.work_item_id) {
+        const { data: wi } = await supabase
+          .from("work_items")
+          .select("id, sector, disciplina, elemento, parte, readiness_status")
+          .eq("id", dr.work_item_id)
+          .maybeSingle();
+        setLinkedWorkItem(wi ?? null);
+      } else {
+        setLinkedWorkItem(null);
+      }
     } catch { /* ignore */ }
     setLoading(false);
   }, [id]);
@@ -356,6 +368,42 @@ export default function DailyReportDetailPage() {
 
       {/* Quality context banner */}
       <QualityContextBanner reportId={id!} />
+
+      {/* WorkItem context card */}
+      {linkedWorkItem && (
+        <div className="flex items-center gap-3 rounded-lg border bg-card px-4 py-2.5">
+          <div className="flex-1 min-w-0">
+            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-0.5">
+              {t("dailyReports.linkedWorkItem", { defaultValue: "Elemento de Obra associado" })}
+            </p>
+            <div className="flex flex-wrap items-center gap-2 text-sm font-medium">
+              <span>{linkedWorkItem.sector}</span>
+              <span className="text-muted-foreground">·</span>
+              <span className="text-muted-foreground">{linkedWorkItem.disciplina}</span>
+              {linkedWorkItem.elemento && (
+                <><span className="text-muted-foreground">·</span><span>{linkedWorkItem.elemento}</span></>
+              )}
+              {linkedWorkItem.parte && (
+                <><span className="text-muted-foreground">·</span><span className="text-muted-foreground">{linkedWorkItem.parte}</span></>
+              )}
+            </div>
+          </div>
+          <Badge className={
+            linkedWorkItem.readiness_status === "ready"    ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300" :
+            linkedWorkItem.readiness_status === "blocked"  ? "bg-destructive/15 text-destructive" :
+            "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300"
+          }>
+            {t(`workItems.readiness.${linkedWorkItem.readiness_status}`, { defaultValue: linkedWorkItem.readiness_status })}
+          </Badge>
+          <Link
+            to={`/work-items/${linkedWorkItem.id}`}
+            className="flex items-center gap-1 text-primary text-xs underline-offset-2 hover:underline"
+          >
+            {t("common.viewDetails", { defaultValue: "Ver detalhe" })}
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </Link>
+        </div>
+      )}
 
       {/* Section 1: Identification — editable */}
       <Card>

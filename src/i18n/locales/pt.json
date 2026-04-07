@@ -2419,13 +2419,21 @@
         "planning": "Planeamento",
         "ppi": "PPIs",
         "tests": "Ensaios",
-        "physicalTests": "Ensaios físicos"
+        "physicalTests": "Ensaios físicos",
+        "dailyReports": "Partes Diárias"
       },
       "testsTab": {
         "suggestion": "Sugestão de ensaio"
       },
       "testsTimeline": {
         "title": "Cronograma de Ensaios"
+      },
+      "dailyReports": {
+        "empty": "Ainda não há partes diárias associadas a este elemento de obra.",
+        "goTo": "Ir para Partes Diárias",
+        "total": "Total",
+        "hours": "Horas registadas",
+        "withAlerts": "Com alertas qualidade"
       }
     },
     "export": {
@@ -3662,7 +3670,8 @@
       "sectionLinks": "Ligações",
       "sectionDates": "Datas e Progresso",
       "sectionRequirements": "Requisitos de Qualidade"
-    }
+    },
+    "readiness": "Prontidão"
   },
   "mapMas": {
     "title": "Aprovação MAP/MAS",
@@ -4154,7 +4163,8 @@
     "contextBanner": "Atenção — elemento tem pendências",
     "ncOpen": "{{count}} NC(s) abertas",
     "hpPending": "{{count}} HP(s) pendentes",
-    "testsOverdue": "{{count}} ensaio(s) em atraso"
+    "testsOverdue": "{{count}} ensaio(s) em atraso",
+    "linkedWorkItem": "Elemento de Obra associado"
   },
   "recycled": {
     "exportPpgrcd": "Exportar Ficha PPGRCD",

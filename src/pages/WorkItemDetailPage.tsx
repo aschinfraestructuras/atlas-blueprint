@@ -4,7 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   ArrowLeft, Construction, FlaskConical, AlertTriangle, Paperclip,
-  Pencil, Calendar, MapPin, ClipboardCheck, Plus, Eye, FileDown, FileText, Loader2,
+  Pencil, Calendar, MapPin, ClipboardCheck, Plus, Eye, FileDown, FileText, Loader2, ClipboardList,
   CheckCircle2, XCircle, Clock, Crosshair, Target, Map, ListTodo,
   ShieldCheck, ShieldAlert, Copy, Package, Trash2,
   Layers, Flame, Mountain,
@@ -21,6 +21,7 @@ import { concreteService, computeBatchResult, type ConcreteBatch } from "@/lib/s
 import { weldService, type WeldRecord } from "@/lib/services/weldService";
 import { soilService, type SoilSample } from "@/lib/services/soilService";
 import { WorkItemFormDialog } from "@/components/work-items/WorkItemFormDialog";
+import { WorkItemDailyReportsTab } from "@/components/work-items/WorkItemDailyReportsTab";
 import { WorkItemReportPreview } from "@/components/work-items/WorkItemReportPreview";
 import type { WorkItemReportData } from "@/components/work-items/WorkItemReportPreview";
 import { PPIStatusBadge } from "@/components/ppi/PPIStatusBadge";
@@ -1342,6 +1343,10 @@ export default function WorkItemDetailPage() {
             <FlaskConical className="h-3.5 w-3.5" />
             {t("workItems.detail.tabs.physicalTests")}
           </TabsTrigger>
+          <TabsTrigger value="dailyReports" className="gap-1.5">
+            <ClipboardList className="h-3.5 w-3.5" />
+            {t("workItems.detail.tabs.dailyReports", { defaultValue: "Partes Diárias" })}
+          </TabsTrigger>
           <TabsTrigger value="attachments" className="gap-1.5">
             <Paperclip className="h-3.5 w-3.5" />
             {t("workItems.detail.tabs.attachments")}
@@ -1494,6 +1499,11 @@ export default function WorkItemDetailPage() {
         {/* Physical Tests tab — grouped */}
         <TabsContent value="physicalTests" className="mt-4">
           <PhysicalTestsGroupedTab workItemId={item.id} projectId={activeProject?.id ?? ""} />
+        </TabsContent>
+
+        {/* Daily Reports tab */}
+        <TabsContent value="dailyReports" className="mt-4">
+          <WorkItemDailyReportsTab workItemId={item.id} projectId={activeProject?.id ?? ""} />
         </TabsContent>
 
         {/* Attachments tab */}
