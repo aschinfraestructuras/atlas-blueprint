@@ -239,7 +239,7 @@ export function AttachmentsPanel({
     if (!previewFile || !entityId || !user) return;
     setUploading(true);
     try {
-      await attachmentService.upload(previewFile, projectId, entityType, entityId, user.id);
+      await attachmentService.upload(previewFile, projectId, entityType, entityId, user.id, previewGeo);
       toast({ title: t("attachments.toast.uploaded", { name: previewFile.name }) });
       refetch();
     } catch (err) {
