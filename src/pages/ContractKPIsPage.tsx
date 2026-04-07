@@ -151,10 +151,8 @@ export default function ContractKPIsPage() {
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       <PageHeader
-        titleKey="kpis.title"
-        subtitleKey="kpis.subtitle"
-        defaultTitle="KPIs de Contrato"
-        defaultSubtitle="Indicadores de qualidade exigidos pelo dono de obra"
+        title={t("kpis.title", { defaultValue: "KPIs de Contrato" })}
+        subtitle={t("kpis.subtitle", { defaultValue: "Indicadores de qualidade exigidos pelo dono de obra" })}
       />
 
       {/* ── Semáforo principal ───────────────────────────────────────── */}
