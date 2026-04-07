@@ -194,6 +194,7 @@ export function AttachmentsPanel({
   // Camera preview state
   const [previewFile, setPreviewFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewGeo, setPreviewGeo] = useState<GeoData | null>(null);
   const [compressing, setCompressing] = useState(false);
 
   const showCamera = isTouchDevice();
