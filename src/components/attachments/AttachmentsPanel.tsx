@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAttachments } from "@/hooks/useAttachments";
-import { attachmentService, type EntityType } from "@/lib/services/attachmentService";
+import { attachmentService, type EntityType, type GeoData } from "@/lib/services/attachmentService";
 import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
