@@ -60,6 +60,25 @@ function isTouchDevice(): boolean {
   return "ontouchstart" in window || navigator.maxTouchPoints > 0;
 }
 
+// ─── Geolocation helper ─────────────────────────────────────────────────────
+
+function captureGeo(timeoutMs = 8000): Promise<GeoData | null> {
+  if (!navigator.geolocation) return Promise.resolve(null);
+  return new Promise((resolve) => {
+    navigator.geolocation.getCurrentPosition(
+      (pos) =>
+        resolve({
+          latitude: pos.coords.latitude,
+          longitude: pos.coords.longitude,
+          accuracy_m: pos.coords.accuracy ?? null,
+          captured_at: new Date().toISOString(),
+        }),
+      () => resolve(null),
+      { enableHighAccuracy: true, timeout: timeoutMs, maximumAge: 30_000 }
+    );
+  });
+}
+
 // ─── Image compression ──────────────────────────────────────────────────────
 
 function compressImage(file: File, maxDim = 1920, quality = 0.85): Promise<File> {
