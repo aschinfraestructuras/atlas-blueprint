@@ -65,6 +65,7 @@ export default function PPIPage() {
   }, [activeProject, data]);
 
   // ── Selection for bulk export ──────────────────────────────────────────────
+  const [viewMode, setViewMode] = useState<"table" | "cards">("table");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [loadingExport, setLoadingExport] = useState(false);
   const [exportInstances, setExportInstances] = useState<PpiInstanceForExport[]>([]);
@@ -282,6 +283,15 @@ export default function PPIPage() {
         </Select>
 
         <PKRangeFilter onFilter={(f, t) => { setPkFrom(f); setPkTo(t); }} />
+        {/* Toggle vista */}
+        <div className="flex items-center border border-border rounded-lg overflow-hidden">
+          <button onClick={() => setViewMode("table")}
+            className={`px-2.5 py-1.5 text-xs transition-colors ${viewMode === "table" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
+            title="Vista tabela">☰</button>
+          <button onClick={() => setViewMode("cards")}
+            className={`px-2.5 py-1.5 text-xs transition-colors ${viewMode === "cards" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
+            title="Vista cards">⊞</button>
+        </div>
         {/* Export menu — appears when rows exist */}
         {filtered.length > 0 && (
           <div className="ml-auto flex items-center gap-2">
@@ -321,6 +331,36 @@ export default function PPIPage() {
             : {})}
         />
       ) : (
+        <>
+        {viewMode === "cards" ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {filtered.map((inst) => (
+              <div key={inst.id}
+                className="rounded-xl border border-border bg-card p-3 cursor-pointer hover:shadow-md hover:border-primary/20 transition-all active:scale-[0.99]"
+                onClick={() => navigate(`/ppi/${inst.id}`)}>
+                <div className="flex items-start justify-between gap-2 mb-2">
+                  <div className="min-w-0 flex-1">
+                    <p className="font-mono text-sm font-bold text-foreground">{inst.code}</p>
+                    {inst.template_disciplina && (
+                      <p className="text-xs text-muted-foreground capitalize mt-0.5">
+                        {t(`ppi.disciplinas.${inst.template_disciplina}`, { defaultValue: inst.template_disciplina })}
+                      </p>
+                    )}
+                  </div>
+                  <PPIStatusBadge status={inst.status} />
+                </div>
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span>{inst.inspection_date ? new Date(inst.inspection_date + "T12:00:00").toLocaleDateString() : "—"}</span>
+                  {(inst as any).hp_pending_count > 0 && (
+                    <Badge variant="secondary" className="bg-destructive/10 text-destructive text-xs font-bold">
+                      HP: {(inst as any).hp_pending_count}
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
         <div className="rounded-xl border border-border overflow-hidden bg-card shadow-card">
           <Table>
             <TableHeader>
@@ -459,6 +499,8 @@ export default function PPIPage() {
             </TableBody>
           </Table>
         </div>
+        )}
+        </>
       )}
 
       {/* ── New Instance dialog ──────────────────────────────────────── */}
