@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAttachments } from "@/hooks/useAttachments";
-import { attachmentService, type EntityType, type GeoData } from "@/lib/services/attachmentService";
+import { attachmentService, getSignedUrlForPath, type EntityType, type GeoData } from "@/lib/services/attachmentService";
 import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -34,7 +34,7 @@ import {
 import {
   Paperclip, Upload, Download, Trash2, Loader2,
   FileText, FileSpreadsheet, FileImage, FileArchive, File,
-  Camera, MapPin,
+  Camera, MapPin, Eye, ExternalLink,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Attachment } from "@/lib/services/attachmentService";
@@ -193,6 +193,9 @@ export function AttachmentsPanel({
 
   // Camera preview state
   const [previewFile, setPreviewFile] = useState<File | null>(null);
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
+  const [lightboxName, setLightboxName] = useState<string>("");
+  const [viewingId, setViewingId] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewGeo, setPreviewGeo] = useState<GeoData | null>(null);
   const [compressing, setCompressing] = useState(false);
@@ -295,6 +298,26 @@ export function AttachmentsPanel({
       });
     } finally {
       setUploading(false);
+    }
+  };
+
+  // ── View (lightbox para imagens, nova aba para PDF) ───────────────────────
+
+  const handleView = async (att: Attachment) => {
+    const isImg = isImageFile(att.file_name);
+    setViewingId(att.id);
+    try {
+      const url = await getSignedUrlForPath(att.file_path, 300);
+      if (isImg) {
+        setLightboxUrl(url);
+        setLightboxName(att.file_name);
+      } else {
+        window.open(url, "_blank", "noopener,noreferrer");
+      }
+    } catch {
+      toast({ title: t("attachments.toast.downloadError", { name: att.file_name }), variant: "destructive" });
+    } finally {
+      setViewingId(null);
     }
   };
 
@@ -498,6 +521,30 @@ export function AttachmentsPanel({
 
                   {/* Actions */}
                   <div className="flex items-center gap-0.5 flex-shrink-0">
+                    {/* Botão Ver */}
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 text-muted-foreground hover:text-primary"
+                          onClick={() => handleView(att)}
+                          disabled={viewingId === att.id}
+                        >
+                          {viewingId === att.id
+                            ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                            : att.file_name.toLowerCase().endsWith(".pdf")
+                              ? <ExternalLink className="h-3.5 w-3.5" />
+                              : <Eye className="h-3.5 w-3.5" />}
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="top">
+                        {att.file_name.toLowerCase().endsWith(".pdf")
+                          ? t("attachments.openPdf", { defaultValue: "Abrir PDF" })
+                          : t("attachments.view", { defaultValue: "Ver imagem" })}
+                      </TooltipContent>
+                    </Tooltip>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Button
@@ -608,6 +655,30 @@ export function AttachmentsPanel({
           </DialogContent>
         </Dialog>
       </div>
+      {/* Lightbox para imagens */}
+      {lightboxUrl && (
+        <div
+          className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
+          onClick={() => setLightboxUrl(null)}
+        >
+          <div className="relative max-w-5xl max-h-full" onClick={e => e.stopPropagation()}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute -top-10 right-0 text-white hover:bg-white/20"
+              onClick={() => setLightboxUrl(null)}
+            >
+              ✕
+            </Button>
+            <p className="text-white text-xs mb-2 truncate max-w-md">{lightboxName}</p>
+            <img
+              src={lightboxUrl}
+              alt={lightboxName}
+              className="max-w-full max-h-[85vh] rounded-lg shadow-2xl object-contain"
+            />
+          </div>
+        </div>
+      )}
     </TooltipProvider>
   );
 }

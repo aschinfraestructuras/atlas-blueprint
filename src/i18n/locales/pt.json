@@ -3005,7 +3005,9 @@
     "geo": {
       "openMap": "Abrir no Google Maps",
       "unavailable": "GPS não disponível"
-    }
+    },
+    "view": "Ver imagem",
+    "openPdf": "Abrir PDF"
   },
   "report": {
     "generatedOn": "Gerado em",

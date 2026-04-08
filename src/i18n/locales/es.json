@@ -3090,7 +3090,9 @@
     "geo": {
       "openMap": "Abrir en Google Maps",
       "unavailable": "GPS no disponible"
-    }
+    },
+    "view": "Ver imagen",
+    "openPdf": "Abrir PDF"
   },
   "report": {
     "generatedOn": "Generado el",
