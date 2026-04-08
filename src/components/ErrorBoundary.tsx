@@ -51,9 +51,14 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
             <br />
             La aplicación encontró un problema. Intente recargar la página.
           </p>
-          {import.meta.env.DEV && this.state.error && (
+          {this.state.error && (
             <pre className="mt-4 max-h-40 overflow-auto rounded-md border border-border bg-muted p-3 text-left text-xs text-destructive">
               {this.state.error.message}
+              {"
+"}
+              {this.state.error.stack?.split("
+").slice(0,5).join("
+")}
             </pre>
           )}
           <button
