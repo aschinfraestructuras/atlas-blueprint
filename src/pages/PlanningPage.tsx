@@ -197,6 +197,12 @@ export default function PlanningPage() {
   }, [activities, wbs]);
   const wbsById = useMemo(() => new Map(wbs.map(w => [w.id, w])), [wbs]);
 
+  // Este useMemo TEM de estar antes do return condicional — Rules of Hooks
+  const selectedWbsNode = useMemo(
+    () => wbs.find(w => w.id === selectedWbsId),
+    [wbs, selectedWbsId]
+  );
+
   if (!activeProject) return <NoProjectBanner />;
 
   const meta = reportMeta ?? { projectName: activeProject.name, projectCode: activeProject.code, locale: i18n.language?.startsWith("es") ? "es" : "pt", generatedBy: user?.email ?? undefined };
@@ -210,11 +216,6 @@ export default function PlanningPage() {
     setSelectedWbsId(prev => prev === node.id ? null : node.id);
     setActiveTab("activities");
   };
-
-  const selectedWbsNode = useMemo(
-    () => wbs.find(w => w.id === selectedWbsId),
-    [wbs, selectedWbsId]
-  );
 
   const toggleWbsExpand = (id: string) => {
     setExpandedWbs(prev => {
