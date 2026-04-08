@@ -23,6 +23,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { FilterBar } from "@/components/ui/filter-bar";
+import { PKRangeFilter } from "@/components/ui/pk-range-filter";
 import {
   Plus, AlertTriangle, CheckCircle, Clock, Wrench, FileText, Target, Trash2, Pencil, Search,
   Map, ShieldAlert, FolderOpen, Eye,
@@ -148,6 +149,8 @@ export default function TopographyPage() {
   const [filterCtrlResult, setFilterCtrlResult] = useState("__all__");
   const [filterSurveyStatus, setFilterSurveyStatus] = useState("__all__");
   const [filterEqCalStatus, setFilterEqCalStatus] = useState("__all__");
+  const [pkFrom, setPkFrom] = useState<number | null>(null);
+  const [pkTo, setPkTo] = useState<number | null>(null);
 
   const filteredSurveys = useMemo(() => {
     let list = surveys;
@@ -177,8 +180,10 @@ export default function TopographyPage() {
     let list = controls;
     if (search) { const q = search.toLowerCase(); list = list.filter(c => c.element.toLowerCase().includes(q) || (c.zone ?? "").toLowerCase().includes(q) || (c.technician ?? "").toLowerCase().includes(q)); }
     if (filterCtrlResult !== "__all__") list = list.filter(c => c.result === filterCtrlResult);
+    if (pkFrom !== null) list = list.filter(c => { const pk = parseFloat(String(c.zone ?? "").replace("PK","").trim()); return isNaN(pk) || pk >= pkFrom; });
+    if (pkTo !== null) list = list.filter(c => { const pk = parseFloat(String(c.zone ?? "").replace("PK","").trim()); return isNaN(pk) || pk <= pkTo; });
     return list;
-  }, [controls, search, filterCtrlResult]);
+  }, [controls, search, filterCtrlResult, pkFrom, pkTo]);
 
   // Arquivo Topográfico: ALL docs with disciplina=topografia
   const topoDocuments = useMemo(() => {
@@ -330,14 +335,17 @@ export default function TopographyPage() {
               </Select>
             )}
             {activeTab === "controls" && (
-              <Select value={filterCtrlResult} onValueChange={setFilterCtrlResult}>
-                <SelectTrigger className="w-[160px] h-8 text-sm"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__all__">{t("topography.filters.allResults")}</SelectItem>
-                  <SelectItem value="conforme">{t("topography.result.conforme")}</SelectItem>
-                  <SelectItem value="nao_conforme">{t("topography.result.nao_conforme")}</SelectItem>
-                </SelectContent>
-              </Select>
+              <>
+                <Select value={filterCtrlResult} onValueChange={setFilterCtrlResult}>
+                  <SelectTrigger className="w-[160px] h-8 text-sm"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__all__">{t("topography.filters.allResults")}</SelectItem>
+                    <SelectItem value="conforme">{t("topography.result.conforme")}</SelectItem>
+                    <SelectItem value="nao_conforme">{t("topography.result.nao_conforme")}</SelectItem>
+                  </SelectContent>
+                </Select>
+                <PKRangeFilter onFilter={(f, t) => { setPkFrom(f); setPkTo(t); }} />
+              </>
             )}
           </FilterBar>
         </div>

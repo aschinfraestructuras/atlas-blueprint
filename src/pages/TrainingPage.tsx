@@ -129,6 +129,9 @@ export default function TrainingPage() {
     })();
   }, [activeProject]);
 
+  // useState tem de estar antes do return condicional — Rules of Hooks
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+
   if (!activeProject) return <NoProjectBanner />;
 
   const resetForm = () => {
@@ -179,7 +182,6 @@ export default function TrainingPage() {
     }
   };
 
-  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   const confirmDeleteSession = async () => {
     if (!deleteTargetId) return;
     try {

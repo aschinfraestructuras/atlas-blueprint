@@ -244,22 +244,7 @@ export default function TechnicalOfficePage() {
     return { open: openCount, answered: answeredCount, overdue: overdueCount, closed: closedCount };
   }, [rfis, todayStr]);
 
-  if (!activeProject) return <NoProjectBanner />;
-
-  const meta = reportMeta ?? { projectName: activeProject.name, projectCode: activeProject.code, locale: "pt" };
-
-  const handleNew = () => { setEditingItem(null); setDialogOpen(true); };
-
-  const handleSoftDeleteItem = async (id: string) => {
-    try { await technicalOfficeService.softDelete(id, activeProject.id); toast.success(t("technicalOffice.toast.deleted", { defaultValue: "Eliminado" })); refetch(); }
-    catch { toast.error(t("common.deleteError", { defaultValue: "Erro ao eliminar" })); }
-  };
-
-  const handleSoftDeleteRfi = async (rfi: Rfi) => {
-    try { await rfiService.softDelete(rfi.id, activeProject.id); toast.success(t("technicalOffice.toast.rfiDeleted")); refetchRfis(); }
-    catch { toast.error(t("common.deleteError", { defaultValue: "Erro ao eliminar" })); }
-  };
-
+  // Hooks têm de estar antes de qualquer return condicional
   const [searchParams] = useSearchParams();
 
   // Abrir RFI pré-preenchido quando vem do HPNotificationPanel
@@ -276,6 +261,23 @@ export default function TechnicalOfficePage() {
       setRfiFormOpen(true);
     }
   }, [searchParams]);
+
+  if (!activeProject) return <NoProjectBanner />;
+
+  const meta = reportMeta ?? { projectName: activeProject.name, projectCode: activeProject.code, locale: "pt" };
+
+  const handleNew = () => { setEditingItem(null); setDialogOpen(true); };
+
+  const handleSoftDeleteItem = async (id: string) => {
+    try { await technicalOfficeService.softDelete(id, activeProject.id); toast.success(t("technicalOffice.toast.deleted", { defaultValue: "Eliminado" })); refetch(); }
+    catch { toast.error(t("common.deleteError", { defaultValue: "Erro ao eliminar" })); }
+  };
+
+  const handleSoftDeleteRfi = async (rfi: Rfi) => {
+    try { await rfiService.softDelete(rfi.id, activeProject.id); toast.success(t("technicalOffice.toast.rfiDeleted")); refetchRfis(); }
+    catch { toast.error(t("common.deleteError", { defaultValue: "Erro ao eliminar" })); }
+  };
+
 
   const handleNewRfi = () => { setEditingRfi(null); setRfiFormOpen(true); };
 
