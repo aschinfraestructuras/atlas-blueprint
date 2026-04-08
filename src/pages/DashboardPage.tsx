@@ -10,6 +10,7 @@ import { useRealtimeProject } from "@/hooks/useRealtimeProject";
 import {
   AlertTriangle, Package, Crosshair, CalendarClock,
   ClipboardCheck, FlaskConical, Clock, ArrowRight, Leaf, FileBarChart2, Bell,
+  ClipboardList, Zap,
   Calendar, Zap, ShieldCheck,
 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -498,6 +499,69 @@ export default function DashboardPage() {
             <p className="text-sm text-muted-foreground">{t("recycled.kpi.target", { defaultValue: "Meta PPGRCD" })}: 5%</p>
           </CardContent>
         </Card>
+      </div>
+
+      {/* ══ ROW 5c — Partes Diárias + Topografia ═══════════════ */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 animate-fade-in" style={{ animationDelay: "230ms", animationFillMode: "both" }}>
+        {[
+          {
+            icon: ClipboardList,
+            label: t("dashboard.kpi.dailyReports", { defaultValue: "Partes Diárias" }),
+            value: kpis.dailyReportsTotal,
+            sub: t("dashboard.kpi.dailyReportsValidated", { defaultValue: `${kpis.dailyReportsValidated} validadas` }),
+            color: "hsl(210, 65%, 50%)",
+            route: "/daily-reports",
+          },
+          {
+            icon: Crosshair,
+            label: t("dashboard.kpi.topoControls", { defaultValue: "Controlos Topográficos" }),
+            value: kpis.topoControlsTotal,
+            sub: kpis.topoControlsTotal > 0
+              ? `${Math.round((kpis.topoControlsConforme / kpis.topoControlsTotal) * 100)}% conformes`
+              : t("common.noData", { defaultValue: "Sem dados" }),
+            color: kpis.topoControlsTotal > 0 && kpis.topoControlsConforme === kpis.topoControlsTotal
+              ? "hsl(145, 55%, 42%)"
+              : "hsl(38, 85%, 50%)",
+            route: "/topography",
+          },
+          {
+            icon: ClipboardCheck,
+            label: t("dashboard.kpi.ppiTotal", { defaultValue: "PPIs Registados" }),
+            value: kpis.ppiTotal,
+            sub: t("dashboard.kpi.ppiApproved", { defaultValue: `${kpis.ppiApproved} aprovados` }),
+            color: kpis.ppiApproved === kpis.ppiTotal && kpis.ppiTotal > 0
+              ? "hsl(145, 55%, 42%)"
+              : "hsl(210, 65%, 50%)",
+            route: "/ppi",
+          },
+          {
+            icon: Zap,
+            label: t("dashboard.kpi.weldsPendingUtShort", { defaultValue: "Soldaduras s/ US" }),
+            value: kpis.weldsPendingUt,
+            sub: kpis.weldsPendingUt === 0
+              ? t("common.ok", { defaultValue: "Tudo inspeccionado" })
+              : t("dashboard.kpi.pendingInspection", { defaultValue: "Pendentes de inspecção" }),
+            color: kpis.weldsPendingUt > 0 ? "hsl(0, 65%, 50%)" : "hsl(145, 55%, 42%)",
+            route: "/tests",
+          },
+        ].map(({ icon: Icon, label, value, sub, color, route }) => (
+          <Card key={label} className="cursor-pointer hover:shadow-md transition-all border-border bg-card"
+            onClick={() => navigate(route)}>
+            <CardContent className="p-3 flex items-center gap-3">
+              <div className="flex-shrink-0 h-9 w-9 rounded-lg flex items-center justify-center"
+                style={{ backgroundColor: `${color}18` }}>
+                <Icon className="h-4 w-4" style={{ color }} />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xl font-black tabular-nums text-foreground leading-none">
+                  {kpiLoading ? "—" : value}
+                </p>
+                <p className="text-[10px] font-semibold text-muted-foreground truncate mt-0.5">{label}</p>
+                <p className="text-[10px] text-muted-foreground/70 truncate">{kpiLoading ? "" : sub}</p>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
       {/* ══ ROW 6 — Module Shortcuts ═══════════════════════ */}

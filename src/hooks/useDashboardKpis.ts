@@ -25,6 +25,10 @@ export interface DashboardKpis {
   matTotal: number;
   weldsPendingUt: number;
   recentActivity: RecentItem[];
+  dailyReportsTotal: number;
+  dailyReportsValidated: number;
+  topoControlsTotal: number;
+  topoControlsConforme: number;
 }
 
 const EMPTY: DashboardKpis = {
@@ -54,6 +58,8 @@ export function useDashboardKpis() {
         matApprovedRes, matTotalRes,
         recentNcRes, recentLotRes, recentPpiRes, recentTestRes,
         ppiInProgressRes, testsOverdueRes, weldsPendingUtRes,
+        dailyRptTotalRes, dailyRptValidatedRes,
+        topoTotalRes, topoConformeRes,
       ] = await Promise.all([
         // NCs abertas (not closed, not archived)
         (supabase as any).from("non_conformities")
@@ -128,6 +134,20 @@ export function useDashboardKpis() {
         (supabase as any).from("weld_records")
           .select("id", { count: "exact", head: true })
           .eq("project_id", pid).eq("has_ut", false),
+        // Partes Diárias
+        (supabase as any).from("daily_reports")
+          .select("id", { count: "exact", head: true })
+          .eq("project_id", pid).eq("is_deleted", false),
+        (supabase as any).from("daily_reports")
+          .select("id", { count: "exact", head: true })
+          .eq("project_id", pid).eq("is_deleted", false).eq("status", "validated"),
+        // Topografia
+        (supabase as any).from("topography_controls")
+          .select("id", { count: "exact", head: true })
+          .eq("project_id", pid),
+        (supabase as any).from("topography_controls")
+          .select("id", { count: "exact", head: true })
+          .eq("project_id", pid).eq("result", "conforme"),
       ]);
 
       const recent: RecentItem[] = [];
@@ -155,6 +175,10 @@ export function useDashboardKpis() {
         matApproved: matApprovedRes.count ?? 0,
         matTotal: matTotalRes.count ?? 0,
         weldsPendingUt: weldsPendingUtRes.count ?? 0,
+        dailyReportsTotal: dailyRptTotalRes.count ?? 0,
+        dailyReportsValidated: dailyRptValidatedRes.count ?? 0,
+        topoControlsTotal: topoTotalRes.count ?? 0,
+        topoControlsConforme: topoConformeRes.count ?? 0,
         recentActivity: recent.slice(0, 8),
       });
     } catch (err) {

@@ -355,7 +355,14 @@
       "nextAudit": "Próxima Auditoría",
       "ppiInProgress": "PPIs en Curso",
       "testsOverdue": "Ensayos Atrasados",
-      "weldsPendingUt": "Soldaduras sin US"
+      "weldsPendingUt": "Soldaduras sin US",
+      "dailyReports": "Partes Diarias",
+      "dailyReportsValidated": "{count} validadas",
+      "topoControls": "Controles Topográficos",
+      "ppiTotal": "PPIs Registrados",
+      "ppiApproved": "{count} aprobados",
+      "weldsPendingUtShort": "Soldaduras s/ US",
+      "pendingInspection": "Pendientes de inspección"
     },
     "period": {
       "all": "Todo el período",
