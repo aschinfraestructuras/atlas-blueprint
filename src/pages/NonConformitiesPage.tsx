@@ -130,6 +130,7 @@ export default function NonConformitiesPage() {
   const [filterDiscipline, setFilterDiscipline] = useState("all");
   const [dateFrom, setDateFrom]         = useState("");
   const [dateTo, setDateTo]             = useState("");
+  const [viewMode, setViewMode]         = useState<"table" | "cards">("table");
 
   // Dialog
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -522,12 +523,19 @@ export default function NonConformitiesPage() {
           </Button>
         )}
 
-        <span className="ml-auto text-xs text-muted-foreground tabular-nums">
+        <span className="text-xs text-muted-foreground tabular-nums">
           {filtered.length} {t("nc.filters.results")}
         </span>
         <PKRangeFilter onFilter={(f, t) => { setPkFrom(f); setPkTo(t); }} />
+        <div className="flex items-center border border-border rounded-lg overflow-hidden ml-auto">
+          <button onClick={() => setViewMode("table")}
+            className={`px-2.5 py-1.5 text-xs transition-colors ${viewMode === "table" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
+            title="Tabela">☰</button>
+          <button onClick={() => setViewMode("cards")}
+            className={`px-2.5 py-1.5 text-xs transition-colors ${viewMode === "cards" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
+            title="Cards">⊞</button>
+        </div>
       </FilterBar>
-
 
       {/* ── Bulk action bar ──────────────────────────────────────────────── */}
       {selected.size > 0 && (
@@ -566,7 +574,7 @@ export default function NonConformitiesPage() {
         </div>
       )}
 
-      {/* ── Table ───────────────────────────────────────────────────────── */}
+      {/* ── Table / Cards ────────────────────────────────────────────── */}
       {loading ? (
         <div className="rounded-xl border border-border overflow-hidden divide-y divide-border">
           {Array.from({ length: 5 }).map((_, i) => (
@@ -580,6 +588,47 @@ export default function NonConformitiesPage() {
         </div>
       ) : filtered.length === 0 ? (
         <EmptyState icon={AlertTriangle} subtitleKey="emptyState.nonConformities.subtitle" />
+      ) : viewMode === "cards" ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {filtered.map(nc => {
+            const isOverdue = nc.due_date && new Date(nc.due_date) < new Date() && nc.status !== "closed" && nc.status !== "archived";
+            const classif = (nc as any).classification;
+            return (
+              <div key={nc.id}
+                className={cn("rounded-xl border bg-card p-3 cursor-pointer hover:shadow-md hover:border-primary/20 transition-all active:scale-[0.99]",
+                  isOverdue ? "border-destructive/40" : "border-border")}
+                onClick={() => navigate(`/non-conformities/${nc.id}`)}>
+                <div className="flex items-start justify-between gap-2 mb-1.5">
+                  <div className="min-w-0 flex-1">
+                    <p className="font-mono text-xs text-muted-foreground">{nc.code ?? nc.reference ?? "—"}</p>
+                    <p className="text-sm font-semibold text-foreground truncate mt-0.5">
+                      {nc.title || nc.description}
+                    </p>
+                  </div>
+                  <NCStatusBadge status={nc.status} />
+                </div>
+                <div className="flex items-center gap-2 mt-2 flex-wrap">
+                  {classif && (
+                    <Badge variant="secondary" className={cn("text-[10px]",
+                      classif === "maior" ? "bg-destructive/10 text-destructive" :
+                      classif === "menor" ? "bg-amber-500/15 text-amber-600" :
+                      "bg-primary/10 text-primary")}>
+                      {classif}
+                    </Badge>
+                  )}
+                  {isOverdue && (
+                    <Badge variant="destructive" className="text-[10px]">
+                      Prazo vencido
+                    </Badge>
+                  )}
+                  {nc.due_date && !isOverdue && (
+                    <span className="text-[10px] text-muted-foreground">{nc.due_date}</span>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
       ) : (
         <div className="rounded-xl border border-border overflow-hidden">
           <Table>
