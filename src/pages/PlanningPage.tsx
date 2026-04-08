@@ -399,6 +399,7 @@ export default function PlanningPage() {
           ) : wbsTree.length === 0 ? (
             <EmptyState icon={Network} subtitleKey={wbs.length === 0 ? "emptyState.planning.wbs" : "emptyState.noResults"} />
           ) : (
+            <>
             {selectedWbsNode && (
               <div className="flex items-center gap-2 px-1 py-2 mb-2 text-sm bg-primary/5 border border-primary/20 rounded-lg">
                 <Filter className="h-3.5 w-3.5 text-primary flex-shrink-0" />
@@ -466,6 +467,7 @@ export default function PlanningPage() {
                 </TableBody>
               </Table>
             </div>
+          </>
           )}
         </TabsContent>
 
@@ -482,6 +484,7 @@ export default function PlanningPage() {
           ) : filteredActivities.length === 0 ? (
             <EmptyState icon={ListChecks} subtitleKey={activities.length === 0 ? "emptyState.planning.activities" : "emptyState.noResults"} />
           ) : (
+            <>
             {selectedWbsNode && (
               <div className="flex items-center gap-2 px-1 py-2 mb-2 text-sm bg-primary/5 border border-primary/20 rounded-lg">
                 <Filter className="h-3.5 w-3.5 text-primary flex-shrink-0" />
@@ -554,6 +557,7 @@ export default function PlanningPage() {
                 </TableBody>
               </Table>
             </div>
+          </>
           )}
         </TabsContent>
       </Tabs>
