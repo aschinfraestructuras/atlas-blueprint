@@ -63,6 +63,7 @@ export default function DailyReportsPage() {
   };
 
   const [search, setSearch] = useState("");
+  const [viewMode, setViewMode] = useState<"table" | "cards">("cards");
   const [statusFilter, setStatusFilter] = useState("all");
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -159,22 +160,53 @@ export default function DailyReportsPage() {
             <SelectItem value="validated">{t("dailyReports.status.validated")}</SelectItem>
           </SelectContent>
         </Select>
-        <span className="ml-auto text-xs text-muted-foreground tabular-nums">
-          {filtered.length} / {data.length}
-        </span>
+        <div className="flex items-center border border-border rounded-lg overflow-hidden ml-auto">
+          <button onClick={() => setViewMode("cards")}
+            className={`px-2.5 py-1.5 text-xs transition-colors ${viewMode === "cards" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
+            title="Cards">⊞</button>
+          <button onClick={() => setViewMode("table")}
+            className={`px-2.5 py-1.5 text-xs transition-colors ${viewMode === "table" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
+            title="Tabela">☰</button>
+        </div>
       </FilterBar>
 
-      {/* Table */}
+      {/* List / Cards */}
+      {loading ? (
+        <div className="p-8 text-center text-muted-foreground">{t("common.loading")}</div>
+      ) : filtered.length === 0 ? (
+        <EmptyState titleKey="common.noData" />
+      ) : viewMode === "cards" ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {filtered.map(r => (
+            <div key={r.id}
+              className="rounded-xl border border-border bg-card p-4 cursor-pointer hover:shadow-md hover:border-primary/20 transition-all active:scale-[0.99]"
+              onClick={() => navigate(`/daily-reports/${r.id}`)}>
+              <div className="flex items-start justify-between gap-2 mb-2">
+                <div className="min-w-0 flex-1">
+                  <p className="font-mono text-sm font-bold text-foreground">{r.report_number}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{r.report_date}</p>
+                </div>
+                <Badge className={STATUS_COLORS[r.status] ?? ""} variant="secondary">
+                  {t(`dailyReports.status.${r.status}`, { defaultValue: r.status })}
+                </Badge>
+              </div>
+              <div className="flex items-center justify-between text-xs text-muted-foreground mt-2">
+                <span>{r.weather ?? "—"}</span>
+                <div className="flex gap-1">
+                  {r.signed_contractor && <Badge variant="outline" className="text-[10px]">E</Badge>}
+                  {r.signed_supervisor && <Badge variant="outline" className="text-[10px]">F</Badge>}
+                  {r.signed_ip && <Badge variant="outline" className="text-[10px]">IP</Badge>}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
       <Card>
         <CardContent className="p-0">
-          {loading ? (
-            <div className="p-8 text-center text-muted-foreground">{t("common.loading")}</div>
-          ) : filtered.length === 0 ? (
-            <EmptyState titleKey="common.noData" />
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
+          <Table>
+            <TableHeader>
+              <TableRow>
                   <TableHead>{t("dailyReports.fields.reportNumber")}</TableHead>
                   <TableHead>{t("dailyReports.fields.reportDate")}</TableHead>
                   <TableHead>{t("dailyReports.fields.weather")}</TableHead>
@@ -216,9 +248,9 @@ export default function DailyReportsPage() {
                 ))}
               </TableBody>
             </Table>
-          )}
         </CardContent>
       </Card>
+      )}
 
       <DailyReportFormDialog open={dialogOpen} onOpenChange={setDialogOpen} onCreated={refetch} />
 
