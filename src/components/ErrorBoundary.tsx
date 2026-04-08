@@ -51,7 +51,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
             <br />
             La aplicación encontró un problema. Intente recargar la página.
           </p>
-          {this.state.error && (
+          {import.meta.env.DEV && this.state.error && (
             <details className="mt-4 text-left">
               <summary className="text-xs text-destructive cursor-pointer">Detalhe do erro</summary>
               <pre className="mt-2 max-h-40 overflow-auto rounded-md border border-border bg-muted p-3 text-xs text-destructive whitespace-pre-wrap">
