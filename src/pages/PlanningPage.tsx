@@ -33,7 +33,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { FilterBar } from "@/components/ui/filter-bar";
 import { EmptyState } from "@/components/EmptyState";
-import { supabase } from "@/integrations/supabase/client";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { WbsFormDialog } from "@/components/planning/WbsFormDialog";
 import { ActivityFormDialog } from "@/components/planning/ActivityFormDialog";
@@ -82,24 +81,7 @@ export default function PlanningPage() {
   const { user } = useAuth();
   const { wbs, activities, loading, error, refetch } = usePlanning();
 
-  const [wiReadiness, setWiReadiness] = useState<Map<string, string>>(new Map());
 
-  // Carregar readiness_status dos WorkItems associados às actividades
-  useEffect(() => {
-    const ids = [...new Set(activities.map(a => a.work_item_id).filter(Boolean))] as string[];
-    if (ids.length === 0) { setWiReadiness(new Map()); return; }
-    let cancelled = false;
-    (async () => {
-      const { data } = await supabase
-        .from("work_items")
-        .select("id, readiness_status")
-        .in("id", ids);
-      if (!cancelled) {
-        setWiReadiness(new Map((data ?? []).map((w: any) => [w.id, w.readiness_status])));
-      }
-    })();
-    return () => { cancelled = true; };
-  }, [activities]);
   const { canCreate, isAdmin } = useProjectRole();
   const reportMeta = useReportMeta();
   const { logoBase64 } = useProjectLogo();
@@ -523,7 +505,6 @@ export default function PlanningPage() {
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("planning.fields.progress")}</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("planning.fields.dates")}</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("planning.fields.requirements")}</TableHead>
-                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground w-20 text-center">{t("planning.readiness", { defaultValue: "Prontidão" })}</TableHead>
                     <TableHead className="w-28">{t("common.actions")}</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -559,19 +540,6 @@ export default function PlanningPage() {
                             ))}
                             {reqBadges.length === 0 && <span className="text-xs text-muted-foreground">—</span>}
                           </div>
-                        </TableCell>
-                        <TableCell className="text-center">
-                          {a.work_item_id && wiReadiness.has(a.work_item_id) ? (
-                            <span title={t(`workItems.readiness.${wiReadiness.get(a.work_item_id)}`, { defaultValue: wiReadiness.get(a.work_item_id) })}
-                              className={cn("inline-block h-3 w-3 rounded-full",
-                                wiReadiness.get(a.work_item_id) === "ready"   ? "bg-green-500" :
-                                wiReadiness.get(a.work_item_id) === "blocked" ? "bg-destructive" :
-                                                                                 "bg-amber-400"
-                              )}
-                            />
-                          ) : (
-                            <span className="text-muted-foreground text-xs">—</span>
-                          )}
                         </TableCell>
                         <TableCell>
                           <div className="flex gap-1">
