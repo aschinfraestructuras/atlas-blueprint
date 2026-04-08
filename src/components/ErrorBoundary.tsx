@@ -52,14 +52,12 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
             La aplicación encontró un problema. Intente recargar la página.
           </p>
           {this.state.error && (
-            <pre className="mt-4 max-h-40 overflow-auto rounded-md border border-border bg-muted p-3 text-left text-xs text-destructive">
-              {this.state.error.message}
-              {"
-"}
-              {this.state.error.stack?.split("
-").slice(0,5).join("
-")}
-            </pre>
+            <details className="mt-4 text-left">
+              <summary className="text-xs text-destructive cursor-pointer">Detalhe do erro</summary>
+              <pre className="mt-2 max-h-40 overflow-auto rounded-md border border-border bg-muted p-3 text-xs text-destructive whitespace-pre-wrap">
+                {this.state.error.message}
+              </pre>
+            </details>
           )}
           <button
             onClick={this.handleReload}
