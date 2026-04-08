@@ -1341,6 +1341,16 @@
     "controls": {
       "outros": "Otros Ensayos",
       "allDisciplinas": "Todas las disciplinas"
+    },
+    "import": {
+      "title": "Importar Resultados de Laboratorio",
+      "btn": "Importar CSV",
+      "dropHere": "Arrastre un fichero CSV aquí o haga clic para seleccionar",
+      "formatTitle": "Formato esperado del CSV",
+      "downloadTemplate": "Descargar plantilla CSV",
+      "importBtn": "Importar {count} resultados",
+      "chooseOther": "Elegir otro fichero",
+      "tryAgain": "Intentar de nuevo"
     }
   },
   "laboratories": {

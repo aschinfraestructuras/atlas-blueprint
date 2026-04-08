@@ -15,7 +15,7 @@ import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { PKRangeFilter } from "@/components/ui/pk-range-filter";
 import { toast } from "@/hooks/use-toast";
 import {
-  FlaskConical, Plus, Pencil, Search, Filter, Archive, Copy, Trash2,
+  FlaskConical, Plus, Pencil, Search, Filter, Archive, Copy, Trash2, Upload,
   CheckCircle2, XCircle, Clock, AlertCircle, BookOpen, FileDown,
   Loader2, AlertTriangle, PieChart as PieChartIcon, BarChart3,
   Layers, Gauge, Mountain, Flame,
@@ -37,6 +37,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { CatalogFormDialog } from "@/components/tests/CatalogFormDialog";
 import { TestResultFormDialog } from "@/components/tests/TestResultFormDialog";
+import { TestResultsCSVImporter } from "@/components/tests/TestResultsCSVImporter";
 import { cn } from "@/lib/utils";
 import { TEST_DISCIPLINES } from "@/lib/services/testService";
 import { supabase } from "@/integrations/supabase/client";
@@ -328,6 +329,7 @@ function ResultsTab() {
   const [editing, setEditing]           = useState<TestResult | null>(null);
   const [selected, setSelected]         = useState<Set<string>>(new Set());
   const [pkFrom, setPkFrom]             = useState<number | null>(null);
+  const [csvImportOpen, setCsvImportOpen] = useState(false);
   const [pkTo, setPkTo]                 = useState<number | null>(null);
 
   const load = useCallback(async () => {
@@ -457,6 +459,11 @@ function ResultsTab() {
           </Button>
         )}
 
+        <Button size="sm" variant="outline" className="h-8 gap-1.5"
+          onClick={() => setCsvImportOpen(true)}>
+          <Upload className="h-3.5 w-3.5" />
+          {t("tests.import.btn", { defaultValue: "Importar CSV" })}
+        </Button>
         <Button size="sm" className="h-8 gap-1.5 ml-auto"
           onClick={() => { setEditing(null); setDialogOpen(true); }}>
           <Plus className="h-3.5 w-3.5" />
@@ -715,6 +722,11 @@ function ResultsTab() {
         </div>
       )}
 
+      <TestResultsCSVImporter
+        open={csvImportOpen}
+        onOpenChange={setCsvImportOpen}
+        onSuccess={() => { setCsvImportOpen(false); load(); }}
+      />
       <TestResultFormDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
