@@ -885,6 +885,121 @@ export default function TestsPage() {
   );
 }
 
+/* ─── Generic tests (test_results com disciplina universal) ────────────────── */
+
+function GenericTestsTab({ projectId }: { projectId: string }) {
+  const { t } = useTranslation();
+  const { activeProject } = useProject();
+  const [results, setResults] = useState<TestResult[]>([]);
+  const [catalog, setCatalog] = useState<TestCatalogEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filterDisciplina, setFilterDisciplina] = useState("__all__");
+  const [formOpen, setFormOpen] = useState(false);
+  const [editing, setEditing] = useState<TestResult | null>(null);
+
+  const load = useCallback(async () => {
+    if (!projectId) return;
+    setLoading(true);
+    try {
+      const [r, c] = await Promise.all([
+        testService.getResults(projectId),
+        testService.getCatalog(),
+      ]);
+      setResults(r);
+      setCatalog(c);
+    } catch { /* ignore */ }
+    setLoading(false);
+  }, [projectId]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const disciplinas = useMemo(() =>
+    [...new Set(catalog.map(c => c.disciplina).filter(Boolean))].sort(),
+    [catalog]
+  );
+
+  const filteredResults = useMemo(() => {
+    if (filterDisciplina === "__all__") return results;
+    const ids = new Set(catalog.filter(c => c.disciplina === filterDisciplina).map(c => c.id));
+    return results.filter(r => ids.has(r.test_id));
+  }, [results, catalog, filterDisciplina]);
+
+  const getTestName = (testId: string) =>
+    catalog.find(c => c.id === testId)?.name ?? "—";
+  const getDisciplina = (testId: string) =>
+    catalog.find(c => c.id === testId)?.disciplina ?? "—";
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div className="flex items-center gap-2">
+          <select
+            value={filterDisciplina}
+            onChange={e => setFilterDisciplina(e.target.value)}
+            className="text-sm h-8 rounded-md border border-input bg-background px-2"
+          >
+            <option value="__all__">{t("tests.controls.allDisciplinas", { defaultValue: "Todas as disciplinas" })}</option>
+            {disciplinas.map(d => <option key={d} value={d}>{d}</option>)}
+          </select>
+          <span className="text-xs text-muted-foreground">{filteredResults.length} resultados</span>
+        </div>
+        <Button size="sm" className="gap-1.5" onClick={() => { setEditing(null); setFormOpen(true); }}>
+          <Plus className="h-3.5 w-3.5" />
+          {t("tests.results.add", { defaultValue: "Novo ensaio" })}
+        </Button>
+      </div>
+      {loading ? (
+        <div className="space-y-2">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}</div>
+      ) : filteredResults.length === 0 ? (
+        <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
+          {t("tests.results.empty", { defaultValue: "Nenhum ensaio registado." })}
+        </div>
+      ) : (
+        <div className="rounded-md border overflow-hidden">
+          <Table>
+            <TableHeader><TableRow className="bg-muted/40">
+              <TableHead className="text-xs">{t("common.description")}</TableHead>
+              <TableHead className="text-xs">Disciplina</TableHead>
+              <TableHead className="text-xs">{t("common.date")}</TableHead>
+              <TableHead className="text-xs">Localização</TableHead>
+              <TableHead className="text-xs">Resultado</TableHead>
+            </TableRow></TableHeader>
+            <TableBody>
+              {filteredResults.map(r => (
+                <TableRow key={r.id} className="cursor-pointer hover:bg-muted/20"
+                  onClick={() => { setEditing(r); setFormOpen(true); }}>
+                  <TableCell className="text-sm font-medium">{getTestName(r.test_id)}</TableCell>
+                  <TableCell className="text-xs text-muted-foreground capitalize">{getDisciplina(r.test_id)}</TableCell>
+                  <TableCell className="text-xs">{r.result_date ? new Date(r.result_date).toLocaleDateString() : "—"}</TableCell>
+                  <TableCell className="text-xs">{r.location ?? "—"}</TableCell>
+                  <TableCell>
+                    {r.pass_fail === "pass" ? (
+                      <Badge className="bg-green-100 text-green-700 text-[10px]">Conforme</Badge>
+                    ) : r.pass_fail === "fail" ? (
+                      <Badge variant="destructive" className="text-[10px]">Não Conforme</Badge>
+                    ) : (
+                      <Badge variant="outline" className="text-amber-600 text-[10px]">Pendente</Badge>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
+      {activeProject && (
+        <TestResultFormDialog
+          open={formOpen}
+          onOpenChange={setFormOpen}
+          projectId={projectId}
+          testResult={editing ?? undefined}
+          onSuccess={() => { setFormOpen(false); load(); }}
+        />
+      )}
+    </div>
+  );
+}
+
 /* ─── Nested control-modules sub-tabs ──────────────────────────────────────── */
 
 function ControlModulesTabs({ projectId }: { projectId: string }) {
@@ -899,6 +1014,7 @@ function ControlModulesTabs({ projectId }: { projectId: string }) {
           { value: "compaction", icon: Gauge, label: t("nav.compaction") },
           { value: "soils", icon: Mountain, label: t("nav.soils") },
           { value: "welding", icon: Flame, label: t("nav.welding") },
+          { value: "outros", icon: FlaskConical, label: t("tests.controls.outros", { defaultValue: "Outros Ensaios" }) },
         ].map(({ value, icon: Icon, label }) => (
           <Button
             key={value}
@@ -917,6 +1033,7 @@ function ControlModulesTabs({ projectId }: { projectId: string }) {
       {sub === "compaction" && <CompactionTab projectId={projectId} />}
       {sub === "soils" && <SoilsTab projectId={projectId} />}
       {sub === "welding" && <WeldTab projectId={projectId} />}
+      {sub === "outros" && <GenericTestsTab projectId={projectId} />}
     </div>
   );
 }

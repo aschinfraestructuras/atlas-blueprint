@@ -1337,6 +1337,10 @@
       "fail": "Reprobado",
       "pending": "Pendiente",
       "inconclusive": "Inconclusivo"
+    },
+    "controls": {
+      "outros": "Otros Ensayos",
+      "allDisciplinas": "Todas las disciplinas"
     }
   },
   "laboratories": {
