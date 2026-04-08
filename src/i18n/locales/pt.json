@@ -2942,7 +2942,13 @@
       "timeLabel": "Hora",
       "unnotifiedWarning": "Existem itens HP sem notificação",
       "createRfi": "Criar RFI",
-      "rfiRef": "Ref. RFI"
+      "rfiRef": "Ref. RFI",
+      "notApplicable": "Não Aplicável — Dispensar notificação HP",
+      "notApplicableReason": "Justificação (obrigatória)",
+      "notApplicableReasonPlaceholder": "Ex: HP dispensado por decisão da fiscalização em reunião de obra",
+      "notApplicableReasonRequired": "Justificação obrigatória para Não Aplicável",
+      "markedNotApplicable": "HP marcado como Não Aplicável.",
+      "markNotApplicable": "Marcar Não Aplicável"
     },
     "location": {
       "pkStart": "PK início",

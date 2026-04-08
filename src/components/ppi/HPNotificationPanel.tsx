@@ -69,6 +69,8 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
   const [creating, setCreating] = useState(false);
   const [earlyOverride, setEarlyOverride] = useState(false);
   const [earlyReason, setEarlyReason] = useState("");
+  const [notApplicable, setNotApplicable] = useState(false);
+  const [notApplicableReason, setNotApplicableReason] = useState("");
 
   // Confirm dialog
   const [confirmingId, setConfirmingId] = useState<string | null>(null);
@@ -132,6 +134,8 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
     setRfiRef("");
     setEarlyOverride(false);
     setEarlyReason("");
+    setNotApplicable(false);
+    setNotApplicableReason("");
     // Default date: 48h+ from now
     const minDate = new Date(Date.now() + 48 * 60 * 60 * 1000);
     setPlannedDate(minDate.toISOString().slice(0, 10));
@@ -140,7 +144,42 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
   }
 
   async function handleCreate() {
-    if (!dialogItem || !plannedDate || !plannedTime) return;
+    if (!dialogItem) return;
+
+    // Caso "Não Aplicável": registar sem data obrigatória
+    if (notApplicable) {
+      if (!notApplicableReason.trim()) {
+        toast({ title: t("ppi.hpNotification.notApplicableReasonRequired", { defaultValue: "Justificação obrigatória para Não Aplicável" }), variant: "destructive" });
+        return;
+      }
+      setCreating(true);
+      try {
+        const today = new Date().toISOString().slice(0, 10);
+        const input: HpNotificationInput = {
+          project_id: projectId,
+          instance_id: instance.id,
+          item_id: dialogItem.id,
+          ppi_ref: instance.code,
+          point_no: dialogItem.check_code,
+          activity: activity || dialogItem.label,
+          location_pk: locationPk || null,
+          planned_datetime: `${today}T00:00:00`,
+          notes: `[NÃO APLICÁVEL] ${notApplicableReason.trim()}`,
+          rfi_ref: null,
+        };
+        await hpNotificationService.create({ ...input, advance_notice_override: true, advance_notice_reason: `N/A: ${notApplicableReason.trim()}` } as any);
+        toast({ title: t("ppi.hpNotification.markedNotApplicable", { defaultValue: "HP marcado como Não Aplicável." }) });
+        setDialogOpen(false);
+        load();
+      } catch {
+        toast({ title: t("ppi.hpNotification.createError", { defaultValue: "Erro ao criar notificação HP." }), variant: "destructive" });
+      } finally {
+        setCreating(false);
+      }
+      return;
+    }
+
+    if (!plannedDate || !plannedTime) return;
 
     const plannedDatetime = `${plannedDate}T${plannedTime}:00`;
     const minDatetime = new Date(Date.now() + 48 * 60 * 60 * 1000);
@@ -642,8 +681,38 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
                 className="text-sm"
               />
             </div>
+            {/* Não Aplicável section */}
+            <div className="flex items-start gap-2 rounded-lg border border-muted bg-muted/20 px-3 py-2.5">
+              <input
+                type="checkbox"
+                id="notApplicable"
+                checked={notApplicable}
+                onChange={(e) => { setNotApplicable(e.target.checked); setEarlyOverride(false); setEarlyReason(""); }}
+                className="mt-0.5 h-4 w-4 accent-destructive"
+              />
+              <div className="flex-1 space-y-1.5">
+                <label htmlFor="notApplicable" className="text-xs font-medium text-foreground cursor-pointer">
+                  {t("ppi.hpNotification.notApplicable", { defaultValue: "Não Aplicável — Dispensar notificação HP" })}
+                </label>
+                {notApplicable && (
+                  <div className="space-y-1">
+                    <Label className="text-xs text-muted-foreground">
+                      {t("ppi.hpNotification.notApplicableReason", { defaultValue: "Justificação (obrigatória)" })} *
+                    </Label>
+                    <Textarea
+                      value={notApplicableReason}
+                      onChange={(e) => setNotApplicableReason(e.target.value)}
+                      placeholder={t("ppi.hpNotification.notApplicableReasonPlaceholder", { defaultValue: "Ex: HP dispensado por decisão da fiscalização em reunião de obra de dd/mm/aaaa" })}
+                      rows={2}
+                      className="text-sm resize-none"
+                      autoFocus
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
             {/* Early warning override section */}
-            {earlyOverride && (
+            {!notApplicable && earlyOverride && (
               <div className="rounded-lg border border-amber-400/40 bg-amber-50 dark:bg-amber-900/20 p-3 space-y-2">
                 <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400 text-xs font-medium">
                   <AlertTriangle className="h-3.5 w-3.5" />
@@ -669,7 +738,7 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
             </Button>
             <Button
               onClick={handleCreate}
-              disabled={creating || !plannedDate || !plannedTime || !activity.trim() || (earlyOverride && !earlyReason.trim())}
+              disabled={creating || (notApplicable ? !notApplicableReason.trim() : (!plannedDate || !plannedTime || !activity.trim() || (earlyOverride && !earlyReason.trim())))}
               className="gap-1.5"
             >
               {creating ? (
@@ -677,7 +746,7 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
               ) : (
                 <Bell className="h-3.5 w-3.5" />
               )}
-              {t("ppi.hpNotification.send", { defaultValue: "Enviar Notificação" })}
+              {notApplicable ? t("ppi.hpNotification.markNotApplicable", { defaultValue: "Marcar Não Aplicável" }) : t("ppi.hpNotification.send", { defaultValue: "Enviar Notificação" })}
             </Button>
           </DialogFooter>
         </DialogContent>
