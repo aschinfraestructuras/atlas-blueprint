@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Layers, Gauge, Mountain, FlaskConical, Zap } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import { concreteService, type ConcreteBatchWithCounts } from "@/lib/services/concreteService";
 import { compactionService, type CompactionZoneWithCounts } from "@/lib/services/compactionService";
 import { soilService, type SoilSample } from "@/lib/services/soilService";
@@ -30,11 +31,33 @@ export function PPITestsTab({ instanceId, ppiCode, workItemId }: PPITestsTabProp
   const [soils, setSoils] = useState<SoilSample[]>([]);
   const [welds, setWelds] = useState<WeldRecord[]>([]);
   const [loading, setLoading] = useState(true);
+  const [genericTests, setGenericTests] = useState<Array<{
+    id: string; code: string | null; result_date: string | null;
+    pass_fail: string | null; result_value: string | null;
+    test_name: string; location: string | null;
+  }>>([]);
 
   useEffect(() => {
     setLoading(true);
     const fetchData = async () => {
       try {
+        // Ensaios genéricos ligados a este PPI
+        const { data: gTests } = await supabase
+          .from("test_results")
+          .select("id, code, result_date, pass_fail, result_value, location, tests_catalog(name)")
+          .eq("ppi_instance_id", instanceId)
+          .eq("is_deleted", false)
+          .order("result_date", { ascending: false });
+        setGenericTests((gTests ?? []).map((r: any) => ({
+          id: r.id,
+          code: r.code,
+          result_date: r.result_date,
+          pass_fail: r.pass_fail,
+          result_value: r.result_value,
+          location: r.location,
+          test_name: r.tests_catalog?.name ?? "Ensaio",
+        })));
+
         const [c, comp, s, w] = await Promise.all([
           workItemId
             ? concreteService.listByWorkItem(workItemId)
@@ -216,6 +239,36 @@ export function PPITestsTab({ instanceId, ppiCode, workItemId }: PPITestsTabProp
                     <TableCell className="text-xs">{new Date(s.sample_date).toLocaleDateString()}</TableCell>
                     <TableCell className="text-xs">{s.pk_location ?? "—"}</TableCell>
                     <TableCell><ResultBadge result={s.overall_result} /></TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CollapsibleContent>
+        </Collapsible>
+      )}
+      {/* Ensaios Genéricos ligados a este PPI */}
+      {genericTests.length > 0 && (
+        <Collapsible defaultOpen>
+          <CollapsibleTrigger className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors w-full py-1">
+            <FlaskConical className="h-3.5 w-3.5" /> Ensaios ({genericTests.length})
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <Table>
+              <TableHeader><TableRow>
+                <TableHead className="text-xs">Tipo de ensaio</TableHead>
+                <TableHead className="text-xs">Data</TableHead>
+                <TableHead className="text-xs">Localização</TableHead>
+                <TableHead className="text-xs">Valor</TableHead>
+                <TableHead className="text-xs">Result.</TableHead>
+              </TableRow></TableHeader>
+              <TableBody>
+                {genericTests.map((g) => (
+                  <TableRow key={g.id}>
+                    <TableCell className="text-xs font-medium">{g.test_name}</TableCell>
+                    <TableCell className="text-xs">{g.result_date ? new Date(g.result_date).toLocaleDateString() : "—"}</TableCell>
+                    <TableCell className="text-xs">{g.location ?? "—"}</TableCell>
+                    <TableCell className="text-xs">{g.result_value ?? "—"}</TableCell>
+                    <TableCell><ResultBadge result={g.pass_fail ?? "pending"} /></TableCell>
                   </TableRow>
                 ))}
               </TableBody>
