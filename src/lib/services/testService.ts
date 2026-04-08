@@ -131,6 +131,7 @@ export interface TestResultInput {
   supplier_id?: string;
   subcontractor_id?: string;
   work_item_id?: string;
+  ppi_instance_id?: string;
 }
 
 export interface TestCatalogInput {
@@ -353,6 +354,7 @@ export const testService = {
       supplier_id:      input.supplier_id ?? null,
       subcontractor_id: input.subcontractor_id ?? null,
       work_item_id:     input.work_item_id ?? null,
+      ppi_instance_id:  input.ppi_instance_id ?? null,
     };
 
     const { data, error } = await supabase

@@ -45,6 +45,7 @@ const schema = (t: (k: string) => string) =>
     report_number:    z.string().trim().optional().or(z.literal("")),
     notes:            z.string().trim().optional().or(z.literal("")),
     work_item_id:     z.string().optional().or(z.literal("")),
+    ppi_instance_id:  z.string().optional().or(z.literal("")),
     supplier_id:      z.string().optional().or(z.literal("")),
     // BE-CAMPO fields
     be_campo_code:    z.string().trim().optional().or(z.literal("")),
@@ -62,6 +63,7 @@ interface Props {
   onOpenChange: (v: boolean) => void;
   testResult?: TestResult | null;
   preselectedWorkItemId?: string;
+  preselectedPpiInstanceId?: string;
   onSuccess: () => void;
 }
 
@@ -84,7 +86,7 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
     defaultValues: {
       test_id: "", date: new Date().toISOString().split("T")[0],
       status_workflow: "draft", result_status: "", sample_ref: "", location: "", pk_inicio: "", pk_fim: "",
-      report_number: "", notes: "", work_item_id: "", supplier_id: "",
+      report_number: "", notes: "", work_item_id: "", supplier_id: "", ppi_instance_id: "",
       be_campo_code: "", eme_code: "", eme_calibration_date: "", location_pk: "", weather: "", ambient_temperature: "",
     },
   });
@@ -121,6 +123,7 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
       report_number:    testResult.report_number ?? "",
       notes:            testResult.notes ?? "",
       work_item_id:     testResult.work_item_id ?? "",
+      ppi_instance_id:  (testResult as any).ppi_instance_id ?? "",
       supplier_id:      testResult.supplier_id ?? "",
       be_campo_code:    (testResult as any).be_campo_code ?? "",
       eme_code:         (testResult as any).eme_code ?? "",
@@ -133,6 +136,7 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
       status_workflow: "draft", result_status: "", sample_ref: "", location: "", pk_inicio: "", pk_fim: "",
       report_number: "", notes: "",
       work_item_id:  preselectedWorkItemId ?? "",
+      ppi_instance_id: preselectedPpiInstanceId ?? "",
       supplier_id: "",
       be_campo_code: "", eme_code: "", eme_calibration_date: "", location_pk: "", weather: "", ambient_temperature: "",
     });
@@ -179,6 +183,7 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
         report_number:    values.report_number || undefined,
         notes:            values.notes        || undefined,
         work_item_id:     values.work_item_id  || undefined,
+        ppi_instance_id:  values.ppi_instance_id || undefined,
         supplier_id:      values.supplier_id   || undefined,
       };
 

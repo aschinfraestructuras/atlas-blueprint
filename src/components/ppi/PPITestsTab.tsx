@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Layers, Gauge, Mountain, FlaskConical, Zap } from "lucide-react";
+import { Layers, Gauge, Mountain, FlaskConical, Zap, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useProject } from "@/contexts/ProjectContext";
+import { Button } from "@/components/ui/button";
+import { TestResultFormDialog } from "@/components/tests/TestResultFormDialog";
 import { concreteService, type ConcreteBatchWithCounts } from "@/lib/services/concreteService";
 import { compactionService, type CompactionZoneWithCounts } from "@/lib/services/compactionService";
 import { soilService, type SoilSample } from "@/lib/services/soilService";
@@ -31,6 +34,8 @@ export function PPITestsTab({ instanceId, ppiCode, workItemId }: PPITestsTabProp
   const [soils, setSoils] = useState<SoilSample[]>([]);
   const [welds, setWelds] = useState<WeldRecord[]>([]);
   const [loading, setLoading] = useState(true);
+  const { activeProject } = useProject();
+  const [formOpen, setFormOpen] = useState(false);
   const [genericTests, setGenericTests] = useState<Array<{
     id: string; code: string | null; result_date: string | null;
     pass_fail: string | null; result_value: string | null;
@@ -104,20 +109,49 @@ export function PPITestsTab({ instanceId, ppiCode, workItemId }: PPITestsTabProp
     return <div className="py-8 text-center text-sm text-muted-foreground">{t("common.loading")}</div>;
   }
 
-  if (totalTests === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center py-10 gap-2 text-muted-foreground">
-        <FlaskConical className="h-6 w-6 opacity-40" />
-        <p className="text-sm">{t("tests.ppiTab.empty")}</p>
-        <p className="text-xs text-muted-foreground/60 max-w-sm text-center">
-          {t("tests.ppiTab.emptyHint", { defaultValue: "Os ensaios são associados ao criar a ficha de betonagem, compactação, solo ou soldadura." })}
-        </p>
-      </div>
-    );
-  }
+  const showEmpty = totalTests === 0 && genericTests.length === 0;
 
   return (
     <div className="space-y-4 p-4">
+      {/* Botão para criar novo ensaio ligado a este PPI */}
+      <div className="flex justify-end">
+        <Button size="sm" className="gap-1.5" onClick={() => setFormOpen(true)}>
+          <Plus className="h-3.5 w-3.5" />
+          {t("tests.results.add", { defaultValue: "Novo Ensaio" })}
+        </Button>
+      </div>
+      {activeProject && (
+        <TestResultFormDialog
+          open={formOpen}
+          onOpenChange={setFormOpen}
+          projectId={activeProject.id}
+          preselectedWorkItemId={workItemId ?? undefined}
+          preselectedPpiInstanceId={instanceId}
+          onSuccess={async () => {
+            setFormOpen(false);
+            const { data } = await supabase
+              .from("test_results")
+              .select("id, code, result_date, pass_fail, result_value, location, tests_catalog(name)")
+              .eq("ppi_instance_id", instanceId)
+              .eq("is_deleted", false)
+              .order("result_date", { ascending: false });
+            setGenericTests((data ?? []).map((r: any) => ({
+              id: r.id, code: r.code, result_date: r.result_date,
+              pass_fail: r.pass_fail, result_value: r.result_value,
+              location: r.location, test_name: r.tests_catalog?.name ?? "Ensaio",
+            })));
+          }}
+        />
+      )}
+      {showEmpty ? (
+        <div className="flex flex-col items-center justify-center py-10 gap-2 text-muted-foreground">
+          <FlaskConical className="h-6 w-6 opacity-40" />
+          <p className="text-sm">{t("tests.ppiTab.empty")}</p>
+          <p className="text-xs text-muted-foreground/60 max-w-sm text-center">
+            {t("tests.ppiTab.emptyHint", { defaultValue: "Registe aqui os ensaios deste PPI ou use o botão acima." })}
+          </p>
+        </div>
+      ) : (<>
       {/* Summary */}
       <div className="flex items-center gap-3 text-sm">
         <Badge variant="outline" className="gap-1">
@@ -276,6 +310,7 @@ export function PPITestsTab({ instanceId, ppiCode, workItemId }: PPITestsTabProp
           </CollapsibleContent>
         </Collapsible>
       )}
+    </>)}
     </div>
   );
 }
