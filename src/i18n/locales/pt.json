@@ -189,7 +189,7 @@
     "survey": "Levantamentos",
     "topography": "Medições & Equipamentos",
     "subcontractors": "Subempreiteiros",
-    "workItems": "Atividades",
+    "workItems": "Elementos de Obra",
     "ppi": "Inspeções PPI",
     "ppiInstances": "Inspeções PPI",
     "health": "Saúde do Sistema",
@@ -3574,12 +3574,16 @@
     "workItemCreated": "Elemento criado e associado",
     "linkedElement": "Elemento de obra associado",
     "viewElement": "Ver elemento",
-    "activities": "Atividades",
+    "activities": "Frentes de Trabalho",
     "activity": {
-      "add": "Nova atividade",
+      "add": "Nova Frente de Trabalho",
       "createTitle": "Criar Atividade",
       "editTitle": "Editar Atividade",
-      "code": "Código"
+      "code": "Código",
+      "singular": "Frente de Trabalho",
+      "plural": "Frentes de Trabalho",
+      "edit": "Editar Frente de Trabalho",
+      "delete": "Eliminar Frente de Trabalho"
     },
     "completion": {
       "blocked": "Bloqueada — requisitos não cumpridos",
@@ -3632,7 +3636,7 @@
       "inProgress": "Em curso",
       "wbsNodes": "Nós WBS"
     },
-    "noActivities": "Sem atividades registadas",
+    "noActivities": "Sem frentes de trabalho ligadas a este elemento.",
     "searchPlaceholder": "Pesquisar código, descrição, zona…",
     "status": {
       "blocked": "Bloqueada",
@@ -3643,7 +3647,8 @@
     },
     "subtitle": "Planeamento e controlo de atividades",
     "tabs": {
-      "activities": "Atividades"
+      "activities": "Frentes de Trabalho",
+      "wbs": "Estrutura WBS"
     },
     "title": "Planeamento",
     "toast": {

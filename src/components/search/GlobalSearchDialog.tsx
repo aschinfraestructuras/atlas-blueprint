@@ -29,7 +29,7 @@ const TYPE_CONFIG: Record<string, { icon: React.ElementType; color: string; labe
   materials: { icon: Package, color: "hsl(var(--module-suppliers))", labelKey: "Materiais" },
   suppliers: { icon: Truck, color: "hsl(var(--module-suppliers))", labelKey: "Fornecedores" },
   subcontractors: { icon: HardHat, color: "hsl(var(--module-subcontractors))", labelKey: "Subempreiteiros" },
-  work_items: { icon: Construction, color: "hsl(var(--module-projects))", labelKey: "Atividades" },
+  work_items: { icon: Construction, color: "hsl(var(--module-projects))", labelKey: "Elementos de Obra" },
 };
 
 interface Props {

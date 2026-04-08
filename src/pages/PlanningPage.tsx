@@ -82,6 +82,8 @@ export default function PlanningPage() {
   const { user } = useAuth();
   const { wbs, activities, loading, error, refetch } = usePlanning();
 
+  const [wiReadiness, setWiReadiness] = useState<Map<string, string>>(new Map());
+
   // Carregar readiness_status dos WorkItems associados às actividades
   useEffect(() => {
     const ids = [...new Set(activities.map(a => a.work_item_id).filter(Boolean))] as string[];
@@ -108,7 +110,6 @@ export default function PlanningPage() {
   const [parentWbs, setParentWbs] = useState<string | null>(null);
   const [actDialogOpen, setActDialogOpen] = useState(false);
   const [editAct, setEditAct] = useState<Activity | null>(null);
-  const [wiReadiness, setWiReadiness] = useState<Map<string, string>>(new Map());
   const [checkDialog, setCheckDialog] = useState<{ open: boolean; id: string; desc: string }>({ open: false, id: "", desc: "" });
   const [expandedWbs, setExpandedWbs] = useState<Set<string>>(new Set());
   const [selectedWbsId, setSelectedWbsId] = useState<string | null>(null);
@@ -328,7 +329,7 @@ export default function PlanningPage() {
       {activities.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <StackedBar
-            title={t("planning.kpi.activityStatus", { defaultValue: "Estado das Atividades" })}
+            title={t("planning.kpi.activityStatus", { defaultValue: "Estado das Frentes de Trabalho" })}
             icon={PieChartIcon}
             segments={[
               { key: "planned", label: t("planning.status.planned"), value: activities.filter(a => a.status === "planned").length, color: "hsl(var(--muted-foreground))" },
@@ -490,7 +491,7 @@ export default function PlanningPage() {
         <TabsContent value="activities" className="space-y-4">
           <div className="flex justify-end">
             <RoleGate action="create">
-              <Button size="sm" className="gap-1.5" onClick={handleNewAct}><Plus className="h-3.5 w-3.5" /> {t("planning.activity.add")}{selectedWbsNode ? ` (${selectedWbsNode.wbs_code})` : ""}</Button>
+              <Button size="sm" className="gap-1.5" onClick={handleNewAct}><Plus className="h-3.5 w-3.5" /> {t("planning.activity.add", { defaultValue: "Nova Frente de Trabalho" })}{selectedWbsNode ? ` (${selectedWbsNode.wbs_code})` : ""}</Button>
             </RoleGate>
           </div>
           {loading ? (

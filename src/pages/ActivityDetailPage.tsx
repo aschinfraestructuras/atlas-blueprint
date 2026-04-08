@@ -286,6 +286,12 @@ export default function ActivityDetailPage() {
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div className="flex-1 min-w-0">
+          {/* Breadcrumb: Planeamento › Frentes de Trabalho */}
+          <p className="text-xs text-muted-foreground mb-0.5">
+            {t("nav.planning", { defaultValue: "Planeamento" })}
+            <span className="mx-1">›</span>
+            {t("planning.activity.plural", { defaultValue: "Frentes de Trabalho" })}
+          </p>
           <h1 className="text-xl font-bold tracking-tight text-foreground truncate">{activity.description}</h1>
           <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
             {(activity as any).code && <span className="font-mono font-semibold text-primary">{(activity as any).code}</span>}
