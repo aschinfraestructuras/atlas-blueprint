@@ -544,6 +544,7 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
                     projectId={activeProject.id}
                     entityType="tests"
                     entityId={testResult.id}
+                    cameraProminent={true}
                   />
                 </div>
               </>

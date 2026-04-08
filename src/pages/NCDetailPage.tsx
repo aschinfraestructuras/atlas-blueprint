@@ -597,6 +597,7 @@ export default function NCDetailPage() {
             entityType="non_conformities"
             entityId={nc.id}
             projectId={nc.project_id}
+            cameraProminent={true}
           />
         </TabsContent>
 

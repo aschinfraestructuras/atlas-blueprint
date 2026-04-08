@@ -1095,6 +1095,7 @@ export default function PPIDetailPage() {
             entityId={instance.id}
             projectId={activeProject?.id ?? ""}
             readOnly={["approved", "archived"].includes(instance.status)}
+            cameraProminent={!["approved", "archived"].includes(instance.status)}
           />
         </TabsContent>
 
