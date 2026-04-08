@@ -191,6 +191,7 @@ export default function WorkItemsPage() {
   const [deleting,   setDeleting]     = useState(false);
   const [search,     setSearch]       = useState("");
   const [filterDiscipline, setFilterDiscipline] = useState("all");
+  const [viewMode, setViewMode] = useState<"table" | "cards">("table");
   const [filterStatus,     setFilterStatus]     = useState("all");
 
   // PPI creation
@@ -530,6 +531,23 @@ export default function WorkItemsPage() {
         <span className="ml-auto text-xs text-muted-foreground tabular-nums">
           {filtered.length} / {data.length}
         </span>
+        {/* Toggle vista */}
+        <div className="flex items-center border border-border rounded-lg overflow-hidden ml-auto flex-shrink-0">
+          <button
+            onClick={() => setViewMode("table")}
+            className={`px-2.5 py-1.5 text-xs transition-colors ${viewMode === "table" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
+            title="Vista tabela"
+          >
+            ☰
+          </button>
+          <button
+            onClick={() => setViewMode("cards")}
+            className={`px-2.5 py-1.5 text-xs transition-colors ${viewMode === "cards" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
+            title="Vista cards"
+          >
+            ⊞
+          </button>
+        </div>
       </FilterBar>
 
       {/* ── Tabs: Lista + Prontidão ───────────────────────────── */}
@@ -601,23 +619,29 @@ export default function WorkItemsPage() {
                                 </div>
                               </CollapsibleTrigger>
                               <CollapsibleContent>
-                                <div className="rounded-lg border border-border/40 overflow-hidden mt-1.5 ml-2 bg-card">
-                                  <Table>
-                                    <TableHeader>
-                                      <TableRow className="bg-muted/30 hover:bg-muted/30">
-                                        <TableHead className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">{t("workItems.table.discipline")}</TableHead>
-                                        <TableHead className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">{t("workItems.table.element")}</TableHead>
-                                        <TableHead className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">{t("workItems.table.pk")}</TableHead>
-                                        <TableHead className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">{t("workItems.table.status")}</TableHead>
-                                        <TableHead className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">{t("workItems.table.readiness")}</TableHead>
-                                        <TableHead className="text-right text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">{t("workItems.table.actions")}</TableHead>
-                                      </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                      {obraGroup.items.map((item, idx) => renderItemRow(item, idx))}
-                                    </TableBody>
-                                  </Table>
-                                </div>
+                                {viewMode === "cards" ? (
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-1.5 ml-2">
+                                    {obraGroup.items.map((item) => renderItemCard(item))}
+                                  </div>
+                                ) : (
+                                  <div className="rounded-lg border border-border/40 overflow-hidden mt-1.5 ml-2 bg-card">
+                                    <Table>
+                                      <TableHeader>
+                                        <TableRow className="bg-muted/30 hover:bg-muted/30">
+                                          <TableHead className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">{t("workItems.table.discipline")}</TableHead>
+                                          <TableHead className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">{t("workItems.table.element")}</TableHead>
+                                          <TableHead className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">{t("workItems.table.pk")}</TableHead>
+                                          <TableHead className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">{t("workItems.table.status")}</TableHead>
+                                          <TableHead className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">{t("workItems.table.readiness")}</TableHead>
+                                          <TableHead className="text-right text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">{t("workItems.table.actions")}</TableHead>
+                                        </TableRow>
+                                      </TableHeader>
+                                      <TableBody>
+                                        {obraGroup.items.map((item, idx) => renderItemRow(item, idx))}
+                                      </TableBody>
+                                    </Table>
+                                  </div>
+                                )}
                               </CollapsibleContent>
                             </Collapsible>
                           );
