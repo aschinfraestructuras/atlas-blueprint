@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useProject } from "@/contexts/ProjectContext";
@@ -14,7 +14,7 @@ import { exportWbsCsv, exportWbsPdf, exportActivitiesCsv, exportActivitiesPdf } 
 import { RoleGate } from "@/components/RoleGate";
 import {
   Plus, Pencil, Network, ListChecks, ShieldCheck, Trash2, Search, Eye,
-  ChevronRight, ChevronDown, FolderPlus, ChevronsUpDown, AlertTriangle,
+  ChevronRight, ChevronDown, FolderPlus, ChevronsUpDown,
   CheckCircle2, Clock, Ban, PieChart as PieChartIcon, Filter, X} from "lucide-react";
 import { StackedBar } from "@/components/dashboard/DistributionBar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -26,7 +26,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
@@ -82,7 +82,7 @@ export default function PlanningPage() {
   const { wbs, activities, loading, error, refetch } = usePlanning();
 
 
-  const { canCreate, isAdmin } = useProjectRole();
+  const { isAdmin } = useProjectRole();
   const reportMeta = useReportMeta();
   const { logoBase64 } = useProjectLogo();
   const [activeTab, setActiveTab] = useState("activities");
@@ -173,8 +173,6 @@ export default function PlanningPage() {
     if (filterStatus !== "__all__") list = list.filter(a => a.status === filterStatus);
     return list;
   }, [activities, search, filterStatus, selectedWbsId, wbs]);
-
-  const wbsCodes = useMemo(() => new Set(wbs.map(w => w.wbs_code.toLowerCase())), [wbs]);
 
   // Contador de actividades por WBS (incluindo filhos)
   const actCountByWbs = useMemo(() => {
@@ -401,19 +399,20 @@ export default function PlanningPage() {
           ) : wbsTree.length === 0 ? (
             <EmptyState icon={Network} subtitleKey={wbs.length === 0 ? "emptyState.planning.wbs" : "emptyState.noResults"} />
           ) : (
+            <>
+            {selectedWbsNode && (
+              <div className="flex items-center gap-2 px-1 py-2 mb-2 text-sm bg-primary/5 border border-primary/20 rounded-lg">
+                <Filter className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+                <span className="text-muted-foreground">{t("planning.wbs.filterBy", { defaultValue: "A filtrar por:" })}</span>
+                <span className="font-mono text-primary font-semibold">{selectedWbsNode.wbs_code}</span>
+                <span className="text-foreground truncate">{selectedWbsNode.description}</span>
+                <Button variant="ghost" size="icon" className="h-5 w-5 ml-auto flex-shrink-0" onClick={() => setSelectedWbsId(null)} title={t("common.clear", { defaultValue: "Limpar" })}>
+                  <X className="h-3 w-3" />
+                </Button>
+              </div>
+            )}
             <div className="rounded-xl border border-border overflow-hidden">
               <Table>
-                {selectedWbsNode && (
-                  <div className="flex items-center gap-2 px-1 py-2 mb-2 text-sm bg-primary/5 border border-primary/20 rounded-lg">
-                    <Filter className="h-3.5 w-3.5 text-primary flex-shrink-0" />
-                    <span className="text-muted-foreground">{t("planning.wbs.filterBy", { defaultValue: "A filtrar por:" })}</span>
-                    <span className="font-mono text-primary font-semibold">{selectedWbsNode.wbs_code}</span>
-                    <span className="text-foreground truncate">{selectedWbsNode.description}</span>
-                    <Button variant="ghost" size="icon" className="h-5 w-5 ml-auto flex-shrink-0" onClick={() => setSelectedWbsId(null)} title={t("common.clear", { defaultValue: "Limpar" })}>
-                      <X className="h-3 w-3" />
-                    </Button>
-                  </div>
-                )}
                 <TableHeader>
                   <TableRow className="bg-muted/40">
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground w-8"></TableHead>
@@ -468,6 +467,7 @@ export default function PlanningPage() {
                 </TableBody>
               </Table>
             </div>
+          </>
           )}
         </TabsContent>
 
@@ -484,19 +484,20 @@ export default function PlanningPage() {
           ) : filteredActivities.length === 0 ? (
             <EmptyState icon={ListChecks} subtitleKey={activities.length === 0 ? "emptyState.planning.activities" : "emptyState.noResults"} />
           ) : (
+            <>
+            {selectedWbsNode && (
+              <div className="flex items-center gap-2 px-1 py-2 mb-2 text-sm bg-primary/5 border border-primary/20 rounded-lg">
+                <Filter className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+                <span className="text-muted-foreground">{t("planning.wbs.filterBy", { defaultValue: "A filtrar por:" })}</span>
+                <span className="font-mono text-primary font-semibold">{selectedWbsNode.wbs_code}</span>
+                <span className="text-foreground truncate">{selectedWbsNode.description}</span>
+                <Button variant="ghost" size="icon" className="h-5 w-5 ml-auto flex-shrink-0" onClick={() => setSelectedWbsId(null)} title={t("common.clear", { defaultValue: "Limpar" })}>
+                  <X className="h-3 w-3" />
+                </Button>
+              </div>
+            )}
             <div className="rounded-xl border border-border overflow-hidden">
               <Table>
-                {selectedWbsNode && (
-                  <div className="flex items-center gap-2 px-1 py-2 mb-2 text-sm bg-primary/5 border border-primary/20 rounded-lg">
-                    <Filter className="h-3.5 w-3.5 text-primary flex-shrink-0" />
-                    <span className="text-muted-foreground">{t("planning.wbs.filterBy", { defaultValue: "A filtrar por:" })}</span>
-                    <span className="font-mono text-primary font-semibold">{selectedWbsNode.wbs_code}</span>
-                    <span className="text-foreground truncate">{selectedWbsNode.description}</span>
-                    <Button variant="ghost" size="icon" className="h-5 w-5 ml-auto flex-shrink-0" onClick={() => setSelectedWbsId(null)} title={t("common.clear", { defaultValue: "Limpar" })}>
-                      <X className="h-3 w-3" />
-                    </Button>
-                  </div>
-                )}
                 <TableHeader>
                   <TableRow className="bg-muted/40">
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.description")}</TableHead>
@@ -556,6 +557,7 @@ export default function PlanningPage() {
                 </TableBody>
               </Table>
             </div>
+          </>
           )}
         </TabsContent>
       </Tabs>
