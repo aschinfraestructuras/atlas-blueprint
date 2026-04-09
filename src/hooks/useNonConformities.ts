@@ -5,6 +5,7 @@ import { ncService, type NonConformity } from "@/lib/services/ncService";
 export function useNonConformities() {
   const { activeProject } = useProject();
   const [data, setData] = useState<NonConformity[]>([]);
+  const [truncated, setTruncated] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -17,7 +18,8 @@ export function useNonConformities() {
     setError(null);
     try {
       const result = await ncService.getByProject(activeProject.id);
-      setData(result);
+      setData(result.data);
+      setTruncated(result.truncated);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error loading non-conformities");
     } finally {
@@ -31,5 +33,5 @@ export function useNonConformities() {
     return () => { cancelled = true; };
   }, [fetch]);
 
-  return { data, loading, error, refetch: fetch };
+  return { data, loading, error, truncated, refetch: fetch };
 }

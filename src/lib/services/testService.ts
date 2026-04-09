@@ -271,9 +271,11 @@ export const testService = {
     if (filters?.dateFrom)     q = q.gte("date", filters.dateFrom);
     if (filters?.dateTo)       q = q.lte("date", filters.dateTo);
 
+    q = (q as any).limit(501); // máx 500 + 1 para detectar truncação
     const { data, error } = await q;
     if (error) throw error;
-    return (data ?? []) as unknown as TestResult[];
+    const rows = (data ?? []) as unknown as TestResult[];
+    return rows.slice(0, 500);
   },
 
   /** Server-side paginated query */

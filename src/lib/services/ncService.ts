@@ -152,16 +152,23 @@ export interface NCUpdateInput {
 
 export const ncService = {
 
-  async getByProject(projectId: string, includeDeleted = false): Promise<NonConformity[]> {
+  async getByProject(
+    projectId: string,
+    includeDeleted = false,
+    limit = 500,
+  ): Promise<{ data: NonConformity[]; truncated: boolean }> {
     let q = supabase
       .from("non_conformities")
       .select("*")
       .eq("project_id", projectId)
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false })
+      .limit(limit + 1);
     if (!includeDeleted) q = q.eq("is_deleted", false);
     const { data, error } = await q;
     if (error) throw error;
-    return (data ?? []) as unknown as NonConformity[];
+    const rows = (data ?? []) as unknown as NonConformity[];
+    const truncated = rows.length > limit;
+    return { data: truncated ? rows.slice(0, limit) : rows, truncated };
   },
 
   /** Server-side paginated query with filters */
