@@ -12,10 +12,12 @@ export interface RecentItem {
 
 export interface DashboardKpis {
   ncOpen: number;
+  ncOverdue15d: number;
   pamePending: number;
   emesExpiring30d: number;
-  nextAudit: { description: string; planned_start: string } | null;
+  nextAudit: { code: string; scope: string; planned_date: string; audit_type: string } | null;
   ppiInProgress: number;
+  ppiPendingApproval: number;
   testsOverdue: number;
   ppiApproved: number;
   ppiTotal: number;
@@ -29,15 +31,18 @@ export interface DashboardKpis {
   dailyReportsValidated: number;
   topoControlsTotal: number;
   topoControlsConforme: number;
+  ncMonthly: { month: string; open: number; closed: number }[];
+  testsMonthly: { month: string; pass: number; fail: number; total: number }[];
 }
 
 const EMPTY: DashboardKpis = {
-  ncOpen: 0, pamePending: 0, emesExpiring30d: 0, nextAudit: null,
-  ppiInProgress: 0, testsOverdue: 0,
+  ncOpen: 0, ncOverdue15d: 0, pamePending: 0, emesExpiring30d: 0, nextAudit: null,
+  ppiInProgress: 0, ppiPendingApproval: 0, testsOverdue: 0,
   ppiApproved: 0, ppiTotal: 0, testsCompleted: 0, testsTotal: 0,
   matApproved: 0, matTotal: 0, weldsPendingUt: 0, recentActivity: [],
   dailyReportsTotal: 0, dailyReportsValidated: 0,
   topoControlsTotal: 0, topoControlsConforme: 0,
+  ncMonthly: [], testsMonthly: [],
 };
 
 export function useDashboardKpis() {
@@ -48,152 +53,65 @@ export function useDashboardKpis() {
   const fetch = useCallback(async () => {
     if (!activeProject) { setData(EMPTY); setLoading(false); return; }
     setLoading(true);
-    const pid = activeProject.id;
-    const today = new Date().toISOString().split("T")[0];
-    const in30d = new Date(Date.now() + 30 * 86400000).toISOString().split("T")[0];
 
     try {
-      const [
-        ncRes, pameRes, emeRes, auditRes,
-        ppiApprovedRes, ppiTotalRes,
-        testsCompletedRes, testsTotalRes,
-        matApprovedRes, matTotalRes,
-        recentNcRes, recentLotRes, recentPpiRes, recentTestRes,
-        ppiInProgressRes, testsOverdueRes, weldsPendingUtRes,
-        dailyRptTotalRes, dailyRptValidatedRes,
-        topoTotalRes, topoConformeRes,
-      ] = await Promise.all([
-        // NCs abertas (not closed, not archived)
-        (supabase as any).from("non_conformities")
-          .select("id", { count: "exact", head: true })
-          .eq("project_id", pid).neq("status", "closed").neq("status", "archived").eq("is_deleted", false),
-        // PAME pendentes
-        (supabase as any).from("materials")
-          .select("id", { count: "exact", head: true })
-          .eq("project_id", pid).not("pame_code", "is", null).eq("pame_status", "pending"),
-        // EMEs com calibração a expirar ≤30d (ainda não expirados)
-        (supabase as any).from("topography_equipment")
-          .select("id", { count: "exact", head: true })
-          .eq("project_id", pid).eq("status", "active").gte("calibration_valid_until", today).lte("calibration_valid_until", in30d),
-        // Próxima auditoria (AI-PF17A-*)
-        (supabase as any).from("planning_activities")
-          .select("description, planned_start")
-          .eq("project_id", pid).eq("status", "planned").like("description", "AI-PF17A-%")
-          .order("planned_start", { ascending: true }).limit(1),
-        // PPIs aprovados
-        (supabase as any).from("ppi_instances")
-          .select("id", { count: "exact", head: true })
-          .eq("project_id", pid).eq("status", "approved").eq("is_deleted", false),
-        // PPIs total (instances)
-        (supabase as any).from("ppi_instances")
-          .select("id", { count: "exact", head: true })
-          .eq("project_id", pid).eq("is_deleted", false),
-        // Ensaios realizados (pass)
-        (supabase as any).from("test_results")
-          .select("id", { count: "exact", head: true })
-          .eq("project_id", pid).eq("status", "pass"),
-        // Ensaios total (catálogo activo)
-        (supabase as any).from("tests_catalog")
-          .select("id", { count: "exact", head: true })
-          .eq("project_id", pid).eq("active", true),
-        // Materiais aprovados PAME
-        (supabase as any).from("materials")
-          .select("id", { count: "exact", head: true })
-          .eq("project_id", pid).not("pame_code", "is", null).eq("pame_status", "approved"),
-        // Materiais total PAME
-        (supabase as any).from("materials")
-          .select("id", { count: "exact", head: true })
-          .eq("project_id", pid).not("pame_code", "is", null),
-        // Últimas NCs
-        (supabase as any).from("non_conformities")
-          .select("id, code, classification, created_at")
-          .eq("project_id", pid).eq("is_deleted", false)
-          .order("created_at", { ascending: false }).limit(4),
-        // Últimos lotes
-        (supabase as any).from("material_lots")
-          .select("id, lot_code, created_at")
-          .eq("project_id", pid).eq("is_deleted", false)
-          .order("created_at", { ascending: false }).limit(4),
-        // Últimos PPIs
-        (supabase as any).from("ppi_instances")
-          .select("id, code, created_at")
-          .eq("project_id", pid).eq("is_deleted", false)
-          .order("created_at", { ascending: false }).limit(4),
-        // Últimos ensaios
-        (supabase as any).from("test_results")
-          .select("id, test_id, status, created_at, tests_catalog(code)")
-          .eq("project_id", pid)
-          .order("created_at", { ascending: false }).limit(4),
-        // PPIs em curso (draft + in_progress)
-        (supabase as any).from("ppi_instances")
-          .select("id", { count: "exact", head: true })
-          .eq("project_id", pid).in("status", ["draft", "in_progress"]).eq("is_deleted", false),
-        // Ensaios em atraso
-        (supabase as any).from("test_due_items")
-          .select("id", { count: "exact", head: true })
-          .eq("project_id", pid).in("status", ["due", "overdue"]).lt("due_at_date", today),
-        // Soldaduras sem US
-        (supabase as any).from("weld_records")
-          .select("id", { count: "exact", head: true })
-          .eq("project_id", pid).eq("has_ut", false),
-        // Partes Diárias
-        (supabase as any).from("daily_reports")
-          .select("id", { count: "exact", head: true })
-          .eq("project_id", pid).eq("is_deleted", false),
-        (supabase as any).from("daily_reports")
-          .select("id", { count: "exact", head: true })
-          .eq("project_id", pid).eq("is_deleted", false).eq("status", "validated"),
-        // Topografia
-        (supabase as any).from("topography_controls")
-          .select("id", { count: "exact", head: true })
-          .eq("project_id", pid),
-        (supabase as any).from("topography_controls")
-          .select("id", { count: "exact", head: true })
-          .eq("project_id", pid).eq("result", "conforme"),
-      ]);
+      // 1 RPC substitui as 21 queries paralelas anteriores
+      const { data: raw, error } = await (supabase as any)
+        .rpc("fn_dashboard_summary", {
+          p_project_id: activeProject.id,
+          p_months: 6,
+        });
 
-      const recent: RecentItem[] = [];
-      (recentNcRes.data ?? []).forEach((r: any) =>
-        recent.push({ type: "nc", code: r.code ?? "NC", label: r.classification ?? "", created_at: r.created_at, id: r.id }));
-      (recentLotRes.data ?? []).forEach((r: any) =>
-        recent.push({ type: "lot", code: r.lot_code, label: "", created_at: r.created_at, id: r.id }));
-      (recentPpiRes.data ?? []).forEach((r: any) =>
-        recent.push({ type: "ppi", code: r.code, label: "", created_at: r.created_at, id: r.id }));
-      (recentTestRes.data ?? []).forEach((r: any) =>
-        recent.push({ type: "test", code: r.tests_catalog?.code ?? "Ensaio", label: r.status === "pass" ? "Conforme" : r.status === "fail" ? "Não conforme" : "", created_at: r.created_at, id: r.id }));
-      recent.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      if (error) throw error;
+
+      const d = raw ?? {};
+
+      const recentActivity: RecentItem[] = (d.recent_activity ?? []).map((r: any) => {
+        const obj = r?.jsonb_build_object ?? r;
+        return {
+          type:       obj.type       ?? "nc",
+          code:       obj.code       ?? "—",
+          label:      obj.label      ?? "",
+          created_at: obj.created_at ?? new Date().toISOString(),
+          id:         obj.id         ?? "",
+        };
+      });
 
       setData({
-        ncOpen: ncRes.count ?? 0,
-        pamePending: pameRes.count ?? 0,
-        emesExpiring30d: emeRes.count ?? 0,
-        nextAudit: auditRes.data?.[0] ?? null,
-        ppiInProgress: ppiInProgressRes.count ?? 0,
-        testsOverdue: testsOverdueRes.count ?? 0,
-        ppiApproved: ppiApprovedRes.count ?? 0,
-        ppiTotal: ppiTotalRes.count ?? 0,
-        testsCompleted: testsCompletedRes.count ?? 0,
-        testsTotal: testsTotalRes.count ?? 0,
-        matApproved: matApprovedRes.count ?? 0,
-        matTotal: matTotalRes.count ?? 0,
-        weldsPendingUt: weldsPendingUtRes.count ?? 0,
-        dailyReportsTotal: dailyRptTotalRes.count ?? 0,
-        dailyReportsValidated: dailyRptValidatedRes.count ?? 0,
-        topoControlsTotal: topoTotalRes.count ?? 0,
-        topoControlsConforme: topoConformeRes.count ?? 0,
-        recentActivity: recent.slice(0, 8),
+        ncOpen:                Number(d.nc_open                ?? 0),
+        ncOverdue15d:          Number(d.nc_overdue_15d         ?? 0),
+        pamePending:           Number(d.pame_pending           ?? 0),
+        emesExpiring30d:       Number(d.emes_expiring_30d      ?? 0),
+        nextAudit:             d.next_audit ?? null,
+        ppiInProgress:         Number(d.ppi_in_progress        ?? 0),
+        ppiPendingApproval:    Number(d.ppi_pending_approval   ?? 0),
+        testsOverdue:          Number(d.tests_overdue          ?? 0),
+        ppiApproved:           Number(d.ppi_approved           ?? 0),
+        ppiTotal:              Number(d.ppi_total              ?? 0),
+        testsCompleted:        Number(d.tests_completed        ?? 0),
+        testsTotal:            Number(d.tests_total            ?? 0),
+        matApproved:           Number(d.mat_approved           ?? 0),
+        matTotal:              Number(d.mat_total              ?? 0),
+        weldsPendingUt:        Number(d.welds_pending_ut       ?? 0),
+        dailyReportsTotal:     Number(d.daily_reports_total    ?? 0),
+        dailyReportsValidated: Number(d.daily_reports_validated ?? 0),
+        topoControlsTotal:     Number(d.topo_controls_total    ?? 0),
+        topoControlsConforme:  Number(d.topo_controls_conforme ?? 0),
+        recentActivity,
+        ncMonthly:    d.nc_monthly    ?? [],
+        testsMonthly: d.tests_monthly ?? [],
       });
     } catch (err) {
       console.error("[useDashboardKpis]", err);
+      setData(EMPTY);
     } finally {
       setLoading(false);
     }
   }, [activeProject]);
 
   useEffect(() => {
-    let cancelled = false;
     fetch().catch(() => {});
-    return () => { cancelled = true; };
   }, [fetch]);
+
   return { data, loading, refetch: fetch };
 }
