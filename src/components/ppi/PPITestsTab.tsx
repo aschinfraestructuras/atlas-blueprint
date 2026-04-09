@@ -37,8 +37,8 @@ export function PPITestsTab({ instanceId, ppiCode, workItemId }: PPITestsTabProp
   const { activeProject } = useProject();
   const [formOpen, setFormOpen] = useState(false);
   const [genericTests, setGenericTests] = useState<Array<{
-    id: string; code: string | null; result_date: string | null;
-    pass_fail: string | null; result_value: string | null;
+    id: string; code: string | null; date: string | null;
+    pass_fail: string | null; result_status: string | null;
     test_name: string; location: string | null;
   }>>([]);
 
