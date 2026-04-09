@@ -298,9 +298,9 @@ export function PPITestsTab({ instanceId, ppiCode, workItemId }: PPITestsTabProp
                 {genericTests.map((g) => (
                   <TableRow key={g.id}>
                     <TableCell className="text-xs font-medium">{g.test_name}</TableCell>
-                    <TableCell className="text-xs">{g.result_date ? new Date(g.result_date).toLocaleDateString() : "—"}</TableCell>
+                    <TableCell className="text-xs">{g.date ? new Date(g.date).toLocaleDateString() : "—"}</TableCell>
                     <TableCell className="text-xs">{g.location ?? "—"}</TableCell>
-                    <TableCell className="text-xs">{g.result_value ?? "—"}</TableCell>
+                    <TableCell className="text-xs">{g.result_status ?? "—"}</TableCell>
                     <TableCell><ResultBadge result={g.pass_fail ?? "pending"} /></TableCell>
                   </TableRow>
                 ))}
