@@ -142,7 +142,7 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
     });
     setCreatingNew(false);
     setNewTestName(""); setNewTestCode("");
-  }, [open, testResult, form, preselectedWorkItemId]);
+  }, [open, testResult, form, preselectedWorkItemId, preselectedPpiInstanceId]);
 
   const handleCreateCatalogEntry = async () => {
     if (!activeProject || !newTestName.trim() || !newTestCode.trim()) return;
