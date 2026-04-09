@@ -914,8 +914,8 @@ function GenericTestsTab({ projectId }: { projectId: string }) {
     setLoading(true);
     try {
       const [r, c] = await Promise.all([
-        testService.getResults(projectId),
-        testService.getCatalog(),
+        testService.getByProject(projectId),
+        testService.getCatalogByProject(projectId),
       ]);
       setResults(r);
       setCatalog(c);
