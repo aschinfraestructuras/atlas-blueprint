@@ -621,7 +621,23 @@ export default function WorkItemsPage() {
                               <CollapsibleContent>
                                 {viewMode === "cards" ? (
                                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-1.5 ml-2">
-                                    {obraGroup.items.map((item) => renderItemCard(item))}
+                                    {obraGroup.items.map((item) => (
+                                      <div key={item.id}
+                                        className="rounded-lg border border-border/60 bg-card p-3 cursor-pointer hover:shadow-md hover:border-primary/20 transition-all"
+                                        onClick={() => navigate(`/work-items/${item.id}`)}>
+                                        <div className="flex items-start justify-between gap-2 mb-1">
+                                          <p className="text-sm font-medium text-foreground truncate">
+                                            {[item.elemento, item.parte].filter(Boolean).join(" · ") || "—"}
+                                          </p>
+                                          <StatusBadge status={item.status} />
+                                        </div>
+                                        <p className="text-xs text-muted-foreground">
+                                          {t(`workItems.disciplines.${item.disciplina}`, { defaultValue: item.disciplina })}
+                                          {item.pk_inicio != null && ` · ${formatPk(item.pk_inicio, item.pk_fim)}`}
+                                        </p>
+                                        <div className="mt-1.5"><ReadinessBadge item={item} /></div>
+                                      </div>
+                                    ))}
                                   </div>
                                 ) : (
                                   <div className="rounded-lg border border-border/40 overflow-hidden mt-1.5 ml-2 bg-card">

@@ -914,8 +914,8 @@ function GenericTestsTab({ projectId }: { projectId: string }) {
     setLoading(true);
     try {
       const [r, c] = await Promise.all([
-        testService.getResults(projectId),
-        testService.getCatalog(),
+        testService.getByProject(projectId),
+        testService.getCatalogByProject(projectId),
       ]);
       setResults(r);
       setCatalog(c);
@@ -982,7 +982,7 @@ function GenericTestsTab({ projectId }: { projectId: string }) {
                   onClick={() => { setEditing(r); setFormOpen(true); }}>
                   <TableCell className="text-sm font-medium">{getTestName(r.test_id)}</TableCell>
                   <TableCell className="text-xs text-muted-foreground capitalize">{getDisciplina(r.test_id)}</TableCell>
-                  <TableCell className="text-xs">{r.result_date ? new Date(r.result_date).toLocaleDateString() : "—"}</TableCell>
+                  <TableCell className="text-xs">{r.date ? new Date(r.date).toLocaleDateString() : "—"}</TableCell>
                   <TableCell className="text-xs">{r.location ?? "—"}</TableCell>
                   <TableCell>
                     {r.pass_fail === "pass" ? (
@@ -1003,7 +1003,6 @@ function GenericTestsTab({ projectId }: { projectId: string }) {
         <TestResultFormDialog
           open={formOpen}
           onOpenChange={setFormOpen}
-          projectId={projectId}
           testResult={editing ?? undefined}
           onSuccess={() => { setFormOpen(false); load(); }}
         />

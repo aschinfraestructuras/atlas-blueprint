@@ -124,7 +124,6 @@ export function PPITestsTab({ instanceId, ppiCode, workItemId }: PPITestsTabProp
         <TestResultFormDialog
           open={formOpen}
           onOpenChange={setFormOpen}
-          projectId={activeProject.id}
           preselectedWorkItemId={workItemId ?? undefined}
           preselectedPpiInstanceId={instanceId}
           onSuccess={async () => {
