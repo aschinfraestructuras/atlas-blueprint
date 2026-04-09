@@ -37,8 +37,8 @@ export function PPITestsTab({ instanceId, ppiCode, workItemId }: PPITestsTabProp
   const { activeProject } = useProject();
   const [formOpen, setFormOpen] = useState(false);
   const [genericTests, setGenericTests] = useState<Array<{
-    id: string; code: string | null; result_date: string | null;
-    pass_fail: string | null; result_value: string | null;
+    id: string; code: string | null; date: string | null;
+    pass_fail: string | null; result_status: string | null;
     test_name: string; location: string | null;
   }>>([]);
 
@@ -49,16 +49,16 @@ export function PPITestsTab({ instanceId, ppiCode, workItemId }: PPITestsTabProp
         // Ensaios genéricos ligados a este PPI
         const { data: gTests } = await supabase
           .from("test_results")
-          .select("id, code, result_date, pass_fail, result_value, location, tests_catalog(name)")
+          .select("id, code, date, pass_fail, result_status, location, tests_catalog(name)")
           .eq("ppi_instance_id", instanceId)
           .eq("is_deleted", false)
-          .order("result_date", { ascending: false });
+          .order("date", { ascending: false });
         setGenericTests((gTests ?? []).map((r: any) => ({
           id: r.id,
           code: r.code,
-          result_date: r.result_date,
+          date: r.date,
           pass_fail: r.pass_fail,
-          result_value: r.result_value,
+          result_status: r.result_status,
           location: r.location,
           test_name: r.tests_catalog?.name ?? "Ensaio",
         })));
@@ -130,13 +130,13 @@ export function PPITestsTab({ instanceId, ppiCode, workItemId }: PPITestsTabProp
             setFormOpen(false);
             const { data } = await supabase
               .from("test_results")
-              .select("id, code, result_date, pass_fail, result_value, location, tests_catalog(name)")
+              .select("id, code, date, pass_fail, result_status, location, tests_catalog(name)")
               .eq("ppi_instance_id", instanceId)
               .eq("is_deleted", false)
-              .order("result_date", { ascending: false });
+              .order("date", { ascending: false });
             setGenericTests((data ?? []).map((r: any) => ({
-              id: r.id, code: r.code, result_date: r.result_date,
-              pass_fail: r.pass_fail, result_value: r.result_value,
+              id: r.id, code: r.code, date: r.date,
+              pass_fail: r.pass_fail, result_status: r.result_status,
               location: r.location, test_name: r.tests_catalog?.name ?? "Ensaio",
             })));
           }}
@@ -298,9 +298,9 @@ export function PPITestsTab({ instanceId, ppiCode, workItemId }: PPITestsTabProp
                 {genericTests.map((g) => (
                   <TableRow key={g.id}>
                     <TableCell className="text-xs font-medium">{g.test_name}</TableCell>
-                    <TableCell className="text-xs">{g.result_date ? new Date(g.result_date).toLocaleDateString() : "—"}</TableCell>
+                    <TableCell className="text-xs">{g.date ? new Date(g.date).toLocaleDateString() : "—"}</TableCell>
                     <TableCell className="text-xs">{g.location ?? "—"}</TableCell>
-                    <TableCell className="text-xs">{g.result_value ?? "—"}</TableCell>
+                    <TableCell className="text-xs">{g.result_status ?? "—"}</TableCell>
                     <TableCell><ResultBadge result={g.pass_fail ?? "pending"} /></TableCell>
                   </TableRow>
                 ))}
