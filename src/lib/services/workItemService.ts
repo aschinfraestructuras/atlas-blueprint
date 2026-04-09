@@ -64,16 +64,24 @@ export const WORK_ITEM_STATUS_OPTIONS: { value: WorkItemStatus; label: string }[
 // ─── Service ──────────────────────────────────────────────────────────────────
 
 export const workItemService = {
-  async getByProject(projectId: string, includeDeleted = false): Promise<WorkItem[]> {
+  async getByProject(
+    projectId: string,
+    includeDeleted = false,
+    limit = 500,
+  ): Promise<{ data: WorkItem[]; truncated: boolean }> {
     let q = supabase
       .from("work_items")
       .select("*")
       .eq("project_id", projectId)
-      .order("created_at", { ascending: false });
+      .order("sector", { ascending: true })
+      .order("disciplina", { ascending: true })
+      .limit(limit + 1); // pedir 1 extra para detectar truncação
     if (!includeDeleted) q = q.eq("is_deleted", false);
     const { data, error } = await q;
     if (error) throw error;
-    return (data ?? []) as WorkItem[];
+    const rows = (data ?? []) as WorkItem[];
+    const truncated = rows.length > limit;
+    return { data: truncated ? rows.slice(0, limit) : rows, truncated };
   },
 
   /** Server-side paginated query */

@@ -179,7 +179,7 @@ export default function WorkItemsPage() {
   const navigate                   = useNavigate();
   const { activeProject }          = useProject();
   const { user }                   = useAuth();
-  const { data, loading, refetch } = useWorkItems();
+  const { data, loading, refetch, truncated } = useWorkItems();
   const { canCreate, canEdit, canDelete } = useProjectRole();
   const reportMeta = useReportMeta();
   const { logoBase64 } = useProjectLogo();
@@ -563,6 +563,12 @@ export default function WorkItemsPage() {
           </TabsTrigger>
         </TabsList>
 
+        {truncated && (
+          <div className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 dark:bg-amber-950/20 px-4 py-2 text-sm text-amber-700 dark:text-amber-400">
+            <span className="font-semibold">⚠</span>
+            {t("workItems.truncatedWarning", { defaultValue: "A mostrar os primeiros 500 elementos. Use os filtros para restringir a pesquisa." })}
+          </div>
+        )}
         <TabsContent value="list" className="mt-4">
           {/* ── Grouped content ─────────────────────────────────────────── */}
           {loading ? (

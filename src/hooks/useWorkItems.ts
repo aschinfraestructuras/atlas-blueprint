@@ -4,9 +4,10 @@ import { useProject } from "@/contexts/ProjectContext";
 
 export function useWorkItems() {
   const { activeProject } = useProject();
-  const [data, setData]       = useState<WorkItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError]     = useState<string | null>(null);
+  const [data, setData]           = useState<WorkItem[]>([]);
+  const [loading, setLoading]     = useState(true);
+  const [error, setError]         = useState<string | null>(null);
+  const [truncated, setTruncated] = useState(false);
 
   const fetch = useCallback(async () => {
     if (!activeProject) { setData([]); setLoading(false); return; }
@@ -14,19 +15,18 @@ export function useWorkItems() {
     setError(null);
     try {
       const result = await workItemService.getByProject(activeProject.id);
-      setData(result);
+      setData(result.data);
+      setTruncated(result.truncated);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao carregar work items");
+      setError(err instanceof Error ? err.message : "Erro ao carregar elementos de obra");
     } finally {
       setLoading(false);
     }
   }, [activeProject]);
 
   useEffect(() => {
-    let cancelled = false;
     fetch().catch(() => {});
-    return () => { cancelled = true; };
   }, [fetch]);
 
-  return { data, loading, error, refetch: fetch };
+  return { data, loading, error, truncated, refetch: fetch };
 }

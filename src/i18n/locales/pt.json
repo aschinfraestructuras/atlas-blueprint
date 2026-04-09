@@ -2599,7 +2599,8 @@
       "conforme": "Conforme",
       "nao_conforme": "Não Conforme",
       "nao_aplicavel": "N/A"
-    }
+    },
+    "truncatedWarning": "A mostrar os primeiros 500 elementos. Use os filtros para restringir a pesquisa."
   },
   "ppi": {
     "title": "Planos de Pontos de Inspeção (PPI)",
