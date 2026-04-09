@@ -130,13 +130,13 @@ export function PPITestsTab({ instanceId, ppiCode, workItemId }: PPITestsTabProp
             setFormOpen(false);
             const { data } = await supabase
               .from("test_results")
-              .select("id, code, result_date, pass_fail, result_value, location, tests_catalog(name)")
+              .select("id, code, date, pass_fail, result_status, location, tests_catalog(name)")
               .eq("ppi_instance_id", instanceId)
               .eq("is_deleted", false)
-              .order("result_date", { ascending: false });
+              .order("date", { ascending: false });
             setGenericTests((data ?? []).map((r: any) => ({
-              id: r.id, code: r.code, result_date: r.result_date,
-              pass_fail: r.pass_fail, result_value: r.result_value,
+              id: r.id, code: r.code, date: r.date,
+              pass_fail: r.pass_fail, result_status: r.result_status,
               location: r.location, test_name: r.tests_catalog?.name ?? "Ensaio",
             })));
           }}
