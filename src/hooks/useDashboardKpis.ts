@@ -36,6 +36,8 @@ const EMPTY: DashboardKpis = {
   ppiInProgress: 0, testsOverdue: 0,
   ppiApproved: 0, ppiTotal: 0, testsCompleted: 0, testsTotal: 0,
   matApproved: 0, matTotal: 0, weldsPendingUt: 0, recentActivity: [],
+  dailyReportsTotal: 0, dailyReportsValidated: 0,
+  topoControlsTotal: 0, topoControlsConforme: 0,
 };
 
 export function useDashboardKpis() {

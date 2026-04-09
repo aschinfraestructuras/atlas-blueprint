@@ -1003,7 +1003,6 @@ function GenericTestsTab({ projectId }: { projectId: string }) {
         <TestResultFormDialog
           open={formOpen}
           onOpenChange={setFormOpen}
-          projectId={projectId}
           testResult={editing ?? undefined}
           onSuccess={() => { setFormOpen(false); load(); }}
         />

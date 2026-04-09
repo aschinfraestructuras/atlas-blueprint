@@ -67,7 +67,7 @@ interface Props {
   onSuccess: () => void;
 }
 
-export function TestResultFormDialog({ open, onOpenChange, testResult, preselectedWorkItemId, onSuccess }: Props) {
+export function TestResultFormDialog({ open, onOpenChange, testResult, preselectedWorkItemId, preselectedPpiInstanceId, onSuccess }: Props) {
   const { t }             = useTranslation();
   const { activeProject } = useProject();
   const [submitting, setSubmitting]       = useState(false);

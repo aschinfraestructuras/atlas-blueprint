@@ -179,8 +179,8 @@ export function TestResultsCSVImporter({
           location:        row.localizacao,
           pk_inicio:       row.pk ? parseFloat(row.pk) : undefined,
           notes:           row.notas,
-          status_workflow: "completed",
-          result_status:   pf === "pass" ? "conforme" : pf === "fail" ? "nao_conforme" : undefined,
+          status_workflow: "approved",
+          result_status:   pf === "pass" ? "pass" : pf === "fail" ? "fail" : undefined,
           result_payload:  row.valor ? { value: row.valor, imported: true } : { imported: true },
         });
         imported++;
