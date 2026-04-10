@@ -50,6 +50,10 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 // ─── Dot colour for severity ──────────────────────────────────────────────────
 const SEVERITY_DOT: Record<string, string> = {
@@ -135,6 +139,7 @@ export default function NonConformitiesPage() {
   // Dialog
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingNC, setEditingNC]   = useState<NonConformity | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   // NC prefill from test result fail
   const [searchParams, setSearchParams] = useSearchParams();
