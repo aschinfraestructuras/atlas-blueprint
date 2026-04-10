@@ -381,8 +381,32 @@ export default function SuppliersPage() {
                               toast({ title: info.title, description: info.description ?? info.raw, variant: "destructive" });
                             }
                           }} title={t("common.delete")}>
-                             <Trash2 className="h-3.5 w-3.5" />
-                           </Button>
+                             <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                            </Button>
+                            <AlertDialog open={confirmDeleteId === supplier.id} onOpenChange={(o) => { if (!o) setConfirmDeleteId(null); }}>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>{t("common.confirm")}</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    {t("suppliers.confirmDelete", { name: supplier.name })}
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+                                  <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={async () => {
+                                    try {
+                                      await supplierService.softDelete(supplier.id, activeProject!.id);
+                                      toast({ title: t("common.softDeleted") });
+                                      refetch();
+                                    } catch (err) {
+                                      const info = classifySupabaseError(err, t);
+                                      toast({ title: info.title, description: info.description ?? info.raw, variant: "destructive" });
+                                    }
+                                    setConfirmDeleteId(null);
+                                  }}>{t("common.delete")}</AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
                         </>
                       )}
                     </div>
