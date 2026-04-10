@@ -6,6 +6,10 @@ import { useSuppliers } from "@/hooks/useSuppliers";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import { supplierService } from "@/lib/services/supplierService";
 import { Truck, Plus, Pencil, Search, Archive, RotateCcw, Eye, Trash2, PieChart as PieChartIcon, AlertTriangle, FileDown } from "lucide-react";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { exportLGR } from "@/lib/services/sgqListExportService";
 import { useReportMeta } from "@/hooks/useReportMeta";
 import { useSubcontractors } from "@/hooks/useSubcontractors";
@@ -64,6 +68,7 @@ export default function SuppliersPage() {
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterQual, setFilterQual] = useState("all");
   const [filterCategory, setFilterCategory] = useState("all");
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
     let result = suppliers;
