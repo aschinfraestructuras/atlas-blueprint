@@ -112,7 +112,7 @@ export function PPIInstanceFormDialog({
 
     setLoadingWI(true);
     workItemService.getByProject(activeProject.id)
-      .then(setWorkItems)
+      .then((res) => setWorkItems(res.data))
       .catch(() => setWorkItems([]))
       .finally(() => setLoadingWI(false));
 

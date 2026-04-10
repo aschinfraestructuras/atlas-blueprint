@@ -80,15 +80,16 @@ export default function TestSchedulePage() {
     const date = new Date().toLocaleDateString("pt-PT");
 
     let html = `<html><head><style>
-      body { font-family: Arial, sans-serif; font-size: 9px; color: #1a1a1a; padding: 16px; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 9px; color: #374151; padding: 16px; line-height: 1.4; }
       table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-      th { background: #192F48; color: #fff; padding: 6px 4px; font-size: 9px; text-align: left; }
-      td { border: 1px solid #e2e8f0; padding: 4px; vertical-align: top; font-size: 8px; min-height: 40px; }
-      .test-item { background: #f8fafc; border-radius: 3px; padding: 3px 5px; margin-bottom: 3px; border-left: 3px solid #192F48; }
-      .status-pass { border-left-color: #22c55e; }
-      .status-fail { border-left-color: #ef4444; }
-      .status-pending { border-left-color: #f59e0b; }
-      .kpi { display: inline-block; background: #f1f5f9; padding: 3px 8px; border-radius: 4px; margin-right: 8px; font-size: 9px; }
+      th { background: #192F48; color: #fff; padding: 7px 5px; font-size: 8px; text-align: center; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
+      td { border: 1px solid #d1d5db; padding: 5px 4px; vertical-align: top; font-size: 8px; min-height: 40px; color: #374151; }
+      .test-item { background: #f1f5f9; border-radius: 4px; padding: 4px 6px; margin-bottom: 3px; border-left: 3px solid #192F48; font-size: 8px; color: #374151; }
+      .status-pass { border-left-color: #16a34a; }
+      .status-fail { border-left-color: #dc2626; }
+      .status-pending { border-left-color: #d97706; }
+      .kpi { display: inline-block; background: #e2e8f0; padding: 3px 10px; border-radius: 4px; margin-right: 8px; font-size: 9px; color: #1e293b; font-weight: 600; }
     </style></head><body>`;
 
     html += fullPdfHeader(logoBase64, projectName, "PROG-ENS-" + activeProject.code, "0", date);

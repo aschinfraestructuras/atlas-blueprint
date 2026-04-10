@@ -6,6 +6,10 @@ import { useSuppliers } from "@/hooks/useSuppliers";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import { supplierService } from "@/lib/services/supplierService";
 import { Truck, Plus, Pencil, Search, Archive, RotateCcw, Eye, Trash2, PieChart as PieChartIcon, AlertTriangle, FileDown } from "lucide-react";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { exportLGR } from "@/lib/services/sgqListExportService";
 import { useReportMeta } from "@/hooks/useReportMeta";
 import { useSubcontractors } from "@/hooks/useSubcontractors";
@@ -64,6 +68,7 @@ export default function SuppliersPage() {
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterQual, setFilterQual] = useState("all");
   const [filterCategory, setFilterCategory] = useState("all");
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
     let result = suppliers;
@@ -371,18 +376,34 @@ export default function SuppliersPage() {
                           <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleArchive(supplier)} title={supplier.status === "archived" ? t("suppliers.actions.activate") : t("suppliers.actions.archive")}>
                             {supplier.status === "archived" ? <RotateCcw className="h-3.5 w-3.5" /> : <Archive className="h-3.5 w-3.5" />}
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={async () => {
-                            try {
-                              await supplierService.softDelete(supplier.id, activeProject.id);
-                              toast({ title: t("common.softDeleted") });
-                              refetch();
-                            } catch (err) {
-                              const info = classifySupabaseError(err, t);
-                              toast({ title: info.title, description: info.description ?? info.raw, variant: "destructive" });
-                            }
-                          }} title={t("common.delete")}>
-                             <Trash2 className="h-3.5 w-3.5" />
-                           </Button>
+                          <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive"
+                            onClick={() => setConfirmDeleteId(supplier.id)} title={t("common.delete")}>
+                             <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                            </Button>
+                            <AlertDialog open={confirmDeleteId === supplier.id} onOpenChange={(o) => { if (!o) setConfirmDeleteId(null); }}>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>{t("common.confirm")}</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    {t("suppliers.confirmDelete", { name: supplier.name })}
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+                                  <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={async () => {
+                                    try {
+                                      await supplierService.softDelete(supplier.id, activeProject!.id);
+                                      toast({ title: t("common.softDeleted") });
+                                      refetch();
+                                    } catch (err) {
+                                      const info = classifySupabaseError(err, t);
+                                      toast({ title: info.title, description: info.description ?? info.raw, variant: "destructive" });
+                                    }
+                                    setConfirmDeleteId(null);
+                                  }}>{t("common.delete")}</AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
                         </>
                       )}
                     </div>

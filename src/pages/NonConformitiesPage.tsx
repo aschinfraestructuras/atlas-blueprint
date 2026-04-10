@@ -50,6 +50,10 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 // ─── Dot colour for severity ──────────────────────────────────────────────────
 const SEVERITY_DOT: Record<string, string> = {
@@ -135,6 +139,7 @@ export default function NonConformitiesPage() {
   // Dialog
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingNC, setEditingNC]   = useState<NonConformity | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   // NC prefill from test result fail
   const [searchParams, setSearchParams] = useSearchParams();
@@ -831,27 +836,42 @@ export default function NonConformitiesPage() {
                               <RotateCcw className="h-3.5 w-3.5" />
                             </Button>
                           ) : (
-                            <Button
-                              variant="ghost" size="icon"
-                              className="h-7 w-7 text-destructive hover:text-destructive"
-                              onClick={async () => {
-                                try {
-                                  await ncService.updateStatus(nc.id, "archived");
-                                  toast({ title: t("nc.toast.statusChanged", { status: t("nc.status.archived") }) });
-                                  refetch();
-                                } catch (err) {
-                                  const info = classifySupabaseError(err, t);
-                                  toast({ title: info.title, description: info.description ?? info.raw, variant: "destructive" });
-                                }
-                              }}
-                              title={t("common.archive")}
-                            >
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </Button>
-                          )}
-                        </div>
-                    </TableCell>
-                  </TableRow>
+                             <Button
+                               variant="ghost" size="icon"
+                               className="h-7 w-7 text-destructive hover:text-destructive"
+                               onClick={() => setConfirmDeleteId(nc.id)}
+                               title={t("common.delete")}
+                             >
+                               <Trash2 className="h-3.5 w-3.5" />
+                             </Button>
+                           )}
+                         </div>
+                         <AlertDialog open={confirmDeleteId === nc.id} onOpenChange={(o) => { if (!o) setConfirmDeleteId(null); }}>
+                           <AlertDialogContent>
+                             <AlertDialogHeader>
+                               <AlertDialogTitle>{t("common.confirm")}</AlertDialogTitle>
+                               <AlertDialogDescription>
+                                 {t("nc.confirmDelete", { code: nc.code, defaultValue: `Tem a certeza que deseja eliminar a NC "${nc.code}"?` })}
+                               </AlertDialogDescription>
+                             </AlertDialogHeader>
+                             <AlertDialogFooter>
+                               <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+                               <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={async () => {
+                                 try {
+                                   await ncService.softDelete(nc.id, activeProject!.id);
+                                   toast({ title: t("common.softDeleted") });
+                                   refetch();
+                                 } catch (err) {
+                                   const info = classifySupabaseError(err, t);
+                                   toast({ title: info.title, description: info.description ?? info.raw, variant: "destructive" });
+                                 }
+                                 setConfirmDeleteId(null);
+                               }}>{t("common.delete")}</AlertDialogAction>
+                             </AlertDialogFooter>
+                           </AlertDialogContent>
+                         </AlertDialog>
+                     </TableCell>
+                   </TableRow>
 
                 );
               })}

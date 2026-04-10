@@ -1210,7 +1210,10 @@
       "in_progress": "Em curso",
       "inconclusive": "Inconclusivo",
       "pass": "Conforme",
-      "pending": "Pendente"
+      "pending": "Pendente",
+      "na": "Não Aplicável",
+      "submitted": "Submetido",
+      "reviewed": "Revisto"
     },
     "table": {
       "location": "Localização",
@@ -1484,7 +1487,8 @@
       "result": "Resultado",
       "score": "Pontuação",
       "title": "Avaliações"
-    }
+    },
+    "confirmDelete": "Tem a certeza que deseja eliminar o fornecedor \"{{name}}\"? Esta ação não pode ser revertida."
   },
   "nc": {
     "newNC": "Nova NC",
@@ -4385,7 +4389,12 @@
     "empty": "Nenhuma auditoria registada. O programa anual de auditorias deve ser definido no PQO.",
     "emptyTitle": "Sem auditorias",
     "emptyDescription": "Nenhuma auditoria registada",
-    "type": "Tipo de Auditoria",
+    "type": {
+      "internal": "Interna",
+      "external": "Externa",
+      "surveillance": "Vigilância",
+      "closing": "Encerramento"
+    },
     "types": {
       "internal": "Interna",
       "external": "Externa",
