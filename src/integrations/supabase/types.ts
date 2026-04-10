@@ -3789,8 +3789,36 @@ export type Database = {
           },
         ]
       }
+      notification_rate_limits: {
+        Row: {
+          id: string
+          project_id: string
+          send_count: number
+          updated_at: string
+          user_id: string
+          window_hour: string
+        }
+        Insert: {
+          id?: string
+          project_id: string
+          send_count?: number
+          updated_at?: string
+          user_id: string
+          window_hour?: string
+        }
+        Update: {
+          id?: string
+          project_id?: string
+          send_count?: number
+          updated_at?: string
+          user_id?: string
+          window_hour?: string
+        }
+        Relationships: []
+      }
       notification_recipients: {
         Row: {
+          confirmation_token: string
           confirmed_at: string | null
           contact_id: string | null
           created_at: string
@@ -3801,6 +3829,7 @@ export type Database = {
           sent_status: string
         }
         Insert: {
+          confirmation_token?: string
           confirmed_at?: string | null
           contact_id?: string | null
           created_at?: string
@@ -3811,6 +3840,7 @@ export type Database = {
           sent_status?: string
         }
         Update: {
+          confirmation_token?: string
           confirmed_at?: string | null
           contact_id?: string | null
           created_at?: string
@@ -3934,9 +3964,11 @@ export type Database = {
           entity_id: string | null
           entity_type: string
           id: string
+          idempotency_key: string | null
           list_id: string | null
           pdf_attached: boolean
           project_id: string
+          rate_limited: boolean | null
           sent_at: string
           sent_by: string | null
           subject: string
@@ -3948,9 +3980,11 @@ export type Database = {
           entity_id?: string | null
           entity_type: string
           id?: string
+          idempotency_key?: string | null
           list_id?: string | null
           pdf_attached?: boolean
           project_id: string
+          rate_limited?: boolean | null
           sent_at?: string
           sent_by?: string | null
           subject: string
@@ -3962,9 +3996,11 @@ export type Database = {
           entity_id?: string | null
           entity_type?: string
           id?: string
+          idempotency_key?: string | null
           list_id?: string | null
           pdf_attached?: boolean
           project_id?: string
+          rate_limited?: boolean | null
           sent_at?: string
           sent_by?: string | null
           subject?: string
@@ -12784,6 +12820,14 @@ export type Database = {
       fn_check_activity_completion: {
         Args: { p_activity_id: string }
         Returns: Json
+      }
+      fn_check_and_increment_rate_limit: {
+        Args: {
+          p_max_per_hour?: number
+          p_project_id: string
+          p_user_id: string
+        }
+        Returns: boolean
       }
       fn_claim_my_pending_invites: { Args: never; Returns: Json }
       fn_create_document: {
