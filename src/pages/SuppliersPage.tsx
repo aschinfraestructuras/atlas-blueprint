@@ -376,16 +376,8 @@ export default function SuppliersPage() {
                           <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleArchive(supplier)} title={supplier.status === "archived" ? t("suppliers.actions.activate") : t("suppliers.actions.archive")}>
                             {supplier.status === "archived" ? <RotateCcw className="h-3.5 w-3.5" /> : <Archive className="h-3.5 w-3.5" />}
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={async () => {
-                            try {
-                              await supplierService.softDelete(supplier.id, activeProject.id);
-                              toast({ title: t("common.softDeleted") });
-                              refetch();
-                            } catch (err) {
-                              const info = classifySupabaseError(err, t);
-                              toast({ title: info.title, description: info.description ?? info.raw, variant: "destructive" });
-                            }
-                          }} title={t("common.delete")}>
+                          <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive"
+                            onClick={() => setConfirmDeleteId(supplier.id)} title={t("common.delete")}>
                              <Trash2 className="h-3.5 w-3.5 text-destructive" />
                             </Button>
                             <AlertDialog open={confirmDeleteId === supplier.id} onOpenChange={(o) => { if (!o) setConfirmDeleteId(null); }}>
