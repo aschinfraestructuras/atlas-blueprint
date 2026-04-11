@@ -3150,10 +3150,12 @@
       "actions": {
         "approveAndSave": "Guardar y Aprobar",
         "saveQuarantine": "Guardar en Cuarentena",
-        "reject": "Rechazar",
+        "reject": "Rechazar lote",
         "createNc": "Crear NC",
         "createNcPrompt": "Recepción no conforme. ¿Crear NC?",
-        "ncCreated": "NC creada con éxito"
+        "ncCreated": "NC creada con éxito",
+        "release": "Liberar lote",
+        "quarantine": "Poner en cuarentena"
       },
       "table": {
         "date": "Fecha",
@@ -3165,6 +3167,11 @@
         "physicalState": "Estado Físico",
         "ceMarking": "Marc. CE",
         "nc": "NC"
+      },
+      "toast": {
+        "approved": "Lote liberado con éxito",
+        "quarantine": "Lote en cuarentena",
+        "rejected": "Lote rechazado"
       }
     },
     "filters": {

@@ -3178,10 +3178,17 @@
       "actions": {
         "approveAndSave": "Guardar e Aprovar",
         "saveQuarantine": "Guardar em Quarentena",
-        "reject": "Rejeitar",
+        "reject": "Rejeitar lote",
         "createNc": "Criar NC",
         "createNcPrompt": "Receção não conforme. Criar NC?",
-        "ncCreated": "NC criada com sucesso"
+        "ncCreated": "NC criada com sucesso",
+        "release": "Libertar lote",
+        "quarantine": "Colocar em quarentena"
+      },
+      "toast": {
+        "approved": "Lote libertado com sucesso",
+        "quarantine": "Lote colocado em quarentena",
+        "rejected": "Lote rejeitado"
       }
     },
     "approval": {

@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import {
   materialService,
@@ -14,7 +15,7 @@ import { exportMaterialPdf, exportFavPdf } from "@/lib/services/materialExportSe
 import { printQuarantineLabel } from "@/components/materials/QuarantineLabelView";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, Package, Plus, History, CheckCircle2, XCircle, SendHorizontal, AlertTriangle, Clock, Loader2, Tag, FileDown } from "lucide-react";
+import { ArrowLeft, Package, Plus, History, CheckCircle2, XCircle, SendHorizontal, AlertTriangle, Clock, Loader2, Tag, FileDown, ShieldCheck, ShieldAlert, Ban } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -89,6 +90,8 @@ export default function MaterialDetailPage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
   const { canEdit, canCreate, canValidate } = useProjectRole();
+  const { user } = useAuth();
+  const [lotUpdating, setLotUpdating] = useState<string | null>(null);
   const { logoBase64 } = useProjectLogo();
 
   useEffect(() => {
@@ -110,6 +113,25 @@ export default function MaterialDetailPage() {
   const [loading, setLoading] = useState(true);
   const [editOpen, setEditOpen] = useState(false);
   const [receptionOpen, setReceptionOpen] = useState(false);
+
+  async function handleLotStatus(lotId: string, newStatus: "approved" | "quarantine" | "rejected") {
+    if (!user) return;
+    setLotUpdating(lotId);
+    try {
+      const { error } = await (supabase as any).rpc("fn_update_lot_status", {
+        p_lot_id: lotId,
+        p_new_status: newStatus,
+        p_user_id: user.id,
+      });
+      if (error) throw error;
+      toast({ title: t(`materials.reception.toast.${newStatus}`, { defaultValue: `Lote ${newStatus === "approved" ? "libertado" : newStatus === "quarantine" ? "em quarentena" : "rejeitado"}` }) });
+      await fetchAll();
+    } catch (err) {
+      toast({ title: t("common.error"), description: err instanceof Error ? err.message : String(err), variant: "destructive" });
+    } finally {
+      setLotUpdating(null);
+    }
+  }
   const [actionLoading, setActionLoading] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
 
@@ -465,6 +487,7 @@ export default function MaterialDetailPage() {
                       <TableHead>{t("materials.reception.table.physicalState")}</TableHead>
                       <TableHead>{t("materials.reception.table.status")}</TableHead>
                       <TableHead>{t("materials.reception.table.nc")}</TableHead>
+                      {canValidate && <TableHead className="text-right">{t("common.actions")}</TableHead>}
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -489,6 +512,45 @@ export default function MaterialDetailPage() {
                             </button>
                           ) : "—"}
                         </TableCell>
+                        {canValidate && (
+                          <TableCell className="text-right">
+                            <div className="flex items-center justify-end gap-1">
+                              {lot.reception_status !== "approved" && (
+                                <Button
+                                  variant="ghost" size="icon"
+                                  className="h-7 w-7 text-green-600 hover:text-green-700 hover:bg-green-50"
+                                  onClick={() => handleLotStatus(lot.id, "approved")}
+                                  disabled={lotUpdating === lot.id}
+                                  title={t("materials.reception.actions.release", { defaultValue: "Libertar lote" })}
+                                >
+                                  {lotUpdating === lot.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ShieldCheck className="h-3.5 w-3.5" />}
+                                </Button>
+                              )}
+                              {lot.reception_status !== "quarantine" && lot.reception_status !== "rejected" && (
+                                <Button
+                                  variant="ghost" size="icon"
+                                  className="h-7 w-7 text-amber-500 hover:text-amber-600 hover:bg-amber-50"
+                                  onClick={() => handleLotStatus(lot.id, "quarantine")}
+                                  disabled={lotUpdating === lot.id}
+                                  title={t("materials.reception.actions.quarantine", { defaultValue: "Quarentena" })}
+                                >
+                                  <ShieldAlert className="h-3.5 w-3.5" />
+                                </Button>
+                              )}
+                              {lot.reception_status !== "rejected" && (
+                                <Button
+                                  variant="ghost" size="icon"
+                                  className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10"
+                                  onClick={() => handleLotStatus(lot.id, "rejected")}
+                                  disabled={lotUpdating === lot.id}
+                                  title={t("materials.reception.actions.reject", { defaultValue: "Rejeitar lote" })}
+                                >
+                                  <Ban className="h-3.5 w-3.5" />
+                                </Button>
+                              )}
+                            </div>
+                          </TableCell>
+                        )}
                       </TableRow>
                     ))}
                   </TableBody>
