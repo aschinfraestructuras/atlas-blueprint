@@ -29,7 +29,7 @@ export function ModuleShortcuts() {
   const navigate = useNavigate();
 
   return (
-    <div className="grid grid-cols-4 lg:grid-cols-8 gap-2">
+    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 sm:gap-2">
       {MODULES.map((mod) => {
         const Icon = mod.icon;
         return (
@@ -37,22 +37,23 @@ export function ModuleShortcuts() {
             key={mod.route}
             onClick={() => navigate(mod.route)}
             className={cn(
-              "group relative flex flex-col items-center gap-1.5 rounded-xl px-2 py-3",
+              "group relative flex flex-col items-center gap-1.5 rounded-xl px-2 py-4 sm:py-3",
               "bg-card border border-transparent shadow-card",
               "hover:shadow-card-hover hover:border-border",
               "transition-all duration-200 ease-out",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              "min-h-[72px] sm:min-h-0",
             )}
           >
             {/* Icon container with subtle colored background */}
             <div
-              className="flex items-center justify-center w-9 h-9 rounded-lg transition-transform duration-200 group-hover:scale-110"
+              className="flex items-center justify-center w-10 h-10 sm:w-9 sm:h-9 rounded-lg transition-transform duration-200 group-hover:scale-110"
               style={{
                 backgroundColor: `hsl(var(${mod.colorVar}) / 0.08)`,
               }}
             >
               <Icon
-                className="h-4 w-4 transition-colors"
+                className="h-5 w-5 sm:h-4 sm:w-4 transition-colors"
                 style={{ color: `hsl(var(${mod.colorVar}))` }}
               />
             </div>
