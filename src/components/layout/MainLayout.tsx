@@ -122,7 +122,7 @@ export function MainLayout({ children }: MainLayoutProps) {
       <div className="flex flex-1 flex-col overflow-hidden min-w-0">
         <TopBar onMobileMenuOpen={() => setMobileOpen(true)} />
         <main className="flex-1 overflow-y-auto bg-muted/20">
-          <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 pb-20 lg:pb-6">
             {isArchived && <ArchivedBanner />}
             {isViewer && (
               <div className="flex items-center gap-2 mb-4 px-4 py-2.5 rounded-lg border bg-primary/5 border-primary/20 text-primary">
@@ -133,7 +133,7 @@ export function MainLayout({ children }: MainLayoutProps) {
             {children}
           </div>
           {/* Discrete footer */}
-          <footer className="border-t border-border/30 bg-muted/10 py-3 px-4 sm:px-6 lg:px-8">
+          <footer className="border-t border-border/30 bg-muted/10 py-3 px-4 sm:px-6 lg:px-8 hidden lg:block">
             <div className="mx-auto max-w-7xl flex flex-col sm:flex-row items-center justify-between gap-1 text-[10px] text-muted-foreground/50">
               <span>Atlas QMS · {t("auth.qmsLabel")}</span>
               <a
