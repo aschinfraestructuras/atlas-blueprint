@@ -185,3 +185,20 @@
     animation: shimmer 1.6s infinite linear;
   }
 }
+
+/* ── Safe area for mobile bottom nav ─────────────────────────────────── */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ── Mobile tap target minimums ──────────────────────────────────────── */
+@media (max-width: 1023px) {
+  /* Ensure buttons and interactive elements have minimum 44px touch targets */
+  button, a, [role="button"], [role="tab"], [role="menuitem"] {
+    min-height: 44px;
+  }
+  /* Except small inline badges and icons */
+  .badge, [data-no-min-h] {
+    min-height: unset;
+  }
+}

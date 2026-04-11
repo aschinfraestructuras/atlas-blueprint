@@ -148,6 +148,7 @@ export function MainLayout({ children }: MainLayoutProps) {
           </footer>
         </main>
       </div>
+      <MobileBottomNav />
       <SessionTimeoutWarning open={showWarning} onExtend={extendSession} />
       <OnboardingTour />
     </div>
