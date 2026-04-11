@@ -12,6 +12,7 @@ import { useProjectRole } from "@/hooks/useProjectRole";
 import { useSessionTimeout } from "@/hooks/useSessionTimeout";
 import { SessionTimeoutWarning } from "@/components/session/SessionTimeoutWarning";
 import { OnboardingTour } from "@/components/onboarding/OnboardingTour";
+import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 
 interface MainLayoutProps {
   children: React.ReactNode;
