@@ -32,13 +32,13 @@ export function CriticalAlertsBanner({ ncOpen, ncOverdue, emesExpiring, pamePend
   if (active.length === 0) return null;
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
       {active.map((alert) => (
         <div
           key={alert.label}
           onClick={() => navigate(alert.route)}
-          className="flex items-center gap-2.5 px-3 py-2 rounded-lg border border-border/40 bg-muted/30
-                     cursor-pointer hover:bg-muted/60 transition-colors"
+          className="flex items-center gap-2.5 px-3 py-3 sm:py-2 rounded-lg border border-border/40 bg-muted/30
+                     cursor-pointer hover:bg-muted/60 transition-colors min-h-[48px]"
           style={{
             borderLeftWidth: 3,
             borderLeftColor: alert.urgent ? "hsl(var(--destructive))" : "hsl(38 85% 50%)",
