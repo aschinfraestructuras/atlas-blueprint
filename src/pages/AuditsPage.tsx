@@ -156,7 +156,7 @@ export default function AuditsPage() {
           report_ref: fReportRef || null,
           completed_date: fCompletedDate || null,
         });
-        toast.success("Auditoria atualizada");
+        toast.success(t("audits.toast.updated", { defaultValue: "Auditoria atualizada" }));
       } else {
         await qualityAuditService.create({
           project_id: activeProject.id,
@@ -165,12 +165,12 @@ export default function AuditsPage() {
           auditor_name: fAuditorName || undefined,
           scope: fScope || undefined,
         });
-        toast.success("Auditoria criada");
+        toast.success(t("audits.toast.created", { defaultValue: "Auditoria criada" }));
       }
       setFormOpen(false);
       load();
     } catch (err: any) {
-      toast.error(err.message ?? "Erro");
+      toast.error(err.message ?? t("common.error"));
     } finally {
       setSaving(false);
     }
@@ -180,10 +180,10 @@ export default function AuditsPage() {
     if (!deleteTarget) return;
     try {
       await qualityAuditService.delete(deleteTarget.id);
-      toast.success("Auditoria cancelada");
+      toast.success(t("audits.toast.deleted", { defaultValue: "Auditoria cancelada" }));
       load();
     } catch (err: any) {
-      toast.error(err.message ?? "Erro");
+      toast.error(err.message ?? t("common.error"));
     } finally {
       setDeleteTarget(null);
     }

@@ -21,7 +21,12 @@ export default function ConfirmReceiptPage() {
       return;
     }
 
-    const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const token = params.get("token") ?? "";
+    const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      global: {
+        headers: { "x-confirmation-token": token },
+      },
+    });
 
     (async () => {
       try {

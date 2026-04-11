@@ -41,9 +41,9 @@ function escapeHtml(str: string): string {
     .replace(/'/g, "&#39;");
 }
 
-function buildHtmlBody(subject: string, emailBody: string | undefined, entityCode: string | undefined, attachmentCount: number, entityType?: string, recipientId?: string): string {
+function buildHtmlBody(subject: string, emailBody: string | undefined, entityCode: string | undefined, attachmentCount: number, entityType?: string, recipientId?: string, confirmationToken?: string): string {
   const confirmUrl = recipientId
-    ? `https://aschquality.com/confirm-receipt?id=${recipientId}`
+    ? `https://aschquality.com/confirm-receipt?id=${recipientId}${confirmationToken ? `&token=${confirmationToken}` : ""}`
     : "";
   const today = new Date().toLocaleDateString("pt-PT");
   const typeLabel = (entityType ?? "comunicação").toUpperCase();
@@ -335,13 +335,14 @@ Deno.serve(async (req: Request) => {
           name: recipient.name || null,
           sent_status: "pending",
         })
-        .select("id")
+        .select("id, confirmation_token")
         .single();
 
       const recipientId = recipientRow?.id;
+      const confirmationToken = recipientRow?.confirmation_token;
 
       // Build HTML with confirmation link per recipient
-      const htmlBody = buildHtmlBody(subject, emailBody, entity_code, allAttachments.length, entity_type, recipientId);
+      const htmlBody = buildHtmlBody(subject, emailBody, entity_code, allAttachments.length, entity_type, recipientId, confirmationToken);
 
       try {
         if (smtpUser && smtpPass) {
