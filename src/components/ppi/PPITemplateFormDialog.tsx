@@ -27,7 +27,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2, Plus, Trash2, AlertCircle, GripVertical } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import {

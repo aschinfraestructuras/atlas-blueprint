@@ -26,7 +26,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import {
   FileBarChart2, Plus, ArrowLeft, FileText, Send, Trash2, AlertTriangle,
 } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 import { cn } from "@/lib/utils";
 import {
   monthlyReportService,

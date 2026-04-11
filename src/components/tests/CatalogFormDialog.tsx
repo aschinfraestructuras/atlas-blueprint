@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { testService, TEST_DISCIPLINES } from "@/lib/services/testService";
 import type { TestCatalogEntry, TestCatalogInput } from "@/lib/services/testService";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,

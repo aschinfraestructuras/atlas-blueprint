@@ -12,7 +12,7 @@ import { RecycledMaterialFormDialog } from "./RecycledMaterialFormDialog";
 import { exportRecycledMaterialPdf } from "@/lib/services/recycledMaterialExportService";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { useProject } from "@/contexts/ProjectContext";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 
 const STATUS_COLORS: Record<string, string> = {
   pending: "bg-muted text-muted-foreground",

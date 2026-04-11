@@ -13,7 +13,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
 import { Plus, Trash2, CheckCircle2, Clock, Copy } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 import { cn } from "@/lib/utils";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

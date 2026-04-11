@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 
 const SOURCE_ROUTES: Record<string, string> = {
   supplier_doc: "/suppliers",

@@ -7,7 +7,7 @@ import { useSubcontractors } from "@/hooks/useSubcontractors";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import { subcontractorService } from "@/lib/services/subcontractorService";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 import { DistributionBar, StackedBar } from "@/components/dashboard/DistributionBar";
 import { HardHat, Plus, Pencil, Trash2, Search, Eye, Users, AlertTriangle, CheckCircle, Clock } from "lucide-react";
 import {
@@ -62,7 +62,6 @@ export default function SubcontractorsPage() {
   const { data: subcontractors, loading, error, refetch } = useSubcontractors();
   const { canCreate, canDelete } = useProjectRole();
   const reportMeta = useReportMeta();
-  const { toast } = useToast();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingSub, setEditingSub] = useState<Subcontractor | null>(null);
   const [deletingSub, setDeletingSub] = useState<Subcontractor | null>(null);

@@ -31,7 +31,7 @@ import { MaterialReceptionDialog } from "@/components/materials/MaterialReceptio
 import { LinkedDocumentsPanel } from "@/components/documents/LinkedDocumentsPanel";
 import { TechnicalDossierTab } from "@/components/materials/TechnicalDossierTab";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 import { cn } from "@/lib/utils";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 

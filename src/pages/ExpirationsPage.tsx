@@ -15,7 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { FilterBar } from "@/components/ui/filter-bar";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import { cn } from "@/lib/utils";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 import { Clock, AlertTriangle, Truck, HardHat, Crosshair, Package, Eye, Users } from "lucide-react";
 
 const STATUS_COLORS: Record<string, string> = {
@@ -93,7 +93,6 @@ export default function ExpirationsPage() {
 
   const expiredCount = items.filter(i => i.status === "expired").length;
   const expiringCount = items.filter(i => i.status !== "expired").length;
-  const { toast } = useToast();
 
   if (!activeProject) return <NoProjectBanner />;
   

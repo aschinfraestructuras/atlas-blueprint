@@ -20,7 +20,7 @@ import {
   Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
 import { FileCheck, Plus, ClipboardList } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 
 interface RdcRecord {
   id: string;

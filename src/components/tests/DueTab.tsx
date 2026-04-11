@@ -5,7 +5,7 @@ import { useProject } from "@/contexts/ProjectContext";
 import { useTestDueItems } from "@/hooks/useTestDueItems";
 import { testDueService } from "@/lib/services/testDueService";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 import { ModuleKPICard } from "@/components/ModuleKPICard";
 import { Card, CardContent } from "@/components/ui/card";
 import { EmptyState } from "@/components/EmptyState";

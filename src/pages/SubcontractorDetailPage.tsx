@@ -7,7 +7,7 @@ import { subcontractorService, type Subcontractor } from "@/lib/services/subcont
 import { subcontractorDocService, DOC_TYPES, type SubcontractorDocument } from "@/lib/services/subcontractorDocService";
 import { auditService } from "@/lib/services/auditService";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
@@ -54,7 +54,6 @@ export default function SubcontractorDetailPage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
   const { user } = useAuth();
-  const { toast } = useToast();
   const reportMeta = useReportMeta();
   const { logoBase64 } = useProjectLogo();
 

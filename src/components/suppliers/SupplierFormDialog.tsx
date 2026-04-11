@@ -7,7 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useProject } from "@/contexts/ProjectContext";
 import { supplierService } from "@/lib/services/supplierService";
 import type { Supplier } from "@/lib/services/supplierService";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 import { SelectWithOther } from "@/components/ui/select-with-other";
 import { withOtherRefinement } from "@/components/ui/select-with-other.utils";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";

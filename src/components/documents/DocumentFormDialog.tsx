@@ -10,7 +10,7 @@ import type { Document } from "@/lib/services/documentService";
 import { DOCUMENT_STATUSES } from "@/lib/services/documentService";
 import type { DocumentStatus } from "@/lib/services/documentService";
 import { DOCUMENT_TEMPLATES, type DocumentTemplate } from "@/lib/services/documentTemplates";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 import { SelectWithOther } from "@/components/ui/select-with-other";
 import { withOtherRefinement } from "@/components/ui/select-with-other.utils";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";

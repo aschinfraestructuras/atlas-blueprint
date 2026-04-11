@@ -25,7 +25,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { ControlledCopiesPanel } from "@/components/plans/ControlledCopiesPanel";
 import { PlanFormDialog } from "@/components/plans/PlanFormDialog";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { cn } from "@/lib/utils";
 import type { ReportMeta } from "@/lib/services/reportService";

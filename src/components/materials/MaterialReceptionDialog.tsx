@@ -27,7 +27,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { Badge } from "@/components/ui/badge";
 

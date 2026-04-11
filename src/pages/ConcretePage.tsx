@@ -29,7 +29,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { RowActionMenu } from "@/components/ui/row-action-menu";
 import { EmptyState } from "@/components/EmptyState";
 import { ModuleKPICard } from "@/components/ModuleKPICard";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 import { cn } from "@/lib/utils";
 
 const CONCRETE_CLASSES = ["C16/20", "C20/25", "C25/30", "C30/37", "C35/45", "C40/50"];

@@ -13,7 +13,7 @@ import { exportDocumentListPdf, type DocExportLabels } from "@/lib/services/docu
 import { exportLMD } from "@/lib/services/sgqListExportService";
 import { useReportMeta } from "@/hooks/useReportMeta";
 import { auditService } from "@/lib/services/auditService";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 import { supabase } from "@/integrations/supabase/client";
 import { MeetingActionsPanel } from "@/components/documents/MeetingActionsPanel";
 import { ModuleKPICard } from "@/components/ModuleKPICard";

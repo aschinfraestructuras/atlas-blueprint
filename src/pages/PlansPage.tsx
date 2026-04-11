@@ -34,7 +34,7 @@ import { PlanFormDialog } from "@/components/plans/PlanFormDialog";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import { exportPlansCsv, exportPlansPdf } from "@/lib/services/planExportService";
 import { cn } from "@/lib/utils";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
 import type { Plan } from "@/lib/services/planService";
 import type { ReportMeta } from "@/lib/services/reportService";
@@ -67,7 +67,6 @@ export default function PlansPage() {
   const { user } = useAuth();
   const { data: plans, loading, error, refetch } = usePlans();
   const { canCreate, canDelete } = useProjectRole();
-  const { toast } = useToast();
   const { logoBase64 } = useProjectLogo();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingPlan, setEditingPlan] = useState<Plan | null>(null);

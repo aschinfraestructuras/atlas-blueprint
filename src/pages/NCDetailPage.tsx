@@ -33,7 +33,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { cn } from "@/lib/utils";
 import { getNCTransitions, canDeleteNC, canEditNC } from "@/lib/stateMachines";

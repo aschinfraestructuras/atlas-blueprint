@@ -9,7 +9,7 @@ import { useWorkItems } from "@/hooks/useWorkItems";
 import { useNonConformities } from "@/hooks/useNonConformities";
 import { technicalOfficeService, type TechnicalOfficeItem, TECH_OFFICE_TYPES, TECH_OFFICE_STATUSES, PRIORITIES } from "@/lib/services/technicalOfficeService";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
@@ -58,7 +58,6 @@ export function TechnicalOfficeFormDialog({ open, onOpenChange, item, onSuccess 
   const { t } = useTranslation();
   const { user } = useAuth();
   const { activeProject } = useProject();
-  const { toast } = useToast();
   const { data: workItems } = useWorkItems();
   const { data: ncs } = useNonConformities();
   const isEdit = !!item;

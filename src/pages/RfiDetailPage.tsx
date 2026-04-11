@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 import {
   ArrowLeft, Send, Lock, Unlock, Trash2, AlertTriangle, MessageSquare,
   FileText, ExternalLink, LinkIcon, Download, Clock, User, CalendarDays, MapPin, FileCode,
@@ -56,7 +56,6 @@ export default function RfiDetailPage() {
   const { user } = useAuth();
   const { activeProject } = useProject();
   const { isAdmin } = useProjectRole();
-  const { toast } = useToast();
   const reportMeta = useReportMeta();
   const { logoBase64 } = useProjectLogo();
 

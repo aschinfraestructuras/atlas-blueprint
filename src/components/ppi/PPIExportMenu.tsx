@@ -31,7 +31,7 @@ import {
   type PpiInstanceForExport,
   type ExportLabels,
 } from "@/lib/services/ppiExportService";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 import i18n from "@/i18n";
 
 interface Props {

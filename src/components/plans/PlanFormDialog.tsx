@@ -7,7 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useProject } from "@/contexts/ProjectContext";
 import { planService, type Plan } from "@/lib/services/planService";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
@@ -63,7 +63,6 @@ export function PlanFormDialog({ open, onOpenChange, plan, onSuccess }: Props) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { activeProject } = useProject();
-  const { toast } = useToast();
   const isEdit = !!plan;
 
   const form = useForm<FormValues>({

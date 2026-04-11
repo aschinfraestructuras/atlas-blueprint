@@ -13,7 +13,7 @@ import {
 import { exportBeCampoPdf } from "@/lib/services/beCampoExportService";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { PKRangeFilter } from "@/components/ui/pk-range-filter";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 import {
   FlaskConical, Plus, Pencil, Search, Filter, Archive, Copy, Trash2, Upload,
   CheckCircle2, XCircle, Clock, AlertCircle, BookOpen, FileDown,

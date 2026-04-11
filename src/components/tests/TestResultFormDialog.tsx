@@ -9,7 +9,7 @@ import {
   testService, TEST_WORKFLOW_STATUSES, TEST_RESULT_VALUES,
 } from "@/lib/services/testService";
 import type { TestResult, TestCatalogEntry, TestResultInput, TestWorkflowStatus, TestResultValue } from "@/lib/services/testService";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 import { ToastAction } from "@/components/ui/toast";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import {

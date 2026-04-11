@@ -9,7 +9,7 @@ import { subcontractorService, type Subcontractor } from "@/lib/services/subcont
 import { subcontractorDocService, DOC_TYPES, type SubcontractorDocument } from "@/lib/services/subcontractorDocService";
 import { useSuppliers } from "@/hooks/useSuppliers";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
@@ -59,7 +59,6 @@ export function SubcontractorFormDialog({ open, onOpenChange, subcontractor, onS
   const { t } = useTranslation();
   const { user } = useAuth();
   const { activeProject } = useProject();
-  const { toast } = useToast();
   const { data: suppliers } = useSuppliers();
   const isEdit = !!subcontractor;
 

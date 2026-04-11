@@ -20,7 +20,7 @@ import { SelectWithOther } from "@/components/ui/select-with-other";
 import { withOtherRefinement } from "@/components/ui/select-with-other.utils";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 
 // ─── Discipline codes (stable, stored in DB) ──────────────────────────────────
 

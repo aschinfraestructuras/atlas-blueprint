@@ -26,7 +26,7 @@ import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { DocumentFormDialog } from "@/components/documents/DocumentFormDialog";
 import { DynamicFormRenderer, type FormSchema } from "@/components/documents/DynamicFormRenderer";
 import { exportDocumentPdf, type DocExportLabels } from "@/lib/services/documentExportService";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";

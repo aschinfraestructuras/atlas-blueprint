@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 import { useProject } from "@/contexts/ProjectContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWorkItems } from "@/hooks/useWorkItems";
@@ -22,7 +22,6 @@ interface Props {
 export const DailyReportFormDialog = React.forwardRef<HTMLDivElement, Props>(
   function DailyReportFormDialog({ open, onOpenChange, onCreated }, ref) {
     const { t } = useTranslation();
-    const { toast } = useToast();
     const navigate = useNavigate();
     const { activeProject } = useProject();
     const { user } = useAuth();

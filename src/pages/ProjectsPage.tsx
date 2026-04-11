@@ -8,7 +8,7 @@ import type { Project } from "@/lib/services/projectService";
 import { ProjectFormDialog } from "@/components/projects/ProjectFormDialog";
 import { EmptyState } from "@/components/EmptyState";
 import { PageHeader } from "@/components/ui/page-header";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 import {
   FolderKanban, MapPin, Calendar, Plus, MoreHorizontal, Pencil,
   Archive, ArchiveRestore, User, Trash2,

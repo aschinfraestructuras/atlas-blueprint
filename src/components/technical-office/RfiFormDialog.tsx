@@ -9,7 +9,7 @@ import { useWorkItems } from "@/hooks/useWorkItems";
 import { useNonConformities } from "@/hooks/useNonConformities";
 import { rfiService, type Rfi } from "@/lib/services/rfiService";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
@@ -66,7 +66,6 @@ export function RfiFormDialog({ open, onOpenChange, rfi, onSuccess }: Props) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { activeProject } = useProject();
-  const { toast } = useToast();
   const { data: workItems } = useWorkItems();
   const { data: ncs } = useNonConformities();
   const isEdit = !!rfi;

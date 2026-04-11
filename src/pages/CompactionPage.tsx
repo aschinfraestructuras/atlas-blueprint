@@ -25,7 +25,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RowActionMenu } from "@/components/ui/row-action-menu";
 import { EmptyState } from "@/components/EmptyState";
 import { ModuleKPICard } from "@/components/ModuleKPICard";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 import { supabase } from "@/integrations/supabase/client";
 
 function ResultBadge({ result }: { result: string }) {

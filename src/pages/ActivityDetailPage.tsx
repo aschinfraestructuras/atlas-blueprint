@@ -24,7 +24,7 @@ import {
   ClipboardList, MapPin, Wrench, FlaskConical, ShieldCheck, HardHat, Construction
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 
 const STATUS_COLORS: Record<string, string> = {
   planned: "bg-muted text-muted-foreground",

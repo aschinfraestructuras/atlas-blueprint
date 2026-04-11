@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 import { useProject } from "@/contexts/ProjectContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSuppliers } from "@/hooks/useSuppliers";
@@ -25,7 +25,6 @@ const STATUSES = ["pending", "submitted", "approved", "rejected"] as const;
 
 export function RecycledMaterialFormDialog({ open, onOpenChange, existing, onSuccess }: Props) {
   const { t } = useTranslation();
-  const { toast } = useToast();
   const { activeProject } = useProject();
   const { user } = useAuth();
   const { data: suppliers } = useSuppliers();

@@ -30,7 +30,7 @@ import { SupplierFormDialog } from "@/components/suppliers/SupplierFormDialog";
 import { AddMaterialDialog } from "@/components/suppliers/AddMaterialDialog";
 import { LinkedDocumentsPanel } from "@/components/documents/LinkedDocumentsPanel";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 import { cn } from "@/lib/utils";
 
 // Evaluation dialog component

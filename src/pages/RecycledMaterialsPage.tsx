@@ -21,7 +21,7 @@ import { useRecycledMaterials } from "@/hooks/useRecycledMaterials";
 import { RecycledMaterialFormDialog } from "@/components/recycled/RecycledMaterialFormDialog";
 import { RecycledMaterialDetailSheet } from "@/components/recycled/RecycledMaterialDetailSheet";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 
 const STATUS_COLORS: Record<string, string> = {
   pending: "bg-muted text-muted-foreground",

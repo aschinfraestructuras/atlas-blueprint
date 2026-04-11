@@ -24,7 +24,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { RowActionMenu } from "@/components/ui/row-action-menu";
 import { EmptyState } from "@/components/EmptyState";
 import { ModuleKPICard } from "@/components/ModuleKPICard";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 
 const MATERIAL_TYPE_KEYS = [
   { value: "clay", key: "soils.materialTypes.clay" },

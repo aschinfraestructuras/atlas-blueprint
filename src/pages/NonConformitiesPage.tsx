@@ -14,7 +14,7 @@ import { exportToCSV, generateListPdf, buildReportFilename } from "@/lib/service
 import { exportLNC } from "@/lib/services/sgqListExportService";
 import { useReportMeta } from "@/hooks/useReportMeta";
 import type { NonConformity } from "@/lib/services/ncService";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 import { PKRangeFilter } from "@/components/ui/pk-range-filter";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { getNCTransitions } from "@/lib/stateMachines";

@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 import { useReportMeta } from "@/hooks/useReportMeta";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { useProject } from "@/contexts/ProjectContext";
@@ -94,7 +94,6 @@ function QualityContextBanner({ reportId }: { reportId: string }) {
 export default function DailyReportDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { t } = useTranslation();
-  const { toast } = useToast();
   const navigate = useNavigate();
   const meta = useReportMeta();
   const { logoBase64 } = useProjectLogo();

@@ -30,7 +30,7 @@ import { useProjectRole } from "@/hooks/useProjectRole";
 import { useDailyReports } from "@/hooks/useDailyReports";
 import { dailyReportService } from "@/lib/services/dailyReportService";
 import { DailyReportFormDialog } from "@/components/daily-reports/DailyReportFormDialog";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 
 const STATUS_COLORS: Record<string, string> = {
   draft: "bg-muted text-muted-foreground",

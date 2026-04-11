@@ -32,7 +32,7 @@ import {
   type ReportMeta,
   type ReportLabels,
 } from "@/lib/services/reportService";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 

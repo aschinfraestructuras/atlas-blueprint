@@ -7,7 +7,7 @@ import { useProject } from "@/contexts/ProjectContext";
 import { testService } from "@/lib/services/testService";
 import type { TestResult, TestCatalogEntry, TestResultStatus } from "@/lib/services/testService";
 import { TEST_RESULT_STATUS_LABELS, TEST_RESULT_STATUSES } from "@/lib/services/testService";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import {
   Dialog,

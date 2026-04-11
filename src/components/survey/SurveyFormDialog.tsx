@@ -7,7 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useProject } from "@/contexts/ProjectContext";
 import { surveyService, type SurveyRecord } from "@/lib/services/surveyService";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
@@ -50,7 +50,6 @@ export function SurveyFormDialog({ open, onOpenChange, record, onSuccess }: Prop
   const { t } = useTranslation();
   const { user } = useAuth();
   const { activeProject } = useProject();
-  const { toast } = useToast();
   const isEdit = !!record;
 
   const today = new Date().toISOString().split("T")[0];

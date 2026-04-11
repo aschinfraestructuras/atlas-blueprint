@@ -5,7 +5,7 @@ import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { useWorkItems } from "@/hooks/useWorkItems";
 import { weldService, type WeldRecord, type WeldInput, computeOverallResult } from "@/lib/services/weldService";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import {
   Flame, Plus, Search, Trash2, FileDown, CheckCircle2, XCircle, Wrench, Clock, AlertTriangle, ShieldAlert, Pencil,

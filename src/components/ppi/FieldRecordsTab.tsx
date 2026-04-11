@@ -10,7 +10,7 @@ import {
   WEATHER_OPTIONS,
   GR_RESULTS,
 } from "@/lib/services/fieldRecordService";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,

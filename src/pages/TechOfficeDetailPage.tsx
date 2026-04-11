@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 import {
   ArrowLeft, Send, Trash2, AlertTriangle, MessageSquare,
   ExternalLink, LinkIcon, Download, FileText, Paperclip,
@@ -59,7 +59,6 @@ export default function TechOfficeDetailPage() {
   const { isAdmin } = useProjectRole();
   const reportMeta = useReportMeta();
   const { logoBase64 } = useProjectLogo();
-  const { toast } = useToast();
 
   useEffect(() => {
     if (!id || id === "undefined" || id.trim() === "") {

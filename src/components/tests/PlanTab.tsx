@@ -9,7 +9,7 @@ import {
   type TestPlan, type TestPlanRule, type TestPlanRuleInput,
 } from "@/lib/services/testPlanService";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 import { EmptyState } from "@/components/EmptyState";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,

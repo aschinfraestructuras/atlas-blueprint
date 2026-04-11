@@ -6,7 +6,7 @@ import { laboratoryService, type Laboratory, type LaboratoryInput } from "@/lib/
 import { exportLaboratoryPdf, type LabTestRow } from "@/lib/services/laboratoryExportService";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/utils/toast";
 import { ModuleKPICard } from "@/components/ModuleKPICard";
 import { EmptyState } from "@/components/EmptyState";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
