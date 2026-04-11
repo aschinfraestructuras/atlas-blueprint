@@ -1,0 +1,28 @@
+modules = ["nodejs-20"]
+
+[nix]
+channel = "stable-24_05"
+
+[workflows]
+runButton = "Build"
+
+[[workflows.workflow]]
+name = "Build"
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm install"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run build"
+
+[deployment]
+build = ["sh", "-c", "npm install && npm run build"]
+deploymentTarget = "static"
+publicDir = "dist"
+
+[[ports]]
+localPort = 8080
+externalPort = 80
