@@ -10,7 +10,7 @@ import { useRealtimeProject } from "@/hooks/useRealtimeProject";
 import {
   AlertTriangle, Package, Crosshair, CalendarClock,
   ClipboardCheck, FlaskConical, Clock, ArrowRight, Leaf, FileBarChart2, Bell,
-  ClipboardList, Zap, Calendar, ShieldCheck,
+  ClipboardList, Zap, Calendar, ShieldCheck, TrendingUp,
 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
@@ -90,7 +90,6 @@ function MonthlyReportAlert({ projectId }: { projectId: string }) {
     (async () => {
       const now = new Date();
       const prevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-      const prevStr = prevMonth.toISOString().slice(0, 7); // YYYY-MM
 
       const { data } = await (supabase as any)
         .from("monthly_quality_reports")
@@ -103,7 +102,6 @@ function MonthlyReportAlert({ projectId }: { projectId: string }) {
 
       if (data && data.length > 0) { setShow(null); return; }
 
-      // Calculate 5th working day of current month
       let wd = 0;
       const d = new Date(now.getFullYear(), now.getMonth(), 1);
       while (wd < 5) { const dow = d.getDay(); if (dow !== 0 && dow !== 6) wd++; if (wd < 5) d.setDate(d.getDate() + 1); }
@@ -122,7 +120,6 @@ function MonthlyReportAlert({ projectId }: { projectId: string }) {
           ? "bg-destructive/5 border-destructive/30 text-destructive"
           : "bg-amber-500/5 border-amber-500/30 text-amber-700 dark:text-amber-400"
       }`}
-      style={{ animationDelay: "0ms", animationFillMode: "both" }}
     >
       <FileBarChart2 className="h-4 w-4 flex-shrink-0" />
       <span className="text-sm flex-1">
@@ -137,6 +134,68 @@ function MonthlyReportAlert({ projectId }: { projectId: string }) {
         {t("dashboard.monthlyReport.create", { defaultValue: "Criar Relatório" })}
       </button>
     </div>
+  );
+}
+
+// ── Semaphore Module Card (mobile-first, app-like) ────────────────
+interface ModuleStatusCardProps {
+  icon: React.ElementType;
+  label: string;
+  value: number;
+  total?: number;
+  status: "green" | "amber" | "red";
+  subtitle?: string;
+  route: string;
+  loading?: boolean;
+}
+
+function ModuleStatusCard({ icon: Icon, label, value, total, status, subtitle, route, loading }: ModuleStatusCardProps) {
+  const navigate = useNavigate();
+  const statusColors = {
+    green: { bg: "hsl(145 55% 42% / 0.08)", border: "hsl(145 55% 42% / 0.25)", dot: "hsl(145 55% 42%)" },
+    amber: { bg: "hsl(38 85% 50% / 0.08)", border: "hsl(38 85% 50% / 0.25)", dot: "hsl(38 85% 50%)" },
+    red:   { bg: "hsl(0 65% 50% / 0.08)", border: "hsl(0 65% 50% / 0.25)", dot: "hsl(0 65% 50%)" },
+  };
+  const c = statusColors[status];
+
+  return (
+    <Card
+      className="cursor-pointer hover:shadow-card-hover transition-all border-border group active:scale-[0.98]"
+      onClick={() => navigate(route)}
+    >
+      <CardContent className="p-4 flex items-center gap-3.5">
+        {/* Status dot + icon */}
+        <div className="relative flex-shrink-0">
+          <div
+            className="flex items-center justify-center w-11 h-11 rounded-xl transition-transform group-hover:scale-105"
+            style={{ backgroundColor: c.bg, border: `1px solid ${c.border}` }}
+          >
+            <Icon className="h-5 w-5" style={{ color: c.dot }} />
+          </div>
+          {/* Semaphore dot */}
+          <span
+            className="absolute -top-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-card"
+            style={{ backgroundColor: c.dot }}
+          />
+        </div>
+        {/* Text */}
+        <div className="flex-1 min-w-0">
+          <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground truncate">{label}</p>
+          {loading ? (
+            <Skeleton className="h-7 w-16 mt-0.5" />
+          ) : (
+            <div className="flex items-baseline gap-1.5 mt-0.5">
+              <span className="text-2xl font-black tabular-nums text-foreground leading-none">{value}</span>
+              {total !== undefined && (
+                <span className="text-xs text-muted-foreground font-medium">/ {total}</span>
+              )}
+            </div>
+          )}
+          {subtitle && <p className="text-[10px] text-muted-foreground/70 truncate mt-0.5">{subtitle}</p>}
+        </div>
+        <ArrowRight className="h-4 w-4 text-muted-foreground/20 group-hover:text-muted-foreground/60 transition-all flex-shrink-0" />
+      </CardContent>
+    </Card>
   );
 }
 
@@ -189,6 +248,15 @@ export default function DashboardPage() {
 
   if (!activeProject) return <NoProjectBanner />;
 
+  // Derive semaphore statuses for module cards
+  const ncStatus = kpis.ncOpen === 0 ? "green" as const : kpis.ncOpen <= 3 ? "amber" as const : "red" as const;
+  const ppiPct = kpis.ppiTotal > 0 ? Math.round((kpis.ppiApproved / kpis.ppiTotal) * 100) : 0;
+  const ppiStatus = kpis.ppiTotal === 0 ? "green" as const : ppiPct >= 80 ? "green" as const : ppiPct >= 50 ? "amber" as const : "red" as const;
+  const testsPct = kpis.testsTotal > 0 ? Math.round((kpis.testsCompleted / kpis.testsTotal) * 100) : 0;
+  const testsStatus = kpis.testsOverdue > 0 ? "red" as const : testsPct >= 70 ? "green" as const : "amber" as const;
+  const matPct = kpis.matTotal > 0 ? Math.round((kpis.matApproved / kpis.matTotal) * 100) : 0;
+  const matStatus = kpis.pamePending === 0 ? "green" as const : kpis.pamePending <= 5 ? "amber" as const : "red" as const;
+
   return (
     <div className="space-y-5 max-w-[1180px] mx-auto">
 
@@ -222,38 +290,97 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* ══ ROW 1 — Critical Alerts Banner ══════════════════ */}
-      <div className="animate-fade-in" style={{ animationDelay: "0ms", animationFillMode: "both" }}>
+      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+      {/* TIER 1 — CRÍTICO (alertas que exigem acção imediata) */}
+      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+      <div className="space-y-3">
+        <p className="text-[9px] font-black uppercase tracking-[0.22em] text-destructive/60 flex items-center gap-1.5">
+          <AlertTriangle className="h-3 w-3" />
+          {t("dashboard.tier.critical", { defaultValue: "Alertas Críticos" })}
+        </p>
+
         <CriticalAlertsBanner
           ncOpen={kpis.ncOpen}
           ncOverdue={health.total_nc_overdue}
           emesExpiring={kpis.emesExpiring30d}
           pamePending={kpis.pamePending}
         />
+        <MonthlyReportAlert projectId={activeProject.id} />
+        <HPPendingAlert projectId={activeProject.id} />
       </div>
 
-      {/* ══ Monthly Report Deadline Alert ═══════════════════ */}
-      <MonthlyReportAlert projectId={activeProject.id} />
+      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+      {/* TIER 2 — OPERACIONAL (estado actual dos módulos)     */}
+      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+      <div className="space-y-3 animate-fade-in" style={{ animationDelay: "60ms", animationFillMode: "both" }}>
+        <p className="text-[9px] font-black uppercase tracking-[0.22em] text-muted-foreground/60 flex items-center gap-1.5">
+          <ShieldCheck className="h-3 w-3" />
+          {t("dashboard.tier.operational", { defaultValue: "Estado Operacional" })}
+        </p>
 
-      {/* ══ ROW 2 — Health Gauge + 4 KPI Sparklines ═════════ */}
-      <div className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-4 animate-fade-in" style={{ animationDelay: "60ms", animationFillMode: "both" }}>
-        <Card
-          className="border border-border bg-card shadow-card flex flex-col items-center justify-center py-3 cursor-pointer hover:shadow-card-hover transition-all"
-          onClick={() => setHealthSheetOpen(true)}
-        >
-          <div className="scale-[0.85] origin-center">
-            <HealthGauge
-              score={health.health_score}
-              status={health.health_status}
-              loading={healthLoading}
-            />
-          </div>
-          <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-muted-foreground mt-1">
-            {t("health.score", { defaultValue: "Health Score" })}
-          </p>
-        </Card>
-        <HealthScoreSheet open={healthSheetOpen} onOpenChange={setHealthSheetOpen} health={health} loading={healthLoading} />
+        {/* Health + Module Status Cards (app-like grid) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+          {/* Health Score card */}
+          <Card
+            className="border border-border bg-card shadow-card flex flex-col items-center justify-center py-4 cursor-pointer hover:shadow-card-hover transition-all active:scale-[0.98] sm:col-span-2 lg:col-span-1"
+            onClick={() => setHealthSheetOpen(true)}
+          >
+            <div className="scale-[0.8] origin-center">
+              <HealthGauge
+                score={health.health_score}
+                status={health.health_status}
+                loading={healthLoading}
+              />
+            </div>
+            <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-muted-foreground mt-1">
+              {t("health.score", { defaultValue: "Health Score" })}
+            </p>
+          </Card>
+          <HealthScoreSheet open={healthSheetOpen} onOpenChange={setHealthSheetOpen} health={health} loading={healthLoading} />
 
+          {/* 4 Module status cards with semaphore */}
+          <ModuleStatusCard
+            icon={AlertTriangle}
+            label={t("dashboard.module.nc", { defaultValue: "Não Conformidades" })}
+            value={kpis.ncOpen}
+            status={ncStatus}
+            subtitle={kpis.ncOpen === 0 ? t("dashboard.module.ncOk", { defaultValue: "Nenhuma NC aberta" }) : t("dashboard.module.ncSub", { defaultValue: "abertas" })}
+            route="/non-conformities"
+            loading={kpiLoading}
+          />
+          <ModuleStatusCard
+            icon={ClipboardCheck}
+            label={t("dashboard.module.ppi", { defaultValue: "Inspecções PPI" })}
+            value={kpis.ppiApproved}
+            total={kpis.ppiTotal}
+            status={ppiStatus}
+            subtitle={`${ppiPct}% ${t("dashboard.module.approved", { defaultValue: "aprovados" })}`}
+            route="/ppi"
+            loading={kpiLoading}
+          />
+          <ModuleStatusCard
+            icon={FlaskConical}
+            label={t("dashboard.module.tests", { defaultValue: "Ensaios" })}
+            value={kpis.testsCompleted}
+            total={kpis.testsTotal}
+            status={testsStatus}
+            subtitle={kpis.testsOverdue > 0 ? `${kpis.testsOverdue} ${t("dashboard.module.overdue", { defaultValue: "em atraso" })}` : `${testsPct}% ${t("dashboard.module.complete", { defaultValue: "realizados" })}`}
+            route="/tests"
+            loading={kpiLoading}
+          />
+          <ModuleStatusCard
+            icon={Package}
+            label={t("dashboard.module.materials", { defaultValue: "Materiais (PAME)" })}
+            value={kpis.matApproved}
+            total={kpis.matTotal}
+            status={matStatus}
+            subtitle={kpis.pamePending > 0 ? `${kpis.pamePending} ${t("dashboard.module.pending", { defaultValue: "pendentes" })}` : t("dashboard.module.matOk", { defaultValue: "Todos aprovados" })}
+            route="/materials"
+            loading={kpiLoading}
+          />
+        </div>
+
+        {/* KPI sparklines row */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
           <SparklineKPI
             label={t("dashboard.kpi.ncOpen", { defaultValue: "NCs Abertas" })}
@@ -297,180 +424,183 @@ export default function DashboardPage() {
             loading={kpiLoading}
           />
         </div>
+
+        {/* SGQ KPI Cards */}
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground mb-2.5 flex items-center gap-1.5">
+            <ShieldCheck className="h-3.5 w-3.5" />
+            {t("dashboard.sgqKpi.title", { defaultValue: "KPIs do SGQ — Anx. D" })}
+          </p>
+          <SgqKpiCards projectId={activeProject.id} />
+        </div>
       </div>
 
-      {/* ══ HP Pending Alert ════════════════════════════════ */}
-      <HPPendingAlert projectId={activeProject.id} />
-
-      {/* ══ ROW 2b — SGQ KPI Cards (vw_rm_kpis) ════════════ */}
-      <div className="animate-fade-in" style={{ animationDelay: "90ms", animationFillMode: "both" }}>
-        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground mb-2.5 flex items-center gap-1.5">
-          <ShieldCheck className="h-3.5 w-3.5" />
-          {t("dashboard.sgqKpi.title", { defaultValue: "KPIs do SGQ — Anx. D" })}
+      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+      {/* TIER 3 — TENDÊNCIAS (gráficos e análise temporal)    */}
+      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+      <div className="space-y-4 animate-fade-in" style={{ animationDelay: "120ms", animationFillMode: "both" }}>
+        <p className="text-[9px] font-black uppercase tracking-[0.22em] text-muted-foreground/60 flex items-center gap-1.5">
+          <TrendingUp className="h-3 w-3" />
+          {t("dashboard.tier.trends", { defaultValue: "Tendências & Análise" })}
         </p>
-        <SgqKpiCards projectId={activeProject.id} />
-      </div>
 
-      {/* ══ ROW 3 — 3 Main Charts ═══════════════════════════ */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 animate-fade-in" style={{ animationDelay: "120ms", animationFillMode: "both" }}>
-        <NCTrendChart data={filteredNcMonthly} loading={viewsLoading} />
-        <WorkProgressChart />
-        <PPIProgressChart />
-      </div>
-
-      {/* ══ ROW 4 — Module Progress Circles + Recent Activity ═ */}
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_360px] gap-4 animate-fade-in" style={{ animationDelay: "180ms", animationFillMode: "both" }}>
-        {/* Left: 3 circular progress cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {[
-            {
-              icon: ClipboardCheck,
-              label: t("dashboard.progress.ppi", { defaultValue: "PPIs Aprovados" }),
-              approved: kpis.ppiApproved,
-              total: kpis.ppiTotal,
-              route: "/ppi",
-              colorVar: "--module-plans",
-            },
-            {
-              icon: FlaskConical,
-              label: t("dashboard.progress.tests", { defaultValue: "Ensaios Realizados" }),
-              approved: kpis.testsCompleted,
-              total: kpis.testsTotal,
-              route: "/tests",
-              colorVar: "--module-tests",
-            },
-            {
-              icon: Package,
-              label: t("dashboard.progress.materials", { defaultValue: "Materiais Aprovados (PAME)" }),
-              approved: kpis.matApproved,
-              total: kpis.matTotal,
-              route: "/materials",
-              colorVar: "--module-suppliers",
-            },
-          ].map((mod) => {
-            const pct = mod.total > 0 ? Math.round((mod.approved / mod.total) * 100) : 0;
-            const isEmpty = mod.total === 0;
-            const strokeColor = isEmpty
-              ? "hsl(var(--muted))"
-              : pct >= 70
-                ? "hsl(145, 55%, 42%)"
-                : pct >= 40
-                  ? "hsl(38, 85%, 50%)"
-                  : "hsl(var(--muted-foreground))";
-            return (
-              <Card
-                key={mod.label}
-                className="border border-border bg-card shadow-card cursor-pointer hover:shadow-card-hover hover:border-primary/20 transition-all group"
-                onClick={() => navigate(mod.route)}
-              >
-                <CardContent className="p-4 flex flex-col items-center gap-2">
-                  {/* Circular progress */}
-                  <div className="relative flex-shrink-0">
-                    <svg width="52" height="52" viewBox="0 0 52 52">
-                      <circle cx="26" cy="26" r="22" fill="none" stroke="hsl(var(--muted))" strokeWidth="4" />
-                      {!isEmpty && (
-                        <circle
-                          cx="26" cy="26" r="22" fill="none"
-                          stroke={strokeColor} strokeWidth="4" strokeLinecap="round"
-                          strokeDasharray={`${pct * 1.382} 138.2`}
-                          transform="rotate(-90 26 26)"
-                          className="transition-all duration-700 ease-out"
-                        />
-                      )}
-                    </svg>
-                    <span className={cn(
-                      "absolute inset-0 flex items-center justify-center text-[11px] font-black tabular-nums",
-                      isEmpty ? "text-muted-foreground/40" : "text-foreground"
-                    )}>
-                      {kpiLoading ? "—" : isEmpty ? "—" : `${pct}%`}
-                    </span>
-                  </div>
-                  {/* Text */}
-                  <div className="flex items-center gap-1.5">
-                    <div
-                      className="flex items-center justify-center w-5 h-5 rounded"
-                      style={{ backgroundColor: `hsl(var(${mod.colorVar}) / 0.1)` }}
-                    >
-                      <mod.icon className="h-3 w-3" style={{ color: `hsl(var(${mod.colorVar}))` }} />
-                    </div>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.10em] text-muted-foreground truncate">
-                      {mod.label}
-                    </p>
-                  </div>
-                  <p className="text-base font-black tabular-nums text-foreground">
-                    {kpiLoading ? "—" : `${mod.approved} / ${mod.total}`}
-                  </p>
-                </CardContent>
-              </Card>
-            );
-          })}
+        {/* 3 Main Charts */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <NCTrendChart data={filteredNcMonthly} loading={viewsLoading} />
+          <WorkProgressChart />
+          <PPIProgressChart />
         </div>
 
-        {/* Right: Recent Activity */}
-        <Card className="border border-border bg-card shadow-card">
-          <CardHeader className="pb-2 pt-4 px-5">
-            <CardTitle className="text-[11px] font-bold uppercase tracking-[0.12em] text-muted-foreground flex items-center gap-1.5">
-              <Clock className="h-3.5 w-3.5" />
-              {t("dashboard.recent.title", { defaultValue: "Actividade Recente" })}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-5 pb-4">
-            {kpiLoading ? (
-              <div className="space-y-2">
-                {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-8 w-full" />)}
-              </div>
-            ) : kpis.recentActivity.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-6 text-center">
-                {t("dashboard.recent.empty", { defaultValue: "Sem actividade recente" })}
-              </p>
-            ) : (
-              <ul className="divide-y divide-border">
-                {kpis.recentActivity.slice(0, 5).map((item, idx) => {
-                  const cfg = ACTIVITY_CFG[item.type] ?? ACTIVITY_CFG.nc;
-                  const Icon = cfg.icon;
-                  const route = item.type === "nc" ? `/non-conformities/${item.id}`
-                    : item.type === "ppi" ? `/ppi/${item.id}`
-                    : item.type === "lot" ? "/materials"
-                    : "/tests";
-                  return (
-                    <li
-                      key={`${item.type}-${item.id}-${idx}`}
-                      className="flex items-center gap-3 py-2 cursor-pointer hover:bg-muted/30 -mx-2 px-2 rounded-lg transition-colors group/item"
-                      onClick={() => navigate(route)}
-                    >
-                      <Icon className={cn("h-3.5 w-3.5 flex-shrink-0", cfg.cls)} />
-                      <span className="font-mono text-[11px] text-muted-foreground w-28 flex-shrink-0 truncate">{item.code}</span>
-                      <span className="text-sm text-foreground flex-1 truncate">{item.label || "—"}</span>
-                      <Badge variant="outline" className="text-[8px] font-semibold px-1.5 py-0 border-border/60">
-                        {item.type.toUpperCase()}
-                      </Badge>
-                      <span className="text-[10px] text-muted-foreground tabular-nums flex-shrink-0">
-                        {new Date(item.created_at).toLocaleDateString()}
+        {/* Progress Circles + Recent Activity */}
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_360px] gap-4">
+          {/* Left: 3 circular progress cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {[
+              {
+                icon: ClipboardCheck,
+                label: t("dashboard.progress.ppi", { defaultValue: "PPIs Aprovados" }),
+                approved: kpis.ppiApproved,
+                total: kpis.ppiTotal,
+                route: "/ppi",
+                colorVar: "--module-plans",
+              },
+              {
+                icon: FlaskConical,
+                label: t("dashboard.progress.tests", { defaultValue: "Ensaios Realizados" }),
+                approved: kpis.testsCompleted,
+                total: kpis.testsTotal,
+                route: "/tests",
+                colorVar: "--module-tests",
+              },
+              {
+                icon: Package,
+                label: t("dashboard.progress.materials", { defaultValue: "Materiais Aprovados (PAME)" }),
+                approved: kpis.matApproved,
+                total: kpis.matTotal,
+                route: "/materials",
+                colorVar: "--module-suppliers",
+              },
+            ].map((mod) => {
+              const pct = mod.total > 0 ? Math.round((mod.approved / mod.total) * 100) : 0;
+              const isEmpty = mod.total === 0;
+              const strokeColor = isEmpty
+                ? "hsl(var(--muted))"
+                : pct >= 70
+                  ? "hsl(145, 55%, 42%)"
+                  : pct >= 40
+                    ? "hsl(38, 85%, 50%)"
+                    : "hsl(var(--muted-foreground))";
+              return (
+                <Card
+                  key={mod.label}
+                  className="border border-border bg-card shadow-card cursor-pointer hover:shadow-card-hover hover:border-primary/20 transition-all group active:scale-[0.98]"
+                  onClick={() => navigate(mod.route)}
+                >
+                  <CardContent className="p-4 flex flex-col items-center gap-2">
+                    <div className="relative flex-shrink-0">
+                      <svg width="52" height="52" viewBox="0 0 52 52">
+                        <circle cx="26" cy="26" r="22" fill="none" stroke="hsl(var(--muted))" strokeWidth="4" />
+                        {!isEmpty && (
+                          <circle
+                            cx="26" cy="26" r="22" fill="none"
+                            stroke={strokeColor} strokeWidth="4" strokeLinecap="round"
+                            strokeDasharray={`${pct * 1.382} 138.2`}
+                            transform="rotate(-90 26 26)"
+                            className="transition-all duration-700 ease-out"
+                          />
+                        )}
+                      </svg>
+                      <span className={cn(
+                        "absolute inset-0 flex items-center justify-center text-[11px] font-black tabular-nums",
+                        isEmpty ? "text-muted-foreground/40" : "text-foreground"
+                      )}>
+                        {kpiLoading ? "—" : isEmpty ? "—" : `${pct}%`}
                       </span>
-                      <ArrowRight className="h-3 w-3 text-muted-foreground/0 group-hover/item:text-muted-foreground/40 transition-all flex-shrink-0" />
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <div
+                        className="flex items-center justify-center w-5 h-5 rounded"
+                        style={{ backgroundColor: `hsl(var(${mod.colorVar}) / 0.1)` }}
+                      >
+                        <mod.icon className="h-3 w-3" style={{ color: `hsl(var(${mod.colorVar}))` }} />
+                      </div>
+                      <p className="text-[10px] font-bold uppercase tracking-[0.10em] text-muted-foreground truncate">
+                        {mod.label}
+                      </p>
+                    </div>
+                    <p className="text-base font-black tabular-nums text-foreground">
+                      {kpiLoading ? "—" : `${mod.approved} / ${mod.total}`}
+                    </p>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
 
-      {/* ══ ROW 5 — Test Status + Concrete by Class ═══════ */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-fade-in" style={{ animationDelay: "200ms", animationFillMode: "both" }}>
-        <TestStatusCard />
-        <ConcreteByClassCard />
-      </div>
+          {/* Right: Recent Activity */}
+          <Card className="border border-border bg-card shadow-card">
+            <CardHeader className="pb-2 pt-4 px-5">
+              <CardTitle className="text-[11px] font-bold uppercase tracking-[0.12em] text-muted-foreground flex items-center gap-1.5">
+                <Clock className="h-3.5 w-3.5" />
+                {t("dashboard.recent.title", { defaultValue: "Actividade Recente" })}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="px-5 pb-4">
+              {kpiLoading ? (
+                <div className="space-y-2">
+                  {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-8 w-full" />)}
+                </div>
+              ) : kpis.recentActivity.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-6 text-center">
+                  {t("dashboard.recent.empty", { defaultValue: "Sem actividade recente" })}
+                </p>
+              ) : (
+                <ul className="divide-y divide-border">
+                  {kpis.recentActivity.slice(0, 5).map((item, idx) => {
+                    const cfg = ACTIVITY_CFG[item.type] ?? ACTIVITY_CFG.nc;
+                    const Icon = cfg.icon;
+                    const route = item.type === "nc" ? `/non-conformities/${item.id}`
+                      : item.type === "ppi" ? `/ppi/${item.id}`
+                      : item.type === "lot" ? "/materials"
+                      : "/tests";
+                    return (
+                      <li
+                        key={`${item.type}-${item.id}-${idx}`}
+                        className="flex items-center gap-3 py-2 cursor-pointer hover:bg-muted/30 -mx-2 px-2 rounded-lg transition-colors group/item"
+                        onClick={() => navigate(route)}
+                      >
+                        <Icon className={cn("h-3.5 w-3.5 flex-shrink-0", cfg.cls)} />
+                        <span className="font-mono text-[11px] text-muted-foreground w-28 flex-shrink-0 truncate">{item.code}</span>
+                        <span className="text-sm text-foreground flex-1 truncate">{item.label || "—"}</span>
+                        <Badge variant="outline" className="text-[8px] font-semibold px-1.5 py-0 border-border/60">
+                          {item.type.toUpperCase()}
+                        </Badge>
+                        <span className="text-[10px] text-muted-foreground tabular-nums flex-shrink-0">
+                          {new Date(item.created_at).toLocaleDateString()}
+                        </span>
+                        <ArrowRight className="h-3 w-3 text-muted-foreground/0 group-hover/item:text-muted-foreground/40 transition-all flex-shrink-0" />
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </CardContent>
+          </Card>
+        </div>
 
-      {/* ══ ROW 5a — Conformity by Frente ═══════════════════ */}
-      <div className="animate-fade-in" style={{ animationDelay: "210ms", animationFillMode: "both" }}>
+        {/* Test Status + Concrete by Class */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <TestStatusCard />
+          <ConcreteByClassCard />
+        </div>
+
+        {/* Conformity by Frente */}
         <ConformityByFrenteChart />
       </div>
 
-      {/* ══ ROW 5b — Expirations + PPGRCD Widgets ═══════════════ */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-fade-in" style={{ animationDelay: "220ms", animationFillMode: "both" }}>
-        <Card className="cursor-pointer hover:shadow-sm transition-shadow" onClick={() => navigate("/expirations")}>
+      {/* ── Quick Access Widgets ────────────────────────────── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-fade-in" style={{ animationDelay: "200ms", animationFillMode: "both" }}>
+        <Card className="cursor-pointer hover:shadow-sm transition-shadow active:scale-[0.99]" onClick={() => navigate("/expirations")}>
           <CardContent className="py-4">
             <div className="flex items-center gap-2 mb-2">
               <AlertTriangle className="h-4 w-4 text-destructive" />
@@ -488,7 +618,7 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="cursor-pointer hover:shadow-sm transition-shadow" onClick={() => navigate("/recycled-materials")}>
+        <Card className="cursor-pointer hover:shadow-sm transition-shadow active:scale-[0.99]" onClick={() => navigate("/recycled-materials")}>
           <CardContent className="py-4">
             <div className="flex items-center gap-2 mb-2">
               <Leaf className="h-4 w-4 text-green-600" />
@@ -500,8 +630,8 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-      {/* ══ ROW 5c — Partes Diárias + Topografia ═══════════════ */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 animate-fade-in" style={{ animationDelay: "230ms", animationFillMode: "both" }}>
+      {/* ── Quick Stats Row ─────────────────────────────────── */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 animate-fade-in" style={{ animationDelay: "220ms", animationFillMode: "both" }}>
         {[
           {
             icon: ClipboardList,
@@ -544,7 +674,7 @@ export default function DashboardPage() {
             route: "/tests",
           },
         ].map(({ icon: Icon, label, value, sub, color, route }) => (
-          <Card key={label} className="cursor-pointer hover:shadow-md transition-all border-border bg-card"
+          <Card key={label} className="cursor-pointer hover:shadow-md transition-all border-border bg-card active:scale-[0.98]"
             onClick={() => navigate(route)}>
             <CardContent className="p-3 flex items-center gap-3">
               <div className="flex-shrink-0 h-9 w-9 rounded-lg flex items-center justify-center"
@@ -563,7 +693,7 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      {/* ══ ROW 6 — Module Shortcuts ═══════════════════════ */}
+      {/* ── Module Shortcuts ───────────────────────────────── */}
       <div className="animate-fade-in" style={{ animationDelay: "240ms", animationFillMode: "both" }}>
         <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground mb-2.5">
           {t("dashboard.modules", { defaultValue: "Módulos" })}

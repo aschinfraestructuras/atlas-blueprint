@@ -1192,6 +1192,7 @@ export type Database = {
           daily_report_id: string
           final_destination: string | null
           id: string
+          lot_id: string | null
           lot_number: string | null
           material_id: string | null
           nomenclature: string
@@ -1205,6 +1206,7 @@ export type Database = {
           daily_report_id: string
           final_destination?: string | null
           id?: string
+          lot_id?: string | null
           lot_number?: string | null
           material_id?: string | null
           nomenclature: string
@@ -1218,6 +1220,7 @@ export type Database = {
           daily_report_id?: string
           final_destination?: string | null
           id?: string
+          lot_id?: string | null
           lot_number?: string | null
           material_id?: string | null
           nomenclature?: string
@@ -1240,6 +1243,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_daily_report_context"
             referencedColumns: ["report_id"]
+          },
+          {
+            foreignKeyName: "daily_report_materials_lot_id_fkey"
+            columns: ["lot_id"]
+            isOneToOne: false
+            referencedRelation: "material_lots"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "daily_report_materials_lot_id_fkey"
+            columns: ["lot_id"]
+            isOneToOne: false
+            referencedRelation: "vw_traceability_matrix"
+            referencedColumns: ["lot_id"]
           },
           {
             foreignKeyName: "daily_report_materials_material_id_fkey"
@@ -13654,6 +13671,16 @@ export type Database = {
         Returns: undefined
       }
       fn_supplier_eval_template: { Args: never; Returns: Json }
+      fn_update_lot_status: {
+        Args: {
+          p_lot_id: string
+          p_nc_id?: string
+          p_new_status: string
+          p_notes?: string
+          p_user_id: string
+        }
+        Returns: Json
+      }
       fn_update_member_role: {
         Args: { p_new_role: string; p_project_id: string; p_user_id: string }
         Returns: undefined
