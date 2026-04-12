@@ -231,12 +231,15 @@ function NavItem({ item, active, collapsed, onClose }: {
       to={item.url}
       onClick={onClose}
       className={cn(
-        "group relative flex items-center gap-2.5 rounded-lg text-sm font-medium",
+        "group relative flex items-center gap-2.5 rounded-lg text-sm",
         "transition-all duration-150",
         collapsed ? "justify-center px-0 mx-1.5 min-h-[38px]" : "px-3 mx-1.5 min-h-[34px] pl-9",
         active
-          ? "bg-sidebar-accent text-sidebar-accent-foreground font-semibold"
-          : "text-sidebar-foreground/55 hover:text-sidebar-foreground/90 hover:bg-sidebar-accent/50"
+          ? [
+              "bg-sidebar-accent text-sidebar-accent-foreground font-semibold",
+              "shadow-[0_1px_3px_hsl(0_0%_0%/0.15),inset_0_1px_0_hsl(0_0%_100%/0.06)]",
+            ].join(" ")
+          : "font-medium text-sidebar-foreground/55 hover:text-sidebar-foreground/90 hover:bg-sidebar-accent/40"
       )}
     >
       {active && (
@@ -249,8 +252,8 @@ function NavItem({ item, active, collapsed, onClose }: {
       )} />
       {!collapsed && (
         <span className={cn(
-          "truncate leading-none text-[12px] tracking-[0.01em]",
-          active && "text-sidebar-primary"
+          "truncate leading-none text-[12px] tracking-[0.015em]",
+          active ? "text-sidebar-primary font-bold" : "font-medium"
         )}>{t(item.labelKey)}</span>
       )}
     </NavLink>
@@ -329,14 +332,14 @@ function SidebarContent({ collapsed, onClose }: { collapsed: boolean; onClose?: 
       {/* ── Brand ───────────────────────────────────────────────── */}
       <div
         className={cn(
-          "flex items-center h-[56px] flex-shrink-0 px-4 cursor-pointer select-none border-b border-sidebar-border/50",
+          "flex items-center h-[56px] flex-shrink-0 px-4 cursor-pointer select-none border-b border-sidebar-border/40 bg-sidebar-background/20",
           collapsed ? "justify-center px-3" : "gap-3"
         )}
         onClick={() => navigate("/")}
         role="button"
         aria-label="Go to Dashboard"
       >
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg flex-shrink-0 bg-sidebar-primary/15 border border-sidebar-primary/25 overflow-hidden">
+        <div className="flex h-8 w-8 items-center justify-center rounded-xl flex-shrink-0 bg-sidebar-primary/18 border border-sidebar-primary/25 overflow-hidden shadow-[0_1px_3px_hsl(0_0%_0%/0.15)]">
           {logoUrl ? (
             <img src={logoUrl} alt="Logo" className="h-full w-full object-contain" />
           ) : (
@@ -345,7 +348,7 @@ function SidebarContent({ collapsed, onClose }: { collapsed: boolean; onClose?: 
         </div>
         {!collapsed && (
           <div className="flex flex-col min-w-0">
-            <span className="text-[13px] font-black tracking-[0.24em] uppercase leading-none text-sidebar-foreground">
+            <span className="text-[12px] font-black tracking-[0.28em] uppercase leading-none text-sidebar-foreground">
               ATLAS
             </span>
             <span className="text-[8px] font-medium tracking-[0.16em] uppercase leading-none mt-[3px] text-sidebar-foreground/35">

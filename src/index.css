@@ -94,6 +94,19 @@
     --module-projects:          220 48% 42%;
     --module-projects-light:    220 48% 42% / 0.10;
 
+    /* ── Sistema semântico de estados ─────────────────────────── */
+    --state-ok:          145 55% 38%;
+    --state-ok-bg:       145 55% 38% / 0.10;
+    --state-ok-border:   145 55% 38% / 0.25;
+    --state-warn:        38 88% 46%;
+    --state-warn-bg:     38 88% 46% / 0.10;
+    --state-warn-border: 38 88% 46% / 0.25;
+    --state-error:       0 65% 50%;
+    --state-error-bg:    0 65% 50% / 0.10;
+    --state-error-border:0 65% 50% / 0.25;
+    --state-info:        215 65% 38%;
+    --state-info-bg:     215 65% 38% / 0.10;
+    --state-info-border: 215 65% 38% / 0.25;
     /* ── Chart palette ────────────────────────────────────────────── */
     --chart-1:           215 55% 40%;
     --chart-2:           155 45% 38%;
@@ -102,12 +115,13 @@
     --chart-5:           0 55% 48%;
 
     /* ── Sidebar — Vibrant Indigo-Blue ────────────────────────────── */
-    --sidebar-background:       235 55% 38%;
-    --sidebar-foreground:       230 30% 92%;
-    --sidebar-primary:          220 80% 78%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent:           235 45% 48%;
-    --sidebar-accent-foreground: 230 30% 96%;
+    --sidebar-background:       222 52% 22%;
+    --sidebar-foreground:       220 25% 90%;
+    --sidebar-primary:          210 80% 72%;
+    --sidebar-primary-foreground: 222 52% 22%;
+    --sidebar-accent:           222 45% 30%;
+    --sidebar-accent-foreground: 220 30% 96%;
+    --sidebar-border:           222 40% 30%;
     --sidebar-border:           235 40% 48%;
     --sidebar-ring:             225 65% 65%;
     --sidebar:                  235 55% 38%;
@@ -151,9 +165,9 @@
     --chart-4:           30 55% 50%;
     --chart-5:           0 50% 55%;
 
-    --sidebar-background:  215 20% 16%;
-    --sidebar-foreground:  210 15% 85%;
-    --sidebar-primary:     210 55% 60%;
+    --sidebar-background:  220 25% 12%;
+    --sidebar-foreground:  215 20% 85%;
+    --sidebar-primary:     210 65% 65%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent:      215 18% 22%;
     --sidebar-accent-foreground: 210 15% 88%;
