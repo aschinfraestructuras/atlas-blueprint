@@ -92,7 +92,7 @@ export default defineConfig(({ mode }) => ({
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
         navigateFallback: "/",
-        navigateFallbackDenylist: [/^\/api/, /^\/rest/],
+        navigateFallbackDenylist: [/^\/api/, /^\/rest/, /^\/~oauth/],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
