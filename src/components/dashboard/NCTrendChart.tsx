@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   ComposedChart, Area, Line, XAxis, YAxis, Tooltip,
-  ResponsiveContainer, CartesianGrid, defs,
+  ResponsiveContainer, CartesianGrid,
 } from "recharts";
 import type { MonthlyData } from "@/hooks/useDashboardViews";
 import { CHART_COLORS, CHART_STYLE, ChartTooltipContent } from "@/lib/chartTheme";
@@ -13,6 +13,24 @@ import { CHART_COLORS, CHART_STYLE, ChartTooltipContent } from "@/lib/chartTheme
 interface NCTrendChartProps {
   data: MonthlyData[];
   loading?: boolean;
+}
+
+// Gradientes definidos fora do componente recharts — injectados via SVG nativo
+function ChartGradients() {
+  return (
+    <svg width={0} height={0} style={{ position: "absolute" }}>
+      <defs>
+        <linearGradient id="ncOpenGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"   stopColor={CHART_COLORS.danger} stopOpacity={0.22} />
+          <stop offset="100%" stopColor={CHART_COLORS.danger} stopOpacity={0}    />
+        </linearGradient>
+        <linearGradient id="ncCloseGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"   stopColor={CHART_COLORS.success} stopOpacity={0.18} />
+          <stop offset="100%" stopColor={CHART_COLORS.success} stopOpacity={0}    />
+        </linearGradient>
+      </defs>
+    </svg>
+  );
 }
 
 export function NCTrendChart({ data, loading }: NCTrendChartProps) {
@@ -41,7 +59,10 @@ export function NCTrendChart({ data, loading }: NCTrendChartProps) {
           {t("dashboard.charts.ncTrendSub", { defaultValue: "Abertas · Fechadas · Saldo acumulado" })}
         </p>
       </CardHeader>
-      <CardContent className="px-2 pb-3">
+      <CardContent className="px-2 pb-3 relative">
+        {/* SVG com gradientes injectado fora do recharts */}
+        <ChartGradients />
+
         {loading ? (
           <Skeleton className="h-[180px] w-full rounded-lg" />
         ) : chartData.length === 0 ? (
@@ -49,27 +70,12 @@ export function NCTrendChart({ data, loading }: NCTrendChartProps) {
         ) : (
           <ResponsiveContainer width="100%" height={180}>
             <ComposedChart data={chartData} margin={{ top: 8, right: 8, left: -18, bottom: 0 }}>
-              <defs>
-                {/* Gradiente Abertas */}
-                <linearGradient id="ncOpenGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%"   stopColor={CHART_COLORS.danger} stopOpacity={0.22} />
-                  <stop offset="100%" stopColor={CHART_COLORS.danger} stopOpacity={0}    />
-                </linearGradient>
-                {/* Gradiente Fechadas */}
-                <linearGradient id="ncCloseGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%"   stopColor={CHART_COLORS.success} stopOpacity={0.18} />
-                  <stop offset="100%" stopColor={CHART_COLORS.success} stopOpacity={0}    />
-                </linearGradient>
-              </defs>
-
-              {/* Grid muito subtil */}
               <CartesianGrid
                 strokeDasharray="3 4"
                 stroke={CHART_STYLE.grid.stroke}
                 strokeOpacity={0.5}
                 vertical={false}
               />
-
               <XAxis
                 dataKey="label"
                 tick={CHART_STYLE.axis.tick}
@@ -82,14 +88,10 @@ export function NCTrendChart({ data, loading }: NCTrendChartProps) {
                 tickLine={false}
                 width={28}
               />
-
-              {/* Tooltip customizado */}
               <Tooltip
                 content={<ChartTooltipContent />}
                 cursor={CHART_STYLE.tooltip.cursor}
               />
-
-              {/* Área Abertas — vermelho com gradiente */}
               <Area
                 type="monotone"
                 dataKey="opened"
@@ -100,8 +102,6 @@ export function NCTrendChart({ data, loading }: NCTrendChartProps) {
                 dot={false}
                 activeDot={{ r: 4, stroke: "hsl(var(--card))", strokeWidth: 2, fill: CHART_COLORS.danger }}
               />
-
-              {/* Área Fechadas — verde com gradiente */}
               <Area
                 type="monotone"
                 dataKey="closed"
@@ -112,8 +112,6 @@ export function NCTrendChart({ data, loading }: NCTrendChartProps) {
                 dot={false}
                 activeDot={{ r: 4, stroke: "hsl(var(--card))", strokeWidth: 2, fill: CHART_COLORS.success }}
               />
-
-              {/* Linha de Saldo — âmbar tracejada */}
               <Line
                 type="monotone"
                 dataKey="balance"
