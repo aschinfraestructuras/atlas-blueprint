@@ -83,7 +83,7 @@ export const DailyReportFormDialog = React.forwardRef<HTMLDivElement, Props>(
             <DialogTitle>{t("dailyReports.new")}</DialogTitle>
           </DialogHeader>
 
-          <div className="grid gap-4 py-2">
+          <div className="grid gap-4 pt-5 pb-2">
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label>{t("dailyReports.fields.reportDate")}</Label>

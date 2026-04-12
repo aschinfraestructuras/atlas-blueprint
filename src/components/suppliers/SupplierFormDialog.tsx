@@ -161,7 +161,7 @@ export function SupplierFormDialog({ open, onOpenChange, supplier, onSuccess }: 
         </DialogHeader>
 
         <ScrollArea className="max-h-[75vh] pr-1">
-          <div className="space-y-4 pb-1 pt-1">
+          <div className="space-y-4 pb-1 pt-5">
             <Form {...form}>
               <form id="supplier-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 {/* Row 1: Name */}

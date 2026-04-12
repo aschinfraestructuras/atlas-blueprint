@@ -191,7 +191,7 @@ export function MaterialReceptionDialog({ open, onOpenChange, projectId, materia
             <DialogTitle>{t("materials.reception.newReception")}</DialogTitle>
           </DialogHeader>
 
-          <div className="grid gap-4 py-2 md:grid-cols-2">
+          <div className="grid gap-4 pt-5 pb-2 md:grid-cols-2">
             <div className="grid gap-1.5">
               <Label>{t("materials.reception.form.date")}</Label>
               <Input type="date" value={receptionDate} onChange={(e) => setReceptionDate(e.target.value)} />

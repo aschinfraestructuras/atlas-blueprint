@@ -167,7 +167,7 @@ export function ProjectFormDialog({
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-1">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-5">
             {/* Name */}
             <FormField
               control={form.control}

@@ -255,7 +255,7 @@ export function NCFormDialog({
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-0 pt-1">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-0 pt-5">
             <Tabs defaultValue="identification" className="w-full">
               <TabsList className="w-full mb-4 flex-wrap h-auto gap-1">
                 <TabsTrigger value="identification" className="text-xs gap-1">

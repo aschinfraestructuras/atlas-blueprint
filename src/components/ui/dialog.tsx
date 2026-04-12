@@ -46,6 +46,10 @@ const DialogContent = React.forwardRef<
         // Dimensões e layout
         "grid w-full max-w-lg gap-0",
 
+        // Padding horizontal para o corpo do formulário
+        // Header e Footer têm -mx-6 para neutralizar e expandir full-width
+        "px-6",
+
         // Visual — mais arredondado e com sombra profunda
         "rounded-2xl",
         "border border-border/50",
@@ -93,7 +97,8 @@ const DialogHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivEleme
   <div
     className={cn(
       "flex flex-col gap-1.5",
-      "px-6 py-5",
+      // -mx-6 neutraliza o px-6 do DialogContent → borda full-width
+      "-mx-6 px-6 pt-6 pb-5",
       "border-b border-border/50",
       className,
     )}
@@ -107,7 +112,8 @@ const DialogFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivEleme
   <div
     className={cn(
       "flex flex-col-reverse sm:flex-row sm:justify-end sm:gap-2",
-      "px-6 py-4",
+      // -mx-6 neutraliza o px-6 do DialogContent → borda full-width
+      "-mx-6 px-6 py-4",
       "border-t border-border/50",
       "bg-muted/20 rounded-b-2xl",
       className,

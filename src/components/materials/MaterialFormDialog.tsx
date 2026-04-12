@@ -135,7 +135,7 @@ export function MaterialFormDialog({ open, onOpenChange, material, onSuccess }: 
         </DialogHeader>
 
         <ScrollArea className="max-h-[70vh] pr-1">
-          <div className="space-y-4 py-2">
+          <div className="space-y-4 pt-5 pb-2">
             {/* ── Section 1: Identification ── */}
             <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{t("materials.form.sectionIdentification")}</p>
 

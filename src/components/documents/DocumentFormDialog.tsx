@@ -322,7 +322,7 @@ export function DocumentFormDialog({ open, onOpenChange, document: doc, onSucces
 
         {/* Workflow action buttons (only in edit mode) */}
         {doc && (
-          <div className="flex flex-wrap gap-2 py-1">
+          <div className="flex flex-wrap gap-2 pt-5 pb-1">
             {doc.status === "draft" && (
               <Button type="button" size="sm" variant="outline" className="gap-1.5 text-xs"
                 onClick={() => handleStatusTransition("in_review")} disabled={transitioning}>
