@@ -90,7 +90,12 @@ export default function PPIPage() {
     if (filterDiscipline !== "all") {
       rows = rows.filter((r) => r.template_disciplina === filterDiscipline);
     }
-    if (filterStatus !== "all") {
+    if (filterStatus === "overdue") {
+      // Aprovação em atraso: submetidas há mais de 5 dias sem aprovação
+      const cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() - 5);
+      rows = rows.filter((r) => r.status === "submitted" && new Date(r.created_at) < cutoff);
+    } else if (filterStatus !== "all") {
       rows = rows.filter((r) => r.status === filterStatus);
     }
     return rows;
@@ -233,12 +238,19 @@ export default function PPIPage() {
       {/* ── KPIs ────────────────────────────────────────────────────── */}
       {kpis && (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          <ModuleKPICard label={t("ppi.kpi.total")} value={kpis.total} icon={BarChart3} />
-          <ModuleKPICard label={t("ppi.kpi.inProgress")} value={kpis.in_progress_count} icon={Clock} color="hsl(var(--primary))" />
-          <ModuleKPICard label={t("ppi.kpi.submitted")} value={kpis.submitted_count} icon={Send} color="hsl(35, 92%, 50%)" />
-          <ModuleKPICard label={t("ppi.kpi.approved")} value={kpis.approved_count} icon={CheckCircle2} color="hsl(152, 69%, 31%)" />
-          <ModuleKPICard label={t("ppi.kpi.rejected")} value={kpis.rejected_count} icon={XCircle} color="hsl(var(--destructive))" />
-          <ModuleKPICard label={t("ppi.kpi.overdueApproval")} value={kpis.overdue_approval} icon={AlertTriangle} color={kpis.overdue_approval > 0 ? "hsl(var(--destructive))" : undefined} />
+          <ModuleKPICard label={t("ppi.kpi.total")} value={kpis.total} icon={BarChart3}
+            active={filterStatus === "all"} onClick={() => setFilterStatus("all")} />
+          <ModuleKPICard label={t("ppi.kpi.inProgress")} value={kpis.in_progress_count} icon={Clock} color="hsl(var(--primary))"
+            active={filterStatus === "in_progress"} onClick={() => setFilterStatus(filterStatus === "in_progress" ? "all" : "in_progress")} />
+          <ModuleKPICard label={t("ppi.kpi.submitted")} value={kpis.submitted_count} icon={Send} color="hsl(35, 92%, 50%)"
+            active={filterStatus === "submitted"} onClick={() => setFilterStatus(filterStatus === "submitted" ? "all" : "submitted")} />
+          <ModuleKPICard label={t("ppi.kpi.approved")} value={kpis.approved_count} icon={CheckCircle2} color="hsl(152, 69%, 31%)"
+            active={filterStatus === "approved"} onClick={() => setFilterStatus(filterStatus === "approved" ? "all" : "approved")} />
+          <ModuleKPICard label={t("ppi.kpi.rejected")} value={kpis.rejected_count} icon={XCircle} color="hsl(var(--destructive))"
+            active={filterStatus === "rejected"} onClick={() => setFilterStatus(filterStatus === "rejected" ? "all" : "rejected")} />
+          <ModuleKPICard label={t("ppi.kpi.overdueApproval")} value={kpis.overdue_approval} icon={AlertTriangle}
+            color={kpis.overdue_approval > 0 ? "hsl(var(--destructive))" : undefined}
+            active={filterStatus === "overdue"} onClick={() => setFilterStatus(filterStatus === "overdue" ? "all" : "overdue")} />
         </div>
       )}
 
@@ -352,8 +364,11 @@ export default function PPIPage() {
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
                   <span>{inst.inspection_date ? new Date(inst.inspection_date + "T12:00:00").toLocaleDateString() : "—"}</span>
                   {(inst as any).hp_pending_count > 0 && (
-                    <Badge variant="secondary" className="bg-destructive/10 text-destructive text-xs font-bold">
-                      HP: {(inst as any).hp_pending_count}
+                    <Badge
+                      variant="secondary"
+                      className="bg-destructive text-destructive-foreground text-xs font-bold animate-pulse"
+                    >
+                      HP {(inst as any).hp_pending_count}
                     </Badge>
                   )}
                 </div>
@@ -406,9 +421,18 @@ export default function PPIPage() {
                   <TableRow
                     key={inst.id}
                     className={cn(
-                      "cursor-pointer hover:bg-muted/20",
+                      "cursor-pointer hover:bg-muted/20 relative",
                       isSelected && "bg-primary/5"
                     )}
+                    style={{
+                      borderLeft: `3px solid ${
+                        inst.status === "approved"    ? "hsl(152 69% 31%)" :
+                        inst.status === "submitted"   ? "hsl(35 92% 50%)"  :
+                        inst.status === "in_progress" ? "hsl(var(--primary))" :
+                        inst.status === "rejected"    ? "hsl(var(--destructive))" :
+                        "transparent"
+                      }`
+                    }}
                     onClick={() => navigate(`/ppi/${inst.id}`)}
                   >
                     {/* Row checkbox */}

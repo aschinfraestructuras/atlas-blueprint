@@ -15,10 +15,10 @@ export function ModuleKPICard({ label, value, icon: Icon, color, active, onClick
     <Card
       className={cn(
         "border transition-all relative overflow-hidden",
-        active && "border-primary/40 bg-primary/5",
-        onClick && "cursor-pointer hover:shadow-md hover:scale-[1.01] active:scale-[0.99]",
-        !active && "shadow-none hover:shadow-sm",
+        active ? "border-current/30 shadow-sm ring-1 ring-current/20" : "border-border shadow-none hover:shadow-sm",
+        onClick && "cursor-pointer hover:shadow-md hover:scale-[1.01] active:scale-[0.98]",
       )}
+      style={active && color ? { backgroundColor: color.replace(")", " / 0.07)").replace("hsl(", "hsl(") } : undefined}
       onClick={onClick}
     >
       {/* Borda superior colorida — toque visual do Replit */}

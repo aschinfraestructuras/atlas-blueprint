@@ -375,11 +375,16 @@ export default function NonConformitiesPage() {
       {/* ── KPI Row ──────────────────────────────────────────── */}
       {!loading && ncs.length > 0 && (
         <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-7">
-          <ModuleKPICard label={t("moduleKpi.open")} value={openNcs.length} icon={AlertTriangle} color="hsl(var(--destructive))" />
-          <ModuleKPICard label={t("moduleKpi.overdue")} value={overdueNcs.length} icon={Clock} color={overdueNcs.length > 0 ? "hsl(var(--destructive))" : undefined} />
-          <ModuleKPICard label={t("moduleKpi.closed30d")} value={closed30d.length} icon={CheckCircle2} color="hsl(158 45% 36%)" />
-          <ModuleKPICard label={t("moduleKpi.major")} value={majorNcs.length} icon={AlertTriangle} color="hsl(var(--primary))" />
-          <ModuleKPICard label={t("moduleKpi.minor")} value={minorNcs.length} icon={AlertTriangle} />
+          <ModuleKPICard label={t("moduleKpi.open")} value={openNcs.length} icon={AlertTriangle} color="hsl(var(--destructive))"
+            active={filterStatus === "open"} onClick={() => setFilterStatus(filterStatus === "open" ? "all" : "open")} />
+          <ModuleKPICard label={t("moduleKpi.overdue")} value={overdueNcs.length} icon={Clock} color={overdueNcs.length > 0 ? "hsl(var(--destructive))" : undefined}
+            active={filterStatus === "overdue"} onClick={() => setFilterStatus(filterStatus === "overdue" ? "all" : "overdue")} />
+          <ModuleKPICard label={t("moduleKpi.closed30d")} value={closed30d.length} icon={CheckCircle2} color="hsl(158 45% 36%)"
+            active={filterStatus === "closed"} onClick={() => setFilterStatus(filterStatus === "closed" ? "all" : "closed")} />
+          <ModuleKPICard label={t("moduleKpi.major")} value={majorNcs.length} icon={AlertTriangle} color="hsl(var(--primary))"
+            active={filterSeverity === "major"} onClick={() => setFilterSeverity(filterSeverity === "major" ? "all" : "major")} />
+          <ModuleKPICard label={t("moduleKpi.minor")} value={minorNcs.length} icon={AlertTriangle}
+            active={filterSeverity === "minor"} onClick={() => setFilterSeverity(filterSeverity === "minor" ? "all" : "minor")} />
           <ModuleKPICard label={t("moduleKpi.linkedToTests")} value={linkedTests.length} icon={FlaskConical} />
           <ModuleKPICard label={t("moduleKpi.linkedToPPI")} value={linkedPPI.length} icon={ClipboardCheck} />
         </div>
