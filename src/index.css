@@ -115,16 +115,16 @@
     --chart-5:           0 55% 48%;
 
     /* ── Sidebar — Vibrant Indigo-Blue ────────────────────────────── */
-    --sidebar-background:       222 52% 22%;
-    --sidebar-foreground:       220 25% 90%;
-    --sidebar-primary:          210 80% 72%;
-    --sidebar-primary-foreground: 222 52% 22%;
-    --sidebar-accent:           222 45% 30%;
-    --sidebar-accent-foreground: 220 30% 96%;
-    --sidebar-border:           222 40% 30%;
-    --sidebar-border:           235 40% 48%;
-    --sidebar-ring:             225 65% 65%;
-    --sidebar:                  235 55% 38%;
+    /* ── Sidebar — azul profissional (mesma família do login) ─── */
+    --sidebar-background:       215 68% 30%;   /* azul profundo rico */
+    --sidebar-foreground:       210 35% 94%;   /* texto quase branco com tinte azul */
+    --sidebar-primary:          200 100% 82%;  /* azul claro vivo para itens activos */
+    --sidebar-primary-foreground: 215 68% 22%; /* contraste no texto activo */
+    --sidebar-accent:           215 60% 38%;   /* hover — 8 pts mais claro */
+    --sidebar-accent-foreground: 210 30% 97%;  /* texto no hover */
+    --sidebar-border:           215 55% 24%;   /* borda — ligeiramente mais escura */
+    --sidebar-ring:             200 80% 72%;   /* focus ring */
+    --sidebar:                  215 68% 30%;   /* alias */
   }
 
   .dark {
