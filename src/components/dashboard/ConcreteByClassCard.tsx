@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Beaker } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
+import { CHART_SEQUENCE, CHART_STYLE, ChartTooltipContent } from "@/lib/chartTheme";
 
 interface ClassSummary {
   concrete_class: string;
