@@ -126,19 +126,25 @@ export function SgqKpiCards({ projectId }: { projectId: string }) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
       {metrics.map((m) => (
-        <Card key={m.label} className={cn("border transition-all", semaphoreColor(m.status))}>
-          <CardContent className="p-3 flex flex-col items-center text-center gap-1.5">
-            <div className="flex items-center gap-1.5">
-              <span className={cn("h-2 w-2 rounded-full", semaphoreDot(m.status))} />
-              <m.icon className="h-3.5 w-3.5 opacity-70" />
+        <Card key={m.label} className={cn("border transition-all hover:shadow-md cursor-default", semaphoreColor(m.status))}>
+          <CardContent className="p-4 flex flex-col gap-2">
+            <div className="flex items-center justify-between">
+              <m.icon className="h-4 w-4 opacity-60" />
+              <Badge variant="outline" className={cn("text-[9px] px-1.5 py-0 font-semibold border-current/30",
+                m.status === "ok" ? "text-emerald-700" :
+                m.status === "alerta" ? "text-amber-700" :
+                m.status === "critico" ? "text-destructive" : "text-muted-foreground"
+              )}>
+                {m.status === "ok" ? "Conforme" : m.status === "alerta" ? "Alerta" : m.status === "critico" ? "Crítico" : "—"}
+              </Badge>
             </div>
-            <p className="text-[9px] font-bold uppercase tracking-widest opacity-70 leading-tight">{m.label}</p>
-            <p className="text-xl font-black tabular-nums">{m.value}</p>
-            <Badge variant="outline" className="text-[8px] px-1.5 py-0 border-current/20">
+            <p className="text-[9px] font-bold uppercase tracking-widest opacity-60 leading-tight">{m.label}</p>
+            <p className="text-2xl font-black tabular-nums leading-none">{m.value}</p>
+            <p className="text-[9px] opacity-50">
               {m.status === "sem_dados"
                 ? t("dashboard.sgqKpi.noData", { defaultValue: "Sem dados ainda" })
                 : `${t("dashboard.sgqKpi.target", { defaultValue: "Meta" })}: ${m.meta}`}
-            </Badge>
+            </p>
           </CardContent>
         </Card>
       ))}

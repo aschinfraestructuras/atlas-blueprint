@@ -148,32 +148,99 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-secondary">
-      {/* Left panel – branding */}
-      <div className="hidden w-1/2 flex-col justify-between bg-primary p-12 lg:flex">
-        <div className="flex items-center gap-2">
-          <ShieldCheck className="h-6 w-6 text-primary-foreground/80" />
-          <span className="text-lg font-semibold tracking-widest text-primary-foreground/80 uppercase">
+    <div className="flex min-h-screen" style={{ background: "hsl(210 20% 98%)" }}>
+      {/* Left panel – branding com grelha animada e círculo */}
+      <div className="hidden lg:flex w-[58%] flex-col justify-between p-12 relative overflow-hidden"
+        style={{ background: "hsl(215 80% 38%)" }}>
+
+        {/* Grelha de fundo */}
+        <div className="absolute inset-0 opacity-[0.12]"
+          style={{
+            backgroundImage: "linear-gradient(hsl(0 0% 100%) 1px, transparent 1px), linear-gradient(90deg, hsl(0 0% 100%) 1px, transparent 1px)",
+            backgroundSize: "48px 48px",
+          }}
+        />
+
+        {/* Círculo animado grande — o elemento central do Replit */}
+        <div className="absolute" style={{
+          top: "50%", left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: "520px", height: "520px",
+          animation: "loginSpin 28s linear infinite",
+        }}>
+          <div style={{
+            width: "100%", height: "100%",
+            borderRadius: "50%",
+            border: "1.5px solid hsl(0 0% 100% / 0.18)",
+            position: "relative",
+          }}>
+            {/* Ponto orbital */}
+            <div style={{
+              position: "absolute", top: "-5px", left: "50%",
+              transform: "translateX(-50%)",
+              width: "10px", height: "10px",
+              borderRadius: "50%",
+              background: "hsl(0 0% 100% / 0.7)",
+              boxShadow: "0 0 12px 4px hsl(0 0% 100% / 0.35)",
+            }} />
+          </div>
+        </div>
+
+        {/* Círculo interior contra-rotativo */}
+        <div className="absolute" style={{
+          top: "50%", left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: "340px", height: "340px",
+          animation: "loginSpinReverse 18s linear infinite",
+        }}>
+          <div style={{
+            width: "100%", height: "100%",
+            borderRadius: "50%",
+            border: "1px dashed hsl(0 0% 100% / 0.15)",
+          }} />
+        </div>
+
+        {/* Ponto central */}
+        <div className="absolute" style={{
+          top: "50%", left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: "6px", height: "6px",
+          borderRadius: "50%",
+          background: "hsl(0 0% 100% / 0.5)",
+        }} />
+
+        {/* CSS das animações */}
+        <style>{`
+          @keyframes loginSpin { from { transform: translate(-50%,-50%) rotate(0deg); } to { transform: translate(-50%,-50%) rotate(360deg); } }
+          @keyframes loginSpinReverse { from { transform: translate(-50%,-50%) rotate(0deg); } to { transform: translate(-50%,-50%) rotate(-360deg); } }
+        `}</style>
+
+        {/* Conteúdo */}
+        <div className="relative z-10 flex items-center gap-2.5">
+          <ShieldCheck className="h-6 w-6" style={{ color: "hsl(0 0% 100% / 0.85)" }} />
+          <span className="text-base font-bold tracking-[0.2em] uppercase" style={{ color: "hsl(0 0% 100% / 0.85)" }}>
             {t("common.appName")}
           </span>
         </div>
-        <div>
-          <blockquote className="space-y-2">
-            <p className="text-2xl font-light leading-relaxed text-primary-foreground">
+
+        <div className="relative z-10">
+          <blockquote className="space-y-3">
+            <p className="text-2xl font-light leading-relaxed" style={{ color: "hsl(0 0% 100%)" }}>
               {t("auth.qualityQuote")}
             </p>
-            <footer className="text-sm text-primary-foreground/60">
-              {t("auth.qualityQuoteAuthor")}
+            <footer className="text-sm" style={{ color: "hsl(0 0% 100% / 0.55)" }}>
+              — {t("auth.qualityQuoteAuthor")}
             </footer>
           </blockquote>
         </div>
-        <p className="text-xs text-primary-foreground/40 uppercase tracking-widest">
+
+        <p className="relative z-10 text-[10px] tracking-[0.3em] uppercase" style={{ color: "hsl(0 0% 100% / 0.35)" }}>
           {t("auth.qmsLabel")}
         </p>
       </div>
 
       {/* Right panel */}
-      <div className="flex flex-1 flex-col">
+      <div className="flex flex-1 flex-col" style={{ background: "hsl(210 20% 98%)" }}>
         {/* Language switcher top-right */}
         <div className="flex justify-end p-4">
           <DropdownMenu>
@@ -210,8 +277,8 @@ export default function LoginPage() {
               </span>
             </div>
 
-            <div className="space-y-1">
-              <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+            <div className="space-y-1.5">
+              <h1 className="text-[1.75rem] font-bold tracking-tight text-foreground">
                 {mode === "login" ? t("auth.signInTitle") : t("auth.forgotPasswordTitle")}
               </h1>
               <p className="text-sm text-muted-foreground">
@@ -278,7 +345,7 @@ export default function LoginPage() {
 
                 <Button
                   type="submit"
-                  className="w-full min-h-[48px]"
+                  className="w-full min-h-[48px] text-base font-semibold"
                   disabled={isLoginDisabled}
                 >
                   {submitting ? (

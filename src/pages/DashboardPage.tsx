@@ -263,11 +263,11 @@ export default function DashboardPage() {
       {/* ── Header ────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 animate-fade-in" style={{ animationDelay: "0ms", animationFillMode: "both" }}>
         <div className="space-y-0.5">
-          <p className="text-[10px] font-extrabold uppercase tracking-[0.20em] text-muted-foreground/60">
+          <p className="text-[10px] font-extrabold uppercase tracking-[0.20em] text-muted-foreground/50">
             {t("dashboard.welcome")}
           </p>
-          <h1 className="text-2xl font-black tracking-tight text-foreground">{displayName}</h1>
-          <p className="text-xs text-muted-foreground">
+          <h1 className="text-[1.75rem] font-black tracking-tight text-foreground leading-tight">{displayName}</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">
             {t("dashboard.subtitleProject", { project: activeProject.name })}
           </p>
         </div>
