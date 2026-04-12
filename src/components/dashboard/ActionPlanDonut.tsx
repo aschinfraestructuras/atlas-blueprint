@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
+import { CHART_COLORS, ChartTooltipContent } from "@/lib/chartTheme";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface ActionPlanDonutProps {
@@ -14,8 +15,8 @@ export function ActionPlanDonut({ onTime, pastDue, loading }: ActionPlanDonutPro
   const total = onTime + pastDue;
 
   const data = [
-    { name: t("dashboard.charts.onTime", { defaultValue: "No prazo" }), value: onTime, fill: "hsl(var(--chart-2))" },
-    { name: t("dashboard.charts.pastDue", { defaultValue: "Em atraso" }), value: pastDue, fill: "hsl(var(--chart-5))" },
+    { name: t("dashboard.charts.onTime", { defaultValue: "No prazo" }), value: onTime, fill: CHART_COLORS.success },
+    { name: t("dashboard.charts.pastDue", { defaultValue: "Em atraso" }), value: pastDue, fill: CHART_COLORS.danger },
   ];
 
   return (

@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
+import { CHART_COLORS, ChartTooltipContent } from "@/lib/chartTheme";
 import type { TestsMonthlyData } from "@/hooks/useDashboardViews";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -10,8 +11,8 @@ interface TestsDonutChartProps {
 }
 
 const COLORS = {
-  conform: "hsl(var(--chart-2))",
-  nonConform: "hsl(var(--chart-5))",
+  conform:    CHART_COLORS.success,
+  nonConform: CHART_COLORS.danger,
 };
 
 export function TestsDonutChart({ data, loading }: TestsDonutChartProps) {

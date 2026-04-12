@@ -4,9 +4,11 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-  ComposedChart, Area, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
+  ComposedChart, Area, Line, XAxis, YAxis, Tooltip,
+  ResponsiveContainer, CartesianGrid, defs,
 } from "recharts";
 import type { MonthlyData } from "@/hooks/useDashboardViews";
+import { CHART_COLORS, CHART_STYLE, ChartTooltipContent } from "@/lib/chartTheme";
 
 interface NCTrendChartProps {
   data: MonthlyData[];
@@ -28,60 +30,99 @@ export function NCTrendChart({ data, loading }: NCTrendChartProps) {
 
   return (
     <Card
-      className="border border-border bg-card shadow-card cursor-pointer hover:shadow-card-hover hover:border-primary/20 transition-all"
+      className="border border-border/60 bg-card shadow-card cursor-pointer hover:shadow-card-hover hover:border-primary/20 transition-all duration-200"
       onClick={() => navigate("/non-conformities")}
     >
       <CardHeader className="pb-1 pt-4 px-5">
-        <CardTitle className="text-[11px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
+        <CardTitle className="text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
           {t("dashboard.charts.ncTrendTitle", { defaultValue: "Tendência de NCs" })}
         </CardTitle>
-        <p className="text-[9px] text-muted-foreground/60">
+        <p className="text-[9px] text-muted-foreground/50 mt-0.5">
           {t("dashboard.charts.ncTrendSub", { defaultValue: "Abertas · Fechadas · Saldo acumulado" })}
         </p>
       </CardHeader>
-      <CardContent className="px-3 pb-3">
+      <CardContent className="px-2 pb-3">
         {loading ? (
-          <Skeleton className="h-[180px] w-full" />
+          <Skeleton className="h-[180px] w-full rounded-lg" />
         ) : chartData.length === 0 ? (
           <p className="text-xs text-muted-foreground py-12 text-center">{t("common.noData")}</p>
         ) : (
           <ResponsiveContainer width="100%" height={180}>
-            <ComposedChart data={chartData} margin={{ top: 5, right: 10, left: -15, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.4} />
-              <XAxis dataKey="label" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
-              <YAxis tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "hsl(var(--card))",
-                  border: "1px solid hsl(var(--border))",
-                  borderRadius: 8,
-                  fontSize: 11,
-                }}
+            <ComposedChart data={chartData} margin={{ top: 8, right: 8, left: -18, bottom: 0 }}>
+              <defs>
+                {/* Gradiente Abertas */}
+                <linearGradient id="ncOpenGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%"   stopColor={CHART_COLORS.danger} stopOpacity={0.22} />
+                  <stop offset="100%" stopColor={CHART_COLORS.danger} stopOpacity={0}    />
+                </linearGradient>
+                {/* Gradiente Fechadas */}
+                <linearGradient id="ncCloseGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%"   stopColor={CHART_COLORS.success} stopOpacity={0.18} />
+                  <stop offset="100%" stopColor={CHART_COLORS.success} stopOpacity={0}    />
+                </linearGradient>
+              </defs>
+
+              {/* Grid muito subtil */}
+              <CartesianGrid
+                strokeDasharray="3 4"
+                stroke={CHART_STYLE.grid.stroke}
+                strokeOpacity={0.5}
+                vertical={false}
               />
+
+              <XAxis
+                dataKey="label"
+                tick={CHART_STYLE.axis.tick}
+                axisLine={false}
+                tickLine={false}
+              />
+              <YAxis
+                tick={CHART_STYLE.axis.tick}
+                axisLine={false}
+                tickLine={false}
+                width={28}
+              />
+
+              {/* Tooltip customizado */}
+              <Tooltip
+                content={<ChartTooltipContent />}
+                cursor={CHART_STYLE.tooltip.cursor}
+              />
+
+              {/* Área Abertas — vermelho com gradiente */}
               <Area
                 type="monotone"
                 dataKey="opened"
                 name={t("dashboard.kpi.ncOpened", { defaultValue: "Abertas" })}
-                fill="hsl(0 65% 50% / 0.15)"
-                stroke="hsl(0 65% 50%)"
+                fill="url(#ncOpenGrad)"
+                stroke={CHART_COLORS.danger}
                 strokeWidth={2}
+                dot={false}
+                activeDot={{ r: 4, stroke: "hsl(var(--card))", strokeWidth: 2, fill: CHART_COLORS.danger }}
               />
+
+              {/* Área Fechadas — verde com gradiente */}
               <Area
                 type="monotone"
                 dataKey="closed"
                 name={t("dashboard.kpi.ncClosed", { defaultValue: "Fechadas" })}
-                fill="hsl(145 55% 42% / 0.15)"
-                stroke="hsl(145 55% 42%)"
+                fill="url(#ncCloseGrad)"
+                stroke={CHART_COLORS.success}
                 strokeWidth={2}
+                dot={false}
+                activeDot={{ r: 4, stroke: "hsl(var(--card))", strokeWidth: 2, fill: CHART_COLORS.success }}
               />
+
+              {/* Linha de Saldo — âmbar tracejada */}
               <Line
                 type="monotone"
                 dataKey="balance"
                 name={t("dashboard.charts.balance", { defaultValue: "Saldo" })}
-                stroke="hsl(38 85% 50%)"
-                strokeWidth={2}
+                stroke={CHART_COLORS.warning}
+                strokeWidth={1.5}
                 strokeDasharray="5 3"
                 dot={false}
+                activeDot={{ r: 3.5, stroke: "hsl(var(--card))", strokeWidth: 2, fill: CHART_COLORS.warning }}
               />
             </ComposedChart>
           </ResponsiveContainer>

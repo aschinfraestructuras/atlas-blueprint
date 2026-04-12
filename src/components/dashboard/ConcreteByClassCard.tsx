@@ -90,7 +90,7 @@ export function ConcreteByClassCard() {
     fcm: d.avg_fcm ?? 0,
   }));
 
-  const BAR_COLORS = ["hsl(var(--primary))", "hsl(210, 60%, 50%)", "hsl(190, 50%, 45%)", "hsl(160, 50%, 40%)", "hsl(140, 45%, 38%)"];
+  const BAR_COLORS = CHART_SEQUENCE;
 
   return (
     <Card className="border border-border bg-card shadow-card">
