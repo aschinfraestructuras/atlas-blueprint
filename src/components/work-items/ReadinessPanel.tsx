@@ -100,7 +100,7 @@ export function ReadinessPanel() {
         .eq("project_id", activeProject.id)
         .eq("is_deleted", false)
         .not("work_item_id", "is", null)
-        .not("status", "in", '("closed","archived")') as any);
+        .not('status', 'in', '(closed,archived)') as any);
 
       // PPI map
       const pm = new Map<string, { status: string; okCount: number; total: number }>();

@@ -114,6 +114,32 @@ export default defineConfig(({ mode }) => ({
       },
     }),
   ].filter(Boolean),
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // PDF — só carrega quando o utilizador exporta
+          "vendor-pdf": ["jspdf", "html2canvas"],
+          // Gráficos — só carrega no tab Tendências do dashboard
+          "vendor-charts": ["recharts"],
+          // React core — sempre necessário
+          "vendor-react": ["react", "react-dom", "react-router-dom"],
+          // UI base — sempre necessário
+          "vendor-ui": [
+            "@radix-ui/react-dialog",
+            "@radix-ui/react-select",
+            "@radix-ui/react-tabs",
+            "@radix-ui/react-dropdown-menu",
+            "@radix-ui/react-tooltip",
+          ],
+          // i18n
+          "vendor-i18n": ["i18next", "react-i18next"],
+        },
+      },
+    },
+    // Aviso acima de 1MB (chunks individuais)
+    chunkSizeWarningLimit: 1000,
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

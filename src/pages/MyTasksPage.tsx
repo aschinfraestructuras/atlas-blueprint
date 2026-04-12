@@ -86,7 +86,7 @@ export default function MyTasksPage() {
         `)
         .eq("project_id", activeProject.id)
         .eq("is_deleted", false)
-        .not("status", "in", '("approved","archived")');
+        .not('status', 'in', '(approved,archived)');
 
       // Batch-fetch work items for all PPIs in one query
       const wiIds = [...new Set((ppiData ?? []).map((p: any) => p.work_item_id).filter(Boolean))];
@@ -130,7 +130,7 @@ export default function MyTasksPage() {
       const today = new Date().toISOString().slice(0, 10);
       const { data: testData } = await (supabase as any)
         .from("test_due_items")
-        .select("id, test_type, work_item_id, due_at_date")
+        .select("id, due_reason, work_item_id, due_at_date")
         .eq("project_id", activeProject.id)
         .is("related_test_result_id", null)
         .lte("due_at_date", sevenDaysFromNow)
@@ -153,7 +153,7 @@ export default function MyTasksPage() {
 
       const testResults: MyTestDue[] = (testData ?? []).map((td: any) => ({
         id: td.id,
-        test_type: td.test_type ?? "—",
+        test_type: td.due_reason ?? "—",
         work_item_name: td.work_item_id ? (testWiMap[td.work_item_id] ?? null) : null,
         due_at_date: td.due_at_date,
         is_overdue: td.due_at_date < today,
@@ -166,7 +166,7 @@ export default function MyTasksPage() {
         .select("id, code, title, severity, status, deadline")
         .eq("project_id", activeProject.id)
         .eq("is_deleted", false)
-        .not("status", "in", '("closed","archived")');
+        .not('status', 'in', '(closed,archived)');
 
       const ncResults: MyNC[] = (ncData ?? []).map((nc: any) => ({
         id: nc.id,
