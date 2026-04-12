@@ -13,6 +13,7 @@ interface ToastOptions {
   description?: string;
   variant?: "default" | "destructive";
   duration?: number;
+  action?: React.ReactNode;
 }
 
 export function toast(options: ToastOptions | string) {
