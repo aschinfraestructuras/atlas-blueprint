@@ -446,7 +446,13 @@
     "exec": {
       "conform": "Conforme",
       "nonConform": "No conforme"
-    }
+    },
+    "tab": {
+      "overview": "Vista General",
+      "trends": "Tendencias",
+      "access": "Módulos"
+    },
+    "quickStats": "Indicadores de Obra"
   },
   "emptyState": {
     "title": "Aún sin datos",

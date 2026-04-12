@@ -361,7 +361,13 @@
     "exec": {
       "conform": "Conforme",
       "nonConform": "Não conforme"
-    }
+    },
+    "tab": {
+      "overview": "Visão Geral",
+      "trends": "Tendências",
+      "access": "Módulos"
+    },
+    "quickStats": "Indicadores de Obra"
   },
   "emptyState": {
     "title": "Ainda sem dados",
