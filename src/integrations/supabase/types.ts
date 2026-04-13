@@ -2932,6 +2932,7 @@ export type Database = {
           supplier_id: string | null
           unit: string | null
           updated_at: string
+          work_item_id: string | null
         }
         Insert: {
           approved_at?: string | null
@@ -2961,6 +2962,7 @@ export type Database = {
           supplier_id?: string | null
           unit?: string | null
           updated_at?: string
+          work_item_id?: string | null
         }
         Update: {
           approved_at?: string | null
@@ -2990,6 +2992,7 @@ export type Database = {
           supplier_id?: string | null
           unit?: string | null
           updated_at?: string
+          work_item_id?: string | null
         }
         Relationships: [
           {
@@ -3096,6 +3099,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_traceability_matrix"
             referencedColumns: ["supplier_id"]
+          },
+          {
+            foreignKeyName: "material_lots_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_hp_calendar"
+            referencedColumns: ["work_item_id"]
+          },
+          {
+            foreignKeyName: "material_lots_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_traceability_matrix"
+            referencedColumns: ["work_item_id"]
+          },
+          {
+            foreignKeyName: "material_lots_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_work_item_quality_summary"
+            referencedColumns: ["work_item_id"]
+          },
+          {
+            foreignKeyName: "material_lots_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_work_item_readiness_detail"
+            referencedColumns: ["work_item_id"]
+          },
+          {
+            foreignKeyName: "material_lots_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -3279,8 +3317,11 @@ export type Database = {
           corrective_actions: string | null
           created_at: string
           created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           drive_url: string | null
           id: string
+          is_deleted: boolean
           kpi_emes_expiring: number | null
           kpi_hp_approved: number | null
           kpi_hp_rate_pct: number | null
@@ -3312,8 +3353,11 @@ export type Database = {
           corrective_actions?: string | null
           created_at?: string
           created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           drive_url?: string | null
           id?: string
+          is_deleted?: boolean
           kpi_emes_expiring?: number | null
           kpi_hp_approved?: number | null
           kpi_hp_rate_pct?: number | null
@@ -3345,8 +3389,11 @@ export type Database = {
           corrective_actions?: string | null
           created_at?: string
           created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           drive_url?: string | null
           id?: string
+          is_deleted?: boolean
           kpi_emes_expiring?: number | null
           kpi_hp_approved?: number | null
           kpi_hp_rate_pct?: number | null
@@ -13522,6 +13569,10 @@ export type Database = {
           isOneToOne: false
           isSetofReturn: true
         }
+      }
+      fn_lot_received_create_due_tests: {
+        Args: { p_lot_id: string; p_work_item_id?: string }
+        Returns: number
       }
       fn_monthly_kpi_autofill: {
         Args: { p_project_id: string; p_reference_month: string }
