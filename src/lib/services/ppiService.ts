@@ -364,18 +364,25 @@ export const ppiService = {
     const { data, error } = await q;
     if (error) throw error;
 
-    // Fetch HP pending counts for all instances
+    // Fetch HP pending counts AND item progress for all instances
     const instanceIds = (data ?? []).map((r: any) => r.id);
     const hpCounts: Record<string, number> = {};
-    
+    const itemsTotal: Record<string, number> = {};
+    const itemsChecked: Record<string, number> = {};
+
     if (instanceIds.length > 0) {
       const { data: itemsData } = await supabase
         .from("ppi_instance_items")
         .select("instance_id, ipt_e, ipt_f, ipt_ip, result")
         .in("instance_id", instanceIds);
-      
-      // Count items where any ipt field is 'hp' and result is 'pending'
+
       (itemsData ?? []).forEach((item: any) => {
+        // Contagem total e verificados
+        itemsTotal[item.instance_id] = (itemsTotal[item.instance_id] || 0) + 1;
+        if (item.result && item.result !== "pending") {
+          itemsChecked[item.instance_id] = (itemsChecked[item.instance_id] || 0) + 1;
+        }
+        // HP pendentes
         const hasHp = item.ipt_e === "hp" || item.ipt_f === "hp" || item.ipt_ip === "hp";
         const isPending = item.result === "pending";
         if (hasHp && isPending) {
@@ -389,6 +396,8 @@ export const ppiService = {
       template_disciplina: row.ppi_templates?.disciplina ?? null,
       template_code:       row.ppi_templates?.code       ?? null,
       hp_pending_count:    hpCounts[row.id] ?? 0,
+      items_total:         itemsTotal[row.id] ?? 0,
+      items_checked:       itemsChecked[row.id] ?? 0,
       ppi_templates: undefined,
     }));
   },

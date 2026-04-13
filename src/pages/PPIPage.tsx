@@ -65,7 +65,7 @@ export default function PPIPage() {
   }, [activeProject, data]);
 
   // ── Selection for bulk export ──────────────────────────────────────────────
-  const [viewMode, setViewMode] = useState<"table" | "cards">("table");
+  const [viewMode, setViewMode] = useState<"table" | "cards">("cards");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [loadingExport, setLoadingExport] = useState(false);
   const [exportInstances, setExportInstances] = useState<PpiInstanceForExport[]>([]);
@@ -346,34 +346,87 @@ export default function PPIPage() {
         <>
         {viewMode === "cards" ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {filtered.map((inst) => (
-              <div key={inst.id}
-                className="rounded-xl border border-border bg-card p-3 cursor-pointer hover:shadow-md hover:border-primary/20 transition-all active:scale-[0.99]"
-                onClick={() => navigate(`/ppi/${inst.id}`)}>
-                <div className="flex items-start justify-between gap-2 mb-2">
-                  <div className="min-w-0 flex-1">
-                    <p className="font-mono text-sm font-bold text-foreground">{inst.code}</p>
-                    {inst.template_disciplina && (
-                      <p className="text-xs text-muted-foreground capitalize mt-0.5">
-                        {t(`ppi.disciplinas.${inst.template_disciplina}`, { defaultValue: inst.template_disciplina })}
-                      </p>
+            {filtered.map((inst) => {
+              const total   = (inst as any).items_total   ?? 0;
+              const checked = (inst as any).items_checked ?? 0;
+              const hpCount = (inst as any).hp_pending_count ?? 0;
+              const pct = total > 0 ? Math.round((checked / total) * 100) : 0;
+              const statusColors: Record<string, string> = {
+                draft:       "border-l-muted-foreground/40",
+                in_progress: "border-l-primary",
+                submitted:   "border-l-amber-500",
+                approved:    "border-l-emerald-500",
+                rejected:    "border-l-destructive",
+                archived:    "border-l-muted-foreground/30",
+              };
+              return (
+                <div
+                  key={inst.id}
+                  className={`rounded-xl border border-border bg-card cursor-pointer hover:shadow-md hover:border-primary/20 transition-all active:scale-[0.99] border-l-4 ${statusColors[inst.status] ?? ""}`}
+                  onClick={() => navigate(`/ppi/${inst.id}`)}
+                >
+                  <div className="p-4">
+                    {/* Header: código + status */}
+                    <div className="flex items-start justify-between gap-2 mb-2">
+                      <div className="min-w-0 flex-1">
+                        <p className="font-mono text-sm font-bold text-foreground">{inst.code}</p>
+                        {inst.template_code && (
+                          <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                            {inst.template_code}
+                            {inst.template_disciplina && ` · ${t(`ppi.disciplinas.${inst.template_disciplina}`, { defaultValue: inst.template_disciplina })}`}
+                          </p>
+                        )}
+                      </div>
+                      <PPIStatusBadge status={inst.status} />
+                    </div>
+
+                    {/* Barra de progresso dos itens */}
+                    {total > 0 && (
+                      <div className="mb-3">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-[10px] text-muted-foreground">{t("ppi.progress", { defaultValue: "Progresso" })}</span>
+                          <span className="text-[10px] font-semibold text-foreground">{checked}/{total} ({pct}%)</span>
+                        </div>
+                        <div className="h-1.5 rounded-full bg-muted/50 overflow-hidden">
+                          <div
+                            className={`h-full rounded-full transition-all duration-500 ${
+                              pct === 100 ? "bg-emerald-500" :
+                              pct > 50    ? "bg-primary" :
+                              pct > 0     ? "bg-amber-500" : "bg-muted-foreground/30"
+                            }`}
+                            style={{ width: `${pct}%` }}
+                          />
+                        </div>
+                      </div>
                     )}
+
+                    {/* Rodapé: data + HPs */}
+                    <div className="flex items-center justify-between gap-2 pt-2 border-t border-border/40">
+                      <span className="text-[10px] text-muted-foreground">
+                        {inst.inspection_date
+                          ? new Date(inst.inspection_date + "T12:00:00").toLocaleDateString("pt-PT", { day: "2-digit", month: "2-digit", year: "2-digit" })
+                          : inst.created_at
+                          ? new Date(inst.created_at).toLocaleDateString("pt-PT", { day: "2-digit", month: "2-digit", year: "2-digit" })
+                          : "—"}
+                      </span>
+                      <div className="flex items-center gap-1.5">
+                        {hpCount > 0 && (
+                          <Badge className="bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30 text-[10px] h-5 px-1.5 gap-0.5 animate-pulse">
+                            <AlertTriangle className="h-2.5 w-2.5" />
+                            HP {hpCount}
+                          </Badge>
+                        )}
+                        {pct === 100 && inst.status === "in_progress" && (
+                          <Badge className="bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 text-[10px] h-5 px-1.5">
+                            Pronto
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                  <PPIStatusBadge status={inst.status} />
                 </div>
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <span>{inst.inspection_date ? new Date(inst.inspection_date + "T12:00:00").toLocaleDateString() : "—"}</span>
-                  {(inst as any).hp_pending_count > 0 && (
-                    <Badge
-                      variant="secondary"
-                      className="bg-destructive text-destructive-foreground text-xs font-bold animate-pulse"
-                    >
-                      HP {(inst as any).hp_pending_count}
-                    </Badge>
-                  )}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         ) : (
         <div className="rounded-xl border border-border overflow-hidden bg-card shadow-card">
