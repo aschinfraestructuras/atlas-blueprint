@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   ArrowLeft, AlertTriangle, Calendar, Clock, User, Tag, Pencil,
-  CheckCircle2, RotateCcw, Archive, ChevronDown, Loader2,
+  CheckCircle2, RotateCcw, Archive, Loader2,
   FileText, Shield, Link2, ClipboardList, Printer, FileDown, Trash2,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -25,10 +25,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
-import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
-  DropdownMenuSeparator, DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
@@ -100,17 +97,30 @@ function SectionCard({ title, children, icon: Icon }: { title: string; children:
   );
 }
 
-function CapaField({ label, value }: { label: string; value?: string | null }) {
-  if (!value) return (
-    <div>
-      <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground mb-1">{label}</p>
-      <p className="text-sm text-muted-foreground italic">—</p>
-    </div>
-  );
+function CapaField({ label, value, required = false, highlight = false }: {
+  label: string; value?: string | null; required?: boolean; highlight?: boolean;
+}) {
+  const filled = !!value;
   return (
-    <div>
-      <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground mb-1">{label}</p>
-      <p className="text-sm text-foreground whitespace-pre-wrap">{value}</p>
+    <div className={cn(
+      "rounded-lg border p-3 transition-colors",
+      highlight && !filled ? "border-amber-300 dark:border-amber-700 bg-amber-50/50 dark:bg-amber-950/20" :
+      filled ? "border-border bg-card" : "border-border/50 bg-muted/20"
+    )}>
+      <div className="flex items-center gap-1.5 mb-2">
+        <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground flex-1">{label}</p>
+        {required && !filled && (
+          <span className="text-[9px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/40 px-1.5 py-0.5 rounded-full">
+            Obrigatório
+          </span>
+        )}
+        {filled && <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 flex-shrink-0" />}
+      </div>
+      {filled ? (
+        <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">{value}</p>
+      ) : (
+        <p className="text-sm text-muted-foreground/60 italic">—</p>
+      )}
     </div>
   );
 }
@@ -320,9 +330,28 @@ export default function NCDetailPage() {
             <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground mb-1">
               {t("pages.nonConformities.title")}
             </p>
-            <h1 className="text-xl font-extrabold tracking-tight text-foreground flex items-center gap-2">
+            <h1 className="text-xl font-extrabold tracking-tight text-foreground flex items-center gap-2 flex-wrap">
               <AlertTriangle className="h-5 w-5 text-muted-foreground flex-shrink-0" />
               <span className="truncate">{nc.code ?? nc.reference ?? nc.id.slice(0, 8)}</span>
+              {/* Aging badge — dias em aberto */}
+              {nc.status !== "closed" && nc.status !== "archived" && (() => {
+                const created = new Date(nc.detected_at ?? nc.created_at);
+                const days = Math.floor((Date.now() - created.getTime()) / 86400000);
+                const isOverdue = nc.due_date && new Date(nc.due_date) < new Date();
+                return (
+                  <span className={cn(
+                    "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold",
+                    isOverdue
+                      ? "bg-destructive/15 text-destructive border border-destructive/30"
+                      : days > 30
+                      ? "bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/30"
+                      : "bg-muted text-muted-foreground border border-border"
+                  )}>
+                    <Clock className="h-3 w-3" />
+                    {days}d
+                  </span>
+                );
+              })()}
             </h1>
             <p className="text-sm text-muted-foreground mt-1 max-w-xl line-clamp-2">
               {nc.title ?? nc.description}
@@ -340,25 +369,31 @@ export default function NCDetailPage() {
             defaultSubject={`NC — ${nc.code ?? nc.reference ?? ""} — ${nc.title ?? ""}`}
           />
           {transitions.length > 0 && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button size="sm" variant="outline" disabled={transitioning} className="gap-1.5 flex-shrink-0">
-                  {transitioning ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ChevronDown className="h-3.5 w-3.5" />}
-                  {t("nc.transitions.label")}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-52">
-                <div className="px-2 py-1 text-xs text-muted-foreground font-medium">
-                  {t("nc.transitions.changeTo")}
-                </div>
-                <DropdownMenuSeparator />
-                {transitions.map(s => (
-                  <DropdownMenuItem key={s} onClick={() => handleTransition(s)}>
-                    {t(`nc.transitions.${s}`, { defaultValue: s })}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <div className="flex items-center gap-1.5 flex-shrink-0">
+              {transitions.map(s => {
+                const cfg: Record<string, { label: string; variant: "default" | "outline" | "destructive" | "secondary"; cls: string }> = {
+                  open:                 { label: t("nc.transitions.open",                 { defaultValue: "Abrir" }),              variant: "default",     cls: "" },
+                  in_progress:          { label: t("nc.transitions.in_progress",          { defaultValue: "Iniciar" }),            variant: "default",     cls: "" },
+                  pending_verification: { label: t("nc.transitions.pending_verification", { defaultValue: "Para Verificação" }),   variant: "secondary",   cls: "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-300 hover:bg-amber-500/25" },
+                  closed:               { label: t("nc.transitions.closed",               { defaultValue: "Encerrar" }),           variant: "secondary",   cls: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-300 hover:bg-emerald-500/25" },
+                  archived:             { label: t("nc.transitions.archived",             { defaultValue: "Arquivar" }),           variant: "outline",     cls: "text-muted-foreground" },
+                };
+                const c = cfg[s] ?? { label: t(`nc.transitions.${s}`, { defaultValue: s }), variant: "outline" as const, cls: "" };
+                return (
+                  <Button
+                    key={s}
+                    size="sm"
+                    variant={c.variant}
+                    disabled={transitioning}
+                    className={cn("gap-1.5 flex-shrink-0 text-xs", c.cls)}
+                    onClick={() => handleTransition(s)}
+                  >
+                    {transitioning ? <Loader2 className="h-3 w-3 animate-spin" /> : null}
+                    {c.label}
+                  </Button>
+                );
+              })}
+            </div>
           )}
           <Button
             size="sm" variant="outline"
@@ -533,10 +568,10 @@ export default function NCDetailPage() {
                 {t("nc.form.capaHint")}
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <CapaField label={t("nc.form.correction")} value={nc.correction} />
-                <CapaField label={t("nc.form.rootCause")} value={nc.root_cause} />
-                <CapaField label={t("nc.form.correctiveAction")} value={nc.corrective_action} />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <CapaField label={t("nc.form.correction")}       value={nc.correction}        highlight />
+                <CapaField label={t("nc.form.rootCause")}        value={nc.root_cause}        highlight required={nc.severity === "major" || nc.severity === "critical"} />
+                <CapaField label={t("nc.form.correctiveAction")} value={nc.corrective_action} highlight required={nc.severity === "major" || nc.severity === "critical"} />
                 <CapaField label={t("nc.form.preventiveAction")} value={nc.preventive_action} />
               </div>
 
