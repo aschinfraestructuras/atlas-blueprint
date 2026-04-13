@@ -121,7 +121,7 @@ function LotThumbnail({ lotId, projectId }: { lotId: string; projectId: string }
   );
 }
 
-
+export default function MaterialDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t } = useTranslation();
