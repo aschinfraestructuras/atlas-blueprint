@@ -50,6 +50,8 @@ export function DueTab() {
   const navigate = useNavigate();
   const { activeProject } = useProject();
   const [filterStatus, setFilterStatus] = useState("all");
+  const [filterDisciplina, setFilterDisciplina] = useState("all");
+  const [filterOrigin, setFilterOrigin] = useState("all"); // "all" | "lot" | "manual"
   const [search, setSearch] = useState("");
   const [generating, setGenerating] = useState(false);
 
@@ -67,8 +69,22 @@ export function DueTab() {
   const filters = filterStatus !== "all" ? { status: filterStatus } : undefined;
   const { data, loading, refetch } = useTestDueItems(filters);
 
-  // Search filter
+  // Disciplinas únicas presentes nos dados (para o selector dinâmico)
+  const disciplinas = [...new Set(
+    data.map(d => (d.test_plan_rules as any)?.disciplina ?? "").filter(Boolean)
+  )].sort();
+
+  // Filtros combinados: search + disciplina + origem
   const filtered = data.filter((d) => {
+    // Filtro por disciplina
+    if (filterDisciplina !== "all") {
+      const disc = (d.test_plan_rules as any)?.disciplina ?? "";
+      if (disc !== filterDisciplina) return false;
+    }
+    // Filtro por origem (lote automático vs manual)
+    if (filterOrigin === "lot" && !(d.due_reason ?? "").startsWith("Recepção lote")) return false;
+    if (filterOrigin === "manual" && (d.due_reason ?? "").startsWith("Recepção lote")) return false;
+    // Pesquisa livre
     if (!search) return true;
     const q = search.toLowerCase();
     const testName = (d.test_plan_rules as any)?.tests_catalog?.name ?? "";
@@ -188,7 +204,7 @@ export function DueTab() {
             placeholder={t("common.search")} className="pl-8 h-8 text-sm" />
         </div>
         <Select value={filterStatus} onValueChange={setFilterStatus}>
-          <SelectTrigger className="h-8 w-[160px] text-sm">
+          <SelectTrigger className="h-8 w-[150px] text-sm">
             <Filter className="h-3 w-3 mr-1.5 text-muted-foreground" />
             <SelectValue />
           </SelectTrigger>
@@ -197,6 +213,29 @@ export function DueTab() {
             {DUE_STATUSES.map(s => (
               <SelectItem key={s} value={s}>{t(`tests.due.status.${s}`, { defaultValue: s })}</SelectItem>
             ))}
+          </SelectContent>
+        </Select>
+        {disciplinas.length > 0 && (
+          <Select value={filterDisciplina} onValueChange={setFilterDisciplina}>
+            <SelectTrigger className="h-8 w-[140px] text-sm">
+              <SelectValue placeholder={t("common.discipline", { defaultValue: "Disciplina" })} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t("common.allDisciplines", { defaultValue: "Todas" })}</SelectItem>
+              {disciplinas.map(d => (
+                <SelectItem key={d} value={d}>{d}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+        <Select value={filterOrigin} onValueChange={setFilterOrigin}>
+          <SelectTrigger className="h-8 w-[130px] text-sm">
+            <SelectValue placeholder="Origem" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{t("common.all", { defaultValue: "Todas" })}</SelectItem>
+            <SelectItem value="lot">{t("tests.due.originLot", { defaultValue: "De lote" })}</SelectItem>
+            <SelectItem value="manual">{t("tests.due.originManual", { defaultValue: "Manual" })}</SelectItem>
           </SelectContent>
         </Select>
         <Button size="sm" className="h-8 gap-1.5 ml-auto" onClick={handleGenerate} disabled={generating}>
@@ -271,7 +310,13 @@ export function DueTab() {
                       {!wi && !act && "—"}
                     </TableCell>
                     <TableCell className="text-xs text-muted-foreground">
-                      {t(`tests.due.reasons.${item.due_reason}`, { defaultValue: item.due_reason })}
+                      {(item.due_reason ?? "").startsWith("Recepção lote") ? (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800 px-1.5 py-0.5 text-[10px] font-medium">
+                          📦 {item.due_reason}
+                        </span>
+                      ) : (
+                        t(`tests.due.reasons.${item.due_reason}`, { defaultValue: item.due_reason })
+                      )}
                     </TableCell>
                     <TableCell className="text-xs font-mono text-muted-foreground">
                       {item.due_at_date ?? item.scheduled_for ?? "—"}
