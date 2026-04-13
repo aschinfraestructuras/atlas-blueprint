@@ -191,7 +191,7 @@ export default function WorkItemsPage() {
   const [deleting,   setDeleting]     = useState(false);
   const [search,     setSearch]       = useState("");
   const [filterDiscipline, setFilterDiscipline] = useState("all");
-  const [viewMode, setViewMode] = useState<"table" | "cards">("table");
+  const [viewMode, setViewMode] = useState<"table" | "cards">("cards");
   const [filterStatus,     setFilterStatus]     = useState("all");
 
   // PPI creation
@@ -627,23 +627,53 @@ export default function WorkItemsPage() {
                               <CollapsibleContent>
                                 {viewMode === "cards" ? (
                                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-1.5 ml-2">
-                                    {obraGroup.items.map((item) => (
-                                      <div key={item.id}
-                                        className="rounded-lg border border-border/60 bg-card p-3 cursor-pointer hover:shadow-md hover:border-primary/20 transition-all"
-                                        onClick={() => navigate(`/work-items/${item.id}`)}>
-                                        <div className="flex items-start justify-between gap-2 mb-1">
-                                          <p className="text-sm font-medium text-foreground truncate">
-                                            {[item.elemento, item.parte].filter(Boolean).join(" · ") || "—"}
+                                    {obraGroup.items.map((item) => {
+                                      const readiness = item.readiness_status ?? "not_ready";
+                                      const borderCls =
+                                        readiness === "blocked"   ? "border-l-destructive" :
+                                        readiness === "ready"     ? "border-l-emerald-500" :
+                                        readiness === "needs_check" ? "border-l-amber-500" :
+                                        item.status === "completed" ? "border-l-emerald-400" :
+                                        "border-l-muted-foreground/30";
+                                      const hasIssues = item.has_open_nc || item.has_pending_ppi || item.has_pending_tests;
+                                      return (
+                                        <div
+                                          key={item.id}
+                                          className={cn(
+                                            "rounded-lg border border-border/60 bg-card p-3 cursor-pointer hover:shadow-md hover:border-primary/20 transition-all border-l-4",
+                                            borderCls
+                                          )}
+                                          onClick={() => navigate(`/work-items/${item.id}`)}
+                                        >
+                                          <div className="flex items-start justify-between gap-2 mb-1">
+                                            <p className="text-sm font-medium text-foreground line-clamp-2 leading-snug">
+                                              {[item.elemento, item.parte].filter(Boolean).join(" · ") || "—"}
+                                            </p>
+                                            <StatusBadge status={item.status} />
+                                          </div>
+                                          <p className="text-xs text-muted-foreground mb-2">
+                                            {t(`workItems.disciplines.${item.disciplina}`, { defaultValue: item.disciplina })}
+                                            {item.pk_inicio != null && ` · ${formatPk(item.pk_inicio, item.pk_fim)}`}
                                           </p>
-                                          <StatusBadge status={item.status} />
+                                          <div className="flex items-center justify-between gap-2">
+                                            <ReadinessBadge item={item} />
+                                            {hasIssues && (
+                                              <div className="flex items-center gap-1">
+                                                {item.has_open_nc && (
+                                                  <span className="text-[9px] font-bold bg-destructive/10 text-destructive rounded px-1 py-0.5">NC</span>
+                                                )}
+                                                {item.has_pending_ppi && (
+                                                  <span className="text-[9px] font-bold bg-primary/10 text-primary rounded px-1 py-0.5">PPI</span>
+                                                )}
+                                                {item.has_pending_tests && (
+                                                  <span className="text-[9px] font-bold bg-amber-500/15 text-amber-700 dark:text-amber-400 rounded px-1 py-0.5">ENS</span>
+                                                )}
+                                              </div>
+                                            )}
+                                          </div>
                                         </div>
-                                        <p className="text-xs text-muted-foreground">
-                                          {t(`workItems.disciplines.${item.disciplina}`, { defaultValue: item.disciplina })}
-                                          {item.pk_inicio != null && ` · ${formatPk(item.pk_inicio, item.pk_fim)}`}
-                                        </p>
-                                        <div className="mt-1.5"><ReadinessBadge item={item} /></div>
-                                      </div>
-                                    ))}
+                                      );
+                                    })}
                                   </div>
                                 ) : (
                                   <div className="rounded-lg border border-border/40 overflow-hidden mt-1.5 ml-2 bg-card">
