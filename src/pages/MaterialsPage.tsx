@@ -278,7 +278,7 @@ export default function MaterialsPage() {
                         </div>
                       </div>
 
-                      {/* Bottom row: unit + status */}
+                      {/* Bottom row: unit + lotes + data */}
                       <div className="flex items-center gap-2 mt-3 pt-2 border-t border-border/40">
                         {m.unit && (
                           <span className="text-[10px] text-muted-foreground bg-muted/50 rounded px-1.5 py-0.5">{m.unit}</span>
@@ -288,8 +288,15 @@ export default function MaterialsPage() {
                             {t("materials.status.archived")}
                           </Badge>
                         )}
+                        {(m as any).lots_count > 0 && (
+                          <span className="text-[10px] text-muted-foreground">
+                            {(m as any).lots_count} lote{(m as any).lots_count !== 1 ? "s" : ""}
+                          </span>
+                        )}
                         <span className="ml-auto text-[10px] text-muted-foreground">
-                          {new Date(m.created_at).toLocaleDateString()}
+                          {(m as any).last_reception_date
+                            ? `Recep. ${new Date((m as any).last_reception_date).toLocaleDateString("pt-PT", { day: "2-digit", month: "2-digit" })}`
+                            : new Date(m.created_at).toLocaleDateString()}
                         </span>
                       </div>
                     </CardContent>

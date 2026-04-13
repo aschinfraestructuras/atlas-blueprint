@@ -102,7 +102,7 @@ function LotThumbnail({ lotId, projectId }: { lotId: string; projectId: string }
         if (cancelled || !data?.length) return;
         const path = data[0].file_path;
         const { data: urlData } = await supabase.storage
-          .from("attachments")
+          .from("qms-files")
           .createSignedUrl(path, 300);
         if (!cancelled && urlData?.signedUrl) setThumbUrl(urlData.signedUrl);
       } catch { /* no photo — that's fine */ }

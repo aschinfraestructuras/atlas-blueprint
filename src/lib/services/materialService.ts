@@ -113,15 +113,29 @@ interface SupplierMaterialLink {
 // ── Service ───────────────────────────────────────────────────────
 export const materialService = {
   async getByProject(projectId: string, includeDeleted = false): Promise<Material[]> {
-    let q = supabase
+    let q = (supabase as any)
       .from("materials")
-      .select("*")
+      .select(`
+        *,
+        material_lots!material_lots_material_id_fkey(id, reception_date, reception_status)
+      `)
       .eq("project_id", projectId)
       .order("created_at", { ascending: false });
     if (!includeDeleted) q = q.eq("is_deleted", false);
     const { data, error } = await q;
     if (error) throw error;
-    return (data ?? []) as unknown as Material[];
+    // Calcular lots_count e last_reception_date client-side a partir dos lotes
+    return ((data ?? []) as any[]).map((m: any) => {
+      const lots = (m.material_lots ?? []).filter((l: any) => !l.is_deleted);
+      const lastDate = lots.reduce((max: string | null, l: any) =>
+        !max || l.reception_date > max ? l.reception_date : max, null);
+      return {
+        ...m,
+        material_lots: undefined, // limpar para não poluir o type
+        lots_count: lots.length,
+        last_reception_date: lastDate,
+      };
+    }) as unknown as Material[];
   },
 
   /** Server-side paginated query */
