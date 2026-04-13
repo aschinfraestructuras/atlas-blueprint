@@ -134,7 +134,7 @@ export default function NonConformitiesPage() {
   const [filterDiscipline, setFilterDiscipline] = useState("all");
   const [dateFrom, setDateFrom]         = useState("");
   const [dateTo, setDateTo]             = useState("");
-  const [viewMode, setViewMode]         = useState<"table" | "cards">("table");
+  const [viewMode, setViewMode]         = useState<"table" | "cards">("cards");
 
   // Dialog
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -602,38 +602,90 @@ export default function NonConformitiesPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {filtered.map(nc => {
             const isOverdue = nc.due_date && new Date(nc.due_date) < new Date() && nc.status !== "closed" && nc.status !== "archived";
+            const isOpen = nc.status !== "closed" && nc.status !== "archived";
+            const detected = new Date((nc as any).detected_at ?? nc.created_at);
+            const agingDays = Math.floor((Date.now() - detected.getTime()) / 86400000);
             const classif = (nc as any).classification;
+
+            const borderColor =
+              nc.status === "closed"   ? "border-l-emerald-400" :
+              isOverdue                ? "border-l-destructive" :
+              nc.severity === "critical" || nc.severity === "major" ? "border-l-primary" :
+              "border-l-muted-foreground/30";
+
+            const severityBg: Record<string, string> = {
+              critical: "bg-destructive/10 text-destructive border-destructive/20",
+              major:    "bg-primary/10 text-primary border-primary/20",
+              minor:    "bg-muted text-muted-foreground border-border",
+              low:      "bg-muted text-muted-foreground border-border",
+            };
+
             return (
-              <div key={nc.id}
-                className={cn("rounded-xl border bg-card p-3 cursor-pointer hover:shadow-md hover:border-primary/20 transition-all active:scale-[0.99]",
-                  isOverdue ? "border-destructive/40" : "border-border")}
-                onClick={() => navigate(`/non-conformities/${nc.id}`)}>
-                <div className="flex items-start justify-between gap-2 mb-1.5">
-                  <div className="min-w-0 flex-1">
-                    <p className="font-mono text-xs text-muted-foreground">{nc.code ?? nc.reference ?? "—"}</p>
-                    <p className="text-sm font-semibold text-foreground truncate mt-0.5">
-                      {nc.title || nc.description}
-                    </p>
+              <div
+                key={nc.id}
+                className={cn(
+                  "rounded-xl border border-border bg-card cursor-pointer hover:shadow-md hover:border-primary/20 transition-all active:scale-[0.99] border-l-4",
+                  borderColor
+                )}
+                onClick={() => navigate(`/non-conformities/${nc.id}`)}
+              >
+                <div className="p-4">
+                  {/* Header */}
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-1.5 mb-0.5">
+                        <p className="font-mono text-[11px] text-muted-foreground">{nc.code ?? nc.reference ?? "—"}</p>
+                        {/* Aging badge */}
+                        {isOpen && (
+                          <span className={cn(
+                            "inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[9px] font-bold",
+                            isOverdue ? "bg-destructive/15 text-destructive" :
+                            agingDays > 30 ? "bg-amber-500/15 text-amber-700 dark:text-amber-400" :
+                            "bg-muted text-muted-foreground"
+                          )}>
+                            <Clock className="h-2.5 w-2.5" />
+                            {agingDays}d
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm font-semibold text-foreground line-clamp-2 leading-snug">
+                        {nc.title || nc.description}
+                      </p>
+                    </div>
+                    <NCStatusBadge status={nc.status} />
                   </div>
-                  <NCStatusBadge status={nc.status} />
-                </div>
-                <div className="flex items-center gap-2 mt-2 flex-wrap">
-                  {classif && (
-                    <Badge variant="secondary" className={cn("text-[10px]",
-                      classif === "maior" ? "bg-destructive/10 text-destructive" :
-                      classif === "menor" ? "bg-amber-500/15 text-amber-600" :
-                      "bg-primary/10 text-primary")}>
-                      {classif}
+
+                  {/* Tags */}
+                  <div className="flex items-center gap-1.5 flex-wrap mt-2">
+                    <Badge variant="outline" className={cn("text-[10px] h-5 px-1.5", severityBg[nc.severity] ?? "bg-muted text-muted-foreground")}>
+                      {t(`nc.severity.${nc.severity}`, { defaultValue: nc.severity })}
                     </Badge>
-                  )}
-                  {isOverdue && (
-                    <Badge variant="destructive" className="text-[10px]">
-                      Prazo vencido
-                    </Badge>
-                  )}
-                  {nc.due_date && !isOverdue && (
-                    <span className="text-[10px] text-muted-foreground">{nc.due_date}</span>
-                  )}
+                    {classif && (
+                      <Badge variant="outline" className={cn("text-[10px] h-5 px-1.5",
+                        classif === "maior" ? "bg-destructive/10 text-destructive border-destructive/20" :
+                        classif === "menor" ? "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-200" :
+                        "bg-primary/10 text-primary border-primary/20")}>
+                        {classif}
+                      </Badge>
+                    )}
+                    {isOverdue && (
+                      <Badge variant="destructive" className="text-[10px] h-5 px-1.5">
+                        Vencida
+                      </Badge>
+                    )}
+                  </div>
+
+                  {/* Rodapé */}
+                  <div className="flex items-center justify-between mt-3 pt-2 border-t border-border/40">
+                    <span className="text-[10px] text-muted-foreground truncate max-w-[120px]">
+                      {nc.responsible || nc.assigned_to || "—"}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground">
+                      {nc.due_date
+                        ? new Date(nc.due_date + "T00:00:00").toLocaleDateString("pt-PT", { day: "2-digit", month: "2-digit" })
+                        : new Date(detected).toLocaleDateString("pt-PT", { day: "2-digit", month: "2-digit" })}
+                    </span>
+                  </div>
                 </div>
               </div>
             );
