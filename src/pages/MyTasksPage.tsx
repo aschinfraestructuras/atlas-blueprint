@@ -456,7 +456,11 @@ export default function MyTasksPage() {
             ) : (
               <div className="space-y-2">
                 {filteredTests.map(td => (
-                  <Card key={td.id} className="hover:bg-muted/30 transition-colors">
+                  <Card
+                    key={td.id}
+                    className="cursor-pointer hover:bg-muted/30 transition-colors"
+                    onClick={() => navigate(`/tests?tab=due&q=${encodeURIComponent(td.test_type)}`)}
+                  >
                     <CardContent className="p-3 flex items-center gap-3">
                       <FlaskConical className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                       <div className="flex-1 min-w-0">
@@ -478,6 +482,7 @@ export default function MyTasksPage() {
                       {td.is_overdue && (
                         <Badge variant="destructive" className="text-[10px]">{t("myTasks.filterOverdue")}</Badge>
                       )}
+                      <ChevronRight className="h-4 w-4 text-muted-foreground/40 flex-shrink-0" />
                     </CardContent>
                   </Card>
                 ))}

@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { useTestDueItems } from "@/hooks/useTestDueItems";
@@ -49,11 +49,19 @@ export function DueTab() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { activeProject } = useProject();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterDisciplina, setFilterDisciplina] = useState("all");
   const [filterOrigin, setFilterOrigin] = useState("all"); // "all" | "lot" | "manual"
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(() => searchParams.get("q") ?? "");
   const [generating, setGenerating] = useState(false);
+
+  // Limpar ?q= da URL após usar — para não persistir na navegação seguinte
+  useEffect(() => {
+    if (searchParams.get("q")) {
+      setSearchParams(prev => { prev.delete("q"); return prev; }, { replace: true });
+    }
+  }, []);
 
   // Waive dialog
   const [waiveId, setWaiveId] = useState<string | null>(null);
