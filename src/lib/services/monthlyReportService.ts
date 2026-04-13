@@ -153,6 +153,7 @@ export const monthlyReportService = {
       .from("monthly_quality_reports")
       .select("*")
       .eq("project_id", projectId)
+      .eq("is_deleted", false)
       .order("reference_month", { ascending: false });
     if (error) throw error;
     return (data ?? []) as MonthlyReport[];
@@ -191,10 +192,17 @@ export const monthlyReportService = {
   },
 
   async deleteDraft(id: string): Promise<void> {
+    const { data: { user } } = await supabase.auth.getUser();
     const { error } = await db
       .from("monthly_quality_reports")
-      .update({ is_deleted: true, updated_at: new Date().toISOString() } as any)
-      .eq("id", id);
+      .update({
+        is_deleted: true,
+        deleted_at: new Date().toISOString(),
+        deleted_by: user?.id ?? null,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", id)
+      .eq("status", "draft"); // garantia extra — só apaga rascunhos
     if (error) throw error;
   },
 
