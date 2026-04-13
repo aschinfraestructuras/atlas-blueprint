@@ -3,6 +3,13 @@
  * Formato esperado do CSV:
  *   codigo_ensaio | data | amostra | localizacao | pk | valor | resultado | notas
  * Mapeamento: codigo_ensaio → tests_catalog.code → test_id (UUID)
+ *
+ * Robusto contra:
+ *  - BOM UTF-8 (Excel PT exporta com \uFEFF)
+ *  - Encoding Windows-1252 (Excel antigo PT/ES)
+ *  - Separadores ; ou , com campos entre aspas
+ *  - Datas DD/MM/YYYY e YYYY-MM-DD
+ *  - Linhas em branco e espaços extra
  */
 
 import { useState, useCallback, useRef } from "react";
@@ -19,6 +26,8 @@ import {
   Upload, FileSpreadsheet, CheckCircle2, XCircle,
   AlertTriangle, Loader2, Download,
 } from "lucide-react";
+
+const MAX_ROWS = 1000;
 
 interface ParsedRow {
   rowNum: number;
@@ -42,34 +51,119 @@ interface ImportResult {
   errors: string[];
 }
 
+// ── Leitura de ficheiro com fallback de encoding ──────────────────────────────
+function readFileText(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    // Tentamos UTF-8 primeiro; se falhar (caracteres de substituição), tentamos windows-1252
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const text = (e.target?.result as string) ?? "";
+      // Heurística: se o texto tiver muitos caracteres de substituição (0xFFFD),
+      // provavelmente é Windows-1252 — relemos com esse encoding
+      const replacements = (text.match(/\uFFFD/g) ?? []).length;
+      if (replacements > 3) {
+        const r2 = new FileReader();
+        r2.onload = (e2) => resolve((e2.target?.result as string) ?? "");
+        r2.onerror = reject;
+        r2.readAsText(file, "windows-1252");
+      } else {
+        resolve(text);
+      }
+    };
+    reader.onerror = reject;
+    reader.readAsText(file, "utf-8");
+  });
+}
+
+// ── Normalizar data para YYYY-MM-DD (Postgres) ────────────────────────────────
+function normalizeDate(raw: string): string | null {
+  const s = raw.trim();
+  if (!s) return null;
+  // Já está em YYYY-MM-DD
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  // DD/MM/YYYY ou DD-MM-YYYY
+  const dmySlash = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+  if (dmySlash) {
+    const [, d, m, y] = dmySlash;
+    return `${y}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`;
+  }
+  // DD/MM/YY
+  const dmyShort = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2})$/);
+  if (dmyShort) {
+    const [, d, m, y] = dmyShort;
+    const year = parseInt(y) >= 50 ? `19${y}` : `20${y}`;
+    return `${year}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`;
+  }
+  return null;
+}
+
+// ── Parser CSV robusto (RFC 4180 + separador automático) ──────────────────────
+function splitCSVLine(line: string, sep: string): string[] {
+  const result: string[] = [];
+  let cur = "";
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (inQuotes) {
+      if (ch === '"') {
+        // aspas duplas dentro de campo com aspas → aspas literal
+        if (line[i + 1] === '"') { cur += '"'; i++; }
+        else inQuotes = false;
+      } else {
+        cur += ch;
+      }
+    } else {
+      if (ch === '"') {
+        inQuotes = true;
+      } else if (ch === sep) {
+        result.push(cur.trim());
+        cur = "";
+      } else {
+        cur += ch;
+      }
+    }
+  }
+  result.push(cur.trim());
+  return result;
+}
+
 function parseCSV(text: string): ParsedRow[] {
-  const lines = text.trim().split(/\r?\n/);
+  // Remover BOM UTF-8 (\uFEFF) que o Excel PT coloca no início
+  const clean = text.replace(/^\uFEFF/, "").replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+  const lines = clean.split("\n").filter(l => l.trim());
   if (lines.length < 2) return [];
 
-  // Detectar separador (ponto e vírgula ou vírgula)
+  // Detectar separador: ponto e vírgula tem precedência (padrão PT/ES)
   const sep = lines[0].includes(";") ? ";" : ",";
-  const headers = lines[0].split(sep).map(h => h.trim().toLowerCase()
-    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-    .replace(/\s+/g, "_")
+
+  // Normalizar cabeçalhos: lowercase + sem acentos + sem BOM residual
+  const headers = splitCSVLine(lines[0], sep).map(h =>
+    h.replace(/^\uFEFF/, "").trim().toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s+/g, "_")
   );
 
-  return lines.slice(1).filter(l => l.trim()).map((line, i) => {
-    const cols = line.split(sep).map(c => c.trim().replace(/^["']|["']$/g, ""));
-    const get = (key: string) => {
+  const dataLines = lines.slice(1).filter(l => l.trim());
+  const capped = dataLines.slice(0, MAX_ROWS);
+
+  return capped.map((line, i) => {
+    const cols = splitCSVLine(line, sep);
+
+    const get = (key: string): string => {
       const aliases: Record<string, string[]> = {
-        codigo_ensaio: ["codigo_ensaio","code","codigo","ensaio","test_code","tipo"],
-        data:          ["data","date","data_ensaio","data_resultado"],
-        amostra:       ["amostra","sample","sample_ref","ref"],
-        localizacao:   ["localizacao","location","local","zona"],
-        pk:            ["pk","pk_inicio","localizacao_pk"],
-        valor:         ["valor","value","result_value","resultado_valor"],
-        resultado:     ["resultado","result","pass_fail","conformidade"],
-        notas:         ["notas","notes","obs","observacoes"],
+        codigo_ensaio: ["codigo_ensaio","code","codigo","ensaio","test_code","tipo","type"],
+        data:          ["data","date","data_ensaio","data_resultado","data_colheita"],
+        amostra:       ["amostra","sample","sample_ref","ref","referencia","id_amostra"],
+        localizacao:   ["localizacao","location","local","zona","troco","sector"],
+        pk:            ["pk","pk_inicio","localizacao_pk","prog_km","km"],
+        valor:         ["valor","value","result_value","resultado_valor","medicao","medida"],
+        resultado:     ["resultado","result","pass_fail","conformidade","status","estado"],
+        notas:         ["notas","notes","obs","observacoes","comentarios","remarks"],
       };
       const keys = aliases[key] ?? [key];
       for (const k of keys) {
         const idx = headers.indexOf(k);
-        if (idx >= 0) return cols[idx] ?? "";
+        if (idx >= 0 && idx < cols.length) return cols[idx] ?? "";
       }
       return "";
     };
@@ -90,9 +184,10 @@ function parseCSV(text: string): ParsedRow[] {
 
 function normalizePassFail(val?: string): "pass" | "fail" | undefined {
   if (!val) return undefined;
-  const v = val.toLowerCase().trim();
-  if (["pass","ok","conforme","aprovado","s","sim","yes","1","true"].includes(v)) return "pass";
-  if (["fail","nok","nao_conforme","reprovado","n","nao","no","0","false"].includes(v)) return "fail";
+  const v = val.toLowerCase().trim()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  if (["pass","ok","conforme","aprovado","s","sim","yes","1","true","c"].includes(v)) return "pass";
+  if (["fail","nok","nao conforme","nao_conforme","reprovado","n","nao","no","0","false","nc"].includes(v)) return "fail";
   return undefined;
 }
 
@@ -139,7 +234,7 @@ export function TestResultsCSVImporter({
   }, []);
 
   const handleFile = async (file: File) => {
-    const text = await file.text();
+    const text = await readFileText(file);
     const parsed = parseCSV(text);
     if (parsed.length === 0) return;
 
@@ -149,11 +244,15 @@ export function TestResultsCSVImporter({
       if (!row.codigo_ensaio) return { ...row, error: `Linha ${row.rowNum}: código de ensaio vazio` };
       if (!row.data) return { ...row, error: `Linha ${row.rowNum}: data vazia` };
 
+      // Normalizar data para YYYY-MM-DD
+      const dataNorm = normalizeDate(row.data);
+      if (!dataNorm) return { ...row, error: `Linha ${row.rowNum}: data inválida "${row.data}" (use YYYY-MM-DD ou DD/MM/YYYY)` };
+
       const key = row.codigo_ensaio.trim().toLowerCase();
       const match = catalog.get(key);
       if (!match) return { ...row, error: `Linha ${row.rowNum}: código "${row.codigo_ensaio}" não encontrado no catálogo` };
 
-      return { ...row, test_id: match.id, test_name: match.name };
+      return { ...row, data: dataNorm, test_id: match.id, test_name: match.name };
     });
 
     setRows(resolved);
@@ -242,7 +341,8 @@ export function TestResultsCSVImporter({
                   <p className="text-xs text-muted-foreground mt-2">
                     • <strong>codigo_ensaio</strong>: código do catálogo (ex: PE-B01) ou nome do ensaio<br />
                     • <strong>data</strong>: YYYY-MM-DD ou DD/MM/YYYY<br />
-                    • <strong>resultado</strong>: OK/NOK, Conforme/Não conforme, pass/fail
+                    • <strong>resultado</strong>: OK/NOK, Conforme/Não conforme, pass/fail<br />
+                    • Separador <strong>;</strong> ou <strong>,</strong> — máx. {MAX_ROWS} linhas — exportação directa do Excel PT suportada
                   </p>
                   <Button
                     variant="link" size="sm" className="h-auto p-0 mt-2 text-xs"
@@ -312,7 +412,10 @@ export function TestResultsCSVImporter({
                         <td className="px-2 py-1">
                           {row.error ? (
                             <span className="text-destructive flex items-center gap-1">
-                              <XCircle className="h-3 w-3" /> {row.error.split(":")[1]?.trim() ?? "erro"}
+                              <XCircle className="h-3 w-3 flex-shrink-0" />
+                              <span className="truncate max-w-[180px]" title={row.error}>
+                                {row.error.replace(/^Linha \d+:\s*/, "")}
+                              </span>
                             </span>
                           ) : (
                             <span className="text-green-600 flex items-center gap-1">
