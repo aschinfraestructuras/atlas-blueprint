@@ -7,16 +7,18 @@ import { useProjectRole } from "@/hooks/useProjectRole";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { materialService } from "@/lib/services/materialService";
 import { exportMaterialsListPdf } from "@/lib/services/materialExportService";
-import { Package, Plus, Pencil, Search, Archive, RotateCcw, Eye, Trash2, PieChart as PieChartIcon } from "lucide-react";
 import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from "@/components/ui/table";
+  Package, Plus, Pencil, Search, Archive, RotateCcw, Eye, Trash2,
+  PieChart as PieChartIcon, ShieldCheck, Clock, AlertTriangle, Ban,
+  ClipboardList,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { EmptyState } from "@/components/EmptyState";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import {
@@ -31,11 +33,14 @@ import { toast } from "@/lib/utils/toast";
 import { cn } from "@/lib/utils";
 import type { Material } from "@/lib/services/materialService";
 
-
-const STATUS_COLORS: Record<string, string> = {
-  active: "bg-primary/15 text-primary",
-  discontinued: "bg-accent text-accent-foreground",
-  archived: "bg-muted text-muted-foreground",
+const APPROVAL_BADGE: Record<string, { bg: string; icon: typeof ShieldCheck }> = {
+  approved: { bg: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400", icon: ShieldCheck },
+  pending: { bg: "bg-muted text-muted-foreground", icon: Clock },
+  submitted: { bg: "bg-amber-500/15 text-amber-700 dark:text-amber-400", icon: Clock },
+  in_review: { bg: "bg-primary/15 text-primary", icon: Clock },
+  rejected: { bg: "bg-destructive/10 text-destructive", icon: Ban },
+  conditional: { bg: "bg-amber-500/15 text-amber-700 dark:text-amber-400", icon: AlertTriangle },
+  quarantine: { bg: "bg-orange-500/15 text-orange-700 dark:text-orange-400", icon: AlertTriangle },
 };
 
 const CATEGORIES = [
@@ -53,11 +58,9 @@ export default function MaterialsPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingMaterial, setEditingMaterial] = useState<Material | null>(null);
   const [search, setSearch] = useState("");
-  const [filterStatus, setFilterStatus] = useState("all");
   const [filterCategory, setFilterCategory] = useState("all");
-  const [activeTab, setActiveTab] = useState("materials");
-
   const [filterApproval, setFilterApproval] = useState("all");
+  const [activeTab, setActiveTab] = useState("materials");
   const [deleteTarget, setDeleteTarget] = useState<Material | null>(null);
 
   const filtered = useMemo(() => {
@@ -67,17 +70,15 @@ export default function MaterialsPage() {
       result = result.filter(m =>
         m.name.toLowerCase().includes(q) ||
         m.code.toLowerCase().includes(q) ||
-        (m.specification ?? "").toLowerCase().includes(q) ||
-        (m.normative_refs ?? "").toLowerCase().includes(q)
+        (m.specification ?? "").toLowerCase().includes(q)
       );
     }
-    if (filterStatus !== "all") result = result.filter(m => m.status === filterStatus);
     if (filterCategory !== "all") result = result.filter(m => m.category === filterCategory);
     if (filterApproval !== "all") result = result.filter(m =>
-      (m as any).pame_status === filterApproval || m.approval_status === filterApproval
+      m.approval_status === filterApproval || (m as any).pame_status === filterApproval
     );
     return result;
-  }, [materials, search, filterStatus, filterCategory, filterApproval]);
+  }, [materials, search, filterCategory, filterApproval]);
 
   if (!activeProject) return <NoProjectBanner />;
 
@@ -113,12 +114,47 @@ export default function MaterialsPage() {
     t(`materials.status.${m.status}`),
   ]);
 
+  // KPI counts
+  const approvedCount = materials.filter(m => m.approval_status === "approved").length;
+  const pendingCount = materials.filter(m => ["pending", "submitted", "in_review"].includes(m.approval_status)).length;
+  const quarantineCount = materials.filter(m => (m as any).pame_status === "quarantine" || m.approval_status === "rejected").length;
+
+  const getApprovalInfo = (m: Material) => {
+    const status = (m as any).pame_status || m.approval_status || "pending";
+    return APPROVAL_BADGE[status] ?? APPROVAL_BADGE.pending;
+  };
+
   return (
-    <div className="space-y-6 max-w-6xl mx-auto">
+    <div className="space-y-5 max-w-6xl mx-auto pb-24 lg:pb-6">
       <div className="flex items-center justify-between">
         <div className="space-y-1">
           <h1 className="text-2xl font-bold tracking-tight text-foreground">{t("pages.materials.title")}</h1>
           <p className="text-sm text-muted-foreground">{t("pages.materials.subtitle")}</p>
+        </div>
+        <div className="hidden sm:flex items-center gap-2">
+          <ReportExportMenu
+            options={[
+              {
+                label: "CSV", icon: "csv" as const,
+                action: () => {
+                  const csv = [exportHeaders.join(";"), ...exportRows.map(r => r.join(";"))].join("\n");
+                  const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement("a"); a.href = url; a.download = `MAT_${activeProject.code ?? "PROJ"}.csv`; a.click(); URL.revokeObjectURL(url);
+                },
+              },
+              {
+                label: "PDF", icon: "pdf" as const,
+                action: () => exportMaterialsListPdf(filtered, activeProject.code ?? "PROJ", logoBase64, t),
+              },
+            ]}
+          />
+          {canCreate && (
+            <Button onClick={handleNew} size="sm" className="gap-1.5">
+              <Plus className="h-3.5 w-3.5" />
+              {t("materials.newMaterial")}
+            </Button>
+          )}
         </div>
       </div>
 
@@ -128,268 +164,150 @@ export default function MaterialsPage() {
           <TabsTrigger value="pame">{t("materials.pame.title", { defaultValue: "Plano PAME" })}</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="materials" className="space-y-6 mt-4">
-          <div className="flex items-center justify-end gap-2">
-            <ReportExportMenu
-              options={[
-                {
-                  label: "CSV", icon: "csv" as const,
-                  action: () => {
-                    const csv = [exportHeaders.join(";"), ...exportRows.map(r => r.join(";"))].join("\n");
-                    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement("a"); a.href = url; a.download = `MAT_${activeProject.code ?? "PROJ"}.csv`; a.click(); URL.revokeObjectURL(url);
-                  },
-                },
-                {
-                  label: "PDF", icon: "pdf" as const,
-                  action: () => {
-                    exportMaterialsListPdf(filtered, activeProject.code ?? "PROJ", logoBase64, t);
-                  },
-                },
-              ]}
-            />
-            {canCreate && (
-              <Button onClick={handleNew} size="sm" className="gap-1.5">
-                <Plus className="h-3.5 w-3.5" />
-                {t("materials.newMaterial")}
-              </Button>
-            )}
+        <TabsContent value="materials" className="space-y-5 mt-4">
+          {/* ── KPI Cards ── */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {[
+              { label: t("materials.kpi.total"), value: kpis?.materials_total ?? materials.length, icon: Package, color: "text-foreground" },
+              { label: t("materials.approval.statuses.approved", { defaultValue: "Aprovados" }), value: approvedCount, icon: ShieldCheck, color: "text-emerald-600 dark:text-emerald-400" },
+              { label: t("materials.approval.statuses.pending", { defaultValue: "Pendentes" }), value: pendingCount, icon: Clock, color: "text-amber-600 dark:text-amber-400" },
+              { label: t("materials.reception.status.quarantine", { defaultValue: "Quarentena" }), value: quarantineCount, icon: AlertTriangle, color: "text-orange-600 dark:text-orange-400" },
+            ].map((k, i) => (
+              <Card key={i} className="border border-border/60 bg-card shadow-sm">
+                <CardContent className="p-4 flex items-center gap-3">
+                  <div className={cn("rounded-xl bg-muted/60 p-2.5", k.color)}>
+                    <k.icon className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{k.label}</p>
+                    <p className={cn("text-2xl font-black tabular-nums", k.color)}>{k.value}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
 
-          {/* KPI Cards + Charts */}
-          {kpis && (
-            <>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-                {[
-                  { label: t("materials.kpi.total"), value: kpis.materials_total },
-                  { label: t("materials.kpi.active"), value: kpis.materials_active },
-                  { label: t("materials.kpi.discontinued"), value: kpis.materials_discontinued },
-                  { label: t("materials.kpi.docsExpired"), value: kpis.materials_with_expired_docs },
-                  { label: t("materials.kpi.withOpenNC"), value: kpis.materials_with_open_nc },
-                  { label: t("materials.kpi.nonconformTests"), value: kpis.materials_with_nonconform_tests_30d },
-                ].map((k, i) => (
-                  <Card key={i} className="border-0 bg-card shadow-card">
-                    <CardContent className="p-4 text-center">
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{k.label}</p>
-                      <p className="text-2xl font-black tabular-nums mt-1 text-foreground">{k.value}</p>
-                    </CardContent>
-                  </Card>
-                ))}
+          {/* ── Sticky Filter Bar ── */}
+          <div className="sticky top-0 z-10 -mx-1 px-1 py-2 bg-background/95 backdrop-blur-sm">
+            <FilterBar>
+              <div className="relative flex-1 min-w-[180px]">
+                <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
+                <Input placeholder={t("materials.searchPlaceholder")} value={search} onChange={e => setSearch(e.target.value)} className="pl-8 h-9 text-sm" />
               </div>
-
-              {/* Distribution charts */}
-              {materials.length > 0 && (
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <Card className="border shadow-none">
-                    <CardContent className="pt-4 pb-4 px-4">
-                      <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground flex items-center gap-1.5 mb-3">
-                        <PieChartIcon className="h-3.5 w-3.5" />{t("materials.form.category")}
-                      </p>
-                      {(() => {
-                        const catMap: Record<string, number> = {};
-                        materials.forEach(m => { catMap[m.category] = (catMap[m.category] ?? 0) + 1; });
-                        const entries = Object.entries(catMap).sort((a, b) => b[1] - a[1]).slice(0, 8);
-                        const maxVal = Math.max(...entries.map(e => e[1]), 1);
-                        const COLORS = [
-                          "hsl(var(--primary))", "hsl(var(--chart-2))", "hsl(var(--chart-3))",
-                          "hsl(var(--chart-4))", "hsl(var(--chart-5))", "hsl(var(--accent-foreground))",
-                          "hsl(var(--muted-foreground))", "hsl(var(--chart-1))",
-                        ];
-                        return (
-                          <div className="space-y-2">
-                            {entries.map(([k, v], i) => (
-                              <div key={k} className="flex items-center gap-2">
-                                <span className="text-xs text-muted-foreground w-24 truncate text-right">{t(`materials.categories.${k}`, { defaultValue: k })}</span>
-                                <div className="flex-1 h-5 bg-muted/30 rounded-full overflow-hidden">
-                                  <div
-                                    className="h-full rounded-full transition-all duration-500 ease-out"
-                                    style={{ width: `${(v / maxVal) * 100}%`, backgroundColor: COLORS[i % COLORS.length] }}
-                                  />
-                                </div>
-                                <span className="text-xs font-bold tabular-nums text-foreground w-8 text-right">{v}</span>
-                              </div>
-                            ))}
-                          </div>
-                        );
-                      })()}
-                    </CardContent>
-                  </Card>
-                  <Card className="border shadow-none">
-                    <CardContent className="pt-4 pb-4 px-4">
-                      <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground flex items-center gap-1.5 mb-3">
-                        <Package className="h-3.5 w-3.5" />{t("materials.approval.title", { defaultValue: "Aprovação MAP/MAS" })}
-                      </p>
-                      {(() => {
-                        const statusMap: Record<string, number> = {};
-                        materials.forEach(m => { statusMap[m.approval_status] = (statusMap[m.approval_status] ?? 0) + 1; });
-                        const entries = Object.entries(statusMap).sort((a, b) => b[1] - a[1]);
-                        const total = entries.reduce((s, e) => s + e[1], 0) || 1;
-                        const STATUS_CHART_COLORS: Record<string, string> = {
-                          pending: "hsl(var(--muted-foreground))",
-                          submitted: "hsl(var(--chart-4))",
-                          in_review: "hsl(var(--primary))",
-                          approved: "hsl(var(--chart-2))",
-                          rejected: "hsl(var(--destructive))",
-                          conditional: "hsl(var(--chart-5))",
-                        };
-                        return (
-                          <div className="space-y-3">
-                            {/* Stacked bar */}
-                            <div className="h-6 rounded-full overflow-hidden flex">
-                              {entries.map(([k, v]) => (
-                                <div
-                                  key={k}
-                                  className="h-full transition-all duration-500"
-                                  style={{
-                                    width: `${(v / total) * 100}%`,
-                                    backgroundColor: STATUS_CHART_COLORS[k] ?? "hsl(var(--muted-foreground))",
-                                  }}
-                                  title={`${t(`materials.approval.statuses.${k}`, { defaultValue: k })}: ${v}`}
-                                />
-                              ))}
-                            </div>
-                            {/* Legend */}
-                            <div className="flex flex-wrap gap-x-4 gap-y-1">
-                              {entries.map(([k, v]) => (
-                                <div key={k} className="flex items-center gap-1.5">
-                                  <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: STATUS_CHART_COLORS[k] ?? "hsl(var(--muted-foreground))" }} />
-                                  <span className="text-xs text-muted-foreground">{t(`materials.approval.statuses.${k}`, { defaultValue: k })}</span>
-                                  <span className="text-xs font-bold tabular-nums text-foreground">{v}</span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        );
-                      })()}
-                    </CardContent>
-                  </Card>
-                </div>
-              )}
-            </>
-          )}
-
-          {/* Filters */}
-          <FilterBar>
-            <div className="relative flex-1 min-w-[200px]">
-              <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
-              <Input placeholder={t("materials.searchPlaceholder")} value={search} onChange={e => setSearch(e.target.value)} className="pl-8 h-9 text-sm" />
-            </div>
-            <Select value={filterStatus} onValueChange={setFilterStatus}>
-              <SelectTrigger className="w-[140px] h-9 text-sm"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t("materials.filters.allStatuses")}</SelectItem>
-                <SelectItem value="active">{t("materials.status.active")}</SelectItem>
-                <SelectItem value="discontinued">{t("materials.status.discontinued")}</SelectItem>
-                <SelectItem value="archived">{t("materials.status.archived")}</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={filterCategory} onValueChange={setFilterCategory}>
-              <SelectTrigger className="w-[150px] h-9 text-sm"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t("materials.filters.allCategories")}</SelectItem>
-                {CATEGORIES.map(c => (
-                  <SelectItem key={c} value={c}>{t(`materials.categories.${c}`)}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={filterApproval} onValueChange={setFilterApproval}>
-              <SelectTrigger className="w-[160px] h-9 text-sm"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t("materials.filters.allApprovals")}</SelectItem>
-                <SelectItem value="pending">{t("materials.approval.statuses.pending")}</SelectItem>
-                <SelectItem value="submitted">{t("materials.approval.statuses.submitted")}</SelectItem>
-                <SelectItem value="in_review">{t("materials.approval.statuses.in_review")}</SelectItem>
-                <SelectItem value="approved">{t("materials.approval.statuses.approved")}</SelectItem>
-                <SelectItem value="rejected">{t("materials.approval.statuses.rejected")}</SelectItem>
-                <SelectItem value="conditional">{t("materials.approval.statuses.conditional")}</SelectItem>
-              </SelectContent>
-            </Select>
-          </FilterBar>
+              <Select value={filterApproval} onValueChange={setFilterApproval}>
+                <SelectTrigger className="w-[150px] h-9 text-sm"><SelectValue placeholder={t("common.status")} /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{t("materials.filters.allApprovals", { defaultValue: "Todos estados" })}</SelectItem>
+                  <SelectItem value="approved">{t("materials.approval.statuses.approved")}</SelectItem>
+                  <SelectItem value="pending">{t("materials.approval.statuses.pending")}</SelectItem>
+                  <SelectItem value="submitted">{t("materials.approval.statuses.submitted")}</SelectItem>
+                  <SelectItem value="in_review">{t("materials.approval.statuses.in_review")}</SelectItem>
+                  <SelectItem value="rejected">{t("materials.approval.statuses.rejected")}</SelectItem>
+                  <SelectItem value="conditional">{t("materials.approval.statuses.conditional")}</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={filterCategory} onValueChange={setFilterCategory}>
+                <SelectTrigger className="w-[150px] h-9 text-sm"><SelectValue placeholder={t("materials.form.category")} /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{t("materials.filters.allCategories")}</SelectItem>
+                  {CATEGORIES.map(c => (
+                    <SelectItem key={c} value={c}>{t(`materials.categories.${c}`)}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </FilterBar>
+          </div>
 
           {error && (
             <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">{error}</div>
           )}
 
           {loading ? (
-            <div className="rounded-xl border border-border overflow-hidden divide-y divide-border">
-              {Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="flex items-center gap-4 px-5 py-3">
-                  <Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-16" /><Skeleton className="h-4 w-16" />
-                </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <Skeleton key={i} className="h-32 rounded-xl" />
               ))}
             </div>
           ) : filtered.length === 0 ? (
             <EmptyState icon={Package} subtitleKey="emptyState.materials.subtitle" ctaKey="materials.newMaterial" onCta={handleNew} />
           ) : (
-            <div className="rounded-xl border border-border overflow-hidden">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-muted/40">
-                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("materials.table.code")}</TableHead>
-                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.name")}</TableHead>
-                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("materials.form.category")}</TableHead>
-                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("materials.form.specification")}</TableHead>
-                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("materials.form.unit")}</TableHead>
-                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.status")}</TableHead>
-                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("materials.approval.title", { defaultValue: "Aprovação" })}</TableHead>
-                     <TableHead className="w-28" />
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filtered.map(m => (
-                    <TableRow key={m.id} className="hover:bg-muted/20 transition-colors cursor-pointer" onClick={() => navigate(`/materials/${m.id}`)}>
-                      <TableCell className="font-mono text-xs text-muted-foreground">{m.code}</TableCell>
-                      <TableCell className="font-medium text-sm text-foreground">
-                        <div className="flex items-center gap-2">
-                          <Package className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-                          {m.name}
-                          {(m.pame_status === "rejected" || (m as any).approval_status === "rejected") && (
-                            <span title="Material em quarentena" className="text-destructive text-xs">⛔</span>
-                          )}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {filtered.map(m => {
+                const approvalInfo = getApprovalInfo(m);
+                const ApprovalIcon = approvalInfo.icon;
+                return (
+                  <Card
+                    key={m.id}
+                    className="border border-border/60 bg-card hover:shadow-md transition-all cursor-pointer active:scale-[0.98] group"
+                    onClick={() => navigate(`/materials/${m.id}`)}
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-mono text-[11px] text-muted-foreground">{m.code}</span>
+                            <Badge variant="secondary" className={cn("text-[10px] px-1.5 py-0 h-5 gap-1", approvalInfo.bg)}>
+                              <ApprovalIcon className="h-3 w-3" />
+                              {t(`materials.approval.statuses.${(m as any).pame_status || m.approval_status}`, { defaultValue: m.approval_status })}
+                            </Badge>
+                          </div>
+                          <h3 className="text-sm font-semibold text-foreground truncate">{m.name}</h3>
+                          <p className="text-xs text-muted-foreground mt-0.5">
+                            {t(`materials.categories.${m.category}`, { defaultValue: m.category })}
+                            {m.specification ? ` · ${m.specification}` : ""}
+                          </p>
                         </div>
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">{t(`materials.categories.${m.category}`, { defaultValue: m.category })}</TableCell>
-                      <TableCell className="text-sm text-muted-foreground">{m.specification ?? "—"}</TableCell>
-                      <TableCell className="text-sm text-muted-foreground">{m.unit ?? "—"}</TableCell>
-                      <TableCell>
-                         <Badge variant="secondary" className={cn("text-xs", STATUS_COLORS[m.status] ?? "")}>{t(`materials.status.${m.status}`)}</Badge>
-                       </TableCell>
-                       <TableCell>
-                         <Badge variant="secondary" className={cn("text-xs",
-                           m.approval_status === "approved" ? "bg-chart-2/15 text-chart-2" :
-                           m.approval_status === "rejected" ? "bg-destructive/10 text-destructive" :
-                           m.approval_status === "conditional" ? "bg-amber-500/15 text-amber-600" :
-                           m.approval_status === "in_review" ? "bg-primary/15 text-primary" : ""
-                         )}>{t(`materials.approval.statuses.${m.approval_status}`, { defaultValue: m.approval_status })}</Badge>
-                       </TableCell>
-                       <TableCell>
-                        <div className="flex gap-1" onClick={e => e.stopPropagation()}>
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => navigate(`/materials/${m.id}`)} title={t("common.view")}>
-                            <Eye className="h-3.5 w-3.5" />
-                          </Button>
+
+                        {/* Action buttons */}
+                        <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity" onClick={e => e.stopPropagation()}>
                           {canEdit && (
-                            <>
-                              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEdit(m)} title={t("common.edit")}>
-                                <Pencil className="h-3.5 w-3.5" />
-                              </Button>
-                              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleArchive(m)} title={m.status === "archived" ? t("materials.actions.activate") : t("materials.actions.archive")}>
-                                {m.status === "archived" ? <RotateCcw className="h-3.5 w-3.5" /> : <Archive className="h-3.5 w-3.5" />}
-                              </Button>
-                            </>
+                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEdit(m)}>
+                              <Pencil className="h-3.5 w-3.5" />
+                            </Button>
+                          )}
+                          {canEdit && (
+                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleArchive(m)}>
+                              {m.status === "archived" ? <RotateCcw className="h-3.5 w-3.5" /> : <Archive className="h-3.5 w-3.5" />}
+                            </Button>
                           )}
                           {(canDelete || isManager || isAdmin) && (
-                            <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => setDeleteTarget(m)} title={t("common.delete")}>
+                            <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => setDeleteTarget(m)}>
                               <Trash2 className="h-3.5 w-3.5" />
                             </Button>
                           )}
                         </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                      </div>
+
+                      {/* Bottom row: unit + status */}
+                      <div className="flex items-center gap-2 mt-3 pt-2 border-t border-border/40">
+                        {m.unit && (
+                          <span className="text-[10px] text-muted-foreground bg-muted/50 rounded px-1.5 py-0.5">{m.unit}</span>
+                        )}
+                        {m.status === "archived" && (
+                          <Badge variant="secondary" className="text-[10px] bg-muted text-muted-foreground">
+                            {t("materials.status.archived")}
+                          </Badge>
+                        )}
+                        <span className="ml-auto text-[10px] text-muted-foreground">
+                          {new Date(m.created_at).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
+          )}
+
+          {/* FAB — Registar Recepção (mobile) */}
+          {canCreate && (
+            <button
+              onClick={handleNew}
+              className="fixed bottom-20 right-4 z-50 lg:hidden h-14 w-14 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center active:scale-95 transition-transform"
+              aria-label={t("materials.newMaterial")}
+            >
+              <Plus className="h-6 w-6" />
+            </button>
           )}
 
           <MaterialFormDialog open={dialogOpen} onOpenChange={setDialogOpen} material={editingMaterial} onSuccess={refetch} />
