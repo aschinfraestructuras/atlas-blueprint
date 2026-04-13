@@ -80,7 +80,7 @@ export function MaterialReceptionDialog({ open, onOpenChange, projectId, materia
   // Campos do formulário
   const [receptionDate, setReceptionDate] = useState(today());
   const [supplierId, setSupplierId] = useState("");
-  const [workItemId, setWorkItemId] = useState("");
+  const [workItemId, setWorkItemId] = useState("__none__");
   const [pameCode, setPameCode] = useState("");
   const [deliveryNoteRef, setDeliveryNoteRef] = useState("");
   const [lotRef, setLotRef] = useState("");
@@ -106,7 +106,7 @@ export function MaterialReceptionDialog({ open, onOpenChange, projectId, materia
     if (!open) return;
     setReceptionDate(today());
     setSupplierId(material.supplier_id ?? "");
-    setWorkItemId("");
+    setWorkItemId("__none__");
     setPameCode(material.pame_code ?? "");
     setDeliveryNoteRef(""); setLotRef(""); setQuantityReceived("");
     setUnit(material.unit ?? "");
@@ -175,7 +175,7 @@ export function MaterialReceptionDialog({ open, onOpenChange, projectId, materia
           project_id: projectId,
           material_id: material.id,
           supplier_id: supplierId,
-          work_item_id: workItemId || null,
+          work_item_id: workItemId === "__none__" ? null : workItemId,
           lot_code: generatedCode,
           reception_date: receptionDate,
           delivery_note_ref: deliveryNoteRef.trim(),
@@ -215,7 +215,7 @@ export function MaterialReceptionDialog({ open, onOpenChange, projectId, materia
         try {
           const { data: dueCount } = await (supabase as any).rpc("fn_lot_received_create_due_tests", {
             p_lot_id: lotId,
-            p_work_item_id: workItemId || null,
+            p_work_item_id: workItemId === "__none__" ? null : workItemId,
           });
           dueCreated = Number(dueCount ?? 0);
         } catch { /* regras de ensaio podem não existir — não bloqueia */ }
@@ -306,7 +306,7 @@ export function MaterialReceptionDialog({ open, onOpenChange, projectId, materia
                   <SelectValue placeholder={t("common.none", { defaultValue: "Sem associação" })} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">{t("common.none", { defaultValue: "Sem associação" })}</SelectItem>
+                  <SelectItem value="__none__">{t("common.none", { defaultValue: "Sem associação" })}</SelectItem>
                   {workItems.map(wi => (
                     <SelectItem key={wi.id} value={wi.id}>
                       {wi.sector} {wi.disciplina ? `· ${wi.disciplina}` : ""} {wi.elemento ? `— ${wi.elemento}` : ""}
