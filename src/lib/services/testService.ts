@@ -374,6 +374,18 @@ export const testService = {
       module: "tests",
       diff: { test_id: input.test_id, date: input.date, status_workflow: wfStatus },
     });
+
+    // Fechar ciclo: se existir um test_due_item pendente para este tipo de ensaio,
+    // marca-o como done e liga ao resultado criado (não bloqueia em caso de erro)
+    try {
+      await (supabase as any).rpc("fn_complete_due_from_result", {
+        p_test_result_id: (data as unknown as TestResult).id,
+        p_project_id:     input.project_id,
+        p_test_id:        input.test_id,
+        p_work_item_id:   input.work_item_id ?? null,
+      });
+    } catch { /* silencioso — não bloqueia criação do resultado */ }
+
     return data as unknown as TestResult;
   },
 
