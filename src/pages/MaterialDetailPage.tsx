@@ -344,20 +344,22 @@ export default function MaterialDetailPage() {
       )}
 
       <Tabs defaultValue="summary" className="space-y-4">
-        <TabsList className="bg-muted/50 flex-wrap">
-          <TabsTrigger value="summary">{t("materials.detail.tabs.summary")}</TabsTrigger>
-          <TabsTrigger value="approval">{t("materials.detail.tabs.approval")}</TabsTrigger>
-          <TabsTrigger value="reception">{t("materials.detail.tabs.reception")}</TabsTrigger>
-          <TabsTrigger value="suppliers">{t("materials.detail.tabs.suppliers")}</TabsTrigger>
-          <TabsTrigger value="documents">{t("materials.detail.tabs.documents")}</TabsTrigger>
-          <TabsTrigger value="tests">{t("materials.detail.tabs.tests")}</TabsTrigger>
-          <TabsTrigger value="ncs">{t("materials.detail.tabs.ncs")}</TabsTrigger>
-          <TabsTrigger value="workItems">{t("materials.detail.tabs.workItems")}</TabsTrigger>
-          <TabsTrigger value="usage">{t("materials.usageTab")}</TabsTrigger>
-          <TabsTrigger value="recycled">{t("recycled.title", { defaultValue: "Reciclado" })}</TabsTrigger>
-          <TabsTrigger value="dossier">{t("materials.detail.tabs.dossier")}</TabsTrigger>
-          <TabsTrigger value="audit">{t("materials.detail.tabs.audit")}</TabsTrigger>
-        </TabsList>
+        <div className="relative">
+          <TabsList className="bg-muted/50 w-full overflow-x-auto flex-nowrap justify-start gap-0.5 h-auto p-1 scrollbar-none">
+            <TabsTrigger value="summary" className="flex-shrink-0 text-xs">{t("materials.detail.tabs.summary")}</TabsTrigger>
+            <TabsTrigger value="approval" className="flex-shrink-0 text-xs">{t("materials.detail.tabs.approval")}</TabsTrigger>
+            <TabsTrigger value="reception" className="flex-shrink-0 text-xs">{t("materials.detail.tabs.reception")}</TabsTrigger>
+            <TabsTrigger value="suppliers" className="flex-shrink-0 text-xs">{t("materials.detail.tabs.suppliers")}</TabsTrigger>
+            <TabsTrigger value="documents" className="flex-shrink-0 text-xs">{t("materials.detail.tabs.documents")}</TabsTrigger>
+            <TabsTrigger value="tests" className="flex-shrink-0 text-xs">{t("materials.detail.tabs.tests")}</TabsTrigger>
+            <TabsTrigger value="ncs" className="flex-shrink-0 text-xs">{t("materials.detail.tabs.ncs")}</TabsTrigger>
+            <TabsTrigger value="workItems" className="flex-shrink-0 text-xs">{t("materials.detail.tabs.workItems")}</TabsTrigger>
+            <TabsTrigger value="usage" className="flex-shrink-0 text-xs">{t("materials.usageTab")}</TabsTrigger>
+            <TabsTrigger value="recycled" className="flex-shrink-0 text-xs">{t("recycled.title", { defaultValue: "Reciclado" })}</TabsTrigger>
+            <TabsTrigger value="dossier" className="flex-shrink-0 text-xs">{t("materials.detail.tabs.dossier")}</TabsTrigger>
+            <TabsTrigger value="audit" className="flex-shrink-0 text-xs">{t("materials.detail.tabs.audit")}</TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="summary">
           <Card className="border-0 shadow-card">

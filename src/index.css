@@ -222,6 +222,14 @@
   .shadow-card-hover {
     box-shadow: var(--shadow-card-hover);
   }
+  /* Ocultar scrollbar mantendo funcionalidade — usado nas TabsList em mobile */
+  .scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 /* ── Shimmer skeleton animation ──────────────────────────────────────── */

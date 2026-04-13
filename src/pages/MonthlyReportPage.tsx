@@ -580,8 +580,15 @@ export default function MonthlyReportPage() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{t("common.confirm")}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t("monthlyReport.deleteConfirm", { code: deleteTarget?.code })}
+            <AlertDialogDescription asChild>
+              <div className="space-y-2">
+                <p>{t("monthlyReport.deleteConfirm", { code: deleteTarget?.code })}</p>
+                {deleteTarget?.status !== "draft" && (
+                  <p className="text-destructive font-medium text-sm">
+                    ⚠️ Este relatório está <strong>{t(`monthlyReport.status.${deleteTarget?.status}`, { defaultValue: deleteTarget?.status })}</strong>. A eliminação é irreversível e ficará registada no audit log.
+                  </p>
+                )}
+              </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

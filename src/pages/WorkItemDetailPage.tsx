@@ -1300,58 +1300,60 @@ export default function WorkItemDetailPage() {
       <ReadinessCard itemId={item.id} readinessStatus={item.readiness_status} hasOpenNc={item.has_open_nc} hasPendingPpi={item.has_pending_ppi} hasPendingTests={item.has_pending_tests} />
 
       <Tabs defaultValue="ppi">
-        <TabsList className="flex-wrap">
-          <TabsTrigger value="ppi" className="gap-1.5">
-            <ClipboardCheck className="h-3.5 w-3.5" />
-            {t("workItems.detail.tabs.ppi")}
-          </TabsTrigger>
-          <TabsTrigger value="tests" className="gap-1.5">
-            <FlaskConical className="h-3.5 w-3.5" />
-            {t("workItems.detail.tabs.tests")}
-          </TabsTrigger>
-          <TabsTrigger value="ncs" className="gap-1.5">
-            <AlertTriangle className="h-3.5 w-3.5" />
-            {t("workItems.detail.tabs.ncs")}
-            {ncs.length > 0 && (
-              <span className="ml-1 rounded-full bg-destructive/10 px-1.5 py-px text-[10px] font-bold text-destructive">
-                {ncs.length}
-              </span>
-            )}
-          </TabsTrigger>
-          <TabsTrigger value="materials" className="gap-1.5">
-            <Package className="h-3.5 w-3.5" />
-            {t("workItems.tabs.materials")}
-            {workItemMaterials.length > 0 && (
-              <Badge variant="secondary" className="ml-1 text-[10px] h-4 px-1">
-                {workItemMaterials.length}
-              </Badge>
-            )}
-          </TabsTrigger>
-          <TabsTrigger value="documents" className="gap-1.5">
-            <FileText className="h-3.5 w-3.5" />
-            {t("documents.linkedPanel.title")}
-          </TabsTrigger>
-          <TabsTrigger value="planning" className="gap-1.5">
-            <ListTodo className="h-3.5 w-3.5" />
-            {t("workItems.detail.tabs.planning", { defaultValue: "Planeamento" })}
-          </TabsTrigger>
-          <TabsTrigger value="topography" className="gap-1.5">
-            <Crosshair className="h-3.5 w-3.5" />
-            {t("topography.title")}
-          </TabsTrigger>
-          <TabsTrigger value="physicalTests" className="gap-1.5">
-            <FlaskConical className="h-3.5 w-3.5" />
-            {t("workItems.detail.tabs.physicalTests")}
-          </TabsTrigger>
-          <TabsTrigger value="dailyReports" className="gap-1.5">
-            <ClipboardList className="h-3.5 w-3.5" />
-            {t("workItems.detail.tabs.dailyReports", { defaultValue: "Partes Diárias" })}
-          </TabsTrigger>
-          <TabsTrigger value="attachments" className="gap-1.5">
-            <Paperclip className="h-3.5 w-3.5" />
-            {t("workItems.detail.tabs.attachments")}
-          </TabsTrigger>
-        </TabsList>
+        <div className="relative">
+          <TabsList className="w-full overflow-x-auto flex-nowrap justify-start gap-0.5 h-auto p-1 scrollbar-none">
+            <TabsTrigger value="ppi" className="flex-shrink-0 gap-1.5 text-xs">
+              <ClipboardCheck className="h-3.5 w-3.5" />
+              {t("workItems.detail.tabs.ppi")}
+            </TabsTrigger>
+            <TabsTrigger value="tests" className="flex-shrink-0 gap-1.5 text-xs">
+              <FlaskConical className="h-3.5 w-3.5" />
+              {t("workItems.detail.tabs.tests")}
+            </TabsTrigger>
+            <TabsTrigger value="ncs" className="flex-shrink-0 gap-1.5 text-xs">
+              <AlertTriangle className="h-3.5 w-3.5" />
+              {t("workItems.detail.tabs.ncs")}
+              {ncs.length > 0 && (
+                <span className="ml-1 rounded-full bg-destructive/10 px-1.5 py-px text-[10px] font-bold text-destructive">
+                  {ncs.length}
+                </span>
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="materials" className="flex-shrink-0 gap-1.5 text-xs">
+              <Package className="h-3.5 w-3.5" />
+              {t("workItems.tabs.materials")}
+              {workItemMaterials.length > 0 && (
+                <Badge variant="secondary" className="ml-1 text-[10px] h-4 px-1">
+                  {workItemMaterials.length}
+                </Badge>
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="documents" className="flex-shrink-0 gap-1.5 text-xs">
+              <FileText className="h-3.5 w-3.5" />
+              {t("documents.linkedPanel.title")}
+            </TabsTrigger>
+            <TabsTrigger value="planning" className="flex-shrink-0 gap-1.5 text-xs">
+              <ListTodo className="h-3.5 w-3.5" />
+              {t("workItems.detail.tabs.planning", { defaultValue: "Planeamento" })}
+            </TabsTrigger>
+            <TabsTrigger value="topography" className="flex-shrink-0 gap-1.5 text-xs">
+              <Crosshair className="h-3.5 w-3.5" />
+              {t("topography.title")}
+            </TabsTrigger>
+            <TabsTrigger value="physicalTests" className="flex-shrink-0 gap-1.5 text-xs">
+              <FlaskConical className="h-3.5 w-3.5" />
+              {t("workItems.detail.tabs.physicalTests")}
+            </TabsTrigger>
+            <TabsTrigger value="dailyReports" className="flex-shrink-0 gap-1.5 text-xs">
+              <ClipboardList className="h-3.5 w-3.5" />
+              {t("workItems.detail.tabs.dailyReports", { defaultValue: "Partes Diárias" })}
+            </TabsTrigger>
+            <TabsTrigger value="attachments" className="flex-shrink-0 gap-1.5 text-xs">
+              <Paperclip className="h-3.5 w-3.5" />
+              {t("workItems.detail.tabs.attachments")}
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         {/* PPI tab */}
         <TabsContent value="ppi" className="mt-4">

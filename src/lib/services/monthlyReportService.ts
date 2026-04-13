@@ -193,6 +193,14 @@ export const monthlyReportService = {
 
   async deleteDraft(id: string): Promise<void> {
     const { data: { user } } = await supabase.auth.getUser();
+    // Primeiro verificar se o relatório existe e não está já apagado
+    const { data: existing } = await db
+      .from("monthly_quality_reports")
+      .select("id, status")
+      .eq("id", id)
+      .eq("is_deleted", false)
+      .single();
+    if (!existing) throw new Error("Relatório não encontrado ou já foi eliminado.");
     const { error } = await db
       .from("monthly_quality_reports")
       .update({
@@ -201,8 +209,7 @@ export const monthlyReportService = {
         deleted_by: user?.id ?? null,
         updated_at: new Date().toISOString(),
       })
-      .eq("id", id)
-      .eq("status", "draft"); // garantia extra — só apaga rascunhos
+      .eq("id", id);
     if (error) throw error;
   },
 
