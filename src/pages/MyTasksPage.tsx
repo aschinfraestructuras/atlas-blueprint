@@ -39,6 +39,7 @@ interface MyPpi {
 interface MyTestDue {
   id: string;
   test_type: string;
+  test_search_key?: string;
   work_item_name: string | null;
   due_at_date: string;
   is_overdue: boolean;
@@ -125,13 +126,17 @@ export default function MyTasksPage() {
       });
       setPpis(ppiResults);
 
-      // 2. Test due items
+      // 2. Test due items — buscar com nome real do catálogo
       const sevenDaysFromNow = new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10);
       const today = new Date().toISOString().slice(0, 10);
       const { data: testData } = await (supabase as any)
         .from("test_due_items")
-        .select("id, due_reason, work_item_id, due_at_date")
+        .select(`
+          id, due_reason, work_item_id, due_at_date,
+          test_plan_rules(test_id, tests_catalog(name, code))
+        `)
         .eq("project_id", activeProject.id)
+        .eq("is_deleted", false)
         .is("related_test_result_id", null)
         .lte("due_at_date", sevenDaysFromNow)
         .order("due_at_date", { ascending: true });
@@ -151,13 +156,29 @@ export default function MyTasksPage() {
         testWiIds.forEach((id: string) => { if (wiMap[id]) testWiMap[id] = wiMap[id].sector; });
       }
 
-      const testResults: MyTestDue[] = (testData ?? []).map((td: any) => ({
-        id: td.id,
-        test_type: td.due_reason ?? "—",
-        work_item_name: td.work_item_id ? (testWiMap[td.work_item_id] ?? null) : null,
-        due_at_date: td.due_at_date,
-        is_overdue: td.due_at_date < today,
-      }));
+      const testResults: MyTestDue[] = (testData ?? []).map((td: any) => {
+        const catalogName = td.test_plan_rules?.tests_catalog?.name;
+        const catalogCode = td.test_plan_rules?.tests_catalog?.code;
+        // Mostrar nome do catálogo; due_reason como fallback legível em português
+        const dueTriggerLabels: Record<string, string> = {
+          distance_reached:  "Distância atingida",
+          quantity_reached:  "Quantidade atingida",
+          area_reached:      "Área atingida",
+          lot_received:      "Lote recepcionado",
+          time_elapsed:      "Prazo atingido",
+          manual:            "Manual",
+        };
+        const displayName = catalogName ?? dueTriggerLabels[td.due_reason] ?? td.due_reason ?? "—";
+        const searchKey = catalogCode ?? catalogName ?? "";
+        return {
+          id: td.id,
+          test_type: displayName,
+          test_search_key: searchKey,
+          work_item_name: td.work_item_id ? (testWiMap[td.work_item_id] ?? null) : null,
+          due_at_date: td.due_at_date,
+          is_overdue: td.due_at_date < today,
+        };
+      });
       setTests(testResults);
 
       // 3. NCs
@@ -459,7 +480,7 @@ export default function MyTasksPage() {
                   <Card
                     key={td.id}
                     className="cursor-pointer hover:bg-muted/30 transition-colors"
-                    onClick={() => navigate(`/tests?tab=due&q=${encodeURIComponent(td.test_type)}`)}
+                    onClick={() => navigate(`/tests?tab=due&q=${encodeURIComponent(td.test_search_key || td.test_type)}`)}
                   >
                     <CardContent className="p-3 flex items-center gap-3">
                       <FlaskConical className="h-4 w-4 text-muted-foreground flex-shrink-0" />
