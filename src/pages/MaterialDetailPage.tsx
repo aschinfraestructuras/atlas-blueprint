@@ -466,98 +466,121 @@ export default function MaterialDetailPage() {
         </TabsContent>
 
         <TabsContent value="reception">
-          <Card className="border-0 shadow-card">
-            <CardHeader className="pb-2 flex flex-row items-center justify-between">
-              <CardTitle className="text-sm">{t("materials.reception.title")}</CardTitle>
-              {canCreate && <Button size="sm" onClick={() => setReceptionOpen(true)}>{t("materials.reception.newReception")}</Button>}
-            </CardHeader>
-            <CardContent>
-              {lots.length === 0 ? (
-                <p className="text-sm text-muted-foreground text-center py-6">{t("common.noData")}</p>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>{t("materials.reception.table.lotCode")}</TableHead>
-                      <TableHead>{t("materials.reception.table.date")}</TableHead>
-                      <TableHead>{t("materials.reception.table.supplier")}</TableHead>
-                      <TableHead>{t("materials.reception.table.deliveryNote")}</TableHead>
-                      <TableHead>{t("materials.reception.table.lotRef")}</TableHead>
-                      <TableHead>{t("materials.reception.table.ceMarking")}</TableHead>
-                      <TableHead>{t("materials.reception.table.physicalState")}</TableHead>
-                      <TableHead>{t("materials.reception.table.status")}</TableHead>
-                      <TableHead>{t("materials.reception.table.nc")}</TableHead>
-                      {canValidate && <TableHead className="text-right">{t("common.actions")}</TableHead>}
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {lots.map((lot) => (
-                      <TableRow key={lot.id}>
-                        <TableCell className="font-mono text-xs">{lot.lot_code}</TableCell>
-                        <TableCell className="text-sm">{new Date(lot.reception_date).toLocaleDateString()}</TableCell>
-                        <TableCell className="text-sm">{lot.suppliers?.name ?? "—"}</TableCell>
-                        <TableCell className="text-sm">{lot.delivery_note_ref ?? "—"}</TableCell>
-                        <TableCell className="text-sm">{lot.lot_ref ?? "—"}</TableCell>
-                        <TableCell className="text-sm">{lot.ce_marking_ok ? "✅" : "❌"}</TableCell>
-                        <TableCell>
-                          <Badge variant="secondary" className={cn("text-xs", PHYSICAL_STATE_COLORS[lot.physical_state] ?? "")}>{lot.physical_state === "conforme" ? t("common.conforming", { defaultValue: "Conforme" }) : t("common.nonConforming", { defaultValue: "Não conforme" })}</Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="secondary" className={cn("text-xs", RECEPTION_STATUS_COLORS[lot.reception_status] ?? "")}>{t(`materials.reception.status.${lot.reception_status}`)}</Badge>
-                        </TableCell>
-                        <TableCell>
-                          {lot.nc_id ? (
-                            <button className="text-xs text-primary underline underline-offset-2" onClick={() => navigate(`/non-conformities/${lot.nc_id}`)}>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-foreground">{t("materials.reception.title")}</h3>
+              {canCreate && (
+                <Button size="sm" onClick={() => setReceptionOpen(true)} className="gap-1.5">
+                  <Plus className="h-3.5 w-3.5" />
+                  {t("materials.reception.newReception")}
+                </Button>
+              )}
+            </div>
+
+            {lots.length === 0 ? (
+              <Card className="border-0 shadow-card">
+                <CardContent className="p-6">
+                  <p className="text-sm text-muted-foreground text-center py-6">{t("common.noData")}</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {lots.map((lot) => {
+                  const statusColor = RECEPTION_STATUS_COLORS[lot.reception_status] ?? "";
+                  const physicalColor = PHYSICAL_STATE_COLORS[lot.physical_state] ?? "";
+                  return (
+                    <Card key={lot.id} className="border border-border/60 bg-card overflow-hidden">
+                      <CardContent className="p-0">
+                        {/* Lot thumbnail + header */}
+                        <div className="flex gap-3 p-4 pb-3">
+                          {/* Thumbnail placeholder — will show photo if exists */}
+                          <LotThumbnail lotId={lot.id} projectId={activeProject.id} />
+
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="font-mono text-[11px] text-muted-foreground">{lot.lot_code}</span>
+                              <Badge variant="secondary" className={cn("text-[10px] px-1.5 py-0 h-5", statusColor)}>
+                                {t(`materials.reception.status.${lot.reception_status}`)}
+                              </Badge>
+                            </div>
+                            <p className="text-sm font-medium text-foreground truncate">
+                              {lot.suppliers?.name ?? "—"}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {new Date(lot.reception_date).toLocaleDateString()}
+                              {lot.delivery_note_ref ? ` · GR ${lot.delivery_note_ref}` : ""}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Details row */}
+                        <div className="flex flex-wrap gap-2 px-4 pb-3">
+                          {lot.lot_ref && (
+                            <span className="text-[10px] text-muted-foreground bg-muted/50 rounded px-1.5 py-0.5">
+                              Lote: {lot.lot_ref}
+                            </span>
+                          )}
+                          <Badge variant="secondary" className={cn("text-[10px] px-1.5 py-0 h-5", physicalColor)}>
+                            {lot.physical_state === "conforme" ? "✅ Conforme" : "❌ Não conforme"}
+                          </Badge>
+                          <span className="text-[10px] text-muted-foreground bg-muted/50 rounded px-1.5 py-0.5">
+                            CE: {lot.ce_marking_ok ? "✅" : "❌"}
+                          </span>
+                          {lot.nc_id && (
+                            <button
+                              className="text-[10px] text-destructive underline underline-offset-2"
+                              onClick={() => navigate(`/non-conformities/${lot.nc_id}`)}
+                            >
                               {lot.non_conformities?.code ?? "NC"}
                             </button>
-                          ) : "—"}
-                        </TableCell>
+                          )}
+                        </div>
+
+                        {/* Action buttons */}
                         {canValidate && (
-                          <TableCell className="text-right">
-                            <div className="flex items-center justify-end gap-1">
-                              {lot.reception_status !== "approved" && (
-                                <Button
-                                  variant="ghost" size="icon"
-                                  className="h-7 w-7 text-green-600 hover:text-green-700 hover:bg-green-50"
-                                  onClick={() => handleLotStatus(lot.id, "approved")}
-                                  disabled={lotUpdating === lot.id}
-                                  title={t("materials.reception.actions.release", { defaultValue: "Libertar lote" })}
-                                >
-                                  {lotUpdating === lot.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ShieldCheck className="h-3.5 w-3.5" />}
-                                </Button>
-                              )}
-                              {lot.reception_status !== "quarantine" && lot.reception_status !== "rejected" && (
-                                <Button
-                                  variant="ghost" size="icon"
-                                  className="h-7 w-7 text-amber-500 hover:text-amber-600 hover:bg-amber-50"
-                                  onClick={() => handleLotStatus(lot.id, "quarantine")}
-                                  disabled={lotUpdating === lot.id}
-                                  title={t("materials.reception.actions.quarantine", { defaultValue: "Quarentena" })}
-                                >
-                                  <ShieldAlert className="h-3.5 w-3.5" />
-                                </Button>
-                              )}
-                              {lot.reception_status !== "rejected" && (
-                                <Button
-                                  variant="ghost" size="icon"
-                                  className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10"
-                                  onClick={() => handleLotStatus(lot.id, "rejected")}
-                                  disabled={lotUpdating === lot.id}
-                                  title={t("materials.reception.actions.reject", { defaultValue: "Rejeitar lote" })}
-                                >
-                                  <Ban className="h-3.5 w-3.5" />
-                                </Button>
-                              )}
-                            </div>
-                          </TableCell>
+                          <div className="flex items-center gap-1 px-4 py-2.5 border-t border-border/40 bg-muted/20">
+                            {lot.reception_status !== "approved" && (
+                              <Button
+                                variant="ghost" size="sm"
+                                className="h-8 gap-1.5 text-xs text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/10"
+                                onClick={() => handleLotStatus(lot.id, "approved")}
+                                disabled={lotUpdating === lot.id}
+                              >
+                                {lotUpdating === lot.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ShieldCheck className="h-3.5 w-3.5" />}
+                                {t("materials.reception.actions.release", { defaultValue: "Libertar" })}
+                              </Button>
+                            )}
+                            {lot.reception_status !== "quarantine" && lot.reception_status !== "rejected" && (
+                              <Button
+                                variant="ghost" size="sm"
+                                className="h-8 gap-1.5 text-xs text-amber-600 dark:text-amber-400 hover:bg-amber-500/10"
+                                onClick={() => handleLotStatus(lot.id, "quarantine")}
+                                disabled={lotUpdating === lot.id}
+                              >
+                                <ShieldAlert className="h-3.5 w-3.5" />
+                                {t("materials.reception.actions.quarantine", { defaultValue: "Quarentena" })}
+                              </Button>
+                            )}
+                            {lot.reception_status !== "rejected" && (
+                              <Button
+                                variant="ghost" size="sm"
+                                className="h-8 gap-1.5 text-xs text-destructive hover:bg-destructive/10"
+                                onClick={() => handleLotStatus(lot.id, "rejected")}
+                                disabled={lotUpdating === lot.id}
+                              >
+                                <Ban className="h-3.5 w-3.5" />
+                                {t("materials.reception.actions.reject", { defaultValue: "Rejeitar" })}
+                              </Button>
+                            )}
+                          </div>
                         )}
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
-            </CardContent>
-          </Card>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </TabsContent>
 
         <TabsContent value="suppliers">
