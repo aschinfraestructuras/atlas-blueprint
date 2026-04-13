@@ -3766,7 +3766,9 @@
       "blocked": "Bloqueadas",
       "completed": "Completadas",
       "inProgress": "En curso",
-      "wbsNodes": "Nodos WBS"
+      "wbsNodes": "Nodos WBS",
+      "ready": "Listas",
+      "needsCheck": "A verificar"
     },
     "noActivities": "Sin frentes de trabajo vinculadas a este elemento.",
     "searchPlaceholder": "Buscar código, descripción, zona…",
@@ -3780,7 +3782,8 @@
     "subtitle": "Planificación y control de actividades",
     "tabs": {
       "activities": "Frentes de Trabajo",
-      "wbs": "Estructura WBS"
+      "wbs": "Estructura WBS",
+      "readiness": "Disponibilidad"
     },
     "title": "Planificación",
     "toast": {
@@ -3808,7 +3811,19 @@
       "sectionDates": "Fechas y Progreso",
       "sectionRequirements": "Requisitos de Calidad"
     },
-    "readiness": "Preparación"
+    "readiness": {
+      "title": "Disponibilidad de Frentes",
+      "complete": "Completada",
+      "running": "En Ejecución",
+      "ready": "Lista para Iniciar",
+      "needsCheck": "Verificar Requisitos",
+      "blocked": "Bloqueada",
+      "cancelled": "Cancelada",
+      "readyCount": "Listas para iniciar",
+      "needsCheckCount": "Pendiente de verificación",
+      "column": "Disponibilidad",
+      "filterReady": "Listas"
+    }
   },
   "mapMas": {
     "title": "Aprobación MAP/MAS",

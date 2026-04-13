@@ -15,7 +15,8 @@ import { RoleGate } from "@/components/RoleGate";
 import {
   Plus, Pencil, Network, ListChecks, ShieldCheck, Trash2, Search, Eye,
   ChevronRight, ChevronDown, FolderPlus, ChevronsUpDown,
-  CheckCircle2, Clock, Ban, PieChart as PieChartIcon, Filter, X} from "lucide-react";
+  CheckCircle2, Clock, Ban, PieChart as PieChartIcon, Filter, X,
+  Circle, AlertTriangle, PlayCircle, MinusCircle} from "lucide-react";
 import { StackedBar } from "@/components/dashboard/DistributionBar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -52,6 +53,54 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 const ACTIVITY_STATUSES = ["planned", "in_progress", "blocked", "completed", "cancelled"];
+
+// ── Semáforo de Prontidão ─────────────────────────────────────────────────────
+type ReadinessState = "complete" | "running" | "ready" | "needs_check" | "blocked" | "cancelled";
+
+function getReadinessState(a: Activity): ReadinessState {
+  if (a.status === "completed")  return "complete";
+  if (a.status === "cancelled")  return "cancelled";
+  if (a.status === "blocked")    return "blocked";
+  if (a.status === "in_progress") return "running";
+  // planned
+  const hasReqs = a.requires_ppi || a.requires_tests || a.requires_topography;
+  return hasReqs ? "needs_check" : "ready";
+}
+
+const READINESS_CONFIG: Record<ReadinessState, {
+  label: string; icon: React.ElementType;
+  dot: string; badge: string; text: string;
+}> = {
+  complete:    { label: "complete",    icon: CheckCircle2,  dot: "bg-emerald-500", badge: "bg-emerald-50 border-emerald-200 dark:bg-emerald-950/40 dark:border-emerald-800", text: "text-emerald-700 dark:text-emerald-300" },
+  running:     { label: "running",     icon: PlayCircle,    dot: "bg-primary",     badge: "bg-primary/8 border-primary/20",  text: "text-primary" },
+  ready:       { label: "ready",       icon: Circle,        dot: "bg-sky-500",     badge: "bg-sky-50 border-sky-200 dark:bg-sky-950/40 dark:border-sky-800", text: "text-sky-700 dark:text-sky-300" },
+  needs_check: { label: "needs_check", icon: AlertTriangle, dot: "bg-amber-500",   badge: "bg-amber-50 border-amber-200 dark:bg-amber-950/40 dark:border-amber-800", text: "text-amber-700 dark:text-amber-300" },
+  blocked:     { label: "blocked",     icon: Ban,           dot: "bg-destructive", badge: "bg-destructive/8 border-destructive/20", text: "text-destructive" },
+  cancelled:   { label: "cancelled",   icon: MinusCircle,   dot: "bg-muted-foreground", badge: "bg-muted border-border", text: "text-muted-foreground" },
+};
+
+function ReadinessBadge({ activity }: { activity: Activity }) {
+  const { t } = useTranslation();
+  const state = getReadinessState(activity);
+  const cfg = READINESS_CONFIG[state];
+  const Icon = cfg.icon;
+  const label = t(`planning.readiness.${
+    state === "needs_check" ? "needsCheck" :
+    state === "running" ? "running" :
+    state === "ready" ? "ready" :
+    state === "blocked" ? "blocked" :
+    state === "complete" ? "complete" : "cancelled"
+  }`, { defaultValue: state });
+  return (
+    <span className={cn(
+      "inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-semibold whitespace-nowrap",
+      cfg.badge, cfg.text
+    )}>
+      <Icon className="h-2.5 w-2.5" />
+      {label}
+    </span>
+  );
+}
 
 function DeleteButton({ onConfirm }: { onConfirm: () => void }) {
   const { t } = useTranslation();
@@ -108,7 +157,9 @@ export default function PlanningPage() {
     const completed = activities.filter(a => a.status === "completed").length;
     const blocked = activities.filter(a => a.status === "blocked").length;
     const avgProgress = totalAct > 0 ? Math.round(activities.reduce((s, a) => s + a.progress_pct, 0) / totalAct) : 0;
-    return { totalWbs, totalAct, inProgress, completed, blocked, avgProgress };
+    const ready      = activities.filter(a => getReadinessState(a) === "ready").length;
+    const needsCheck = activities.filter(a => getReadinessState(a) === "needs_check").length;
+    return { totalWbs, totalAct, inProgress, completed, blocked, avgProgress, ready, needsCheck };
   }, [wbs, activities]);
 
   // Helper: get all descendant IDs of a WBS node (including itself)
@@ -276,7 +327,7 @@ export default function PlanningPage() {
       </div>
 
       {/* KPIs */}
-      <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
         <Card><CardContent className="pt-4 pb-3 text-center">
           <div className="flex items-center justify-center gap-1 text-muted-foreground mb-1"><Network className="h-3.5 w-3.5" /><p className="text-xs">{t("planning.kpi.wbsNodes")}</p></div>
           <p className="text-2xl font-bold text-foreground">{kpis.totalWbs}</p>
@@ -304,6 +355,26 @@ export default function PlanningPage() {
             <span className="text-2xl font-bold text-foreground">{kpis.avgProgress}%</span>
           </div>
         </CardContent></Card>
+        {/* Semáforo: Prontas */}
+        <Card className="border-sky-200 dark:border-sky-800 bg-sky-50/50 dark:bg-sky-950/20">
+          <CardContent className="pt-4 pb-3 text-center">
+            <div className="flex items-center justify-center gap-1 text-sky-600 dark:text-sky-400 mb-1">
+              <Circle className="h-3.5 w-3.5 fill-sky-500 text-sky-500" />
+              <p className="text-xs">{t("planning.kpi.ready", { defaultValue: "Prontas" })}</p>
+            </div>
+            <p className="text-2xl font-bold text-sky-700 dark:text-sky-300">{kpis.ready}</p>
+          </CardContent>
+        </Card>
+        {/* Semáforo: A Verificar */}
+        <Card className={cn("border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-950/20", kpis.needsCheck > 0 && "ring-1 ring-amber-300 dark:ring-amber-700")}>
+          <CardContent className="pt-4 pb-3 text-center">
+            <div className="flex items-center justify-center gap-1 text-amber-600 dark:text-amber-400 mb-1">
+              <AlertTriangle className="h-3.5 w-3.5" />
+              <p className="text-xs">{t("planning.kpi.needsCheck", { defaultValue: "A Verificar" })}</p>
+            </div>
+            <p className="text-2xl font-bold text-amber-700 dark:text-amber-300">{kpis.needsCheck}</p>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Activity Status Distribution */}
@@ -504,9 +575,9 @@ export default function PlanningPage() {
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">WBS</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("planning.fields.zone")}</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.status")}</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("planning.readiness.column", { defaultValue: "Prontidão" })}</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("planning.fields.progress")}</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("planning.fields.dates")}</TableHead>
-                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("planning.fields.requirements")}</TableHead>
                     <TableHead className="w-28">{t("common.actions")}</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -528,6 +599,7 @@ export default function PlanningPage() {
                             {t(`planning.status.${a.status}`, { defaultValue: a.status })}
                           </Badge>
                         </TableCell>
+                        <TableCell><ReadinessBadge activity={a} /></TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2 min-w-[80px]">
                             <Progress value={a.progress_pct} className="h-2 flex-1" />
@@ -535,14 +607,6 @@ export default function PlanningPage() {
                           </div>
                         </TableCell>
                         <TableCell className="text-xs text-muted-foreground whitespace-nowrap">{a.planned_start || "?"} → {a.planned_end || "?"}</TableCell>
-                        <TableCell>
-                          <div className="flex gap-1">
-                            {reqBadges.map(b => (
-                              <Badge key={b.label} variant="outline" className="text-[10px]">{b.label}</Badge>
-                            ))}
-                            {reqBadges.length === 0 && <span className="text-xs text-muted-foreground">—</span>}
-                          </div>
-                        </TableCell>
                         <TableCell>
                           <div className="flex gap-1">
                             <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => navigate(`/planning/activities/${a.id}`)} title={t("common.view")}><Eye className="h-3.5 w-3.5" /></Button>

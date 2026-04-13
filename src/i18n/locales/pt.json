@@ -3681,7 +3681,9 @@
       "blocked": "Bloqueadas",
       "completed": "Concluídas",
       "inProgress": "Em curso",
-      "wbsNodes": "Nós WBS"
+      "wbsNodes": "Nós WBS",
+      "ready": "Prontas",
+      "needsCheck": "A verificar"
     },
     "noActivities": "Sem frentes de trabalho ligadas a este elemento.",
     "searchPlaceholder": "Pesquisar código, descrição, zona…",
@@ -3695,7 +3697,8 @@
     "subtitle": "Planeamento e controlo de atividades",
     "tabs": {
       "activities": "Frentes de Trabalho",
-      "wbs": "Estrutura WBS"
+      "wbs": "Estrutura WBS",
+      "readiness": "Prontidão"
     },
     "title": "Planeamento",
     "toast": {
@@ -3723,7 +3726,19 @@
       "sectionDates": "Datas e Progresso",
       "sectionRequirements": "Requisitos de Qualidade"
     },
-    "readiness": "Prontidão"
+    "readiness": {
+      "title": "Prontidão das Frentes",
+      "complete": "Concluída",
+      "running": "Em Execução",
+      "ready": "Pronta para Iniciar",
+      "needsCheck": "Verificar Requisitos",
+      "blocked": "Bloqueada",
+      "cancelled": "Cancelada",
+      "readyCount": "Prontas para iniciar",
+      "needsCheckCount": "Aguardam verificação",
+      "column": "Prontidão",
+      "filterReady": "Prontas"
+    }
   },
   "mapMas": {
     "title": "Aprovação MAP/MAS",
