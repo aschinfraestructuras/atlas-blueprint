@@ -486,12 +486,15 @@ export default function TopographyPage() {
                 <TableHead>{t("topography.table.deviation")}</TableHead>
                 <TableHead>{t("topography.table.result")}</TableHead>
                 <TableHead>{t("common.date")}</TableHead>
-                <TableHead>{t("topography.table.technician")}</TableHead>
+                <TableHead>{t("topography.table.links", { defaultValue: "Ligações" })}</TableHead>
                 <TableHead>{t("common.actions")}</TableHead>
               </TableRow></TableHeader>
               <TableBody>
                 {filteredControls.map((ctrl) => {
                   const eq = equipment.find(e => e.id === ctrl.equipment_id);
+                  const wi = (ctrl as any).work_items;
+                  const ppi = (ctrl as any).ppi_instances;
+                  const nc = (ctrl as any).non_conformities;
                   return (
                     <TableRow key={ctrl.id}>
                       <TableCell className="font-mono text-xs">{(ctrl as any).ft_code || "—"}</TableCell>
@@ -503,7 +506,14 @@ export default function TopographyPage() {
                       <TableCell>{ctrl.deviation || "—"}</TableCell>
                       <TableCell><Badge variant={ctrl.result === "conforme" ? "default" : "destructive"}>{t(`topography.result.${ctrl.result}`)}</Badge></TableCell>
                       <TableCell>{ctrl.execution_date}</TableCell>
-                      <TableCell>{ctrl.technician || "—"}</TableCell>
+                      <TableCell>
+                        <div className="flex flex-col gap-0.5">
+                          {wi && <span className="text-[10px] text-muted-foreground bg-muted/40 rounded px-1.5 py-0.5 inline-flex">WI: {wi.sector}{wi.elemento ? ` · ${wi.elemento}` : ""}</span>}
+                          {ppi && <span className="text-[10px] text-primary bg-primary/8 rounded px-1.5 py-0.5 inline-flex">PPI: {ppi.code}</span>}
+                          {nc && <span className="text-[10px] text-destructive bg-destructive/8 rounded px-1.5 py-0.5 inline-flex">NC: {nc.code}</span>}
+                          {!wi && !ppi && !nc && <span className="text-[10px] text-muted-foreground">—</span>}
+                        </div>
+                      </TableCell>
                       <TableCell>
                         <div className="flex gap-1">
                           <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditControl(ctrl)}><Pencil className="h-3.5 w-3.5" /></Button>

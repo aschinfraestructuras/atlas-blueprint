@@ -292,7 +292,12 @@ export const topographyRequestService = {
 export const topographyControlService = {
   async getByProject(projectId: string): Promise<TopographyControl[]> {
     const { data, error } = await db.from("topography_controls")
-      .select("*")
+      .select(`
+        *,
+        work_items(id, sector, elemento, parte),
+        ppi_instances(id, code, status),
+        non_conformities(id, code, title, status)
+      `)
       .eq("project_id", projectId)
       .order("execution_date", { ascending: false });
     if (error) throw error;

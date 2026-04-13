@@ -30,6 +30,8 @@ export function ControlFormDialog({ open, onOpenChange, projectId, equipment, ed
   const [loading, setLoading] = useState(false);
   const isEdit = !!editControl;
   const [workItems, setWorkItems] = useState<{ id: string; sector: string; elemento?: string | null; parte?: string | null }[]>([]);
+  const [ppiInstances, setPpiInstances] = useState<{ id: string; code: string; status: string }[]>([]);
+  const [ncs, setNcs] = useState<{ id: string; code: string; title: string }[]>([]);
   const [form, setForm] = useState({
     equipment_id: editControl?.equipment_id ?? "",
     element: editControl?.element ?? "",
@@ -69,6 +71,14 @@ export function ControlFormDialog({ open, onOpenChange, projectId, equipment, ed
       }
       supabase.from("work_items").select("id, sector, elemento, parte").eq("project_id", projectId).order("sector").then(({ data }) => {
         setWorkItems(data ?? []);
+      });
+      (supabase as any).from("ppi_instances").select("id, code, status").eq("project_id", projectId)
+        .in("status", ["draft", "in_progress", "submitted", "approved"]).order("code").then(({ data }: any) => {
+        setPpiInstances(data ?? []);
+      });
+      (supabase as any).from("non_conformities").select("id, code, title").eq("project_id", projectId)
+        .not("status", "in", '("closed","archived")').order("code").then(({ data }: any) => {
+        setNcs(data ?? []);
       });
     }
   }, [open, editControl, projectId]);
@@ -208,9 +218,33 @@ export function ControlFormDialog({ open, onOpenChange, projectId, equipment, ed
                 </Select>
               </div>
               <div>
-                <Label>{t("topography.form.ncLinked")}</Label>
-                <Input value={form.nc_id === "__none__" ? "" : form.nc_id} onChange={e => setForm(f => ({ ...f, nc_id: e.target.value || "__none__" }))} placeholder="UUID (opcional)" className="font-mono text-xs" />
+                <Label>{t("topography.form.ppiLinked", { defaultValue: "PPI associada" })}</Label>
+                <Select value={form.ppi_id} onValueChange={v => setForm(f => ({ ...f, ppi_id: v }))}>
+                  <SelectTrigger><SelectValue placeholder={t("topography.form.none")} /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">{t("topography.form.none")}</SelectItem>
+                    {ppiInstances.map(p => (
+                      <SelectItem key={p.id} value={p.id}>
+                        {p.code} — {t(`ppi.status.${p.status}`, { defaultValue: p.status })}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
+            </div>
+            <div>
+              <Label>{t("topography.form.ncLinked", { defaultValue: "NC associada" })}</Label>
+              <Select value={form.nc_id} onValueChange={v => setForm(f => ({ ...f, nc_id: v }))}>
+                <SelectTrigger><SelectValue placeholder={t("topography.form.none")} /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none__">{t("topography.form.none")}</SelectItem>
+                  {ncs.map(nc => (
+                    <SelectItem key={nc.id} value={nc.id}>
+                      {nc.code} — {nc.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div><Label>{t("topography.form.notes")}</Label><Textarea value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} rows={2} /></div>
