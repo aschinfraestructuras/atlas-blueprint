@@ -84,7 +84,44 @@ type MaterialLot = {
   non_conformities?: { id: string; code: string | null } | null;
 };
 
-export default function MaterialDetailPage() {
+// ── Lot Thumbnail (loads first photo attachment) ─────────────────────────────
+function LotThumbnail({ lotId, projectId }: { lotId: string; projectId: string }) {
+  const [thumbUrl, setThumbUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data } = await supabase
+          .from("attachments")
+          .select("file_path")
+          .eq("entity_type", "material_lot")
+          .eq("entity_id", lotId)
+          .order("created_at", { ascending: true })
+          .limit(1);
+        if (cancelled || !data?.length) return;
+        const path = data[0].file_path;
+        const { data: urlData } = await supabase.storage
+          .from("attachments")
+          .createSignedUrl(path, 300);
+        if (!cancelled && urlData?.signedUrl) setThumbUrl(urlData.signedUrl);
+      } catch { /* no photo — that's fine */ }
+    })();
+    return () => { cancelled = true; };
+  }, [lotId, projectId]);
+
+  return (
+    <div className="w-14 h-14 rounded-lg bg-muted/50 border border-border/40 flex-shrink-0 overflow-hidden flex items-center justify-center">
+      {thumbUrl ? (
+        <img src={thumbUrl} alt="" className="w-full h-full object-cover" />
+      ) : (
+        <Package className="h-5 w-5 text-muted-foreground/40" />
+      )}
+    </div>
+  );
+}
+
+
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t } = useTranslation();
