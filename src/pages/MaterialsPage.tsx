@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useProject } from "@/contexts/ProjectContext";
@@ -7,10 +7,11 @@ import { useProjectRole } from "@/hooks/useProjectRole";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { materialService } from "@/lib/services/materialService";
 import { exportMaterialsListPdf } from "@/lib/services/materialExportService";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Package, Plus, Pencil, Search, Archive, RotateCcw, Eye, Trash2,
   PieChart as PieChartIcon, ShieldCheck, Clock, AlertTriangle, Ban,
-  ClipboardList,
+  ClipboardList, Truck, CheckCircle2, XCircle,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -60,8 +61,26 @@ export default function MaterialsPage() {
   const [search, setSearch] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
   const [filterApproval, setFilterApproval] = useState("all");
-  const [activeTab, setActiveTab] = useState("materials");
+  const [activeTab, setActiveTab] = useState("receptions");
   const [deleteTarget, setDeleteTarget] = useState<Material | null>(null);
+  const [lots, setLots] = useState<any[]>([]);
+  const [lotsLoading, setLotsLoading] = useState(true);
+
+  // Carregar todos os lotes do projecto com joins
+  useEffect(() => {
+    if (!activeProject) return;
+    setLotsLoading(true);
+    (supabase as any)
+      .from("material_lots")
+      .select("*, materials(code, name, category, unit)")
+      .eq("project_id", activeProject.id)
+      .eq("is_deleted", false)
+      .order("reception_date", { ascending: false })
+      .then(({ data }: any) => {
+        setLots(data ?? []);
+        setLotsLoading(false);
+      });
+  }, [activeProject]);
 
   const filtered = useMemo(() => {
     let result = materials;
@@ -160,9 +179,109 @@ export default function MaterialsPage() {
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
-          <TabsTrigger value="materials">{t("pages.materials.title")}</TabsTrigger>
+          <TabsTrigger value="receptions" className="gap-1.5">
+            <Truck className="h-3.5 w-3.5" />
+            Recepções de Obra
+            {lots.length > 0 && (
+              <span className="ml-1 rounded-full bg-primary/15 text-primary text-[10px] font-bold px-1.5 py-0.5">{lots.length}</span>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="materials">{t("pages.materials.title")} — Catálogo PAME</TabsTrigger>
           <TabsTrigger value="pame">{t("materials.pame.title", { defaultValue: "Plano PAME" })}</TabsTrigger>
         </TabsList>
+
+        {/* ── TAB: RECEPÇÕES DE OBRA ── */}
+        <TabsContent value="receptions" className="space-y-4 mt-4">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-semibold text-foreground">Recepções de material em obra</p>
+              <p className="text-xs text-muted-foreground">Lotes recepcionados — registos reais de entrega e controlo</p>
+            </div>
+            {canCreate && (
+              <Button size="sm" className="gap-1.5" onClick={() => navigate("/materials")}>
+                <Plus className="h-3.5 w-3.5" />
+                Nova Recepção
+              </Button>
+            )}
+          </div>
+
+          {lotsLoading ? (
+            <div className="space-y-2">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-16 w-full" />)}</div>
+          ) : lots.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 gap-3 text-muted-foreground">
+              <Truck className="h-10 w-10 opacity-20" />
+              <p className="text-sm font-medium">Sem recepções registadas</p>
+              <p className="text-xs">Quando receber material em obra, registe aqui a recepção.</p>
+            </div>
+          ) : (
+            <>
+              {/* KPIs de lotes */}
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  { label: "Aprovados", value: lots.filter(l => l.reception_status === "approved").length, color: "text-emerald-600 dark:text-emerald-400", icon: CheckCircle2 },
+                  { label: "Em quarentena", value: lots.filter(l => l.reception_status === "quarantine").length, color: "text-amber-600 dark:text-amber-400", icon: AlertTriangle },
+                  { label: "Rejeitados", value: lots.filter(l => l.reception_status === "rejected").length, color: "text-destructive", icon: XCircle },
+                ].map((k, i) => (
+                  <Card key={i} className="border-0 bg-card shadow-card">
+                    <CardContent className="p-3 flex items-center gap-2.5">
+                      <k.icon className={`h-4 w-4 ${k.color} flex-shrink-0`} />
+                      <div>
+                        <p className="text-xl font-black tabular-nums text-foreground">{k.value}</p>
+                        <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{k.label}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              {/* Lista de lotes */}
+              <div className="rounded-xl border border-border overflow-hidden">
+                <div className="grid grid-cols-1 divide-y divide-border">
+                  {lots.map(lot => {
+                    const statusStyles: Record<string, string> = {
+                      approved:   "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800",
+                      quarantine: "bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800",
+                      rejected:   "bg-destructive/10 text-destructive border-destructive/20",
+                      pending:    "bg-muted text-muted-foreground border-border",
+                    };
+                    const mat = lot.materials;
+                    return (
+                      <div
+                        key={lot.id}
+                        className="flex items-center gap-3 px-4 py-3 bg-card hover:bg-muted/20 cursor-pointer transition-colors"
+                        onClick={() => navigate(`/materials/${lot.material_id}`)}
+                      >
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="font-mono text-xs font-bold text-foreground">{lot.lot_code}</span>
+                            <span className="text-xs text-muted-foreground truncate">{mat?.name ?? "—"}</span>
+                            <Badge variant="outline" className="text-[10px] h-4 px-1 shrink-0">{mat?.category ?? "—"}</Badge>
+                          </div>
+                          <div className="flex items-center gap-3 mt-0.5">
+                            <span className="text-[10px] text-muted-foreground">
+                              {lot.quantity_received != null ? `${Number(lot.quantity_received).toLocaleString("pt-PT")} ${lot.unit ?? ""}` : "—"}
+                            </span>
+                            <span className="text-[10px] text-muted-foreground">
+                              {lot.reception_date ? new Date(lot.reception_date).toLocaleDateString("pt-PT", { day: "2-digit", month: "2-digit", year: "2-digit" }) : "—"}
+                            </span>
+                            {lot.rejection_reason && (
+                              <span className="text-[10px] text-destructive italic truncate max-w-[200px]">{lot.rejection_reason}</span>
+                            )}
+                          </div>
+                        </div>
+                        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${statusStyles[lot.reception_status] ?? statusStyles.pending}`}>
+                          {lot.reception_status === "approved"   ? "Aprovado" :
+                           lot.reception_status === "quarantine" ? "Quarentena" :
+                           lot.reception_status === "rejected"   ? "Rejeitado" : "Pendente"}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </>
+          )}
+        </TabsContent>
 
         <TabsContent value="materials" className="space-y-5 mt-4">
           {/* ── KPI Cards ── */}
