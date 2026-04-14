@@ -132,8 +132,8 @@ function ProgressCircle({ icon: Icon, label, approved, total, route, colorVar, l
   const isEmpty = total === 0;
   const strokeColor = isEmpty ? "hsl(var(--muted))" : pct >= 70 ? "hsl(145 55% 42%)" : pct >= 40 ? "hsl(38 85% 50%)" : "hsl(var(--destructive))";
   // Larger circle for desktop readability
-  const SIZE = 72;
-  const R = 28;
+  const SIZE = 88;
+  const R = 34;
   const C = 2 * Math.PI * R;
   const VB = SIZE + 4;
   const center = VB / 2;
