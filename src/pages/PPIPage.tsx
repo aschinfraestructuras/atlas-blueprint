@@ -300,7 +300,7 @@ export default function PPIPage() {
           <button onClick={() => setViewMode("table")}
             className={cn("px-2.5 py-1.5 text-xs transition-colors min-h-[32px] min-w-[32px] flex items-center justify-center", viewMode === "table" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted")}
             title="Vista tabela" aria-label="Vista tabela">
-            <ClipboardList className="h-3.5 w-3.5" />
+            <BarChart3 className="h-3.5 w-3.5" />
           </button>
           <button onClick={() => setViewMode("cards")}
             className={cn("px-2.5 py-1.5 text-xs transition-colors min-h-[32px] min-w-[32px] flex items-center justify-center", viewMode === "cards" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted")}
