@@ -1,9 +1,9 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProjectProvider } from "@/contexts/ProjectContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
@@ -13,6 +13,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { Loader2 } from "lucide-react";
 import { queryClient } from "@/lib/queryClient";
 import { PWAInstallBanner } from "@/components/pwa/PWAInstallBanner";
+import { useProjectRole } from "@/hooks/useProjectRole";
 
 // Static imports — needed before auth redirect
 import LoginPage from "./pages/LoginPage";
@@ -77,10 +78,39 @@ const SubmittalsPage = lazy(() => import("./pages/SubmittalsPage"));
 const MyTasksPage = lazy(() => import("./pages/MyTasksPage"));
 const ConfirmReceiptPage = lazy(() => import("./pages/ConfirmReceiptPage"));
 
+// Rotas permitidas para o role viewer — tudo o resto é redirecionado para /direction-portal
+const VIEWER_ALLOWED_ROUTES = [
+  "/direction-portal",
+  "/ppi",
+  "/non-conformities",
+  "/documents",
+  "/invite",
+];
+
+function ViewerGuard({ children }: { children: React.ReactNode }) {
+  const { role, loading } = useProjectRole();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (loading || role !== "viewer") return;
+    const allowed = VIEWER_ALLOWED_ROUTES.some(r => location.pathname === r || location.pathname.startsWith(r + "/"));
+    if (!allowed) {
+      navigate("/direction-portal", { replace: true });
+    }
+  }, [role, loading, location.pathname, navigate]);
+
+  return <>{children}</>;
+}
+
 function ProtectedLayout({ children }: { children: React.ReactNode }) {
   return (
     <ProtectedRoute>
-      <MainLayout>{children}</MainLayout>
+      <MainLayout>
+        <ViewerGuard>
+          {children}
+        </ViewerGuard>
+      </MainLayout>
     </ProtectedRoute>
   );
 }
