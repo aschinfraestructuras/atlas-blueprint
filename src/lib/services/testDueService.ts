@@ -61,12 +61,44 @@ export const testDueService = {
     return (data ?? []) as TestDueItem[];
   },
 
-  async generateDueTests(projectId: string): Promise<number> {
+  async generateDueTests(projectId: string): Promise<{ count: number; diagnosis: string | null }> {
+    // Diagnóstico pré-geração: verificar pré-condições
+    try {
+      const [{ data: plans }, { data: wis }] = await Promise.all([
+        (supabase as any).from("test_plans")
+          .select("id, status, title")
+          .eq("project_id", projectId)
+          .eq("is_deleted", false),
+        (supabase as any).from("work_items")
+          .select("id, status")
+          .eq("project_id", projectId)
+          .eq("is_deleted", false)
+          .in("status", ["in_progress", "active", "planned"]),
+      ]);
+
+      const activePlans = (plans ?? []).filter((p: any) => p.status === "active");
+      if (activePlans.length === 0) {
+        const draftPlans = (plans ?? []).filter((p: any) => p.status === "draft");
+        return {
+          count: 0,
+          diagnosis: draftPlans.length > 0
+            ? `O Plano de Ensaios está em Rascunho — precisa de ser Activado antes de gerar agendamentos.`
+            : "Nenhum Plano de Ensaios activo encontrado. Configure o plano na tab Planos.",
+        };
+      }
+      if ((wis ?? []).length === 0) {
+        return {
+          count: 0,
+          diagnosis: "Nenhum Elemento de Obra em curso encontrado. Inicie trabalhos na página Elementos de Obra.",
+        };
+      }
+    } catch { /* não bloquear se diagnóstico falhar */ }
+
     const { data, error } = await supabase.rpc("fn_generate_due_tests", {
       p_project_id: projectId,
     });
     if (error) throw error;
-    return (data as number) ?? 0;
+    return { count: (data as number) ?? 0, diagnosis: null };
   },
 
   async schedule(id: string, projectId: string, date: string): Promise<void> {

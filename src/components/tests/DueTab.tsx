@@ -128,13 +128,17 @@ export function DueTab() {
     if (!activeProject) return;
     setGenerating(true);
     try {
-      const count = await testDueService.generateDueTests(activeProject.id);
-      if (count > 0) {
-        toast({ title: t("tests.due.generated"), description: t("tests.due.generatedCount", { count }) });
+      const result = await testDueService.generateDueTests(activeProject.id);
+      if (result.diagnosis) {
+        // Pré-condição não satisfeita — mostrar aviso claro
+        toast({ title: "⚠️ Não foi possível gerar agendamentos", description: result.diagnosis, variant: "destructive" });
+      } else if (result.count > 0) {
+        toast({ title: t("tests.due.generated"), description: t("tests.due.generatedCount", { count: result.count }) });
+        refetch();
       } else {
-        toast({ title: t("tests.due.generated"), description: t("tests.due.noGenerated") });
+        toast({ title: t("tests.due.generated"), description: "Todos os agendamentos já existem — nenhum novo criado." });
+        refetch();
       }
-      refetch();
     } catch (err) {
       const info = classifySupabaseError(err);
       toast({ title: t(info.titleKey), description: info.raw, variant: "destructive" });

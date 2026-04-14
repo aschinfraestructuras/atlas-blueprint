@@ -508,11 +508,25 @@ export function PlanTab() {
             <div className="p-4 rounded-xl border border-primary/30 bg-primary/5 space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-mono text-sm font-bold text-foreground">{activePlan.code}</span>
                     <Badge variant="secondary" className={cn("text-xs", PLAN_STATUS_COLORS[activePlan.status] ?? "")}>
                       {t(`tests.plans.status.${activePlan.status}`)}
                     </Badge>
+                    {activePlan.status === "draft" && (
+                      <button
+                        className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-full px-2.5 py-0.5 hover:bg-emerald-100 transition-colors"
+                        onClick={async () => {
+                          try {
+                            await (supabase as any).from("test_plans").update({ status: "active" }).eq("id", activePlan.id);
+                            await loadPlans();
+                            toast({ title: "Plano activado", description: "Pode agora gerar agendamentos na tab Agendados." });
+                          } catch { toast({ title: "Erro ao activar plano", variant: "destructive" }); }
+                        }}
+                      >
+                        ✓ Activar Plano
+                      </button>
+                    )}
                   </div>
                   <p className="text-sm text-muted-foreground mt-0.5">{activePlan.title}</p>
                   {activePlan.scope_notes && (
