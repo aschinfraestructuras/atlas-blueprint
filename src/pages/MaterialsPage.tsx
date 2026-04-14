@@ -210,10 +210,14 @@ export default function MaterialsPage() {
             {canCreate && materials.length > 0 && (
               <div className="flex items-center gap-2">
                 <Select
-                  value=""
+                  value={undefined}
                   onValueChange={(matId) => {
                     const mat = materials.find(m => m.id === matId);
-                    if (mat) { setReceptionTarget(mat); setReceptionOpen(true); }
+                    if (mat) {
+                      setReceptionTarget(mat);
+                      // pequeno delay para garantir que o Select fecha antes do dialog abrir
+                      setTimeout(() => setReceptionOpen(true), 50);
+                    }
                   }}
                 >
                   <SelectTrigger className="h-8 w-[180px] text-sm gap-1.5">
@@ -552,26 +556,6 @@ export default function MaterialsPage() {
           )}
 
           <MaterialFormDialog open={dialogOpen} onOpenChange={setDialogOpen} material={editingMaterial} onSuccess={refetch} />
-          {receptionTarget && (
-            <MaterialReceptionDialog
-              open={receptionOpen}
-              onOpenChange={(o) => { setReceptionOpen(o); if (!o) setReceptionTarget(null); }}
-              projectId={activeProject!.id}
-              material={receptionTarget}
-              onSuccess={async () => {
-                setReceptionTarget(null);
-                setReceptionOpen(false);
-                // Recarregar lotes
-                const { data } = await (supabase as any)
-                  .from("material_lots")
-                  .select("*, materials(code, name, category, unit)")
-                  .eq("project_id", activeProject!.id)
-                  .eq("is_deleted", false)
-                  .order("reception_date", { ascending: false });
-                setLots(data ?? []);
-              }}
-            />
-          )}
           <AlertDialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
             <AlertDialogContent>
               <AlertDialogHeader>
@@ -587,10 +571,50 @@ export default function MaterialsPage() {
         </TabsContent>
 
         <TabsContent value="pame" className="mt-4">
-          <PameTab materials={materials} />
+          <PameTab materials={materials} navigate={navigate} />
         </TabsContent>
 
       </Tabs>
+
+      {/* ── Dialogs globais — fora das Tabs para ficarem sempre montados ── */}
+      <MaterialFormDialog open={dialogOpen} onOpenChange={setDialogOpen} material={editingMaterial} onSuccess={refetch} />
+
+      {receptionTarget && (
+        <MaterialReceptionDialog
+          open={receptionOpen}
+          onOpenChange={(o) => {
+            setReceptionOpen(o);
+            if (!o) setTimeout(() => setReceptionTarget(null), 300);
+          }}
+          projectId={activeProject!.id}
+          material={receptionTarget}
+          onSuccess={async () => {
+            setReceptionOpen(false);
+            setTimeout(() => setReceptionTarget(null), 300);
+            const { data } = await (supabase as any)
+              .from("material_lots")
+              .select("*, materials(code, name, category, unit)")
+              .eq("project_id", activeProject!.id)
+              .eq("is_deleted", false)
+              .order("reception_date", { ascending: false });
+            setLots(data ?? []);
+          }}
+        />
+      )}
+
+      <AlertDialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("materials.deleteConfirmTitle")}</AlertDialogTitle>
+            <AlertDialogDescription>{t("materials.deleteConfirm")}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">{t("common.delete")}</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
     </div>
   );
 }
@@ -610,7 +634,7 @@ const PAME_PRIORITY_COLORS: Record<string, string> = {
 };
 const PAME_DISCIPLINES = ["terras", "betao", "ferrovia", "catenaria", "st", "drenagem", "estruturas", "outros"];
 
-function PameTab({ materials }: { materials: Material[] }) {
+function PameTab({ materials, navigate }: { materials: Material[]; navigate: (path: string) => void }) {
   const { t } = useTranslation();
   const [filterDiscipline, setFilterDiscipline] = useState("all");
   const [filterPriority, setFilterPriority] = useState("all");
