@@ -854,6 +854,7 @@ export default function TestsPage() {
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <div className="overflow-x-auto -mx-1 px-1">
           <TabsList className="h-auto gap-1 p-1 inline-flex w-max min-w-full sm:w-auto">
+            {/* ── OBRA ── */}
             <TabsTrigger value="due" className="gap-1.5 text-xs sm:text-sm">
               <Clock className="h-3.5 w-3.5 flex-shrink-0" />
               <span className="truncate">{t("tests.tabs.due")}</span>
@@ -862,17 +863,22 @@ export default function TestsPage() {
               <FlaskConical className="h-3.5 w-3.5 flex-shrink-0" />
               <span className="truncate">{t("tests.tabs.results")}</span>
             </TabsTrigger>
-            <TabsTrigger value="plan" className="gap-1.5 text-xs sm:text-sm">
-              <BookOpen className="h-3.5 w-3.5 flex-shrink-0" />
-              <span className="truncate">{t("tests.tabs.plan")}</span>
-            </TabsTrigger>
-            <TabsTrigger value="catalog" className="gap-1.5 text-xs sm:text-sm">
-              <BookOpen className="h-3.5 w-3.5 flex-shrink-0" />
-              <span className="truncate">{t("tests.tabs.catalog")}</span>
-            </TabsTrigger>
             <TabsTrigger value="controls" className="gap-1.5 text-xs sm:text-sm">
               <Gauge className="h-3.5 w-3.5 flex-shrink-0" />
               <span className="truncate">{t("tests.tabs.controls", "Controlo")}</span>
+            </TabsTrigger>
+            {/* ── divisor visual ── */}
+            <div className="flex items-center px-1" aria-hidden>
+              <div className="w-px h-5 bg-border/60 rounded-full" />
+            </div>
+            {/* ── BIBLIOTECA / CONFIGURAÇÃO ── */}
+            <TabsTrigger value="plan" className="gap-1.5 text-xs sm:text-sm text-muted-foreground data-[state=active]:text-foreground">
+              <BookOpen className="h-3.5 w-3.5 flex-shrink-0" />
+              <span className="truncate">{t("tests.tabs.plan")}</span>
+            </TabsTrigger>
+            <TabsTrigger value="catalog" className="gap-1.5 text-xs sm:text-sm text-muted-foreground data-[state=active]:text-foreground">
+              <BookOpen className="h-3.5 w-3.5 flex-shrink-0" />
+              <span className="truncate">{t("tests.tabs.catalog")}</span>
             </TabsTrigger>
           </TabsList>
         </div>

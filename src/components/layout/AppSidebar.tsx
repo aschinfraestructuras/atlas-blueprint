@@ -35,6 +35,8 @@ interface SidebarNavItem {
   adminOnly?: boolean;
   /** If true, this item is visible to the viewer role */
   viewerVisible?: boolean;
+  /** If true, this item is a library/configuration item — shown with muted style */
+  isLibrary?: boolean;
 }
 
 interface SidebarSection {
@@ -64,9 +66,9 @@ const NAV_SECTIONS: SidebarSection[] = [
       { labelKey: "nav.planning",     url: "/planning",      icon: CalendarClock },
       { labelKey: "nav.workItems",    url: "/work-items",    icon: Construction },
       { labelKey: "nav.ppi",          url: "/ppi",           icon: ClipboardCheck, viewerVisible: true },
-      { labelKey: "nav.ppiTemplates", url: "/ppi/templates", icon: ClipboardCheck },
       { labelKey: "nav.dailyReports", url: "/daily-reports", icon: ClipboardList },
       { labelKey: "nav.topography",   url: "/topography",    icon: Crosshair },
+      { labelKey: "nav.ppiTemplates", url: "/ppi/templates", icon: ClipboardCheck, isLibrary: true },
     ],
   },
   {
@@ -74,19 +76,14 @@ const NAV_SECTIONS: SidebarSection[] = [
     sectionIcon: CheckSquare,
     collapsible: true,
     items: [
-      { labelKey: "nav.materials",       url: "/materials",        icon: Package },
-      { labelKey: "nav.recycledMaterials", url: "/recycled-materials", icon: Leaf },
-      { labelKey: "nav.suppliers",       url: "/suppliers",        icon: Truck },
-      { labelKey: "nav.subcontractors",  url: "/subcontractors",   icon: HardHat },
-      { labelKey: "nav.laboratories",    url: "/laboratories",     icon: Building2 },
-      { labelKey: "nav.tests",           url: "/tests",            icon: FlaskConical },
-      { labelKey: "nav.testSchedule",    url: "/tests/schedule",   icon: CalendarClock },
-      { labelKey: "nav.concrete",        url: "/tests/concrete",   icon: FlaskConical },
-      { labelKey: "nav.compaction",      url: "/tests/compaction", icon: FlaskConical },
-      { labelKey: "nav.soils",           url: "/tests/soils",      icon: FlaskConical },
-      { labelKey: "nav.welding",         url: "/tests/welding",    icon: Zap },
-      { labelKey: "nav.nonConformities", url: "/non-conformities", icon: AlertTriangle, viewerVisible: true },
-      { labelKey: "nav.actionPlan",      url: "/action-plan",      icon: ClipboardList },
+      { labelKey: "nav.materials",         url: "/materials",         icon: Package },
+      { labelKey: "nav.tests",             url: "/tests",             icon: FlaskConical },
+      { labelKey: "nav.nonConformities",   url: "/non-conformities",  icon: AlertTriangle, viewerVisible: true },
+      { labelKey: "nav.recycledMaterials", url: "/recycled-materials",icon: Leaf },
+      { labelKey: "nav.suppliers",         url: "/suppliers",         icon: Truck, isLibrary: true },
+      { labelKey: "nav.subcontractors",    url: "/subcontractors",    icon: HardHat, isLibrary: true },
+      { labelKey: "nav.laboratories",      url: "/laboratories",      icon: Building2, isLibrary: true },
+      { labelKey: "nav.actionPlan",        url: "/action-plan",       icon: ClipboardList },
     ],
   },
   {
@@ -416,9 +413,24 @@ function SidebarContent({ collapsed, onClose }: { collapsed: boolean; onClose?: 
                 )}
               >
                 <div className="space-y-[1px]">
-                  {filteredItems.map(item => (
-                    <NavItem key={item.url} item={item} active={isActive(item.url, item.exact)} collapsed={collapsed} onClose={onClose} />
-                  ))}
+                  {filteredItems.map((item, idx) => {
+                    const prevItem = filteredItems[idx - 1];
+                    const isFirstLibrary = item.isLibrary && (!prevItem || !prevItem.isLibrary);
+                    return (
+                      <div key={item.url}>
+                        {isFirstLibrary && !collapsed && (
+                          <div className="flex items-center gap-1.5 px-3 mt-2 mb-1">
+                            <div className="h-px flex-1 bg-sidebar-border/25" />
+                            <span className="text-[9px] font-bold uppercase tracking-[0.15em] text-sidebar-foreground/30">
+                              Configuração
+                            </span>
+                            <div className="h-px flex-1 bg-sidebar-border/25" />
+                          </div>
+                        )}
+                        <NavItem item={item} active={isActive(item.url, item.exact)} collapsed={collapsed} onClose={onClose} />
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>
