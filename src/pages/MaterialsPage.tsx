@@ -181,13 +181,20 @@ export default function MaterialsPage() {
         <TabsList>
           <TabsTrigger value="receptions" className="gap-1.5">
             <Truck className="h-3.5 w-3.5" />
-            Recepções de Obra
+            <span className="hidden sm:inline">Recepções de Obra</span>
+            <span className="sm:hidden">Recepções</span>
             {lots.length > 0 && (
               <span className="ml-1 rounded-full bg-primary/15 text-primary text-[10px] font-bold px-1.5 py-0.5">{lots.length}</span>
             )}
           </TabsTrigger>
-          <TabsTrigger value="materials">{t("pages.materials.title")} — Catálogo PAME</TabsTrigger>
-          <TabsTrigger value="pame">{t("materials.pame.title", { defaultValue: "Plano PAME" })}</TabsTrigger>
+          <TabsTrigger value="materials">
+            <span className="hidden sm:inline">{t("pages.materials.title")} — Catálogo PAME</span>
+            <span className="sm:hidden">Catálogo</span>
+          </TabsTrigger>
+          <TabsTrigger value="pame">
+            <span className="hidden sm:inline">{t("materials.pame.title", { defaultValue: "Plano PAME" })}</span>
+            <span className="sm:hidden">PAME</span>
+          </TabsTrigger>
         </TabsList>
 
         {/* ── TAB: RECEPÇÕES DE OBRA ── */}
@@ -216,7 +223,7 @@ export default function MaterialsPage() {
           ) : (
             <>
               {/* KPIs de lotes */}
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {[
                   { label: "Aprovados", value: lots.filter(l => l.reception_status === "approved").length, color: "text-emerald-600 dark:text-emerald-400", icon: CheckCircle2 },
                   { label: "Em quarentena", value: lots.filter(l => l.reception_status === "quarantine").length, color: "text-amber-600 dark:text-amber-400", icon: AlertTriangle },

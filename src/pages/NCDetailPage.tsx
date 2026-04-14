@@ -134,12 +134,12 @@ function NCStatusStepper({ currentStatus }: { currentStatus: string }) {
   const currentIdx = NC_FLOW.indexOf(currentStatus as any);
 
   return (
-    <div className="flex items-center justify-between gap-1 px-2 py-3 rounded-xl border bg-card">
+    <div className="flex items-center justify-between gap-1 px-2 py-3 rounded-xl border bg-card overflow-x-auto">
       {NC_FLOW.map((step, i) => {
         const isPast = currentIdx > i;
         const isCurrent = currentIdx === i;
         return (
-          <div key={step} className="flex items-center gap-1 flex-1 min-w-0">
+          <div key={step} className="flex items-center gap-1 flex-1 min-w-0 flex-shrink-0">
             <div className={cn(
               "flex items-center justify-center rounded-full h-7 w-7 flex-shrink-0 text-xs font-bold transition-colors",
               isPast && "bg-green-500/15 text-green-600 dark:text-green-400",
@@ -424,7 +424,7 @@ export default function NCDetailPage() {
       <NCStatusStepper currentStatus={nc.status} />
 
       {/* ── Status bar ──────────────────────────────────────────────────── */}
-      <div className="flex flex-wrap gap-3 items-center">
+      <div className="flex flex-wrap gap-2 items-center">
         <Badge className={cn("text-sm px-3 py-1", STATUS_COLORS[nc.status])}>
           {t(`nc.status.${nc.status}`, { defaultValue: nc.status })}
         </Badge>
