@@ -131,31 +131,36 @@ function ProgressCircle({ icon: Icon, label, approved, total, route, colorVar, l
   const animPct = useCountUp(loading ? 0 : pct, { duration: 1000, delay: 200 });
   const isEmpty = total === 0;
   const strokeColor = isEmpty ? "hsl(var(--muted))" : pct >= 70 ? "hsl(145 55% 42%)" : pct >= 40 ? "hsl(38 85% 50%)" : "hsl(var(--destructive))";
-  const C = 2 * Math.PI * 22;
+  // Larger circle for desktop readability
+  const SIZE = 72;
+  const R = 28;
+  const C = 2 * Math.PI * R;
+  const VB = SIZE + 4;
+  const center = VB / 2;
   return (
     <Card className="border border-border/60 bg-card shadow-card cursor-pointer hover:shadow-card-hover hover:border-primary/20 transition-all active:scale-[0.97]"
       onClick={() => navigate(route)}>
-      <CardContent className="p-4 flex flex-col items-center gap-2">
+      <CardContent className="p-5 flex flex-col items-center gap-3">
         <div className="relative">
-          <svg width="56" height="56" viewBox="0 0 52 52">
-            <circle cx="26" cy="26" r="22" fill="none" stroke="hsl(var(--muted))" strokeWidth="4" />
-            {!isEmpty && <circle cx="26" cy="26" r="22" fill="none" stroke={strokeColor} strokeWidth="4" strokeLinecap="round"
-              strokeDasharray={C} strokeDashoffset={C * (1 - animPct / 100)} transform="rotate(-90 26 26)"
+          <svg width={SIZE} height={SIZE} viewBox={`0 0 ${VB} ${VB}`}>
+            <circle cx={center} cy={center} r={R} fill="none" stroke="hsl(var(--muted))" strokeWidth="5" />
+            {!isEmpty && <circle cx={center} cy={center} r={R} fill="none" stroke={strokeColor} strokeWidth="5" strokeLinecap="round"
+              strokeDasharray={C} strokeDashoffset={C * (1 - animPct / 100)} transform={`rotate(-90 ${center} ${center})`}
               style={{ transition: "stroke-dashoffset 1s cubic-bezier(0.16,1,0.3,1)" }} />}
           </svg>
-          <span className={cn("absolute inset-0 flex items-center justify-center text-[11px] font-black tabular-nums",
+          <span className={cn("absolute inset-0 flex items-center justify-center text-sm font-black tabular-nums",
             isEmpty ? "text-muted-foreground/40" : "text-foreground")}>
             {loading ? "—" : isEmpty ? "—" : `${Math.round(animPct)}%`}
           </span>
         </div>
         <div className="flex items-center gap-1.5">
-          <div className="flex items-center justify-center w-5 h-5 rounded-md"
+          <div className="flex items-center justify-center w-6 h-6 rounded-md"
             style={{ backgroundColor: `hsl(var(${colorVar}) / 0.10)` }}>
-            <Icon className="h-3 w-3" style={{ color: `hsl(var(${colorVar}))` }} />
+            <Icon className="h-3.5 w-3.5" style={{ color: `hsl(var(${colorVar}))` }} />
           </div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-muted-foreground truncate">{label}</p>
+          <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-muted-foreground truncate">{label}</p>
         </div>
-        <p className="text-sm font-black tabular-nums">{loading ? "—" : `${approved} / ${total}`}</p>
+        <p className="text-base font-black tabular-nums">{loading ? "—" : `${approved} / ${total}`}</p>
       </CardContent>
     </Card>
   );
@@ -219,8 +224,10 @@ export default function DashboardPage() {
     { icon: Package,        label: t("dashboard.module.materials", { defaultValue: "Materiais PAME" }),    value: kpis.pamePending,   total: undefined,         status: matStatus,   sub: kpis.pamePending === 0 ? "Tudo aprovado" : `${kpis.pamePending} pend.`, route: "/materials" },
   ];
 
+  const isHealthy = !healthLoading && health.health_score >= 80;
+
   return (
-    <div className="space-y-5 max-w-[1180px] mx-auto">
+    <div className="space-y-5 max-w-[1180px] mx-auto overflow-x-hidden">
 
       {/* HEADER */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 animate-fade-in">
@@ -244,7 +251,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* ALERTAS — só aparece se houver */}
+      {/* ALERTAS */}
       {hasAlerts && (
         <div className="space-y-2 animate-fade-in">
           <CriticalAlertsBanner ncOpen={kpis.ncOpen} ncOverdue={health.total_nc_overdue}
@@ -254,45 +261,65 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* HEALTH + 4 MODULE CARDS — sempre visível */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 animate-fade-in" style={{ animationDelay: "60ms", animationFillMode: "both" }}>
-
-        {/* Health Score com anel pulsante */}
-        <Card className="border border-border/60 bg-card shadow-card flex flex-col items-center justify-center py-5 cursor-pointer hover:shadow-card-hover transition-all active:scale-[0.97] sm:col-span-2 lg:col-span-1 relative overflow-hidden"
-          onClick={() => setHealthSheetOpen(true)}>
-          {!healthLoading && health.health_status === "healthy" && (
-            <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+      {/* ── HEALTH SCORE — proeminente ── */}
+      <style>{`@keyframes healthPulse { 0%,100%{box-shadow:0 0 0 0 hsl(145 55% 42%/0.15)} 50%{box-shadow:0 0 0 12px hsl(145 55% 42%/0)} }`}</style>
+      <Card
+        className={cn(
+          "border border-border/60 bg-card shadow-card cursor-pointer hover:shadow-card-hover transition-all active:scale-[0.98] relative overflow-hidden",
+          isHealthy && "border-emerald-400/30",
+        )}
+        style={isHealthy ? { animation: "healthPulse 3s ease-in-out infinite" } : undefined}
+        onClick={() => setHealthSheetOpen(true)}
+      >
+        <CardContent className="py-6 px-6 flex flex-col sm:flex-row items-center gap-5">
+          {/* Decorative rings when healthy */}
+          {isHealthy && (
+            <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-30">
               <style>{`@keyframes dashRing { 0%,100%{transform:scale(1);opacity:.5} 50%{transform:scale(1.07);opacity:.12} }`}</style>
-              <div className="absolute rounded-full border border-emerald-400/20" style={{ width: 155, height: 155, animation: "dashRing 4s ease-in-out infinite" }} />
-              <div className="absolute rounded-full border border-emerald-400/10" style={{ width: 195, height: 195, animation: "dashRing 4s ease-in-out infinite 1s" }} />
+              <div className="absolute rounded-full border border-emerald-400/20" style={{ width: 180, height: 180, animation: "dashRing 4s ease-in-out infinite" }} />
+              <div className="absolute rounded-full border border-emerald-400/10" style={{ width: 220, height: 220, animation: "dashRing 4s ease-in-out infinite 1s" }} />
             </div>
           )}
-          <div className="relative z-10 scale-[0.88] origin-center">
+          <div className="relative z-10">
             <HealthGauge score={health.health_score} status={health.health_status} loading={healthLoading} />
           </div>
-          <p className="relative z-10 text-[9px] font-bold uppercase tracking-[0.18em] text-muted-foreground mt-0.5">
-            {t("health.score", { defaultValue: "Health Score" })}
-          </p>
-        </Card>
-        <HealthScoreSheet open={healthSheetOpen} onOpenChange={setHealthSheetOpen} health={health} loading={healthLoading} />
+          <div className="relative z-10 flex flex-col items-center sm:items-start gap-1.5 text-center sm:text-left">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">
+              {t("health.score", { defaultValue: "Health Score" })}
+            </p>
+            <p className="text-[11px] text-muted-foreground/60 max-w-[280px] leading-relaxed">
+              {t("health.explanation", { defaultValue: "Score calculado com base em NCs, PPIs, ensaios e materiais" })}
+            </p>
+            <div className="flex items-center gap-1 mt-1 text-[10px] text-primary font-semibold">
+              <span>{t("health.seeDetails", { defaultValue: "Ver detalhes" })}</span>
+              <ArrowRight className="h-3 w-3" />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+      <HealthScoreSheet open={healthSheetOpen} onOpenChange={setHealthSheetOpen} health={health} loading={healthLoading} />
 
-        {/* Module cards */}
-        {modules.map((mod, i) => {
+      {/* ── MODULE CARDS — 2x2 mobile, 4 cols desktop ── */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 animate-fade-in" style={{ animationDelay: "60ms", animationFillMode: "both" }}>
+        {modules.map((mod) => {
           const color = colorMap[mod.status];
           const Icon = mod.icon;
           return (
-            <Card key={mod.route} className="border border-border/60 bg-card shadow-card cursor-pointer hover:shadow-card-hover transition-all active:scale-[0.97] group relative overflow-hidden"
-              onClick={() => navigate(mod.route)}>
-              <div className="absolute top-0 left-0 right-0 h-0.5" style={{ backgroundColor: color }} />
-              <CardContent className="p-4 flex items-center gap-3.5">
-                <div className="relative flex-shrink-0">
-                  <div className="flex items-center justify-center w-11 h-11 rounded-xl transition-transform group-hover:scale-105"
-                    style={{ backgroundColor: `${color.replace("hsl(", "").replace(")", "")}`.replace("hsl(", ""), background: `color-mix(in srgb, ${color} 9%, transparent)` }}>
+            <Card
+              key={mod.route}
+              className="border border-border/60 bg-card shadow-card cursor-pointer hover:shadow-lg hover:-translate-y-0.5 transition-all active:scale-[0.97] group relative overflow-hidden"
+              style={{ borderLeftWidth: 4, borderLeftColor: color }}
+              onClick={() => navigate(mod.route)}
+            >
+              <CardContent className="p-4 flex flex-col gap-2.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-center w-10 h-10 rounded-xl"
+                    style={{ background: `color-mix(in srgb, ${color} 9%, transparent)` }}>
                     <Icon className="h-5 w-5" style={{ color }} />
                   </div>
-                  <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-card" style={{ backgroundColor: color }} />
+                  <span className="w-2.5 h-2.5 rounded-full border-2 border-card" style={{ backgroundColor: color }} />
                 </div>
-                <div className="flex-1 min-w-0">
+                <div className="min-w-0">
                   <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground truncate">{mod.label}</p>
                   {kpiLoading ? <Skeleton className="h-7 w-12 mt-0.5" /> :
                     <div className="flex items-baseline gap-1 mt-0.5">
@@ -301,6 +328,8 @@ export default function DashboardPage() {
                     </div>}
                   <p className="text-[10px] text-muted-foreground/60 truncate mt-0.5">{mod.sub}</p>
                 </div>
+                {/* Hover arrow */}
+                <ArrowRight className="absolute bottom-3 right-3 h-3.5 w-3.5 text-muted-foreground/0 group-hover:text-muted-foreground/50 transition-all" />
               </CardContent>
             </Card>
           );
@@ -321,9 +350,9 @@ export default function DashboardPage() {
           </TabsTrigger>
         </TabsList>
 
-        {/* TAB: VISÃO GERAL */}
+        {/* TAB: VISÃO GERAL — SparklineKPIs num grid uniforme */}
         <TabsContent value="overview" className="space-y-5 mt-4">
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-3 [&>*]:min-h-[100px]">
             <SparklineKPI label={t("dashboard.kpi.ncOpen",        { defaultValue: "NCs Abertas" })}   value={kpis.ncOpen}          icon={AlertTriangle}  color="0 65% 50%"   sparkData={ncSpark}    onClick={() => navigate("/non-conformities")} loading={kpiLoading} />
             <SparklineKPI label={t("dashboard.kpi.testsOverdue",  { defaultValue: "Ensaios Atraso" })} value={kpis.testsOverdue}    icon={Clock}          color="38 85% 50%"  onClick={() => navigate("/tests")}             loading={kpiLoading} />
             <SparklineKPI label={t("dashboard.kpi.pamePending",   { defaultValue: "PAME Pendentes" })} value={kpis.pamePending}     icon={Package}        color="215 65% 38%" onClick={() => navigate("/materials")}         loading={kpiLoading} />
@@ -348,11 +377,16 @@ export default function DashboardPage() {
         </TabsContent>
 
         {/* TAB: TENDÊNCIAS */}
-        <TabsContent value="trends" className="space-y-4 mt-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <NCTrendChart data={filteredNcMonthly} loading={viewsLoading} />
-            <WorkProgressChart />
-            <PPIProgressChart />
+        <TabsContent value="trends" className="space-y-5 mt-4">
+          <div>
+            <p className="text-[9px] font-extrabold uppercase tracking-[0.22em] text-muted-foreground/50 mb-3 flex items-center gap-1.5">
+              <BarChart3 className="h-3 w-3" />{t("dashboard.trends.monthly", { defaultValue: "Tendência Mensal" })}
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <NCTrendChart data={filteredNcMonthly} loading={viewsLoading} />
+              <WorkProgressChart />
+              <PPIProgressChart />
+            </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-[1fr_360px] gap-4">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -397,24 +431,24 @@ export default function DashboardPage() {
           <ConformityByFrenteChart />
         </TabsContent>
 
-        {/* TAB: MÓDULOS */}
+        {/* TAB: MÓDULOS — grid 3x2 com ícones grandes */}
         <TabsContent value="access" className="space-y-5 mt-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {[
               { icon: AlertTriangle, label: t("nav.expirations", { defaultValue: "Expirações" }), sub: t("dashboard.expirations.subtitle", { defaultValue: "Docs e calibrações a expirar em 30d" }), badge: kpiLoading ? "—" : String(kpis.emesExpiring30d), danger: kpis.emesExpiring30d > 0, route: "/expirations", color: "hsl(0 65% 50%)" },
               { icon: Leaf,          label: t("recycled.dashboard.widget", { defaultValue: "PPGRCD — Reciclados" }), sub: `${t("recycled.kpi.target", { defaultValue: "Meta PPGRCD" })}: 5%`, badge: null, danger: false, route: "/recycled-materials", color: "hsl(145 55% 42%)" },
             ].map(({ icon: Icon, label, sub, badge, danger, route, color }) => (
-              <Card key={route} className="cursor-pointer hover:shadow-card-hover transition-all border-border/60 active:scale-[0.97] group" onClick={() => navigate(route)}>
-                <CardContent className="p-4 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: `color-mix(in srgb, ${color} 10%, transparent)` }}>
-                    <Icon className="h-4.5 w-4.5" style={{ color, width: "1.125rem", height: "1.125rem" }} />
+              <Card key={route} className="cursor-pointer hover:shadow-lg hover:-translate-y-0.5 transition-all border-border/60 active:scale-[0.97] group" onClick={() => navigate(route)}>
+                <CardContent className="p-5 flex flex-col items-center text-center gap-3">
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: `color-mix(in srgb, ${color} 10%, transparent)` }}>
+                    <Icon className="h-6 w-6" style={{ color }} />
                   </div>
-                  <div className="flex-1 min-w-0">
+                  <div className="min-w-0">
                     <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{label}</p>
-                    <p className="text-[10px] text-muted-foreground/60">{sub}</p>
+                    <p className="text-[10px] text-muted-foreground/60 mt-0.5">{sub}</p>
                   </div>
                   {badge && <Badge variant={danger ? "destructive" : "secondary"} className="text-[11px] font-black px-2">{badge}</Badge>}
-                  <ArrowRight className="h-3.5 w-3.5 text-muted-foreground/30 group-hover:text-muted-foreground/60 transition-colors flex-shrink-0" />
+                  <ArrowRight className="h-3.5 w-3.5 text-muted-foreground/0 group-hover:text-muted-foreground/50 transition-all" />
                 </CardContent>
               </Card>
             ))}
