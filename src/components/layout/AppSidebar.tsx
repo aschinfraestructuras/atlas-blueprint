@@ -54,7 +54,8 @@ const NAV_SECTIONS: SidebarSection[] = [
     sectionIcon: LayoutDashboard,
     collapsible: false,
     items: [
-      { labelKey: "nav.dashboard", url: "/", icon: LayoutDashboard, exact: true, viewerVisible: true },
+      { labelKey: "nav.dashboard",        url: "/",                 icon: LayoutDashboard, exact: true, viewerVisible: true },
+      { labelKey: "nav.directionPortal",  url: "/direction-portal", icon: Building2,       viewerVisible: true },
     ],
   },
   {

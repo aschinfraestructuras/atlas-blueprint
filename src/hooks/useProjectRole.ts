@@ -50,6 +50,7 @@ export function useProjectRole() {
   const isAdmin = role === "admin";
   const isManager = role === "admin" || role === "project_manager";
   const isQuality = role === "quality_manager" || isManager;
+  const isViewer = role === "viewer";
   const canCreate = can("create");
   const canEdit = can("edit");
   const canDelete = can("delete");
@@ -62,6 +63,7 @@ export function useProjectRole() {
     isAdmin,
     isManager,
     isQuality,
+    isViewer,
     canCreate,
     canEdit,
     canDelete,
