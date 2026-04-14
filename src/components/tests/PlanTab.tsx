@@ -519,7 +519,7 @@ export function PlanTab() {
                         onClick={async () => {
                           try {
                             await (supabase as any).from("test_plans").update({ status: "active" }).eq("id", activePlan.id);
-                            await loadPlans();
+                            await refetch();
                             toast({ title: "Plano activado", description: "Pode agora gerar agendamentos na tab Agendados." });
                           } catch { toast({ title: "Erro ao activar plano", variant: "destructive" }); }
                         }}
