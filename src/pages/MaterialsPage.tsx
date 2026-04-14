@@ -115,9 +115,9 @@ export default function MaterialsPage() {
   ]);
 
   // KPI counts
-  const approvedCount = materials.filter(m => m.approval_status === "approved").length;
-  const pendingCount = materials.filter(m => ["pending", "submitted", "in_review"].includes(m.approval_status)).length;
-  const quarantineCount = materials.filter(m => (m as any).pame_status === "quarantine" || m.approval_status === "rejected").length;
+  const approvedCount   = materials.filter(m => (m as any).pame_status === "approved").length;
+  const pendingCount    = materials.filter(m => ["pending", "submitted", "in_review"].includes((m as any).pame_status ?? "pending")).length;
+  const quarantineCount = materials.filter(m => (m as any).pame_status === "quarantine" || (m as any).pame_status === "rejected").length;
 
   const getApprovalInfo = (m: Material) => {
     const status = (m as any).pame_status || m.approval_status || "pending";
