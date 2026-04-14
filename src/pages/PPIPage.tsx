@@ -255,7 +255,7 @@ export default function PPIPage() {
       )}
 
       {/* ── Filters ─────────────────────────────────────────────────── */}
-      <div className="flex flex-wrap gap-3 items-center">
+      <div className="flex flex-wrap gap-2 items-center">
         <div className="relative flex-1 min-w-[200px] max-w-xs">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
           <Input
@@ -298,11 +298,15 @@ export default function PPIPage() {
         {/* Toggle vista */}
         <div className="flex items-center border border-border rounded-lg overflow-hidden">
           <button onClick={() => setViewMode("table")}
-            className={`px-2.5 py-1.5 text-xs transition-colors ${viewMode === "table" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
-            title="Vista tabela">☰</button>
+            className={cn("px-2.5 py-1.5 text-xs transition-colors min-h-[32px] min-w-[32px] flex items-center justify-center", viewMode === "table" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted")}
+            title="Vista tabela" aria-label="Vista tabela">
+            <ClipboardList className="h-3.5 w-3.5" />
+          </button>
           <button onClick={() => setViewMode("cards")}
-            className={`px-2.5 py-1.5 text-xs transition-colors ${viewMode === "cards" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
-            title="Vista cards">⊞</button>
+            className={cn("px-2.5 py-1.5 text-xs transition-colors min-h-[32px] min-w-[32px] flex items-center justify-center", viewMode === "cards" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted")}
+            title="Vista cards" aria-label="Vista cards">
+            <Square className="h-3.5 w-3.5" />
+          </button>
         </div>
         {/* Export menu — appears when rows exist */}
         {filtered.length > 0 && (
