@@ -62,9 +62,8 @@ export const testDueService = {
   },
 
   async generateDueTests(projectId: string): Promise<{ count: number; diagnosis: string | null }> {
-    // Diagnóstico pré-geração: verificar pré-condições
     try {
-      const [{ data: plans }, { data: wis }] = await Promise.all([
+      const [{ data: plans }, { data: wis }, { data: rules }] = await Promise.all([
         (supabase as any).from("test_plans")
           .select("id, status, title")
           .eq("project_id", projectId)
@@ -73,23 +72,35 @@ export const testDueService = {
           .select("id, status")
           .eq("project_id", projectId)
           .eq("is_deleted", false)
-          .in("status", ["in_progress", "active", "planned"]),
+          .in("status", ["in_progress", "active"]), // apenas obra real
+        (supabase as any).from("test_plan_rules")
+          .select("id, frequency_type, test_plans(status)")
+          .eq("is_active", true)
+          .neq("frequency_type", "manual"),         // regras manuais não contam
       ]);
 
       const activePlans = (plans ?? []).filter((p: any) => p.status === "active");
+      const activeRules = (rules ?? []).filter((r: any) => r.test_plans?.status === "active");
+
       if (activePlans.length === 0) {
         const draftPlans = (plans ?? []).filter((p: any) => p.status === "draft");
         return {
           count: 0,
           diagnosis: draftPlans.length > 0
-            ? `O Plano de Ensaios está em Rascunho — precisa de ser Activado antes de gerar agendamentos.`
-            : "Nenhum Plano de Ensaios activo encontrado. Configure o plano na tab Planos.",
+            ? `O Plano de Ensaios está em Rascunho — tem de ser Activado na tab Planos antes de gerar agendamentos.`
+            : "Nenhum Plano de Ensaios activo. Configure o plano na tab Planos.",
+        };
+      }
+      if (activeRules.length === 0) {
+        return {
+          count: 0,
+          diagnosis: "O plano activo só tem regras Manuais — estas são criadas uma a uma quando necessário, não em bloco. Os agendamentos automáticos requerem regras do tipo Quantidade, Tempo ou Evento.",
         };
       }
       if ((wis ?? []).length === 0) {
         return {
           count: 0,
-          diagnosis: "Nenhum Elemento de Obra em curso encontrado. Inicie trabalhos na página Elementos de Obra.",
+          diagnosis: "Nenhum Elemento de Obra em curso (in_progress ou active). Os agendamentos são gerados quando os trabalhos começam — inicie os WIs na página Elementos de Obra.",
         };
       }
     } catch { /* não bloquear se diagnóstico falhar */ }
