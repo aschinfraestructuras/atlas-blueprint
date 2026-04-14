@@ -12894,6 +12894,15 @@ export type Database = {
         Returns: boolean
       }
       fn_claim_my_pending_invites: { Args: never; Returns: Json }
+      fn_complete_due_from_result: {
+        Args: {
+          p_project_id: string
+          p_test_id: string
+          p_test_result_id: string
+          p_work_item_id?: string
+        }
+        Returns: number
+      }
       fn_create_document: {
         Args: {
           p_disciplina?: string
@@ -13407,6 +13416,7 @@ export type Database = {
           items_created: number
         }[]
       }
+      fn_create_reception_nc: { Args: { p_lot_id: string }; Returns: Json }
       fn_create_supplier: {
         Args: {
           p_address?: string
