@@ -27,6 +27,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { MaterialFormDialog } from "@/components/materials/MaterialFormDialog";
+import { MaterialReceptionDialog } from "@/components/materials/MaterialReceptionDialog";
 import { FilterBar } from "@/components/ui/filter-bar";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import { Card, CardContent } from "@/components/ui/card";
@@ -65,6 +66,8 @@ export default function MaterialsPage() {
   const [deleteTarget, setDeleteTarget] = useState<Material | null>(null);
   const [lots, setLots] = useState<any[]>([]);
   const [lotsLoading, setLotsLoading] = useState(true);
+  const [receptionTarget, setReceptionTarget] = useState<Material | null>(null);
+  const [receptionOpen, setReceptionOpen] = useState(false);
 
   // Carregar todos os lotes do projecto com joins
   useEffect(() => {
@@ -204,11 +207,28 @@ export default function MaterialsPage() {
               <p className="text-sm font-semibold text-foreground">Recepções de material em obra</p>
               <p className="text-xs text-muted-foreground">Lotes recepcionados — registos reais de entrega e controlo</p>
             </div>
-            {canCreate && (
-              <Button size="sm" className="gap-1.5" onClick={() => navigate("/materials")}>
-                <Plus className="h-3.5 w-3.5" />
-                Nova Recepção
-              </Button>
+            {canCreate && materials.length > 0 && (
+              <div className="flex items-center gap-2">
+                <Select
+                  value=""
+                  onValueChange={(matId) => {
+                    const mat = materials.find(m => m.id === matId);
+                    if (mat) { setReceptionTarget(mat); setReceptionOpen(true); }
+                  }}
+                >
+                  <SelectTrigger className="h-8 w-[180px] text-sm gap-1.5">
+                    <Plus className="h-3.5 w-3.5 text-muted-foreground" />
+                    <SelectValue placeholder="Nova Recepção" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {materials.filter(m => m.status !== "archived").map(m => (
+                      <SelectItem key={m.id} value={m.id}>
+                        <span className="font-mono text-xs">{m.code}</span> — {m.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             )}
           </div>
 
@@ -532,6 +552,26 @@ export default function MaterialsPage() {
           )}
 
           <MaterialFormDialog open={dialogOpen} onOpenChange={setDialogOpen} material={editingMaterial} onSuccess={refetch} />
+          {receptionTarget && (
+            <MaterialReceptionDialog
+              open={receptionOpen}
+              onOpenChange={(o) => { setReceptionOpen(o); if (!o) setReceptionTarget(null); }}
+              projectId={activeProject!.id}
+              material={receptionTarget}
+              onSuccess={async () => {
+                setReceptionTarget(null);
+                setReceptionOpen(false);
+                // Recarregar lotes
+                const { data } = await (supabase as any)
+                  .from("material_lots")
+                  .select("*, materials(code, name, category, unit)")
+                  .eq("project_id", activeProject!.id)
+                  .eq("is_deleted", false)
+                  .order("reception_date", { ascending: false });
+                setLots(data ?? []);
+              }}
+            />
+          )}
           <AlertDialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
             <AlertDialogContent>
               <AlertDialogHeader>
@@ -623,7 +663,11 @@ function PameTab({ materials }: { materials: Material[] }) {
             </TableHeader>
             <TableBody>
               {pameItems.map(m => (
-                <TableRow key={m.id} className="hover:bg-muted/20">
+                <TableRow
+                  key={m.id}
+                  className="hover:bg-muted/20 cursor-pointer"
+                  onClick={() => navigate(`/materials/${m.id}`)}
+                >
                   <TableCell className="font-mono text-xs">{(m as any).pame_code}</TableCell>
                   <TableCell className="text-sm font-medium text-foreground">{m.name}</TableCell>
                   <TableCell className="text-sm text-muted-foreground">{t(`nc.discipline.${(m as any).pame_disciplina}`, { defaultValue: (m as any).pame_disciplina ?? "—" })}</TableCell>
