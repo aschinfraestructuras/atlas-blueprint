@@ -6,6 +6,7 @@ import { useProject } from "@/contexts/ProjectContext";
 import { useDashboardKpis } from "@/hooks/useDashboardKpis";
 import { useDashboardViews } from "@/hooks/useDashboardViews";
 import { useProjectHealth } from "@/hooks/useProjectHealth";
+import { useProjectRole } from "@/hooks/useProjectRole";
 import { useRealtimeProject } from "@/hooks/useRealtimeProject";
 import { useCountUp } from "@/hooks/useCountUp";
 import {
@@ -171,12 +172,20 @@ export default function DashboardPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { activeProject } = useProject();
+  const { role } = useProjectRole();
   const { data: kpis, loading: kpiLoading, refetch } = useDashboardKpis();
   const { ncMonthly, testsMonthly, loading: viewsLoading } = useDashboardViews();
   const { health, loading: healthLoading } = useProjectHealth(activeProject?.id);
   const [healthSheetOpen, setHealthSheetOpen] = useState(false);
   const [period, setPeriod] = useState("all");
   const [activeTab, setActiveTab] = useState("overview");
+
+  // Viewers são redirecionados automaticamente para o Portal Direcção de Obra
+  useEffect(() => {
+    if (role === "viewer") {
+      navigate("/direction-portal", { replace: true });
+    }
+  }, [role, navigate]);
 
   const refetchAll = useCallback(() => { refetch(); }, [refetch]);
   useRealtimeProject("non_conformities", refetchAll);
