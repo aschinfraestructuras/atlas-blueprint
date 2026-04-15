@@ -92,7 +92,8 @@
     "more": "más",
     "pkFrom": "PK Inicio",
     "pkTo": "PK Fin",
-    "apply": "Aplicar"
+    "apply": "Aplicar",
+    "locale": "es-ES"
   },
   "auth": {
     "signIn": "Iniciar sesión",
@@ -3421,7 +3422,16 @@
       "printLabel": "Imprimir etiqueta"
     },
     "deleteConfirm": "¿Está seguro de que desea eliminar este material?",
-    "deleteConfirmTitle": "Eliminar Material"
+    "deleteConfirmTitle": "Eliminar Material",
+    "reception_tab": {
+      "tabLabel": "Recepciones de Obra",
+      "sectionTitle": "Recepciones de material en obra",
+      "sectionSubtitle": "Lotes recepcionados — registros reales de entrega y control",
+      "newReception": "Nueva Recepción",
+      "catalogTab": "Catálogo PAME",
+      "tabLabelShort": "Recepciones",
+      "catalogTabShort": "Catálogo"
+    }
   },
   "settings": {
     "integrations": {
@@ -5369,5 +5379,32 @@
       "critical": "Crítico",
       "noData": "Sin datos"
     }
+  },
+  "portal": {
+    "title": "Portal Dirección de Obra",
+    "updatedAt": "Actualizado",
+    "nc": "No Conformidades",
+    "ncOpen": "{{count}} abierta(s)",
+    "ncNone": "Sin alertas",
+    "ppiApproved": "PPIs aprobadas",
+    "testsCompleted": "Ensayos realizados",
+    "testsOverdue": "{{count}} ensayo(s) en retraso",
+    "testsNone": "Sin retrasos",
+    "materials": "Materiales PAME",
+    "materialsDone": "Todo aprobado",
+    "materialsPending": "pendientes de aprobación",
+    "progressTitle": "Progreso de calidad",
+    "progressTests": "Ensayos realizados",
+    "progressMaterials": "Materiales PAME aprobados",
+    "progressPpi": "Inspecciones PPI aprobadas",
+    "alertsTitle": "Alertas y pendientes",
+    "ncAlert": "{{count}} NC(s) abiertas",
+    "testsAlert": "{{count}} ensayo(s) en retraso",
+    "noAlerts": "Sin alertas activas",
+    "reportsTitle": "Informes y documentos",
+    "ppiLabel": "PPIs aprobadas",
+    "ncLabel": "No Conformidades",
+    "materialsLabel": "Materiales PAME",
+    "emesAlert": "{{count}} expiraciones en los próximos 30 días"
   }
 }

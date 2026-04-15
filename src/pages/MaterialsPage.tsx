@@ -184,15 +184,15 @@ export default function MaterialsPage() {
         <TabsList>
           <TabsTrigger value="receptions" className="gap-1.5">
             <Truck className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">Recepções de Obra</span>
-            <span className="sm:hidden">Recepções</span>
+            <span className="hidden sm:inline">{t("materials.reception_tab.tabLabel")}</span>
+            <span className="sm:hidden">{t("materials.reception_tab.tabLabelShort", { defaultValue: "Recepções" })}</span>
             {lots.length > 0 && (
               <span className="ml-1 rounded-full bg-primary/15 text-primary text-[10px] font-bold px-1.5 py-0.5">{lots.length}</span>
             )}
           </TabsTrigger>
           <TabsTrigger value="materials">
-            <span className="hidden sm:inline">{t("pages.materials.title")} — Catálogo PAME</span>
-            <span className="sm:hidden">Catálogo</span>
+            <span className="hidden sm:inline">{t("pages.materials.title")} — {t("materials.reception_tab.catalogTab")}</span>
+            <span className="sm:hidden">{t("materials.reception_tab.catalogTabShort", { defaultValue: "Catálogo" })}</span>
           </TabsTrigger>
           <TabsTrigger value="pame">
             <span className="hidden sm:inline">{t("materials.pame.title", { defaultValue: "Plano PAME" })}</span>
@@ -204,8 +204,8 @@ export default function MaterialsPage() {
         <TabsContent value="receptions" className="space-y-4 mt-4">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-semibold text-foreground">Recepções de material em obra</p>
-              <p className="text-xs text-muted-foreground">Lotes recepcionados — registos reais de entrega e controlo</p>
+              <p className="text-sm font-semibold text-foreground">{t("materials.reception_tab.sectionTitle")}</p>
+              <p className="text-xs text-muted-foreground">{t("materials.reception_tab.sectionSubtitle")}</p>
             </div>
             {canCreate && materials.length > 0 && (
               <div className="flex items-center gap-2">
@@ -222,7 +222,7 @@ export default function MaterialsPage() {
                 >
                   <SelectTrigger className="h-8 w-[180px] text-sm gap-1.5">
                     <Plus className="h-3.5 w-3.5 text-muted-foreground" />
-                    <SelectValue placeholder="Nova Recepção" />
+                    <SelectValue placeholder={t("materials.reception_tab.newReception")} />
                   </SelectTrigger>
                   <SelectContent>
                     {materials.filter(m => m.status !== "archived").map(m => (

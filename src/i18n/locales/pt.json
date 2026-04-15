@@ -92,7 +92,8 @@
     "more": "mais",
     "pkFrom": "PK Início",
     "pkTo": "PK Fim",
-    "apply": "Aplicar"
+    "apply": "Aplicar",
+    "locale": "pt-PT"
   },
   "auth": {
     "signIn": "Iniciar sessão",
@@ -3336,6 +3337,15 @@
     "deleteConfirmTitle": "Eliminar Material",
     "export": {
       "reportTitle": "Ficha de Material"
+    },
+    "reception_tab": {
+      "tabLabel": "Recepções de Obra",
+      "sectionTitle": "Recepções de material em obra",
+      "sectionSubtitle": "Lotes recepcionados — registos reais de entrega e controlo",
+      "newReception": "Nova Recepção",
+      "catalogTab": "Catálogo PAME",
+      "tabLabelShort": "Recepções",
+      "catalogTabShort": "Catálogo"
     }
   },
   "settings": {
@@ -5369,5 +5379,32 @@
       "critical": "Crítico",
       "noData": "Sem dados"
     }
+  },
+  "portal": {
+    "title": "Portal Direcção de Obra",
+    "updatedAt": "Actualizado",
+    "nc": "Não Conformidades",
+    "ncOpen": "{{count}} em aberto",
+    "ncNone": "Sem alertas",
+    "ppiApproved": "PPIs aprovadas",
+    "testsCompleted": "Ensaios realizados",
+    "testsOverdue": "{{count}} ensaio(s) em atraso",
+    "testsNone": "Sem atrasos",
+    "materials": "Materiais PAME",
+    "materialsDone": "Tudo aprovado",
+    "materialsPending": "pendentes de aprovação",
+    "progressTitle": "Progresso de qualidade",
+    "progressTests": "Ensaios realizados",
+    "progressMaterials": "Materiais PAME aprovados",
+    "progressPpi": "Inspecções PPI aprovadas",
+    "alertsTitle": "Alertas e pendências",
+    "ncAlert": "{{count}} NC(s) em aberto",
+    "testsAlert": "{{count}} ensaio(s) em atraso",
+    "noAlerts": "Sem alertas activos",
+    "reportsTitle": "Relatórios e documentos",
+    "ppiLabel": "PPIs aprovadas",
+    "ncLabel": "Não Conformidades",
+    "materialsLabel": "Materiais PAME",
+    "emesAlert": "{{count}} expirações nos próximos 30 dias"
   }
 }
