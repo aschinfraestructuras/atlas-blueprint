@@ -423,7 +423,7 @@ function SidebarContent({ collapsed, onClose }: { collapsed: boolean; onClose?: 
                           <div className="flex items-center gap-1.5 px-3 mt-2 mb-1">
                             <div className="h-px flex-1 bg-sidebar-border/25" />
                             <span className="text-[9px] font-bold uppercase tracking-[0.15em] text-sidebar-foreground/30">
-                              Configuração
+                              {t("nav.sections.configuration")}
                             </span>
                             <div className="h-px flex-1 bg-sidebar-border/25" />
                           </div>

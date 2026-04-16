@@ -376,7 +376,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Radar de Qualidade Integrado */}
-          <div className="grid grid-cols-1 md:grid-cols-[1fr_360px] gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_minmax(320px,420px)] gap-4">
             <QualityOverviewChart
               ncOpen={kpis.ncOpen}
               ncTotal={kpis.ncOpen + (kpis.testsCompleted > 0 ? kpis.testsCompleted : 1)}

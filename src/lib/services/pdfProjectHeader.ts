@@ -63,7 +63,7 @@ export function fullPdfHeader(
   const dono = donoObra && donoObra !== "—" ? donoObra : (meta?.client ?? "—");
 
   const logoHtml = logoBase64
-    ? `<img src="${logoBase64}" style="height:18mm;max-width:60mm;object-fit:contain;" />`
+    ? `<img src="${logoBase64}" style="height:24mm;max-width:80mm;object-fit:contain;" />`
     : `<div style="width:50mm;height:16mm;background:#192F48;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;font-weight:900;letter-spacing:-0.5px;">ATLAS</div>`;
 
   return `
