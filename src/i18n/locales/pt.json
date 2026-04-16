@@ -4062,7 +4062,9 @@
     "viewPpis": "Ver PPIs pendentes",
     "viewTests": "Ver ensaios em atraso",
     "systemTab": "Sistema",
-    "sidebarScore": "Score"
+    "sidebarScore": "Score",
+    "explanation": "Score calculado com base em NCs, PPIs, ensaios e materiais",
+    "seeDetails": "Ver detalhes"
   },
   "moduleKpi": {
     "total": "Total",
