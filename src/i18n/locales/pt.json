@@ -171,7 +171,8 @@
       "execution": "Execução",
       "quality": "Qualidade",
       "documentation": "Documentação",
-      "reports": "Relatórios"
+      "reports": "Relatórios",
+      "configuration": "Configuração"
     },
     "dashboard": "Painel Geral",
     "directionPortal": "Portal Direcção de Obra",
@@ -279,7 +280,8 @@
       "ppiTotal": "PPIs Registados",
       "ppiApproved": "{count} aprovados",
       "weldsPendingUtShort": "Soldaduras s/ US",
-      "pendingInspection": "Pendentes de inspecção"
+      "pendingInspection": "Pendentes de inspecção",
+      "testsCompleted": "Ensaios Feitos"
     },
     "period": {
       "all": "Todo o período",
@@ -308,7 +310,10 @@
       "noPending": "0 pendentes",
       "allInspected": "Todas inspecionadas",
       "noData": "Sem dados ainda",
-      "target": "Meta"
+      "target": "Meta",
+      "conform": "Conforme",
+      "alert": "Alerta",
+      "critical": "Crítico"
     },
     "hpPending": "HPs Sem Confirmação",
     "noData": "Sem dados",
@@ -383,7 +388,17 @@
       "conform": "conf.",
       "allInspected": "Tudo inspeccionado",
       "pendingItems": "Pendentes"
-    }
+    },
+    "radar": {
+      "nc": "NCs",
+      "ppi": "PPIs",
+      "tests": "Ensaios",
+      "materials": "Materiais",
+      "health": "Saúde",
+      "avg": "Média"
+    },
+    "rmsgqOverdue": "RMSGQ em atraso {{days}}d",
+    "rmsgqDue": "RMSGQ prazo em {{days}}d"
   },
   "emptyState": {
     "title": "Ainda sem dados",

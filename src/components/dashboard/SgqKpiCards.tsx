@@ -115,7 +115,7 @@ export function SgqKpiCards({ projectId }: { projectId: string }) {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
         {Array.from({ length: 5 }).map((_, i) => (
           <Skeleton key={i} className="h-24 w-full rounded-lg" />
         ))}
@@ -124,10 +124,10 @@ export function SgqKpiCards({ projectId }: { projectId: string }) {
   }
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
       {metrics.map((m) => (
         <Card key={m.label} className={cn("border transition-all hover:shadow-md cursor-default", semaphoreColor(m.status))}>
-          <CardContent className="p-4 flex flex-col gap-2">
+          <CardContent className="p-3 sm:p-4 flex flex-col gap-1.5 sm:gap-2">
             <div className="flex items-center justify-between">
               <m.icon className="h-4 w-4 opacity-60" />
               <Badge variant="outline" className={cn("text-[9px] px-1.5 py-0 font-semibold border-current/30",
@@ -135,7 +135,7 @@ export function SgqKpiCards({ projectId }: { projectId: string }) {
                 m.status === "alerta" ? "text-amber-700" :
                 m.status === "critico" ? "text-destructive" : "text-muted-foreground"
               )}>
-                {m.status === "ok" ? "Conforme" : m.status === "alerta" ? "Alerta" : m.status === "critico" ? "Crítico" : "—"}
+                {m.status === "ok" ? t("dashboard.sgqKpi.conform") : m.status === "alerta" ? t("dashboard.sgqKpi.alert") : m.status === "critico" ? t("dashboard.sgqKpi.critical") : "—"}
               </Badge>
             </div>
             <p className="text-[9px] font-bold uppercase tracking-widest opacity-60 leading-tight">{m.label}</p>
