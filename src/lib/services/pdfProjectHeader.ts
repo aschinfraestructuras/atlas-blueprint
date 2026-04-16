@@ -63,8 +63,8 @@ export function fullPdfHeader(
   const dono = donoObra && donoObra !== "—" ? donoObra : (meta?.client ?? "—");
 
   const logoHtml = logoBase64
-    ? `<img src="${logoBase64}" style="height:12mm;max-width:40mm;object-fit:contain;" />`
-    : `<div style="width:40mm;height:12mm;background:#192F48;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:900;letter-spacing:-0.5px;">ATLAS</div>`;
+    ? `<img src="${logoBase64}" style="height:18mm;max-width:60mm;object-fit:contain;" />`
+    : `<div style="width:50mm;height:16mm;background:#192F48;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;font-weight:900;letter-spacing:-0.5px;">ATLAS</div>`;
 
   return `
   <div style="display:flex;align-items:flex-start;justify-content:space-between;padding:10px 0 10px 0;border-bottom:3px solid #192F48;margin-bottom:0;">

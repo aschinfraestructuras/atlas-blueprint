@@ -289,7 +289,9 @@
     "viewPpis": "Ver PPIs pendientes",
     "viewTests": "Ver ensayos atrasados",
     "systemTab": "Sistema",
-    "sidebarScore": "Score"
+    "sidebarScore": "Score",
+    "explanation": "Score calculado en base a NCs, PPIs, ensayos y materiales",
+    "seeDetails": "Ver detalles"
   },
   "moduleKpi": {
     "total": "Total",
@@ -454,7 +456,24 @@
       "trends": "Tendencias",
       "access": "Módulos"
     },
-    "quickStats": "Indicadores de Obra"
+  "quickStats": "Indicadores de Obra",
+    "moduleSub": {
+      "ncOpen": "abiertas",
+      "noAlerts": "Sin alertas",
+      "approved": "aprobados",
+      "completed": "realizados",
+      "allApproved": "Todo aprobado",
+      "pending": "pend."
+    },
+    "kpiSub": {
+      "validated": "validadas",
+      "conform": "conf.",
+      "allInspected": "Todo inspeccionado",
+      "pendingItems": "Pendientes"
+    },
+    "kpi2": {
+      "testsCompleted": "Ensayos Realizados"
+    }
   },
   "emptyState": {
     "title": "Aún sin datos",
