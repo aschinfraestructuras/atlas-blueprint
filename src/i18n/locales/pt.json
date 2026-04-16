@@ -369,7 +369,21 @@
       "trends": "Tendências",
       "access": "Módulos"
     },
-    "quickStats": "Indicadores de Obra"
+    "quickStats": "Indicadores de Obra",
+    "moduleSub": {
+      "ncOpen": "em aberto",
+      "noAlerts": "Sem alertas",
+      "approved": "aprovados",
+      "completed": "realizados",
+      "allApproved": "Tudo aprovado",
+      "pending": "pend."
+    },
+    "kpiSub": {
+      "validated": "validadas",
+      "conform": "conf.",
+      "allInspected": "Tudo inspeccionado",
+      "pendingItems": "Pendentes"
+    }
   },
   "emptyState": {
     "title": "Ainda sem dados",
