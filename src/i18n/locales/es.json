@@ -366,7 +366,8 @@
       "ppiTotal": "PPIs Registrados",
       "ppiApproved": "{count} aprobados",
       "weldsPendingUtShort": "Soldaduras s/ US",
-      "pendingInspection": "Pendientes de inspección"
+      "pendingInspection": "Pendientes de inspección",
+      "testsCompleted": "Ensayos Realizados"
     },
     "period": {
       "all": "Todo el período",
