@@ -171,7 +171,8 @@
       "execution": "Ejecución",
       "quality": "Calidad",
       "documentation": "Documentación",
-      "reports": "Informes"
+      "reports": "Informes",
+      "configuration": "Configuración"
     },
     "dashboard": "Panel General",
     "directionPortal": "Portal Dirección de Obra",
@@ -396,7 +397,10 @@
       "noPending": "0 pendientes",
       "allInspected": "Todas inspeccionadas",
       "noData": "Sin datos aún",
-      "target": "Meta"
+      "target": "Meta",
+      "conform": "Conforme",
+      "alert": "Alerta",
+      "critical": "Crítico"
     },
     "hpPending": "HPs Sin Confirmación",
     "noData": "Sin datos",
@@ -457,7 +461,7 @@
       "trends": "Tendencias",
       "access": "Módulos"
     },
-  "quickStats": "Indicadores de Obra",
+    "quickStats": "Indicadores de Obra",
     "moduleSub": {
       "ncOpen": "abiertas",
       "noAlerts": "Sin alertas",
@@ -474,7 +478,17 @@
     },
     "kpi2": {
       "testsCompleted": "Ensayos Realizados"
-    }
+    },
+    "radar": {
+      "nc": "NCs",
+      "ppi": "PPIs",
+      "tests": "Ensayos",
+      "materials": "Materiales",
+      "health": "Salud",
+      "avg": "Media"
+    },
+    "rmsgqOverdue": "RMSGQ atrasado {{days}}d",
+    "rmsgqDue": "RMSGQ plazo en {{days}}d"
   },
   "emptyState": {
     "title": "Aún sin datos",
