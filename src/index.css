@@ -1,7 +1,25 @@
 @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap");
+@import "leaflet/dist/leaflet.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Leaflet dark mode fix */
+.dark .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(0.9); }
+.dark .leaflet-marker-pane,
+.dark .leaflet-shadow-pane,
+.dark .leaflet-overlay-pane { filter: none; }
+.leaflet-container { font-family: var(--font-sans); }
+.leaflet-popup-content-wrapper {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: 12px;
+  box-shadow: 0 8px 24px hsl(0 0% 0% / 0.12);
+  padding: 0;
+}
+.leaflet-popup-content { margin: 0; }
+.leaflet-popup-tip { background: hsl(var(--card)); }
+.leaflet-popup-close-button { color: hsl(var(--muted-foreground)) !important; top: 8px !important; right: 8px !important; }
 
 /*
   ATLAS Quality Platform — Professional QMS Design System

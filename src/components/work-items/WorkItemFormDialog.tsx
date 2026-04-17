@@ -105,6 +105,8 @@ export function WorkItemFormDialog({ open, onOpenChange, item, duplicateFrom, on
             pk_inicio:       duplicateFrom ? undefined : (source.pk_inicio ?? undefined),
             pk_fim:          duplicateFrom ? undefined : (source.pk_fim ?? undefined),
             status:          duplicateFrom ? "planned" : (source.status ?? "planned"),
+            latitude:        duplicateFrom ? undefined : ((source as any).latitude ?? undefined),
+            longitude:       duplicateFrom ? undefined : ((source as any).longitude ?? undefined),
           }
         : {
             sector: "", disciplina: "geral", disciplina_outro: "", lote: "",
@@ -128,6 +130,8 @@ export function WorkItemFormDialog({ open, onOpenChange, item, duplicateFrom, on
         parte:           values.parte     || undefined,
         pk_inicio:       values.pk_inicio ?? null,
         pk_fim:          values.pk_fim    ?? null,
+        latitude:        (values as any).latitude  ?? null,
+        longitude:       (values as any).longitude ?? null,
         status:          values.status as WorkItemStatus,
       };
 
@@ -291,6 +295,51 @@ export function WorkItemFormDialog({ open, onOpenChange, item, duplicateFrom, on
                   <FormMessage />
                 </FormItem>
               )} />
+            </div>
+
+            {/* Row 5: Coordenadas GPS */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-foreground">{t("workItems.form.gpsCoords", { defaultValue: "Coordenadas GPS" })}</span>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-7 gap-1.5 text-xs"
+                  onClick={() => {
+                    if (!navigator.geolocation) return;
+                    navigator.geolocation.getCurrentPosition(
+                      (pos) => {
+                        form.setValue("latitude" as any, pos.coords.latitude);
+                        form.setValue("longitude" as any, pos.coords.longitude);
+                      },
+                      () => {},
+                      { enableHighAccuracy: true, timeout: 10000 }
+                    );
+                  }}
+                >
+                  <span>📍</span>
+                  {t("workItems.form.captureGps", { defaultValue: "Capturar GPS" })}
+                </Button>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <Input
+                  type="number"
+                  step="any"
+                  placeholder={t("workItems.form.latitude", { defaultValue: "Latitude" })}
+                  value={(form.watch("latitude" as any) as number | undefined) ?? ""}
+                  onChange={(e) => form.setValue("latitude" as any, e.target.value === "" ? undefined : parseFloat(e.target.value))}
+                  className="text-xs"
+                />
+                <Input
+                  type="number"
+                  step="any"
+                  placeholder={t("workItems.form.longitude", { defaultValue: "Longitude" })}
+                  value={(form.watch("longitude" as any) as number | undefined) ?? ""}
+                  onChange={(e) => form.setValue("longitude" as any, e.target.value === "" ? undefined : parseFloat(e.target.value))}
+                  className="text-xs"
+                />
+              </div>
             </div>
 
             <DialogFooter>

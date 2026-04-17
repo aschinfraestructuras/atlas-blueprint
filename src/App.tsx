@@ -23,6 +23,7 @@ import ResetPasswordPage from "./pages/ResetPasswordPage";
 // Lazy-loaded pages
 const DashboardPage = lazy(() => import("./pages/DashboardPage"));
 const DirectionPortalPage = lazy(() => import("./pages/DirectionPortalPage"));
+const MapPage = lazy(() => import("./pages/MapPage"));
 const ProjectsPage = lazy(() => import("./pages/ProjectsPage"));
 const DocumentsPage = lazy(() => import("./pages/DocumentsPage"));
 const DocumentDetailPage = lazy(() => import("./pages/DocumentDetailPage"));
@@ -146,6 +147,7 @@ const App = () => (
                 {/* Protected – all share MainLayout */}
                 <Route path="/" element={<ProtectedLayout><DashboardPage /></ProtectedLayout>} />
                 <Route path="/direction-portal" element={<ProtectedLayout><DirectionPortalPage /></ProtectedLayout>} />
+                <Route path="/map" element={<ProtectedLayout><MapPage /></ProtectedLayout>} />
                 <Route path="/my-tasks" element={<ProtectedLayout><MyTasksPage /></ProtectedLayout>} />
                 <Route path="/projects" element={<ProtectedLayout><ProjectsPage /></ProtectedLayout>} />
                 <Route path="/documents" element={<ProtectedLayout><DocumentsPage /></ProtectedLayout>} />

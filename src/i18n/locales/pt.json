@@ -219,7 +219,8 @@
     "myTasks": "O Meu Dia",
     "ppiTemplates": "Modelos PPI",
     "controlledDistribution": "Distribuição Controlada",
-    "contractKpis": "KPIs de Contrato"
+    "contractKpis": "KPIs de Contrato",
+    "map": "Mapa da Obra"
   },
   "topbar": {
     "language": "Idioma",
@@ -5465,5 +5466,18 @@
   },
   "gallery": {
     "empty": "Sem fotografias para mostrar"
+  },
+  "map": {
+    "pageCategory": "Georreferenciação",
+    "pageTitle": "Mapa da Obra",
+    "pageSubtitle": "Localização geográfica dos work items, NCs, PPIs e ensaios",
+    "filters": "Camadas",
+    "centre": "Centrar",
+    "loading": "A carregar pontos...",
+    "noPoints": "Sem pontos georreferenciados",
+    "noPointsHint": "Adicione coordenadas GPS nos formulários de Work Items, NCs, PPIs e Ensaios.",
+    "noPointsShort": "Sem dados georref.",
+    "points": "pontos visíveis",
+    "totalPoints": "{{count}} pontos georreferenciados"
   }
 }
