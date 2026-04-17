@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend,
 } from "recharts";
+import { CHART_COLORS, CHART_STYLE, ChartTooltipContent } from "@/lib/chartTheme";
 
 interface DiscRow {
   d: string;
@@ -67,21 +68,14 @@ export function WorkProgressChart() {
         ) : (
           <ResponsiveContainer width="100%" height={180}>
             <BarChart data={data} layout="vertical" margin={{ top: 5, right: 10, left: 5, bottom: 0 }} barSize={8}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.4} />
-              <XAxis type="number" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
-              <YAxis dataKey="d" type="category" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} width={70} />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "hsl(var(--card))",
-                  border: "1px solid hsl(var(--border))",
-                  borderRadius: 8,
-                  fontSize: 11,
-                }}
-              />
-              <Legend wrapperStyle={{ fontSize: 10 }} />
-              <Bar dataKey="concluido" name={t("dashboard.charts.completed", { defaultValue: "Concluído" })} stackId="a" fill="hsl(145 55% 42%)" radius={[0, 0, 0, 0]} />
-              <Bar dataKey="execucao" name={t("dashboard.charts.inProgress", { defaultValue: "Em execução" })} stackId="a" fill="hsl(var(--primary))" />
-              <Bar dataKey="planeado" name={t("dashboard.charts.planned", { defaultValue: "Planeado" })} stackId="a" fill="hsl(var(--muted))" radius={[0, 4, 4, 0]} />
+              <CartesianGrid strokeDasharray={CHART_STYLE.grid.strokeDasharray} stroke={CHART_STYLE.grid.stroke} strokeOpacity={CHART_STYLE.grid.strokeOpacity} horizontal={false} />
+              <XAxis type="number" tick={CHART_STYLE.axis.tick} axisLine={false} tickLine={false} />
+              <YAxis dataKey="d" type="category" tick={CHART_STYLE.axis.tick} axisLine={false} tickLine={false} width={70} />
+              <Tooltip content={<ChartTooltipContent />} cursor={CHART_STYLE.tooltip.cursor} />
+              <Legend wrapperStyle={{ fontSize: 10, color: "hsl(var(--muted-foreground))" }} />
+              <Bar dataKey="concluido" name={t("dashboard.charts.completed",  { defaultValue: "Concluído" })}   stackId="a" fill={CHART_COLORS.success} radius={[0, 0, 0, 0]} />
+              <Bar dataKey="execucao"  name={t("dashboard.charts.inProgress", { defaultValue: "Em execução" })} stackId="a" fill={CHART_COLORS.primary} />
+              <Bar dataKey="planeado"  name={t("dashboard.charts.planned",    { defaultValue: "Planeado" })}    stackId="a" fill={CHART_COLORS.muted}   radius={[0, 4, 4, 0]} />
             </BarChart>
           </ResponsiveContainer>
         )}

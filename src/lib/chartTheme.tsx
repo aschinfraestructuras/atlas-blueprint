@@ -1,7 +1,7 @@
 /**
  * ATLAS QMS — Sistema de cores unificado para todos os gráficos
  * Uma fonte de verdade. Todos os gráficos importam daqui.
- * Paleta: coerente com o primary (navy azul) e neutros quentes.
+ * Paleta coerente com o primary (navy azul) e neutros quentes.
  */
 
 // Paleta principal — 6 cores harmoniosas
@@ -25,37 +25,27 @@ export const CHART_SEQUENCE = [
   CHART_COLORS.danger,
 ];
 
-// Gradientes para AreaChart — pares [cor topo, transparente]
 export function chartGradient(color: string, id: string) {
   return { id, color };
 }
 
-// Estilos partilhados do recharts — aplica em todos os gráficos
+// Estilos partilhados do recharts — light + dark mode correctos
 export const CHART_STYLE = {
-  // Grid suave — não distrai do conteúdo
   grid: {
-    strokeDasharray: "3 3",
-    stroke: "hsl(215 15% 90%)",
-    strokeOpacity: 0.6,
+    strokeDasharray: "3 4",
+    stroke: "hsl(var(--border))",   // adapta-se ao dark mode
+    strokeOpacity: 0.5,
   },
-  // Eixos discretos
   axis: {
-    tick:   { fontSize: 10, fill: "hsl(215 10% 55%)", fontWeight: 500 },
-    line:   { stroke: "transparent" },
+    tick:     { fontSize: 10, fill: "hsl(var(--muted-foreground))", fontWeight: 500 },
+    line:     { stroke: "transparent" },
     axisLine: { stroke: "transparent" },
   },
-  // Tooltip customizado (via componente ChartTooltip)
   tooltip: {
-    cursor: { stroke: "hsl(215 15% 85%)", strokeWidth: 1, strokeDasharray: "4 2" },
+    cursor: { stroke: "hsl(var(--border))", strokeWidth: 1, strokeDasharray: "4 2" },
   },
-  // Dot nas linhas — apenas no hover
-  dot: { r: 0 },
-  activeDot: {
-    r: 4,
-    stroke: "hsl(var(--card))",
-    strokeWidth: 2,
-    fill: "currentColor",
-  },
+  dot:       { r: 0 },
+  activeDot: { r: 4, stroke: "hsl(var(--card))", strokeWidth: 2, fill: "currentColor" },
 } as const;
 
 // Tooltip personalizado — componente React
@@ -69,20 +59,25 @@ export function ChartTooltipContent({
 }) {
   if (!active || !payload?.length) return null;
   return (
-    <div
-      style={{
-        background: "hsl(var(--card))",
-        border: "1px solid hsl(var(--border) / 0.5)",
-        borderRadius: "0.625rem",
-        padding: "8px 12px",
-        boxShadow: "0 8px 24px hsl(215 30% 18% / 0.14), 0 2px 6px hsl(215 30% 18% / 0.08)",
-        fontSize: 11,
-        fontFamily: "var(--font-sans)",
-        minWidth: 100,
-      }}
-    >
+    <div style={{
+      background: "hsl(var(--card))",
+      border: "1px solid hsl(var(--border))",
+      borderRadius: "0.625rem",
+      padding: "8px 12px",
+      boxShadow: "0 8px 24px hsl(215 30% 18% / 0.12), 0 2px 6px hsl(215 30% 18% / 0.06)",
+      fontSize: 11,
+      fontFamily: "var(--font-sans)",
+      minWidth: 100,
+    }}>
       {label && (
-        <p style={{ color: "hsl(var(--muted-foreground))", marginBottom: 4, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", fontSize: 9 }}>
+        <p style={{
+          color: "hsl(var(--muted-foreground))",
+          marginBottom: 4,
+          fontWeight: 600,
+          textTransform: "uppercase",
+          letterSpacing: "0.06em",
+          fontSize: 9,
+        }}>
           {label}
         </p>
       )}
