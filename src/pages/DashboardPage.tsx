@@ -429,28 +429,26 @@ export default function DashboardPage() {
             <SparklineKPI label={t("dashboard.kpi.emesExpiring",  { defaultValue: "Expirações 30d" })} value={kpis.emesExpiring30d} icon={ShieldCheck}    color={kpis.emesExpiring30d > 0 ? "0 65% 50%" : "145 55% 38%"} onClick={() => navigate("/expirations")} loading={kpiLoading} />
           </div>
 
-          {/* Radar de Qualidade Integrado */}
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_minmax(320px,420px)] gap-4">
-            <QualityOverviewChart
-              ncOpen={kpis.ncOpen}
-              ncTotal={kpis.ncOpen + (kpis.testsCompleted > 0 ? kpis.testsCompleted : 1)}
-              ppiApproved={kpis.ppiApproved}
-              ppiTotal={kpis.ppiTotal}
-              testsCompleted={kpis.testsCompleted}
-              testsTotal={kpis.testsTotal}
-              matApproved={kpis.matApproved}
-              matTotal={kpis.matTotal}
-              healthScore={health.health_score}
-              loading={kpiLoading || healthLoading}
-            />
-            <div className="space-y-4">
-              <div>
-                <p className="text-[9px] font-extrabold uppercase tracking-[0.22em] text-muted-foreground/50 mb-2.5 flex items-center gap-1.5">
-                  <ShieldCheck className="h-3 w-3" />{t("dashboard.sgqKpi.title", { defaultValue: "KPIs de Contrato" })}
-                </p>
-                <SgqKpiCards projectId={activeProject.id} />
-              </div>
-            </div>
+          {/* Radar de Qualidade Integrado — largura total */}
+          <QualityOverviewChart
+            ncOpen={kpis.ncOpen}
+            ncTotal={kpis.ncOpen + (kpis.testsCompleted > 0 ? kpis.testsCompleted : 1)}
+            ppiApproved={kpis.ppiApproved}
+            ppiTotal={kpis.ppiTotal}
+            testsCompleted={kpis.testsCompleted}
+            testsTotal={kpis.testsTotal}
+            matApproved={kpis.matApproved}
+            matTotal={kpis.matTotal}
+            healthScore={health.health_score}
+            loading={kpiLoading || healthLoading}
+          />
+
+          {/* KPIs do SGQ — linha completa abaixo do radar */}
+          <div>
+            <p className="text-[9px] font-extrabold uppercase tracking-[0.22em] text-muted-foreground/50 mb-2.5 flex items-center gap-1.5">
+              <ShieldCheck className="h-3 w-3" />{t("dashboard.sgqKpi.title", { defaultValue: "KPIs do SGQ — Anx. D" })}
+            </p>
+            <SgqKpiCards projectId={activeProject.id} />
           </div>
 
           <div>
