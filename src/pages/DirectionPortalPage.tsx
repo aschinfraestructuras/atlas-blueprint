@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
-import { useProjectRole } from "@/hooks/useProjectRole";
+
 import { useDashboardKpis } from "@/hooks/useDashboardKpis";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
