@@ -60,7 +60,7 @@ function ProgressRow({ label, value, total, color = "#378ADD" }: { label: string
 export default function DirectionPortalPage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
-  const { role } = useProjectRole();
+  
   const { data: kpis, loading } = useDashboardKpis();
   const [lastUpdated] = useState(new Date());
 
