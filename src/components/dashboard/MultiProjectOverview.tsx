@@ -131,7 +131,7 @@ export function MultiProjectOverview() {
     );
   }
 
-  if (!projects || projects.length === 0) return null;
+  if (visibleProjects.length === 0) return null;
 
   return (
     <Card>
