@@ -1,0 +1,38 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "name": "PF17A — Linha do Sul (Poceirão–Setúbal)", "type": "railway_alignment", "color": "#185FA5" },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-8.9021, 38.6552], [-8.8890, 38.6380], [-8.8701, 38.6175],
+          [-8.8520, 38.5980], [-8.8320, 38.5790], [-8.8150, 38.5620],
+          [-8.7980, 38.5410], [-8.7850, 38.5280], [-8.7700, 38.5120],
+          [-8.7590, 38.5010], [-8.7490, 38.4920]
+        ]
+      }
+    },
+    { "type": "Feature", "properties": { "name": "PK 25+000", "type": "pk_marker", "pk": 25, "local": "Poceirão" },         "geometry": { "type": "Point", "coordinates": [-8.9021, 38.6552] } },
+    { "type": "Feature", "properties": { "name": "PK 27+500", "type": "pk_marker", "pk": 27.5, "local": "Laranjas" },        "geometry": { "type": "Point", "coordinates": [-8.8890, 38.6380] } },
+    { "type": "Feature", "properties": { "name": "PK 30+000", "type": "pk_marker", "pk": 30, "local": "Palmela" },           "geometry": { "type": "Point", "coordinates": [-8.8701, 38.6175] } },
+    { "type": "Feature", "properties": { "name": "PK 32+500", "type": "pk_marker", "pk": 32.5, "local": "Vale Figueira" },   "geometry": { "type": "Point", "coordinates": [-8.8520, 38.5980] } },
+    { "type": "Feature", "properties": { "name": "PK 35+000", "type": "pk_marker", "pk": 35, "local": "Setúbal Norte" },     "geometry": { "type": "Point", "coordinates": [-8.8320, 38.5790] } },
+    { "type": "Feature", "properties": { "name": "PK 37+500", "type": "pk_marker", "pk": 37.5, "local": "Praias do Sado" },  "geometry": { "type": "Point", "coordinates": [-8.8150, 38.5620] } },
+    { "type": "Feature", "properties": { "name": "PK 40+000", "type": "pk_marker", "pk": 40, "local": "Sado" },              "geometry": { "type": "Point", "coordinates": [-8.7980, 38.5410] } },
+    { "type": "Feature", "properties": { "name": "PK 42+500", "type": "pk_marker", "pk": 42.5, "local": "Cachofarra" },      "geometry": { "type": "Point", "coordinates": [-8.7850, 38.5280] } },
+    { "type": "Feature", "properties": { "name": "PK 45+000", "type": "pk_marker", "pk": 45, "local": "Zona Industrial" },   "geometry": { "type": "Point", "coordinates": [-8.7700, 38.5120] } },
+    { "type": "Feature", "properties": { "name": "PK 47+500", "type": "pk_marker", "pk": 47.5, "local": "Setúbal Sul" },     "geometry": { "type": "Point", "coordinates": [-8.7590, 38.5010] } },
+    { "type": "Feature", "properties": { "name": "PK 50+000", "type": "pk_marker", "pk": 50, "local": "Setúbal Est." },      "geometry": { "type": "Point", "coordinates": [-8.7490, 38.4920] } },
+    { "type": "Feature", "properties": { "name": "PF17A — Via Férrea",                  "type": "sector", "pk": 38.0 }, "geometry": { "type": "Point", "coordinates": [-8.8100, 38.5600] } },
+    { "type": "Feature", "properties": { "name": "PF17A — Terraplanagens",               "type": "sector", "pk": 30.0 }, "geometry": { "type": "Point", "coordinates": [-8.8650, 38.6100] } },
+    { "type": "Feature", "properties": { "name": "PF17A — Drenagem",                     "type": "sector", "pk": 33.0 }, "geometry": { "type": "Point", "coordinates": [-8.8450, 38.5900] } },
+    { "type": "Feature", "properties": { "name": "PF17A — Betão e Obras de Arte",        "type": "sector", "pk": 42.5 }, "geometry": { "type": "Point", "coordinates": [-8.7850, 38.5280] } },
+    { "type": "Feature", "properties": { "name": "PF17A — Catenária 25kV",               "type": "sector", "pk": 38.0 }, "geometry": { "type": "Point", "coordinates": [-8.8050, 38.5550] } },
+    { "type": "Feature", "properties": { "name": "PF17A — Aparelhos de Mudança de Via",  "type": "sector", "pk": 48.0 }, "geometry": { "type": "Point", "coordinates": [-8.7540, 38.4950] } },
+    { "type": "Feature", "properties": { "name": "PF17A — Sinalização S&T",              "type": "sector", "pk": 40.0 }, "geometry": { "type": "Point", "coordinates": [-8.7960, 38.5380] } },
+    { "type": "Feature", "properties": { "name": "PF17A — Torres GSM-R",                 "type": "sector", "pk": 35.0 }, "geometry": { "type": "Point", "coordinates": [-8.8290, 38.5780] } },
+    { "type": "Feature", "properties": { "name": "PF17A — Vedações e Restabelecimentos", "type": "sector", "pk": 32.0 }, "geometry": { "type": "Point", "coordinates": [-8.8600, 38.6020] } }
+  ]
+}
