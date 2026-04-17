@@ -28,6 +28,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { useProject } from "@/contexts/ProjectContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -502,6 +503,18 @@ export default function SettingsPage() {
         </div>
       )}
 
+
+      {/* ── Navegação por tabs ─────────────────────────────────────────── */}
+      <Tabs defaultValue="project" className="space-y-4">
+        <TabsList className="grid w-full grid-cols-4 h-10">
+          <TabsTrigger value="project"  className="gap-1.5 text-xs"><Building2   className="h-3.5 w-3.5 flex-shrink-0 hidden sm:block" /><span>{t("pages.settings.tabs.project",  { defaultValue: "Projecto" })}</span></TabsTrigger>
+          <TabsTrigger value="profile"  className="gap-1.5 text-xs"><UserCheck   className="h-3.5 w-3.5 flex-shrink-0 hidden sm:block" /><span>{t("pages.settings.tabs.profile",  { defaultValue: "Perfil" })}</span></TabsTrigger>
+          <TabsTrigger value="members"  className="gap-1.5 text-xs"><Users       className="h-3.5 w-3.5 flex-shrink-0 hidden sm:block" /><span>{t("pages.settings.tabs.members",  { defaultValue: "Membros" })}</span></TabsTrigger>
+          <TabsTrigger value="system"   className="gap-1.5 text-xs"><ShieldCheck className="h-3.5 w-3.5 flex-shrink-0 hidden sm:block" /><span>{t("pages.settings.tabs.system",   { defaultValue: "Sistema" })}</span></TabsTrigger>
+        </TabsList>
+
+        {/* ═══ TAB 1 — PROJECTO ════════════════════════════════════════════ */}
+        <TabsContent value="project" className="space-y-6 mt-2">
       {/* ── 1. Project Settings ──────────────────────────────────────── */}
       <SettingsSection icon={Building2} title={s("project.title")} subtitle={s("project.subtitle")} color={MOD.projects} badge={activeProject ? s("project.badgeActive") : undefined}>
         <SettingsRow label={s("project.activeProject")} description={activeProject?.name ?? s("project.noProject")} value={activeProject?.code} icon={Building2} />
@@ -580,6 +593,25 @@ ${usageStats ? `
         {isAdmin && activeProject && <PpiSeedSection projectId={activeProject.id} />}
       </SettingsSection>
 
+      {/* ── 7. Branding / Logo ───────────────────────────────────────── */}
+      <BrandingSection />
+
+      {/* ── 7b. Own Resources (ASCH) ─────────────────────────────────── */}
+      {(isAdmin || myRole === "quality_manager") && activeProject && (
+        <OwnResourcesSection projectId={activeProject.id} />
+      )}
+
+      {/* ── 7c. Contacts & Notifications ─────────────────────────────── */}
+      {(isAdmin || myRole === "quality_manager") && activeProject && (
+        <SettingsSection icon={Mail} title={t("settings.contactsTab", { defaultValue: "Contactos & Notificações" })} subtitle={t("settings.contactsTabDesc", { defaultValue: "Gerir contactos do projecto e listas de distribuição para notificações" })} color="hsl(252, 55%, 45%)">
+          <ContactsNotificationsSection projectId={activeProject.id} />
+        </SettingsSection>
+      )}
+
+        </TabsContent>
+
+        {/* ═══ TAB 2 — PERFIL ══════════════════════════════════════════════ */}
+        <TabsContent value="profile" className="space-y-6 mt-2">
       {/* ── 2. User Profile ──────────────────────────────────────────── */}
       <SettingsSection icon={UserCheck} title={s("profile.title")} subtitle={s("profile.subtitle")} color={MOD.documents}>
         <div className="flex items-center gap-3 py-3 border-b border-border/50">
@@ -646,6 +678,76 @@ ${usageStats ? `
         </Dialog>
       </SettingsSection>
 
+      {/* ── 5. Preferences ───────────────────────────────────────────── */}
+      <SettingsSection icon={Sliders} title={s("preferences.title")} subtitle={s("preferences.subtitle")} color={MOD.tests}>
+        {/* Language Switcher - Functional */}
+        <div className="flex items-center gap-3 py-3 border-b border-border/50 hover:bg-muted/30 -mx-2 px-2 rounded-lg transition-colors duration-150">
+          <Globe className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+          <div className="flex-1 min-w-0">
+            <p className="text-[12.5px] font-medium text-foreground leading-none">{s("preferences.language")}</p>
+            <p className="text-[11px] text-muted-foreground mt-0.5 leading-snug">{s("preferences.languageDesc")}</p>
+          </div>
+          <Select
+            value={i18n.language?.startsWith("es") ? "es" : "pt"}
+            onValueChange={(lang) => {
+              i18n.changeLanguage(lang);
+              localStorage.setItem("atlas_lang", lang);
+            }}
+          >
+            <SelectTrigger className="w-[130px] h-7 text-xs"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="pt">Português</SelectItem>
+              <SelectItem value="es">Español</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <SettingsRow label={s("preferences.timezone")} description={s("preferences.timezoneDesc")} icon={Sliders} comingSoon comingSoonLabel={cs} />
+        {/* Theme Selector - Functional */}
+        <div className="flex items-center gap-3 py-3 border-b border-border/50 hover:bg-muted/30 -mx-2 px-2 rounded-lg transition-colors duration-150">
+          <Settings className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+          <div className="flex-1 min-w-0">
+            <p className="text-[12.5px] font-medium text-foreground leading-none">{s("preferences.theme")}</p>
+            <p className="text-[11px] text-muted-foreground mt-0.5 leading-snug">{s("preferences.themeDesc")}</p>
+          </div>
+          <Select value={theme} onValueChange={(v: any) => setTheme(v)}>
+            <SelectTrigger className="w-[130px] h-7 text-xs"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="light"><div className="flex items-center gap-1.5"><Sun className="h-3 w-3" />{t("topbar.themeLight")}</div></SelectItem>
+              <SelectItem value="dark"><div className="flex items-center gap-1.5"><Moon className="h-3 w-3" />{t("topbar.themeDark")}</div></SelectItem>
+              <SelectItem value="system"><div className="flex items-center gap-1.5"><Monitor className="h-3 w-3" />{t("topbar.themeSystem")}</div></SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        {/* Restart Onboarding Tour */}
+        <div className="flex items-center gap-3 py-3 border-b border-border/50 hover:bg-muted/30 -mx-2 px-2 rounded-lg transition-colors duration-150">
+          <Rocket className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+          <div className="flex-1 min-w-0">
+            <p className="text-[12.5px] font-medium text-foreground leading-none">{t("pages.settings.sections.preferences.tour", { defaultValue: "Tour de boas-vindas" })}</p>
+            <p className="text-[11px] text-muted-foreground mt-0.5 leading-snug">{t("pages.settings.sections.preferences.tourDesc", { defaultValue: "Rever o guia introdutório da plataforma" })}</p>
+          </div>
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-7 text-xs gap-1.5"
+            onClick={() => {
+              localStorage.removeItem("atlas_onboarding_completed");
+              navigate("/");
+              window.location.reload();
+            }}
+          >
+            <Rocket className="h-3 w-3" />
+            {t("pages.settings.sections.preferences.restartTour", { defaultValue: "Repetir tour" })}
+          </Button>
+        </div>
+      </SettingsSection>
+
+      {/* ── 6. Notification Preferences ──────────────────────────────── */}
+      <NotificationPreferencesSection />
+
+        </TabsContent>
+
+        {/* ═══ TAB 3 — MEMBROS ═════════════════════════════════════════════ */}
+        <TabsContent value="members" className="space-y-6 mt-2">
       {/* ── 3. User Management — FUNCTIONAL ──────────────────────────── */}
       <SettingsSection icon={Users} title={s("users.title")} subtitle={s("users.subtitle")} color={MOD.plans}>
         {/* Invite button */}
@@ -929,87 +1031,10 @@ ${usageStats ? `
         </div>
       </SettingsSection>
 
-      {/* ── 5. Preferences ───────────────────────────────────────────── */}
-      <SettingsSection icon={Sliders} title={s("preferences.title")} subtitle={s("preferences.subtitle")} color={MOD.tests}>
-        {/* Language Switcher - Functional */}
-        <div className="flex items-center gap-3 py-3 border-b border-border/50 hover:bg-muted/30 -mx-2 px-2 rounded-lg transition-colors duration-150">
-          <Globe className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-          <div className="flex-1 min-w-0">
-            <p className="text-[12.5px] font-medium text-foreground leading-none">{s("preferences.language")}</p>
-            <p className="text-[11px] text-muted-foreground mt-0.5 leading-snug">{s("preferences.languageDesc")}</p>
-          </div>
-          <Select
-            value={i18n.language?.startsWith("es") ? "es" : "pt"}
-            onValueChange={(lang) => {
-              i18n.changeLanguage(lang);
-              localStorage.setItem("atlas_lang", lang);
-            }}
-          >
-            <SelectTrigger className="w-[130px] h-7 text-xs"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="pt">Português</SelectItem>
-              <SelectItem value="es">Español</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <SettingsRow label={s("preferences.timezone")} description={s("preferences.timezoneDesc")} icon={Sliders} comingSoon comingSoonLabel={cs} />
-        {/* Theme Selector - Functional */}
-        <div className="flex items-center gap-3 py-3 border-b border-border/50 hover:bg-muted/30 -mx-2 px-2 rounded-lg transition-colors duration-150">
-          <Settings className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-          <div className="flex-1 min-w-0">
-            <p className="text-[12.5px] font-medium text-foreground leading-none">{s("preferences.theme")}</p>
-            <p className="text-[11px] text-muted-foreground mt-0.5 leading-snug">{s("preferences.themeDesc")}</p>
-          </div>
-          <Select value={theme} onValueChange={(v: any) => setTheme(v)}>
-            <SelectTrigger className="w-[130px] h-7 text-xs"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="light"><div className="flex items-center gap-1.5"><Sun className="h-3 w-3" />{t("topbar.themeLight")}</div></SelectItem>
-              <SelectItem value="dark"><div className="flex items-center gap-1.5"><Moon className="h-3 w-3" />{t("topbar.themeDark")}</div></SelectItem>
-              <SelectItem value="system"><div className="flex items-center gap-1.5"><Monitor className="h-3 w-3" />{t("topbar.themeSystem")}</div></SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        {/* Restart Onboarding Tour */}
-        <div className="flex items-center gap-3 py-3 border-b border-border/50 hover:bg-muted/30 -mx-2 px-2 rounded-lg transition-colors duration-150">
-          <Rocket className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-          <div className="flex-1 min-w-0">
-            <p className="text-[12.5px] font-medium text-foreground leading-none">{t("pages.settings.sections.preferences.tour", { defaultValue: "Tour de boas-vindas" })}</p>
-            <p className="text-[11px] text-muted-foreground mt-0.5 leading-snug">{t("pages.settings.sections.preferences.tourDesc", { defaultValue: "Rever o guia introdutório da plataforma" })}</p>
-          </div>
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-7 text-xs gap-1.5"
-            onClick={() => {
-              localStorage.removeItem("atlas_onboarding_completed");
-              navigate("/");
-              window.location.reload();
-            }}
-          >
-            <Rocket className="h-3 w-3" />
-            {t("pages.settings.sections.preferences.restartTour", { defaultValue: "Repetir tour" })}
-          </Button>
-        </div>
-      </SettingsSection>
+        </TabsContent>
 
-      {/* ── 6. Notification Preferences ──────────────────────────────── */}
-      <NotificationPreferencesSection />
-
-      {/* ── 7. Branding / Logo ───────────────────────────────────────── */}
-      <BrandingSection />
-
-      {/* ── 7b. Own Resources (ASCH) ─────────────────────────────────── */}
-      {(isAdmin || myRole === "quality_manager") && activeProject && (
-        <OwnResourcesSection projectId={activeProject.id} />
-      )}
-
-      {/* ── 7c. Contacts & Notifications ─────────────────────────────── */}
-      {(isAdmin || myRole === "quality_manager") && activeProject && (
-        <SettingsSection icon={Mail} title={t("settings.contactsTab", { defaultValue: "Contactos & Notificações" })} subtitle={t("settings.contactsTabDesc", { defaultValue: "Gerir contactos do projecto e listas de distribuição para notificações" })} color="hsl(252, 55%, 45%)">
-          <ContactsNotificationsSection projectId={activeProject.id} />
-        </SettingsSection>
-      )}
-
+        {/* ═══ TAB 4 — SISTEMA ═════════════════════════════════════════════ */}
+        <TabsContent value="system" className="space-y-6 mt-2">
       {/* ── 8. System Audit ──────────────────────────────────────────── */}
       {(isAdmin || myRole === "project_manager" || myRole === "quality_manager") && (
         <SettingsSection icon={ClipboardList} title={t("pages.settings.sections.audit.title", { defaultValue: "Auditoria do Sistema" })} subtitle={t("pages.settings.sections.audit.subtitle", { defaultValue: "Logs de ações, alterações e aprovações — ISO 9001" })} color={MOD.nc}>
@@ -1112,6 +1137,9 @@ ${usageStats ? `
           <MultiProjectOverview />
         </SettingsSection>
       )}
+        </TabsContent>
+
+      </Tabs>
     </div>
   );
 }

@@ -625,6 +625,12 @@
       "roles": {
         "technician": "Técnico",
         "viewer": "Visualizador"
+      },
+      "tabs": {
+        "project": "Projecto",
+        "profile": "Perfil",
+        "members": "Membros",
+        "system": "Sistema"
       }
     },
     "technicalOffice": {
