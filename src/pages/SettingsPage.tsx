@@ -1100,6 +1100,18 @@ ${usageStats ? `
           </div>
         </SettingsSection>
       )}
+
+      {/* ── 11. Multi-Project Executive View (admin / project_manager only) ──── */}
+      {(isAdmin || myRole === "project_manager") && (
+        <SettingsSection
+          icon={Building2}
+          title={t("settings.multiProject.title", { defaultValue: "Visão Multi-Projecto" })}
+          subtitle={t("settings.multiProject.subtitle", { defaultValue: "Indicadores executivos comparativos entre todas as obras (apenas projectos activos e arquivados)" })}
+          color={MOD.projects}
+        >
+          <MultiProjectOverview />
+        </SettingsSection>
+      )}
     </div>
   );
 }
