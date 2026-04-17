@@ -171,6 +171,9 @@ export default function DirectionPortalPage() {
         </Card>
       </div>
 
+      {/* Visão Multi-Projecto — KPIs executivos comparativos */}
+      <MultiProjectOverview />
+
       {/* Acesso rápido */}
       <div>
         <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground mb-3">{t("portal.reportsTitle")}</p>
