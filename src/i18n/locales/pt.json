@@ -398,7 +398,13 @@
       "avg": "Média"
     },
     "rmsgqOverdue": "RMSGQ em atraso {{days}}d",
-    "rmsgqDue": "RMSGQ prazo em {{days}}d"
+    "rmsgqDue": "RMSGQ prazo em {{days}}d",
+    "module": {
+      "nc": "Não Conformidades",
+      "ppi": "Inspecções PPI",
+      "tests": "Ensaios",
+      "materials": "Materiais PAME"
+    }
   },
   "emptyState": {
     "title": "Ainda sem dados",
