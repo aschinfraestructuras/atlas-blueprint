@@ -35,6 +35,7 @@ import { TestStatusCard } from "@/components/dashboard/TestStatusCard";
 import { ConcreteByClassCard } from "@/components/dashboard/ConcreteByClassCard";
 import { SgqKpiCards } from "@/components/dashboard/SgqKpiCards";
 import { QualityOverviewChart } from "@/components/dashboard/QualityOverviewChart";
+import { StatusTimeline, type TimelineItem } from "@/components/dashboard/StatusTimeline";
 import { cn } from "@/lib/utils";
 
 const ACTIVITY_CFG: Record<string, { icon: React.ElementType; cls: string }> = {
