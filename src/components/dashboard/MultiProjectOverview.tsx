@@ -50,12 +50,18 @@ export function MultiProjectOverview() {
   const [kpis, setKpis] = useState<Record<string, ProjectKpi>>({});
   const [loading, setLoading] = useState(false);
 
+  // Filtrar projetos apagados (soft-deleted: status='inactive'). Mostrar apenas activos e arquivados.
+  const visibleProjects = useMemo(
+    () => (projects ?? []).filter(p => p.status === "active" || p.status === "archived"),
+    [projects],
+  );
+
   useEffect(() => {
-    if (!projects || projects.length === 0) return;
+    if (visibleProjects.length === 0) return;
     let cancelled = false;
     (async () => {
       setLoading(true);
-      const ids = projects.map(p => p.id);
+      const ids = visibleProjects.map(p => p.id);
 
       const { data: healthRows } = await supabase
         .from("vw_project_health" as any)
