@@ -89,15 +89,15 @@ export function MultiProjectOverview() {
       setLoading(false);
     })().catch(() => setLoading(false));
     return () => { cancelled = true; };
-  }, [projects]);
+  }, [visibleProjects]);
 
   const sorted = useMemo(() => {
-    return [...projects].sort((a, b) => {
+    return [...visibleProjects].sort((a, b) => {
       const ha = kpis[a.id]?.health ?? -1;
       const hb = kpis[b.id]?.health ?? -1;
       return ha - hb; // piores primeiro (mais críticos)
     });
-  }, [projects, kpis]);
+  }, [visibleProjects, kpis]);
 
   const aggregate = useMemo(() => {
     const list = Object.values(kpis);
