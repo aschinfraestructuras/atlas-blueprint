@@ -39,6 +39,7 @@ import { WorkersPanel } from "@/components/workers/WorkersPanel";
 import { MachineryPanel } from "@/components/workers/MachineryPanel";
 import { ContactsNotificationsSection } from "@/components/settings/ContactsNotificationsSection";
 import { ppiSeedService } from "@/lib/services/ppiSeedService";
+import { MultiProjectOverview } from "@/components/dashboard/MultiProjectOverview";
 
 // ── PPI Seed Section ──────────────────────────────────────────────────────────
 function PpiSeedSection({ projectId }: { projectId: string }) {
