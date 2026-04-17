@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
+import { MultiProjectOverview } from "@/components/dashboard/MultiProjectOverview";
 
 function KpiBlock({ icon: Icon, label, value, sub, status, route }: {
   icon: React.ElementType; label: string; value: number | string;

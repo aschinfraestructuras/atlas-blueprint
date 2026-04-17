@@ -517,6 +517,11 @@ export default function DashboardPage() {
             <ConcreteByClassCard />
           </div>
           <ConformityByFrenteChart />
+          <StatusTimeline
+            title={t("dashboard.timeline.title", { defaultValue: "Linha do Tempo — NCs e PPIs (6 meses)" })}
+            items={timelineItems}
+            monthsBack={6}
+          />
         </TabsContent>
 
         {/* TAB: MÓDULOS — grid 3x2 com ícones grandes */}
