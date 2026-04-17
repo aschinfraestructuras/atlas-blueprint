@@ -173,14 +173,14 @@ export function ProjectMap({ height = 480, showControls = true, className }: Pro
 
   useEffect(() => {
     if (!mapReady || !mapRef.current) return;
-    const { map, L } = mapRef.current;
+    const { map, L, geoData } = mapRef.current as any;
 
     // Limpar camadas anteriores
     if (alignmentLayerRef.current) { alignmentLayerRef.current.remove(); alignmentLayerRef.current = null; }
     pkLayersRef.current.forEach(l => l.remove()); pkLayersRef.current = [];
     sectorLayersRef.current.forEach(l => l.remove()); sectorLayersRef.current = [];
 
-    const features = (alignmentData as any).features ?? [];
+    const features = (geoData as any)?.features ?? [];
 
     // Traçado
     if (showAlignment) {
