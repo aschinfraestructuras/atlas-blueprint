@@ -50,12 +50,18 @@ export function MultiProjectOverview() {
   const [kpis, setKpis] = useState<Record<string, ProjectKpi>>({});
   const [loading, setLoading] = useState(false);
 
+  // Filtrar projetos apagados (soft-deleted: status='inactive'). Mostrar apenas activos e arquivados.
+  const visibleProjects = useMemo(
+    () => (projects ?? []).filter(p => p.status === "active" || p.status === "archived"),
+    [projects],
+  );
+
   useEffect(() => {
-    if (!projects || projects.length === 0) return;
+    if (visibleProjects.length === 0) return;
     let cancelled = false;
     (async () => {
       setLoading(true);
-      const ids = projects.map(p => p.id);
+      const ids = visibleProjects.map(p => p.id);
 
       const { data: healthRows } = await supabase
         .from("vw_project_health" as any)
@@ -83,15 +89,15 @@ export function MultiProjectOverview() {
       setLoading(false);
     })().catch(() => setLoading(false));
     return () => { cancelled = true; };
-  }, [projects]);
+  }, [visibleProjects]);
 
   const sorted = useMemo(() => {
-    return [...projects].sort((a, b) => {
+    return [...visibleProjects].sort((a, b) => {
       const ha = kpis[a.id]?.health ?? -1;
       const hb = kpis[b.id]?.health ?? -1;
       return ha - hb; // piores primeiro (mais críticos)
     });
-  }, [projects, kpis]);
+  }, [visibleProjects, kpis]);
 
   const aggregate = useMemo(() => {
     const list = Object.values(kpis);
@@ -125,7 +131,7 @@ export function MultiProjectOverview() {
     );
   }
 
-  if (!projects || projects.length === 0) return null;
+  if (visibleProjects.length === 0) return null;
 
   return (
     <Card>

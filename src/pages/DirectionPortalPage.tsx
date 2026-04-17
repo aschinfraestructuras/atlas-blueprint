@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
-import { useProjectRole } from "@/hooks/useProjectRole";
+
 import { useDashboardKpis } from "@/hooks/useDashboardKpis";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
-import { MultiProjectOverview } from "@/components/dashboard/MultiProjectOverview";
+
 
 function KpiBlock({ icon: Icon, label, value, sub, status, route }: {
   icon: React.ElementType; label: string; value: number | string;
@@ -60,7 +60,7 @@ function ProgressRow({ label, value, total, color = "#378ADD" }: { label: string
 export default function DirectionPortalPage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
-  const { role } = useProjectRole();
+  
   const { data: kpis, loading } = useDashboardKpis();
   const [lastUpdated] = useState(new Date());
 
@@ -170,9 +170,6 @@ export default function DirectionPortalPage() {
           </CardContent>
         </Card>
       </div>
-
-      {/* Visão Multi-Projecto — KPIs executivos comparativos */}
-      <MultiProjectOverview />
 
       {/* Acesso rápido */}
       <div>
