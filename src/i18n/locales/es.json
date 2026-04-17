@@ -494,6 +494,9 @@
       "ppi": "Inspecciones PPI",
       "tests": "Ensayos",
       "materials": "Materiales PAME"
+    },
+    "timeline": {
+      "title": "Línea de Tiempo — NCs y PPIs (6 meses)"
     }
   },
   "emptyState": {
@@ -5445,6 +5448,19 @@
     "ppiLabel": "PPIs aprobadas",
     "ncLabel": "No Conformidades",
     "materialsLabel": "Materiales PAME",
-    "emesAlert": "{{count}} expiraciones en los próximos 30 días"
+    "emesAlert": "{{count}} expiraciones en los próximos 30 días",
+    "multiProjectTitle": "Vista Multi-Proyecto",
+    "totalProjects": "Total",
+    "avgHealth": "salud media",
+    "critical": "críticos",
+    "seeAllProjects": "Ver todos los proyectos"
+  },
+  "timeline": {
+    "months": "meses",
+    "empty": "Sin eventos en el período",
+    "ongoing": "en curso"
+  },
+  "gallery": {
+    "empty": "Sin fotografías para mostrar"
   }
 }
