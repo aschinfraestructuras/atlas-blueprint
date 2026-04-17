@@ -665,7 +665,7 @@ export function AttachmentsPanel({
             <Button
               variant="ghost"
               size="icon"
-              className="absolute -top-10 right-0 text-white hover:bg-white/20"
+              className="absolute -top-10 right-0 text-white/90 hover:text-white hover:bg-white/15"
               onClick={() => setLightboxUrl(null)}
             >
               ✕
