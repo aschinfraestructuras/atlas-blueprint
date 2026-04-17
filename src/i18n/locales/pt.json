@@ -398,7 +398,16 @@
       "avg": "Média"
     },
     "rmsgqOverdue": "RMSGQ em atraso {{days}}d",
-    "rmsgqDue": "RMSGQ prazo em {{days}}d"
+    "rmsgqDue": "RMSGQ prazo em {{days}}d",
+    "module": {
+      "nc": "Não Conformidades",
+      "ppi": "Inspecções PPI",
+      "tests": "Ensaios",
+      "materials": "Materiais PAME"
+    },
+    "timeline": {
+      "title": "Linha do Tempo — NCs e PPIs (6 meses)"
+    }
   },
   "emptyState": {
     "title": "Ainda sem dados",
@@ -5436,6 +5445,19 @@
     "ppiLabel": "PPIs aprovadas",
     "ncLabel": "Não Conformidades",
     "materialsLabel": "Materiais PAME",
-    "emesAlert": "{{count}} expirações nos próximos 30 dias"
+    "emesAlert": "{{count}} expirações nos próximos 30 dias",
+    "multiProjectTitle": "Visão Multi-Projecto",
+    "totalProjects": "Total",
+    "avgHealth": "saúde média",
+    "critical": "críticos",
+    "seeAllProjects": "Ver todos os projectos"
+  },
+  "timeline": {
+    "months": "meses",
+    "empty": "Sem eventos no período",
+    "ongoing": "em curso"
+  },
+  "gallery": {
+    "empty": "Sem fotografias para mostrar"
   }
 }

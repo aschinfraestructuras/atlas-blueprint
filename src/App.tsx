@@ -8,6 +8,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ProjectProvider } from "@/contexts/ProjectContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { MainLayout } from "@/components/layout/MainLayout";
+import { PageTransition } from "@/components/layout/PageTransition";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { Loader2 } from "lucide-react";
@@ -108,7 +109,7 @@ function ProtectedLayout({ children }: { children: React.ReactNode }) {
     <ProtectedRoute>
       <MainLayout>
         <ViewerGuard>
-          {children}
+          <PageTransition>{children}</PageTransition>
         </ViewerGuard>
       </MainLayout>
     </ProtectedRoute>

@@ -50,6 +50,7 @@
     "cmdk": "^1.1.1",
     "date-fns": "^3.6.0",
     "embla-carousel-react": "^8.6.0",
+    "framer-motion": "^12.38.0",
     "i18next": "^25.8.10",
     "input-otp": "^1.4.2",
     "jspdf": "^4.2.0",
@@ -69,6 +70,7 @@
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^0.9.9",
     "vite-plugin-pwa": "^1.2.0",
+    "yet-another-react-lightbox": "^3.31.0",
     "zod": "^3.25.76"
   },
   "devDependencies": {

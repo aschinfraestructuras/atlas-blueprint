@@ -35,6 +35,7 @@ import { TestStatusCard } from "@/components/dashboard/TestStatusCard";
 import { ConcreteByClassCard } from "@/components/dashboard/ConcreteByClassCard";
 import { SgqKpiCards } from "@/components/dashboard/SgqKpiCards";
 import { QualityOverviewChart } from "@/components/dashboard/QualityOverviewChart";
+import { StatusTimeline, type TimelineItem } from "@/components/dashboard/StatusTimeline";
 import { cn } from "@/lib/utils";
 
 const ACTIVITY_CFG: Record<string, { icon: React.ElementType; cls: string }> = {
@@ -180,6 +181,59 @@ export default function DashboardPage() {
   const [healthSheetOpen, setHealthSheetOpen] = useState(false);
   const [period, setPeriod] = useState("all");
   const [activeTab, setActiveTab] = useState("overview");
+  const [timelineItems, setTimelineItems] = useState<TimelineItem[]>([]);
+
+  // Buscar NCs e PPIs recentes para a Timeline (sem alterar hooks de negócio)
+  useEffect(() => {
+    if (!activeProject) return;
+    let cancelled = false;
+    (async () => {
+      const sinceIso = new Date(Date.now() - 1000 * 60 * 60 * 24 * 30 * 6).toISOString();
+      const [ncRes, ppiRes] = await Promise.all([
+        supabase.from("non_conformities")
+          .select("id, code, title, status, severity, opened_at, closed_at")
+          .eq("project_id", activeProject.id)
+          .eq("is_deleted", false)
+          .gte("opened_at", sinceIso)
+          .order("opened_at", { ascending: false })
+          .limit(15),
+        supabase.from("ppi_instances")
+          .select("id, code, title, status, created_at, updated_at, is_deleted")
+          .eq("project_id", activeProject.id)
+          .eq("is_deleted", false)
+          .gte("created_at", sinceIso)
+          .order("created_at", { ascending: false })
+          .limit(15),
+      ]);
+      if (cancelled) return;
+      const items: TimelineItem[] = [];
+      for (const nc of (ncRes.data ?? []) as any[]) {
+        items.push({
+          id: `nc-${nc.id}`,
+          label: `${nc.code ?? "NC"} — ${nc.title ?? ""}`.slice(0, 40),
+          startDate: nc.opened_at,
+          endDate: nc.closed_at ?? null,
+          variant: nc.closed_at ? "closed" : nc.severity === "critical" ? "critical" : "warning",
+          meta: `NC · ${nc.status ?? "—"}`,
+          href: `/non-conformities/${nc.id}`,
+        });
+      }
+      for (const ppi of (ppiRes.data ?? []) as any[]) {
+        const closed = ["approved", "closed", "completed"].includes((ppi.status ?? "").toLowerCase());
+        items.push({
+          id: `ppi-${ppi.id}`,
+          label: `${ppi.code ?? "PPI"} — ${ppi.title ?? ""}`.slice(0, 40),
+          startDate: ppi.created_at,
+          endDate: closed ? ppi.updated_at : null,
+          variant: closed ? "closed" : "in_progress",
+          meta: `PPI · ${ppi.status ?? "—"}`,
+          href: `/ppi/${ppi.id}`,
+        });
+      }
+      setTimelineItems(items);
+    })().catch(() => {});
+    return () => { cancelled = true; };
+  }, [activeProject]);
 
   // Viewers são redirecionados automaticamente para o Portal Direcção de Obra
   useEffect(() => {
@@ -463,6 +517,11 @@ export default function DashboardPage() {
             <ConcreteByClassCard />
           </div>
           <ConformityByFrenteChart />
+          <StatusTimeline
+            title={t("dashboard.timeline.title", { defaultValue: "Linha do Tempo — NCs e PPIs (6 meses)" })}
+            items={timelineItems}
+            monthsBack={6}
+          />
         </TabsContent>
 
         {/* TAB: MÓDULOS — grid 3x2 com ícones grandes */}
