@@ -5483,5 +5483,58 @@
     "noPointsShort": "Sin datos georref.",
     "points": "puntos visibles",
     "totalPoints": "{{count}} puntos georreferenciados"
+  },
+  "mqt": {
+    "title": "Mapa de Cantidades y Trabajos",
+    "description": "Ítems contractuales del MQT importados del XML oficial.",
+    "searchPlaceholder": "Buscar por código o designación…",
+    "filterByFamily": "Filtrar por familia",
+    "allFamilies": "Todas las familias",
+    "leafOnly": "Solo ítems hoja",
+    "showing": "Mostrando {{shown}} de {{total}} ítems",
+    "truncated": "Mostrando {{shown}} de {{total}} resultados (filtre para refinar)",
+    "cols": {
+      "code": "Código",
+      "designation": "Designación",
+      "unit": "Un.",
+      "quantity": "Cantidad",
+      "pk": "PK",
+      "family": "Familia"
+    },
+    "kpis": {
+      "families": "Familias",
+      "itemsWithPk": "Ítems c/ PK",
+      "volumeM3": "Volumen (m³)",
+      "areaM2": "Área (m²)",
+      "lengthM": "Longitud (m)"
+    },
+    "empty": {
+      "title": "Sin ítems MQT importados",
+      "description": "El administrador aún no ha importado el Mapa de Cantidades.",
+      "descriptionAdmin": "Haga clic en 'Importar XML' para cargar el archivo MQT del proyecto."
+    },
+    "noResults": {
+      "title": "Sin resultados",
+      "description": "Intente ajustar la búsqueda o los filtros."
+    },
+    "import": {
+      "button": "Importar XML",
+      "title": "Importar Mapa de Cantidades (MQT)",
+      "description": "Cargue el archivo XML del MQT para registrarlo como contrato de referencia. Solo administradores.",
+      "file": "Archivo XML",
+      "version": "Versión / fecha del MQT",
+      "versionHint": "Identificador único — reemplaza importaciones anteriores con la misma versión.",
+      "parsing": "Analizando XML…",
+      "parseError": "Error al analizar el archivo XML.",
+      "preview": "Vista previa de la importación:",
+      "totalItems": "Total de ítems",
+      "leafItems": "Ítems hoja (con cantidad)",
+      "groupers": "Agrupadores",
+      "warningOverwrite": "⚠ Los ítems existentes con la misma versión serán reemplazados.",
+      "confirm": "Importar",
+      "importing": "Importando…",
+      "success": "MQT importado correctamente ({{count}} ítems).",
+      "error": "Error al importar MQT."
+    }
   }
 }
