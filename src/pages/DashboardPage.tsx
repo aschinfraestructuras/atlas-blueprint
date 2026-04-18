@@ -449,11 +449,11 @@ export default function DashboardPage() {
 
           {/* Linha 1 — SparklineKPIs */}
           <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-2.5 sm:gap-3 [&>*]:min-h-[88px] sm:[&>*]:min-h-[100px]">
-            <SparklineKPI label={t("dashboard.kpi.ncOpen",        { defaultValue: "NCs Abertas" })}   value={kpis.ncOpen}          icon={AlertTriangle}  color="0 65% 50%"   sparkData={ncSpark}    onClick={() => navigate("/non-conformities")} loading={kpiLoading} />
-            <SparklineKPI label={t("dashboard.kpi.testsOverdue",  { defaultValue: "Ensaios Atraso" })} value={kpis.testsOverdue}    icon={Clock}          color="38 85% 50%"  onClick={() => navigate("/tests")}             loading={kpiLoading} />
-            <SparklineKPI label={t("dashboard.kpi.pamePending",   { defaultValue: "PAME Pendentes" })} value={kpis.pamePending}     icon={Package}        color="215 65% 38%" onClick={() => navigate("/materials")}         loading={kpiLoading} />
-            <SparklineKPI label={t("dashboard.kpi.testsCompleted",{ defaultValue: "Ensaios Feitos" })} value={kpis.testsCompleted}  icon={FlaskConical}   color="145 55% 38%" sparkData={testsSpark} onClick={() => navigate("/tests")}             loading={kpiLoading} />
-            <SparklineKPI label={t("dashboard.kpi.emesExpiring",  { defaultValue: "Expirações 30d" })} value={kpis.emesExpiring30d} icon={ShieldCheck}    color={kpis.emesExpiring30d > 0 ? "0 65% 50%" : "145 55% 38%"} onClick={() => navigate("/expirations")} loading={kpiLoading} />
+            <SparklineKPI label={t("dashboard.kpi.ncOpen",        { defaultValue: "NCs Abertas" })}   value={kpis.ncOpen}          icon={AlertTriangle}  color="0 65% 50%"   sparkData={ncSpark}    onClick={() => navigate("/non-conformities")} loading={kpiLoading} invertTrendSemantics delay={0}   />
+            <SparklineKPI label={t("dashboard.kpi.testsOverdue",  { defaultValue: "Ensaios Atraso" })} value={kpis.testsOverdue}    icon={Clock}          color="38 85% 50%"  onClick={() => navigate("/tests")}             loading={kpiLoading} invertTrendSemantics delay={60}  />
+            <SparklineKPI label={t("dashboard.kpi.pamePending",   { defaultValue: "PAME Pendentes" })} value={kpis.pamePending}     icon={Package}        color="215 65% 38%" onClick={() => navigate("/materials")}         loading={kpiLoading} invertTrendSemantics delay={120} />
+            <SparklineKPI label={t("dashboard.kpi.testsCompleted",{ defaultValue: "Ensaios Feitos" })} value={kpis.testsCompleted}  icon={FlaskConical}   color="145 55% 38%" sparkData={testsSpark} onClick={() => navigate("/tests")}             loading={kpiLoading} delay={180} />
+            <SparklineKPI label={t("dashboard.kpi.emesExpiring",  { defaultValue: "Expirações 30d" })} value={kpis.emesExpiring30d} icon={ShieldCheck}    color={kpis.emesExpiring30d > 0 ? "0 65% 50%" : "145 55% 38%"} onClick={() => navigate("/expirations")} loading={kpiLoading} invertTrendSemantics delay={240} />
           </div>
 
           {/* Linha 2 — Visão Integrada de Qualidade (radar + breakdown) */}
