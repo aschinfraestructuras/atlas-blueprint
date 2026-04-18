@@ -149,73 +149,184 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen" style={{ background: "hsl(210 20% 98%)" }}>
-      {/* Left panel – branding com grelha animada e círculo */}
+      {/* Left panel – Quality checklist animation */}
       <div className="hidden lg:flex w-[58%] flex-col justify-between p-12 relative overflow-hidden"
         style={{ background: "hsl(215 80% 38%)" }}>
 
-        {/* Grelha de fundo */}
-        <div className="absolute inset-0 opacity-[0.12]"
+        {/* Grelha subtil de fundo */}
+        <div className="absolute inset-0 opacity-[0.07]"
           style={{
             backgroundImage: "linear-gradient(hsl(0 0% 100%) 1px, transparent 1px), linear-gradient(90deg, hsl(0 0% 100%) 1px, transparent 1px)",
-            backgroundSize: "48px 48px",
+            backgroundSize: "40px 40px",
           }}
         />
 
-        {/* Círculo animado grande — o elemento central do Replit */}
-        <div className="absolute" style={{
-          top: "50%", left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "520px", height: "520px",
-          animation: "loginSpin 28s linear infinite",
-        }}>
-          <div style={{
-            width: "100%", height: "100%",
-            borderRadius: "50%",
-            border: "1.5px solid hsl(0 0% 100% / 0.18)",
-            position: "relative",
-          }}>
-            {/* Ponto orbital */}
-            <div style={{
-              position: "absolute", top: "-5px", left: "50%",
-              transform: "translateX(-50%)",
-              width: "10px", height: "10px",
-              borderRadius: "50%",
-              background: "hsl(0 0% 100% / 0.7)",
-              boxShadow: "0 0 12px 4px hsl(0 0% 100% / 0.35)",
-            }} />
-          </div>
-        </div>
-
-        {/* Círculo interior contra-rotativo */}
-        <div className="absolute" style={{
-          top: "50%", left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "340px", height: "340px",
-          animation: "loginSpinReverse 18s linear infinite",
-        }}>
-          <div style={{
-            width: "100%", height: "100%",
-            borderRadius: "50%",
-            border: "1px dashed hsl(0 0% 100% / 0.15)",
-          }} />
-        </div>
-
-        {/* Ponto central */}
-        <div className="absolute" style={{
-          top: "50%", left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "6px", height: "6px",
-          borderRadius: "50%",
-          background: "hsl(0 0% 100% / 0.5)",
-        }} />
+        {/* Gradiente radial suave */}
+        <div className="absolute inset-0"
+          style={{ background: "radial-gradient(ellipse 70% 60% at 60% 45%, hsl(215 90% 48% / 0.4) 0%, transparent 70%)" }}
+        />
 
         {/* CSS das animações */}
         <style>{`
-          @keyframes loginSpin { from { transform: translate(-50%,-50%) rotate(0deg); } to { transform: translate(-50%,-50%) rotate(360deg); } }
-          @keyframes loginSpinReverse { from { transform: translate(-50%,-50%) rotate(0deg); } to { transform: translate(-50%,-50%) rotate(-360deg); } }
+          @keyframes qlFadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to   { opacity: 1; transform: translateY(0); }
+          }
+          @keyframes qlCheck {
+            0%   { stroke-dashoffset: 24; opacity: 0; }
+            30%  { opacity: 1; }
+            100% { stroke-dashoffset: 0; opacity: 1; }
+          }
+          @keyframes qlBar {
+            from { width: 0; }
+            to   { width: var(--bar-w); }
+          }
+          @keyframes qlPulse {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50%       { opacity: 1;   transform: scale(1.08); }
+          }
+          @keyframes qlFloat {
+            0%, 100% { transform: translateY(0px); }
+            50%       { transform: translateY(-6px); }
+          }
+          .ql-item { animation: qlFadeIn 0.5s ease both; }
+          .ql-item:nth-child(1) { animation-delay: 0.3s; }
+          .ql-item:nth-child(2) { animation-delay: 0.9s; }
+          .ql-item:nth-child(3) { animation-delay: 1.5s; }
+          .ql-item:nth-child(4) { animation-delay: 2.1s; }
+          .ql-item:nth-child(5) { animation-delay: 2.7s; }
+          .ql-item:nth-child(6) { animation-delay: 3.3s; }
+          .ql-check { stroke-dasharray: 24; animation: qlCheck 0.4s ease both; }
+          .ql-check-1 { animation-delay: 0.7s; }
+          .ql-check-2 { animation-delay: 1.3s; }
+          .ql-check-3 { animation-delay: 1.9s; }
+          .ql-check-4 { animation-delay: 2.5s; }
+          .ql-check-5 { animation-delay: 3.1s; }
+          .ql-bar-fill { animation: qlBar 0.7s cubic-bezier(0.16,1,0.3,1) both; }
+          .ql-bar-1 { animation-delay: 0.8s; --bar-w: 92%; }
+          .ql-bar-2 { animation-delay: 1.4s; --bar-w: 78%; }
+          .ql-bar-3 { animation-delay: 2.0s; --bar-w: 65%; }
+          .ql-bar-4 { animation-delay: 2.6s; --bar-w: 88%; }
+          .ql-bar-5 { animation-delay: 3.2s; --bar-w: 55%; }
+          .ql-score-ring { animation: qlFadeIn 0.6s ease 0.4s both; }
+          .ql-float { animation: qlFloat 4s ease-in-out infinite; }
         `}</style>
 
-        {/* Conteúdo */}
+        {/* Card central — checklist animada */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="ql-float" style={{ width: "340px" }}>
+            <div style={{
+              background: "hsl(0 0% 100% / 0.06)",
+              border: "1px solid hsl(0 0% 100% / 0.12)",
+              borderRadius: "20px",
+              padding: "28px 24px",
+              backdropFilter: "blur(12px)",
+            }}>
+              {/* Header do card */}
+              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "20px" }}>
+                <div style={{
+                  width: "36px", height: "36px", borderRadius: "10px",
+                  background: "hsl(0 0% 100% / 0.15)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+                  </svg>
+                </div>
+                <div>
+                  <p style={{ color: "hsl(0 0% 100% / 0.9)", fontWeight: 700, fontSize: "13px", margin: 0 }}>Quality Checklist</p>
+                  <p style={{ color: "hsl(0 0% 100% / 0.45)", fontSize: "11px", margin: 0 }}>PPI-PF17A · Rev.00</p>
+                </div>
+                {/* Score badge */}
+                <div className="ql-score-ring" style={{ marginLeft: "auto", textAlign: "center" }}>
+                  <svg width="48" height="48" viewBox="0 0 48 48">
+                    <circle cx="24" cy="24" r="19" fill="none" stroke="hsl(0 0% 100% / 0.12)" strokeWidth="3"/>
+                    <circle cx="24" cy="24" r="19" fill="none" stroke="hsl(145 60% 55%)" strokeWidth="3"
+                      strokeDasharray="119.4" strokeDashoffset="14.3"
+                      strokeLinecap="round" transform="rotate(-90 24 24)"
+                      style={{ transition: "stroke-dashoffset 1.2s ease 3.5s" }}/>
+                    <text x="24" y="28" textAnchor="middle" fill="white" fontSize="12" fontWeight="800">88%</text>
+                  </svg>
+                </div>
+              </div>
+
+              {/* Itens da checklist */}
+              {[
+                { label: "Compactação GC ≥ 95%",    ok: true,  bar: "ql-bar-1" },
+                { label: "Geometria de via",          ok: true,  bar: "ql-bar-2" },
+                { label: "Resistência betão fck",     ok: true,  bar: "ql-bar-3" },
+                { label: "Gabarit catenária",         ok: true,  bar: "ql-bar-4" },
+                { label: "Ensaio de soldadura US",    ok: false, bar: "ql-bar-5" },
+                { label: "Drenagem PH 32.1",          ok: true,  bar: null },
+              ].map((item, i) => (
+                <div key={i} className="ql-item" style={{
+                  display: "flex", alignItems: "center", gap: "10px",
+                  marginBottom: i < 5 ? "12px" : "0",
+                }}>
+                  {/* Checkbox */}
+                  <div style={{
+                    width: "22px", height: "22px", borderRadius: "6px", flexShrink: 0,
+                    background: item.ok ? "hsl(145 60% 45% / 0.25)" : "hsl(0 65% 55% / 0.20)",
+                    border: `1.5px solid ${item.ok ? "hsl(145 60% 55% / 0.6)" : "hsl(0 65% 55% / 0.5)"}`,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                  }}>
+                    <svg width="13" height="13" viewBox="0 0 13 13">
+                      {item.ok
+                        ? <path className={`ql-check ql-check-${i + 1}`}
+                            d="M2.5 6.5l3 3 5-6"
+                            fill="none" stroke="hsl(145 60% 65%)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        : <path className={`ql-check ql-check-${i + 1}`}
+                            d="M3.5 3.5l6 6M9.5 3.5l-6 6"
+                            fill="none" stroke="hsl(0 65% 65%)" strokeWidth="2" strokeLinecap="round"/>}
+                    </svg>
+                  </div>
+                  {/* Label + barra */}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p style={{ color: "hsl(0 0% 100% / 0.80)", fontSize: "11px", fontWeight: 600, margin: "0 0 4px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                      {item.label}
+                    </p>
+                    {item.bar && (
+                      <div style={{ height: "4px", background: "hsl(0 0% 100% / 0.10)", borderRadius: "2px", overflow: "hidden" }}>
+                        <div className={`ql-bar-fill ${item.bar}`} style={{
+                          height: "100%", borderRadius: "2px",
+                          background: item.ok ? "hsl(145 60% 55%)" : "hsl(0 65% 55%)",
+                        }}/>
+                      </div>
+                    )}
+                  </div>
+                  {/* Status badge */}
+                  <span style={{
+                    fontSize: "9px", fontWeight: 700, padding: "2px 6px",
+                    borderRadius: "4px", flexShrink: 0,
+                    background: item.ok ? "hsl(145 60% 45% / 0.2)" : "hsl(0 65% 55% / 0.2)",
+                    color: item.ok ? "hsl(145 60% 70%)" : "hsl(0 65% 70%)",
+                    border: `1px solid ${item.ok ? "hsl(145 60% 55% / 0.3)" : "hsl(0 65% 55% / 0.3)"}`,
+                  }}>
+                    {item.ok ? "OK" : "NC"}
+                  </span>
+                </div>
+              ))}
+
+              {/* Footer */}
+              <div style={{
+                marginTop: "16px", paddingTop: "12px",
+                borderTop: "1px solid hsl(0 0% 100% / 0.08)",
+                display: "flex", justifyContent: "space-between", alignItems: "center",
+              }}>
+                <span style={{ fontSize: "10px", color: "hsl(0 0% 100% / 0.35)" }}>5 / 6 conformes</span>
+                <span style={{
+                  fontSize: "10px", fontWeight: 700, padding: "3px 10px", borderRadius: "20px",
+                  background: "hsl(38 88% 50% / 0.20)", color: "hsl(38 88% 70%)",
+                  border: "1px solid hsl(38 88% 50% / 0.30)",
+                }}>
+                  CONF. C/ OBS.
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Conteúdo — logo e quote */}
         <div className="relative z-10 flex items-center gap-2.5">
           <ShieldCheck className="h-6 w-6" style={{ color: "hsl(0 0% 100% / 0.85)" }} />
           <span className="text-base font-bold tracking-[0.2em] uppercase" style={{ color: "hsl(0 0% 100% / 0.85)" }}>
