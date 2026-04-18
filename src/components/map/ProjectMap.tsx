@@ -598,7 +598,31 @@ export const ProjectMap = forwardRef<ProjectMapHandle, Props>(function ProjectMa
             );
           })}
 
-          <div className="ml-auto flex gap-1.5">
+          <div className="ml-auto flex items-center gap-1.5">
+            <button
+              onClick={() => setUseCluster((v) => !v)}
+              title={t("map.cluster", { defaultValue: "Agrupar marcadores" })}
+              className={cn(
+                "flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-semibold border transition-all",
+                useCluster ? "bg-foreground text-background border-foreground" : "bg-transparent border-border text-muted-foreground opacity-60"
+              )}
+            >
+              <Boxes className="h-3 w-3" />
+              <span className="hidden md:inline">Cluster</span>
+            </button>
+            <button
+              onClick={() => setShowHeatmap((v) => !v)}
+              title={t("map.heatmap", { defaultValue: "Mapa de calor" })}
+              className={cn(
+                "flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-semibold border transition-all",
+                showHeatmap ? "text-white border-transparent" : "bg-transparent border-border text-muted-foreground opacity-60"
+              )}
+              style={showHeatmap ? { backgroundColor: "#E24B4A" } : {}}
+            >
+              <Flame className="h-3 w-3" />
+              <span className="hidden md:inline">Heatmap</span>
+            </button>
+            <div className="w-px h-4 bg-border/60 mx-0.5" />
             <Button variant="ghost" size="sm" className="h-7 gap-1.5 text-xs px-2.5" onClick={locateUser} title={t("map.locate", { defaultValue: "A minha localização" })}>
               <Locate className="h-3 w-3" />
             </Button>
