@@ -13916,7 +13916,6 @@ export type Database = {
         Args: { p_email: string; p_project_id: string; p_role?: string }
         Returns: Json
       }
-      fn_is_project_admin: { Args: { p_project_id: string }; Returns: boolean }
       fn_link_due_to_result: {
         Args: { p_due_id: string; p_test_result_id: string }
         Returns: undefined

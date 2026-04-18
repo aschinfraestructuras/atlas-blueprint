@@ -218,6 +218,7 @@
     "submittals": "Submittals",
     "myTasks": "O Meu Dia",
     "ppiTemplates": "Modelos PPI",
+    "mqt": "MQT — Mapa Quantidades",
     "controlledDistribution": "Distribuição Controlada",
     "contractKpis": "KPIs de Contrato",
     "map": "Mapa da Obra"
@@ -5479,5 +5480,58 @@
     "noPointsShort": "Sem dados georref.",
     "points": "pontos visíveis",
     "totalPoints": "{{count}} pontos georreferenciados"
+  },
+  "mqt": {
+    "title": "Mapa de Quantidades e Trabalhos",
+    "description": "Itens contratuais do MQT importados do XML oficial.",
+    "searchPlaceholder": "Procurar por código ou designação…",
+    "filterByFamily": "Filtrar por família",
+    "allFamilies": "Todas as famílias",
+    "leafOnly": "Só itens folha",
+    "showing": "A mostrar {{shown}} de {{total}} itens",
+    "truncated": "A mostrar {{shown}} de {{total}} resultados (filtre para refinar)",
+    "cols": {
+      "code": "Código",
+      "designation": "Designação",
+      "unit": "Un.",
+      "quantity": "Quantidade",
+      "pk": "PK",
+      "family": "Família"
+    },
+    "kpis": {
+      "families": "Famílias",
+      "itemsWithPk": "Itens c/ PK",
+      "volumeM3": "Volume (m³)",
+      "areaM2": "Área (m²)",
+      "lengthM": "Comprimento (m)"
+    },
+    "empty": {
+      "title": "Sem itens MQT importados",
+      "description": "O administrador ainda não importou o Mapa de Quantidades.",
+      "descriptionAdmin": "Clique em 'Importar XML' para carregar o ficheiro MQT do projeto."
+    },
+    "noResults": {
+      "title": "Sem resultados",
+      "description": "Tente ajustar a pesquisa ou os filtros."
+    },
+    "import": {
+      "button": "Importar XML",
+      "title": "Importar Mapa de Quantidades (MQT)",
+      "description": "Carregue o ficheiro XML do MQT para o registar como contrato de referência. Apenas administradores.",
+      "file": "Ficheiro XML",
+      "version": "Versão / data do MQT",
+      "versionHint": "Identificador único — substitui importações anteriores com a mesma versão.",
+      "parsing": "A analisar XML…",
+      "parseError": "Erro ao analisar o ficheiro XML.",
+      "preview": "Pré-visualização da importação:",
+      "totalItems": "Total de itens",
+      "leafItems": "Itens folha (com quantidade)",
+      "groupers": "Agrupadores",
+      "warningOverwrite": "⚠ Itens existentes com a mesma versão serão substituídos.",
+      "confirm": "Importar",
+      "importing": "A importar…",
+      "success": "MQT importado com sucesso ({{count}} itens).",
+      "error": "Erro ao importar MQT."
+    }
   }
 }

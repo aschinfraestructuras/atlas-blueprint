@@ -79,6 +79,7 @@ const ActionPlanPage = lazy(() => import("./pages/ActionPlanPage"));
 const SubmittalsPage = lazy(() => import("./pages/SubmittalsPage"));
 const MyTasksPage = lazy(() => import("./pages/MyTasksPage"));
 const ConfirmReceiptPage = lazy(() => import("./pages/ConfirmReceiptPage"));
+const MqtPage = lazy(() => import("./pages/MqtPage"));
 
 // Rotas permitidas para o role viewer — tudo o resto é redirecionado para /direction-portal
 const VIEWER_ALLOWED_ROUTES = [
@@ -204,6 +205,7 @@ const App = () => (
                 <Route path="/traceability" element={<ProtectedLayout><TraceabilityMatrixPage /></ProtectedLayout>} />
                 <Route path="/action-plan" element={<ProtectedLayout><ActionPlanPage /></ProtectedLayout>} />
                 <Route path="/submittals" element={<ProtectedLayout><SubmittalsPage /></ProtectedLayout>} />
+                <Route path="/mqt" element={<ProtectedLayout><MqtPage /></ProtectedLayout>} />
 
                 {/* Catch-all */}
                 <Route path="*" element={<NotFound />} />
