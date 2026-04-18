@@ -27,6 +27,10 @@ export default function MqtPage() {
 
   const [search, setSearch] = useState("");
   const [familyFilter, setFamilyFilter] = useState<string>("all");
+  const [unitFilter, setUnitFilter] = useState<string>("all");
+  const [pkFilter, setPkFilter] = useState<"all" | "with" | "without">("all");
+  const [qtyMin, setQtyMin] = useState<string>("");
+  const [qtyMax, setQtyMax] = useState<string>("");
   const [leafOnly, setLeafOnly] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
   const [tab, setTab] = useState<"items" | "coverage">("items");
@@ -37,18 +41,37 @@ export default function MqtPage() {
     return Array.from(s).sort();
   }, [items]);
 
+  const units = useMemo(() => {
+    const s = new Set<string>();
+    items.forEach((i) => i.unidade && s.add(i.unidade));
+    return Array.from(s).sort();
+  }, [items]);
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
+    const min = qtyMin.trim() === "" ? null : Number(qtyMin);
+    const max = qtyMax.trim() === "" ? null : Number(qtyMax);
     return items.filter((it) => {
       if (familyFilter !== "all" && it.familia !== familyFilter) return false;
+      if (unitFilter !== "all" && it.unidade !== unitFilter) return false;
+      if (pkFilter === "with" && !it.pk_inicio_mqt) return false;
+      if (pkFilter === "without" && it.pk_inicio_mqt) return false;
       if (leafOnly && !it.is_leaf) return false;
+      if (min != null && !Number.isNaN(min) && (it.quantidade ?? -Infinity) < min) return false;
+      if (max != null && !Number.isNaN(max) && (it.quantidade ?? Infinity) > max) return false;
       if (q) {
         const hay = `${it.code_rubrica} ${it.designacao}`.toLowerCase();
         if (!hay.includes(q)) return false;
       }
       return true;
     });
-  }, [items, search, familyFilter, leafOnly]);
+  }, [items, search, familyFilter, unitFilter, pkFilter, qtyMin, qtyMax, leafOnly]);
+
+  const hasActiveFilters = search || familyFilter !== "all" || unitFilter !== "all" || pkFilter !== "all" || qtyMin || qtyMax || leafOnly;
+  const clearFilters = () => {
+    setSearch(""); setFamilyFilter("all"); setUnitFilter("all");
+    setPkFilter("all"); setQtyMin(""); setQtyMax(""); setLeafOnly(false);
+  };
 
   return (
     <div className="space-y-4">
