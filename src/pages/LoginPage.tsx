@@ -182,6 +182,122 @@ export default function LoginPage() {
           aria-hidden="true"
         />
 
+        {/* Animações sobrepostas — movimento subtil */}
+        <style>{`
+          @keyframes loginTrail {
+            0%   { transform: translateX(-30%); opacity: 0; }
+            15%  { opacity: 0.8; }
+            85%  { opacity: 0.8; }
+            100% { transform: translateX(130%); opacity: 0; }
+          }
+          @keyframes loginPulse {
+            0%, 100% { transform: scale(1);   opacity: 0.55; box-shadow: 0 0 0 0 hsl(180 90% 60% / 0.5); }
+            50%      { transform: scale(1.4); opacity: 1;    box-shadow: 0 0 0 10px hsl(180 90% 60% / 0); }
+          }
+          @keyframes loginOrbit {
+            from { transform: rotate(0deg) translateX(48px) rotate(0deg); }
+            to   { transform: rotate(360deg) translateX(48px) rotate(-360deg); }
+          }
+          @keyframes loginRing {
+            0%, 100% { opacity: 0.25; transform: scale(1); }
+            50%      { opacity: 0.55; transform: scale(1.05); }
+          }
+          @keyframes loginShimmer {
+            0%   { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+          }
+          .lg-trail   { animation: loginTrail 7s ease-in-out infinite; }
+          .lg-trail-2 { animation: loginTrail 9s ease-in-out infinite 2.5s; }
+          .lg-trail-3 { animation: loginTrail 11s ease-in-out infinite 5s; }
+          .lg-pulse   { animation: loginPulse 2.6s ease-in-out infinite; }
+          .lg-orbit   { animation: loginOrbit 8s linear infinite; }
+          .lg-ring    { animation: loginRing 4s ease-in-out infinite; }
+          .lg-shimmer { animation: loginShimmer 6s ease-in-out infinite; }
+        `}</style>
+
+        {/* Light trails horizontais (acompanham as linhas da imagem) */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+          <div
+            className="lg-trail absolute h-[2px] w-[35%]"
+            style={{
+              top: "42%",
+              background: "linear-gradient(90deg, transparent 0%, hsl(180 95% 65% / 0.9) 50%, transparent 100%)",
+              filter: "blur(0.5px)",
+              boxShadow: "0 0 12px hsl(180 95% 65% / 0.7)",
+            }}
+          />
+          <div
+            className="lg-trail-2 absolute h-[1.5px] w-[28%]"
+            style={{
+              top: "58%",
+              background: "linear-gradient(90deg, transparent 0%, hsl(190 90% 70% / 0.8) 50%, transparent 100%)",
+              filter: "blur(0.5px)",
+              boxShadow: "0 0 10px hsl(180 95% 65% / 0.6)",
+            }}
+          />
+          <div
+            className="lg-trail-3 absolute h-[1px] w-[22%]"
+            style={{
+              top: "72%",
+              background: "linear-gradient(90deg, transparent 0%, hsl(180 95% 75% / 0.7) 50%, transparent 100%)",
+              filter: "blur(0.5px)",
+            }}
+          />
+
+          {/* Shimmer diagonal subtil (toda a área) */}
+          <div
+            className="lg-shimmer absolute -inset-y-10 w-1/3"
+            style={{
+              background:
+                "linear-gradient(115deg, transparent 0%, hsl(0 0% 100% / 0.04) 50%, transparent 100%)",
+            }}
+          />
+
+          {/* Sensores pulsantes (pontos cyan) */}
+          <span
+            className="lg-pulse absolute h-2 w-2 rounded-full"
+            style={{ top: "30%", left: "22%", background: "hsl(180 95% 65%)" }}
+          />
+          <span
+            className="lg-pulse absolute h-1.5 w-1.5 rounded-full"
+            style={{ top: "65%", left: "78%", background: "hsl(180 95% 70%)", animationDelay: "1.3s" }}
+          />
+          <span
+            className="lg-pulse absolute h-1.5 w-1.5 rounded-full"
+            style={{ top: "48%", left: "12%", background: "hsl(190 90% 72%)", animationDelay: "0.7s" }}
+          />
+
+          {/* Órbita: anel + bolinha que rola */}
+          <div
+            className="absolute"
+            style={{ top: "38%", right: "14%", width: "112px", height: "112px" }}
+          >
+            <div
+              className="lg-ring absolute inset-0 rounded-full border"
+              style={{ borderColor: "hsl(180 95% 65% / 0.35)" }}
+            />
+            <div
+              className="absolute inset-0 rounded-full border border-dashed"
+              style={{ borderColor: "hsl(180 95% 65% / 0.2)" }}
+            />
+            <div
+              className="absolute"
+              style={{ top: "50%", left: "50%", width: 0, height: 0 }}
+            >
+              <span
+                className="lg-orbit absolute block h-2.5 w-2.5 rounded-full"
+                style={{
+                  marginLeft: "-5px",
+                  marginTop: "-5px",
+                  background: "hsl(180 95% 70%)",
+                  boxShadow: "0 0 12px hsl(180 95% 65% / 0.9), 0 0 24px hsl(180 95% 65% / 0.5)",
+                }}
+              />
+            </div>
+          </div>
+        </div>
+
+
         {/* Logo top */}
         <div className="relative z-10 flex items-center gap-2.5">
           <ShieldCheck className="h-6 w-6 text-white/90" />
