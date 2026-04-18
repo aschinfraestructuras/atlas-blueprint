@@ -51,6 +51,9 @@ const schema = (t: (k: string) => string) =>
     location: z.string().trim().max(200).optional().or(z.literal("")),
     start_date: z.string().optional().or(z.literal("")),
     status: z.enum(["active", "archived"]),
+    map_center_lat: z.coerce.number().min(-90).max(90).nullable().optional(),
+    map_center_lng: z.coerce.number().min(-180).max(180).nullable().optional(),
+    map_default_zoom: z.coerce.number().int().min(1).max(20).nullable().optional(),
   });
 
 type FormValues = z.infer<ReturnType<typeof schema>>;
