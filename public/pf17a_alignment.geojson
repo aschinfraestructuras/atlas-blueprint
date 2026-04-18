@@ -1,103 +1,105 @@
 {
   "type": "FeatureCollection",
   "metadata": {
-    "project": "PF17A — Linha do Sul (Porto Setúbal / Praias do Sado)",
+    "project": "PF17A — Linha do Sul (Setúbal-Mar → Praias do Sado A)",
     "pk_range": "29+730 a 33+700",
-    "total_features": 31,
-    "crs": "WGS84",
-    "note": "Eixo desenhado sobre OSM (precisão ~30-50m). Substituir por DXF/PDF oficial quando disponível."
+    "total_features": 37,
+    "crs": "WGS84 (EPSG:4326)",
+    "source": "PF17A_PE_00_02_MDJ_00 — Fichas de Identificação dos Vértices de Apoio Topográfico (fev/2018)",
+    "datum_origem": "ETRS89 / PT-TM06 (Datum Cascais 1938)",
+    "vertices_count": 19,
+    "precision": "Métrica — coordenadas oficiais do projeto (precisão <1m)",
+    "note": "Sentido confirmado: PK 29+730 = Setúbal-Mar (oeste/Sado) → PK 33+700 = Praias do Sado A (leste)"
   },
   "features": [
     {
       "type": "Feature",
       "properties": {
-        "name": "PF17A — Linha do Sul (Praias do Sado – Porto de Setúbal)",
+        "name": "PF17A — Linha do Sul (Setúbal-Mar → Praias do Sado A)",
         "type": "railway_alignment",
         "pk_inicio": "29+730",
-        "pk_fim": "33+700"
+        "pk_fim": "33+700",
+        "datum": "ETRS89/PT-TM06 (vértices de apoio topográfico, fev/2018)",
+        "precision": "Métrica (<1m) — coordenadas oficiais do projeto"
       },
       "geometry": {
         "type": "LineString",
         "coordinates": [
           [
-            -8.9043,
-            38.5197
+            -8.8794817,
+            38.5201279
           ],
           [
-            -8.9015,
-            38.51985
+            -8.8767305,
+            38.5189975
           ],
           [
-            -8.8985,
-            38.51998
+            -8.8740965,
+            38.5181974
           ],
           [
-            -8.8955,
-            38.52005
+            -8.8714749,
+            38.5172649
           ],
           [
-            -8.8925,
-            38.52008
+            -8.8687459,
+            38.5162738
           ],
           [
-            -8.8895,
-            38.52
+            -8.8661267,
+            38.5150268
           ],
           [
-            -8.8865,
-            38.51985
+            -8.8634158,
+            38.5141459
           ],
           [
-            -8.884,
-            38.5196
+            -8.860708,
+            38.5133002
           ],
           [
-            -8.8815,
-            38.51925
+            -8.8585537,
+            38.5128016
           ],
           [
-            -8.879,
-            38.5189
+            -8.8553116,
+            38.5123062
           ],
           [
-            -8.878,
-            38.51875
+            -8.8533194,
+            38.5122226
           ],
           [
-            -8.877,
-            38.5186
+            -8.8510842,
+            38.511999
           ],
           [
-            -8.875,
-            38.5183
+            -8.8483937,
+            38.5118076
           ],
           [
-            -8.873,
-            38.518
+            -8.8466132,
+            38.5119523
           ],
           [
-            -8.871,
-            38.5178
+            -8.8446324,
+            38.5127387
           ],
           [
-            -8.869,
-            38.5176
+            -8.8424289,
+            38.5135996
           ],
           [
-            -8.867,
-            38.5175
+            -8.8408494,
+            38.5149846
           ],
           [
-            -8.865,
-            38.51745
+            -8.8398875,
+            38.5161812
           ],
           [
-            -8.8635,
-            38.51742
-          ],
-          [
-            -8.862,
-            38.5174
+            -8.8384,
+            38.5174889
           ]
         ]
       }
@@ -105,284 +107,436 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "PK 29+730",
-        "type": "pk_marker",
+        "name": "V 29-1 — PK 29+730",
+        "type": "vertex",
+        "vertex_id": "29-1",
         "pk": 29.73,
-        "local": "Praias do Sado (início)"
+        "pk_label": "29+730",
+        "elevation_m": 4.446,
+        "local": "Estação Setúbal-Mar (cais)"
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -8.9043,
-          38.5197
+          -8.8794817,
+          38.5201279
         ]
       }
     },
     {
       "type": "Feature",
       "properties": {
-        "name": "PK 30+000",
-        "type": "pk_marker",
-        "pk": 30.0,
-        "local": ""
+        "name": "V 30-1 — PK 30+001",
+        "type": "vertex",
+        "vertex_id": "30-1",
+        "pk": 30.001,
+        "pk_label": "30+001",
+        "elevation_m": 3.338,
+        "local": "Setúbal-Mar → Praias do Sado"
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -8.90141,
-          38.51985
+          -8.8767305,
+          38.5189975
         ]
       }
     },
     {
       "type": "Feature",
       "properties": {
-        "name": "PK 30+500",
-        "type": "pk_marker",
+        "name": "V 30-2 — PK 30+247",
+        "type": "vertex",
+        "vertex_id": "30-2",
+        "pk": 30.247,
+        "pk_label": "30+247",
+        "elevation_m": 3.098,
+        "local": "A 1.7m muro c/vedação"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -8.8740965,
+          38.5181974
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "V 30-3 — PK 30+500",
+        "type": "vertex",
+        "vertex_id": "30-3",
         "pk": 30.5,
-        "local": "Estação Praias do Sado"
+        "pk_label": "30+500",
+        "elevation_m": 3.275,
+        "local": "A 2.6m do marco hectométrico 30+500"
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -8.89606,
-          38.52004
+          -8.8714749,
+          38.5172649
         ]
       }
     },
     {
       "type": "Feature",
       "properties": {
-        "name": "PK 31+000",
-        "type": "pk_marker",
-        "pk": 31.0,
-        "local": ""
+        "name": "V 30-4 — PK 30+761",
+        "type": "vertex",
+        "vertex_id": "30-4",
+        "pk": 30.761,
+        "pk_label": "30+761",
+        "elevation_m": 3.238,
+        "local": "Em maciço alvenaria"
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -8.8907,
-          38.52003
+          -8.8687459,
+          38.5162738
         ]
       }
     },
     {
       "type": "Feature",
       "properties": {
-        "name": "PK 31+500",
-        "type": "pk_marker",
-        "pk": 31.5,
-        "local": ""
+        "name": "V 31-1 — PK 31+026",
+        "type": "vertex",
+        "vertex_id": "31-1",
+        "pk": 31.026,
+        "pk_label": "31+026",
+        "elevation_m": 3.283,
+        "local": "A 0.6m muro de suporte"
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -8.88535,
-          38.51974
+          -8.8661267,
+          38.5150268
         ]
       }
     },
     {
       "type": "Feature",
       "properties": {
-        "name": "PK 31+670",
-        "type": "pk_marker",
-        "pk": 31.67,
-        "local": "PN Cachofarra (supressão)"
+        "name": "V 31-2 — PK 31+279",
+        "type": "vertex",
+        "vertex_id": "31-2",
+        "pk": 31.279,
+        "pk_label": "31+279",
+        "elevation_m": 3.594,
+        "local": "Topo do muro (Catenária 31-12)"
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -8.88355,
-          38.51954
+          -8.8634158,
+          38.5141459
         ]
       }
     },
     {
       "type": "Feature",
       "properties": {
-        "name": "PK 32+000",
-        "type": "pk_marker",
-        "pk": 32.0,
-        "local": "Feixe Cachofarra"
+        "name": "V 31-3 — PK 31+535",
+        "type": "vertex",
+        "vertex_id": "31-3",
+        "pk": 31.535,
+        "pk_label": "31+535",
+        "elevation_m": 3.12,
+        "local": "A 3.2m muro c/vedação"
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -8.88006,
-          38.51905
+          -8.860708,
+          38.5133002
         ]
       }
     },
     {
       "type": "Feature",
       "properties": {
-        "name": "PK 32+200",
-        "type": "pk_marker",
-        "pk": 32.2,
-        "local": ""
+        "name": "V 31-4 — PK 31+726",
+        "type": "vertex",
+        "vertex_id": "31-4",
+        "pk": 31.726,
+        "pk_label": "31+726",
+        "elevation_m": 5.287,
+        "local": "Cais do Antigo Apeadeiro Cachofarra"
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -8.87795,
-          38.51874
+          -8.8585537,
+          38.5128016
         ]
       }
     },
     {
       "type": "Feature",
       "properties": {
-        "name": "PK 32+500",
-        "type": "pk_marker",
-        "pk": 32.5,
-        "local": "Porto de Setúbal Norte"
+        "name": "V 32-1 — PK 32+015",
+        "type": "vertex",
+        "vertex_id": "32-1",
+        "pk": 32.015,
+        "pk_label": "32+015",
+        "elevation_m": 7.772,
+        "local": "A 0.9m muro suporte c/vedação"
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -8.8748,
-          38.51827
+          -8.8553116,
+          38.5123062
         ]
       }
     },
     {
       "type": "Feature",
       "properties": {
-        "name": "PK 32+800",
-        "type": "pk_marker",
-        "pk": 32.8,
-        "local": ""
+        "name": "V 32-2 — PK 32+189",
+        "type": "vertex",
+        "vertex_id": "32-2",
+        "pk": 32.189,
+        "pk_label": "32+189",
+        "elevation_m": 7.672,
+        "local": "A 1.3m vedação"
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -8.87162,
-          38.51786
+          -8.8533194,
+          38.5122226
         ]
       }
     },
     {
       "type": "Feature",
       "properties": {
-        "name": "PK 33+000",
-        "type": "pk_marker",
-        "pk": 33.0,
-        "local": "Tersado"
+        "name": "V 32-3 — PK 32+385",
+        "type": "vertex",
+        "vertex_id": "32-3",
+        "pk": 32.385,
+        "pk_label": "32+385",
+        "elevation_m": 6.027,
+        "local": "Bordo caixa sinalização"
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -8.8695,
-          38.51765
+          -8.8510842,
+          38.511999
         ]
       }
     },
     {
       "type": "Feature",
       "properties": {
-        "name": "PK 33+200",
-        "type": "pk_marker",
-        "pk": 33.2,
-        "local": ""
+        "name": "V 32-4 — PK 32+621",
+        "type": "vertex",
+        "vertex_id": "32-4",
+        "pk": 32.621,
+        "pk_label": "32+621",
+        "elevation_m": 4.599,
+        "local": "Maciço armário"
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -8.86736,
-          38.51752
+          -8.8483937,
+          38.5118076
         ]
       }
     },
     {
       "type": "Feature",
       "properties": {
-        "name": "PK 33+500",
-        "type": "pk_marker",
-        "pk": 33.5,
-        "local": ""
+        "name": "V 32-5 — PK 32+778",
+        "type": "vertex",
+        "vertex_id": "32-5",
+        "pk": 32.778,
+        "pk_label": "32+778",
+        "elevation_m": 4.832,
+        "local": "Crista talude"
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -8.86414,
-          38.51743
+          -8.8466132,
+          38.5119523
         ]
       }
     },
     {
       "type": "Feature",
       "properties": {
-        "name": "PK 33+700",
-        "type": "pk_marker",
+        "name": "V 32-6 — PK 32+971",
+        "type": "vertex",
+        "vertex_id": "32-6",
+        "pk": 32.971,
+        "pk_label": "32+971",
+        "elevation_m": 3.229,
+        "local": "Bordo caixa sinalização"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -8.8446324,
+          38.5127387
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "V 33-1 — PK 33+188",
+        "type": "vertex",
+        "vertex_id": "33-1",
+        "pk": 33.188,
+        "pk_label": "33+188",
+        "elevation_m": 4.156,
+        "local": "Estação Praias do Sado (cais)"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -8.8424289,
+          38.5135996
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "V 33-2 — PK 33+390",
+        "type": "vertex",
+        "vertex_id": "33-2",
+        "pk": 33.39,
+        "pk_label": "33+390",
+        "elevation_m": 3.469,
+        "local": "Sinalética 'A', Praias do Sado → Praias do Sado A"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -8.8408494,
+          38.5149846
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "V 33-3 — PK 33+550",
+        "type": "vertex",
+        "vertex_id": "33-3",
+        "pk": 33.55,
+        "pk_label": "33+550",
+        "elevation_m": 3.427,
+        "local": "Topo de maciço"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -8.8398875,
+          38.5161812
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "V 33-4 — PK 33+700",
+        "type": "vertex",
+        "vertex_id": "33-4",
         "pk": 33.7,
-        "local": "Porto de Setúbal (fim)"
+        "pk_label": "33+700",
+        "elevation_m": 4.968,
+        "local": "Final obra — Praias do Sado A (estimado)"
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -8.862,
-          38.5174
+          -8.8384,
+          38.5174889
         ]
       }
     },
     {
       "type": "Feature",
       "properties": {
-        "name": "Restabelecimento R1 — PK 31+175",
+        "name": "Restabelecimento R1",
         "type": "structure",
         "pk": 31.175
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -8.88882,
-          38.51997
+          -8.8645302,
+          38.514508
         ]
       }
     },
     {
       "type": "Feature",
       "properties": {
-        "name": "AMV 1 — PK 31+685",
+        "name": "AMV 1 — Cachofarra",
         "type": "structure",
         "pk": 31.685
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -8.88339,
-          38.51951
+          -8.8590161,
+          38.5129086
         ]
       }
     },
     {
       "type": "Feature",
       "properties": {
-        "name": "AMV 2 — PK 31+721",
+        "name": "AMV 2 — Cachofarra",
         "type": "structure",
         "pk": 31.721
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -8.88301,
-          38.51946
+          -8.8586101,
+          38.5128146
         ]
       }
     },
     {
       "type": "Feature",
       "properties": {
-        "name": "Drenagem km 32+653 a 32+825",
+        "name": "PN Cachofarra (supressão)",
+        "type": "structure",
+        "pk": 31.67
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -8.8591853,
+          38.5129478
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Drenagem km 32+653",
         "type": "structure",
         "pk": 32.653
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -8.87318,
-          38.51803
+          -8.8480308,
+          38.5118371
         ]
       }
     },
@@ -396,8 +550,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -8.89606,
-          38.52004
+          -8.8714749,
+          38.5172649
         ]
       }
     },
@@ -411,8 +565,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -8.89338,
-          38.52007
+          -8.8688609,
+          38.5163155
         ]
       }
     },
@@ -426,23 +580,23 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -8.88882,
-          38.51997
+          -8.8645302,
+          38.514508
         ]
       }
     },
     {
       "type": "Feature",
       "properties": {
-        "name": "PF17A — ST — Supressão PN PK 31+670",
+        "name": "PF17A — ST Supressão PN PK 31+670",
         "type": "sector",
         "pk": 31.67
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -8.88355,
-          38.51954
+          -8.8591853,
+          38.5129478
         ]
       }
     },
@@ -456,8 +610,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -8.88301,
-          38.51946
+          -8.8586101,
+          38.5128146
         ]
       }
     },
@@ -471,8 +625,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -8.88006,
-          38.51905
+          -8.8554799,
+          38.5123319
         ]
       }
     },
@@ -486,8 +640,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -8.87795,
-          38.51874
+          -8.8531939,
+          38.51221
         ]
       }
     },
@@ -501,8 +655,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -8.8748,
-          38.51827
+          -8.8497731,
+          38.5119058
         ]
       }
     },
@@ -516,8 +670,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -8.87162,
-          38.51786
+          -8.8463874,
+          38.512042
         ]
       }
     },
@@ -531,8 +685,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -8.8695,
-          38.51765
+          -8.8443379,
+          38.5128538
         ]
       }
     },
@@ -546,8 +700,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -8.86736,
-          38.51752
+          -8.8423351,
+          38.5136819
         ]
       }
     },
@@ -561,8 +715,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -8.862,
-          38.5174
+          -8.8384,
+          38.5174889
         ]
       }
     }
