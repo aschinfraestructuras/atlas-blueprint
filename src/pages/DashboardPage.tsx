@@ -473,6 +473,9 @@ export default function DashboardPage() {
               loading={kpiLoading || viewsLoading}
             />
             <TopCriticalFrentes projectId={activeProject.id} />
+          </div>
+
+          {/* Linha 2 — Visão Integrada de Qualidade (radar + breakdown) */}
           <QualityOverviewChart
             ncOpen={kpis.ncOpen}
             ncTotal={kpis.ncOpen + (kpis.testsCompleted > 0 ? kpis.testsCompleted : 1)}
