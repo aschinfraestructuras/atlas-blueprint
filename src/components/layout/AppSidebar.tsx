@@ -14,7 +14,7 @@ import {
   Clock, BarChart3, Building2, ClipboardList, Leaf, GraduationCap, FileBarChart2,
   Users, Link2, Hammer, CheckSquare, FileStack, PieChart, Cog, CalendarCheck, Activity,
   Download, Zap, TrendingUp, Map, FileSpreadsheet,
-  Send, FileUp, ScanSearch } from "lucide-react";
+  Send, ScanSearch } from "lucide-react";
 import { usePWAInstall } from "@/hooks/usePWAInstall";
 import { NavLink } from "@/components/NavLink";
 import { cn } from "@/lib/utils";
