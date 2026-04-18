@@ -116,6 +116,7 @@ export function useProjectLogo() {
         .update({ logo_url: null } as any)
         .eq("id", activeProject.id);
       if (error) throw error;
+      invalidateProjectLogoCache(activeProject.id);
       setLogoUrl(null);
       setLogoBase64(null);
       await refetchProjects();
