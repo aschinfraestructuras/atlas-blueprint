@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 import {
   fieldRecordService,
   type FieldRecord,
@@ -48,6 +49,7 @@ export function FieldRecordsTab({ instanceId, ppiCode, disciplina }: Props) {
   const { t } = useTranslation();
   const { activeProject } = useProject();
   const { user } = useAuth();
+  const { logoBase64 } = useProjectLogo();
 
   const [records, setRecords] = useState<FieldRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -119,7 +121,7 @@ export function FieldRecordsTab({ instanceId, ppiCode, disciplina }: Props) {
   async function handleExport(record: FieldRecord) {
     try {
       const full = await fieldRecordService.getById(record.id);
-      fieldRecordService.exportPdf(full, activeProject?.name ?? "Atlas QMS");
+      fieldRecordService.exportPdf(full, activeProject?.name ?? "Atlas QMS", logoBase64);
     } catch (err) {
       toast({ title: "Erro ao exportar", variant: "destructive" });
     }
