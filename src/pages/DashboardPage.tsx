@@ -251,8 +251,6 @@ export default function DashboardPage() {
 
   const filteredNcMonthly    = useMemo(() => filterByPeriod(ncMonthly),    [ncMonthly,    filterByPeriod]);
   const filteredTestsMonthly = useMemo(() => filterByPeriod(testsMonthly), [testsMonthly, filterByPeriod]);
-  const ncSpark    = useMemo(() => filteredNcMonthly.slice(-6).map(m => ({ v: m.opened })),                     [filteredNcMonthly]);
-  const testsSpark = useMemo(() => filteredTestsMonthly.slice(-6).map(m => ({ v: m.conform + m.non_conform })), [filteredTestsMonthly]);
 
   const displayName = user?.email?.split("@")[0] ?? "—";
   if (!activeProject) return <NoProjectBanner />;
