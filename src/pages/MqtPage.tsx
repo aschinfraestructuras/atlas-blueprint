@@ -51,7 +51,7 @@ export default function MqtPage() {
     <div className="space-y-4">
       <PageHeader
         title={t("mqt.title")}
-        description={t("mqt.description")}
+        subtitle={t("mqt.description")}
         icon={FileSpreadsheet}
         actions={
           isAdmin && (
@@ -111,13 +111,13 @@ export default function MqtPage() {
             <EmptyState
               icon={FileSpreadsheet}
               title={t("mqt.empty.title")}
-              description={isAdmin ? t("mqt.empty.descriptionAdmin") : t("mqt.empty.description")}
+              subtitle={isAdmin ? t("mqt.empty.descriptionAdmin") : t("mqt.empty.description")}
             />
           ) : filtered.length === 0 ? (
             <EmptyState
               icon={Search}
               title={t("mqt.noResults.title")}
-              description={t("mqt.noResults.description")}
+              subtitle={t("mqt.noResults.description")}
             />
           ) : (
             <div className="border rounded-lg overflow-hidden">

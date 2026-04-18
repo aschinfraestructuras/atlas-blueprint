@@ -123,7 +123,7 @@ export function MqtImportDialog({ open, onOpenChange }: MqtImportDialogProps) {
                 <li>• {t("mqt.import.leafItems")}: <strong>{preview.folhas}</strong></li>
                 <li>• {t("mqt.import.groupers")}: <strong>{preview.items.length - preview.folhas}</strong></li>
               </ul>
-              <p className="mt-2 text-xs text-amber-600 dark:text-amber-500">
+              <p className="mt-2 text-xs text-warning">
                 {t("mqt.import.warningOverwrite")}
               </p>
             </div>
