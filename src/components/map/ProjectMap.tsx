@@ -364,26 +364,51 @@ export const ProjectMap = forwardRef<ProjectMapHandle, Props>(function ProjectMa
     });
   }, [mapReady, showAlignment, showPKs]);
 
-  // Marcadores de dados reais
+  // Marcadores de dados reais (com suporte a cluster e heatmap)
+  const clusterLayerRef = useRef<any>(null);
+  const heatLayerRef = useRef<any>(null);
+
   useEffect(() => {
     if (!mapReady || !mapRef.current) return;
     const { map, L } = mapRef.current;
 
+    // Limpar tudo o que possa existir
     markersRef.current.forEach((m) => m.remove());
     markersRef.current.clear();
+    if (clusterLayerRef.current) { map.removeLayer(clusterLayerRef.current); clusterLayerRef.current = null; }
+    if (heatLayerRef.current)    { map.removeLayer(heatLayerRef.current);    heatLayerRef.current = null; }
 
     const visible = points.filter((p) => activeFilters.has(p.entity_type));
     if (visible.length === 0) return;
 
     const bounds: [number, number][] = [];
 
-    visible.forEach((point) => {
+    // Heatmap (densidade por NCs/ensaios) — não substitui marcadores
+    if (showHeatmap) {
+      import("leaflet.heat").then(() => {
+        if (!mapRef.current) return;
+        const heatPoints = visible.map((p) => {
+          // intensidade maior para NC críticas/abertas e ensaios fail
+          let intensity = 0.5;
+          if (p.entity_type === "non_conformity") intensity = (p.status === "closed") ? 0.4 : 0.95;
+          if (p.entity_type === "test_result")    intensity = (p.status === "fail") ? 0.9 : 0.4;
+          return [p.latitude, p.longitude, intensity];
+        });
+        heatLayerRef.current = (L as any).heatLayer(heatPoints, {
+          radius: 28,
+          blur: 22,
+          maxZoom: 17,
+          gradient: { 0.2: "#1D9E75", 0.5: "#BA7517", 0.85: "#E24B4A" },
+        }).addTo(map);
+      }).catch(() => { /* ignore */ });
+    }
+
+    const buildMarker = (point: MapPoint) => {
       const color = statusColor(point.entity_type, point.status);
       const label =
         point.entity_type === "non_conformity" ? "NC" :
         point.entity_type === "ppi" ? "PPI" :
         point.entity_type === "test_result" ? "ENS" : "WI";
-
       const icon = L.divIcon({
         html: markerSvg(color, label),
         className: "",
@@ -391,22 +416,64 @@ export const ProjectMap = forwardRef<ProjectMapHandle, Props>(function ProjectMa
         iconAnchor: [17, 44],
         popupAnchor: [0, -46],
       });
-
-      const marker = L.marker([point.latitude, point.longitude], { icon })
-        .addTo(map)
+      return L.marker([point.latitude, point.longitude], { icon })
         .bindPopup(popupHtml(point), { maxWidth: 260, minWidth: 220 });
+    };
 
-      markersRef.current.set(`${point.entity_type}-${point.id}`, marker);
-      bounds.push([point.latitude, point.longitude]);
-    });
+    if (useCluster && visible.length > 8) {
+      // Carregamento dinâmico do plugin cluster
+      import("leaflet.markercluster").then(() => {
+        if (!mapRef.current) return;
+        const cluster = (L as any).markerClusterGroup({
+          showCoverageOnHover: false,
+          spiderfyOnMaxZoom: true,
+          chunkedLoading: true,
+          maxClusterRadius: 50,
+          iconCreateFunction: (c: any) => {
+            const count = c.getChildCount();
+            const size = count < 10 ? 32 : count < 50 ? 38 : 46;
+            const color = count < 10 ? "#185FA5" : count < 50 ? "#BA7517" : "#E24B4A";
+            return L.divIcon({
+              html: `<div style="background:${color};color:white;border-radius:50%;width:${size}px;height:${size}px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;font-family:system-ui;border:3px solid rgba(255,255,255,0.85);box-shadow:0 2px 8px rgba(0,0,0,0.3)">${count}</div>`,
+              className: "",
+              iconSize: [size, size],
+            });
+          },
+        });
+        visible.forEach((point) => {
+          const marker = buildMarker(point);
+          cluster.addLayer(marker);
+          markersRef.current.set(`${point.entity_type}-${point.id}`, marker);
+          bounds.push([point.latitude, point.longitude]);
+        });
+        cluster.addTo(map);
+        clusterLayerRef.current = cluster;
 
-    // Só ajusta os limites automaticamente se NÃO há centro definido pelo projeto
-    const hasProjectCenter = activeProject?.map_center_lat != null;
-    if (!hasProjectCenter) {
-      if (bounds.length === 1) map.setView(bounds[0], 15);
-      else if (bounds.length > 1) map.fitBounds(L.latLngBounds(bounds), { padding: [40, 40], maxZoom: 16 });
+        const hasProjectCenter = activeProject?.map_center_lat != null;
+        if (!hasProjectCenter && bounds.length > 1) {
+          map.fitBounds(L.latLngBounds(bounds), { padding: [40, 40], maxZoom: 16 });
+        }
+      }).catch(() => {
+        // Fallback: marcadores soltos
+        visible.forEach((point) => {
+          const marker = buildMarker(point).addTo(map);
+          markersRef.current.set(`${point.entity_type}-${point.id}`, marker);
+          bounds.push([point.latitude, point.longitude]);
+        });
+      });
+    } else {
+      visible.forEach((point) => {
+        const marker = buildMarker(point).addTo(map);
+        markersRef.current.set(`${point.entity_type}-${point.id}`, marker);
+        bounds.push([point.latitude, point.longitude]);
+      });
+      const hasProjectCenter = activeProject?.map_center_lat != null;
+      if (!hasProjectCenter) {
+        if (bounds.length === 1) map.setView(bounds[0], 15);
+        else if (bounds.length > 1) map.fitBounds(L.latLngBounds(bounds), { padding: [40, 40], maxZoom: 16 });
+      }
     }
-  }, [points, activeFilters, mapReady, activeProject?.map_center_lat]);
+  }, [points, activeFilters, mapReady, useCluster, showHeatmap, activeProject?.map_center_lat]);
 
   const centreOnProject = () => {
     if (!mapRef.current || !activeProject) return;
