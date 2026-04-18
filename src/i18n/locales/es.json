@@ -4482,7 +4482,13 @@
       "deleted": "Sesión eliminada",
       "loadError": "Error al cargar sesiones",
       "exportError": "Error al exportar"
-    }
+    },
+    "tab": {
+      "sessions": "Sesiones",
+      "attendees": "Asistencias",
+      "coverage": "Cobertura"
+    },
+    "attendeeGeneric": "Asistente {{n}}"
   },
   "audits": {
     "title": "Programa de Auditorías",

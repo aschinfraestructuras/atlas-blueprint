@@ -8,7 +8,8 @@ import { trainingService, type TrainingSession, type TrainingAttendee } from "@/
 import { projectWorkerService, type ProjectWorker } from "@/lib/services/projectWorkerService";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
-import { GraduationCap, Plus, FileText, Trash2, Eye, X, Users, AlertTriangle } from "lucide-react";
+import { GraduationCap, Plus, FileText, Trash2, Eye, X, Users, AlertTriangle, BarChart2 } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -71,6 +72,7 @@ export default function TrainingPage() {
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [activeTab, setActiveTab] = useState("sessions");
   const [detailSession, setDetailSession] = useState<TrainingSession | null>(null);
   const [detailAttendees, setDetailAttendees] = useState<TrainingAttendee[]>([]);
   const [detailOpen, setDetailOpen] = useState(false);
@@ -241,6 +243,7 @@ export default function TrainingPage() {
         )}
       </div>
 
+      {/* KPIs — sempre visíveis */}
       {/* KPIs */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
@@ -258,43 +261,25 @@ export default function TrainingPage() {
         ))}
       </div>
 
-      {/* Coverage KPI */}
-      {coverageData.total > 0 && (() => {
-        const pct = Math.round((coverageData.trained / coverageData.total) * 100);
-        const colorClass = pct >= 80 ? "text-emerald-600" : pct >= 50 ? "text-amber-500" : "text-destructive";
-        const barColor = pct >= 80 ? "bg-emerald-500" : pct >= 50 ? "bg-amber-500" : "bg-destructive";
-        return (
-          <Card className="border border-border bg-card shadow-card">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <Users className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                    {t("training.kpi.coverage", { defaultValue: "Cobertura da Equipa" })}
-                  </span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className={`text-lg font-black tabular-nums ${colorClass}`}>{pct}%</span>
-                  <span className="text-xs text-muted-foreground">{coverageData.trained}/{coverageData.total}</span>
-                </div>
-              </div>
-              <Progress value={pct} className={`h-2 [&>div]:${barColor}`} />
-              {untrained.length > 0 && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="mt-3 gap-1.5 text-xs"
-                  onClick={() => setWorkersSheetOpen(true)}
-                >
-                  <AlertTriangle className="h-3 w-3" />
-                  {t("training.noSafetyTraining", { defaultValue: "Trabalhadores sem formação" })} ({untrained.length})
-                </Button>
-              )}
-            </CardContent>
-          </Card>
-        );
-      })()}
 
+      {/* ── Tabs: Sessões / Presenças / Cobertura ─────────────────────── */}
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="h-9 p-1 bg-muted/50 rounded-xl border border-border/40 gap-0.5">
+          <TabsTrigger value="sessions" className="gap-1.5 text-xs font-semibold rounded-lg data-[state=active]:shadow-sm">
+            <GraduationCap className="h-3 w-3" />{t("training.tab.sessions", { defaultValue: "Sessões" })}
+            {sessions.length > 0 && <span className="ml-1 text-[9px] bg-muted px-1.5 py-0 rounded-full font-bold">{sessions.length}</span>}
+          </TabsTrigger>
+          <TabsTrigger value="attendees" className="gap-1.5 text-xs font-semibold rounded-lg data-[state=active]:shadow-sm">
+            <Users className="h-3 w-3" />{t("training.tab.attendees", { defaultValue: "Presenças" })}
+          </TabsTrigger>
+          <TabsTrigger value="coverage" className="gap-1.5 text-xs font-semibold rounded-lg data-[state=active]:shadow-sm">
+            <BarChart2 className="h-3 w-3" />{t("training.tab.coverage", { defaultValue: "Cobertura" })}
+            {untrained.length > 0 && <span className="ml-1 text-[9px] bg-amber-500/20 text-amber-600 px-1.5 py-0 rounded-full font-bold">{untrained.length}</span>}
+          </TabsTrigger>
+        </TabsList>
+
+        {/* TAB: Sessões */}
+        <TabsContent value="sessions" className="mt-4">
       {loading ? (
         <div className="space-y-2">
           {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}
@@ -363,6 +348,95 @@ export default function TrainingPage() {
         </div>
       )}
 
+        </TabsContent>
+
+        {/* TAB: Presenças — lista consolidada de formandos por sessão */}
+        <TabsContent value="attendees" className="mt-4">
+          {loading ? (
+            <div className="space-y-2">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}</div>
+          ) : sessions.length === 0 ? (
+            <EmptyState icon={Users} subtitleKey="training.empty" />
+          ) : (
+            <div className="rounded-xl border border-border overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-muted/40">
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.name")}</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("training.form.function", { defaultValue: "Função" })}</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("training.form.company", { defaultValue: "Empresa" })}</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("training.table.title", { defaultValue: "Sessão" })}</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("common.date")}</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {untrainedView.length > 0 ? untrainedView.map((w: any, i: number) => (
+                    <TableRow key={i} className="hover:bg-muted/20">
+                      <TableCell className="text-sm font-medium">{w.worker_name ?? w.name ?? "—"}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{w.role_function ?? w.function ?? "—"}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{w.company ?? "—"}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{w.last_session_title ?? "—"}</TableCell>
+                      <TableCell className="text-xs text-muted-foreground tabular-nums">
+                        {w.last_session_date ? new Date(w.last_session_date).toLocaleDateString(t("common.locale", { defaultValue: "pt-PT" })) : "—"}
+                      </TableCell>
+                    </TableRow>
+                  )) : sessions.flatMap(s =>
+                    Array.from({ length: s.attendee_count }).map((_, i) => (
+                      <TableRow key={`${s.id}-${i}`} className="hover:bg-muted/20">
+                        <TableCell className="text-sm text-muted-foreground italic">{t("training.attendeeGeneric", { n: i + 1, defaultValue: `Formando ${i + 1}` })}</TableCell>
+                        <TableCell className="text-sm text-muted-foreground">—</TableCell>
+                        <TableCell className="text-sm text-muted-foreground">—</TableCell>
+                        <TableCell className="text-sm font-medium">{s.title}</TableCell>
+                        <TableCell className="text-xs text-muted-foreground tabular-nums">{new Date(s.session_date).toLocaleDateString(t("common.locale", { defaultValue: "pt-PT" }))}</TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        </TabsContent>
+
+        {/* TAB: Cobertura */}
+        <TabsContent value="coverage" className="mt-4 space-y-4">
+      {/* Coverage KPI */}
+      {coverageData.total > 0 && (() => {
+        const pct = Math.round((coverageData.trained / coverageData.total) * 100);
+        const colorClass = pct >= 80 ? "text-emerald-600" : pct >= 50 ? "text-amber-500" : "text-destructive";
+        const barColor = pct >= 80 ? "bg-emerald-500" : pct >= 50 ? "bg-amber-500" : "bg-destructive";
+        return (
+          <Card className="border border-border bg-card shadow-card">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Users className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                    {t("training.kpi.coverage", { defaultValue: "Cobertura da Equipa" })}
+                  </span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className={`text-lg font-black tabular-nums ${colorClass}`}>{pct}%</span>
+                  <span className="text-xs text-muted-foreground">{coverageData.trained}/{coverageData.total}</span>
+                </div>
+              </div>
+              <Progress value={pct} className={`h-2 [&>div]:${barColor}`} />
+              {untrained.length > 0 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="mt-3 gap-1.5 text-xs"
+                  onClick={() => setWorkersSheetOpen(true)}
+                >
+                  <AlertTriangle className="h-3 w-3" />
+                  {t("training.noSafetyTraining", { defaultValue: "Trabalhadores sem formação" })} ({untrained.length})
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+        );
+      })()}
+
+        </TabsContent>
+      </Tabs>
       {/* Create Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
