@@ -36,6 +36,10 @@ import { ConcreteByClassCard } from "@/components/dashboard/ConcreteByClassCard"
 import { SgqKpiCards } from "@/components/dashboard/SgqKpiCards";
 import { QualityOverviewChart } from "@/components/dashboard/QualityOverviewChart";
 import { StatusTimeline, type TimelineItem } from "@/components/dashboard/StatusTimeline";
+import { DashboardHero } from "@/components/dashboard/DashboardHero";
+import { PredictiveInsightsCard } from "@/components/dashboard/PredictiveInsightsCard";
+import { TopCriticalFrentes } from "@/components/dashboard/TopCriticalFrentes";
+import { KeyboardShortcutsOverlay } from "@/components/dashboard/KeyboardShortcutsOverlay";
 import { cn } from "@/lib/utils";
 
 const ACTIVITY_CFG: Record<string, { icon: React.ElementType; cls: string }> = {
