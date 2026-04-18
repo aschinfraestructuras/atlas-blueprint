@@ -107,34 +107,80 @@ export default function MqtPage() {
           <Card>
             <CardContent className="p-4 space-y-4">
               {/* Filtros */}
-              <div className="flex flex-col md:flex-row gap-2">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder={t("mqt.searchPlaceholder")}
-                    className="pl-9"
-                  />
+              <div className="space-y-2">
+                <div className="flex flex-col md:flex-row gap-2">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      placeholder={t("mqt.searchPlaceholder")}
+                      className="pl-9"
+                    />
+                  </div>
+                  <Select value={familyFilter} onValueChange={setFamilyFilter}>
+                    <SelectTrigger className="w-full md:w-[180px]">
+                      <SelectValue placeholder={t("mqt.filterByFamily")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">{t("mqt.allFamilies")}</SelectItem>
+                      {families.map((f) => (
+                        <SelectItem key={f} value={f}>{f}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Select value={unitFilter} onValueChange={setUnitFilter}>
+                    <SelectTrigger className="w-full md:w-[140px]">
+                      <SelectValue placeholder={t("mqt.filterByUnit", { defaultValue: "Unidade" })} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">{t("mqt.allUnits", { defaultValue: "Todas as un." })}</SelectItem>
+                      {units.map((u) => (
+                        <SelectItem key={u} value={u}>{u}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Select value={pkFilter} onValueChange={(v) => setPkFilter(v as "all" | "with" | "without")}>
+                    <SelectTrigger className="w-full md:w-[160px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">{t("mqt.pkAll", { defaultValue: "Todos (PK)" })}</SelectItem>
+                      <SelectItem value="with">{t("mqt.pkWith", { defaultValue: "Com PK" })}</SelectItem>
+                      <SelectItem value="without">{t("mqt.pkWithout", { defaultValue: "Sem PK" })}</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
-                <Select value={familyFilter} onValueChange={setFamilyFilter}>
-                  <SelectTrigger className="w-full md:w-[200px]">
-                    <SelectValue placeholder={t("mqt.filterByFamily")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">{t("mqt.allFamilies")}</SelectItem>
-                    {families.map((f) => (
-                      <SelectItem key={f} value={f}>{f}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Button
-                  variant={leafOnly ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setLeafOnly((v) => !v)}
-                >
-                  {t("mqt.leafOnly")}
-                </Button>
+                <div className="flex flex-col md:flex-row gap-2">
+                  <Input
+                    type="number"
+                    inputMode="decimal"
+                    value={qtyMin}
+                    onChange={(e) => setQtyMin(e.target.value)}
+                    placeholder={t("mqt.qtyMin", { defaultValue: "Quantidade mín." })}
+                    className="md:w-[180px]"
+                  />
+                  <Input
+                    type="number"
+                    inputMode="decimal"
+                    value={qtyMax}
+                    onChange={(e) => setQtyMax(e.target.value)}
+                    placeholder={t("mqt.qtyMax", { defaultValue: "Quantidade máx." })}
+                    className="md:w-[180px]"
+                  />
+                  <Button
+                    variant={leafOnly ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setLeafOnly((v) => !v)}
+                  >
+                    {t("mqt.leafOnly")}
+                  </Button>
+                  {hasActiveFilters && (
+                    <Button variant="ghost" size="sm" onClick={clearFilters}>
+                      {t("common.clearFilters", { defaultValue: "Limpar filtros" })}
+                    </Button>
+                  )}
+                </div>
               </div>
 
               <div className="text-xs text-muted-foreground">
