@@ -10,8 +10,8 @@ import { useProjectRole } from "@/hooks/useProjectRole";
 import { useRealtimeProject } from "@/hooks/useRealtimeProject";
 import { useCountUp } from "@/hooks/useCountUp";
 import {
-  AlertTriangle, Package, Crosshair, Clock, ArrowRight, Leaf,
-  ClipboardCheck, FlaskConical, ClipboardList, Zap, Calendar,
+  AlertTriangle, Package, Clock, ArrowRight, Leaf,
+  ClipboardCheck, FlaskConical, Calendar,
   ShieldCheck, LayoutDashboard, BarChart3, Layers, Info, MapPin,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
