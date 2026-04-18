@@ -108,30 +108,6 @@ function MonthlyReportAlert({ projectId }: { projectId: string }) {
   );
 }
 
-function AnimatedKpiCard({ icon: Icon, label, value, sub, color, route, loading, delay = 0 }:
-  { icon: React.ElementType; label: string; value: number; sub: string; color: string; route: string; loading: boolean; delay?: number }) {
-  const navigate = useNavigate();
-  const animated = useCountUp(loading ? 0 : value, { duration: 800, delay });
-  return (
-    <Card className="cursor-pointer hover:shadow-card-hover transition-all border-border/60 bg-card active:scale-[0.97]"
-      onClick={() => navigate(route)}>
-      <CardContent className="p-3 sm:p-4 flex items-center gap-2.5 sm:gap-3">
-        <div className="flex-shrink-0 h-9 w-9 sm:h-10 sm:w-10 rounded-xl flex items-center justify-center"
-          style={{ backgroundColor: `${color}15` }}>
-          <Icon className="h-4 w-4 sm:h-[18px] sm:w-[18px]" style={{ color }} />
-        </div>
-        <div className="min-w-0 flex-1">
-          <p className="text-xl sm:text-2xl font-black tabular-nums text-foreground leading-none">
-            {loading ? <Skeleton className="h-6 w-10 inline-block" /> : animated}
-          </p>
-          <p className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-muted-foreground truncate mt-0.5">{label}</p>
-          <p className="text-[9px] sm:text-[10px] text-muted-foreground/60 truncate">{loading ? "" : sub}</p>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
 function ProgressCircle({ icon: Icon, label, approved, total, route, colorVar, loading }:
   { icon: React.ElementType; label: string; approved: number; total: number; route: string; colorVar: string; loading: boolean }) {
   const navigate = useNavigate();
