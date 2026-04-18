@@ -3471,6 +3471,125 @@ export type Database = {
           },
         ]
       }
+      mqt_items: {
+        Row: {
+          code_rubrica: string
+          created_at: string
+          designacao: string
+          familia: string | null
+          id: string
+          imported_at: string
+          imported_by: string | null
+          is_leaf: boolean
+          mqt_version: string | null
+          nivel: number
+          parent_code: string | null
+          pk_fim_mqt: string | null
+          pk_inicio_mqt: string | null
+          prazo_garantia: string | null
+          preco_total: number | null
+          preco_unitario: number | null
+          project_id: string
+          quantidade: number | null
+          unidade: string | null
+          updated_at: string
+        }
+        Insert: {
+          code_rubrica: string
+          created_at?: string
+          designacao: string
+          familia?: string | null
+          id?: string
+          imported_at?: string
+          imported_by?: string | null
+          is_leaf?: boolean
+          mqt_version?: string | null
+          nivel?: number
+          parent_code?: string | null
+          pk_fim_mqt?: string | null
+          pk_inicio_mqt?: string | null
+          prazo_garantia?: string | null
+          preco_total?: number | null
+          preco_unitario?: number | null
+          project_id: string
+          quantidade?: number | null
+          unidade?: string | null
+          updated_at?: string
+        }
+        Update: {
+          code_rubrica?: string
+          created_at?: string
+          designacao?: string
+          familia?: string | null
+          id?: string
+          imported_at?: string
+          imported_by?: string | null
+          is_leaf?: boolean
+          mqt_version?: string | null
+          nivel?: number
+          parent_code?: string | null
+          pk_fim_mqt?: string | null
+          pk_inicio_mqt?: string | null
+          prazo_garantia?: string | null
+          preco_total?: number | null
+          preco_unitario?: number | null
+          project_id?: string
+          quantidade?: number | null
+          unidade?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mqt_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mqt_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "mqt_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "mqt_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "mqt_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "mqt_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_rm_kpis"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "mqt_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_sgq_matrix_summary"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
       non_conformities: {
         Row: {
           ac_efficacy_indicator: string | null
@@ -11673,6 +11792,190 @@ export type Database = {
         }
         Relationships: []
       }
+      vw_mqt_items_safe: {
+        Row: {
+          code_rubrica: string | null
+          created_at: string | null
+          designacao: string | null
+          familia: string | null
+          id: string | null
+          imported_at: string | null
+          imported_by: string | null
+          is_leaf: boolean | null
+          mqt_version: string | null
+          nivel: number | null
+          parent_code: string | null
+          pk_fim_mqt: string | null
+          pk_inicio_mqt: string | null
+          prazo_garantia: string | null
+          preco_total: number | null
+          preco_unitario: number | null
+          project_id: string | null
+          quantidade: number | null
+          unidade: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          code_rubrica?: string | null
+          created_at?: string | null
+          designacao?: string | null
+          familia?: string | null
+          id?: string | null
+          imported_at?: string | null
+          imported_by?: string | null
+          is_leaf?: boolean | null
+          mqt_version?: string | null
+          nivel?: number | null
+          parent_code?: string | null
+          pk_fim_mqt?: string | null
+          pk_inicio_mqt?: string | null
+          prazo_garantia?: string | null
+          preco_total?: never
+          preco_unitario?: never
+          project_id?: string | null
+          quantidade?: number | null
+          unidade?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          code_rubrica?: string | null
+          created_at?: string | null
+          designacao?: string | null
+          familia?: string | null
+          id?: string | null
+          imported_at?: string | null
+          imported_by?: string | null
+          is_leaf?: boolean | null
+          mqt_version?: string | null
+          nivel?: number | null
+          parent_code?: string | null
+          pk_fim_mqt?: string | null
+          pk_inicio_mqt?: string | null
+          prazo_garantia?: string | null
+          preco_total?: never
+          preco_unitario?: never
+          project_id?: string | null
+          quantidade?: number | null
+          unidade?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mqt_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mqt_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "mqt_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "mqt_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "mqt_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "mqt_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_rm_kpis"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "mqt_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_sgq_matrix_summary"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
+      vw_mqt_summary: {
+        Row: {
+          area_m2: number | null
+          comprimento_m: number | null
+          familia: string | null
+          itens_com_pk: number | null
+          peso_kg: number | null
+          project_id: string | null
+          total_itens_folha: number | null
+          unidades: number | null
+          valor_total_eur: number | null
+          volume_m3: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mqt_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mqt_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "mqt_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "mqt_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "mqt_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "mqt_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_rm_kpis"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "mqt_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_sgq_matrix_summary"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
       vw_nc_aging: {
         Row: {
           aging_0_30d: number | null
@@ -13613,6 +13916,7 @@ export type Database = {
         Args: { p_email: string; p_project_id: string; p_role?: string }
         Returns: Json
       }
+      fn_is_project_admin: { Args: { p_project_id: string }; Returns: boolean }
       fn_link_due_to_result: {
         Args: { p_due_id: string; p_test_result_id: string }
         Returns: undefined
