@@ -427,10 +427,10 @@ export default function LoginPage() {
             </div>
 
             <div className="space-y-1.5">
-              <h1 className="text-[1.75rem] font-bold tracking-tight text-foreground">
+              <h1 className="text-[1.75rem] font-bold tracking-tight text-white lg:text-foreground">
                 {mode === "login" ? t("auth.signInTitle") : t("auth.forgotPasswordTitle")}
               </h1>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-white/70 lg:text-muted-foreground">
                 {mode === "login" ? t("auth.signInSubtitle") : t("auth.forgotPasswordSubtitle")}
               </p>
             </div>
@@ -552,13 +552,13 @@ export default function LoginPage() {
             <div className="space-y-3 text-center">
               {mode === "forgot" && (
                 <button
-                  className="text-sm font-medium text-foreground underline-offset-4 hover:underline"
+                  className="text-sm font-medium text-white lg:text-foreground underline-offset-4 hover:underline"
                   onClick={() => { setMode("login"); setError(null); }}
                 >
                   {t("auth.backToSignIn")}
                 </button>
               )}
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-white/65 lg:text-muted-foreground">
                 {t("auth.inviteOnlyNotice")}
               </p>
             </div>
