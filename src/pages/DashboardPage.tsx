@@ -432,15 +432,27 @@ export default function DashboardPage() {
 
       {/* TABS */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="animate-fade-in" style={{ animationDelay: "100ms", animationFillMode: "both" }}>
-        <TabsList className="h-9 sm:h-10 p-1 bg-muted/50 rounded-xl border border-border/40 w-full sm:w-auto gap-0.5">
-          <TabsTrigger value="overview" className="gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-semibold rounded-lg data-[state=active]:shadow-sm">
-            <LayoutDashboard className="h-3 w-3 sm:h-3.5 sm:w-3.5" />{t("dashboard.tab.overview", { defaultValue: "Visão Geral" })}
+        <TabsList className="h-auto p-1.5 bg-gradient-to-r from-muted/60 via-muted/40 to-muted/60 rounded-2xl border border-border/50 shadow-inner w-full sm:w-auto gap-1">
+          <TabsTrigger
+            value="overview"
+            className="gap-2 px-4 sm:px-5 py-2 text-xs sm:text-sm font-bold rounded-xl transition-all data-[state=active]:bg-card data-[state=active]:shadow-md data-[state=active]:border data-[state=active]:border-primary/30 data-[state=active]:text-primary data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground"
+          >
+            <LayoutDashboard className="h-4 w-4" />
+            {t("dashboard.tab.overview", { defaultValue: "Visão Geral" })}
           </TabsTrigger>
-          <TabsTrigger value="trends" className="gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-semibold rounded-lg data-[state=active]:shadow-sm">
-            <BarChart3 className="h-3 w-3 sm:h-3.5 sm:w-3.5" />{t("dashboard.tab.trends", { defaultValue: "Tendências" })}
+          <TabsTrigger
+            value="trends"
+            className="gap-2 px-4 sm:px-5 py-2 text-xs sm:text-sm font-bold rounded-xl transition-all data-[state=active]:bg-card data-[state=active]:shadow-md data-[state=active]:border data-[state=active]:border-primary/30 data-[state=active]:text-primary data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground"
+          >
+            <BarChart3 className="h-4 w-4" />
+            {t("dashboard.tab.trends", { defaultValue: "Tendências" })}
           </TabsTrigger>
-          <TabsTrigger value="access" className="gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-semibold rounded-lg data-[state=active]:shadow-sm">
-            <Layers className="h-3 w-3 sm:h-3.5 sm:w-3.5" />{t("dashboard.tab.access", { defaultValue: "Módulos" })}
+          <TabsTrigger
+            value="access"
+            className="gap-2 px-4 sm:px-5 py-2 text-xs sm:text-sm font-bold rounded-xl transition-all data-[state=active]:bg-card data-[state=active]:shadow-md data-[state=active]:border data-[state=active]:border-primary/30 data-[state=active]:text-primary data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground"
+          >
+            <Layers className="h-4 w-4" />
+            {t("dashboard.tab.access", { defaultValue: "Módulos" })}
           </TabsTrigger>
         </TabsList>
 
