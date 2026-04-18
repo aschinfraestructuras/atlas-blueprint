@@ -13,7 +13,7 @@ import {
   Inbox, BookOpen, HardHat, Construction, ClipboardCheck, Crosshair, CalendarClock,
   Clock, FileCheck, BarChart3, Building2, ClipboardList, Leaf, GraduationCap, FileBarChart2,
   Users, Link2, Hammer, CheckSquare, FileStack, PieChart, Cog, CalendarCheck, Activity,
-  Download, Zap, TrendingUp, Map } from "lucide-react";
+  Download, Zap, TrendingUp, Map, FileSpreadsheet } from "lucide-react";
 import { usePWAInstall } from "@/hooks/usePWAInstall";
 import { NavLink } from "@/components/NavLink";
 import { cn } from "@/lib/utils";
@@ -115,6 +115,7 @@ const NAV_SECTIONS: SidebarSection[] = [
       { labelKey: "nav.monthlyReport",  url: "/reports/monthly", icon: FileBarChart2 },
       { labelKey: "nav.sgqMatrix",      url: "/sgq-matrix",     icon: ShieldCheck },
       { labelKey: "nav.contractKpis",   url: "/contract-kpis",  icon: TrendingUp },
+      { labelKey: "nav.mqt",            url: "/mqt",            icon: FileSpreadsheet },
     ],
   },
   {
