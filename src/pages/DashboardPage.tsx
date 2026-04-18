@@ -595,41 +595,10 @@ export default function DashboardPage() {
               <PPIProgressChart />
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-[1fr_360px] gap-3 sm:gap-4">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
-              <ProgressCircle icon={ClipboardCheck} label={t("dashboard.progress.ppi",       { defaultValue: "PPIs Aprovados" })}      approved={kpis.ppiApproved}    total={kpis.ppiTotal}   route="/ppi"       colorVar="--module-plans"    loading={kpiLoading} />
-              <ProgressCircle icon={FlaskConical}   label={t("dashboard.progress.tests",     { defaultValue: "Ensaios Realizados" })}   approved={kpis.testsCompleted} total={kpis.testsTotal} route="/tests"     colorVar="--module-tests"    loading={kpiLoading} />
-              <ProgressCircle icon={Package}        label={t("dashboard.progress.materials", { defaultValue: "Materiais Aprovados" })}  approved={kpis.matApproved}    total={kpis.matTotal}   route="/materials" colorVar="--module-suppliers" loading={kpiLoading} />
-            </div>
-            <Card className="border border-border/60 bg-card shadow-card">
-              <CardHeader className="pb-2 pt-4 px-4 sm:px-5">
-                <CardTitle className="text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground flex items-center gap-1.5">
-                  <Clock className="h-3.5 w-3.5" />{t("dashboard.recent.title", { defaultValue: "Actividade Recente" })}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="px-4 sm:px-5 pb-4">
-                {kpiLoading ? <div className="space-y-2">{Array.from({ length: 4 }).map((_,i) => <Skeleton key={i} className="h-8 w-full" />)}</div>
-                  : kpis.recentActivity.length === 0 ? <p className="text-sm text-muted-foreground py-6 text-center">{t("dashboard.recent.empty", { defaultValue: "Sem actividade recente" })}</p>
-                  : <ul className="divide-y divide-border">
-                    {kpis.recentActivity.slice(0, 5).map((item, idx) => {
-                      const cfg = ACTIVITY_CFG[item.type] ?? ACTIVITY_CFG.nc;
-                      const Icon = cfg.icon;
-                      const route = item.type==="nc" ? `/non-conformities/${item.id}` : item.type==="ppi" ? `/ppi/${item.id}` : item.type==="lot" ? "/materials" : "/tests";
-                      return (
-                        <li key={`${item.type}-${item.id}-${idx}`}
-                          className="flex items-center gap-2 sm:gap-3 py-2 cursor-pointer hover:bg-muted/30 -mx-2 px-2 rounded-lg transition-colors"
-                          onClick={() => navigate(route)}>
-                          <Icon className={cn("h-3.5 w-3.5 flex-shrink-0", cfg.cls)} />
-                          <span className="font-mono text-[10px] sm:text-[11px] text-muted-foreground w-20 sm:w-28 flex-shrink-0 truncate">{item.code}</span>
-                          <span className="text-xs sm:text-sm text-foreground flex-1 truncate">{item.label || "—"}</span>
-                          <Badge variant="outline" className="text-[8px] font-semibold px-1.5 py-0 hidden sm:inline-flex">{item.type.toUpperCase()}</Badge>
-                          <span className="text-[9px] sm:text-[10px] text-muted-foreground tabular-nums">{new Date(item.created_at).toLocaleDateString()}</span>
-                        </li>
-                      );
-                    })}
-                  </ul>}
-              </CardContent>
-            </Card>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
+            <ProgressCircle icon={ClipboardCheck} label={t("dashboard.progress.ppi",       { defaultValue: "PPIs Aprovados" })}      approved={kpis.ppiApproved}    total={kpis.ppiTotal}   route="/ppi"       colorVar="--module-plans"    loading={kpiLoading} />
+            <ProgressCircle icon={FlaskConical}   label={t("dashboard.progress.tests",     { defaultValue: "Ensaios Realizados" })}   approved={kpis.testsCompleted} total={kpis.testsTotal} route="/tests"     colorVar="--module-tests"    loading={kpiLoading} />
+            <ProgressCircle icon={Package}        label={t("dashboard.progress.materials", { defaultValue: "Materiais Aprovados" })}  approved={kpis.matApproved}    total={kpis.matTotal}   route="/materials" colorVar="--module-suppliers" loading={kpiLoading} />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
             <TestStatusCard />
