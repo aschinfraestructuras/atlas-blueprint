@@ -3,46 +3,609 @@
   "metadata": {
     "project": "PF17A — Linha do Sul (Porto Setúbal / Praias do Sado)",
     "pk_range": "29+730 a 33+700",
-    "crs": "WGS84 (convertido de ETRS89-PT-TM06)",
-    "source": "PF17A_PE_00_0602_002_00 + PF17A_PE_00_0602_009_00"
+    "crs_origin": "ETRS89-PT-TM06",
+    "crs_output": "WGS84",
+    "fonte": "PF17A_PE_00_0602_002_00 + 009_00 + 011_00"
   },
   "features": [
     {
       "type": "Feature",
-      "properties": { "name": "PF17A — Linha do Sul (Praias do Sado – Porto de Setúbal)", "type": "railway_alignment" },
+      "properties": {
+        "name": "PF17A — Linha do Sul (Praias do Sado → Porto de Setúbal)",
+        "type": "railway_alignment",
+        "pk_inicio": 29.73,
+        "pk_fim": 33.7,
+        "comprimento_m": 3970
+      },
       "geometry": {
         "type": "LineString",
         "coordinates": [
-          [-8.86831, 38.51632],
-          [-8.86600, 38.51454],
-          [-8.86484, 38.51364],
-          [-8.86369, 38.51347],
-          [-8.86312, 38.51338],
-          [-8.86197, 38.51321],
-          [-8.86082, 38.51295],
-          [-8.85967, 38.51259],
-          [-8.85852, 38.51233],
-          [-8.85737, 38.51207]
+          [
+            -8.869234515445475,
+            38.517038280036125
+          ],
+          [
+            -8.868310876802148,
+            38.51641349769366
+          ],
+          [
+            -8.867388168862268,
+            38.515878785438424
+          ],
+          [
+            -8.86658012526146,
+            38.51534334788379
+          ],
+          [
+            -8.866000480415147,
+            38.51471639251669
+          ],
+          [
+            -8.865538231663054,
+            38.51435895029165
+          ],
+          [
+            -8.86519063612838,
+            38.514000789711716
+          ],
+          [
+            -8.864958603801913,
+            38.51373198949449
+          ],
+          [
+            -8.86484304405021,
+            38.513642628044074
+          ],
+          [
+            -8.864612836635333,
+            38.5135539824782
+          ],
+          [
+            -8.864383085252001,
+            38.5135103753001
+          ],
+          [
+            -8.86415351627079,
+            38.51348478320804
+          ],
+          [
+            -8.863809208601952,
+            38.51345089810816
+          ],
+          [
+            -8.863522225120956,
+            38.51341665456816
+          ],
+          [
+            -8.863235241900865,
+            38.51338241032192
+          ],
+          [
+            -8.862890935107657,
+            38.51334852251236
+          ],
+          [
+            -8.862431980995185,
+            38.51331534755107
+          ],
+          [
+            -8.861973027275472,
+            38.51328217078663
+          ],
+          [
+            -8.861513892476122,
+            38.513230976667835
+          ],
+          [
+            -8.861054576941417,
+            38.51316176518869
+          ],
+          [
+            -8.860595171637334,
+            38.513083544120754
+          ],
+          [
+            -8.860135767300106,
+            38.51300532123964
+          ],
+          [
+            -8.85967627342355,
+            38.5129180887656
+          ],
+          [
+            -8.859216690180308,
+            38.51282184669548
+          ],
+          [
+            -8.858756927352145,
+            38.512707587244186
+          ],
+          [
+            -8.858297075618271,
+            38.51258431818822
+          ],
+          [
+            -8.857722217990153,
+            38.512425725411305
+          ],
+          [
+            -8.857147362845092,
+            38.512267129783325
+          ],
+          [
+            -8.856572510183142,
+            38.51210853130434
+          ],
+          [
+            -8.85599756995964,
+            38.511940922185794
+          ]
         ]
       }
     },
-    { "type": "Feature", "properties": { "name": "PK 29+730", "type": "pk_marker", "pk": 29.73, "local": "Praias do Sado (início)" }, "geometry": { "type": "Point", "coordinates": [-8.86831, 38.51632] } },
-    { "type": "Feature", "properties": { "name": "PK 30+500", "type": "pk_marker", "pk": 30.5,  "local": "Praias do Sado Est." }, "geometry": { "type": "Point", "coordinates": [-8.86600, 38.51454] } },
-    { "type": "Feature", "properties": { "name": "PK 31+175", "type": "pk_marker", "pk": 31.175,"local": "Restabelecimento R1" }, "geometry": { "type": "Point", "coordinates": [-8.86484, 38.51364] } },
-    { "type": "Feature", "properties": { "name": "PK 31+670", "type": "pk_marker", "pk": 31.67, "local": "PN Cachofarra (supressão)" }, "geometry": { "type": "Point", "coordinates": [-8.86312, 38.51338] } },
-    { "type": "Feature", "properties": { "name": "PK 32+000", "type": "pk_marker", "pk": 32.0,  "local": "Feixe Cachofarra" }, "geometry": { "type": "Point", "coordinates": [-8.86197, 38.51321] } },
-    { "type": "Feature", "properties": { "name": "PK 32+800", "type": "pk_marker", "pk": 32.8,  "local": "Porto de Setúbal" }, "geometry": { "type": "Point", "coordinates": [-8.85967, 38.51259] } },
-    { "type": "Feature", "properties": { "name": "PK 33+700", "type": "pk_marker", "pk": 33.7,  "local": "Porto de Setúbal (fim)" }, "geometry": { "type": "Point", "coordinates": [-8.85737, 38.51207] } },
-    { "type": "Feature", "properties": { "name": "PF17A — Via Férrea",                   "type": "sector", "pk": 31.5  }, "geometry": { "type": "Point", "coordinates": [-8.86369, 38.51347] } },
-    { "type": "Feature", "properties": { "name": "PF17A — Terraplanagens",                "type": "sector", "pk": 30.5  }, "geometry": { "type": "Point", "coordinates": [-8.86600, 38.51454] } },
-    { "type": "Feature", "properties": { "name": "PF17A — Drenagem",                      "type": "sector", "pk": 31.0  }, "geometry": { "type": "Point", "coordinates": [-8.86484, 38.51364] } },
-    { "type": "Feature", "properties": { "name": "PF17A — Betão e Obras de Arte",         "type": "sector", "pk": 31.175}, "geometry": { "type": "Point", "coordinates": [-8.86450, 38.51360] } },
-    { "type": "Feature", "properties": { "name": "PF17A — Catenária 25kV",                "type": "sector", "pk": 32.0  }, "geometry": { "type": "Point", "coordinates": [-8.86197, 38.51321] } },
-    { "type": "Feature", "properties": { "name": "PF17A — Aparelhos de Mudança de Via",   "type": "sector", "pk": 32.5  }, "geometry": { "type": "Point", "coordinates": [-8.86025, 38.51277] } },
-    { "type": "Feature", "properties": { "name": "PF17A — Sinalização S&T",               "type": "sector", "pk": 31.67 }, "geometry": { "type": "Point", "coordinates": [-8.86312, 38.51338] } },
-    { "type": "Feature", "properties": { "name": "PF17A — ST — Supressão PN PK 31+670",  "type": "sector", "pk": 31.67 }, "geometry": { "type": "Point", "coordinates": [-8.86300, 38.51330] } },
-    { "type": "Feature", "properties": { "name": "PF17A — Vedações e Restabelecimentos",  "type": "sector", "pk": 31.175}, "geometry": { "type": "Point", "coordinates": [-8.86490, 38.51370] } },
-    { "type": "Feature", "properties": { "name": "PF17A — Torres GSM-R",                  "type": "sector", "pk": 33.0  }, "geometry": { "type": "Point", "coordinates": [-8.85800, 38.51220] } },
-    { "type": "Feature", "properties": { "name": "PF17A — PSR Cachofarra + Restab. R1",   "type": "sector", "pk": 31.5  }, "geometry": { "type": "Point", "coordinates": [-8.86380, 38.51340] } }
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Linha RO-RO T1 — Porto de Setúbal",
+        "type": "linha_aux"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -8.860248965250065,
+            38.51286048517071
+          ],
+          [
+            -8.85910068674026,
+            38.51268744057441
+          ],
+          [
+            -8.85795241355557,
+            38.512514384658985
+          ],
+          [
+            -8.856803244233822,
+            38.51225123956005
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "PK 29+730",
+        "type": "pk_marker",
+        "pk": 29.73,
+        "local": "Praias do Sado — Início PF17A"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -8.869234515445475,
+          38.517038280036125
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "PK 30+500",
+        "type": "pk_marker",
+        "pk": 30.5,
+        "local": "Estação Praias do Sado"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -8.866000480415147,
+          38.51471639251669
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "PK 31+175",
+        "type": "pk_marker",
+        "pk": 31.175,
+        "local": "Restabelecimento R1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -8.86484304405021,
+          38.513642628044074
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "PK 31+670",
+        "type": "pk_marker",
+        "pk": 31.67,
+        "local": "PN PK 31+670 — Cachofarra"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -8.863522225120956,
+          38.51341665456816
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "PK 32+000",
+        "type": "pk_marker",
+        "pk": 32.0,
+        "local": "Feixe da Cachofarra"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -8.861973027275472,
+          38.51328217078663
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "PK 32+653",
+        "type": "pk_marker",
+        "pk": 32.653,
+        "local": "km 32+653"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -8.859216690180308,
+          38.51282184669548
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "PK 32+825",
+        "type": "pk_marker",
+        "pk": 32.825,
+        "local": "km 32+825"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -8.858756927352145,
+          38.512707587244186
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "PK 33+700",
+        "type": "pk_marker",
+        "pk": 33.7,
+        "local": "Porto de Setúbal — Fim PF17A"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -8.85599756995964,
+          38.511940922185794
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "AMV 1 + AMV 2 (PK 31+685 / 31+720)",
+        "code": "AMV-1/2",
+        "type": "amv",
+        "categoria": "Aparelhos Mudança Via"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -8.863522225120956,
+          38.51341665456816
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Supressão PN PK 31+670 — Cachofarra",
+        "code": "PN-31670",
+        "type": "supressao_pn",
+        "categoria": "Passagem de Nível"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -8.863235241900865,
+          38.51338241032192
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Obra de Arte — Restabelecimento R1",
+        "code": "OA-R1",
+        "type": "obra_arte",
+        "categoria": "Passagem Desnivelada"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -8.86484304405021,
+          38.513642628044074
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "PSR Cachofarra — Feixe",
+        "code": "PSR-CACH",
+        "type": "psr",
+        "categoria": "Posto Seccionamento"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -8.861973027275472,
+          38.51328217078663
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Estação Praias do Sado",
+        "code": "EST-PS",
+        "type": "estacao",
+        "categoria": "Estação Ferroviária"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -8.868310876802148,
+          38.51641349769366
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Terminal Porto de Setúbal (Tersado)",
+        "code": "TERM-PS",
+        "type": "terminal",
+        "categoria": "Terminal Ferroviário"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -8.856802342775113,
+          38.51216116169406
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Linha RO-RO T1 (Porto Setúbal)",
+        "code": "RORO-T1",
+        "type": "linha_aux",
+        "categoria": "Linha Auxiliar"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -8.859101591079627,
+          38.51277751838647
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Muro Suporte M 31.3",
+        "code": "MURO-313",
+        "type": "estrutura",
+        "categoria": "Obra Geotécnica"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -8.86484304405021,
+          38.513642628044074
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "PF17A — Via Férrea",
+        "type": "sector",
+        "pk": 31.5
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -8.863694742809262,
+          38.51346962875213
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "PF17A — Terraplanagens",
+        "type": "sector",
+        "pk": 30.3
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -8.86658012526146,
+          38.51534334788379
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "PF17A — Drenagem",
+        "type": "sector",
+        "pk": 30.9
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -8.86519063612838,
+          38.514000789711716
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "PF17A — Betão e Obras de Arte",
+        "type": "sector",
+        "pk": 31.175
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -8.86484304405021,
+          38.513642628044074
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "PF17A — Catenária 25kV",
+        "type": "sector",
+        "pk": 32.0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -8.861973027275472,
+          38.51328217078663
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "PF17A — Aparelhos de Mudança de Via",
+        "type": "sector",
+        "pk": 31.685
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -8.863522225120956,
+          38.51341665456816
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "PF17A — Sinalização S&T",
+        "type": "sector",
+        "pk": 31.67
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -8.8635793670127,
+          38.513398281573316
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "PF17A — ST — Supressão PN PK 31+670",
+        "type": "sector",
+        "pk": 31.67
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -8.863522225120956,
+          38.51341665456816
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "PF17A — PSR Cachofarra + Restab. R1",
+        "type": "sector",
+        "pk": 31.5
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -8.863809208601952,
+          38.51345089810816
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "PF17A — Vedações e Restabelecimentos",
+        "type": "sector",
+        "pk": 31.175
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -8.86484304405021,
+          38.513642628044074
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "PF17A — Torres GSM-R",
+        "type": "sector",
+        "pk": 33.0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -8.857722217990153,
+          38.512425725411305
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "PF17A — Caminho de Cabos BT/Telecom",
+        "type": "sector",
+        "pk": 32.3
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -8.860595171637334,
+          38.513083544120754
+        ]
+      }
+    }
   ]
 }

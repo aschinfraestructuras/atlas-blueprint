@@ -250,26 +250,72 @@ export const ProjectMap = forwardRef<ProjectMapHandle, Props>(function ProjectMa
     if (features.length === 0) return;
 
     if (showAlignment) {
+      // Traçado principal — halo + linha sólida
       const lineFeature = features.find((f: any) => f.properties?.type === "railway_alignment");
       if (lineFeature) {
         const coords = lineFeature.geometry.coordinates.map(([lon, lat]: [number, number]) => [lat, lon]);
-        const polyline = L.polyline(coords, { color: "#185FA5", weight: 4, opacity: 0.85 }).addTo(map);
-        L.polyline(coords, { color: "#5b8dd9", weight: 8, opacity: 0.2 }).addTo(map);
+        L.polyline(coords, { color: "#5b8dd9", weight: 10, opacity: 0.15 }).addTo(map);
+        const polyline = L.polyline(coords, { color: "#185FA5", weight: 4, opacity: 0.9 }).addTo(map);
+        polyline.bindTooltip("Linha do Sul — PF17A (PK 29+730 a 33+700)", { sticky: true });
         alignmentLayerRef.current = polyline;
       }
+
+      // Linha RO-RO T1 — tracejada cinza/azul (ramal Porto Setúbal)
+      const roroFeature = features.find((f: any) => f.properties?.type === "linha_aux");
+      if (roroFeature) {
+        const coords = roroFeature.geometry.coordinates.map(([lon, lat]: [number, number]) => [lat, lon]);
+        const l = L.polyline(coords, { color: "#4a7fb5", weight: 2.5, opacity: 0.7, dashArray: "6 4" }).addTo(map);
+        l.bindTooltip(roroFeature.properties.name, { sticky: true });
+        sectorLayersRef.current.push(l);
+      }
+
+      // Estruturas notáveis (AMV, PN, OA, PSR, estações, etc.)
+      const STRUCT_ICONS: Record<string, { bg: string; label: string }> = {
+        amv:         { bg: "#7C3AED", label: "AMV" },
+        supressao_pn:{ bg: "#DC2626", label: "PN"  },
+        obra_arte:   { bg: "#059669", label: "OA"  },
+        psr:         { bg: "#D97706", label: "PSR" },
+        estacao:     { bg: "#1D4ED8", label: "EST" },
+        terminal:    { bg: "#0F766E", label: "TRM" },
+        estrutura:   { bg: "#6B7280", label: "EST" },
+        linha_aux:   { bg: "#4a7fb5", label: "LX"  },
+      };
+      features.filter((f: any) => {
+        const t = f.properties?.type;
+        return Object.keys(STRUCT_ICONS).includes(t) && f.geometry?.type === "Point";
+      }).forEach((f: any) => {
+        const [lon, lat] = f.geometry.coordinates;
+        const cfg = STRUCT_ICONS[f.properties.type] ?? { bg: "#666", label: "•" };
+        const icon = L.divIcon({
+          html: `<div style="background:${cfg.bg};color:white;font-size:8px;font-weight:800;padding:2px 5px;border-radius:3px;white-space:nowrap;border:1.5px solid rgba(255,255,255,0.4);box-shadow:0 2px 6px rgba(0,0,0,.35);font-family:system-ui">${cfg.label}</div>`,
+          className: "",
+          iconSize: [34, 18],
+          iconAnchor: [17, 9],
+        });
+        const m = L.marker([lat, lon], { icon })
+          .bindPopup(`<div style="padding:10px 12px;font-family:system-ui;min-width:200px">
+            <p style="font-size:9px;font-weight:700;text-transform:uppercase;color:${cfg.bg};margin:0 0 4px;letter-spacing:.08em">${f.properties.categoria ?? f.properties.type}</p>
+            <p style="font-size:12px;font-weight:700;color:#111;margin:0 0 2px">${f.properties.name}</p>
+            ${f.properties.code ? `<p style="font-size:10px;color:#888;margin:0;font-family:monospace">${f.properties.code}</p>` : ""}
+          </div>`)
+          .addTo(map);
+        sectorLayersRef.current.push(m);
+      });
     }
 
     if (showPKs) {
       features.filter((f: any) => f.properties?.type === "pk_marker").forEach((f: any) => {
         const [lon, lat] = f.geometry.coordinates;
+        const pk = f.properties.pk;
+        const isKey = [29.73, 31.67, 33.7].includes(pk); // PKs âncora — destaque
         const icon = L.divIcon({
-          html: pkMarkerSvg(f.properties.pk),
+          html: `<div style="background:${isKey ? "#DC2626" : "#192F48"};color:white;font-size:${isKey ? "9.5" : "8.5"}px;font-weight:700;padding:2px 6px;border-radius:3px;white-space:nowrap;border:1px solid ${isKey ? "#ef4444" : "#2a4a6b"};box-shadow:0 1px 4px rgba(0,0,0,.3);font-family:system-ui,monospace">PK ${f.properties.name.replace("PK ","")}</div>`,
           className: "",
-          iconSize: [60, 20],
-          iconAnchor: [30, 10],
+          iconSize: [72, 20],
+          iconAnchor: [36, 10],
         });
         const m = L.marker([lat, lon], { icon })
-          .bindTooltip(f.properties.local, { direction: "top", offset: [0, -12] })
+          .bindTooltip(`<b>${f.properties.name}</b><br>${f.properties.local}`, { direction: "top", offset: [0, -14] })
           .addTo(map);
         pkLayersRef.current.push(m);
       });
@@ -284,10 +330,10 @@ export const ProjectMap = forwardRef<ProjectMapHandle, Props>(function ProjectMa
         iconAnchor: [7, 7],
       });
       const m = L.marker([lat, lon], { icon })
-        .bindPopup(`<div style="padding:8px 10px;font-family:system-ui;min-width:180px">
-          <p style="font-size:9px;font-weight:700;text-transform:uppercase;color:#888;margin:0 0 4px">Sector WBS</p>
+        .bindPopup(`<div style="padding:8px 10px;font-family:system-ui;min-width:200px">
+          <p style="font-size:9px;font-weight:700;text-transform:uppercase;color:#185FA5;margin:0 0 4px;letter-spacing:.08em">Sector WBS</p>
           <p style="font-size:12px;font-weight:700;color:#111;margin:0">${f.properties.name}</p>
-          <p style="font-size:10px;color:#888;margin:4px 0 0">PK ${f.properties.pk}+000 (aprox.)</p>
+          <p style="font-size:10px;color:#888;margin:4px 0 0">PK ${f.properties.pk} (aprox.)</p>
         </div>`)
         .addTo(map);
       sectorLayersRef.current.push(m);
