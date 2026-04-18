@@ -316,18 +316,26 @@ export const ProjectMap = forwardRef<ProjectMapHandle, Props>(function ProjectMa
     }
 
     if (showPKs) {
-      features.filter((f: any) => f.properties?.type === "pk_marker").forEach((f: any) => {
+      // Suporte a 'vertex' (vértices topográficos oficiais) e 'pk_marker' (legacy)
+      features.filter((f: any) => f.properties?.type === "vertex" || f.properties?.type === "pk_marker").forEach((f: any) => {
         const [lon, lat] = f.geometry.coordinates;
         const pk = f.properties.pk;
-        const isKey = [29.73, 31.67, 33.7].includes(pk); // PKs âncora — destaque
+        const isKey = [29.73, 31.67, 31.726, 33.188, 33.7].includes(pk); // PKs âncora — destaque
+        const isVertex = f.properties?.type === "vertex";
+        const labelText = isVertex
+          ? `V ${f.properties.vertex_id} · ${f.properties.pk_label}`
+          : `PK ${f.properties.name.replace("PK ","")}`;
         const icon = L.divIcon({
-          html: `<div style="background:${isKey ? "#DC2626" : "#192F48"};color:white;font-size:${isKey ? "9.5" : "8.5"}px;font-weight:700;padding:2px 6px;border-radius:3px;white-space:nowrap;border:1px solid ${isKey ? "#ef4444" : "#2a4a6b"};box-shadow:0 1px 4px rgba(0,0,0,.3);font-family:system-ui,monospace">PK ${f.properties.name.replace("PK ","")}</div>`,
+          html: `<div style="background:${isKey ? "#DC2626" : "#192F48"};color:white;font-size:${isKey ? "9.5" : "8.5"}px;font-weight:700;padding:2px 6px;border-radius:3px;white-space:nowrap;border:1px solid ${isKey ? "#ef4444" : "#2a4a6b"};box-shadow:0 1px 4px rgba(0,0,0,.3);font-family:system-ui,monospace">${labelText}</div>`,
           className: "",
-          iconSize: [72, 20],
-          iconAnchor: [36, 10],
+          iconSize: [labelText.length * 5.5 + 12, 20],
+          iconAnchor: [(labelText.length * 5.5 + 12) / 2, 10],
         });
+        const tooltipHtml = isVertex
+          ? `<b>Vértice ${f.properties.vertex_id}</b> — PK ${f.properties.pk_label}<br><span style="font-size:10px">${f.properties.local ?? ""}</span><br><span style="font-size:10px;color:#666">Cota ${f.properties.elevation_m}m · ETRS89/PT-TM06</span>`
+          : `<b>${f.properties.name}</b><br>${f.properties.local ?? ""}`;
         const m = L.marker([lat, lon], { icon })
-          .bindTooltip(`<b>${f.properties.name}</b><br>${f.properties.local}`, { direction: "top", offset: [0, -14] })
+          .bindTooltip(tooltipHtml, { direction: "top", offset: [0, -14] })
           .addTo(map);
         pkLayersRef.current.push(m);
       });
