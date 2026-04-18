@@ -331,6 +331,49 @@
     "progressDistribution": "Distribución de Progreso"
   },
   "dashboard": {
+    "live": "live",
+    "justNow": "ahora",
+    "quickActionsLabel": "Acciones rápidas",
+    "heroChip": {
+      "client": "Cliente",
+      "contractor": "Contratista",
+      "start": "Inicio",
+      "daysAgo": "d"
+    },
+    "quick": {
+      "nc": "Nueva NC",
+      "ppi": "Nuevo PPI",
+      "test": "Registrar Ensayo",
+      "report": "Parte Diario"
+    },
+    "mapCta": {
+      "eyebrow": "Georreferenciación",
+      "live": "Live",
+      "title": "Mapa de la Obra",
+      "subtitle": "Visualiza elementos, NCs, PPIs y ensayos geolocalizados",
+      "button": "Abrir mapa",
+      "aria": "Abrir Mapa de la Obra"
+    },
+    "checklist": {
+      "title": "Panel de Conformidad",
+      "subtitle": "Criterios de calidad del proyecto",
+      "global": "Conformidad global",
+      "ok": "OK",
+      "nc": "NC",
+      "warn": "OBS",
+      "loading": "Calculando conformidad…",
+      "empty": "Sin criterios para evaluar",
+      "footerOk": "{{ok}} de {{total}} conformes",
+      "viewAll": "Ver detalle SGC",
+      "items": {
+        "nc": "NCs abiertas",
+        "ppi": "PPIs aprobados",
+        "tests": "Ensayos realizados",
+        "materials": "PAME aprobados",
+        "topo": "Topografía conforme",
+        "weld": "Soldaduras inspeccionadas"
+      }
+    },
     "testStatus": {
       "title": "Estado de los Ensayos",
       "ncOpen": "NCs abiertas",

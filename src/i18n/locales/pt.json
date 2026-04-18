@@ -244,6 +244,49 @@
     "cta": "Ver projetos"
   },
   "dashboard": {
+    "live": "live",
+    "justNow": "agora",
+    "quickActionsLabel": "Acções rápidas",
+    "heroChip": {
+      "client": "Cliente",
+      "contractor": "Empreiteiro",
+      "start": "Início",
+      "daysAgo": "d"
+    },
+    "quick": {
+      "nc": "Nova NC",
+      "ppi": "Novo PPI",
+      "test": "Registar Ensaio",
+      "report": "Parte Diária"
+    },
+    "mapCta": {
+      "eyebrow": "Georreferenciação",
+      "live": "Live",
+      "title": "Mapa da Obra",
+      "subtitle": "Visualiza elementos, NCs, PPIs e ensaios geolocalizados",
+      "button": "Abrir mapa",
+      "aria": "Abrir Mapa da Obra"
+    },
+    "checklist": {
+      "title": "Painel de Conformidade",
+      "subtitle": "Critérios de qualidade do projeto",
+      "global": "Conformidade global",
+      "ok": "OK",
+      "nc": "NC",
+      "warn": "OBS",
+      "loading": "A calcular conformidade…",
+      "empty": "Sem critérios para avaliar",
+      "footerOk": "{{ok}} de {{total}} conformes",
+      "viewAll": "Ver detalhe SGQ",
+      "items": {
+        "nc": "NCs em aberto",
+        "ppi": "PPIs aprovados",
+        "tests": "Ensaios realizados",
+        "materials": "PAME aprovados",
+        "topo": "Topografia conforme",
+        "weld": "Soldaduras inspeccionadas"
+      }
+    },
     "testStatus": {
       "title": "Estado dos Ensaios",
       "ncOpen": "NCs em aberto",
