@@ -121,7 +121,7 @@ export function FieldRecordsTab({ instanceId, ppiCode, disciplina }: Props) {
   async function handleExport(record: FieldRecord) {
     try {
       const full = await fieldRecordService.getById(record.id);
-      fieldRecordService.exportPdf(full, activeProject?.name ?? "Atlas QMS");
+      fieldRecordService.exportPdf(full, activeProject?.name ?? "Atlas QMS", logoBase64);
     } catch (err) {
       toast({ title: "Erro ao exportar", variant: "destructive" });
     }
