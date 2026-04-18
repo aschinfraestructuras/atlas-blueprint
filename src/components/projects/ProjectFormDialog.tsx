@@ -87,6 +87,9 @@ export function ProjectFormDialog({
       location: "",
       start_date: "",
       status: "active",
+      map_center_lat: undefined,
+      map_center_lng: undefined,
+      map_default_zoom: undefined,
     },
   });
 
@@ -102,8 +105,14 @@ export function ProjectFormDialog({
               location: project.location ?? "",
               start_date: project.start_date ?? "",
               status: project.status as "active" | "archived",
+              map_center_lat: project.map_center_lat ?? undefined,
+              map_center_lng: project.map_center_lng ?? undefined,
+              map_default_zoom: project.map_default_zoom ?? undefined,
             }
-          : { name: "", code: "", client: "", location: "", start_date: "", status: "active" }
+          : {
+              name: "", code: "", client: "", location: "", start_date: "", status: "active",
+              map_center_lat: undefined, map_center_lng: undefined, map_default_zoom: undefined,
+            }
       );
     }
   }, [open, project, form]);
@@ -112,13 +121,18 @@ export function ProjectFormDialog({
     if (!user) return;
     setSubmitting(true);
     try {
-      // Check code uniqueness
       const unique = await projectService.isCodeUnique(values.code, project?.id);
       if (!unique) {
         form.setError("code", { message: t("projects.form.validation.codeNotUnique") });
         setSubmitting(false);
         return;
       }
+
+      const mapPayload = {
+        map_center_lat: values.map_center_lat ?? null,
+        map_center_lng: values.map_center_lng ?? null,
+        map_default_zoom: values.map_default_zoom ?? null,
+      };
 
       if (isEdit && project) {
         const updated = await projectService.update(project.id, {
@@ -128,9 +142,9 @@ export function ProjectFormDialog({
           location: values.location || undefined,
           start_date: values.start_date || undefined,
           status: values.status,
+          ...mapPayload,
         });
         toast({ title: t("projects.toast.updated") });
-        // If the active project was this one, refresh it
         setActiveProject(updated);
       } else {
         const created = await projectService.create({
@@ -141,6 +155,7 @@ export function ProjectFormDialog({
           start_date: values.start_date || undefined,
           status: values.status,
           created_by: user.id,
+          ...mapPayload,
         });
         setActiveProject(created);
         toast({ title: t("projects.toast.created") });
