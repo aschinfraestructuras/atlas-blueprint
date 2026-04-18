@@ -644,6 +644,34 @@ export const ProjectMap = forwardRef<ProjectMapHandle, Props>(function ProjectMa
           </div>
         )}
         <div ref={containerRef} className="w-full h-full" />
+
+        {/* Mini-legenda flutuante */}
+        {points.length > 0 && (
+          <div className="absolute bottom-3 left-3 z-[400] bg-card/95 backdrop-blur-sm border border-border/60 rounded-lg shadow-card px-2.5 py-2 pointer-events-none min-w-[140px]">
+            <p className="text-[8.5px] font-bold uppercase tracking-wider text-muted-foreground/70 mb-1">
+              {t("map.legend", { defaultValue: "Legenda" })}
+            </p>
+            <ul className="space-y-0.5">
+              {(["work_item", "non_conformity", "ppi", "test_result"] as const).map((type) => {
+                const cfg = TYPE_CONFIG[type];
+                const total = typeCounts[type] ?? 0;
+                const visible = activeFilters.has(type) ? total : 0;
+                if (total === 0) return null;
+                return (
+                  <li key={type} className="flex items-center gap-1.5 text-[10px]">
+                    <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: cfg.color, opacity: activeFilters.has(type) ? 1 : 0.3 }} />
+                    <span className={cn("font-medium", activeFilters.has(type) ? "text-foreground" : "text-muted-foreground/50")}>
+                      {cfg.label}
+                    </span>
+                    <span className="ml-auto tabular-nums font-bold text-muted-foreground">
+                      {visible}/{total}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        )}
       </div>
 
       {showControls && (
