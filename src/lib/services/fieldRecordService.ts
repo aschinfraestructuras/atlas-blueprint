@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { fullPdfHeader } from "./pdfProjectHeader";
+import { resolveProjectLogoBase64 } from "./projectLogoResolver";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -167,9 +168,17 @@ export const fieldRecordService = {
     };
   },
 
-  exportPdf(record: FieldRecord & { materials?: FieldRecordMaterial[]; checks?: FieldRecordCheck[] }, projectName: string, logoBase64?: string | null) {
+  async exportPdf(record: FieldRecord & { materials?: FieldRecordMaterial[]; checks?: FieldRecordCheck[] }, projectName: string, logoBase64?: string | null) {
     const w = window.open("", "_blank");
     if (!w) return;
+
+    // Fallback: if logoBase64 wasn't provided by the caller (e.g. hook not ready),
+    // fetch the active project's configured logo on-demand so the PDF always uses
+    // the same brand image as the rest of the app.
+    let resolvedLogo = logoBase64 ?? null;
+    if (!resolvedLogo && record.project_id) {
+      try { resolvedLogo = await resolveProjectLogoBase64(record.project_id); } catch { /* ignore */ }
+    }
 
     const resultLabel: Record<string, string> = {
       conforme: "CONFORME",
@@ -220,7 +229,7 @@ export const fieldRecordService = {
     const resColor = resultColor[record.result] ?? "#333";
 
     const headerHtml = fullPdfHeader(
-      logoBase64 ?? null,
+      resolvedLogo,
       projectName,
       record.code,
       "0",
