@@ -2373,17 +2373,25 @@ export type Database = {
           code: string
           created_at: string
           created_by: string | null
+          disciplina: string | null
+          elemento: string | null
           has_photos: boolean
           id: string
           inspection_date: string
           inspector_id: string | null
+          is_deleted: boolean
           location_pk: string | null
+          next_inspection: string | null
           observations: string | null
+          pk_fim: string | null
           point_type: string
           ppi_instance_id: string | null
           project_id: string
           result: string
           specialist_name: string | null
+          status: string
+          tq_name: string | null
+          updated_at: string
           weather: string | null
         }
         Insert: {
@@ -2391,17 +2399,25 @@ export type Database = {
           code: string
           created_at?: string
           created_by?: string | null
+          disciplina?: string | null
+          elemento?: string | null
           has_photos?: boolean
           id?: string
           inspection_date?: string
           inspector_id?: string | null
+          is_deleted?: boolean
           location_pk?: string | null
+          next_inspection?: string | null
           observations?: string | null
+          pk_fim?: string | null
           point_type?: string
           ppi_instance_id?: string | null
           project_id: string
           result?: string
           specialist_name?: string | null
+          status?: string
+          tq_name?: string | null
+          updated_at?: string
           weather?: string | null
         }
         Update: {
@@ -2409,17 +2425,25 @@ export type Database = {
           code?: string
           created_at?: string
           created_by?: string | null
+          disciplina?: string | null
+          elemento?: string | null
           has_photos?: boolean
           id?: string
           inspection_date?: string
           inspector_id?: string | null
+          is_deleted?: boolean
           location_pk?: string | null
+          next_inspection?: string | null
           observations?: string | null
+          pk_fim?: string | null
           point_type?: string
           ppi_instance_id?: string | null
           project_id?: string
           result?: string
           specialist_name?: string | null
+          status?: string
+          tq_name?: string | null
+          updated_at?: string
           weather?: string | null
         }
         Relationships: [
