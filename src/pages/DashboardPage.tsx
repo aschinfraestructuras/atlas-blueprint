@@ -10,8 +10,8 @@ import { useProjectRole } from "@/hooks/useProjectRole";
 import { useRealtimeProject } from "@/hooks/useRealtimeProject";
 import { useCountUp } from "@/hooks/useCountUp";
 import {
-  AlertTriangle, Package, Crosshair, Clock, ArrowRight, Leaf,
-  ClipboardCheck, FlaskConical, ClipboardList, Zap, Calendar,
+  AlertTriangle, Package, Clock, ArrowRight, Leaf,
+  ClipboardCheck, FlaskConical, Calendar,
   ShieldCheck, LayoutDashboard, BarChart3, Layers, Info, MapPin,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -24,7 +24,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { HealthGauge } from "@/components/dashboard/HealthGauge";
 import { HealthScoreSheet } from "@/components/dashboard/HealthScoreSheet";
-import { SparklineKPI } from "@/components/dashboard/SparklineKPI";
+
 import { CriticalAlertsBanner } from "@/components/dashboard/CriticalAlertsBanner";
 import { NCTrendChart } from "@/components/dashboard/NCTrendChart";
 import { WorkProgressChart } from "@/components/dashboard/WorkProgressChart";
@@ -105,30 +105,6 @@ function MonthlyReportAlert({ projectId }: { projectId: string }) {
       </span>
       <ArrowRight className="h-3 w-3 opacity-50" />
     </div>
-  );
-}
-
-function AnimatedKpiCard({ icon: Icon, label, value, sub, color, route, loading, delay = 0 }:
-  { icon: React.ElementType; label: string; value: number; sub: string; color: string; route: string; loading: boolean; delay?: number }) {
-  const navigate = useNavigate();
-  const animated = useCountUp(loading ? 0 : value, { duration: 800, delay });
-  return (
-    <Card className="cursor-pointer hover:shadow-card-hover transition-all border-border/60 bg-card active:scale-[0.97]"
-      onClick={() => navigate(route)}>
-      <CardContent className="p-3 sm:p-4 flex items-center gap-2.5 sm:gap-3">
-        <div className="flex-shrink-0 h-9 w-9 sm:h-10 sm:w-10 rounded-xl flex items-center justify-center"
-          style={{ backgroundColor: `${color}15` }}>
-          <Icon className="h-4 w-4 sm:h-[18px] sm:w-[18px]" style={{ color }} />
-        </div>
-        <div className="min-w-0 flex-1">
-          <p className="text-xl sm:text-2xl font-black tabular-nums text-foreground leading-none">
-            {loading ? <Skeleton className="h-6 w-10 inline-block" /> : animated}
-          </p>
-          <p className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-muted-foreground truncate mt-0.5">{label}</p>
-          <p className="text-[9px] sm:text-[10px] text-muted-foreground/60 truncate">{loading ? "" : sub}</p>
-        </div>
-      </CardContent>
-    </Card>
   );
 }
 
@@ -275,8 +251,6 @@ export default function DashboardPage() {
 
   const filteredNcMonthly    = useMemo(() => filterByPeriod(ncMonthly),    [ncMonthly,    filterByPeriod]);
   const filteredTestsMonthly = useMemo(() => filterByPeriod(testsMonthly), [testsMonthly, filterByPeriod]);
-  const ncSpark    = useMemo(() => filteredNcMonthly.slice(-6).map(m => ({ v: m.opened })),                     [filteredNcMonthly]);
-  const testsSpark = useMemo(() => filteredTestsMonthly.slice(-6).map(m => ({ v: m.conform + m.non_conform })), [filteredTestsMonthly]);
 
   const displayName = user?.email?.split("@")[0] ?? "—";
   if (!activeProject) return <NoProjectBanner />;
@@ -513,19 +487,10 @@ export default function DashboardPage() {
           </TabsTrigger>
         </TabsList>
 
-        {/* TAB: VISÃO GERAL */}
+        {/* TAB: VISÃO GERAL — focada em inteligência (sem duplicar Module Cards do topo) */}
         <TabsContent value="overview" className="space-y-5 mt-4">
 
-          {/* Linha 1 — SparklineKPIs */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-2.5 sm:gap-3 [&>*]:min-h-[88px] sm:[&>*]:min-h-[100px]">
-            <SparklineKPI label={t("dashboard.kpi.ncOpen",        { defaultValue: "NCs Abertas" })}   value={kpis.ncOpen}          icon={AlertTriangle}  color="0 65% 50%"   sparkData={ncSpark}    onClick={() => navigate("/non-conformities")} loading={kpiLoading} invertTrendSemantics delay={0}   />
-            <SparklineKPI label={t("dashboard.kpi.testsOverdue",  { defaultValue: "Ensaios Atraso" })} value={kpis.testsOverdue}    icon={Clock}          color="38 85% 50%"  onClick={() => navigate("/tests")}             loading={kpiLoading} invertTrendSemantics delay={60}  />
-            <SparklineKPI label={t("dashboard.kpi.pamePending",   { defaultValue: "PAME Pendentes" })} value={kpis.pamePending}     icon={Package}        color="215 65% 38%" onClick={() => navigate("/materials")}         loading={kpiLoading} invertTrendSemantics delay={120} />
-            <SparklineKPI label={t("dashboard.kpi.testsCompleted",{ defaultValue: "Ensaios Feitos" })} value={kpis.testsCompleted}  icon={FlaskConical}   color="145 55% 38%" sparkData={testsSpark} onClick={() => navigate("/tests")}             loading={kpiLoading} delay={180} />
-            <SparklineKPI label={t("dashboard.kpi.emesExpiring",  { defaultValue: "Expirações 30d" })} value={kpis.emesExpiring30d} icon={ShieldCheck}    color={kpis.emesExpiring30d > 0 ? "0 65% 50%" : "145 55% 38%"} onClick={() => navigate("/expirations")} loading={kpiLoading} invertTrendSemantics delay={240} />
-          </div>
-
-          {/* Linha 1.5 — Inteligência Operacional: Insights + Top Frentes */}
+          {/* Linha 1 — Inteligência Operacional: Insights + Top Frentes */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 animate-fade-in" style={{ animationDelay: "120ms", animationFillMode: "both" }}>
             <PredictiveInsightsCard
               ncMonthly={filteredNcMonthly as any}
@@ -551,7 +516,7 @@ export default function DashboardPage() {
             loading={kpiLoading || healthLoading}
           />
 
-          {/* Linha 3 — KPIs SGQ (largura total) + Actividade Recente */}
+          {/* Linha 3 — KPIs SGQ + Actividade Recente */}
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-4">
             <div>
               <p className="text-[9px] font-extrabold uppercase tracking-[0.22em] text-muted-foreground/50 mb-2.5 flex items-center gap-1.5">
@@ -590,17 +555,6 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
           </div>
-
-          {/* Linha 4 — Indicadores de Obra */}
-          <div>
-            <p className="text-[9px] font-extrabold uppercase tracking-[0.22em] text-muted-foreground/50 mb-2.5">{t("dashboard.quickStats", { defaultValue: "Indicadores de Obra" })}</p>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3">
-              <AnimatedKpiCard icon={ClipboardList}  label={t("dashboard.kpi.dailyReports",      { defaultValue: "Partes Diárias" })}   value={kpis.dailyReportsTotal}  sub={`${kpis.dailyReportsValidated} ${t("dashboard.kpiSub.validated", { defaultValue: "validadas" })}`}                     color="hsl(210 65% 50%)" route="/daily-reports" loading={kpiLoading} delay={0}   />
-              <AnimatedKpiCard icon={Crosshair}      label={t("dashboard.kpi.topoControls",      { defaultValue: "Controlos Topo." })}  value={kpis.topoControlsTotal}  sub={kpis.topoControlsTotal > 0 ? `${Math.round((kpis.topoControlsConforme / kpis.topoControlsTotal)*100)}% ${t("dashboard.kpiSub.conform", { defaultValue: "conf." })}` : "—"} color={kpis.topoControlsTotal > 0 && kpis.topoControlsConforme === kpis.topoControlsTotal ? "hsl(145 55% 42%)" : "hsl(38 85% 50%)"} route="/topography" loading={kpiLoading} delay={80} />
-              <AnimatedKpiCard icon={ClipboardCheck} label={t("dashboard.kpi.ppiTotal",          { defaultValue: "PPIs Registados" })}  value={kpis.ppiTotal}           sub={`${kpis.ppiApproved} ${t("dashboard.moduleSub.approved", { defaultValue: "aprovados" })}`}                               color={kpis.ppiApproved===kpis.ppiTotal&&kpis.ppiTotal>0?"hsl(145 55% 42%)":"hsl(215 65% 50%)"} route="/ppi" loading={kpiLoading} delay={160} />
-              <AnimatedKpiCard icon={Zap}            label={t("dashboard.kpi.weldsPendingUtShort",{ defaultValue: "Soldaduras s/US" })} value={kpis.weldsPendingUt}     sub={kpis.weldsPendingUt===0?t("dashboard.kpiSub.allInspected",{ defaultValue: "Tudo inspeccionado" }):t("dashboard.kpiSub.pendingItems",{ defaultValue: "Pendentes" })} color={kpis.weldsPendingUt>0?"hsl(0 65% 50%)":"hsl(145 55% 42%)"} route="/tests" loading={kpiLoading} delay={240} />
-            </div>
-          </div>
         </TabsContent>
 
         {/* TAB: TENDÊNCIAS */}
@@ -615,41 +569,10 @@ export default function DashboardPage() {
               <PPIProgressChart />
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-[1fr_360px] gap-3 sm:gap-4">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
-              <ProgressCircle icon={ClipboardCheck} label={t("dashboard.progress.ppi",       { defaultValue: "PPIs Aprovados" })}      approved={kpis.ppiApproved}    total={kpis.ppiTotal}   route="/ppi"       colorVar="--module-plans"    loading={kpiLoading} />
-              <ProgressCircle icon={FlaskConical}   label={t("dashboard.progress.tests",     { defaultValue: "Ensaios Realizados" })}   approved={kpis.testsCompleted} total={kpis.testsTotal} route="/tests"     colorVar="--module-tests"    loading={kpiLoading} />
-              <ProgressCircle icon={Package}        label={t("dashboard.progress.materials", { defaultValue: "Materiais Aprovados" })}  approved={kpis.matApproved}    total={kpis.matTotal}   route="/materials" colorVar="--module-suppliers" loading={kpiLoading} />
-            </div>
-            <Card className="border border-border/60 bg-card shadow-card">
-              <CardHeader className="pb-2 pt-4 px-4 sm:px-5">
-                <CardTitle className="text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground flex items-center gap-1.5">
-                  <Clock className="h-3.5 w-3.5" />{t("dashboard.recent.title", { defaultValue: "Actividade Recente" })}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="px-4 sm:px-5 pb-4">
-                {kpiLoading ? <div className="space-y-2">{Array.from({ length: 4 }).map((_,i) => <Skeleton key={i} className="h-8 w-full" />)}</div>
-                  : kpis.recentActivity.length === 0 ? <p className="text-sm text-muted-foreground py-6 text-center">{t("dashboard.recent.empty", { defaultValue: "Sem actividade recente" })}</p>
-                  : <ul className="divide-y divide-border">
-                    {kpis.recentActivity.slice(0, 5).map((item, idx) => {
-                      const cfg = ACTIVITY_CFG[item.type] ?? ACTIVITY_CFG.nc;
-                      const Icon = cfg.icon;
-                      const route = item.type==="nc" ? `/non-conformities/${item.id}` : item.type==="ppi" ? `/ppi/${item.id}` : item.type==="lot" ? "/materials" : "/tests";
-                      return (
-                        <li key={`${item.type}-${item.id}-${idx}`}
-                          className="flex items-center gap-2 sm:gap-3 py-2 cursor-pointer hover:bg-muted/30 -mx-2 px-2 rounded-lg transition-colors"
-                          onClick={() => navigate(route)}>
-                          <Icon className={cn("h-3.5 w-3.5 flex-shrink-0", cfg.cls)} />
-                          <span className="font-mono text-[10px] sm:text-[11px] text-muted-foreground w-20 sm:w-28 flex-shrink-0 truncate">{item.code}</span>
-                          <span className="text-xs sm:text-sm text-foreground flex-1 truncate">{item.label || "—"}</span>
-                          <Badge variant="outline" className="text-[8px] font-semibold px-1.5 py-0 hidden sm:inline-flex">{item.type.toUpperCase()}</Badge>
-                          <span className="text-[9px] sm:text-[10px] text-muted-foreground tabular-nums">{new Date(item.created_at).toLocaleDateString()}</span>
-                        </li>
-                      );
-                    })}
-                  </ul>}
-              </CardContent>
-            </Card>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
+            <ProgressCircle icon={ClipboardCheck} label={t("dashboard.progress.ppi",       { defaultValue: "PPIs Aprovados" })}      approved={kpis.ppiApproved}    total={kpis.ppiTotal}   route="/ppi"       colorVar="--module-plans"    loading={kpiLoading} />
+            <ProgressCircle icon={FlaskConical}   label={t("dashboard.progress.tests",     { defaultValue: "Ensaios Realizados" })}   approved={kpis.testsCompleted} total={kpis.testsTotal} route="/tests"     colorVar="--module-tests"    loading={kpiLoading} />
+            <ProgressCircle icon={Package}        label={t("dashboard.progress.materials", { defaultValue: "Materiais Aprovados" })}  approved={kpis.matApproved}    total={kpis.matTotal}   route="/materials" colorVar="--module-suppliers" loading={kpiLoading} />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
             <TestStatusCard />
