@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useProject } from "@/contexts/ProjectContext";
+import { invalidateProjectLogoCache } from "@/lib/services/projectLogoResolver";
 
 /**
  * Convert image URL to base64 data URI for reliable PDF/print rendering.
@@ -86,7 +87,7 @@ export function useProjectLogo() {
         .update({ logo_url: path } as any)
         .eq("id", activeProject.id);
       if (dbErr) throw dbErr;
-
+      invalidateProjectLogoCache(activeProject.id);
       const { data: signedData } = await supabase.storage
         .from("qms-files")
         .createSignedUrl(path, 86400);
@@ -115,6 +116,7 @@ export function useProjectLogo() {
         .update({ logo_url: null } as any)
         .eq("id", activeProject.id);
       if (error) throw error;
+      invalidateProjectLogoCache(activeProject.id);
       setLogoUrl(null);
       setLogoBase64(null);
       await refetchProjects();
