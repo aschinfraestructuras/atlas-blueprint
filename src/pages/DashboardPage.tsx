@@ -463,7 +463,16 @@ export default function DashboardPage() {
             <SparklineKPI label={t("dashboard.kpi.emesExpiring",  { defaultValue: "Expirações 30d" })} value={kpis.emesExpiring30d} icon={ShieldCheck}    color={kpis.emesExpiring30d > 0 ? "0 65% 50%" : "145 55% 38%"} onClick={() => navigate("/expirations")} loading={kpiLoading} invertTrendSemantics delay={240} />
           </div>
 
-          {/* Linha 2 — Visão Integrada de Qualidade (radar + breakdown) */}
+          {/* Linha 1.5 — Inteligência Operacional: Insights + Top Frentes */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 animate-fade-in" style={{ animationDelay: "120ms", animationFillMode: "both" }}>
+            <PredictiveInsightsCard
+              ncMonthly={filteredNcMonthly as any}
+              testsMonthly={filteredTestsMonthly as any}
+              ppiApproved={kpis.ppiApproved}
+              ppiTotal={kpis.ppiTotal}
+              loading={kpiLoading || viewsLoading}
+            />
+            <TopCriticalFrentes projectId={activeProject.id} />
           <QualityOverviewChart
             ncOpen={kpis.ncOpen}
             ncTotal={kpis.ncOpen + (kpis.testsCompleted > 0 ? kpis.testsCompleted : 1)}
