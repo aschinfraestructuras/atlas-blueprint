@@ -9,8 +9,10 @@ import { cn } from "@/lib/utils";
 import {
   AlertTriangle, ClipboardCheck, FlaskConical,
   Construction, Layers, RefreshCw, Navigation,
-  Train, Locate,
+  Train, Locate, Boxes, Flame,
 } from "lucide-react";
+import "leaflet.markercluster/dist/MarkerCluster.css";
+import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 
 
 export interface MapPoint {
@@ -132,6 +134,8 @@ export const ProjectMap = forwardRef<ProjectMapHandle, Props>(function ProjectMa
   const [mapReady, setMapReady] = useState(false);
   const [showAlignment, setShowAlignment] = useState(true);
   const [showPKs, setShowPKs]   = useState(true);
+  const [useCluster, setUseCluster] = useState(true);
+  const [showHeatmap, setShowHeatmap] = useState(false);
   const [activeFilters, setActiveFilters] = useState<Set<MapPoint["entity_type"]>>(
     new Set(["work_item", "non_conformity", "ppi", "test_result"])
   );
