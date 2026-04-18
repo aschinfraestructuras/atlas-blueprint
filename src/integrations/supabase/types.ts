@@ -3504,7 +3504,9 @@ export type Database = {
           fip_validation_required: boolean
           id: string
           is_deleted: boolean
+          latitude: number | null
           location_pk: string | null
+          longitude: number | null
           material_id: string | null
           nc_sequence: number | null
           origin: string
@@ -3567,7 +3569,9 @@ export type Database = {
           fip_validation_required?: boolean
           id?: string
           is_deleted?: boolean
+          latitude?: number | null
           location_pk?: string | null
+          longitude?: number | null
           material_id?: string | null
           nc_sequence?: number | null
           origin?: string
@@ -3630,7 +3634,9 @@ export type Database = {
           fip_validation_required?: boolean
           id?: string
           is_deleted?: boolean
+          latitude?: number | null
           location_pk?: string | null
+          longitude?: number | null
           material_id?: string | null
           nc_sequence?: number | null
           origin?: string
@@ -4785,6 +4791,8 @@ export type Database = {
           inspection_date: string | null
           inspector_id: string | null
           is_deleted: boolean
+          latitude: number | null
+          longitude: number | null
           opened_at: string
           pk_fim: string | null
           pk_inicio: string | null
@@ -4817,6 +4825,8 @@ export type Database = {
           inspection_date?: string | null
           inspector_id?: string | null
           is_deleted?: boolean
+          latitude?: number | null
+          longitude?: number | null
           opened_at?: string
           pk_fim?: string | null
           pk_inicio?: string | null
@@ -4849,6 +4859,8 @@ export type Database = {
           inspection_date?: string | null
           inspector_id?: string | null
           is_deleted?: boolean
+          latitude?: number | null
+          longitude?: number | null
           opened_at?: string
           pk_fim?: string | null
           pk_inicio?: string | null
@@ -8186,8 +8198,10 @@ export type Database = {
           id: string
           is_deleted: boolean
           lab_report_ref: string | null
+          latitude: number | null
           location: string | null
           location_pk: string | null
+          longitude: number | null
           material: string | null
           material_id: string | null
           material_outro: string | null
@@ -8234,8 +8248,10 @@ export type Database = {
           id?: string
           is_deleted?: boolean
           lab_report_ref?: string | null
+          latitude?: number | null
           location?: string | null
           location_pk?: string | null
+          longitude?: number | null
           material?: string | null
           material_id?: string | null
           material_outro?: string | null
@@ -8282,8 +8298,10 @@ export type Database = {
           id?: string
           is_deleted?: boolean
           lab_report_ref?: string | null
+          latitude?: number | null
           location?: string | null
           location_pk?: string | null
+          longitude?: number | null
           material?: string | null
           material_id?: string | null
           material_outro?: string | null
@@ -9975,6 +9993,9 @@ export type Database = {
           has_pending_tests: boolean
           id: string
           is_deleted: boolean
+          latitude: number | null
+          location_description: string | null
+          longitude: number | null
           lote: string | null
           obra: string | null
           parte: string | null
@@ -10000,6 +10021,9 @@ export type Database = {
           has_pending_tests?: boolean
           id?: string
           is_deleted?: boolean
+          latitude?: number | null
+          location_description?: string | null
+          longitude?: number | null
           lote?: string | null
           obra?: string | null
           parte?: string | null
@@ -10025,6 +10049,9 @@ export type Database = {
           has_pending_tests?: boolean
           id?: string
           is_deleted?: boolean
+          latitude?: number | null
+          location_description?: string | null
+          longitude?: number | null
           lote?: string | null
           obra?: string | null
           parte?: string | null
@@ -11564,6 +11591,22 @@ export type Database = {
           },
         ]
       }
+      vw_map_points: {
+        Row: {
+          disciplina: string | null
+          entity_type: string | null
+          id: string | null
+          latitude: number | null
+          longitude: number | null
+          pk: string | null
+          project_id: string | null
+          severity: string | null
+          status: string | null
+          subtitle: string | null
+          title: string | null
+        }
+        Relationships: []
+      }
       vw_monthly_quality_summary: {
         Row: {
           concrete_batches_month: number | null
@@ -13070,7 +13113,9 @@ export type Database = {
               fip_validation_required: boolean
               id: string
               is_deleted: boolean
+              latitude: number | null
               location_pk: string | null
+              longitude: number | null
               material_id: string | null
               nc_sequence: number | null
               origin: string
@@ -13177,7 +13222,9 @@ export type Database = {
               fip_validation_required: boolean
               id: string
               is_deleted: boolean
+              latitude: number | null
               location_pk: string | null
+              longitude: number | null
               material_id: string | null
               nc_sequence: number | null
               origin: string
@@ -13254,7 +13301,9 @@ export type Database = {
           fip_validation_required: boolean
           id: string
           is_deleted: boolean
+          latitude: number | null
           location_pk: string | null
+          longitude: number | null
           material_id: string | null
           nc_sequence: number | null
           origin: string
@@ -13331,7 +13380,9 @@ export type Database = {
           fip_validation_required: boolean
           id: string
           is_deleted: boolean
+          latitude: number | null
           location_pk: string | null
+          longitude: number | null
           material_id: string | null
           nc_sequence: number | null
           origin: string
@@ -13498,8 +13549,10 @@ export type Database = {
           id: string
           is_deleted: boolean
           lab_report_ref: string | null
+          latitude: number | null
           location: string | null
           location_pk: string | null
+          longitude: number | null
           material: string | null
           material_id: string | null
           material_outro: string | null
@@ -13651,6 +13704,8 @@ export type Database = {
               inspection_date: string | null
               inspector_id: string | null
               is_deleted: boolean
+              latitude: number | null
+              longitude: number | null
               opened_at: string
               pk_fim: string | null
               pk_inicio: string | null
@@ -13696,6 +13751,8 @@ export type Database = {
               inspection_date: string | null
               inspector_id: string | null
               is_deleted: boolean
+              latitude: number | null
+              longitude: number | null
               opened_at: string
               pk_fim: string | null
               pk_inicio: string | null
@@ -13780,7 +13837,9 @@ export type Database = {
           fip_validation_required: boolean
           id: string
           is_deleted: boolean
+          latitude: number | null
           location_pk: string | null
+          longitude: number | null
           material_id: string | null
           nc_sequence: number | null
           origin: string
@@ -13838,8 +13897,10 @@ export type Database = {
           id: string
           is_deleted: boolean
           lab_report_ref: string | null
+          latitude: number | null
           location: string | null
           location_pk: string | null
+          longitude: number | null
           material: string | null
           material_id: string | null
           material_outro: string | null
