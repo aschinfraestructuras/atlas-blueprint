@@ -80,9 +80,20 @@ export function SparklineKPI({
             <Skeleton className="h-7 w-12" />
           ) : (
             <div className="pl-0.5">
-              <p className="text-xl sm:text-2xl font-black tabular-nums text-foreground leading-none">
-                {value}
-              </p>
+              <div className="flex items-baseline gap-1.5 flex-wrap">
+                <p className="text-xl sm:text-2xl font-black tabular-nums text-foreground leading-none">
+                  {value}
+                </p>
+                {trend && (
+                  <span className={cn(
+                    "inline-flex items-center gap-0.5 text-[8.5px] sm:text-[9px] font-bold px-1 py-0.5 rounded border tabular-nums",
+                    trendCls,
+                  )}>
+                    <TrendIcon className="h-2.5 w-2.5" />
+                    {trend.dir === "flat" ? "0" : `${trend.pct}%`}
+                  </span>
+                )}
+              </div>
               {subtitle && (
                 <p className="text-[8px] sm:text-[9px] text-muted-foreground/70 mt-0.5 leading-tight">{subtitle}</p>
               )}
