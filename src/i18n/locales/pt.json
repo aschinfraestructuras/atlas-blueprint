@@ -5479,7 +5479,32 @@
     "noPointsHint": "Adicione coordenadas GPS nos formulários de Work Items, NCs, PPIs e Ensaios.",
     "noPointsShort": "Sem dados georref.",
     "points": "pontos visíveis",
-    "totalPoints": "{{count}} pontos georreferenciados"
+    "totalPoints": "{{count}} pontos georreferenciados",
+    "cluster": "Agrupar marcadores",
+    "heatmap": "Mapa de calor",
+    "legend": "Legenda",
+    "alignment": "Traçado",
+    "locate": "A minha localização",
+    "youAreHere": "A sua localização",
+    "showTable": "Mostrar lista",
+    "hideTable": "Ocultar lista",
+    "table": {
+      "searchPlaceholder": "Pesquisar título, PK, disciplina…",
+      "pkMin": "PK mín",
+      "pkMax": "PK máx",
+      "filters": "Filtros",
+      "clear": "Limpar",
+      "status": "Estado",
+      "severity": "Severidade",
+      "discipline": "Disciplina",
+      "allStatuses": "Todos os estados",
+      "allSeverities": "Todas as severidades",
+      "allDisciplines": "Todas as disciplinas",
+      "count": "{{shown}} de {{total}} pontos",
+      "empty": "Nenhum ponto corresponde aos filtros.",
+      "focus": "Focar no mapa",
+      "open": "Abrir detalhe"
+    }
   },
   "mqt": {
     "title": "Mapa de Quantidades e Trabalhos",
