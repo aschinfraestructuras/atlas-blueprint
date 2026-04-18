@@ -186,6 +186,11 @@ export default function DashboardPage() {
   const [period, setPeriod] = useState("all");
   const [activeTab, setActiveTab] = useState("overview");
   const [timelineItems, setTimelineItems] = useState<TimelineItem[]>([]);
+  // Live indicator state — must stay above any early return (Rules of Hooks)
+  const [lastUpdated, setLastUpdated] = useState<number>(Date.now());
+  const [, forceTick] = useState(0);
+  useEffect(() => { if (!kpiLoading) setLastUpdated(Date.now()); }, [kpiLoading, kpis]);
+  useEffect(() => { const id = setInterval(() => forceTick((v) => v + 1), 30_000); return () => clearInterval(id); }, []);
 
   // Buscar NCs e PPIs recentes para a Timeline (sem alterar hooks de negócio)
   useEffect(() => {
