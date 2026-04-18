@@ -1819,6 +1819,19 @@
     },
     "actions": {
       "reopen": "Reabrir"
+    },
+    "tab": {
+      "list": "Lista",
+      "analysis": "Análise",
+      "actionPlan": "Plano de Acções"
+    },
+    "actionPlan": {
+      "overdue": "Em Atraso",
+      "openPending": "Abertas — Ação Pendente",
+      "dueDate": "Prazo",
+      "noDueDate": "Sem prazo",
+      "allClosed": "Sem NCs abertas",
+      "allClosedSub": "Todas as não conformidades estão fechadas ou arquivadas"
     }
   },
   "technicalOffice": {

@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { usePermissions } from "@/hooks/usePermissions";
 import { useNonConformities } from "@/hooks/useNonConformities";
 import { ncService } from "@/lib/services/ncService";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { exportNCBulkPdf, type NCExportLabels } from "@/lib/services/ncExportService";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
@@ -22,7 +23,7 @@ import {
   AlertTriangle, Calendar, Plus, Pencil, ChevronDown, Trash2,
   Eye, Loader2, Database, Search, X, CheckSquare, Square, FileDown,
   Clock, CheckCircle2, FlaskConical, ClipboardCheck, Timer,
-  PieChart, RotateCcw,
+  PieChart, RotateCcw, List, BarChart3, ClipboardList,
 } from "lucide-react";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -140,6 +141,9 @@ export default function NonConformitiesPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingNC, setEditingNC]   = useState<NonConformity | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+
+  // Tabs
+  const [activeTab, setActiveTab] = useState("list");
 
   // NC prefill from test result fail
   const [searchParams, setSearchParams] = useSearchParams();
@@ -390,64 +394,23 @@ export default function NonConformitiesPage() {
         </div>
       )}
 
-      {/* ── Charts Row ──────────────────────────────────────── */}
-      {!loading && openNcs.length > 0 && (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <Card className="border shadow-none">
-            <CardHeader className="pb-1 pt-4 px-4">
-              <CardTitle className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground flex items-center gap-1.5">
-                <Timer className="h-3.5 w-3.5" />{t("moduleKpi.ncAgingChart")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="px-4 pb-4">
-              <ResponsiveContainer width="100%" height={120}>
-                <BarChart data={agingData} barCategoryGap="25%">
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                  <XAxis dataKey="label" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
-                  <YAxis allowDecimals={false} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} width={20} />
-                  <Tooltip />
-                  <Bar dataKey="value" fill="hsl(var(--destructive))" radius={[3, 3, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-          <Card className="border shadow-none">
-            <CardHeader className="pb-1 pt-4 px-4">
-              <CardTitle className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground flex items-center gap-1.5">
-                <PieChart className="h-3.5 w-3.5" />{t("moduleKpi.byDisciplina", { defaultValue: "Por Categoria" })}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="px-4 pb-4">
-              {(() => {
-                const entries = rootCauseData.slice(0, 8);
-                const maxVal = Math.max(...entries.map(e => e.value), 1);
-                const COLORS = [
-                  "hsl(var(--primary))", "hsl(var(--chart-2))", "hsl(var(--chart-3))",
-                  "hsl(var(--chart-4))", "hsl(var(--chart-5))", "hsl(var(--accent-foreground))",
-                  "hsl(var(--muted-foreground))", "hsl(var(--chart-1))",
-                ];
-                return (
-                  <div className="space-y-2">
-                    {entries.map((d, i) => (
-                      <div key={d.label} className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground w-24 truncate text-right">{d.label}</span>
-                        <div className="flex-1 h-5 bg-muted/30 rounded-full overflow-hidden">
-                          <div
-                            className="h-full rounded-full transition-all duration-500 ease-out"
-                            style={{ width: `${(d.value / maxVal) * 100}%`, backgroundColor: COLORS[i % COLORS.length] }}
-                          />
-                        </div>
-                        <span className="text-xs font-bold tabular-nums text-foreground w-8 text-right">{d.value}</span>
-                      </div>
-                    ))}
-                  </div>
-                );
-              })()}
-            </CardContent>
-          </Card>
-        </div>
-      )}
+      {/* ── Tabs: Lista / Análise / Plano de Acções ─────────────────── */}
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="h-9 p-1 bg-muted/50 rounded-xl border border-border/40 gap-0.5">
+          <TabsTrigger value="list" className="gap-1.5 text-xs font-semibold rounded-lg data-[state=active]:shadow-sm">
+            <List className="h-3 w-3" />{t("nc.tab.list", { defaultValue: "Lista" })}
+            {filtered.length > 0 && <span className="ml-1 text-[9px] bg-muted px-1.5 py-0 rounded-full font-bold">{filtered.length}</span>}
+          </TabsTrigger>
+          <TabsTrigger value="analysis" className="gap-1.5 text-xs font-semibold rounded-lg data-[state=active]:shadow-sm">
+            <BarChart3 className="h-3 w-3" />{t("nc.tab.analysis", { defaultValue: "Análise" })}
+          </TabsTrigger>
+          <TabsTrigger value="action_plan" className="gap-1.5 text-xs font-semibold rounded-lg data-[state=active]:shadow-sm">
+            <ClipboardList className="h-3 w-3" />{t("nc.tab.actionPlan", { defaultValue: "Plano de Acções" })}
+            {overdueNcs.length > 0 && <span className="ml-1 text-[9px] bg-destructive/20 text-destructive px-1.5 py-0 rounded-full font-bold">{overdueNcs.length}</span>}
+          </TabsTrigger>
+        </TabsList>
 
+        <TabsContent value="list" className="mt-4 space-y-4">
       {/* ── Filters ─────────────────────────────────────────────────────── */}
       <FilterBar>
         <div className="relative">
@@ -937,6 +900,124 @@ export default function NonConformitiesPage() {
         </div>
       )}
 
+        </TabsContent>
+
+        <TabsContent value="analysis" className="mt-4 space-y-4">
+      {/* ── Charts Row ──────────────────────────────────────── */}
+      {!loading && openNcs.length > 0 && (
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <Card className="border shadow-none">
+            <CardHeader className="pb-1 pt-4 px-4">
+              <CardTitle className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground flex items-center gap-1.5">
+                <Timer className="h-3.5 w-3.5" />{t("moduleKpi.ncAgingChart")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="px-4 pb-4">
+              <ResponsiveContainer width="100%" height={120}>
+                <BarChart data={agingData} barCategoryGap="25%">
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                  <XAxis dataKey="label" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
+                  <YAxis allowDecimals={false} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} width={20} />
+                  <Tooltip />
+                  <Bar dataKey="value" fill="hsl(var(--destructive))" radius={[3, 3, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+          <Card className="border shadow-none">
+            <CardHeader className="pb-1 pt-4 px-4">
+              <CardTitle className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground flex items-center gap-1.5">
+                <PieChart className="h-3.5 w-3.5" />{t("moduleKpi.byDisciplina", { defaultValue: "Por Categoria" })}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="px-4 pb-4">
+              {(() => {
+                const entries = rootCauseData.slice(0, 8);
+                const maxVal = Math.max(...entries.map(e => e.value), 1);
+                const COLORS = [
+                  "hsl(var(--primary))", "hsl(var(--chart-2))", "hsl(var(--chart-3))",
+                  "hsl(var(--chart-4))", "hsl(var(--chart-5))", "hsl(var(--accent-foreground))",
+                  "hsl(var(--muted-foreground))", "hsl(var(--chart-1))",
+                ];
+                return (
+                  <div className="space-y-2">
+                    {entries.map((d, i) => (
+                      <div key={d.label} className="flex items-center gap-2">
+                        <span className="text-xs text-muted-foreground w-24 truncate text-right">{d.label}</span>
+                        <div className="flex-1 h-5 bg-muted/30 rounded-full overflow-hidden">
+                          <div
+                            className="h-full rounded-full transition-all duration-500 ease-out"
+                            style={{ width: `${(d.value / maxVal) * 100}%`, backgroundColor: COLORS[i % COLORS.length] }}
+                          />
+                        </div>
+                        <span className="text-xs font-bold tabular-nums text-foreground w-8 text-right">{d.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+        </TabsContent>
+
+        <TabsContent value="action_plan" className="mt-4">
+      {/* ── Tab: Plano de Acções ─────────────────────────────────────── */}
+      {!loading && (
+        <div className="space-y-3">
+          {overdueNcs.length > 0 && (
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-destructive mb-2 flex items-center gap-1.5">
+                <Clock className="h-3 w-3" />{t("nc.actionPlan.overdue", { defaultValue: "Em Atraso" })} ({overdueNcs.length})
+              </p>
+              <div className="space-y-2">
+                {overdueNcs.sort((a, b) => (a.due_date ?? "").localeCompare(b.due_date ?? "")).map(nc => (
+                  <div key={nc.id} className="flex items-center gap-3 px-4 py-3 rounded-xl border border-destructive/25 bg-destructive/5 cursor-pointer hover:bg-destructive/10 transition-colors"
+                    onClick={() => navigate(`/non-conformities/${nc.id}`)}>
+                    <div className="w-2 h-2 rounded-full bg-destructive flex-shrink-0" />
+                    <span className="font-mono text-xs text-muted-foreground w-28 flex-shrink-0">{nc.code}</span>
+                    <span className="text-sm font-medium flex-1 truncate">{nc.title}</span>
+                    <span className="text-xs text-destructive font-semibold flex-shrink-0">{t("nc.actionPlan.dueDate", { defaultValue: "Prazo" })}: {nc.due_date ? new Date(nc.due_date + "T00:00:00").toLocaleDateString(t("common.locale", { defaultValue: "pt-PT" })) : "—"}</span>
+                    <StatusPill status={nc.status as any} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          {openNcs.filter(nc => !overdueNcs.includes(nc)).length > 0 && (
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2 flex items-center gap-1.5">
+                <AlertTriangle className="h-3 w-3" />{t("nc.actionPlan.openPending", { defaultValue: "Abertas — Ação Pendente" })} ({openNcs.filter(nc => !overdueNcs.includes(nc)).length})
+              </p>
+              <div className="space-y-2">
+                {openNcs.filter(nc => !overdueNcs.includes(nc))
+                  .sort((a, b) => (a.due_date ?? "9999").localeCompare(b.due_date ?? "9999"))
+                  .map(nc => (
+                  <div key={nc.id} className="flex items-center gap-3 px-4 py-3 rounded-xl border border-border/50 bg-muted/20 cursor-pointer hover:bg-muted/40 transition-colors"
+                    onClick={() => navigate(`/non-conformities/${nc.id}`)}>
+                    <div className="w-2 h-2 rounded-full bg-amber-500 flex-shrink-0" />
+                    <span className="font-mono text-xs text-muted-foreground w-28 flex-shrink-0">{nc.code}</span>
+                    <span className="text-sm font-medium flex-1 truncate">{nc.title}</span>
+                    <span className="text-xs text-muted-foreground flex-shrink-0">{nc.due_date ? new Date(nc.due_date + "T00:00:00").toLocaleDateString(t("common.locale", { defaultValue: "pt-PT" })) : t("nc.actionPlan.noDueDate", { defaultValue: "Sem prazo" })}</span>
+                    <StatusPill status={nc.status as any} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          {openNcs.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-16 gap-3">
+              <CheckCircle2 className="h-12 w-12 text-emerald-500/30" />
+              <p className="text-sm font-medium text-muted-foreground">{t("nc.actionPlan.allClosed", { defaultValue: "Sem NCs abertas" })}</p>
+              <p className="text-xs text-muted-foreground/60">{t("nc.actionPlan.allClosedSub", { defaultValue: "Todas as não conformidades estão fechadas ou arquivadas" })}</p>
+            </div>
+          )}
+        </div>
+      )}
+        </TabsContent>
+      </Tabs>
       {/* ── Dialog ──────────────────────────────────────────────────────── */}
       <NCFormDialog
         open={dialogOpen}
