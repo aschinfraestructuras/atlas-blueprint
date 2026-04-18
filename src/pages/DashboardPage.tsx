@@ -12,7 +12,7 @@ import { useCountUp } from "@/hooks/useCountUp";
 import {
   AlertTriangle, Package, Crosshair, Clock, ArrowRight, Leaf,
   ClipboardCheck, FlaskConical, ClipboardList, Zap, Calendar,
-  ShieldCheck, LayoutDashboard, BarChart3, Layers, Info,
+  ShieldCheck, LayoutDashboard, BarChart3, Layers, Info, MapPin,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -424,6 +424,68 @@ export default function DashboardPage() {
           );
         })}
       </div>
+
+      {/* ── MAP QUICK ACCESS — card horizontal premium, integrado entre módulos e tabs ── */}
+      <Card
+        className="relative overflow-hidden border border-border/60 bg-card shadow-card cursor-pointer hover:shadow-card-hover hover:border-primary/30 hover:-translate-y-0.5 transition-all active:scale-[0.99] group animate-fade-in"
+        style={{ animationDelay: "80ms", animationFillMode: "both" }}
+        onClick={() => navigate("/map")}
+        role="link"
+        aria-label={t("dashboard.mapCta.aria", { defaultValue: "Abrir Mapa da Obra" })}
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/[0.06] via-card to-emerald-500/[0.05]" />
+        <div
+          className="absolute inset-0 opacity-[0.05] pointer-events-none"
+          style={{
+            backgroundImage:
+              "linear-gradient(hsl(var(--foreground)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)",
+            backgroundSize: "32px 32px",
+          }}
+        />
+        <div className="absolute -right-16 -top-16 w-56 h-56 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
+
+        <CardContent className="relative z-10 p-4 sm:p-5 flex items-center gap-4">
+          <div className="flex-shrink-0 relative">
+            <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-2xl bg-gradient-to-br from-primary/15 to-primary/5 border border-primary/20 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+              <MapPin className="h-5 w-5 sm:h-6 sm:w-6 text-primary" strokeWidth={2.2} />
+            </div>
+            <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5">
+              <span className="absolute inset-0 rounded-full bg-emerald-500/60 animate-ping" />
+              <span className="absolute inset-0 rounded-full bg-emerald-500 border-2 border-card" />
+            </span>
+          </div>
+
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-1.5 mb-0.5">
+              <p className="text-[9px] font-extrabold uppercase tracking-[0.22em] text-muted-foreground/70">
+                {t("dashboard.mapCta.eyebrow", { defaultValue: "Georreferenciação" })}
+              </p>
+              <Badge variant="outline" className="h-4 px-1.5 text-[8px] font-bold uppercase tracking-wider border-emerald-500/30 text-emerald-600 bg-emerald-500/5">
+                {t("dashboard.mapCta.live", { defaultValue: "Live" })}
+              </Badge>
+            </div>
+            <h3 className="text-base sm:text-lg font-black tracking-tight text-foreground leading-tight">
+              {t("dashboard.mapCta.title", { defaultValue: "Mapa da Obra" })}
+            </h3>
+            <p className="text-[11px] sm:text-xs text-muted-foreground/80 truncate mt-0.5">
+              {t("dashboard.mapCta.subtitle", { defaultValue: "Visualize work items, NCs, PPIs e ensaios geolocalizados" })}
+            </p>
+          </div>
+
+          <div className="hidden sm:flex flex-shrink-0">
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 gap-1.5 text-xs font-semibold border-primary/30 text-primary bg-card/80 backdrop-blur-sm hover:bg-primary/5 hover:border-primary/50 group-hover:translate-x-0.5 transition-all"
+              onClick={(e) => { e.stopPropagation(); navigate("/map"); }}
+            >
+              {t("dashboard.mapCta.button", { defaultValue: "Abrir mapa" })}
+              <ArrowRight className="h-3 w-3" />
+            </Button>
+          </div>
+          <ArrowRight className="sm:hidden h-4 w-4 text-muted-foreground/50 group-hover:text-primary group-hover:translate-x-0.5 transition-all flex-shrink-0" />
+        </CardContent>
+      </Card>
 
       {/* TABS */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="animate-fade-in" style={{ animationDelay: "100ms", animationFillMode: "both" }}>
