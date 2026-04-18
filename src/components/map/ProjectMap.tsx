@@ -9,8 +9,10 @@ import { cn } from "@/lib/utils";
 import {
   AlertTriangle, ClipboardCheck, FlaskConical,
   Construction, Layers, RefreshCw, Navigation,
-  Train, Locate,
+  Train, Locate, Boxes, Flame,
 } from "lucide-react";
+import "leaflet.markercluster/dist/MarkerCluster.css";
+import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 
 
 export interface MapPoint {
@@ -132,6 +134,8 @@ export const ProjectMap = forwardRef<ProjectMapHandle, Props>(function ProjectMa
   const [mapReady, setMapReady] = useState(false);
   const [showAlignment, setShowAlignment] = useState(true);
   const [showPKs, setShowPKs]   = useState(true);
+  const [useCluster, setUseCluster] = useState(true);
+  const [showHeatmap, setShowHeatmap] = useState(false);
   const [activeFilters, setActiveFilters] = useState<Set<MapPoint["entity_type"]>>(
     new Set(["work_item", "non_conformity", "ppi", "test_result"])
   );
@@ -360,26 +364,51 @@ export const ProjectMap = forwardRef<ProjectMapHandle, Props>(function ProjectMa
     });
   }, [mapReady, showAlignment, showPKs]);
 
-  // Marcadores de dados reais
+  // Marcadores de dados reais (com suporte a cluster e heatmap)
+  const clusterLayerRef = useRef<any>(null);
+  const heatLayerRef = useRef<any>(null);
+
   useEffect(() => {
     if (!mapReady || !mapRef.current) return;
     const { map, L } = mapRef.current;
 
+    // Limpar tudo o que possa existir
     markersRef.current.forEach((m) => m.remove());
     markersRef.current.clear();
+    if (clusterLayerRef.current) { map.removeLayer(clusterLayerRef.current); clusterLayerRef.current = null; }
+    if (heatLayerRef.current)    { map.removeLayer(heatLayerRef.current);    heatLayerRef.current = null; }
 
     const visible = points.filter((p) => activeFilters.has(p.entity_type));
     if (visible.length === 0) return;
 
     const bounds: [number, number][] = [];
 
-    visible.forEach((point) => {
+    // Heatmap (densidade por NCs/ensaios) — não substitui marcadores
+    if (showHeatmap) {
+      import("leaflet.heat").then(() => {
+        if (!mapRef.current) return;
+        const heatPoints = visible.map((p) => {
+          // intensidade maior para NC críticas/abertas e ensaios fail
+          let intensity = 0.5;
+          if (p.entity_type === "non_conformity") intensity = (p.status === "closed") ? 0.4 : 0.95;
+          if (p.entity_type === "test_result")    intensity = (p.status === "fail") ? 0.9 : 0.4;
+          return [p.latitude, p.longitude, intensity];
+        });
+        heatLayerRef.current = (L as any).heatLayer(heatPoints, {
+          radius: 28,
+          blur: 22,
+          maxZoom: 17,
+          gradient: { 0.2: "#1D9E75", 0.5: "#BA7517", 0.85: "#E24B4A" },
+        }).addTo(map);
+      }).catch(() => { /* ignore */ });
+    }
+
+    const buildMarker = (point: MapPoint) => {
       const color = statusColor(point.entity_type, point.status);
       const label =
         point.entity_type === "non_conformity" ? "NC" :
         point.entity_type === "ppi" ? "PPI" :
         point.entity_type === "test_result" ? "ENS" : "WI";
-
       const icon = L.divIcon({
         html: markerSvg(color, label),
         className: "",
@@ -387,22 +416,64 @@ export const ProjectMap = forwardRef<ProjectMapHandle, Props>(function ProjectMa
         iconAnchor: [17, 44],
         popupAnchor: [0, -46],
       });
-
-      const marker = L.marker([point.latitude, point.longitude], { icon })
-        .addTo(map)
+      return L.marker([point.latitude, point.longitude], { icon })
         .bindPopup(popupHtml(point), { maxWidth: 260, minWidth: 220 });
+    };
 
-      markersRef.current.set(`${point.entity_type}-${point.id}`, marker);
-      bounds.push([point.latitude, point.longitude]);
-    });
+    if (useCluster && visible.length > 8) {
+      // Carregamento dinâmico do plugin cluster
+      import("leaflet.markercluster").then(() => {
+        if (!mapRef.current) return;
+        const cluster = (L as any).markerClusterGroup({
+          showCoverageOnHover: false,
+          spiderfyOnMaxZoom: true,
+          chunkedLoading: true,
+          maxClusterRadius: 50,
+          iconCreateFunction: (c: any) => {
+            const count = c.getChildCount();
+            const size = count < 10 ? 32 : count < 50 ? 38 : 46;
+            const color = count < 10 ? "#185FA5" : count < 50 ? "#BA7517" : "#E24B4A";
+            return L.divIcon({
+              html: `<div style="background:${color};color:white;border-radius:50%;width:${size}px;height:${size}px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;font-family:system-ui;border:3px solid rgba(255,255,255,0.85);box-shadow:0 2px 8px rgba(0,0,0,0.3)">${count}</div>`,
+              className: "",
+              iconSize: [size, size],
+            });
+          },
+        });
+        visible.forEach((point) => {
+          const marker = buildMarker(point);
+          cluster.addLayer(marker);
+          markersRef.current.set(`${point.entity_type}-${point.id}`, marker);
+          bounds.push([point.latitude, point.longitude]);
+        });
+        cluster.addTo(map);
+        clusterLayerRef.current = cluster;
 
-    // Só ajusta os limites automaticamente se NÃO há centro definido pelo projeto
-    const hasProjectCenter = activeProject?.map_center_lat != null;
-    if (!hasProjectCenter) {
-      if (bounds.length === 1) map.setView(bounds[0], 15);
-      else if (bounds.length > 1) map.fitBounds(L.latLngBounds(bounds), { padding: [40, 40], maxZoom: 16 });
+        const hasProjectCenter = activeProject?.map_center_lat != null;
+        if (!hasProjectCenter && bounds.length > 1) {
+          map.fitBounds(L.latLngBounds(bounds), { padding: [40, 40], maxZoom: 16 });
+        }
+      }).catch(() => {
+        // Fallback: marcadores soltos
+        visible.forEach((point) => {
+          const marker = buildMarker(point).addTo(map);
+          markersRef.current.set(`${point.entity_type}-${point.id}`, marker);
+          bounds.push([point.latitude, point.longitude]);
+        });
+      });
+    } else {
+      visible.forEach((point) => {
+        const marker = buildMarker(point).addTo(map);
+        markersRef.current.set(`${point.entity_type}-${point.id}`, marker);
+        bounds.push([point.latitude, point.longitude]);
+      });
+      const hasProjectCenter = activeProject?.map_center_lat != null;
+      if (!hasProjectCenter) {
+        if (bounds.length === 1) map.setView(bounds[0], 15);
+        else if (bounds.length > 1) map.fitBounds(L.latLngBounds(bounds), { padding: [40, 40], maxZoom: 16 });
+      }
     }
-  }, [points, activeFilters, mapReady, activeProject?.map_center_lat]);
+  }, [points, activeFilters, mapReady, useCluster, showHeatmap, activeProject?.map_center_lat]);
 
   const centreOnProject = () => {
     if (!mapRef.current || !activeProject) return;
@@ -527,7 +598,31 @@ export const ProjectMap = forwardRef<ProjectMapHandle, Props>(function ProjectMa
             );
           })}
 
-          <div className="ml-auto flex gap-1.5">
+          <div className="ml-auto flex items-center gap-1.5">
+            <button
+              onClick={() => setUseCluster((v) => !v)}
+              title={t("map.cluster", { defaultValue: "Agrupar marcadores" })}
+              className={cn(
+                "flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-semibold border transition-all",
+                useCluster ? "bg-foreground text-background border-foreground" : "bg-transparent border-border text-muted-foreground opacity-60"
+              )}
+            >
+              <Boxes className="h-3 w-3" />
+              <span className="hidden md:inline">Cluster</span>
+            </button>
+            <button
+              onClick={() => setShowHeatmap((v) => !v)}
+              title={t("map.heatmap", { defaultValue: "Mapa de calor" })}
+              className={cn(
+                "flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-semibold border transition-all",
+                showHeatmap ? "text-white border-transparent" : "bg-transparent border-border text-muted-foreground opacity-60"
+              )}
+              style={showHeatmap ? { backgroundColor: "#E24B4A" } : {}}
+            >
+              <Flame className="h-3 w-3" />
+              <span className="hidden md:inline">Heatmap</span>
+            </button>
+            <div className="w-px h-4 bg-border/60 mx-0.5" />
             <Button variant="ghost" size="sm" className="h-7 gap-1.5 text-xs px-2.5" onClick={locateUser} title={t("map.locate", { defaultValue: "A minha localização" })}>
               <Locate className="h-3 w-3" />
             </Button>
@@ -549,6 +644,34 @@ export const ProjectMap = forwardRef<ProjectMapHandle, Props>(function ProjectMa
           </div>
         )}
         <div ref={containerRef} className="w-full h-full" />
+
+        {/* Mini-legenda flutuante */}
+        {points.length > 0 && (
+          <div className="absolute bottom-3 left-3 z-[400] bg-card/95 backdrop-blur-sm border border-border/60 rounded-lg shadow-card px-2.5 py-2 pointer-events-none min-w-[140px]">
+            <p className="text-[8.5px] font-bold uppercase tracking-wider text-muted-foreground/70 mb-1">
+              {t("map.legend", { defaultValue: "Legenda" })}
+            </p>
+            <ul className="space-y-0.5">
+              {(["work_item", "non_conformity", "ppi", "test_result"] as const).map((type) => {
+                const cfg = TYPE_CONFIG[type];
+                const total = typeCounts[type] ?? 0;
+                const visible = activeFilters.has(type) ? total : 0;
+                if (total === 0) return null;
+                return (
+                  <li key={type} className="flex items-center gap-1.5 text-[10px]">
+                    <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: cfg.color, opacity: activeFilters.has(type) ? 1 : 0.3 }} />
+                    <span className={cn("font-medium", activeFilters.has(type) ? "text-foreground" : "text-muted-foreground/50")}>
+                      {cfg.label}
+                    </span>
+                    <span className="ml-auto tabular-nums font-bold text-muted-foreground">
+                      {visible}/{total}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        )}
       </div>
 
       {showControls && (
