@@ -473,11 +473,11 @@ export default function FieldRecordsPage() {
 
       {/* KPIs */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
-        <ModuleKPICard label={t("common.total")} value={kpis.total} icon={ClipboardCheck} loading={loading} />
-        <ModuleKPICard label={t("fieldRecords.kpi.conforme", { defaultValue: "Conforme" })} value={kpis.conforme} icon={CheckCircle2} loading={loading} color="green" />
-        <ModuleKPICard label={t("fieldRecords.kpi.obs", { defaultValue: "c/ Obs." })} value={kpis.obs} icon={AlertTriangle} loading={loading} color="amber" />
-        <ModuleKPICard label={t("fieldRecords.kpi.naoConforme", { defaultValue: "Não Conforme" })} value={kpis.naoConforme} icon={XCircle} loading={loading} color="red" />
-        <ModuleKPICard label={t("fieldRecords.kpi.pendente", { defaultValue: "Pendente" })} value={kpis.pendente} icon={Clock} loading={loading} />
+        <ModuleKPICard label={t("common.total")} value={loading ? "—" : kpis.total} icon={ClipboardCheck} />
+        <ModuleKPICard label={t("fieldRecords.kpi.conforme", { defaultValue: "Conforme" })} value={loading ? "—" : kpis.conforme} icon={CheckCircle2} color="hsl(142 71% 45%)" />
+        <ModuleKPICard label={t("fieldRecords.kpi.obs", { defaultValue: "c/ Obs." })} value={loading ? "—" : kpis.obs} icon={AlertTriangle} color="hsl(38 92% 50%)" />
+        <ModuleKPICard label={t("fieldRecords.kpi.naoConforme", { defaultValue: "Não Conforme" })} value={loading ? "—" : kpis.naoConforme} icon={XCircle} color="hsl(var(--destructive))" />
+        <ModuleKPICard label={t("fieldRecords.kpi.pendente", { defaultValue: "Pendente" })} value={loading ? "—" : kpis.pendente} icon={Clock} />
       </div>
 
       {/* Filtros */}
@@ -525,8 +525,9 @@ export default function FieldRecordsPage() {
               ))
             ) : filtered.length === 0 ? (
               <TableRow><TableCell colSpan={8} className="py-0">
-                <EmptyState icon={ClipboardCheck} titleKey="fieldRecords.empty.title" subtitleKey="fieldRecords.empty.subtitle"
-                  titleDefault="Sem grelhas de registo" subtitleDefault="Cria uma nova grelha para registar uma verificação de campo" />
+                <EmptyState icon={ClipboardCheck}
+                  title={t("fieldRecords.empty.title", { defaultValue: "Sem grelhas de registo" })}
+                  subtitle={t("fieldRecords.empty.subtitle", { defaultValue: "Cria uma nova grelha para registar uma verificação de campo" })} />
               </TableCell></TableRow>
             ) : filtered.map(r => {
               const resultCfg = RESULT_CFG[r.result] ?? RESULT_CFG.pendente;

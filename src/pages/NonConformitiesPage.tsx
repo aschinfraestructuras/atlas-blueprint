@@ -980,7 +980,7 @@ export default function NonConformitiesPage() {
                     <span className="font-mono text-xs text-muted-foreground w-28 flex-shrink-0">{nc.code}</span>
                     <span className="text-sm font-medium flex-1 truncate">{nc.title}</span>
                     <span className="text-xs text-destructive font-semibold flex-shrink-0">{t("nc.actionPlan.dueDate", { defaultValue: "Prazo" })}: {nc.due_date ? new Date(nc.due_date + "T00:00:00").toLocaleDateString(t("common.locale", { defaultValue: "pt-PT" })) : "—"}</span>
-                    <StatusPill status={nc.status as any} />
+                    <NCStatusBadge status={nc.status} />
                   </div>
                 ))}
               </div>
@@ -1001,7 +1001,7 @@ export default function NonConformitiesPage() {
                     <span className="font-mono text-xs text-muted-foreground w-28 flex-shrink-0">{nc.code}</span>
                     <span className="text-sm font-medium flex-1 truncate">{nc.title}</span>
                     <span className="text-xs text-muted-foreground flex-shrink-0">{nc.due_date ? new Date(nc.due_date + "T00:00:00").toLocaleDateString(t("common.locale", { defaultValue: "pt-PT" })) : t("nc.actionPlan.noDueDate", { defaultValue: "Sem prazo" })}</span>
-                    <StatusPill status={nc.status as any} />
+                    <NCStatusBadge status={nc.status} />
                   </div>
                 ))}
               </div>
