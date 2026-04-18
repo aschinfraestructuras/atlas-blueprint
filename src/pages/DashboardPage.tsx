@@ -43,13 +43,6 @@ import { KeyboardShortcutsOverlay } from "@/components/dashboard/KeyboardShortcu
 import { QualityChecklistCard } from "@/components/dashboard/QualityChecklistCard";
 import { cn } from "@/lib/utils";
 
-const ACTIVITY_CFG: Record<string, { icon: React.ElementType; cls: string }> = {
-  nc:   { icon: AlertTriangle,  cls: "text-destructive" },
-  lot:  { icon: Package,        cls: "text-primary" },
-  ppi:  { icon: ClipboardCheck, cls: "text-emerald-600" },
-  test: { icon: FlaskConical,   cls: "text-amber-500" },
-};
-
 function HPPendingAlert({ projectId }: { projectId: string }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
