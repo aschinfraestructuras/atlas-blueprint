@@ -191,29 +191,30 @@ export default function DashboardPage() {
       const sinceIso = new Date(Date.now() - 1000 * 60 * 60 * 24 * 30 * 6).toISOString();
       const [ncRes, ppiRes] = await Promise.all([
         supabase.from("non_conformities")
-          .select("id, code, title, status, severity, opened_at, closed_at")
+          .select("id, code, title, description, status, severity, detected_at, closure_date")
+          .eq("project_id", activeProject.id)
+          .eq("is_deleted", false)
+          .gte("detected_at", sinceIso)
+          .order("detected_at", { ascending: false })
+          .limit(15),
+        supabase.from("ppi_instances")
+          .select("id, code, status, opened_at, updated_at, closed_at, is_deleted")
           .eq("project_id", activeProject.id)
           .eq("is_deleted", false)
           .gte("opened_at", sinceIso)
           .order("opened_at", { ascending: false })
           .limit(15),
-        supabase.from("ppi_instances")
-          .select("id, code, title, status, created_at, updated_at, is_deleted")
-          .eq("project_id", activeProject.id)
-          .eq("is_deleted", false)
-          .gte("created_at", sinceIso)
-          .order("created_at", { ascending: false })
-          .limit(15),
       ]);
       if (cancelled) return;
       const items: TimelineItem[] = [];
       for (const nc of (ncRes.data ?? []) as any[]) {
+        const label = nc.title ?? nc.description ?? "NC";
         items.push({
           id: `nc-${nc.id}`,
-          label: `${nc.code ?? "NC"} — ${nc.title ?? ""}`.slice(0, 40),
-          startDate: nc.opened_at,
-          endDate: nc.closed_at ?? null,
-          variant: nc.closed_at ? "closed" : nc.severity === "critical" ? "critical" : "warning",
+          label: `${nc.code ?? "NC"} — ${label}`.slice(0, 40),
+          startDate: nc.detected_at,
+          endDate: nc.closure_date ?? null,
+          variant: nc.closure_date ? "closed" : nc.severity === "critical" ? "critical" : "warning",
           meta: `NC · ${nc.status ?? "—"}`,
           href: `/non-conformities/${nc.id}`,
         });
@@ -222,9 +223,9 @@ export default function DashboardPage() {
         const closed = ["approved", "closed", "completed"].includes((ppi.status ?? "").toLowerCase());
         items.push({
           id: `ppi-${ppi.id}`,
-          label: `${ppi.code ?? "PPI"} — ${ppi.title ?? ""}`.slice(0, 40),
-          startDate: ppi.created_at,
-          endDate: closed ? ppi.updated_at : null,
+          label: `${ppi.code ?? "PPI"}`.slice(0, 40),
+          startDate: ppi.opened_at,
+          endDate: closed ? (ppi.closed_at ?? ppi.updated_at) : null,
           variant: closed ? "closed" : "in_progress",
           meta: `PPI · ${ppi.status ?? "—"}`,
           href: `/ppi/${ppi.id}`,
