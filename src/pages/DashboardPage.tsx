@@ -12,7 +12,7 @@ import { useCountUp } from "@/hooks/useCountUp";
 import {
   AlertTriangle, Package, Crosshair, Clock, ArrowRight, Leaf,
   ClipboardCheck, FlaskConical, ClipboardList, Zap, Calendar,
-  ShieldCheck, LayoutDashboard, BarChart3, Layers, Info,
+  ShieldCheck, LayoutDashboard, BarChart3, Layers, Info, MapPin,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
