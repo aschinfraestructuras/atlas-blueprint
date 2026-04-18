@@ -513,19 +513,10 @@ export default function DashboardPage() {
           </TabsTrigger>
         </TabsList>
 
-        {/* TAB: VISÃO GERAL */}
+        {/* TAB: VISÃO GERAL — focada em inteligência (sem duplicar Module Cards do topo) */}
         <TabsContent value="overview" className="space-y-5 mt-4">
 
-          {/* Linha 1 — SparklineKPIs */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-2.5 sm:gap-3 [&>*]:min-h-[88px] sm:[&>*]:min-h-[100px]">
-            <SparklineKPI label={t("dashboard.kpi.ncOpen",        { defaultValue: "NCs Abertas" })}   value={kpis.ncOpen}          icon={AlertTriangle}  color="0 65% 50%"   sparkData={ncSpark}    onClick={() => navigate("/non-conformities")} loading={kpiLoading} invertTrendSemantics delay={0}   />
-            <SparklineKPI label={t("dashboard.kpi.testsOverdue",  { defaultValue: "Ensaios Atraso" })} value={kpis.testsOverdue}    icon={Clock}          color="38 85% 50%"  onClick={() => navigate("/tests")}             loading={kpiLoading} invertTrendSemantics delay={60}  />
-            <SparklineKPI label={t("dashboard.kpi.pamePending",   { defaultValue: "PAME Pendentes" })} value={kpis.pamePending}     icon={Package}        color="215 65% 38%" onClick={() => navigate("/materials")}         loading={kpiLoading} invertTrendSemantics delay={120} />
-            <SparklineKPI label={t("dashboard.kpi.testsCompleted",{ defaultValue: "Ensaios Feitos" })} value={kpis.testsCompleted}  icon={FlaskConical}   color="145 55% 38%" sparkData={testsSpark} onClick={() => navigate("/tests")}             loading={kpiLoading} delay={180} />
-            <SparklineKPI label={t("dashboard.kpi.emesExpiring",  { defaultValue: "Expirações 30d" })} value={kpis.emesExpiring30d} icon={ShieldCheck}    color={kpis.emesExpiring30d > 0 ? "0 65% 50%" : "145 55% 38%"} onClick={() => navigate("/expirations")} loading={kpiLoading} invertTrendSemantics delay={240} />
-          </div>
-
-          {/* Linha 1.5 — Inteligência Operacional: Insights + Top Frentes */}
+          {/* Linha 1 — Inteligência Operacional: Insights + Top Frentes */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 animate-fade-in" style={{ animationDelay: "120ms", animationFillMode: "both" }}>
             <PredictiveInsightsCard
               ncMonthly={filteredNcMonthly as any}
@@ -551,7 +542,7 @@ export default function DashboardPage() {
             loading={kpiLoading || healthLoading}
           />
 
-          {/* Linha 3 — KPIs SGQ (largura total) + Actividade Recente */}
+          {/* Linha 3 — KPIs SGQ + Actividade Recente */}
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-4">
             <div>
               <p className="text-[9px] font-extrabold uppercase tracking-[0.22em] text-muted-foreground/50 mb-2.5 flex items-center gap-1.5">
@@ -589,17 +580,6 @@ export default function DashboardPage() {
                   </ul>}
               </CardContent>
             </Card>
-          </div>
-
-          {/* Linha 4 — Indicadores de Obra */}
-          <div>
-            <p className="text-[9px] font-extrabold uppercase tracking-[0.22em] text-muted-foreground/50 mb-2.5">{t("dashboard.quickStats", { defaultValue: "Indicadores de Obra" })}</p>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3">
-              <AnimatedKpiCard icon={ClipboardList}  label={t("dashboard.kpi.dailyReports",      { defaultValue: "Partes Diárias" })}   value={kpis.dailyReportsTotal}  sub={`${kpis.dailyReportsValidated} ${t("dashboard.kpiSub.validated", { defaultValue: "validadas" })}`}                     color="hsl(210 65% 50%)" route="/daily-reports" loading={kpiLoading} delay={0}   />
-              <AnimatedKpiCard icon={Crosshair}      label={t("dashboard.kpi.topoControls",      { defaultValue: "Controlos Topo." })}  value={kpis.topoControlsTotal}  sub={kpis.topoControlsTotal > 0 ? `${Math.round((kpis.topoControlsConforme / kpis.topoControlsTotal)*100)}% ${t("dashboard.kpiSub.conform", { defaultValue: "conf." })}` : "—"} color={kpis.topoControlsTotal > 0 && kpis.topoControlsConforme === kpis.topoControlsTotal ? "hsl(145 55% 42%)" : "hsl(38 85% 50%)"} route="/topography" loading={kpiLoading} delay={80} />
-              <AnimatedKpiCard icon={ClipboardCheck} label={t("dashboard.kpi.ppiTotal",          { defaultValue: "PPIs Registados" })}  value={kpis.ppiTotal}           sub={`${kpis.ppiApproved} ${t("dashboard.moduleSub.approved", { defaultValue: "aprovados" })}`}                               color={kpis.ppiApproved===kpis.ppiTotal&&kpis.ppiTotal>0?"hsl(145 55% 42%)":"hsl(215 65% 50%)"} route="/ppi" loading={kpiLoading} delay={160} />
-              <AnimatedKpiCard icon={Zap}            label={t("dashboard.kpi.weldsPendingUtShort",{ defaultValue: "Soldaduras s/US" })} value={kpis.weldsPendingUt}     sub={kpis.weldsPendingUt===0?t("dashboard.kpiSub.allInspected",{ defaultValue: "Tudo inspeccionado" }):t("dashboard.kpiSub.pendingItems",{ defaultValue: "Pendentes" })} color={kpis.weldsPendingUt>0?"hsl(0 65% 50%)":"hsl(145 55% 42%)"} route="/tests" loading={kpiLoading} delay={240} />
-            </div>
           </div>
         </TabsContent>
 
