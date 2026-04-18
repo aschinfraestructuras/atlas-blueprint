@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { PasswordStrengthIndicator } from "@/components/auth/PasswordStrengthIndicator";
+import heroMarketing from "@/assets/atlas-hero-marketing.jpg";
 
 type Mode = "login" | "forgot";
 
@@ -152,6 +153,18 @@ export default function LoginPage() {
       {/* Left panel – Quality checklist animation */}
       <div className="hidden lg:flex w-[58%] flex-col justify-between p-12 relative overflow-hidden"
         style={{ background: "hsl(215 80% 38%)" }}>
+
+        {/* Imagem de marketing como background subtil */}
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-[0.18]"
+          style={{ backgroundImage: `url(${heroMarketing})` }}
+          aria-hidden="true"
+        />
+        <div
+          className="absolute inset-0"
+          style={{ background: "linear-gradient(135deg, hsl(215 80% 32% / 0.85) 0%, hsl(215 85% 40% / 0.70) 100%)" }}
+          aria-hidden="true"
+        />
 
         {/* Grelha subtil de fundo */}
         <div className="absolute inset-0 opacity-[0.07]"
