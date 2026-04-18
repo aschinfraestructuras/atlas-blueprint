@@ -36,6 +36,10 @@ import { ConcreteByClassCard } from "@/components/dashboard/ConcreteByClassCard"
 import { SgqKpiCards } from "@/components/dashboard/SgqKpiCards";
 import { QualityOverviewChart } from "@/components/dashboard/QualityOverviewChart";
 import { StatusTimeline, type TimelineItem } from "@/components/dashboard/StatusTimeline";
+import { DashboardHero } from "@/components/dashboard/DashboardHero";
+import { PredictiveInsightsCard } from "@/components/dashboard/PredictiveInsightsCard";
+import { TopCriticalFrentes } from "@/components/dashboard/TopCriticalFrentes";
+import { KeyboardShortcutsOverlay } from "@/components/dashboard/KeyboardShortcutsOverlay";
 import { cn } from "@/lib/utils";
 
 const ACTIVITY_CFG: Record<string, { icon: React.ElementType; cls: string }> = {
@@ -182,6 +186,11 @@ export default function DashboardPage() {
   const [period, setPeriod] = useState("all");
   const [activeTab, setActiveTab] = useState("overview");
   const [timelineItems, setTimelineItems] = useState<TimelineItem[]>([]);
+  // Live indicator state — must stay above any early return (Rules of Hooks)
+  const [lastUpdated, setLastUpdated] = useState<number>(Date.now());
+  const [, forceTick] = useState(0);
+  useEffect(() => { if (!kpiLoading) setLastUpdated(Date.now()); }, [kpiLoading, kpis]);
+  useEffect(() => { const id = setInterval(() => forceTick((v) => v + 1), 30_000); return () => clearInterval(id); }, []);
 
   // Buscar NCs e PPIs recentes para a Timeline (sem alterar hooks de negócio)
   useEffect(() => {
@@ -291,54 +300,40 @@ export default function DashboardPage() {
 
   const isHealthy = !healthLoading && health.health_score >= 80;
 
+  // Accent dinâmico do hero conforme estado global
+  const heroAccent: "green" | "amber" | "red" =
+    kpis.ncOpen > 5 || kpis.testsOverdue > 3 ? "red"
+    : kpis.ncOpen > 0 || kpis.pamePending > 0 ? "amber"
+    : "green";
+
+  // Live indicator — texto humanizado
+  const liveAgo = (() => {
+    const sec = Math.floor((Date.now() - lastUpdated) / 1000);
+    if (sec < 60) return t("dashboard.justNow", { defaultValue: "agora" });
+    const min = Math.floor(sec / 60);
+    if (min < 60) return `${min}m`;
+    return `${Math.floor(min / 60)}h`;
+  })();
+
   return (
     <div className="space-y-5 max-w-[1180px] mx-auto overflow-x-hidden">
 
-      {/* HERO HEADER — glassmorphism */}
-      <div className="relative overflow-hidden rounded-2xl border border-border/50 animate-fade-in">
-        {/* Layered backgrounds */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/8 via-card/60 to-card" />
-        <div className="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-primary/15 blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-24 -left-16 w-64 h-64 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
-        <div
-          className="absolute inset-0 opacity-[0.035] pointer-events-none"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 1px 1px, hsl(var(--foreground)) 1px, transparent 0)",
-            backgroundSize: "20px 20px",
-          }}
-        />
-        {/* Content */}
-        <div className="relative z-10 backdrop-blur-[2px] flex flex-col sm:flex-row sm:items-end justify-between gap-3 sm:gap-4 px-4 sm:px-6 py-5 sm:py-6">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <p className="text-[9px] font-extrabold uppercase tracking-[0.25em] text-muted-foreground/70">
-                {t("dashboard.welcome")}
-              </p>
-            </div>
-            <h1 className="text-2xl sm:text-[1.85rem] font-black tracking-tight text-foreground leading-tight">
-              {displayName}
-            </h1>
-            <p className="text-xs sm:text-sm text-muted-foreground/85">
-              {t("dashboard.subtitleProject", { project: activeProject.name })}
-            </p>
-          </div>
-          <div className="flex items-center gap-2 self-start sm:self-end bg-card/70 backdrop-blur-md border border-border/50 rounded-xl px-2.5 py-1.5 shadow-sm">
-            <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
-            <Select value={period} onValueChange={setPeriod}>
-              <SelectTrigger className="h-7 w-[140px] text-xs border-0 bg-transparent shadow-none focus:ring-0 focus:ring-offset-0 px-1"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t("dashboard.period.all",  { defaultValue: "Todo o período" })}</SelectItem>
-                <SelectItem value="3m"> {t("dashboard.period.3m",   { defaultValue: "Últimos 3 meses" })}</SelectItem>
-                <SelectItem value="6m"> {t("dashboard.period.6m",   { defaultValue: "Últimos 6 meses" })}</SelectItem>
-                <SelectItem value="12m">{t("dashboard.period.12m",  { defaultValue: "Últimos 12 meses" })}</SelectItem>
-                <SelectItem value="ytd">{t("dashboard.period.ytd",  { defaultValue: "Ano corrente" })}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      </div>
+      {/* Keyboard shortcuts overlay (global '?') */}
+      <KeyboardShortcutsOverlay />
+
+      {/* HERO HEADER — Command Bar + Breadcrumb + Live + Accent dinâmico */}
+      <DashboardHero
+        displayName={displayName}
+        projectName={activeProject.name}
+        projectCode={(activeProject as any).code ?? null}
+        client={(activeProject as any).client ?? null}
+        contractor={(activeProject as any).contractor ?? null}
+        startDate={(activeProject as any).start_date ?? null}
+        period={period}
+        onPeriodChange={setPeriod}
+        accentTone={heroAccent}
+        liveUpdatedAgo={liveAgo}
+      />
 
       {/* ALERTAS */}
       {hasAlerts && (
@@ -466,6 +461,18 @@ export default function DashboardPage() {
             <SparklineKPI label={t("dashboard.kpi.pamePending",   { defaultValue: "PAME Pendentes" })} value={kpis.pamePending}     icon={Package}        color="215 65% 38%" onClick={() => navigate("/materials")}         loading={kpiLoading} invertTrendSemantics delay={120} />
             <SparklineKPI label={t("dashboard.kpi.testsCompleted",{ defaultValue: "Ensaios Feitos" })} value={kpis.testsCompleted}  icon={FlaskConical}   color="145 55% 38%" sparkData={testsSpark} onClick={() => navigate("/tests")}             loading={kpiLoading} delay={180} />
             <SparklineKPI label={t("dashboard.kpi.emesExpiring",  { defaultValue: "Expirações 30d" })} value={kpis.emesExpiring30d} icon={ShieldCheck}    color={kpis.emesExpiring30d > 0 ? "0 65% 50%" : "145 55% 38%"} onClick={() => navigate("/expirations")} loading={kpiLoading} invertTrendSemantics delay={240} />
+          </div>
+
+          {/* Linha 1.5 — Inteligência Operacional: Insights + Top Frentes */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 animate-fade-in" style={{ animationDelay: "120ms", animationFillMode: "both" }}>
+            <PredictiveInsightsCard
+              ncMonthly={filteredNcMonthly as any}
+              testsMonthly={filteredTestsMonthly as any}
+              ppiApproved={kpis.ppiApproved}
+              ppiTotal={kpis.ppiTotal}
+              loading={kpiLoading || viewsLoading}
+            />
+            <TopCriticalFrentes projectId={activeProject.id} />
           </div>
 
           {/* Linha 2 — Visão Integrada de Qualidade (radar + breakdown) */}
