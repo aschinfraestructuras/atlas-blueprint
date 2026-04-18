@@ -306,11 +306,7 @@ export default function DashboardPage() {
     : kpis.ncOpen > 0 || kpis.pamePending > 0 ? "amber"
     : "green";
 
-  // Live indicator — minutos desde último refetch
-  const [lastUpdated, setLastUpdated] = useState<number>(Date.now());
-  useEffect(() => { if (!kpiLoading) setLastUpdated(Date.now()); }, [kpiLoading, kpis]);
-  const [, force] = useState(0);
-  useEffect(() => { const id = setInterval(() => force((v) => v + 1), 30_000); return () => clearInterval(id); }, []);
+  // Live indicator — texto humanizado
   const liveAgo = (() => {
     const sec = Math.floor((Date.now() - lastUpdated) / 1000);
     if (sec < 60) return t("dashboard.justNow", { defaultValue: "agora" });
