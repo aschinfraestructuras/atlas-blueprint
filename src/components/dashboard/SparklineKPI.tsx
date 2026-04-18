@@ -51,9 +51,10 @@ export function SparklineKPI({
   return (
     <Card
       className={cn(
-        "border border-border/40 bg-card shadow-card transition-all overflow-hidden group relative",
+        "border border-border/40 bg-card shadow-card transition-all overflow-hidden group relative animate-fade-in",
         onClick && "cursor-pointer hover:shadow-card-hover hover:border-border/60 active:scale-[0.97]",
       )}
+      style={delay ? { animationDelay: `${delay}ms`, animationFillMode: "both" } : undefined}
       onClick={onClick}
     >
       {/* Top accent line */}
