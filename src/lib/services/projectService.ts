@@ -15,6 +15,9 @@ export interface Project {
   created_at: string;
   updated_at: string;
   logo_url: string | null;
+  map_center_lat: number | null;
+  map_center_lng: number | null;
+  map_default_zoom: number | null;
 }
 
 export interface ProjectInsert {
@@ -25,6 +28,9 @@ export interface ProjectInsert {
   start_date?: string;
   status: string;
   created_by: string;
+  map_center_lat?: number | null;
+  map_center_lng?: number | null;
+  map_default_zoom?: number | null;
 }
 
 export interface ProjectUpdate {
@@ -34,6 +40,9 @@ export interface ProjectUpdate {
   location?: string;
   start_date?: string;
   status?: string;
+  map_center_lat?: number | null;
+  map_center_lng?: number | null;
+  map_default_zoom?: number | null;
 }
 
 export const projectService = {
