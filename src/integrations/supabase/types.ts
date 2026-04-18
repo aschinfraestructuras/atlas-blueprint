@@ -11911,6 +11911,79 @@ export type Database = {
           },
         ]
       }
+      vw_mqt_quality_coverage: {
+        Row: {
+          code_rubrica: string | null
+          coverage_status: string | null
+          designacao: string | null
+          familia: string | null
+          has_pk: boolean | null
+          mqt_item_id: string | null
+          nc_open: number | null
+          nc_total: number | null
+          pk_fim_mqt: string | null
+          pk_inicio_mqt: string | null
+          ppi_approved: number | null
+          ppi_total: number | null
+          project_id: string | null
+          quantidade: number | null
+          tests_fail: number | null
+          tests_pass: number | null
+          tests_total: number | null
+          unidade: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mqt_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mqt_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "mqt_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "mqt_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "mqt_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "mqt_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_rm_kpis"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "mqt_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_sgq_matrix_summary"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
       vw_mqt_summary: {
         Row: {
           area_m2: number | null
@@ -13994,6 +14067,19 @@ export type Database = {
       }
       fn_next_training_code: { Args: { p_project_id: string }; Returns: string }
       fn_next_weld_code: { Args: { p_project_id: string }; Returns: string }
+      fn_pk_to_meters:
+        | {
+            Args: { pk: number }
+            Returns: {
+              error: true
+            } & "Could not choose the best candidate function between: public.fn_pk_to_meters(pk => text), public.fn_pk_to_meters(pk => numeric). Try renaming the parameters or the function itself in the database so function overloading can be resolved"
+          }
+        | {
+            Args: { pk: string }
+            Returns: {
+              error: true
+            } & "Could not choose the best candidate function between: public.fn_pk_to_meters(pk => text), public.fn_pk_to_meters(pk => numeric). Try renaming the parameters or the function itself in the database so function overloading can be resolved"
+          }
       fn_ppi_bulk_mark_ok: { Args: { p_instance_id: string }; Returns: number }
       fn_ppi_bulk_save_items: {
         Args: { p_instance_id: string; p_items: Json }

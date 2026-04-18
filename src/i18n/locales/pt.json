@@ -5532,6 +5532,37 @@
       "importing": "A importar…",
       "success": "MQT importado com sucesso ({{count}} itens).",
       "error": "Erro ao importar MQT."
+    },
+    "tabs": {
+      "items": "Itens MQT",
+      "coverage": "Cobertura SGQ"
+    },
+    "coverage": {
+      "allStatus": "Todos os estados",
+      "noPkWarning": "Nenhuma rubrica MQT tem PKs reconhecidos. A cobertura SGQ por PK só funciona quando o XML do MQT contém PKs na designação (ex: 'km 32+653 a km 32+825').",
+      "empty": {
+        "title": "Sem dados de cobertura",
+        "description": "Importe primeiro o MQT para ver a cobertura SGQ por rubrica."
+      },
+      "kpi": {
+        "total": "Rubricas folha",
+        "covered": "Cobertas",
+        "partial": "Parciais",
+        "uncovered": "Sem cobertura",
+        "critical": "Críticas (NC)"
+      },
+      "cols": {
+        "ppi": "PPIs",
+        "tests": "Ensaios",
+        "ncs": "NCs",
+        "status": "Estado SGQ"
+      },
+      "status": {
+        "covered": "Coberto",
+        "partial": "Parcial",
+        "uncovered": "Sem cobertura",
+        "critical": "Crítico"
+      }
     }
   }
 }

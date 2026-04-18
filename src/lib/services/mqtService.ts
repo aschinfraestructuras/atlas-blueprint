@@ -48,6 +48,29 @@ export interface MqtSummaryRow {
   valor_total_eur: number | null;
 }
 
+export type MqtCoverageStatus = "covered" | "partial" | "uncovered" | "critical";
+
+export interface MqtCoverageRow {
+  mqt_item_id: string;
+  project_id: string;
+  code_rubrica: string;
+  familia: string | null;
+  designacao: string;
+  unidade: string | null;
+  quantidade: number | null;
+  pk_inicio_mqt: string | null;
+  pk_fim_mqt: string | null;
+  ppi_total: number;
+  ppi_approved: number;
+  tests_total: number;
+  tests_pass: number;
+  tests_fail: number;
+  nc_total: number;
+  nc_open: number;
+  coverage_status: MqtCoverageStatus;
+  has_pk: boolean;
+}
+
 export interface ParsedMqtItem {
   code_rubrica: string;
   parent_code: string | null;
@@ -278,6 +301,22 @@ export async function getMqtSummary(projectId: string): Promise<MqtSummaryRow[]>
 
   if (error) throw error;
   return (data as unknown as MqtSummaryRow[]) ?? [];
+}
+
+/**
+ * Lista cobertura SGQ por rubrica MQT folha.
+ * Read-only — não impacta nenhum fluxo existente.
+ */
+export async function listMqtCoverage(projectId: string): Promise<MqtCoverageRow[]> {
+  const { data, error } = await supabase
+    .from("vw_mqt_quality_coverage" as never)
+    .select("*")
+    .eq("project_id", projectId)
+    .order("code_rubrica", { ascending: true })
+    .limit(5000);
+
+  if (error) throw error;
+  return (data as unknown as MqtCoverageRow[]) ?? [];
 }
 
 /**
