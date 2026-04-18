@@ -315,6 +315,103 @@ export function ProjectFormDialog({
               />
             </div>
 
+            {/* Centro do Mapa (opcional) */}
+            <div className="border-t border-border/40 pt-3 space-y-2">
+              <div className="flex items-center justify-between">
+                <FormLabel className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  {t("projects.form.mapCenter", { defaultValue: "Centro do Mapa" })}{" "}
+                  <span className="text-[10px] text-muted-foreground font-normal normal-case">
+                    ({t("common.optional")})
+                  </span>
+                </FormLabel>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 text-[10px] gap-1"
+                  onClick={() => {
+                    if (!navigator.geolocation) return;
+                    navigator.geolocation.getCurrentPosition(
+                      (pos) => {
+                        form.setValue("map_center_lat", pos.coords.latitude);
+                        form.setValue("map_center_lng", pos.coords.longitude);
+                        if (!form.getValues("map_default_zoom")) {
+                          form.setValue("map_default_zoom", 14);
+                        }
+                      },
+                      () => {},
+                      { enableHighAccuracy: true, timeout: 8000 },
+                    );
+                  }}
+                >
+                  📍 {t("projects.form.useMyLocation", { defaultValue: "Usar minha localização" })}
+                </Button>
+              </div>
+              <div className="grid grid-cols-3 gap-3">
+                <FormField
+                  control={form.control}
+                  name="map_center_lat"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          step="any"
+                          placeholder="Lat"
+                          value={field.value ?? ""}
+                          onChange={(e) => field.onChange(e.target.value === "" ? undefined : parseFloat(e.target.value))}
+                          className="text-xs"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="map_center_lng"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          step="any"
+                          placeholder="Lng"
+                          value={field.value ?? ""}
+                          onChange={(e) => field.onChange(e.target.value === "" ? undefined : parseFloat(e.target.value))}
+                          className="text-xs"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="map_default_zoom"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min={1}
+                          max={20}
+                          placeholder="Zoom"
+                          value={field.value ?? ""}
+                          onChange={(e) => field.onChange(e.target.value === "" ? undefined : parseInt(e.target.value, 10))}
+                          className="text-xs"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <p className="text-[10px] text-muted-foreground">
+                {t("projects.form.mapHint", { defaultValue: "Se vazio, o mapa abre na localização do utilizador ou em Portugal." })}
+              </p>
+            </div>
+
             <DialogFooter className="pt-2">
               <Button
                 type="button"
