@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useImperativeHandle, forwardRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 import {
   AlertTriangle, ClipboardCheck, FlaskConical,
   Construction, Layers, RefreshCw, Navigation,
-  Train,
+  Train, Locate,
 } from "lucide-react";
 
 
@@ -27,12 +27,21 @@ export interface MapPoint {
   severity: string | null;
 }
 
+export interface ProjectMapHandle {
+  focusPoint: (point: MapPoint) => void;
+  refresh: () => void;
+}
+
 const TYPE_CONFIG = {
   work_item:      { color: "#185FA5", icon: Construction,   label: "Work Items", route: (id: string) => `/work-items/${id}` },
   non_conformity: { color: "#E24B4A", icon: AlertTriangle,  label: "NCs",        route: (id: string) => `/non-conformities/${id}` },
   ppi:            { color: "#1D9E75", icon: ClipboardCheck, label: "PPIs",       route: (id: string) => `/ppi/${id}` },
   test_result:    { color: "#BA7517", icon: FlaskConical,   label: "Ensaios",    route: (_id: string) => `/tests` },
 } as const;
+
+// Fallback global default (Lisboa centro) — usado apenas se não houver projeto, nem geo, nem pontos
+const DEFAULT_CENTER: [number, number] = [39.5, -8.0];
+const DEFAULT_ZOOM = 7;
 
 function statusColor(type: MapPoint["entity_type"], status: string | null): string {
   if (type === "non_conformity") {
@@ -58,7 +67,7 @@ function markerSvg(color: string, label: string): string {
   </svg>`;
 }
 
-function pkMarkerSvg(pk: number): string {
+function pkMarkerSvg(pk: number | string): string {
   return `<div style="background:#192F48;color:white;font-size:9px;font-weight:700;padding:2px 5px;border-radius:3px;white-space:nowrap;border:1px solid #2a4a6b;font-family:system-ui,monospace;box-shadow:0 1px 4px rgba(0,0,0,.3)">PK ${pk}+000</div>`;
 }
 
@@ -66,6 +75,13 @@ function sectorMarkerSvg(color = "#185FA5"): string {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14">
     <circle cx="7" cy="7" r="6" fill="${color}" opacity="0.85"/>
     <circle cx="7" cy="7" r="3" fill="white"/>
+  </svg>`;
+}
+
+function userMarkerSvg(): string {
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">
+    <circle cx="10" cy="10" r="9" fill="#3B82F6" opacity="0.25"/>
+    <circle cx="10" cy="10" r="5" fill="#3B82F6" stroke="white" stroke-width="2"/>
   </svg>`;
 }
 
@@ -92,15 +108,25 @@ function popupHtml(point: MapPoint): string {
   </div>`;
 }
 
-interface Props { height?: number; showControls?: boolean; className?: string; }
+interface Props {
+  height?: number;
+  showControls?: boolean;
+  className?: string;
+  onPointsLoaded?: (points: MapPoint[]) => void;
+  onActiveFiltersChange?: (filters: Set<MapPoint["entity_type"]>) => void;
+}
 
-export function ProjectMap({ height = 480, showControls = true, className }: Props) {
+export const ProjectMap = forwardRef<ProjectMapHandle, Props>(function ProjectMap(
+  { height = 480, showControls = true, className, onPointsLoaded, onActiveFiltersChange },
+  ref,
+) {
   const { t } = useTranslation();
   const { activeProject } = useProject();
   const navigate = useNavigate();
-  const mapRef      = useRef<{ map: any; L: any; geoData: any } | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const markersRef  = useRef<any[]>([]);
+  const mapRef        = useRef<{ map: any; L: any; geoData: any | null } | null>(null);
+  const containerRef  = useRef<HTMLDivElement>(null);
+  const markersRef    = useRef<Map<string, any>>(new Map());
+  const userMarkerRef = useRef<any>(null);
   const [points, setPoints]    = useState<MapPoint[]>([]);
   const [loading, setLoading]  = useState(true);
   const [mapReady, setMapReady] = useState(false);
@@ -110,10 +136,17 @@ export function ProjectMap({ height = 480, showControls = true, className }: Pro
     new Set(["work_item", "non_conformity", "ppi", "test_result"])
   );
 
+  // Project-specific alignment file (only PF17A has one shipped)
+  const isPF17A = activeProject?.code?.toUpperCase() === "PF17A";
+
   useEffect(() => {
     (window as any).__atlasNav = navigate;
     return () => { delete (window as any).__atlasNav; };
   }, [navigate]);
+
+  useEffect(() => {
+    onActiveFiltersChange?.(activeFilters);
+  }, [activeFilters, onActiveFiltersChange]);
 
   const loadPoints = useCallback(async () => {
     if (!activeProject) return;
@@ -122,28 +155,39 @@ export function ProjectMap({ height = 480, showControls = true, className }: Pro
       .from("vw_map_points")
       .select("*")
       .eq("project_id", activeProject.id);
-    setPoints((data ?? []) as MapPoint[]);
+    const pts = (data ?? []) as MapPoint[];
+    setPoints(pts);
+    onPointsLoaded?.(pts);
     setLoading(false);
-  }, [activeProject]);
+  }, [activeProject, onPointsLoaded]);
 
   useEffect(() => { loadPoints(); }, [loadPoints]);
 
-  // Carregar GeoJSON e inicializar mapa
+  // Inicializar mapa (depende do projeto activo para o centro inicial)
   useEffect(() => {
-    if (!containerRef.current || mapRef.current) return;
+    if (!containerRef.current || mapRef.current || !activeProject) return;
     let cancelled = false;
 
-    Promise.all([
-      import("leaflet"),
-      fetch("/pf17a_alignment.geojson").then(r => r.json()).catch(() => null),
-    ]).then(([L, geoData]) => {
-      if (cancelled || !containerRef.current) return;
+    const geoPromise = isPF17A
+      ? fetch("/pf17a_alignment.geojson").then((r) => r.json()).catch(() => null)
+      : Promise.resolve(null);
 
+    Promise.all([import("leaflet"), geoPromise]).then(([L, geoData]) => {
+      if (cancelled || !containerRef.current) return;
       delete (L.Icon.Default.prototype as any)._getIconUrl;
 
+      // Resolver centro inicial
+      const initialCenter: [number, number] =
+        activeProject.map_center_lat != null && activeProject.map_center_lng != null
+          ? [Number(activeProject.map_center_lat), Number(activeProject.map_center_lng)]
+          : isPF17A
+          ? [38.55, -8.83]
+          : DEFAULT_CENTER;
+      const initialZoom = activeProject.map_default_zoom ?? (isPF17A ? 12 : DEFAULT_ZOOM);
+
       const map = L.map(containerRef.current!, {
-        center: [38.55, -8.83],
-        zoom: 12,
+        center: initialCenter,
+        zoom: initialZoom,
         zoomControl: true,
       });
 
@@ -154,6 +198,29 @@ export function ProjectMap({ height = 480, showControls = true, className }: Pro
 
       mapRef.current = { map, L, geoData };
       setMapReady(true);
+
+      // Se não há centro definido nem geojson nem pontos, pedir geolocalização do utilizador
+      const hasCenter = activeProject.map_center_lat != null;
+      if (!hasCenter && !isPF17A && navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            if (!mapRef.current) return;
+            const { map: m, L: leaf } = mapRef.current;
+            m.setView([pos.coords.latitude, pos.coords.longitude], 14);
+            const icon = leaf.divIcon({
+              html: userMarkerSvg(),
+              className: "",
+              iconSize: [20, 20],
+              iconAnchor: [10, 10],
+            });
+            userMarkerRef.current = leaf.marker([pos.coords.latitude, pos.coords.longitude], { icon })
+              .addTo(m)
+              .bindTooltip(t("map.youAreHere", { defaultValue: "A sua localização" }));
+          },
+          () => { /* utilizador negou — fica no default */ },
+          { enableHighAccuracy: false, timeout: 5000, maximumAge: 60000 },
+        );
+      }
     });
 
     return () => {
@@ -164,49 +231,36 @@ export function ProjectMap({ height = 480, showControls = true, className }: Pro
         setMapReady(false);
       }
     };
-  }, []);
+  }, [activeProject?.id, isPF17A]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Camadas do traçado + PKs
+  // Camadas do traçado + PKs (só PF17A para já)
   const alignmentLayerRef = useRef<any>(null);
   const pkLayersRef = useRef<any[]>([]);
   const sectorLayersRef = useRef<any[]>([]);
 
   useEffect(() => {
     if (!mapReady || !mapRef.current) return;
-    const { map, L, geoData } = mapRef.current as any;
+    const { map, L, geoData } = mapRef.current;
 
-    // Limpar camadas anteriores
     if (alignmentLayerRef.current) { alignmentLayerRef.current.remove(); alignmentLayerRef.current = null; }
-    pkLayersRef.current.forEach(l => l.remove()); pkLayersRef.current = [];
-    sectorLayersRef.current.forEach(l => l.remove()); sectorLayersRef.current = [];
+    pkLayersRef.current.forEach((l) => l.remove()); pkLayersRef.current = [];
+    sectorLayersRef.current.forEach((l) => l.remove()); sectorLayersRef.current = [];
 
     const features = (geoData as any)?.features ?? [];
+    if (features.length === 0) return;
 
-    // Traçado
     if (showAlignment) {
       const lineFeature = features.find((f: any) => f.properties?.type === "railway_alignment");
       if (lineFeature) {
         const coords = lineFeature.geometry.coordinates.map(([lon, lat]: [number, number]) => [lat, lon]);
-        const polyline = L.polyline(coords, {
-          color: "#185FA5",
-          weight: 4,
-          opacity: 0.85,
-          dashArray: undefined,
-        }).addTo(map);
-        // Linha de realce
-        L.polyline(coords, {
-          color: "#5b8dd9",
-          weight: 8,
-          opacity: 0.2,
-        }).addTo(map);
+        const polyline = L.polyline(coords, { color: "#185FA5", weight: 4, opacity: 0.85 }).addTo(map);
+        L.polyline(coords, { color: "#5b8dd9", weight: 8, opacity: 0.2 }).addTo(map);
         alignmentLayerRef.current = polyline;
       }
     }
 
-    // Marcadores PK
     if (showPKs) {
-      const pkFeatures = features.filter((f: any) => f.properties?.type === "pk_marker");
-      pkFeatures.forEach((f: any) => {
+      features.filter((f: any) => f.properties?.type === "pk_marker").forEach((f: any) => {
         const [lon, lat] = f.geometry.coordinates;
         const icon = L.divIcon({
           html: pkMarkerSvg(f.properties.pk),
@@ -221,9 +275,7 @@ export function ProjectMap({ height = 480, showControls = true, className }: Pro
       });
     }
 
-    // Sectores WBS
-    const sectorFeatures = features.filter((f: any) => f.properties?.type === "sector");
-    sectorFeatures.forEach((f: any) => {
+    features.filter((f: any) => f.properties?.type === "sector").forEach((f: any) => {
       const [lon, lat] = f.geometry.coordinates;
       const icon = L.divIcon({
         html: sectorMarkerSvg("#185FA5"),
@@ -240,7 +292,6 @@ export function ProjectMap({ height = 480, showControls = true, className }: Pro
         .addTo(map);
       sectorLayersRef.current.push(m);
     });
-
   }, [mapReady, showAlignment, showPKs]);
 
   // Marcadores de dados reais
@@ -248,19 +299,20 @@ export function ProjectMap({ height = 480, showControls = true, className }: Pro
     if (!mapReady || !mapRef.current) return;
     const { map, L } = mapRef.current;
 
-    markersRef.current.forEach(m => m.remove());
-    markersRef.current = [];
+    markersRef.current.forEach((m) => m.remove());
+    markersRef.current.clear();
 
-    const visible = points.filter(p => activeFilters.has(p.entity_type));
+    const visible = points.filter((p) => activeFilters.has(p.entity_type));
     if (visible.length === 0) return;
 
     const bounds: [number, number][] = [];
 
-    visible.forEach(point => {
+    visible.forEach((point) => {
       const color = statusColor(point.entity_type, point.status);
-      const label = point.entity_type === "non_conformity" ? "NC"
-        : point.entity_type === "ppi" ? "PPI"
-        : point.entity_type === "test_result" ? "ENS" : "WI";
+      const label =
+        point.entity_type === "non_conformity" ? "NC" :
+        point.entity_type === "ppi" ? "PPI" :
+        point.entity_type === "test_result" ? "ENS" : "WI";
 
       const icon = L.divIcon({
         html: markerSvg(color, label),
@@ -274,22 +326,69 @@ export function ProjectMap({ height = 480, showControls = true, className }: Pro
         .addTo(map)
         .bindPopup(popupHtml(point), { maxWidth: 260, minWidth: 220 });
 
-      markersRef.current.push(marker);
+      markersRef.current.set(`${point.entity_type}-${point.id}`, marker);
       bounds.push([point.latitude, point.longitude]);
     });
 
-    if (bounds.length === 1) map.setView(bounds[0], 15);
-    else if (bounds.length > 1) map.fitBounds(L.latLngBounds(bounds), { padding: [40, 40], maxZoom: 16 });
-  }, [points, activeFilters, mapReady]);
+    // Só ajusta os limites automaticamente se NÃO há centro definido pelo projeto
+    const hasProjectCenter = activeProject?.map_center_lat != null;
+    if (!hasProjectCenter) {
+      if (bounds.length === 1) map.setView(bounds[0], 15);
+      else if (bounds.length > 1) map.fitBounds(L.latLngBounds(bounds), { padding: [40, 40], maxZoom: 16 });
+    }
+  }, [points, activeFilters, mapReady, activeProject?.map_center_lat]);
 
-  const centreOnLine = () => {
-    if (!mapRef.current) return;
-    mapRef.current.map.setView([38.55, -8.83], 12);
+  const centreOnProject = () => {
+    if (!mapRef.current || !activeProject) return;
+    const { map } = mapRef.current;
+    if (activeProject.map_center_lat != null && activeProject.map_center_lng != null) {
+      map.setView(
+        [Number(activeProject.map_center_lat), Number(activeProject.map_center_lng)],
+        activeProject.map_default_zoom ?? 13,
+      );
+    } else if (isPF17A) {
+      map.setView([38.55, -8.83], 12);
+    } else {
+      map.setView(DEFAULT_CENTER, DEFAULT_ZOOM);
+    }
   };
 
+  const locateUser = () => {
+    if (!mapRef.current || !navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { map, L } = mapRef.current!;
+        map.setView([pos.coords.latitude, pos.coords.longitude], 15);
+        if (userMarkerRef.current) userMarkerRef.current.remove();
+        const icon = L.divIcon({
+          html: userMarkerSvg(),
+          className: "",
+          iconSize: [20, 20],
+          iconAnchor: [10, 10],
+        });
+        userMarkerRef.current = L.marker([pos.coords.latitude, pos.coords.longitude], { icon })
+          .addTo(map)
+          .bindTooltip(t("map.youAreHere", { defaultValue: "A sua localização" }));
+      },
+      () => { /* ignorar */ },
+      { enableHighAccuracy: true, timeout: 8000 },
+    );
+  };
+
+  useImperativeHandle(ref, () => ({
+    focusPoint: (point: MapPoint) => {
+      if (!mapRef.current) return;
+      const { map } = mapRef.current;
+      map.setView([point.latitude, point.longitude], 17);
+      const m = markersRef.current.get(`${point.entity_type}-${point.id}`);
+      if (m) m.openPopup();
+    },
+    refresh: () => loadPoints(),
+  }), [loadPoints]);
+
   const typeCounts = Object.fromEntries(
-    (["work_item", "non_conformity", "ppi", "test_result"] as const).map(type => [
-      type, points.filter(p => p.entity_type === type).length,
+    (["work_item", "non_conformity", "ppi", "test_result"] as const).map((type) => [
+      type, points.filter((p) => p.entity_type === type).length,
     ])
   );
 
@@ -297,43 +396,43 @@ export function ProjectMap({ height = 480, showControls = true, className }: Pro
     <Card className={cn("overflow-hidden border border-border/60", className)}>
       {showControls && (
         <div className="flex items-center gap-2 px-4 py-2.5 border-b border-border/40 bg-muted/20 flex-wrap">
+          {isPF17A && (
+            <>
+              <Train className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+              <button
+                onClick={() => setShowAlignment((v) => !v)}
+                className={cn(
+                  "flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold border transition-all",
+                  showAlignment ? "text-white border-transparent" : "bg-transparent border-border text-muted-foreground opacity-50"
+                )}
+                style={showAlignment ? { backgroundColor: "#185FA5" } : {}}
+              >
+                {t("map.alignment", { defaultValue: "Traçado" })}
+              </button>
+              <button
+                onClick={() => setShowPKs((v) => !v)}
+                className={cn(
+                  "flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold border transition-all",
+                  showPKs ? "bg-foreground text-background border-foreground" : "bg-transparent border-border text-muted-foreground opacity-50"
+                )}
+              >
+                PKs
+              </button>
+              <div className="w-px h-4 bg-border/60 mx-0.5" />
+            </>
+          )}
 
-          {/* Camadas base */}
-          <Train className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-          <button
-            onClick={() => setShowAlignment(v => !v)}
-            className={cn(
-              "flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold border transition-all",
-              showAlignment ? "text-white border-transparent" : "bg-transparent border-border text-muted-foreground opacity-50"
-            )}
-            style={showAlignment ? { backgroundColor: "#185FA5" } : {}}
-          >
-            Traçado
-          </button>
-          <button
-            onClick={() => setShowPKs(v => !v)}
-            className={cn(
-              "flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold border transition-all",
-              showPKs ? "bg-foreground text-background border-foreground" : "bg-transparent border-border text-muted-foreground opacity-50"
-            )}
-          >
-            PKs
-          </button>
-
-          <div className="w-px h-4 bg-border/60 mx-0.5" />
-
-          {/* Camadas de dados */}
           <Layers className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-          {(["work_item", "non_conformity", "ppi", "test_result"] as const).map(type => {
+          {(["work_item", "non_conformity", "ppi", "test_result"] as const).map((type) => {
             const cfg = TYPE_CONFIG[type];
             const count = typeCounts[type] ?? 0;
             const active = activeFilters.has(type);
             return (
               <button
                 key={type}
-                onClick={() => setActiveFilters(prev => {
+                onClick={() => setActiveFilters((prev) => {
                   const next = new Set(prev);
-                  next.has(type) ? next.delete(type) : next.add(type);
+                  if (next.has(type)) next.delete(type); else next.add(type);
                   return next;
                 })}
                 className={cn(
@@ -354,11 +453,14 @@ export function ProjectMap({ height = 480, showControls = true, className }: Pro
           })}
 
           <div className="ml-auto flex gap-1.5">
-            <Button variant="ghost" size="sm" className="h-7 gap-1.5 text-xs px-2.5" onClick={centreOnLine}>
-              <Navigation className="h-3 w-3" />
-              <span className="hidden sm:inline">{t("map.centre", { defaultValue: "PF17A" })}</span>
+            <Button variant="ghost" size="sm" className="h-7 gap-1.5 text-xs px-2.5" onClick={locateUser} title={t("map.locate", { defaultValue: "A minha localização" })}>
+              <Locate className="h-3 w-3" />
             </Button>
-            <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={loadPoints} title="Actualizar">
+            <Button variant="ghost" size="sm" className="h-7 gap-1.5 text-xs px-2.5" onClick={centreOnProject}>
+              <Navigation className="h-3 w-3" />
+              <span className="hidden sm:inline">{activeProject?.code ?? t("map.centre", { defaultValue: "Centro" })}</span>
+            </Button>
+            <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={loadPoints} title={t("common.refresh", { defaultValue: "Actualizar" })}>
               <RefreshCw className="h-3 w-3" />
             </Button>
           </div>
@@ -378,12 +480,16 @@ export function ProjectMap({ height = 480, showControls = true, className }: Pro
         <div className="px-4 py-2 border-t border-border/40 bg-muted/10 flex items-center justify-between">
           <span className="text-[10px] text-muted-foreground">
             {points.length > 0
-              ? `${points.filter(p => activeFilters.has(p.entity_type)).length}/${points.length} pontos de dados · traçado aproximado (PF17A)`
-              : t("map.noPointsShort", { defaultValue: "Traçado PF17A · Adicione coordenadas GPS nos formulários" })}
+              ? t("map.pointsCount", {
+                  defaultValue: "{{visible}}/{{total}} pontos visíveis",
+                  visible: points.filter((p) => activeFilters.has(p.entity_type)).length,
+                  total: points.length,
+                })
+              : t("map.noPointsShort", { defaultValue: "Sem coordenadas — adicione GPS nos formulários" })}
           </span>
           <span className="text-[10px] text-muted-foreground">© OpenStreetMap</span>
         </div>
       )}
     </Card>
   );
-}
+});

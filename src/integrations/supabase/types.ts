@@ -5772,6 +5772,9 @@ export type Database = {
           id: string
           location: string | null
           logo_url: string | null
+          map_center_lat: number | null
+          map_center_lng: number | null
+          map_default_zoom: number | null
           name: string
           start_date: string | null
           status: string
@@ -5788,6 +5791,9 @@ export type Database = {
           id?: string
           location?: string | null
           logo_url?: string | null
+          map_center_lat?: number | null
+          map_center_lng?: number | null
+          map_default_zoom?: number | null
           name: string
           start_date?: string | null
           status?: string
@@ -5804,6 +5810,9 @@ export type Database = {
           id?: string
           location?: string | null
           logo_url?: string | null
+          map_center_lat?: number | null
+          map_center_lng?: number | null
+          map_default_zoom?: number | null
           name?: string
           start_date?: string | null
           status?: string
@@ -13620,6 +13629,9 @@ export type Database = {
           id: string
           location: string | null
           logo_url: string | null
+          map_center_lat: number | null
+          map_center_lng: number | null
+          map_default_zoom: number | null
           name: string
           start_date: string | null
           status: string
