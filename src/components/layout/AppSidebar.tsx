@@ -11,9 +11,10 @@ import {
   FlaskConical, AlertTriangle, ScrollText, Settings,
   ShieldCheck, ChevronLeft, ChevronRight, X, ChevronDown,
   Inbox, BookOpen, HardHat, Construction, ClipboardCheck, Crosshair, CalendarClock,
-  Clock, FileCheck, BarChart3, Building2, ClipboardList, Leaf, GraduationCap, FileBarChart2,
+  Clock, BarChart3, Building2, ClipboardList, Leaf, GraduationCap, FileBarChart2,
   Users, Link2, Hammer, CheckSquare, FileStack, PieChart, Cog, CalendarCheck, Activity,
-  Download, Zap, TrendingUp, Map, FileSpreadsheet } from "lucide-react";
+  Download, Zap, TrendingUp, Map, FileSpreadsheet,
+  Send, FileUp, ScanSearch } from "lucide-react";
 import { usePWAInstall } from "@/hooks/usePWAInstall";
 import { NavLink } from "@/components/NavLink";
 import { cn } from "@/lib/utils";
@@ -98,9 +99,9 @@ const NAV_SECTIONS: SidebarSection[] = [
       { labelKey: "nav.plans",           url: "/plans",            icon: BookOpen },
       { labelKey: "nav.dfo",             url: "/dfo",              icon: FolderKanban },
       { labelKey: "nav.documents",       url: "/documents",        icon: FileText, viewerVisible: true },
-      { labelKey: "nav.controlledDistribution", url: "/controlled-distribution", icon: FileCheck },
-      { labelKey: "nav.submittals",      url: "/submittals",       icon: FileCheck },
-      { labelKey: "nav.audits",          url: "/audits",           icon: FileCheck },
+      { labelKey: "nav.controlledDistribution", url: "/controlled-distribution", icon: Send },
+      { labelKey: "nav.submittals",      url: "/submittals",       icon: FileUp },
+      { labelKey: "nav.audits",          url: "/audits",           icon: ScanSearch },
       { labelKey: "nav.training",        url: "/training",         icon: GraduationCap },
     ],
   },
