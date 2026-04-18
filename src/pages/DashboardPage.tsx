@@ -517,44 +517,53 @@ export default function DashboardPage() {
             loading={kpiLoading || healthLoading}
           />
 
-          {/* Linha 3 — KPIs SGQ + Actividade Recente */}
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-4">
+          {/* Linha 3 — KPIs SGQ + Quality Checklist (visual, inspirado no Apple-tier mockup) */}
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-4">
             <div>
               <p className="text-[9px] font-extrabold uppercase tracking-[0.22em] text-muted-foreground/50 mb-2.5 flex items-center gap-1.5">
                 <ShieldCheck className="h-3 w-3" />{t("dashboard.sgqKpi.title", { defaultValue: "KPIs do SGQ — Anx. D" })}
               </p>
               <SgqKpiCards projectId={activeProject.id} />
             </div>
-            <Card className="border border-border/60 bg-card shadow-card">
-              <CardHeader className="pb-2 pt-4 px-4">
-                <CardTitle className="text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground flex items-center gap-1.5">
-                  <Clock className="h-3.5 w-3.5" />{t("dashboard.recent.title", { defaultValue: "Actividade Recente" })}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="px-4 pb-4">
-                {kpiLoading
-                  ? <div className="space-y-2">{Array.from({ length: 5 }).map((_,i) => <Skeleton key={i} className="h-8 w-full" />)}</div>
-                  : kpis.recentActivity.length === 0
-                  ? <p className="text-xs text-muted-foreground py-6 text-center">{t("dashboard.recent.empty", { defaultValue: "Sem actividade recente" })}</p>
-                  : <ul className="divide-y divide-border/40">
-                    {kpis.recentActivity.slice(0, 7).map((item, idx) => {
-                      const cfg = ACTIVITY_CFG[item.type] ?? ACTIVITY_CFG.nc;
-                      const Icon = cfg.icon;
-                      const route = item.type==="nc" ? `/non-conformities/${item.id}` : item.type==="ppi" ? `/ppi/${item.id}` : item.type==="lot" ? "/materials" : "/tests";
-                      return (
-                        <li key={`${item.type}-${item.id}-${idx}`}
-                          className="flex items-center gap-2 py-2 cursor-pointer hover:bg-muted/30 -mx-1 px-1 rounded-lg transition-colors"
-                          onClick={() => navigate(route)}>
-                          <Icon className={cn("h-3.5 w-3.5 flex-shrink-0", cfg.cls)} />
-                          <span className="font-mono text-[10px] text-muted-foreground w-24 flex-shrink-0 truncate">{item.code}</span>
-                          <span className="text-xs text-foreground flex-1 truncate">{item.label || "—"}</span>
-                          <span className="text-[9px] text-muted-foreground tabular-nums flex-shrink-0">{new Date(item.created_at).toLocaleDateString(t("common.locale", { defaultValue: "pt-PT" }), { day: "2-digit", month: "2-digit" })}</span>
-                        </li>
-                      );
-                    })}
-                  </ul>}
-              </CardContent>
-            </Card>
+
+            <QualityChecklistCard
+              loading={kpiLoading || healthLoading}
+              globalPct={health.health_score}
+              items={[
+                {
+                  key: "nc",
+                  label: t("dashboard.checklist.items.nc", { defaultValue: "NCs em aberto" }),
+                  pct: kpis.ncOpen === 0 ? 100 : Math.max(0, 100 - kpis.ncOpen * 12),
+                  status: kpis.ncOpen === 0 ? "ok" : kpis.ncOpen <= 3 ? "warn" : "nc",
+                  hint: kpis.ncOpen === 0 ? "0" : `${kpis.ncOpen}`,
+                  route: "/non-conformities",
+                },
+                {
+                  key: "ppi",
+                  label: t("dashboard.checklist.items.ppi", { defaultValue: "PPIs aprovados" }),
+                  pct: ppiPct,
+                  status: kpis.ppiTotal === 0 ? "empty" : ppiPct >= 80 ? "ok" : ppiPct >= 50 ? "warn" : "nc",
+                  hint: kpis.ppiTotal > 0 ? `${kpis.ppiApproved}/${kpis.ppiTotal}` : undefined,
+                  route: "/ppi",
+                },
+                {
+                  key: "tests",
+                  label: t("dashboard.checklist.items.tests", { defaultValue: "Ensaios realizados" }),
+                  pct: testsPct,
+                  status: kpis.testsTotal === 0 ? "empty" : kpis.testsOverdue > 0 ? "nc" : testsPct >= 70 ? "ok" : "warn",
+                  hint: kpis.testsTotal > 0 ? `${kpis.testsCompleted}/${kpis.testsTotal}` : undefined,
+                  route: "/tests",
+                },
+                {
+                  key: "materials",
+                  label: t("dashboard.checklist.items.materials", { defaultValue: "PAME aprovados" }),
+                  pct: kpis.matTotal > 0 ? Math.round((kpis.matApproved / kpis.matTotal) * 100) : 0,
+                  status: kpis.matTotal === 0 ? "empty" : kpis.pamePending === 0 ? "ok" : kpis.pamePending <= 5 ? "warn" : "nc",
+                  hint: kpis.matTotal > 0 ? `${kpis.matApproved}/${kpis.matTotal}` : undefined,
+                  route: "/materials",
+                },
+              ]}
+            />
           </div>
         </TabsContent>
 
