@@ -199,9 +199,21 @@ export const ProjectMap = forwardRef<ProjectMapHandle, Props>(function ProjectMa
       mapRef.current = { map, L, geoData };
       setMapReady(true);
 
-      // Se não há centro definido nem geojson nem pontos, pedir geolocalização do utilizador
-      const hasCenter = activeProject.map_center_lat != null;
-      if (!hasCenter && !isPF17A && navigator.geolocation) {
+      // Auto-fit ao traçado se existir — mostra a obra inteira de uma vez
+      const alignLine = (geoData as any)?.features?.find(
+        (f: any) => f.properties?.type === "railway_alignment"
+      );
+      if (alignLine?.geometry?.coordinates?.length > 1) {
+        const coords = alignLine.geometry.coordinates.map(([lon, lat]: [number, number]) => [lat, lon]);
+        setTimeout(() => map.fitBounds(L.latLngBounds(coords), { padding: [48, 48], maxZoom: 15 }), 100);
+        return;
+      }
+
+      // Se não há traçado mas há centro definido, usar esse
+      if (activeProject.map_center_lat != null) return;
+
+      // Fallback: geolocalização do utilizador
+      if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (pos) => {
             if (!mapRef.current) return;
@@ -386,14 +398,23 @@ export const ProjectMap = forwardRef<ProjectMapHandle, Props>(function ProjectMa
 
   const centreOnProject = () => {
     if (!mapRef.current || !activeProject) return;
-    const { map } = mapRef.current;
+    const { map, L, geoData } = mapRef.current as any;
+
+    // Prioridade 1: fitBounds ao traçado se existir
+    const features = (geoData as any)?.features ?? [];
+    const line = features.find((f: any) => f.properties?.type === "railway_alignment");
+    if (line && line.geometry?.coordinates?.length > 1) {
+      const coords = line.geometry.coordinates.map(([lon, lat]: [number, number]) => [lat, lon]);
+      map.fitBounds(L.latLngBounds(coords), { padding: [48, 48], maxZoom: 15 });
+      return;
+    }
+
+    // Prioridade 2: centro configurado no projecto
     if (activeProject.map_center_lat != null && activeProject.map_center_lng != null) {
       map.setView(
         [Number(activeProject.map_center_lat), Number(activeProject.map_center_lng)],
         activeProject.map_default_zoom ?? 13,
       );
-    } else if (isPF17A) {
-      map.setView([38.55, -8.83], 12);
     } else {
       map.setView(DEFAULT_CENTER, DEFAULT_ZOOM);
     }
