@@ -221,7 +221,8 @@
     "controlledDistribution": "Distribución Controlada",
     "contractKpis": "KPIs de Contrato",
     "map": "Mapa de Obra",
-    "mqt": "MQT — Mapa Cantidades"
+    "mqt": "MQT — Mapa Cantidades",
+    "fieldRecords": "Registros de Campo"
   },
   "topbar": {
     "language": "Idioma",
@@ -5139,19 +5140,61 @@
     "deleteConfirm": "¿Está seguro de que desea eliminar este submittal?"
   },
   "fieldRecords": {
-    "empty": "Sin fichas de registro asociadas a esta inspección.",
-    "activity": "Actividad",
-    "form": {
-      "title": "Registro de campo"
+    "category": "Inspección de Campo",
+    "title": "Registros de Inspección de Campo",
+    "subtitle": "Registro de RP · WP — verificaciones, materiales y ensayos in situ",
+    "new": "Nueva GR",
+    "empty": {
+      "title": "Sin registros de campo",
+      "subtitle": "Crea un nuevo registro para documentar una verificación de campo"
     },
-    "new": "Nuevo registro",
-    "pointType": "Tipo de punto",
-    "specialist": "Especialista",
-    "title": "Registros de Campo",
+    "deleteConfirm": "El registro será archivado y no aparecerá en la lista.",
     "toast": {
-      "created": "Registro creado con éxito"
+      "created": "Registro de campo creado con éxito"
     },
-    "weather": "Condiciones meteorológicas"
+    "kpi": {
+      "conforme": "Conforme",
+      "obs": "c/ Obs.",
+      "naoConforme": "No Conforme",
+      "pendente": "Pendiente"
+    },
+    "col": {
+      "type": "Tipo",
+      "activity": "Actividad",
+      "pk": "PK",
+      "ppi": "PPI",
+      "result": "Resultado"
+    },
+    "form": {
+      "title": "Nuevo Registro de Inspección de Campo",
+      "section1": "Identificación",
+      "section2": "Materiales y Equipos",
+      "section3": "Verificaciones Realizadas",
+      "section5": "Observaciones e Incidencias",
+      "section6": "Resultado Global",
+      "pointType": "Tipo de Punto",
+      "activity": "Actividad / Trabajo Inspeccionado",
+      "activityPlaceholder": "Ej: Compactación de terraplén — capa 3",
+      "activityRequired": "La actividad es obligatoria",
+      "ppiRef": "PPI de Referencia (opcional)",
+      "disciplina": "Disciplina",
+      "pk": "PK Inicio",
+      "pkFim": "PK Fin",
+      "elemento": "Elemento",
+      "weather": "Condiciones Meteorológicas",
+      "tq": "TQ / Responsable de Registro",
+      "specialist": "Resp. Especialidad / Encargado",
+      "materialName": "Material / Equipo",
+      "lot": "Lote",
+      "qty": "Cant.",
+      "checkItem": "Ítem verificado",
+      "criteria": "Criterio",
+      "method": "Método/EME",
+      "measured": "Valor medido",
+      "observationsPlaceholder": "Observaciones generales, NCs abiertas, referencias fotográficas…",
+      "nextInspection": "Próxima Verificación Prevista",
+      "hasPhotos": "Registro fotográfico realizado"
+    }
   },
   "fieldRecord": {
     "createNc": "Crear NC",

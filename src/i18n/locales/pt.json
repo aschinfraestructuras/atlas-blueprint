@@ -221,7 +221,8 @@
     "mqt": "MQT — Mapa Quantidades",
     "controlledDistribution": "Distribuição Controlada",
     "contractKpis": "KPIs de Contrato",
-    "map": "Mapa da Obra"
+    "map": "Mapa da Obra",
+    "fieldRecords": "Grelhas de Campo"
   },
   "topbar": {
     "language": "Idioma",
@@ -5136,19 +5137,61 @@
     "deleteConfirm": "Tem a certeza que deseja eliminar este submittal?"
   },
   "fieldRecords": {
-    "empty": "Sem grelhas de registo associadas a esta inspeção.",
-    "activity": "Actividade",
-    "form": {
-      "title": "Registo de campo"
+    "category": "Inspecção de Campo",
+    "title": "Grelhas de Registo de Campo",
+    "subtitle": "Registo de RP · WP — verificações, materiais e ensaios in situ",
+    "new": "Nova Grelha GR",
+    "empty": {
+      "title": "Sem grelhas de registo",
+      "subtitle": "Cria uma nova grelha para registar uma verificação de campo"
     },
-    "new": "Novo registo",
-    "pointType": "Tipo de ponto",
-    "specialist": "Especialista",
-    "title": "Registos de Campo",
+    "deleteConfirm": "A grelha será arquivada e não aparecerá na lista.",
     "toast": {
-      "created": "Registo criado com sucesso"
+      "created": "Grelha de Registo criada com sucesso"
     },
-    "weather": "Condições meteorológicas"
+    "kpi": {
+      "conforme": "Conforme",
+      "obs": "c/ Obs.",
+      "naoConforme": "Não Conforme",
+      "pendente": "Pendente"
+    },
+    "col": {
+      "type": "Tipo",
+      "activity": "Actividade",
+      "pk": "PK",
+      "ppi": "PPI",
+      "result": "Resultado"
+    },
+    "form": {
+      "title": "Nova Grelha de Registo de Campo",
+      "section1": "Identificação",
+      "section2": "Materiais e Equipamentos",
+      "section3": "Verificações Realizadas",
+      "section5": "Observações e Ocorrências",
+      "section6": "Resultado Global",
+      "pointType": "Tipo de Ponto",
+      "activity": "Actividade / Trabalho Inspeccionado",
+      "activityPlaceholder": "Ex: Compactação de aterro — camada 3",
+      "activityRequired": "A actividade é obrigatória",
+      "ppiRef": "PPI de Referência (opcional)",
+      "disciplina": "Disciplina",
+      "pk": "PK Início",
+      "pkFim": "PK Fim",
+      "elemento": "Elemento",
+      "weather": "Condições Meteorológicas",
+      "tq": "TQ / Responsável de Registo",
+      "specialist": "Resp. Especialidade / Encarregado",
+      "materialName": "Material / Equipamento",
+      "lot": "Lote",
+      "qty": "Qtd.",
+      "checkItem": "Item verificado",
+      "criteria": "Critério",
+      "method": "Método/EME",
+      "measured": "Valor medido",
+      "observationsPlaceholder": "Observações gerais, RNCs abertas, referências fotográficas…",
+      "nextInspection": "Próxima Verificação Prevista",
+      "hasPhotos": "Registo fotográfico efectuado"
+    }
   },
   "fieldRecord": {
     "createNc": "Criar NC",
