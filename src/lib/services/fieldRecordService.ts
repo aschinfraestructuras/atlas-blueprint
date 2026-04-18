@@ -1,5 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import { projectInfoStripHtml } from "./pdfProjectHeader";
+import { fullPdfHeader } from "./pdfProjectHeader";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -219,48 +219,37 @@ export const fieldRecordService = {
 
     const resColor = resultColor[record.result] ?? "#333";
 
-    const logoHtml = logoBase64
-      ? `<img src="${logoBase64}" style="height:45px;max-width:150px;object-fit:contain;" />`
-      : "";
+    const headerHtml = fullPdfHeader(
+      logoBase64 ?? null,
+      projectName,
+      record.code,
+      "0",
+      new Date(record.inspection_date || Date.now()).toLocaleDateString("pt-PT"),
+    );
 
     w.document.write(`<!DOCTYPE html><html><head><title>${record.code}</title>
       <style>
-        body{font-family:Arial,sans-serif;margin:30px;font-size:11px}
+        body{font-family:Arial,sans-serif;margin:14mm 12mm;font-size:11px;color:#1A1A1A}
         h2{margin:0 0 4px;font-size:16px}
-        h3{margin:18px 0 6px;font-size:12px;border-bottom:1px solid #ccc;padding-bottom:3px;text-transform:uppercase;letter-spacing:.08em;color:#555}
+        h3{margin:18px 0 6px;font-size:12px;border-bottom:1px solid #C4CBD4;padding-bottom:3px;text-transform:uppercase;letter-spacing:.08em;color:#192F48;font-weight:700}
         table{width:100%;border-collapse:collapse;margin-top:6px}
-        th,td{border:1px solid #ccc;padding:5px 8px;text-align:left;font-size:10px}
-        th{background:#f0f4f8;font-weight:700;text-transform:uppercase;font-size:9px;letter-spacing:.06em;color:#555}
-        .header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #2F4F75;padding-bottom:10px;margin-bottom:14px}
+        th,td{border:1px solid #C4CBD4;padding:5px 8px;text-align:left;font-size:10px}
+        th{background:#F1F3F5;font-weight:700;text-transform:uppercase;font-size:9px;letter-spacing:.06em;color:#505A68}
         .result-box{margin-top:18px;padding:10px 16px;border:3px solid ${resColor};border-radius:6px;font-size:14px;font-weight:900;color:${resColor};text-align:center}
         .sig-row{display:flex;gap:40px;margin-top:50px}
         .sig-block{flex:1;text-align:center;font-size:10px}
         .sig-block .line{border-top:1px solid #333;margin-top:40px;padding-top:4px}
-        .sig-block .role{font-weight:700;color:#555;margin-bottom:2px}
+        .sig-block .role{font-weight:700;color:#505A68;margin-bottom:2px}
         .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 24px}
         .info-grid span{font-size:10px}
-        .info-grid .label{font-weight:700;color:#555;text-transform:uppercase;font-size:8px;letter-spacing:.1em}
-        .info-grid .value{font-size:11px;color:#111}
-        .photo-reg{margin-top:16px;font-size:10px;color:#555;border:1px solid #ccc;padding:8px 12px;border-radius:4px}
+        .info-grid .label{font-weight:700;color:#505A68;text-transform:uppercase;font-size:8px;letter-spacing:.1em}
+        .info-grid .value{font-size:11px;color:#1A1A1A}
+        .photo-reg{margin-top:16px;font-size:10px;color:#505A68;border:1px solid #C4CBD4;padding:8px 12px;border-radius:4px}
         @page{size:A4 portrait;margin:14mm 12mm}
         @media print{.no-print{display:none!important}}
       </style>
     </head><body>
-      <div class="header">
-        <div style="display:flex;align-items:center;gap:12px">
-          ${logoHtml}
-          <div>
-            <h2 style="color:#2F4F75;font-size:18px;font-weight:900">ATLAS QMS</h2>
-            <p style="color:#777;margin:2px 0 0;font-size:10px">${projectName}</p>
-          </div>
-        </div>
-        <div style="text-align:right">
-          <h2 style="font-size:16px;color:#2F4F75;font-weight:900">${record.code}</h2>
-          <p style="margin:2px 0 0;color:#777;font-size:9px;text-transform:uppercase;letter-spacing:.1em">Grelha de Registo</p>
-        </div>
-      </div>
-
-      ${projectInfoStripHtml(null)}
+      ${headerHtml}
 
       <h3>1. Identificação</h3>
       <div class="info-grid">
