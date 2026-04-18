@@ -327,12 +327,74 @@ export default function LoginPage() {
       </div>
 
       {/* Right panel */}
-      <div className="flex flex-1 flex-col" style={{ background: "hsl(210 20% 98%)" }}>
+      <div className="relative flex flex-1 flex-col overflow-hidden bg-[hsl(210_20%_98%)] lg:bg-[hsl(210_20%_98%)]">
+        {/* === Mobile/Tablet only: background moderno (escondido em lg+) === */}
+        <div className="absolute inset-0 lg:hidden pointer-events-none" aria-hidden="true">
+          {/* Imagem hero também em tablet/mobile */}
+          <img
+            src={loginHero}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          {/* Overlay para contraste do form */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(180deg, hsl(215 80% 12% / 0.70) 0%, hsl(215 80% 14% / 0.78) 50%, hsl(215 80% 10% / 0.92) 100%)",
+            }}
+          />
+          {/* Light trails subtis (mobile) */}
+          <style>{`
+            @keyframes mobTrail {
+              0%   { transform: translateX(-30%); opacity: 0; }
+              20%  { opacity: 0.7; }
+              80%  { opacity: 0.7; }
+              100% { transform: translateX(130%); opacity: 0; }
+            }
+            @keyframes mobBlob {
+              0%, 100% { transform: translate(0,0) scale(1); }
+              50%      { transform: translate(20px,-15px) scale(1.08); }
+            }
+            .mob-trail   { animation: mobTrail 8s ease-in-out infinite; }
+            .mob-trail-2 { animation: mobTrail 11s ease-in-out infinite 3s; }
+            .mob-blob    { animation: mobBlob 10s ease-in-out infinite; }
+          `}</style>
+          <div
+            className="mob-trail absolute h-[1.5px] w-[40%]"
+            style={{
+              top: "28%",
+              background: "linear-gradient(90deg, transparent, hsl(180 95% 65% / 0.8), transparent)",
+              boxShadow: "0 0 12px hsl(180 95% 65% / 0.6)",
+            }}
+          />
+          <div
+            className="mob-trail-2 absolute h-[1px] w-[30%]"
+            style={{
+              top: "75%",
+              background: "linear-gradient(90deg, transparent, hsl(190 90% 70% / 0.7), transparent)",
+            }}
+          />
+          {/* Blobs cyan (atmosfera) */}
+          <div
+            className="mob-blob absolute -top-20 -right-20 w-72 h-72 rounded-full blur-3xl"
+            style={{ background: "hsl(180 95% 50% / 0.18)" }}
+          />
+          <div
+            className="mob-blob absolute -bottom-24 -left-16 w-80 h-80 rounded-full blur-3xl"
+            style={{ background: "hsl(215 90% 50% / 0.25)", animationDelay: "3s" }}
+          />
+        </div>
+
         {/* Language switcher top-right */}
-        <div className="flex justify-end p-4">
+        <div className="relative z-10 flex justify-end p-4">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="gap-1.5 text-xs font-semibold text-muted-foreground">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="gap-1.5 text-xs font-semibold text-muted-foreground lg:text-muted-foreground text-white/80 hover:text-white hover:bg-white/10 lg:hover:bg-accent lg:hover:text-foreground"
+              >
                 <Globe className="h-3.5 w-3.5" />
                 {LANGUAGES.find((l) => l.code === i18n.language)?.label ?? "PT"}
               </Button>
@@ -354,21 +416,21 @@ export default function LoginPage() {
           </DropdownMenu>
         </div>
 
-        <div className="flex flex-1 items-center justify-center px-6 pb-12">
-          <div className="w-full max-w-sm space-y-8">
+        <div className="relative z-10 flex flex-1 items-center justify-center px-6 pb-12">
+          <div className="w-full max-w-sm space-y-8 lg:bg-transparent lg:border-0 lg:shadow-none lg:p-0 lg:backdrop-blur-none rounded-2xl border border-white/15 bg-white/[0.06] p-6 sm:p-8 backdrop-blur-2xl shadow-[0_20px_60px_-15px_hsl(215_80%_5%/0.6)] lg:!bg-transparent lg:!border-0 lg:!shadow-none lg:!p-0 lg:!backdrop-blur-none">
             {/* Mobile logo */}
             <div className="flex items-center gap-2 lg:hidden">
-              <ShieldCheck className="h-5 w-5 text-foreground" />
-              <span className="text-base font-semibold tracking-widest uppercase">
+              <ShieldCheck className="h-5 w-5 text-white lg:text-foreground" />
+              <span className="text-base font-semibold tracking-widest uppercase text-white lg:text-foreground">
                 {t("common.appName")}
               </span>
             </div>
 
             <div className="space-y-1.5">
-              <h1 className="text-[1.75rem] font-bold tracking-tight text-foreground">
+              <h1 className="text-[1.75rem] font-bold tracking-tight text-white lg:text-foreground">
                 {mode === "login" ? t("auth.signInTitle") : t("auth.forgotPasswordTitle")}
               </h1>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-white/70 lg:text-muted-foreground">
                 {mode === "login" ? t("auth.signInSubtitle") : t("auth.forgotPasswordSubtitle")}
               </p>
             </div>
@@ -490,13 +552,13 @@ export default function LoginPage() {
             <div className="space-y-3 text-center">
               {mode === "forgot" && (
                 <button
-                  className="text-sm font-medium text-foreground underline-offset-4 hover:underline"
+                  className="text-sm font-medium text-white lg:text-foreground underline-offset-4 hover:underline"
                   onClick={() => { setMode("login"); setError(null); }}
                 >
                   {t("auth.backToSignIn")}
                 </button>
               )}
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-white/65 lg:text-muted-foreground">
                 {t("auth.inviteOnlyNotice")}
               </p>
             </div>
