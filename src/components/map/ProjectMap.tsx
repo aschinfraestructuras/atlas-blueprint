@@ -98,7 +98,7 @@ export function ProjectMap({ height = 480, showControls = true, className }: Pro
   const { t } = useTranslation();
   const { activeProject } = useProject();
   const navigate = useNavigate();
-  const mapRef      = useRef<{ map: any; L: any } | null>(null);
+  const mapRef      = useRef<{ map: any; L: any; geoData: any } | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const markersRef  = useRef<any[]>([]);
   const [points, setPoints]    = useState<MapPoint[]>([]);
