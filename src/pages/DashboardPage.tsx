@@ -294,25 +294,49 @@ export default function DashboardPage() {
   return (
     <div className="space-y-5 max-w-[1180px] mx-auto overflow-x-hidden">
 
-      {/* HEADER */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 sm:gap-4 animate-fade-in">
-        <div className="space-y-0.5 sm:space-y-1">
-          <p className="text-[9px] font-extrabold uppercase tracking-[0.25em] text-muted-foreground/50">{t("dashboard.welcome")}</p>
-          <h1 className="text-2xl sm:text-[1.75rem] font-black tracking-tight text-foreground leading-tight">{displayName}</h1>
-          <p className="text-xs sm:text-sm text-muted-foreground/80">{t("dashboard.subtitleProject", { project: activeProject.name })}</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
-          <Select value={period} onValueChange={setPeriod}>
-            <SelectTrigger className="h-8 w-[150px] text-xs"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{t("dashboard.period.all",  { defaultValue: "Todo o período" })}</SelectItem>
-              <SelectItem value="3m"> {t("dashboard.period.3m",   { defaultValue: "Últimos 3 meses" })}</SelectItem>
-              <SelectItem value="6m"> {t("dashboard.period.6m",   { defaultValue: "Últimos 6 meses" })}</SelectItem>
-              <SelectItem value="12m">{t("dashboard.period.12m",  { defaultValue: "Últimos 12 meses" })}</SelectItem>
-              <SelectItem value="ytd">{t("dashboard.period.ytd",  { defaultValue: "Ano corrente" })}</SelectItem>
-            </SelectContent>
-          </Select>
+      {/* HERO HEADER — glassmorphism */}
+      <div className="relative overflow-hidden rounded-2xl border border-border/50 animate-fade-in">
+        {/* Layered backgrounds */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/8 via-card/60 to-card" />
+        <div className="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-primary/15 blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-24 -left-16 w-64 h-64 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
+        <div
+          className="absolute inset-0 opacity-[0.035] pointer-events-none"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 1px 1px, hsl(var(--foreground)) 1px, transparent 0)",
+            backgroundSize: "20px 20px",
+          }}
+        />
+        {/* Content */}
+        <div className="relative z-10 backdrop-blur-[2px] flex flex-col sm:flex-row sm:items-end justify-between gap-3 sm:gap-4 px-4 sm:px-6 py-5 sm:py-6">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <p className="text-[9px] font-extrabold uppercase tracking-[0.25em] text-muted-foreground/70">
+                {t("dashboard.welcome")}
+              </p>
+            </div>
+            <h1 className="text-2xl sm:text-[1.85rem] font-black tracking-tight text-foreground leading-tight">
+              {displayName}
+            </h1>
+            <p className="text-xs sm:text-sm text-muted-foreground/85">
+              {t("dashboard.subtitleProject", { project: activeProject.name })}
+            </p>
+          </div>
+          <div className="flex items-center gap-2 self-start sm:self-end bg-card/70 backdrop-blur-md border border-border/50 rounded-xl px-2.5 py-1.5 shadow-sm">
+            <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
+            <Select value={period} onValueChange={setPeriod}>
+              <SelectTrigger className="h-7 w-[140px] text-xs border-0 bg-transparent shadow-none focus:ring-0 focus:ring-offset-0 px-1"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t("dashboard.period.all",  { defaultValue: "Todo o período" })}</SelectItem>
+                <SelectItem value="3m"> {t("dashboard.period.3m",   { defaultValue: "Últimos 3 meses" })}</SelectItem>
+                <SelectItem value="6m"> {t("dashboard.period.6m",   { defaultValue: "Últimos 6 meses" })}</SelectItem>
+                <SelectItem value="12m">{t("dashboard.period.12m",  { defaultValue: "Últimos 12 meses" })}</SelectItem>
+                <SelectItem value="ytd">{t("dashboard.period.ytd",  { defaultValue: "Ano corrente" })}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
 
@@ -425,11 +449,11 @@ export default function DashboardPage() {
 
           {/* Linha 1 — SparklineKPIs */}
           <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-2.5 sm:gap-3 [&>*]:min-h-[88px] sm:[&>*]:min-h-[100px]">
-            <SparklineKPI label={t("dashboard.kpi.ncOpen",        { defaultValue: "NCs Abertas" })}   value={kpis.ncOpen}          icon={AlertTriangle}  color="0 65% 50%"   sparkData={ncSpark}    onClick={() => navigate("/non-conformities")} loading={kpiLoading} />
-            <SparklineKPI label={t("dashboard.kpi.testsOverdue",  { defaultValue: "Ensaios Atraso" })} value={kpis.testsOverdue}    icon={Clock}          color="38 85% 50%"  onClick={() => navigate("/tests")}             loading={kpiLoading} />
-            <SparklineKPI label={t("dashboard.kpi.pamePending",   { defaultValue: "PAME Pendentes" })} value={kpis.pamePending}     icon={Package}        color="215 65% 38%" onClick={() => navigate("/materials")}         loading={kpiLoading} />
-            <SparklineKPI label={t("dashboard.kpi.testsCompleted",{ defaultValue: "Ensaios Feitos" })} value={kpis.testsCompleted}  icon={FlaskConical}   color="145 55% 38%" sparkData={testsSpark} onClick={() => navigate("/tests")}             loading={kpiLoading} />
-            <SparklineKPI label={t("dashboard.kpi.emesExpiring",  { defaultValue: "Expirações 30d" })} value={kpis.emesExpiring30d} icon={ShieldCheck}    color={kpis.emesExpiring30d > 0 ? "0 65% 50%" : "145 55% 38%"} onClick={() => navigate("/expirations")} loading={kpiLoading} />
+            <SparklineKPI label={t("dashboard.kpi.ncOpen",        { defaultValue: "NCs Abertas" })}   value={kpis.ncOpen}          icon={AlertTriangle}  color="0 65% 50%"   sparkData={ncSpark}    onClick={() => navigate("/non-conformities")} loading={kpiLoading} invertTrendSemantics delay={0}   />
+            <SparklineKPI label={t("dashboard.kpi.testsOverdue",  { defaultValue: "Ensaios Atraso" })} value={kpis.testsOverdue}    icon={Clock}          color="38 85% 50%"  onClick={() => navigate("/tests")}             loading={kpiLoading} invertTrendSemantics delay={60}  />
+            <SparklineKPI label={t("dashboard.kpi.pamePending",   { defaultValue: "PAME Pendentes" })} value={kpis.pamePending}     icon={Package}        color="215 65% 38%" onClick={() => navigate("/materials")}         loading={kpiLoading} invertTrendSemantics delay={120} />
+            <SparklineKPI label={t("dashboard.kpi.testsCompleted",{ defaultValue: "Ensaios Feitos" })} value={kpis.testsCompleted}  icon={FlaskConical}   color="145 55% 38%" sparkData={testsSpark} onClick={() => navigate("/tests")}             loading={kpiLoading} delay={180} />
+            <SparklineKPI label={t("dashboard.kpi.emesExpiring",  { defaultValue: "Expirações 30d" })} value={kpis.emesExpiring30d} icon={ShieldCheck}    color={kpis.emesExpiring30d > 0 ? "0 65% 50%" : "145 55% 38%"} onClick={() => navigate("/expirations")} loading={kpiLoading} invertTrendSemantics delay={240} />
           </div>
 
           {/* Linha 2 — Visão Integrada de Qualidade (radar + breakdown) */}

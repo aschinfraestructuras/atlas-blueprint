@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { AreaChart, Area, ResponsiveContainer } from "recharts";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, TrendingUp, TrendingDown, Minus } from "lucide-react";
 
 interface SparklineKPIProps {
   label: string;
@@ -13,18 +13,48 @@ interface SparklineKPIProps {
   color?: string;     // HSL string like "0 65% 50%"
   onClick?: () => void;
   loading?: boolean;
+  /** When true, an upward trend is interpreted as negative (e.g. NCs aumentando = mau) */
+  invertTrendSemantics?: boolean;
+  delay?: number;
 }
 
-export function SparklineKPI({ label, value, subtitle, icon: Icon, sparkData, color, onClick, loading }: SparklineKPIProps) {
+/** Compara últimos 2 valores do sparkline e devolve variação % + direção. */
+function computeTrend(data?: { v: number }[]) {
+  if (!data || data.length < 2) return null;
+  const last = data[data.length - 1].v;
+  const prev = data[data.length - 2].v;
+  if (prev === 0 && last === 0) return { dir: "flat" as const, pct: 0 };
+  if (prev === 0) return { dir: "up" as const, pct: 100 };
+  const pct = Math.round(((last - prev) / prev) * 100);
+  if (pct === 0) return { dir: "flat" as const, pct: 0 };
+  return { dir: pct > 0 ? "up" as const : "down" as const, pct: Math.abs(pct) };
+}
+
+export function SparklineKPI({
+  label, value, subtitle, icon: Icon, sparkData, color, onClick, loading,
+  invertTrendSemantics, delay = 0,
+}: SparklineKPIProps) {
   const fillColor = color ? `hsl(${color})` : "hsl(var(--primary))";
   const gradientId = `spark-${label.replace(/[^a-zA-Z0-9]/g, "")}`;
+  const trend = computeTrend(sparkData);
+  const isGood =
+    !trend ? false
+    : trend.dir === "flat" ? false
+    : invertTrendSemantics ? trend.dir === "down" : trend.dir === "up";
+  const trendCls = trend?.dir === "flat"
+    ? "bg-muted/50 text-muted-foreground border-border/40"
+    : isGood
+    ? "bg-emerald-500/10 text-emerald-700 border-emerald-500/30 dark:text-emerald-400"
+    : "bg-destructive/10 text-destructive border-destructive/30";
+  const TrendIcon = trend?.dir === "up" ? TrendingUp : trend?.dir === "down" ? TrendingDown : Minus;
 
   return (
     <Card
       className={cn(
-        "border border-border/40 bg-card shadow-card transition-all overflow-hidden group relative",
+        "border border-border/40 bg-card shadow-card transition-all overflow-hidden group relative animate-fade-in",
         onClick && "cursor-pointer hover:shadow-card-hover hover:border-border/60 active:scale-[0.97]",
       )}
+      style={delay ? { animationDelay: `${delay}ms`, animationFillMode: "both" } : undefined}
       onClick={onClick}
     >
       {/* Top accent line */}
@@ -50,9 +80,20 @@ export function SparklineKPI({ label, value, subtitle, icon: Icon, sparkData, co
             <Skeleton className="h-7 w-12" />
           ) : (
             <div className="pl-0.5">
-              <p className="text-xl sm:text-2xl font-black tabular-nums text-foreground leading-none">
-                {value}
-              </p>
+              <div className="flex items-baseline gap-1.5 flex-wrap">
+                <p className="text-xl sm:text-2xl font-black tabular-nums text-foreground leading-none">
+                  {value}
+                </p>
+                {trend && (
+                  <span className={cn(
+                    "inline-flex items-center gap-0.5 text-[8.5px] sm:text-[9px] font-bold px-1 py-0.5 rounded border tabular-nums",
+                    trendCls,
+                  )}>
+                    <TrendIcon className="h-2.5 w-2.5" />
+                    {trend.dir === "flat" ? "0" : `${trend.pct}%`}
+                  </span>
+                )}
+              </div>
               {subtitle && (
                 <p className="text-[8px] sm:text-[9px] text-muted-foreground/70 mt-0.5 leading-tight">{subtitle}</p>
               )}
