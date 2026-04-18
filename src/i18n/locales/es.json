@@ -220,7 +220,8 @@
     "ppiTemplates": "Modelos PPI",
     "controlledDistribution": "Distribución Controlada",
     "contractKpis": "KPIs de Contrato",
-    "map": "Mapa de Obra"
+    "map": "Mapa de Obra",
+    "mqt": "MQT — Mapa Cantidades"
   },
   "topbar": {
     "language": "Idioma",
