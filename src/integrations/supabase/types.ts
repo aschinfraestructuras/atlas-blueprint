@@ -3168,6 +3168,9 @@ export type Database = {
           approval_status: string
           approved_at: string | null
           approved_by: string | null
+          block_checked_at: string | null
+          block_reasons: string[]
+          blocked_at: string | null
           category: string
           code: string
           created_at: string
@@ -3177,6 +3180,7 @@ export type Database = {
           deleted_by: string | null
           fav_documents: Json | null
           id: string
+          is_blocked: boolean
           is_deleted: boolean
           name: string
           normative_refs: string | null
@@ -3208,6 +3212,9 @@ export type Database = {
           approval_status?: string
           approved_at?: string | null
           approved_by?: string | null
+          block_checked_at?: string | null
+          block_reasons?: string[]
+          blocked_at?: string | null
           category: string
           code: string
           created_at?: string
@@ -3217,6 +3224,7 @@ export type Database = {
           deleted_by?: string | null
           fav_documents?: Json | null
           id?: string
+          is_blocked?: boolean
           is_deleted?: boolean
           name: string
           normative_refs?: string | null
@@ -3248,6 +3256,9 @@ export type Database = {
           approval_status?: string
           approved_at?: string | null
           approved_by?: string | null
+          block_checked_at?: string | null
+          block_reasons?: string[]
+          blocked_at?: string | null
           category?: string
           code?: string
           created_at?: string
@@ -3257,6 +3268,7 @@ export type Database = {
           deleted_by?: string | null
           fav_documents?: Json | null
           id?: string
+          is_blocked?: boolean
           is_deleted?: boolean
           name?: string
           normative_refs?: string | null
@@ -13436,6 +13448,9 @@ export type Database = {
           approval_status: string
           approved_at: string | null
           approved_by: string | null
+          block_checked_at: string | null
+          block_reasons: string[]
+          blocked_at: string | null
           category: string
           code: string
           created_at: string
@@ -13445,6 +13460,7 @@ export type Database = {
           deleted_by: string | null
           fav_documents: Json | null
           id: string
+          is_blocked: boolean
           is_deleted: boolean
           name: string
           normative_refs: string | null
@@ -14059,6 +14075,10 @@ export type Database = {
         Args: { p_lot_id: string; p_work_item_id?: string }
         Returns: number
       }
+      fn_materialize_ppi_pending_tests: {
+        Args: { p_instance_id: string }
+        Returns: number
+      }
       fn_monthly_kpi_autofill: {
         Args: { p_project_id: string; p_reference_month: string }
         Returns: Json
@@ -14217,6 +14237,10 @@ export type Database = {
       }
       fn_recalc_work_item_readiness: {
         Args: { p_work_item_id: string }
+        Returns: undefined
+      }
+      fn_recompute_material_block: {
+        Args: { p_material_id: string }
         Returns: undefined
       }
       fn_remove_project_member: {

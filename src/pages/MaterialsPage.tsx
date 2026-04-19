@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { MaterialFormDialog } from "@/components/materials/MaterialFormDialog";
 import { MaterialReceptionDialog } from "@/components/materials/MaterialReceptionDialog";
+import { MaterialBlockedBadge } from "@/components/materials/MaterialBlockedBadge";
 import { FilterBar } from "@/components/ui/filter-bar";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import { Card, CardContent } from "@/components/ui/card";
@@ -482,12 +483,13 @@ export default function MaterialsPage() {
                     <CardContent className="p-4">
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
+                          <div className="flex items-center gap-2 mb-1 flex-wrap">
                             <span className="font-mono text-[11px] text-muted-foreground">{m.code}</span>
                             <Badge variant="secondary" className={cn("text-[10px] px-1.5 py-0 h-5 gap-1", approvalInfo.bg)}>
                               <ApprovalIcon className="h-3 w-3" />
                               {t(`materials.approval.statuses.${(m as any).pame_status || m.approval_status}`, { defaultValue: m.approval_status })}
                             </Badge>
+                            <MaterialBlockedBadge isBlocked={!!m.is_blocked} reasons={m.block_reasons} />
                           </div>
                           <h3 className="text-sm font-semibold text-foreground truncate">{m.name}</h3>
                           <p className="text-xs text-muted-foreground mt-0.5">
