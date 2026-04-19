@@ -494,7 +494,14 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
                       instance: { code: instance.code, description: (instance as any).description },
                       projectName: activeProject?.name ?? "",
                       projectId,
-                      projectMeta: reportMeta ?? null,
+                      projectMeta: activeProject ? {
+                        name: activeProject.name,
+                        code: activeProject.code,
+                        contractor: (activeProject as any).contractor,
+                        client: (activeProject as any).client,
+                        location: (activeProject as any).location,
+                        contract_number: (activeProject as any).contract_number,
+                      } : null,
                     })}
                   >
                     <FileDown className="h-3 w-3" />
