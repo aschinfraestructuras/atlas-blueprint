@@ -150,6 +150,7 @@ export function WorkItemFormDialog({ open, onOpenChange, item, duplicateFrom, on
         latitude:        (values as any).latitude  ?? null,
         longitude:       (values as any).longitude ?? null,
         status:          values.status as WorkItemStatus,
+        wbs_id:          values.wbs_id && values.wbs_id !== "__none__" ? values.wbs_id : null,
       };
 
       if (isEdit && item) {
