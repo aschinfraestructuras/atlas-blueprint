@@ -3665,8 +3665,6 @@ export type Database = {
           root_cause: string | null
           root_cause_method: string | null
           severity: string
-          source_ppi_item_id: string | null
-          source_test_result_id: string | null
           status: string
           subcontractor_id: string | null
           supplier_id: string | null
@@ -3732,8 +3730,6 @@ export type Database = {
           root_cause?: string | null
           root_cause_method?: string | null
           severity?: string
-          source_ppi_item_id?: string | null
-          source_test_result_id?: string | null
           status?: string
           subcontractor_id?: string | null
           supplier_id?: string | null
@@ -3799,8 +3795,6 @@ export type Database = {
           root_cause?: string | null
           root_cause_method?: string | null
           severity?: string
-          source_ppi_item_id?: string | null
-          source_test_result_id?: string | null
           status?: string
           subcontractor_id?: string | null
           supplier_id?: string | null
@@ -3928,20 +3922,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_sgq_matrix_summary"
             referencedColumns: ["project_id"]
-          },
-          {
-            foreignKeyName: "non_conformities_source_ppi_item_id_fkey"
-            columns: ["source_ppi_item_id"]
-            isOneToOne: false
-            referencedRelation: "ppi_instance_items"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "non_conformities_source_test_result_id_fkey"
-            columns: ["source_test_result_id"]
-            isOneToOne: false
-            referencedRelation: "test_results"
-            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "non_conformities_subcontractor_id_fkey"
@@ -13570,8 +13550,6 @@ export type Database = {
               root_cause: string | null
               root_cause_method: string | null
               severity: string
-              source_ppi_item_id: string | null
-              source_test_result_id: string | null
               status: string
               subcontractor_id: string | null
               supplier_id: string | null
@@ -13681,8 +13659,6 @@ export type Database = {
               root_cause: string | null
               root_cause_method: string | null
               severity: string
-              source_ppi_item_id: string | null
-              source_test_result_id: string | null
               status: string
               subcontractor_id: string | null
               supplier_id: string | null
@@ -13762,8 +13738,6 @@ export type Database = {
           root_cause: string | null
           root_cause_method: string | null
           severity: string
-          source_ppi_item_id: string | null
-          source_test_result_id: string | null
           status: string
           subcontractor_id: string | null
           supplier_id: string | null
@@ -13843,8 +13817,6 @@ export type Database = {
           root_cause: string | null
           root_cause_method: string | null
           severity: string
-          source_ppi_item_id: string | null
-          source_test_result_id: string | null
           status: string
           subcontractor_id: string | null
           supplier_id: string | null
@@ -14318,8 +14290,6 @@ export type Database = {
           root_cause: string | null
           root_cause_method: string | null
           severity: string
-          source_ppi_item_id: string | null
-          source_test_result_id: string | null
           status: string
           subcontractor_id: string | null
           supplier_id: string | null
