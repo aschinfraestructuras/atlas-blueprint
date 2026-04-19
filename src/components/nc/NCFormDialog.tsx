@@ -241,6 +241,16 @@ export function NCFormDialog({
         await ncService.update(nc.id, activeProject.id, payload as any, nc.status);
         toast({ title: t("nc.toast.updated") });
       } else {
+        // Em criação, anexar ids de origem (prefill) — ligação dura à origem técnica
+        if (prefill?.test_result_id) {
+          payload.test_result_id = prefill.test_result_id;
+        }
+        if (prefill?.work_item_id) {
+          payload.work_item_id = prefill.work_item_id;
+        }
+        if (prefill?.ppi_instance_id) {
+          payload.ppi_instance_id = prefill.ppi_instance_id;
+        }
         await ncService.create({
           project_id: activeProject.id,
           ...payload,
