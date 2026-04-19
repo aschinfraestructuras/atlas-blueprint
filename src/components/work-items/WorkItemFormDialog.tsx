@@ -48,6 +48,7 @@ const makeSchema = (t: (k: string) => string) =>
       status:          z.string().min(1),
       latitude:        z.coerce.number().nullable().optional(),
       longitude:       z.coerce.number().nullable().optional(),
+      wbs_id:          z.string().optional(),
     })
     .superRefine((val, ctx) => {
       withOtherRefinement(
