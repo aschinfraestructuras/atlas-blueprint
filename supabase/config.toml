@@ -4,7 +4,7 @@ project_id = "qrsdpsugfjmrdeychxzf"
 verify_jwt = true
 
 [functions.send-notification]
-verify_jwt = true
+verify_jwt = false
 
 [functions.migrate-storage-paths]
 verify_jwt = true
