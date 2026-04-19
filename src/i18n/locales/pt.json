@@ -222,7 +222,8 @@
     "controlledDistribution": "Distribuição Controlada",
     "contractKpis": "KPIs de Contrato",
     "map": "Mapa da Obra",
-    "fieldRecords": "Grelhas de Campo"
+    "fieldRecords": "Grelhas de Campo",
+    "notifications": "Notificações"
   },
   "topbar": {
     "language": "Idioma",
@@ -3564,7 +3565,13 @@
     "importPpiTemplates": "Importar Templates PPI",
     "ppiAlreadyImported": "Os templates PPI já foram importados para este projecto.",
     "ppiImportSuccess": "Templates PPI importados com sucesso.",
-    "ppiImported": "PPI Importados"
+    "ppiImported": "PPI Importados",
+    "teams": {
+      "desc": "Recebe alertas de Hold Points e Não Conformidades directamente no Teams. Cria um Incoming Webhook no canal desejado e cola o URL aqui.",
+      "webhookUrl": "URL do Incoming Webhook",
+      "active": "Notificações activas",
+      "saved": "Configuração Teams guardada"
+    }
   },
   "topography": {
     "archiveSubtitle": "Desenhos topográficos associados ao projeto",
@@ -4231,6 +4238,16 @@
       "sent": "Enviado",
       "failed": "Falhou",
       "read": "Lido"
+    },
+    "centerTitle": "Centro de Notificações",
+    "category": "Alertas e Notificações",
+    "system": "Sistema",
+    "emptySubtitle": "Não há alertas activos de momento",
+    "tabs": {
+      "all": "Todos",
+      "hp": "Hold Points",
+      "nc": "NCs",
+      "expirations": "Expirações"
     }
   },
   "pagination": {

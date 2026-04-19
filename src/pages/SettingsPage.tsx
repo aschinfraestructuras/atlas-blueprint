@@ -9,7 +9,7 @@ import {
   Building2, Mail, UserCheck, Key, Database, ChevronRight,
   Plus, Trash2, UserMinus, Loader2, Sun, Moon, Monitor,
   ImageIcon, Upload, X, ClipboardList, HardDrive, Check, Eye, EyeOff, Pencil, ShieldAlert, Rocket, Wrench,
-  BarChart3, GitBranch, ExternalLink,
+  BarChart3, GitBranch, ExternalLink, MessageSquare, Save,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -334,6 +334,53 @@ export default function SettingsPage() {
   const { user } = useAuth();
   const { isAdmin, role: myRole } = useProjectRole();
   const { theme, setTheme } = useTheme();
+
+  // ── Teams Webhook config ──────────────────────────────────────────────────
+  const [teamsWebhookUrl, setTeamsWebhookUrl]     = useState("");
+  const [teamsWebhookActive, setTeamsWebhookActive] = useState(false);
+  const [teamsWebhookId, setTeamsWebhookId]       = useState<string | null>(null);
+  const [savingTeams, setSavingTeams]             = useState(false);
+
+  useEffect(() => {
+    if (!activeProject) return;
+    (supabase as any)
+      .from("project_integrations")
+      .select("id, config, is_active")
+      .eq("project_id", activeProject.id)
+      .eq("type", "teams_webhook")
+      .maybeSingle()
+      .then(({ data }: any) => {
+        if (data) {
+          setTeamsWebhookId(data.id);
+          setTeamsWebhookUrl(data.config?.url ?? "");
+          setTeamsWebhookActive(data.is_active ?? false);
+        }
+      });
+  }, [activeProject]);
+
+  const saveTeamsWebhook = async () => {
+    if (!activeProject) return;
+    setSavingTeams(true);
+    try {
+      const payload = {
+        project_id: activeProject.id,
+        type: "teams_webhook",
+        config: { url: teamsWebhookUrl.trim() },
+        is_active: teamsWebhookActive && !!teamsWebhookUrl.trim(),
+      };
+      if (teamsWebhookId) {
+        await (supabase as any).from("project_integrations").update(payload).eq("id", teamsWebhookId);
+      } else {
+        const { data } = await (supabase as any).from("project_integrations").insert(payload).select("id").single();
+        setTeamsWebhookId(data?.id ?? null);
+      }
+      toast.success(t("settings.teams.saved", { defaultValue: "Configuração Teams guardada" }));
+    } catch {
+      toast.error(t("common.saveError"));
+    } finally {
+      setSavingTeams(false);
+    }
+  };
 
   const [members, setMembers] = useState<ProjectMember[]>([]);
   const [invites, setInvites] = useState<ProjectInvite[]>([]);
@@ -1122,6 +1169,51 @@ ${usageStats ? `
                 </CardContent>
               </Card>
             ))}
+          </div>
+
+          {/* ── Teams Webhook ── */}
+          <div className="mt-4 rounded-xl border border-border bg-card p-4 space-y-3">
+            <div className="flex items-center gap-2">
+              <MessageSquare className="h-4 w-4 text-[#6264A7]" />
+              <span className="text-[12.5px] font-semibold">Microsoft Teams</span>
+              <Badge variant={teamsWebhookActive ? "default" : "secondary"} className="text-[9px] ml-auto">
+                {teamsWebhookActive ? t("common.active", { defaultValue: "Activo" }) : t("common.inactive", { defaultValue: "Inactivo" })}
+              </Badge>
+            </div>
+            <p className="text-[11px] text-muted-foreground leading-snug">
+              {t("settings.teams.desc", { defaultValue: "Recebe alertas de Hold Points e Não Conformidades directamente no Teams. Cria um Incoming Webhook no canal desejado e cola o URL aqui." })}
+            </p>
+            <div className="space-y-2">
+              <label className="text-xs font-medium text-muted-foreground">
+                {t("settings.teams.webhookUrl", { defaultValue: "URL do Incoming Webhook" })}
+              </label>
+              <Input
+                value={teamsWebhookUrl}
+                onChange={e => setTeamsWebhookUrl(e.target.value)}
+                placeholder="https://outlook.office.com/webhook/..."
+                className="text-xs h-8 font-mono"
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-2 cursor-pointer text-xs text-foreground">
+                <input
+                  type="checkbox"
+                  checked={teamsWebhookActive}
+                  onChange={e => setTeamsWebhookActive(e.target.checked)}
+                  className="h-3.5 w-3.5 rounded"
+                />
+                {t("settings.teams.active", { defaultValue: "Notificações activas" })}
+              </label>
+              <Button
+                size="sm"
+                className="gap-1.5 h-7 text-xs"
+                disabled={savingTeams || !teamsWebhookUrl.trim()}
+                onClick={saveTeamsWebhook}
+              >
+                {savingTeams ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />}
+                {t("common.save")}
+              </Button>
+            </div>
           </div>
         </SettingsSection>
       )}

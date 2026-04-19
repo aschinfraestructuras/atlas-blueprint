@@ -10,6 +10,7 @@ import type { NonConformity } from "@/lib/services/ncService";
 import { toast } from "@/lib/utils/toast";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { withOtherRefinement } from "@/components/ui/select-with-other.utils";
+import { teamsNcOpen } from "@/lib/services/teamsWebhookService";
 import { SelectWithOther } from "@/components/ui/select-with-other";
 import { usePPIInstances } from "@/hooks/usePPI";
 import {
@@ -251,11 +252,20 @@ export function NCFormDialog({
         if (prefill?.ppi_instance_id) {
           payload.ppi_instance_id = prefill.ppi_instance_id;
         }
-        await ncService.create({
+        const created = await ncService.create({
           project_id: activeProject.id,
           ...payload,
         } as any);
         toast({ title: t("nc.toast.created") });
+        // Notificar Teams (melhor-esforço, silencioso)
+        teamsNcOpen({
+          projectId: activeProject.id,
+          ncCode: created?.code ?? "—",
+          title: values.title,
+          severity: values.severity,
+          dueDate: (values as any).due_date ?? null,
+          baseUrl: window.location.origin,
+        });
       }
       onSuccess();
       onOpenChange(false);

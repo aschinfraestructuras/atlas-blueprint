@@ -48,6 +48,7 @@ import {
 import { NotificationModal } from "@/components/notifications/NotificationModal";
 import { notificationLogService, type NotificationLog, type NotificationRecipient } from "@/lib/services/notificationLogService";
 import { exportHpNotificationPdf, generateHpNotificationHtmlBase64 } from "@/lib/services/hpNotificationService";
+import { teamsHpCreated, teamsHpConfirmed } from "@/lib/services/teamsWebhookService";
 
 interface Props {
   instance: PpiInstance;
@@ -234,6 +235,16 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
           defaultValue: "Notificação HP criada com sucesso.",
         }),
       });
+      // Notificar Teams (melhor-esforço, silencioso)
+      teamsHpCreated({
+        projectId,
+        hpCode: instance.code,
+        ppiRef: instance.code,
+        activity,
+        locationPk: locationPk || null,
+        plannedDate: new Date(plannedDatetime).toLocaleString("pt-PT"),
+        baseUrl: window.location.origin,
+      });
       setDialogOpen(false);
       load();
     } catch {
@@ -264,6 +275,16 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
           defaultValue: "Recepção confirmada.",
         }),
       });
+      // Notificar Teams (melhor-esforço, silencioso)
+      const notif = notifications.find(n => n.id === confirmingId);
+      if (notif) {
+        teamsHpConfirmed({
+          projectId,
+          hpCode: notif.code,
+          confirmedBy: confirmName.trim(),
+          baseUrl: window.location.origin,
+        });
+      }
       setConfirmDialogOpen(false);
       load();
     } catch {

@@ -22,6 +22,7 @@ import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 // Lazy-loaded pages
 const FieldRecordsPage = lazy(() => import("./pages/FieldRecordsPage"));
+const NotificationsPage = lazy(() => import("./pages/NotificationsPage"));
 const DashboardPage = lazy(() => import("./pages/DashboardPage"));
 const DirectionPortalPage = lazy(() => import("./pages/DirectionPortalPage"));
 const MapPage = lazy(() => import("./pages/MapPage"));
@@ -177,6 +178,7 @@ const App = () => (
                 <Route path="/work-items/:id" element={<ProtectedLayout><WorkItemDetailPage /></ProtectedLayout>} />
                 <Route path="/ppi" element={<ProtectedLayout><PPIPage /></ProtectedLayout>} />
                 <Route path="/field-records" element={<ProtectedLayout><FieldRecordsPage /></ProtectedLayout>} />
+                <Route path="/notifications" element={<ProtectedLayout><NotificationsPage /></ProtectedLayout>} />
                 <Route path="/ppi/templates" element={<ProtectedLayout><PPITemplatesPage /></ProtectedLayout>} />
                 <Route path="/ppi/:id" element={<ProtectedLayout><PPIDetailPage /></ProtectedLayout>} />
                 <Route path="/materials" element={<ProtectedLayout><MaterialsPage /></ProtectedLayout>} />

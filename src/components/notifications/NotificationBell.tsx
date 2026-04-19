@@ -195,7 +195,7 @@ export function NotificationBell() {
           <>
             <DropdownMenuSeparator />
             <button
-              onClick={() => navigate("/deadlines")}
+              onClick={() => navigate("/notifications")}
               className="w-full py-2 text-center text-xs text-primary hover:underline flex items-center justify-center gap-1"
             >
               {t("notifications.viewAll")}
