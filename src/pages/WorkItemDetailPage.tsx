@@ -1142,6 +1142,16 @@ export default function WorkItemDetailPage() {
 
   const handleAddMaterial = async () => {
     if (!item || !activeProject || !addMatForm.material_id) return;
+    // Bloquear seleção de materiais marcados como is_blocked
+    const sel = (projectMaterials as any[]).find(m => m.id === addMatForm.material_id);
+    if (sel?.is_blocked) {
+      toast({
+        title: "Material bloqueado",
+        description: "Este material não pode ser usado em obra. Verifique documentos, NCs ou ensaios.",
+        variant: "destructive",
+      });
+      return;
+    }
     setAddMatSaving(true);
     try {
       const { data, error } = await (supabase as any).from("work_item_materials").insert({
@@ -1163,13 +1173,14 @@ export default function WorkItemDetailPage() {
     }
   };
 
-  // Load project materials for add dialog
+  // Load project materials for add dialog (incluindo flags de bloqueio)
   useEffect(() => {
     if (!addMaterialOpen || !activeProject) return;
     (supabase as any).from("materials")
-      .select("id, code, name, category, approval_status")
+      .select("id, code, name, category, approval_status, is_blocked, block_reasons")
       .eq("project_id", activeProject.id)
       .eq("is_deleted", false)
+      .order("is_blocked", { ascending: true })
       .order("code")
       .then(({ data }: any) => setProjectMaterials(data ?? []));
   }, [addMaterialOpen, activeProject?.id]);
@@ -1539,8 +1550,14 @@ export default function WorkItemDetailPage() {
                 <SelectTrigger><SelectValue placeholder={t("workItems.materials.form.material")} /></SelectTrigger>
                 <SelectContent>
                   {projectMaterials.map((m: any) => (
-                    <SelectItem key={m.id} value={m.id}>
-                      <span className="font-mono text-xs">{m.code}</span> — {m.name}
+                    <SelectItem key={m.id} value={m.id} disabled={!!m.is_blocked}>
+                      <span className="flex items-center gap-2">
+                        <span className="font-mono text-xs">{m.code}</span>
+                        <span>— {m.name}</span>
+                        {m.is_blocked && (
+                          <span className="ml-auto text-[10px] font-bold text-destructive uppercase">Bloqueado</span>
+                        )}
+                      </span>
                     </SelectItem>
                   ))}
                 </SelectContent>
