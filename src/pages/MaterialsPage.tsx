@@ -63,7 +63,7 @@ export default function MaterialsPage() {
   const [search, setSearch] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
   const [filterApproval, setFilterApproval] = useState("all");
-  const [activeTab, setActiveTab] = useState("receptions");
+  const [activeTab, setActiveTab] = useState("pame");
   const [deleteTarget, setDeleteTarget] = useState<Material | null>(null);
   const [lots, setLots] = useState<any[]>([]);
   const [lotsLoading, setLotsLoading] = useState(true);
@@ -183,21 +183,22 @@ export default function MaterialsPage() {
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
+          {/* Ordem lógica: 1) Plano (PAME) → 2) Catálogo → 3) Receções em obra */}
+          <TabsTrigger value="pame">
+            <span className="hidden sm:inline">1. {t("materials.pame.title", { defaultValue: "Plano PAME" })}</span>
+            <span className="sm:hidden">PAME</span>
+          </TabsTrigger>
+          <TabsTrigger value="materials">
+            <span className="hidden sm:inline">2. {t("materials.reception_tab.catalogTab")}</span>
+            <span className="sm:hidden">{t("materials.reception_tab.catalogTabShort", { defaultValue: "Catálogo" })}</span>
+          </TabsTrigger>
           <TabsTrigger value="receptions" className="gap-1.5">
             <Truck className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">{t("materials.reception_tab.tabLabel")}</span>
+            <span className="hidden sm:inline">3. {t("materials.reception_tab.tabLabel")}</span>
             <span className="sm:hidden">{t("materials.reception_tab.tabLabelShort", { defaultValue: "Recepções" })}</span>
             {lots.length > 0 && (
               <span className="ml-1 rounded-full bg-primary/15 text-primary text-[10px] font-bold px-1.5 py-0.5">{lots.length}</span>
             )}
-          </TabsTrigger>
-          <TabsTrigger value="materials">
-            <span className="hidden sm:inline">{t("pages.materials.title")} — {t("materials.reception_tab.catalogTab")}</span>
-            <span className="sm:hidden">{t("materials.reception_tab.catalogTabShort", { defaultValue: "Catálogo" })}</span>
-          </TabsTrigger>
-          <TabsTrigger value="pame">
-            <span className="hidden sm:inline">{t("materials.pame.title", { defaultValue: "Plano PAME" })}</span>
-            <span className="sm:hidden">PAME</span>
           </TabsTrigger>
         </TabsList>
 
