@@ -84,6 +84,7 @@ export function WorkItemFormDialog({ open, onOpenChange, item, duplicateFrom, on
   const { t } = useTranslation();
   const { user } = useAuth();
   const { activeProject } = useProject();
+  const [wbsList, setWbsList] = useState<WbsNode[]>([]);
 
   const schema = makeSchema(t);
 
@@ -92,8 +93,17 @@ export function WorkItemFormDialog({ open, onOpenChange, item, duplicateFrom, on
     defaultValues: {
       sector: "", disciplina: "geral", disciplina_outro: "", lote: "",
       elemento: "", parte: "", pk_inicio: undefined, pk_fim: undefined, status: "planned",
+      wbs_id: "",
     },
   });
+
+  // Carregar árvore WBS quando o diálogo abre
+  useEffect(() => {
+    if (!open || !activeProject) return;
+    planningService.getWbs(activeProject.id)
+      .then((nodes) => setWbsList(nodes))
+      .catch(() => setWbsList([]));
+  }, [open, activeProject]);
 
   useEffect(() => {
     if (!open) return;
@@ -112,10 +122,12 @@ export function WorkItemFormDialog({ open, onOpenChange, item, duplicateFrom, on
             status:          duplicateFrom ? "planned" : (source.status ?? "planned"),
             latitude:        duplicateFrom ? undefined : ((source as any).latitude ?? undefined),
             longitude:       duplicateFrom ? undefined : ((source as any).longitude ?? undefined),
+            wbs_id:          (source as any).wbs_id ?? "",
           }
         : {
             sector: "", disciplina: "geral", disciplina_outro: "", lote: "",
             elemento: "", parte: "", pk_inicio: undefined, pk_fim: undefined, status: "planned",
+            wbs_id: "",
           },
     );
   }, [open, item, duplicateFrom, form]);
