@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,6 +11,8 @@ import {
   type WorkItem,
   type WorkItemStatus,
 } from "@/lib/services/workItemService";
+import { planningService, type WbsNode } from "@/lib/services/planningService";
+import { compareWbsCodes } from "@/lib/utils/wbsSort";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -19,7 +21,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { SelectWithOther } from "@/components/ui/select-with-other";
 import { withOtherRefinement } from "@/components/ui/select-with-other.utils";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Loader2, Network } from "lucide-react";
 import { toast } from "@/lib/utils/toast";
 
 // ─── Discipline codes (stable, stored in DB) ──────────────────────────────────
