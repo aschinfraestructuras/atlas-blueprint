@@ -315,7 +315,41 @@ export function WorkItemFormDialog({ open, onOpenChange, item, duplicateFrom, on
               )} />
             </div>
 
-            {/* Row 5: Coordenadas GPS */}
+            {/* Row 4.5: Ligação à árvore WBS (opcional) */}
+            <FormField control={form.control} name="wbs_id" render={({ field }) => (
+              <FormItem>
+                <FormLabel className="flex items-center gap-1.5">
+                  <Network className="h-3.5 w-3.5 text-muted-foreground" />
+                  {t("workItems.form.wbs", { defaultValue: "Nó WBS (Estrutura Analítica)" })}
+                  <span className="text-[10px] font-normal text-muted-foreground">({t("common.optional", { defaultValue: "opcional" })})</span>
+                </FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value || "__none__"}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder={t("workItems.form.wbsPlaceholder", { defaultValue: "Sem WBS associado" })} />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent className="max-h-[280px]">
+                    <SelectItem value="__none__">
+                      <span className="text-muted-foreground">— {t("workItems.form.wbsNone", { defaultValue: "Sem WBS" })} —</span>
+                    </SelectItem>
+                    {[...wbsList]
+                      .sort((a, b) => compareWbsCodes(a.wbs_code, b.wbs_code))
+                      .map((node) => (
+                        <SelectItem key={node.id} value={node.id}>
+                          <span className="font-mono text-xs text-muted-foreground mr-2">{node.wbs_code}</span>
+                          {node.description}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )} />
+
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium text-foreground">{t("workItems.form.gpsCoords", { defaultValue: "Coordenadas GPS" })}</span>
