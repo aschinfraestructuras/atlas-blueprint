@@ -2,8 +2,6 @@
  * teams-notification — Envia mensagem a um canal Teams via Incoming Webhook.
  * Formato: Microsoft Adaptive Card (compatível com Teams + Outlook).
  */
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
-
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
@@ -20,15 +18,39 @@ interface RequestBody {
   urgency?: "normal" | "high" | "critical";
 }
 
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+const SERVICE_KEY  = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const ANON_KEY     = Deno.env.get("SUPABASE_ANON_KEY")!;
+
+// Verifica JWT chamando o endpoint /auth/v1/user (suporta ES256 nativamente)
+async function verifyUser(token: string): Promise<boolean> {
+  try {
+    const r = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+      headers: { Authorization: `Bearer ${token}`, apikey: ANON_KEY },
+    });
+    return r.ok;
+  } catch {
+    return false;
+  }
+}
+
+// Busca integração via PostgREST com service-role
+async function fetchIntegration(projectId: string): Promise<{ url: string } | null> {
+  const r = await fetch(
+    `${SUPABASE_URL}/rest/v1/project_integrations?project_id=eq.${projectId}&type=eq.teams_webhook&is_active=eq.true&select=config`,
+    { headers: { apikey: SERVICE_KEY, Authorization: `Bearer ${SERVICE_KEY}` } },
+  );
+  if (!r.ok) return null;
+  const rows = await r.json();
+  const cfg = rows?.[0]?.config;
+  if (!cfg?.url) return null;
+  return { url: cfg.url as string };
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const serviceKey  = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const admin = createClient(supabaseUrl, serviceKey);
-
-    // Verificar auth
     const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
@@ -36,8 +58,8 @@ Deno.serve(async (req: Request) => {
       });
     }
     const token = authHeader.replace("Bearer ", "");
-    const { data: { user }, error: userErr } = await admin.auth.getUser(token);
-    if (userErr || !user) {
+    const ok = await verifyUser(token);
+    if (!ok) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -52,38 +74,22 @@ Deno.serve(async (req: Request) => {
       });
     }
 
-    // Buscar webhook URL da tabela project_integrations
-    const { data: integration } = await admin
-      .from("project_integrations")
-      .select("config, is_active")
-      .eq("project_id", project_id)
-      .eq("type", "teams_webhook")
-      .maybeSingle();
-
-    if (!integration?.is_active || !integration?.config?.url) {
+    const integration = await fetchIntegration(project_id);
+    if (!integration) {
       return new Response(JSON.stringify({ sent: false, reason: "Teams webhook não configurado ou inactivo" }), {
         status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const webhookUrl = integration.config.url as string;
-
-    // Cor por urgência
     const COLOR_MAP = { normal: "0078D4", high: "F7630C", critical: "D13438" };
     const color = COLOR_MAP[urgency];
 
-    // Emoji por tipo de evento
     const EMOJI_MAP: Record<string, string> = {
-      hp_created:    "🔔",
-      hp_confirmed:  "✅",
-      nc_open:       "⚠️",
-      nc_overdue:    "🔴",
-      test_fail:     "❌",
-      custom:        "ℹ️",
+      hp_created:   "🔔", hp_confirmed: "✅", nc_open:    "⚠️",
+      nc_overdue:   "🔴", test_fail:    "❌", custom:     "ℹ️",
     };
     const emoji = EMOJI_MAP[event_type] ?? "ℹ️";
 
-    // Construir Adaptive Card (formato Teams)
     const facts = details
       ? Object.entries(details).map(([k, v]) => ({ title: k, value: v }))
       : [];
@@ -97,47 +103,29 @@ Deno.serve(async (req: Request) => {
         color: urgency === "critical" ? "Attention" : urgency === "high" ? "Warning" : "Default",
         wrap: true,
       },
-      {
-        type: "TextBlock",
-        text: summary,
-        wrap: true,
-        spacing: "Small",
-      },
+      { type: "TextBlock", text: summary, wrap: true, spacing: "Small" },
     ];
 
     if (facts.length > 0) {
-      cardBody.push({
-        type: "FactSet",
-        facts,
-        spacing: "Medium",
-      });
+      cardBody.push({ type: "FactSet", facts, spacing: "Medium" });
     }
 
-    const card: any = {
+    const card = {
       type: "message",
-      attachments: [
-        {
-          contentType: "application/vnd.microsoft.card.adaptive",
-          content: {
-            $schema: "http://adaptivecards.io/schemas/adaptive-card.json",
-            type: "AdaptiveCard",
-            version: "1.4",
-            msteams: { width: "Full" },
-            body: cardBody,
-            actions: link ? [
-              {
-                type: "Action.OpenUrl",
-                title: "Abrir no Atlas QMS",
-                url: link,
-              },
-            ] : [],
-          },
+      attachments: [{
+        contentType: "application/vnd.microsoft.card.adaptive",
+        content: {
+          $schema: "http://adaptivecards.io/schemas/adaptive-card.json",
+          type: "AdaptiveCard",
+          version: "1.4",
+          msteams: { width: "Full" },
+          body: cardBody,
+          actions: link ? [{ type: "Action.OpenUrl", title: "Abrir no Atlas QMS", url: link }] : [],
         },
-      ],
+      }],
     };
 
-    // Enviar para Teams
-    const teamsResp = await fetch(webhookUrl, {
+    const teamsResp = await fetch(integration.url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(card),
