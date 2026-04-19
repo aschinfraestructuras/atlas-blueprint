@@ -3085,7 +3085,8 @@
       "notApplicableReasonPlaceholder": "Ex: HP dispensado por decisão da fiscalização em reunião de obra",
       "notApplicableReasonRequired": "Justificação obrigatória para Não Aplicável",
       "markedNotApplicable": "HP marcado como Não Aplicável.",
-      "markNotApplicable": "Marcar Não Aplicável"
+      "markNotApplicable": "Marcar Não Aplicável",
+      "exportPdf": "Exportar NOT-HP (PDF)"
     },
     "location": {
       "pkStart": "PK início",
