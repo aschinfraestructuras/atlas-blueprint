@@ -17,6 +17,8 @@ export interface WorkItem {
   pk_inicio: number | null;
   pk_fim: number | null;
   status: WorkItemStatus | string;
+  /** FK para nó WBS (planning_wbs.id). Opcional. */
+  wbs_id: string | null;
   created_by: string | null;
   created_at: string;
   updated_at: string;
@@ -38,6 +40,8 @@ export interface WorkItemInput {
   pk_inicio?: number | null;
   pk_fim?: number | null;
   status?: WorkItemStatus;
+  /** Liga a Frente a um nó WBS. Null para limpar associação. */
+  wbs_id?: string | null;
   created_by?: string;
 }
 
@@ -134,8 +138,9 @@ export const workItemService = {
         pk_inicio:  input.pk_inicio ?? null,
         pk_fim:     input.pk_fim    ?? null,
         status:     input.status    ?? "planned",
+        wbs_id:     input.wbs_id    ?? null,
         created_by: input.created_by ?? null,
-      })
+      } as any)
       .select()
       .single();
     if (error) throw error;

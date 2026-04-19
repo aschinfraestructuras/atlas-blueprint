@@ -95,6 +95,14 @@ interface NCFormDialogProps {
   onOpenChange: (open: boolean) => void;
   nc?: NonConformity | null;
   originOverride?: string;
+  /** Pré-preenchimento ao abrir nova NC vinda de fluxo "fail" */
+  prefill?: {
+    test_result_id?: string;
+    work_item_id?: string;
+    ppi_instance_id?: string;
+    description?: string;
+    title?: string;
+  };
   onSuccess: () => void;
 }
 
@@ -120,7 +128,7 @@ const defaultValues = (origin?: string): FormValues => ({
 // ─── Componente ───────────────────────────────────────────────────────────────
 
 export function NCFormDialog({
-  open, onOpenChange, nc, originOverride, onSuccess,
+  open, onOpenChange, nc, originOverride, prefill, onSuccess,
 }: NCFormDialogProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
@@ -142,7 +150,8 @@ export function NCFormDialog({
 
   useEffect(() => {
     if (!open) return;
-    form.reset(nc ? {
+    if (nc) {
+      form.reset({
       title:               nc.title ?? "",
       description:         nc.description,
       severity:            nc.severity,
@@ -176,8 +185,16 @@ export function NCFormDialog({
       actual_completion_date:  nc.actual_completion_date ?? "",
       deviation_justification: nc.deviation_justification ?? "",
       efficacy_analysis:       nc.efficacy_analysis ?? "",
-    } : defaultValues(originOverride));
-  }, [open, nc, form, originOverride]);
+      });
+    } else {
+      // Nova NC — aplicar prefill se existir (ex: vinda de ensaio fail)
+      const base = defaultValues(prefill?.test_result_id ? "test" : (prefill?.ppi_instance_id ? "ppi" : originOverride));
+      if (prefill?.description) base.description = prefill.description;
+      if (prefill?.title) base.title = prefill.title;
+      if (prefill?.ppi_instance_id) base.ppi_instance_id = prefill.ppi_instance_id;
+      form.reset(base);
+    }
+  }, [open, nc, form, originOverride, prefill]);
 
   const onSubmit = async (values: FormValues) => {
     if (!user || !activeProject) return;
@@ -224,6 +241,16 @@ export function NCFormDialog({
         await ncService.update(nc.id, activeProject.id, payload as any, nc.status);
         toast({ title: t("nc.toast.updated") });
       } else {
+        // Em criação, anexar ids de origem (prefill) — ligação dura à origem técnica
+        if (prefill?.test_result_id) {
+          payload.test_result_id = prefill.test_result_id;
+        }
+        if (prefill?.work_item_id) {
+          payload.work_item_id = prefill.work_item_id;
+        }
+        if (prefill?.ppi_instance_id) {
+          payload.ppi_instance_id = prefill.ppi_instance_id;
+        }
         await ncService.create({
           project_id: activeProject.id,
           ...payload,

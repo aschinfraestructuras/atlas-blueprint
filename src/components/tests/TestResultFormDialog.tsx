@@ -16,6 +16,10 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
 import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   Form, FormControl, FormField, FormItem, FormLabel, FormMessage,
 } from "@/components/ui/form";
 import {
@@ -26,7 +30,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Camera, Image as ImageIcon } from "lucide-react";
+import { Loader2, Camera, Image as ImageIcon, AlertTriangle } from "lucide-react";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { supabase } from "@/integrations/supabase/client";
 import { TraceabilityChain } from "@/components/tests/TraceabilityChain";
@@ -80,6 +84,14 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
   const [creatingNew, setCreatingNew]     = useState(false);
   const [equipmentCals, setEquipmentCals] = useState<any[]>([]);
   const isEdit = !!testResult;
+
+  // Modal "criar NC" após gravar fail
+  const [ncPrompt, setNcPrompt] = useState<{
+    testResultId: string;
+    testName: string;
+    testCode: string;
+    workItemId: string;
+  } | null>(null);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema(t)),
@@ -198,25 +210,19 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
         toast({ title: t("tests.results.toast.created") });
       }
 
-      // FAIL → suggest NC
+      // FAIL → abrir modal saliente "criar NC?"
       if (values.result_status === "fail" && savedId) {
         const testName = catalog.find((c) => c.id === values.test_id)?.name ?? "Ensaio";
         const testCode = catalog.find((c) => c.id === values.test_id)?.code ?? "";
-        toast({
-          title: t("tests.resultNonConform", { defaultValue: "Resultado não conforme" }),
-          description: `${testName} (${testCode}) — ${t("tests.openRnc", { defaultValue: "Abrir RNC" })}?`,
-          action: (
-            <ToastAction
-              altText={t("tests.openRnc", { defaultValue: "Abrir RNC" })}
-              onClick={() => {
-                navigate(`/non-conformities?new=1&test_result_id=${savedId}&description=${encodeURIComponent(`${t("tests.resultNonConform", { defaultValue: "Resultado não conforme" })}: ${testName} — ${testCode}`)}&category=qualidade&work_item_id=${values.work_item_id ?? ""}`);
-              }}
-            >
-              {t("tests.openRnc", { defaultValue: "Abrir RNC" })} →
-            </ToastAction>
-          ),
-          duration: 10000,
+        setNcPrompt({
+          testResultId: savedId,
+          testName,
+          testCode,
+          workItemId: values.work_item_id ?? "",
         });
+        // NÃO fechar o diálogo automaticamente — esperar resposta do utilizador
+        onSuccess();
+        return;
       }
 
       onSuccess();
@@ -233,6 +239,7 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
   };
 
   return (
+    <>
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[560px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
@@ -576,5 +583,66 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
         </Form>
       </DialogContent>
     </Dialog>
+
+    {/* ── Modal saliente: ensaio falhou → criar NC? ───────────────────────── */}
+    <AlertDialog
+      open={!!ncPrompt}
+      onOpenChange={(open) => {
+        if (!open) {
+          setNcPrompt(null);
+          onOpenChange(false);
+        }
+      }}
+    >
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle className="flex items-center gap-2 text-destructive">
+            <AlertTriangle className="h-5 w-5" />
+            {t("tests.ncPrompt.title", { defaultValue: "Ensaio não conforme" })}
+          </AlertDialogTitle>
+          <AlertDialogDescription className="space-y-2">
+            <span className="block">
+              {t("tests.ncPrompt.body", { defaultValue: "Este resultado foi marcado como FAIL. Recomenda-se abrir uma Não-Conformidade pré-preenchida com a origem deste ensaio." })}
+            </span>
+            {ncPrompt && (
+              <span className="block rounded-md border border-border bg-muted/40 px-3 py-2 mt-2">
+                <span className="font-mono text-xs text-muted-foreground">{ncPrompt.testCode}</span>
+                <span className="block text-sm font-medium text-foreground">{ncPrompt.testName}</span>
+              </span>
+            )}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel
+            onClick={() => {
+              setNcPrompt(null);
+              onOpenChange(false);
+            }}
+          >
+            {t("tests.ncPrompt.later", { defaultValue: "Mais tarde" })}
+          </AlertDialogCancel>
+          <AlertDialogAction
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            onClick={() => {
+              if (!ncPrompt) return;
+              const desc = `${t("tests.resultNonConform", { defaultValue: "Resultado não conforme" })}: ${ncPrompt.testName} — ${ncPrompt.testCode}`;
+              const params = new URLSearchParams({
+                new: "1",
+                test_result_id: ncPrompt.testResultId,
+                description: desc,
+                category: "qualidade",
+              });
+              if (ncPrompt.workItemId) params.set("work_item_id", ncPrompt.workItemId);
+              setNcPrompt(null);
+              onOpenChange(false);
+              navigate(`/non-conformities?${params.toString()}`);
+            }}
+          >
+            {t("tests.ncPrompt.createNow", { defaultValue: "Criar NC agora" })}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  </>
   );
 }

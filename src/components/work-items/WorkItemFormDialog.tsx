@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,6 +11,8 @@ import {
   type WorkItem,
   type WorkItemStatus,
 } from "@/lib/services/workItemService";
+import { planningService, type WbsNode } from "@/lib/services/planningService";
+import { compareWbsCodes } from "@/lib/utils/wbsSort";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -19,7 +21,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { SelectWithOther } from "@/components/ui/select-with-other";
 import { withOtherRefinement } from "@/components/ui/select-with-other.utils";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Loader2, Network } from "lucide-react";
 import { toast } from "@/lib/utils/toast";
 
 // ─── Discipline codes (stable, stored in DB) ──────────────────────────────────
@@ -46,6 +48,7 @@ const makeSchema = (t: (k: string) => string) =>
       status:          z.string().min(1),
       latitude:        z.coerce.number().nullable().optional(),
       longitude:       z.coerce.number().nullable().optional(),
+      wbs_id:          z.string().optional(),
     })
     .superRefine((val, ctx) => {
       withOtherRefinement(
@@ -81,6 +84,7 @@ export function WorkItemFormDialog({ open, onOpenChange, item, duplicateFrom, on
   const { t } = useTranslation();
   const { user } = useAuth();
   const { activeProject } = useProject();
+  const [wbsList, setWbsList] = useState<WbsNode[]>([]);
 
   const schema = makeSchema(t);
 
@@ -89,8 +93,17 @@ export function WorkItemFormDialog({ open, onOpenChange, item, duplicateFrom, on
     defaultValues: {
       sector: "", disciplina: "geral", disciplina_outro: "", lote: "",
       elemento: "", parte: "", pk_inicio: undefined, pk_fim: undefined, status: "planned",
+      wbs_id: "",
     },
   });
+
+  // Carregar árvore WBS quando o diálogo abre
+  useEffect(() => {
+    if (!open || !activeProject) return;
+    planningService.getWbs(activeProject.id)
+      .then((nodes) => setWbsList(nodes))
+      .catch(() => setWbsList([]));
+  }, [open, activeProject]);
 
   useEffect(() => {
     if (!open) return;
@@ -109,10 +122,12 @@ export function WorkItemFormDialog({ open, onOpenChange, item, duplicateFrom, on
             status:          duplicateFrom ? "planned" : (source.status ?? "planned"),
             latitude:        duplicateFrom ? undefined : ((source as any).latitude ?? undefined),
             longitude:       duplicateFrom ? undefined : ((source as any).longitude ?? undefined),
+            wbs_id:          (source as any).wbs_id ?? "",
           }
         : {
             sector: "", disciplina: "geral", disciplina_outro: "", lote: "",
             elemento: "", parte: "", pk_inicio: undefined, pk_fim: undefined, status: "planned",
+            wbs_id: "",
           },
     );
   }, [open, item, duplicateFrom, form]);
@@ -135,6 +150,7 @@ export function WorkItemFormDialog({ open, onOpenChange, item, duplicateFrom, on
         latitude:        (values as any).latitude  ?? null,
         longitude:       (values as any).longitude ?? null,
         status:          values.status as WorkItemStatus,
+        wbs_id:          values.wbs_id && values.wbs_id !== "__none__" ? values.wbs_id : null,
       };
 
       if (isEdit && item) {
@@ -299,7 +315,41 @@ export function WorkItemFormDialog({ open, onOpenChange, item, duplicateFrom, on
               )} />
             </div>
 
-            {/* Row 5: Coordenadas GPS */}
+            {/* Row 4.5: Ligação à árvore WBS (opcional) */}
+            <FormField control={form.control} name="wbs_id" render={({ field }) => (
+              <FormItem>
+                <FormLabel className="flex items-center gap-1.5">
+                  <Network className="h-3.5 w-3.5 text-muted-foreground" />
+                  {t("workItems.form.wbs", { defaultValue: "Nó WBS (Estrutura Analítica)" })}
+                  <span className="text-[10px] font-normal text-muted-foreground">({t("common.optional", { defaultValue: "opcional" })})</span>
+                </FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value || "__none__"}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder={t("workItems.form.wbsPlaceholder", { defaultValue: "Sem WBS associado" })} />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent className="max-h-[280px]">
+                    <SelectItem value="__none__">
+                      <span className="text-muted-foreground">— {t("workItems.form.wbsNone", { defaultValue: "Sem WBS" })} —</span>
+                    </SelectItem>
+                    {[...wbsList]
+                      .sort((a, b) => compareWbsCodes(a.wbs_code, b.wbs_code))
+                      .map((node) => (
+                        <SelectItem key={node.id} value={node.id}>
+                          <span className="font-mono text-xs text-muted-foreground mr-2">{node.wbs_code}</span>
+                          {node.description}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )} />
+
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium text-foreground">{t("workItems.form.gpsCoords", { defaultValue: "Coordenadas GPS" })}</span>
