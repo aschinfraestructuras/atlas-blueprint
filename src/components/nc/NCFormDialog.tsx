@@ -95,6 +95,14 @@ interface NCFormDialogProps {
   onOpenChange: (open: boolean) => void;
   nc?: NonConformity | null;
   originOverride?: string;
+  /** Pré-preenchimento ao abrir nova NC vinda de fluxo "fail" */
+  prefill?: {
+    test_result_id?: string;
+    work_item_id?: string;
+    ppi_instance_id?: string;
+    description?: string;
+    title?: string;
+  };
   onSuccess: () => void;
 }
 
@@ -120,7 +128,7 @@ const defaultValues = (origin?: string): FormValues => ({
 // ─── Componente ───────────────────────────────────────────────────────────────
 
 export function NCFormDialog({
-  open, onOpenChange, nc, originOverride, onSuccess,
+  open, onOpenChange, nc, originOverride, prefill, onSuccess,
 }: NCFormDialogProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
