@@ -582,5 +582,66 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
         </Form>
       </DialogContent>
     </Dialog>
+
+    {/* ── Modal saliente: ensaio falhou → criar NC? ───────────────────────── */}
+    <AlertDialog
+      open={!!ncPrompt}
+      onOpenChange={(open) => {
+        if (!open) {
+          setNcPrompt(null);
+          onOpenChange(false);
+        }
+      }}
+    >
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle className="flex items-center gap-2 text-destructive">
+            <AlertTriangle className="h-5 w-5" />
+            {t("tests.ncPrompt.title", { defaultValue: "Ensaio não conforme" })}
+          </AlertDialogTitle>
+          <AlertDialogDescription className="space-y-2">
+            <span className="block">
+              {t("tests.ncPrompt.body", { defaultValue: "Este resultado foi marcado como FAIL. Recomenda-se abrir uma Não-Conformidade pré-preenchida com a origem deste ensaio." })}
+            </span>
+            {ncPrompt && (
+              <span className="block rounded-md border border-border bg-muted/40 px-3 py-2 mt-2">
+                <span className="font-mono text-xs text-muted-foreground">{ncPrompt.testCode}</span>
+                <span className="block text-sm font-medium text-foreground">{ncPrompt.testName}</span>
+              </span>
+            )}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel
+            onClick={() => {
+              setNcPrompt(null);
+              onOpenChange(false);
+            }}
+          >
+            {t("tests.ncPrompt.later", { defaultValue: "Mais tarde" })}
+          </AlertDialogCancel>
+          <AlertDialogAction
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            onClick={() => {
+              if (!ncPrompt) return;
+              const desc = `${t("tests.resultNonConform", { defaultValue: "Resultado não conforme" })}: ${ncPrompt.testName} — ${ncPrompt.testCode}`;
+              const params = new URLSearchParams({
+                new: "1",
+                test_result_id: ncPrompt.testResultId,
+                description: desc,
+                category: "qualidade",
+              });
+              if (ncPrompt.workItemId) params.set("work_item_id", ncPrompt.workItemId);
+              setNcPrompt(null);
+              onOpenChange(false);
+              navigate(`/non-conformities?${params.toString()}`);
+            }}
+          >
+            {t("tests.ncPrompt.createNow", { defaultValue: "Criar NC agora" })}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  </>
   );
 }
