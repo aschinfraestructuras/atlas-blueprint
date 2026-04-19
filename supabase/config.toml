@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.migrate-storage-paths]
 verify_jwt = true
+
+[functions.teams-notification]
+verify_jwt = false

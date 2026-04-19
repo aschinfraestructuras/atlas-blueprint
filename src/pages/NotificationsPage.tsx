@@ -241,8 +241,7 @@ export default function NotificationsPage() {
   const renderAlerts = (alerts: LiveAlert[], notifs: Notification[]) => (
     <div className="space-y-2">
       {alerts.length === 0 && notifs.length === 0 && (
-        <EmptyState icon={Bell} titleKey="notifications.empty" subtitleKey="notifications.emptySubtitle"
-          titleDefault="Sem alertas" subtitleDefault="Não há alertas activos de momento" />
+        <EmptyState icon={Bell} title="Sem alertas" subtitle="Não há alertas activos de momento" />
       )}
       {alerts.map(a => <AlertCard key={a.id} alert={a} onNavigate={link => navigate(link)} />)}
       {notifs.length > 0 && alerts.length > 0 && (
