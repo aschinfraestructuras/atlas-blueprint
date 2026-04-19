@@ -145,13 +145,29 @@ export default function NonConformitiesPage() {
   // Tabs
   const [activeTab, setActiveTab] = useState("list");
 
-  // NC prefill from test result fail
+  // NC prefill — vindo de "fail" de ensaio (?new=1&test_result_id=...&work_item_id=...&description=...)
   const [searchParams, setSearchParams] = useSearchParams();
+  const [ncPrefill, setNcPrefill] = useState<{
+    test_result_id?: string;
+    work_item_id?: string;
+    ppi_instance_id?: string;
+    description?: string;
+  } | undefined>(undefined);
+
   useEffect(() => {
-    if (searchParams.get("prefill") === "true") {
+    if (searchParams.get("new") === "1" || searchParams.get("prefill") === "true") {
+      const tr  = searchParams.get("test_result_id") ?? undefined;
+      const wi  = searchParams.get("work_item_id")   ?? undefined;
+      const ppi = searchParams.get("ppi_instance_id") ?? undefined;
+      const desc= searchParams.get("description")    ?? undefined;
+      setNcPrefill({
+        test_result_id: tr || undefined,
+        work_item_id:   wi || undefined,
+        ppi_instance_id: ppi || undefined,
+        description:    desc || undefined,
+      });
       setEditingNC(null);
       setDialogOpen(true);
-      // Clear params so it doesn't re-open on navigation
       setSearchParams({}, { replace: true });
     }
   }, [searchParams, setSearchParams]);
