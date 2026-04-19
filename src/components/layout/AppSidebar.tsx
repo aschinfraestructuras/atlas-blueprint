@@ -68,11 +68,12 @@ const NAV_SECTIONS: SidebarSection[] = [
       { labelKey: "nav.workItems",    url: "/work-items",    icon: Construction },
       { labelKey: "nav.map",          url: "/map",           icon: Map },
       { labelKey: "nav.ppi",          url: "/ppi",           icon: ClipboardCheck, viewerVisible: true },
-      { labelKey: "nav.fieldRecords", url: "/field-records", icon: ClipboardList },
+      // Campo (agrupamento visual)
       { labelKey: "nav.dailyReports", url: "/daily-reports", icon: ClipboardList },
-      { labelKey: "nav.topography",   url: "/topography",    icon: Crosshair },
       { labelKey: "nav.myTasks",      url: "/my-tasks",      icon: CalendarCheck },
-      { labelKey: "nav.ppiTemplates", url: "/ppi/templates", icon: ClipboardCheck, isLibrary: true },
+      { labelKey: "nav.fieldRecords", url: "/field-records", icon: ClipboardList },
+      { labelKey: "nav.topography",   url: "/topography",    icon: Crosshair },
+      // PPI Templates removido — agora tab dentro de /ppi (rota /ppi/templates mantida)
     ],
   },
   {
@@ -83,7 +84,7 @@ const NAV_SECTIONS: SidebarSection[] = [
       { labelKey: "nav.materials",         url: "/materials",         icon: Package },
       { labelKey: "nav.tests",             url: "/tests",             icon: FlaskConical },
       { labelKey: "nav.nonConformities",   url: "/non-conformities",  icon: AlertTriangle, viewerVisible: true },
-      { labelKey: "nav.actionPlan",        url: "/action-plan",       icon: ClipboardList },
+      // Plano de Ações removido — já é tab dentro de /non-conformities (rota /action-plan mantida)
       { labelKey: "nav.recycledMaterials", url: "/recycled-materials",icon: Leaf },
       { labelKey: "nav.suppliers",         url: "/suppliers",         icon: Truck, isLibrary: true },
       { labelKey: "nav.subcontractors",    url: "/subcontractors",    icon: HardHat, isLibrary: true },
@@ -109,10 +110,9 @@ const NAV_SECTIONS: SidebarSection[] = [
     sectionIcon: PieChart,
     collapsible: true,
     items: [
-      { labelKey: "nav.traceability",   url: "/traceability",   icon: Link2 },
       { labelKey: "nav.notifications",  url: "/notifications",  icon: Bell },
-      { labelKey: "nav.deadlines",      url: "/deadlines",      icon: Clock },
-      { labelKey: "nav.expirations",    url: "/expirations",    icon: AlertTriangle },
+      // Prazos e Vencimentos removidos — acessíveis via /notifications (rotas /deadlines e /expirations mantidas)
+      { labelKey: "nav.traceability",   url: "/traceability",   icon: Link2 },
       { labelKey: "nav.qcReport",      url: "/reports/qc",     icon: BarChart3 },
       { labelKey: "nav.monthlyReport",  url: "/reports/monthly", icon: FileBarChart2 },
       { labelKey: "nav.sgqMatrix",      url: "/sgq-matrix",     icon: ShieldCheck },
