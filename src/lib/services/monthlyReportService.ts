@@ -67,6 +67,165 @@ export function isOnTime(report: MonthlyReport): boolean | null {
 
 // ── KPI Snapshot Fetcher ─────────────────────────────────────────
 
+// ─── Tipo para dados detalhados de ensaios ────────────────────────────────────
+export interface TestsDataForMonth {
+  concreteBatches: number;
+  concreteLots: number;
+  concreteConform: number;
+  weldsTotal: number;
+  weldsWithUT: number;
+  soilsTotal: number;
+  soilsConform: number;
+  compactionTotal: number;
+  compactionConform: number;
+}
+
+// ─── Busca dados reais de ensaios para o mês de referência ───────────────────
+export async function fetchTestsDataForMonth(
+  projectId: string,
+  referenceMonth: string, // "YYYY-MM-01"
+): Promise<TestsDataForMonth> {
+  const d = new Date(referenceMonth);
+  const year = d.getFullYear();
+  const month = d.getMonth(); // 0-based
+  const start = new Date(year, month, 1).toISOString().slice(0, 10);
+  const end   = new Date(year, month + 1, 0).toISOString().slice(0, 10);
+
+  const [cbRes, clRes, wrRes, ssRes, czRes] = await Promise.allSettled([
+    // Betão — amassadas no mês
+    db.from("concrete_batches")
+      .select("id", { count: "exact", head: true })
+      .eq("project_id", projectId)
+      .gte("batch_date", start).lte("batch_date", end),
+    // Betão — lotes no mês
+    db.from("concrete_lots")
+      .select("id,status", { count: "exact" })
+      .eq("project_id", projectId)
+      .eq("is_deleted", false)
+      .gte("date_start", start).lte("date_start", end),
+    // Soldaduras no mês
+    db.from("weld_records")
+      .select("id,has_ut")
+      .eq("project_id", projectId)
+      .gte("weld_date", start).lte("weld_date", end),
+    // Solos — amostras no mês
+    db.from("soil_samples")
+      .select("id,overall_result")
+      .eq("project_id", projectId)
+      .gte("sample_date", start).lte("sample_date", end),
+    // Compactação — zonas no mês
+    db.from("compaction_zones")
+      .select("id,overall_result")
+      .eq("project_id", projectId)
+      .gte("test_date", start).lte("test_date", end),
+  ]);
+
+  const cb  = cbRes.status  === "fulfilled" ? cbRes.value  : { count: 0, data: null };
+  const cl  = clRes.status  === "fulfilled" ? clRes.value  : { data: [] };
+  const wr  = wrRes.status  === "fulfilled" ? wrRes.value  : { data: [] };
+  const ss  = ssRes.status  === "fulfilled" ? ssRes.value  : { data: [] };
+  const cz  = czRes.status  === "fulfilled" ? czRes.value  : { data: [] };
+
+  const lots: any[]  = cl.data ?? [];
+  const welds: any[] = wr.data ?? [];
+  const soils: any[] = ss.data ?? [];
+  const zones: any[] = cz.data ?? [];
+
+  return {
+    concreteBatches: cb.count ?? 0,
+    concreteLots:    lots.length,
+    concreteConform: lots.filter((l: any) => l.status === "conform" || l.status === "pass" || l.status === "approved").length,
+    weldsTotal:      welds.length,
+    weldsWithUT:     welds.filter((w: any) => w.has_ut === true).length,
+    soilsTotal:      soils.length,
+    soilsConform:    soils.filter((s: any) => s.overall_result === "pass" || s.overall_result === "conforme").length,
+    compactionTotal: zones.length,
+    compactionConform: zones.filter((z: any) => z.overall_result === "pass" || z.overall_result === "conforme").length,
+  };
+}
+
+// ─── Gera texto narrativo automático a partir da BD ──────────────────────────
+export async function generateNarrativeTexts(
+  projectId: string,
+  referenceMonth: string,
+): Promise<{ production: string; tests: string; training: string }> {
+  const d = new Date(referenceMonth);
+  const year = d.getFullYear();
+  const month = d.getMonth();
+  const start = new Date(year, month, 1).toISOString().slice(0, 10);
+  const end   = new Date(year, month + 1, 0).toISOString().slice(0, 10);
+
+  const [wiRes, trRes, ncRes, testsRes] = await Promise.allSettled([
+    // Frentes activas no mês (via partes diárias)
+    db.from("daily_reports")
+      .select("work_item_id, work_items(sector, disciplina)")
+      .eq("project_id", projectId)
+      .gte("report_date", start).lte("report_date", end)
+      .eq("is_deleted", false),
+    // Sessões de formação no mês
+    db.from("training_sessions")
+      .select("title, session_date, attendee_count, session_type")
+      .eq("project_id", projectId)
+      .gte("session_date", start).lte("session_date", end),
+    // NCs abertas e encerradas
+    db.from("non_conformities")
+      .select("code, status, title")
+      .eq("project_id", projectId)
+      .eq("is_deleted", false),
+    // Ensaios realizados no mês
+    db.from("test_results")
+      .select("id, result_status, tests_catalog(name)")
+      .eq("project_id", projectId)
+      .eq("is_deleted", false)
+      .gte("date", start).lte("date", end),
+  ]);
+
+  // Produção
+  let productionText = "";
+  if (wiRes.status === "fulfilled" && wiRes.value.data?.length) {
+    const disciplinas = new Set<string>();
+    wiRes.value.data.forEach((r: any) => {
+      const d = r.work_items?.disciplina ?? r.work_items?.sector;
+      if (d) disciplinas.add(d);
+    });
+    const partes = wiRes.value.data.length;
+    productionText = `Mês com ${partes} parte(s) diária(s) registada(s). Disciplinas activas: ${Array.from(disciplinas).join(", ") || "N/D"}.`;
+  } else {
+    productionText = "Sem partes diárias registadas no mês.";
+  }
+
+  // Ensaios
+  let testsText = "";
+  if (testsRes.status === "fulfilled" && testsRes.value.data?.length) {
+    const rows: any[] = testsRes.value.data;
+    const total = rows.length;
+    const pass  = rows.filter((r: any) => r.result_status === "pass").length;
+    const fail  = rows.filter((r: any) => r.result_status === "fail").length;
+    const pend  = total - pass - fail;
+    const pct   = total > 0 ? Math.round((pass / total) * 100) : 0;
+    testsText = `${total} ensaio(s) realizado(s) no mês: ${pass} conformes, ${fail} não conformes, ${pend} pendentes. Taxa de conformidade: ${pct}%.`;
+  } else {
+    testsText = "Sem ensaios registados no mês.";
+  }
+
+  // Formações
+  let trainingText = "";
+  if (trRes.status === "fulfilled" && trRes.value.data?.length) {
+    const rows: any[] = trRes.value.data;
+    const totalAttendees = rows.reduce((s: number, r: any) => s + (r.attendee_count ?? 0), 0);
+    const titles = rows.map((r: any) => r.title).join("; ");
+    trainingText = `${rows.length} sessão(ões) de formação: ${titles}. Total de formandos: ${totalAttendees}.`;
+  } else {
+    trainingText = "Sem sessões de formação no mês.";
+  }
+
+  return {
+    production: productionText,
+    tests: testsText,
+    training: trainingText,
+  };
+}
+
 async function fetchKpiSnapshot(projectId: string, refMonth: string) {
   const monthStart = refMonth; // YYYY-MM-01
   const nextMonth = new Date(refMonth);

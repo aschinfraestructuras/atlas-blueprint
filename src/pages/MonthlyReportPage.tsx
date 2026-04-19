@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
-  FileBarChart2, Plus, ArrowLeft, FileText, Send, Trash2, AlertTriangle,
+  FileBarChart2, Plus, ArrowLeft, FileText, Send, Trash2, AlertTriangle, Loader2, Zap,
 } from "lucide-react";
 import { toast } from "@/lib/utils/toast";
 import { cn } from "@/lib/utils";
@@ -32,6 +32,8 @@ import {
   monthlyReportService,
   getDeadlineForMonth,
   isOnTime,
+  fetchTestsDataForMonth,
+  generateNarrativeTexts,
   type MonthlyReport,
 } from "@/lib/services/monthlyReportService";
 
@@ -73,8 +75,9 @@ export default function MonthlyReportPage() {
     contract_number: (activeProject as any)?.contract_number ?? null,
   } : null, [activeProject]);
 
-  const doPdf = useCallback((r: MonthlyReport) => {
-    monthlyReportService.exportPdf(r, activeProject?.name ?? "", logoBase64, projectMeta);
+  const doPdf = useCallback(async (r: MonthlyReport) => {
+    const testsData = await fetchTestsDataForMonth(r.project_id, r.reference_month);
+    monthlyReportService.exportPdf(r, activeProject?.name ?? "", logoBase64, projectMeta, testsData);
   }, [activeProject, logoBase64, projectMeta]);
 
   const [reports, setReports] = useState<MonthlyReport[]>([]);
@@ -84,6 +87,7 @@ export default function MonthlyReportPage() {
   const [deleteTarget, setDeleteTarget] = useState<MonthlyReport | null>(null);
   const [creating, setCreating] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [autoFilling, setAutoFilling] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState(getMonthOptions()[1]?.value ?? "");
   const [monthlySummary, setMonthlySummary] = useState<any>(null);
 
@@ -303,17 +307,51 @@ export default function MonthlyReportPage() {
               <Label>{t("monthlyReport.nextMonthPlan")}</Label>
               <Textarea value={nextMonthPlan} onChange={e => setNextMonthPlan(e.target.value)} rows={4} />
             </div>
-            <div className="grid gap-1.5">
-              <Label>{t("monthlyReport.productionExecuted")}</Label>
-              <Textarea value={productionExecuted} onChange={e => setProductionExecuted(e.target.value)} rows={3} placeholder={t("monthlyReport.productionExecutedPlaceholder")} />
-            </div>
-            <div className="grid gap-1.5">
-              <Label>{t("monthlyReport.testsPerformed")}</Label>
-              <Textarea value={testsPerformed} onChange={e => setTestsPerformed(e.target.value)} rows={2} placeholder={t("monthlyReport.testsPerformedPlaceholder")} />
-            </div>
-            <div className="grid gap-1.5">
-              <Label>{t("monthlyReport.trainingSessions")}</Label>
-              <Textarea value={trainingSessions} onChange={e => setTrainingSessions(e.target.value)} rows={2} placeholder={t("monthlyReport.trainingSessionsPlaceholder")} />
+            {/* ── Campos narrativos com botão Auto-preencher ──────────── */}
+            <div className="rounded-xl border border-border/60 bg-muted/20 p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                  {t("monthlyReport.narrativeSection", { defaultValue: "Texto Narrativo" })}
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-1.5 text-xs h-7"
+                  disabled={autoFilling || !selectedReport}
+                  onClick={async () => {
+                    if (!activeProject || !selectedReport) return;
+                    setAutoFilling(true);
+                    try {
+                      const texts = await generateNarrativeTexts(activeProject.id, selectedReport.reference_month);
+                      setProductionExecuted(texts.production);
+                      setTestsPerformed(texts.tests);
+                      setTrainingSessions(texts.training);
+                      toast({ title: t("monthlyReport.narrativeAutoFilled", { defaultValue: "Texto preenchido automaticamente a partir da BD" }) });
+                    } catch {
+                      toast({ title: t("common.saveError"), variant: "destructive" });
+                    } finally {
+                      setAutoFilling(false);
+                    }
+                  }}
+                >
+                  {autoFilling
+                    ? <><Loader2 className="h-3 w-3 animate-spin" />{t("common.loading")}</>
+                    : <><Zap className="h-3 w-3" />{t("monthlyReport.autoFillNarrative", { defaultValue: "Auto-preencher" })}</>
+                  }
+                </Button>
+              </div>
+              <div className="grid gap-1.5">
+                <Label className="text-xs">{t("monthlyReport.productionExecuted")}</Label>
+                <Textarea value={productionExecuted} onChange={e => setProductionExecuted(e.target.value)} rows={3} placeholder={t("monthlyReport.productionExecutedPlaceholder")} />
+              </div>
+              <div className="grid gap-1.5">
+                <Label className="text-xs">{t("monthlyReport.testsPerformed")}</Label>
+                <Textarea value={testsPerformed} onChange={e => setTestsPerformed(e.target.value)} rows={2} placeholder={t("monthlyReport.testsPerformedPlaceholder")} />
+              </div>
+              <div className="grid gap-1.5">
+                <Label className="text-xs">{t("monthlyReport.trainingSessions")}</Label>
+                <Textarea value={trainingSessions} onChange={e => setTrainingSessions(e.target.value)} rows={2} placeholder={t("monthlyReport.trainingSessionsPlaceholder")} />
+              </div>
             </div>
              <div className="flex items-center gap-2 justify-end">
                <Button variant="outline" size="sm" onClick={async () => {

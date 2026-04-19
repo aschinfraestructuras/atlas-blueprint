@@ -237,14 +237,15 @@ Deno.serve(async (req: Request) => {
     }
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-    const supabaseUser = createClient(supabaseUrl, supabaseKey, {
-      global: { headers: { Authorization: authHeader } },
-    });
+    // Use service role admin client to verify the JWT.
+    // This delegates verification to Supabase Auth server which supports
+    // both HS256 and ES256 — fixes UNAUTHORIZED_UNSUPPORTED_TOKEN_ALGORITHM.
+    const supabaseAdmin = createClient(supabaseUrl, serviceKey);
+    const token = authHeader.replace("Bearer ", "");
 
-    const { data: { user }, error: userErr } = await supabaseUser.auth.getUser();
+    const { data: { user }, error: userErr } = await supabaseAdmin.auth.getUser(token);
     if (userErr || !user) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
@@ -252,8 +253,6 @@ Deno.serve(async (req: Request) => {
       });
     }
     const userId = user.id;
-
-    const body: RequestBody = await req.json();
     const {
       project_id, entity_type, entity_id, entity_code, list_id,
       recipients, subject, body: emailBody,
@@ -275,10 +274,7 @@ Deno.serve(async (req: Request) => {
       allAttachments.push({ filename: pdf_filename, base64: pdf_base64, mime_type: "application/pdf" });
     }
 
-    // Use service role for DB ops
-    const supabaseAdmin = createClient(supabaseUrl, serviceKey);
-
-    // Validate membership
+    // Validate membership (supabaseAdmin já criado acima)
     const { data: membership } = await supabaseAdmin
       .from("project_members")
       .select("user_id")

@@ -4781,7 +4781,10 @@
     },
     "topography": "Topografía",
     "welds": "Soldaduras",
-    "withUT": "Con US"
+    "withUT": "Con US",
+    "narrativeSection": "Texto Narrativo",
+    "narrativeAutoFilled": "Texto completado automáticamente desde la BD",
+    "autoFillNarrative": "Autocompletar"
   },
   "concrete": {
     "title": "Control de Hormigón — Fichas de Hormigonado",

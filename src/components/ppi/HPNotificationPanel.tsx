@@ -28,12 +28,15 @@ import {
 import { toast } from "@/lib/utils/toast";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
+import { useProject } from "@/contexts/ProjectContext";
+import { useReportMeta } from "@/hooks/useReportMeta";
 import {
   AlertTriangle,
   Bell,
   CheckCircle2,
   Clock,
   ExternalLink,
+  FileDown,
   Loader2,
   Plus,
   Send,
@@ -44,6 +47,7 @@ import {
 } from "lucide-react";
 import { NotificationModal } from "@/components/notifications/NotificationModal";
 import { notificationLogService, type NotificationLog, type NotificationRecipient } from "@/lib/services/notificationLogService";
+import { exportHpNotificationPdf } from "@/lib/services/hpNotificationService";
 
 interface Props {
   instance: PpiInstance;
@@ -54,6 +58,8 @@ interface Props {
 export function HPNotificationPanel({ instance, items, projectId }: Props) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { activeProject } = useProject();
+  const reportMeta = useReportMeta();
   const [notifications, setNotifications] = useState<HpNotification[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -478,6 +484,22 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
                   {(n as any).rfi_ref && (
                     <span className="text-[10px] font-mono text-primary">RFI: {(n as any).rfi_ref}</span>
                   )}
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="gap-1 text-[10px] h-6 px-2 text-muted-foreground"
+                    title={t("ppi.hpNotification.exportPdf", { defaultValue: "Exportar NOT-HP (PDF)" })}
+                    onClick={() => exportHpNotificationPdf({
+                      notification: n,
+                      instance: { code: instance.code, description: (instance as any).description },
+                      projectName: activeProject?.name ?? "",
+                      projectId,
+                      projectMeta: reportMeta ?? null,
+                    })}
+                  >
+                    <FileDown className="h-3 w-3" />
+                    PDF
+                  </Button>
                   {n.status === "pending" && (
                     <Button
                       size="sm"

@@ -4778,7 +4778,10 @@
     },
     "topography": "Topografia",
     "welds": "Soldaduras",
-    "withUT": "Com US"
+    "withUT": "Com US",
+    "narrativeSection": "Texto Narrativo",
+    "narrativeAutoFilled": "Texto preenchido automaticamente a partir da BD",
+    "autoFillNarrative": "Auto-preencher"
   },
   "concrete": {
     "title": "Controlo de Betão — Fichas de Betonagem",
