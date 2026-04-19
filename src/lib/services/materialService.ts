@@ -38,6 +38,11 @@ export interface Material {
   created_at: string;
   updated_at: string;
   is_deleted: boolean;
+  // Auto-block flags (computed by DB triggers)
+  is_blocked?: boolean;
+  block_reasons?: string[] | null;
+  blocked_at?: string | null;
+  block_checked_at?: string | null;
 }
 
 export interface MaterialInput {
