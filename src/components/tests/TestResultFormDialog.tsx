@@ -210,25 +210,19 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
         toast({ title: t("tests.results.toast.created") });
       }
 
-      // FAIL → suggest NC
+      // FAIL → abrir modal saliente "criar NC?"
       if (values.result_status === "fail" && savedId) {
         const testName = catalog.find((c) => c.id === values.test_id)?.name ?? "Ensaio";
         const testCode = catalog.find((c) => c.id === values.test_id)?.code ?? "";
-        toast({
-          title: t("tests.resultNonConform", { defaultValue: "Resultado não conforme" }),
-          description: `${testName} (${testCode}) — ${t("tests.openRnc", { defaultValue: "Abrir RNC" })}?`,
-          action: (
-            <ToastAction
-              altText={t("tests.openRnc", { defaultValue: "Abrir RNC" })}
-              onClick={() => {
-                navigate(`/non-conformities?new=1&test_result_id=${savedId}&description=${encodeURIComponent(`${t("tests.resultNonConform", { defaultValue: "Resultado não conforme" })}: ${testName} — ${testCode}`)}&category=qualidade&work_item_id=${values.work_item_id ?? ""}`);
-              }}
-            >
-              {t("tests.openRnc", { defaultValue: "Abrir RNC" })} →
-            </ToastAction>
-          ),
-          duration: 10000,
+        setNcPrompt({
+          testResultId: savedId,
+          testName,
+          testCode,
+          workItemId: values.work_item_id ?? "",
         });
+        // NÃO fechar o diálogo automaticamente — esperar resposta do utilizador
+        onSuccess();
+        return;
       }
 
       onSuccess();
