@@ -1037,8 +1037,12 @@ export default function NonConformitiesPage() {
       {/* ── Dialog ──────────────────────────────────────────────────────── */}
       <NCFormDialog
         open={dialogOpen}
-        onOpenChange={setDialogOpen}
+        onOpenChange={(open) => {
+          setDialogOpen(open);
+          if (!open) setNcPrefill(undefined);
+        }}
         nc={editingNC}
+        prefill={!editingNC ? ncPrefill : undefined}
         onSuccess={refetch}
       />
     </div>
