@@ -150,7 +150,8 @@ export function NCFormDialog({
 
   useEffect(() => {
     if (!open) return;
-    form.reset(nc ? {
+    if (nc) {
+      form.reset({
       title:               nc.title ?? "",
       description:         nc.description,
       severity:            nc.severity,
@@ -184,8 +185,16 @@ export function NCFormDialog({
       actual_completion_date:  nc.actual_completion_date ?? "",
       deviation_justification: nc.deviation_justification ?? "",
       efficacy_analysis:       nc.efficacy_analysis ?? "",
-    } : defaultValues(originOverride));
-  }, [open, nc, form, originOverride]);
+      });
+    } else {
+      // Nova NC — aplicar prefill se existir (ex: vinda de ensaio fail)
+      const base = defaultValues(prefill?.test_result_id ? "test" : (prefill?.ppi_instance_id ? "ppi" : originOverride));
+      if (prefill?.description) base.description = prefill.description;
+      if (prefill?.title) base.title = prefill.title;
+      if (prefill?.ppi_instance_id) base.ppi_instance_id = prefill.ppi_instance_id;
+      form.reset(base);
+    }
+  }, [open, nc, form, originOverride, prefill]);
 
   const onSubmit = async (values: FormValues) => {
     if (!user || !activeProject) return;
