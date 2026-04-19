@@ -35,6 +35,7 @@ import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { cn } from "@/lib/utils";
 import { getNCTransitions, canDeleteNC, canEditNC } from "@/lib/stateMachines";
 import { NotifyEmailButton, NotificationHistory } from "@/components/notifications/EmailNotificationSection";
+import { NCSourceBadge } from "@/components/nc/NCSourceBadge";
 
 // ─── Colour maps ──────────────────────────────────────────────────────────────
 
@@ -469,6 +470,13 @@ export default function NCDetailPage() {
           </div>
         )}
       </div>
+
+      {/* ── Origem dura: ensaio / PPI / frente que originaram esta NC ── */}
+      <NCSourceBadge
+        testResultId={nc.test_result_id}
+        ppiInstanceId={nc.ppi_instance_id}
+        workItemId={nc.work_item_id}
+      />
 
       {/* ── Tabs ─────────────────────────────────────────────────────────── */}
       <Tabs defaultValue="description">
