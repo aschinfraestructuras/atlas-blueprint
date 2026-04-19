@@ -227,9 +227,48 @@ export async function exportHpNotificationPdf(opts: HpNotificationPdfOptions): P
 
   // Resolver logo (pode ser null se não configurado)
   const logoBase64 = await resolveProjectLogoBase64(projectId);
+  const html = buildHpNotificationHtml(n, instance, projectName, projectMeta, logoBase64);
 
-  const w = window.open("", "_blank");
-  if (!w) return;
+  // Usar Blob URL em vez de window.open("") — funciona em tablets e evita popup blockers
+  const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+  const url  = URL.createObjectURL(blob);
+  const w    = window.open(url, "_blank");
+  // Revogar URL após 60s para libertar memória
+  setTimeout(() => URL.revokeObjectURL(url), 60_000);
+  if (!w) {
+    // Fallback: se popup blocker, forçar download como .html
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${n.code ?? "NOT-HP"}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+}
+
+/** Gera o HTML da NOT-HP como string base64 para anexar a emails. */
+export async function generateHpNotificationHtmlBase64(
+  opts: HpNotificationPdfOptions,
+): Promise<{ base64: string; filename: string; mimeType: string }> {
+  const { notification: n, instance, projectName, projectId, projectMeta } = opts;
+  const logoBase64 = await resolveProjectLogoBase64(projectId);
+  const html = buildHpNotificationHtml(n, instance, projectName, projectMeta, logoBase64);
+  const base64 = btoa(unescape(encodeURIComponent(html)));
+  return {
+    base64,
+    filename: `${n.code ?? "NOT-HP"}.html`,
+    mimeType: "text/html",
+  };
+}
+
+/** HTML puro da NOT-HP — separado para poder ser reutilizado (PDF + email). */
+function buildHpNotificationHtml(
+  n: HpNotification,
+  instance: { code: string; description?: string | null },
+  projectName: string,
+  projectMeta: PdfProjectInfo | null | undefined,
+  logoBase64: string | null,
+): string {
 
   const esc = (v?: string | null) => (v ?? "—").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
@@ -283,7 +322,7 @@ export async function exportHpNotificationPdf(opts: HpNotificationPdfOptions): P
     "ATA-Q de HPs anteriores desta fase",
   ];
 
-  w.document.write(`<!DOCTYPE html><html lang="pt"><head>
+  const html = `<!DOCTYPE html><html lang="pt"><head>
 <meta charset="utf-8">
 <title>${esc(n.code)}</title>
 <style>
@@ -524,9 +563,6 @@ ${infoStrip}
 </div>
 </div>
 
-</body></html>`);
-
-  w.document.close();
-  // Pequeno delay para garantir render antes do print
-  setTimeout(() => { try { w.print(); } catch { /* silenciar em caso de popup blocker */ } }, 400);
+</body></html>`;
+  return html;
 }

@@ -47,7 +47,7 @@ import {
 } from "lucide-react";
 import { NotificationModal } from "@/components/notifications/NotificationModal";
 import { notificationLogService, type NotificationLog, type NotificationRecipient } from "@/lib/services/notificationLogService";
-import { exportHpNotificationPdf } from "@/lib/services/hpNotificationService";
+import { exportHpNotificationPdf, generateHpNotificationHtmlBase64 } from "@/lib/services/hpNotificationService";
 
 interface Props {
   instance: PpiInstance;
@@ -86,6 +86,10 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
 
   // Email notification modal
   const [notifyModalOpen, setNotifyModalOpen] = useState(false);
+  // Conteúdo HTML da última NOT-HP gerada — enviado como anexo no email
+  const [notifHtmlAttachment, setNotifHtmlAttachment] = useState<{
+    base64: string; filename: string; mimeType: string;
+  } | null>(null);
 
   // Email notification history
   const [emailLogs, setEmailLogs] = useState<(NotificationLog & { recipients: NotificationRecipient[] })[]>([]);
@@ -489,20 +493,22 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
                     variant="ghost"
                     className="gap-1 text-[10px] h-6 px-2 text-muted-foreground"
                     title={t("ppi.hpNotification.exportPdf", { defaultValue: "Exportar NOT-HP (PDF)" })}
-                    onClick={() => exportHpNotificationPdf({
-                      notification: n,
-                      instance: { code: instance.code, description: (instance as any).description },
-                      projectName: activeProject?.name ?? "",
-                      projectId,
-                      projectMeta: activeProject ? {
-                        name: activeProject.name,
-                        code: activeProject.code,
-                        contractor: (activeProject as any).contractor,
-                        client: (activeProject as any).client,
-                        location: (activeProject as any).location,
-                        contract_number: (activeProject as any).contract_number,
-                      } : null,
-                    })}
+                    onClick={async () => {
+                      const opts = {
+                        notification: n,
+                        instance: { code: instance.code, description: (instance as any).description },
+                        projectName: activeProject?.name ?? "",
+                        projectId,
+                        projectMeta: reportMeta ?? null,
+                      };
+                      // Abrir via Blob URL — funciona em tablet sem popup blocker
+                      exportHpNotificationPdf(opts);
+                      // Guardar HTML base64 para poder anexar ao próximo email
+                      try {
+                        const att = await generateHpNotificationHtmlBase64(opts);
+                        setNotifHtmlAttachment(att);
+                      } catch { /* não bloquear a visualização se falhar */ }
+                    }}
                   >
                     <FileDown className="h-3 w-3" />
                     PDF
@@ -624,6 +630,9 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
             entityCode={instance.code}
             defaultSubject={`NOT-HP — ${instance.code} — ${(instance as any).description ?? instance.code}`}
             defaultMessage={defaultBody}
+            pdfBase64={notifHtmlAttachment?.base64}
+            pdfFilename={notifHtmlAttachment?.filename}
+            pdfMimeType={notifHtmlAttachment?.mimeType}
           />
         );
       })()}

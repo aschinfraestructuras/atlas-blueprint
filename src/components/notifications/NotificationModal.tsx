@@ -36,6 +36,7 @@ interface Props {
   defaultMessage?: string;
   pdfBase64?: string;
   pdfFilename?: string;
+  pdfMimeType?: string;  // default "application/pdf" — usar "text/html" para docs HTML
 }
 
 const MAX_ATTACHMENT_SIZE = 10 * 1024 * 1024; // 10MB per file
@@ -63,7 +64,7 @@ function fileToBase64(file: File): Promise<string> {
 
 export function NotificationModal({
   open, onOpenChange, entityType, entityId, entityCode,
-  defaultSubject, defaultMessage, pdfBase64, pdfFilename,
+  defaultSubject, defaultMessage, pdfBase64, pdfFilename, pdfMimeType = "application/pdf",
 }: Props) {
   const { t } = useTranslation();
   const { activeProject } = useProject();
@@ -199,7 +200,7 @@ export function NotificationModal({
         allAttachments.push({
           filename: pdfFilename,
           base64: pdfBase64,
-          mime_type: "application/pdf",
+          mime_type: pdfMimeType,
         });
       }
 
