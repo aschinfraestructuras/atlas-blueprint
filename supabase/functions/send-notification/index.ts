@@ -253,6 +253,8 @@ Deno.serve(async (req: Request) => {
       });
     }
     const userId = user.id;
+
+    const body: RequestBody = await req.json();
     const {
       project_id, entity_type, entity_id, entity_code, list_id,
       recipients, subject, body: emailBody,
