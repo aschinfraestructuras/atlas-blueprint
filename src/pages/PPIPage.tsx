@@ -381,7 +381,23 @@ export default function PPIPage() {
                           </p>
                         )}
                       </div>
-                      <PPIStatusBadge status={inst.status} />
+                      <div className="flex flex-col items-end gap-1">
+                        <PPIStatusBadge status={inst.status} />
+                        {/* Aging: submetido há mais de 5 dias sem aprovação */}
+                        {inst.status === "submitted" && (() => {
+                          const submitted = inst.submitted_at ? new Date(inst.submitted_at) : new Date(inst.created_at);
+                          const days = Math.floor((Date.now() - submitted.getTime()) / 86400000);
+                          if (days >= 5) {
+                            return (
+                              <Badge className="bg-destructive/15 text-destructive border border-destructive/30 text-[10px] h-4 px-1.5 gap-0.5 animate-pulse">
+                                <Clock className="h-2.5 w-2.5" />
+                                {days}d
+                              </Badge>
+                            );
+                          }
+                          return null;
+                        })()}
+                      </div>
                     </div>
 
                     {/* Barra de progresso dos itens */}
