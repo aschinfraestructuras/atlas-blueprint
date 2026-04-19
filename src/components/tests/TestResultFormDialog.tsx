@@ -85,6 +85,14 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
   const [equipmentCals, setEquipmentCals] = useState<any[]>([]);
   const isEdit = !!testResult;
 
+  // Modal "criar NC" após gravar fail
+  const [ncPrompt, setNcPrompt] = useState<{
+    testResultId: string;
+    testName: string;
+    testCode: string;
+    workItemId: string;
+  } | null>(null);
+
   const form = useForm<FormValues>({
     resolver: zodResolver(schema(t)),
     defaultValues: {
