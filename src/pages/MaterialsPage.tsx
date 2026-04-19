@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { MaterialFormDialog } from "@/components/materials/MaterialFormDialog";
 import { MaterialReceptionDialog } from "@/components/materials/MaterialReceptionDialog";
+import { MaterialBlockedBadge } from "@/components/materials/MaterialBlockedBadge";
 import { FilterBar } from "@/components/ui/filter-bar";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import { Card, CardContent } from "@/components/ui/card";
