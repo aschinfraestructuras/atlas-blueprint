@@ -499,7 +499,14 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
                         instance: { code: instance.code, description: (instance as any).description },
                         projectName: activeProject?.name ?? "",
                         projectId,
-                        projectMeta: reportMeta ?? null,
+                        projectMeta: activeProject ? {
+                          name: activeProject.name,
+                          code: activeProject.code,
+                          contractor: (activeProject as any).contractor ?? null,
+                          client: (activeProject as any).client ?? null,
+                          location: (activeProject as any).location ?? null,
+                          contract_number: (activeProject as any).contract_number ?? null,
+                        } : null,
                       };
                       // Abrir via Blob URL — funciona em tablet sem popup blocker
                       exportHpNotificationPdf(opts);
