@@ -32,6 +32,13 @@ interface TopBarProps {
   onMobileMenuOpen: () => void;
 }
 
+const QUICK_CREATE_ITEMS = [
+  { route: "/non-conformities", labelKey: "dashboard.quick.nc",     defaultLabel: "Nova NC",        Icon: AlertTriangle,  color: "text-destructive" },
+  { route: "/ppi",              labelKey: "dashboard.quick.ppi",    defaultLabel: "Novo PPI",       Icon: ClipboardCheck, color: "text-emerald-600 dark:text-emerald-400" },
+  { route: "/tests",            labelKey: "dashboard.quick.test",   defaultLabel: "Registar Ensaio",Icon: FlaskConical,   color: "text-amber-600 dark:text-amber-400" },
+  { route: "/daily-reports",    labelKey: "dashboard.quick.report", defaultLabel: "Parte Diária",   Icon: FileText,       color: "text-primary" },
+];
+
 export function TopBar({ onMobileMenuOpen }: TopBarProps) {
   const { t, i18n } = useTranslation();
   const { user, signOut } = useAuth();
