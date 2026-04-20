@@ -110,25 +110,45 @@ Deno.serve(async (req: Request) => {
       cardBody.push({ type: "FactSet", facts, spacing: "Medium" });
     }
 
-    const card = {
-      type: "message",
-      attachments: [{
-        contentType: "application/vnd.microsoft.card.adaptive",
-        content: {
-          $schema: "http://adaptivecards.io/schemas/adaptive-card.json",
-          type: "AdaptiveCard",
-          version: "1.4",
-          msteams: { width: "Full" },
-          body: cardBody,
-          actions: link ? [{ type: "Action.OpenUrl", title: "Abrir no Atlas QMS", url: link }] : [],
-        },
-      }],
-    };
+    // Detectar tipo de URL:
+    // - logic.azure.com / powerautomate → Power Automate Workflows (novo método)
+    // - webhook.office.com              → Webhook clássico com Adaptive Card
+    const isPowerAutomate = integration.url.includes("logic.azure.com") ||
+                            integration.url.includes("azure.com");
+
+    let payload: string;
+    if (isPowerAutomate) {
+      // Power Automate aceita texto simples com Markdown
+      const factsText = facts.length > 0
+        ? "\n\n" + facts.map((f: any) => `**${f.title}:** ${f.value}`).join("  \n")
+        : "";
+      const linkText = link ? `\n\n[Abrir no Atlas QMS](${link})` : "";
+      payload = JSON.stringify({
+        text: `${emoji} **${title}**\n\n${summary}${factsText}${linkText}`,
+      });
+    } else {
+      // Webhook clássico — Adaptive Card
+      const card = {
+        type: "message",
+        attachments: [{
+          contentType: "application/vnd.microsoft.card.adaptive",
+          content: {
+            $schema: "http://adaptivecards.io/schemas/adaptive-card.json",
+            type: "AdaptiveCard",
+            version: "1.4",
+            msteams: { width: "Full" },
+            body: cardBody,
+            actions: link ? [{ type: "Action.OpenUrl", title: "Abrir no Atlas QMS", url: link }] : [],
+          },
+        }],
+      };
+      payload = JSON.stringify(card);
+    }
 
     const teamsResp = await fetch(integration.url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(card),
+      body: payload,
     });
 
     if (!teamsResp.ok) {
