@@ -117,7 +117,7 @@ function ProtectedLayout({ children }: { children: React.ReactNode }) {
           <PageTransition>{children}</PageTransition>
         </ViewerGuard>
       </MainLayout>
-      <ScreenSaver idleMinutes={3} projectLabel="PF17A · Linha do Sul · Porto de Setúbal" />
+      <ScreenSaver idleMinutes={3} />
     </ProtectedRoute>
   );
 }

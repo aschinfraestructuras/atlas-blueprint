@@ -269,32 +269,31 @@ export function ScreenSaver({ idleMinutes = 3, projectLabel }: Props) {
       const a = Math.min(1, (ti - 25) / 60);
       if (a <= 0) return;
       ctx.save();
-      ctx.textAlign = "center";
-      const lx = W() / 2, ly = H() * .72;
+      ctx.textAlign = "left";
+      const ly = H() * .72;
 
-      // Brand mark — letterspaced
+      // Measure both words to center the lockup as a single unit
       ctx.font = "300 56px 'Plus Jakarta Sans', system-ui, sans-serif";
+      const wAtlas = ctx.measureText("ATLAS").width;
+      const wGap = 16;
+      const wQms = ctx.measureText("QMS").width;
+      const totalW = wAtlas + wGap + wQms;
+      const startX = W() / 2 - totalW / 2;
+
+      // ATLAS (white) + QMS (accent blue)
       ctx.fillStyle = `rgba(248,250,252,${a * .96})`;
-      const brandTxt = "ATLAS";
-      const brandTxt2 = "QMS";
-      const m1 = ctx.measureText(brandTxt).width;
-      const gap = 18;
-      ctx.fillText(brandTxt, lx - m1 / 2 - gap / 2 - ctx.measureText(brandTxt2).width / 2 + m1 / 2, ly);
-      // Render side by side properly
-      ctx.fillStyle = `rgba(248,250,252,${a * .96})`;
-      ctx.font = "300 56px 'Plus Jakarta Sans', system-ui, sans-serif";
-      const fullW = ctx.measureText("ATLAS  QMS").width;
-      ctx.clearRect(lx - fullW, ly - 60, fullW * 2, 80); // clear our two-pass mistake
-      ctx.fillText("ATLAS", lx - fullW / 2 + ctx.measureText("ATLAS").width / 2, ly);
+      ctx.fillText("ATLAS", startX, ly);
       ctx.fillStyle = `rgba(96,165,250,${a * .96})`;
-      ctx.fillText("QMS", lx + fullW / 2 - ctx.measureText("QMS").width / 2, ly);
+      ctx.fillText("QMS", startX + wAtlas + wGap, ly);
 
-      // Divider line
+      // Divider line under lockup
+      ctx.textAlign = "center";
+      const lx = W() / 2;
       ctx.strokeStyle = `rgba(96,165,250,${a * .35})`;
       ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.moveTo(lx - 80, ly + 22);
-      ctx.lineTo(lx + 80, ly + 22);
+      ctx.moveTo(lx - 90, ly + 22);
+      ctx.lineTo(lx + 90, ly + 22);
       ctx.stroke();
 
       // Tagline (rotates every ~6s)
