@@ -19,6 +19,7 @@ import {
   Sun,
   Moon,
   Monitor,
+  Lock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
