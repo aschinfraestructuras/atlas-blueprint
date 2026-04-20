@@ -144,6 +144,43 @@ export function TopBar({ onMobileMenuOpen }: TopBarProps) {
       {/* Spacer */}
       <div className="flex-1" />
 
+      {/* Quick create menu (only when a project is active and role is not viewer) */}
+      {activeProject && role !== "viewer" && (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="default"
+              size="sm"
+              className="gap-1.5 h-8 px-2.5 text-xs font-semibold shadow-sm"
+              aria-label={t("topbar.create", { defaultValue: "Criar" })}
+            >
+              <Plus className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">{t("topbar.create", { defaultValue: "Criar" })}</span>
+              <ChevronDown className="h-3 w-3 opacity-70 hidden sm:inline" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-52">
+            <DropdownMenuLabel className="text-xs text-muted-foreground">
+              {t("topbar.createNew", { defaultValue: "Criar novo" })}
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {QUICK_CREATE_ITEMS.map((item) => {
+              const Icon = item.Icon;
+              return (
+                <DropdownMenuItem
+                  key={item.route}
+                  onClick={() => navigate(item.route)}
+                  className="gap-2.5 text-sm cursor-pointer"
+                >
+                  <Icon className={cn("h-3.5 w-3.5", item.color)} />
+                  <span>{t(item.labelKey, { defaultValue: item.defaultLabel })}</span>
+                </DropdownMenuItem>
+              );
+            })}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
+
       {/* Global search */}
       <Button
         variant="ghost"
