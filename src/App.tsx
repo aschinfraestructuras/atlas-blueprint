@@ -11,6 +11,7 @@ import { MainLayout } from "@/components/layout/MainLayout";
 import { PageTransition } from "@/components/layout/PageTransition";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { ScreenSaver } from "@/components/ScreenSaver";
 import { Loader2 } from "lucide-react";
 import { queryClient } from "@/lib/queryClient";
 import { PWAInstallBanner } from "@/components/pwa/PWAInstallBanner";
@@ -116,6 +117,7 @@ function ProtectedLayout({ children }: { children: React.ReactNode }) {
           <PageTransition>{children}</PageTransition>
         </ViewerGuard>
       </MainLayout>
+      <ScreenSaver idleMinutes={3} projectLabel="PF17A · Linha do Sul · Porto de Setúbal" />
     </ProtectedRoute>
   );
 }
