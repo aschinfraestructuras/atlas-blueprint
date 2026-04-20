@@ -289,7 +289,7 @@ export default function DashboardPage() {
       {/* Keyboard shortcuts overlay (global '?') */}
       <KeyboardShortcutsOverlay />
 
-      {/* HERO HEADER — Command Bar + Breadcrumb + Live + Accent dinâmico */}
+      {/* HERO HEADER — Executive Cockpit (pills PAME/HP integradas) */}
       <DashboardHero
         displayName={displayName}
         projectName={activeProject.name}
@@ -301,15 +301,17 @@ export default function DashboardPage() {
         onPeriodChange={setPeriod}
         accentTone={heroAccent}
         liveUpdatedAgo={liveAgo}
+        pamePending={kpis.pamePending}
+        ncOpen={kpis.ncOpen}
+        hpPending={hpCountForHero}
       />
 
-      {/* ALERTAS */}
+      {/* ALERTAS — só críticos (NC vencidas, EMEs a expirar) e RMSGQ */}
       {hasAlerts && (
         <div className="space-y-2 animate-fade-in">
           <CriticalAlertsBanner ncOpen={kpis.ncOpen} ncOverdue={health.total_nc_overdue}
-            emesExpiring={kpis.emesExpiring30d} pamePending={kpis.pamePending} />
+            emesExpiring={kpis.emesExpiring30d} pamePending={0} />
           <MonthlyReportAlert projectId={activeProject.id} />
-          <HPPendingAlert     projectId={activeProject.id} />
         </div>
       )}
 
