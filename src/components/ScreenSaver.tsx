@@ -64,21 +64,24 @@ export function ScreenSaver({ idleMinutes = 3, projectLabel }: Props) {
 
   useEffect(() => {
     const IDLE_MS = idleMinutes * 60 * 1000;
+    // Brief grace window after manual activation to avoid the same click immediately dismissing
+    let manualActivatedAt = 0;
     const reset = () => {
+      // Ignore events that occur within 600ms after manual activation
+      if (Date.now() - manualActivatedAt < 600) return;
       clearTimeout(timerRef.current);
-      // If already in screensaver, an interaction dismisses it
       if (activeRef.current) setActive(false);
       timerRef.current = setTimeout(() => setActive(true), IDLE_MS);
     };
     const events = ["mousemove", "keydown", "click", "touchstart", "scroll", "wheel"];
     events.forEach(e => window.addEventListener(e, reset, { passive: true }));
-    // Also reset when tab regains focus / visibility
     const onVis = () => { if (!document.hidden) reset(); };
     document.addEventListener("visibilitychange", onVis);
     window.addEventListener("focus", reset);
     // Manual activation via global event
     const onManual = () => {
       clearTimeout(timerRef.current);
+      manualActivatedAt = Date.now();
       setActive(true);
     };
     window.addEventListener("atlas:screensaver:activate", onManual as EventListener);
