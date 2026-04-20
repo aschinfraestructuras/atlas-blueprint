@@ -58,22 +58,32 @@ export function ScreenSaver({ idleMinutes = 3, projectLabel }: Props) {
 
   const dismiss = useCallback(() => setActive(false), []);
 
-  // Idle detection
+  // Idle detection — uses refs to avoid effect re-runs that reset the timer
+  const activeRef = useRef(false);
+  useEffect(() => { activeRef.current = active; }, [active]);
+
   useEffect(() => {
     const IDLE_MS = idleMinutes * 60 * 1000;
     const reset = () => {
       clearTimeout(timerRef.current);
-      if (active) setActive(false);
+      // If already in screensaver, an interaction dismisses it
+      if (activeRef.current) setActive(false);
       timerRef.current = setTimeout(() => setActive(true), IDLE_MS);
     };
-    const events = ["mousemove", "keydown", "click", "touchstart", "scroll"];
+    const events = ["mousemove", "keydown", "click", "touchstart", "scroll", "wheel"];
     events.forEach(e => window.addEventListener(e, reset, { passive: true }));
+    // Also reset when tab regains focus / visibility
+    const onVis = () => { if (!document.hidden) reset(); };
+    document.addEventListener("visibilitychange", onVis);
+    window.addEventListener("focus", reset);
     reset();
     return () => {
       clearTimeout(timerRef.current);
       events.forEach(e => window.removeEventListener(e, reset));
+      document.removeEventListener("visibilitychange", onVis);
+      window.removeEventListener("focus", reset);
     };
-  }, [idleMinutes, active]);
+  }, [idleMinutes]);
 
   // Canvas animation
   useEffect(() => {
