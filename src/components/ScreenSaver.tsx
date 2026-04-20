@@ -227,61 +227,131 @@ export function ScreenSaver({ idleMinutes = 3, projectLabel }: Props) {
 
     function shield(cx: number, cy: number, sz: number, ti: number) {
       ctx.save();
-      const pulse = 1 + Math.sin(ti * .02) * .03;
-      const s = sz * pulse;
+      const breathe = 1 + Math.sin(ti * .018) * .025;
+      const R = sz * breathe;
 
-      // Outer ambient glow
-      const glow = ctx.createRadialGradient(cx, cy, s * 0.3, cx, cy, s * 1.8);
-      glow.addColorStop(0, "rgba(59,130,246,0.18)");
-      glow.addColorStop(0.5, "rgba(52,211,153,0.06)");
-      glow.addColorStop(1, "rgba(0,0,0,0)");
-      ctx.fillStyle = glow;
-      ctx.beginPath(); ctx.arc(cx, cy, s * 1.8, 0, Math.PI * 2); ctx.fill();
+      // ===== AMBIENT VOLUMETRIC GLOW (multi-layer) =====
+      const ambient = ctx.createRadialGradient(cx, cy, R * 0.2, cx, cy, R * 2.6);
+      ambient.addColorStop(0,    "rgba(96,165,250,0.22)");
+      ambient.addColorStop(0.35, "rgba(56,189,248,0.10)");
+      ambient.addColorStop(0.70, "rgba(99,102,241,0.04)");
+      ambient.addColorStop(1,    "rgba(0,0,0,0)");
+      ctx.fillStyle = ambient;
+      ctx.beginPath(); ctx.arc(cx, cy, R * 2.6, 0, Math.PI * 2); ctx.fill();
 
-      // Rotating ring
+      // ===== ORBITAL RINGS (3 layers, counter-rotating, perspective) =====
+      const drawOrbit = (radius: number, tilt: number, rot: number, alpha: number, lw: number, dash: number[] | null) => {
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(rot);
+        ctx.scale(1, Math.sin(tilt));
+        ctx.strokeStyle = `rgba(125,211,252,${alpha})`;
+        ctx.lineWidth = lw;
+        if (dash) ctx.setLineDash(dash);
+        ctx.beginPath(); ctx.arc(0, 0, radius, 0, Math.PI * 2); ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.restore();
+      };
+      drawOrbit(R * 1.55, 0.32, ti * 0.0040,  0.28, 1.0, null);
+      drawOrbit(R * 1.85, 0.55, -ti * 0.0028, 0.22, 0.8, [3, 9]);
+      drawOrbit(R * 2.20, 0.85,  ti * 0.0019, 0.14, 0.6, null);
+
+      // Orbiting micro-satellites on the rings
+      const sat = (radius: number, tilt: number, rot: number, phase: number, col: string, sz2: number) => {
+        const ang = ti * 0.012 + phase;
+        const x = Math.cos(ang) * radius;
+        const y = Math.sin(ang) * radius * Math.sin(tilt);
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(rot);
+        ctx.fillStyle = col;
+        ctx.shadowBlur = 12; ctx.shadowColor = col;
+        ctx.beginPath(); ctx.arc(x, y, sz2, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+      };
+      sat(R * 1.55, 0.32,  ti * 0.0040, 0,           "rgba(96,165,250,0.95)", 2.4);
+      sat(R * 1.85, 0.55, -ti * 0.0028, Math.PI * .7,"rgba(52,211,153,0.92)", 2.0);
+      sat(R * 2.20, 0.85,  ti * 0.0019, Math.PI * 1.3,"rgba(167,139,250,0.85)",1.7);
+
+      // ===== GEODESIC SPHERE (Atlas globe) =====
+      // Outer rim halo
+      ctx.save();
       ctx.translate(cx, cy);
-      ctx.rotate(ti * 0.003);
-      ctx.strokeStyle = `rgba(96,165,250,${0.18 + Math.sin(ti * .02) * .08})`;
+      const rimGrad = ctx.createRadialGradient(0, 0, R * 0.85, 0, 0, R * 1.05);
+      rimGrad.addColorStop(0, "rgba(0,0,0,0)");
+      rimGrad.addColorStop(0.7, "rgba(96,165,250,0.18)");
+      rimGrad.addColorStop(1, "rgba(56,189,248,0.55)");
+      ctx.fillStyle = rimGrad;
+      ctx.beginPath(); ctx.arc(0, 0, R * 1.05, 0, Math.PI * 2); ctx.fill();
+
+      // Sphere body — radial gradient (deep navy → blue highlight)
+      const bodyGrad = ctx.createRadialGradient(-R * 0.35, -R * 0.4, R * 0.05, 0, 0, R);
+      bodyGrad.addColorStop(0,    "rgba(125,211,252,0.55)");
+      bodyGrad.addColorStop(0.35, "rgba(59,130,246,0.42)");
+      bodyGrad.addColorStop(0.75, "rgba(30,58,138,0.55)");
+      bodyGrad.addColorStop(1,    "rgba(8,15,35,0.92)");
+      ctx.fillStyle = bodyGrad;
+      ctx.beginPath(); ctx.arc(0, 0, R, 0, Math.PI * 2); ctx.fill();
+
+      // Sphere outline
+      ctx.strokeStyle = `rgba(125,211,252,${0.55 + Math.sin(ti * .03) * .12})`;
+      ctx.lineWidth = 1.4;
+      ctx.beginPath(); ctx.arc(0, 0, R, 0, Math.PI * 2); ctx.stroke();
+
+      // Meridians (rotating around Y axis — simulated with sin)
+      const merRot = ti * 0.005;
+      ctx.strokeStyle = "rgba(125,211,252,0.32)";
+      ctx.lineWidth = 0.7;
+      for (let i = 0; i < 7; i++) {
+        const phase = (i / 7) * Math.PI * 2 + merRot;
+        const sx = Math.sin(phase);
+        ctx.save();
+        ctx.scale(sx, 1);
+        if (Math.abs(sx) > 0.05) {
+          ctx.beginPath(); ctx.arc(0, 0, R, -Math.PI / 2, Math.PI / 2); ctx.stroke();
+        }
+        ctx.restore();
+      }
+
+      // Parallels (latitude lines — flattened ellipses)
+      ctx.strokeStyle = "rgba(125,211,252,0.22)";
+      ctx.lineWidth = 0.6;
+      for (let i = 1; i < 5; i++) {
+        const lat = (i / 5) * Math.PI / 2;
+        const r = R * Math.cos(lat);
+        const yOff = R * Math.sin(lat);
+        ctx.beginPath(); ctx.ellipse(0,  yOff, r, r * 0.18, 0, 0, Math.PI * 2); ctx.stroke();
+        ctx.beginPath(); ctx.ellipse(0, -yOff, r, r * 0.18, 0, 0, Math.PI * 2); ctx.stroke();
+      }
+      // Equator (brighter)
+      ctx.strokeStyle = `rgba(96,165,250,${0.55 + Math.sin(ti * .025) * .15})`;
       ctx.lineWidth = 1;
-      ctx.setLineDash([4, 8]);
-      ctx.beginPath(); ctx.arc(0, 0, s * 1.25, 0, Math.PI * 2); ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.rotate(-ti * 0.003);
-      ctx.translate(-cx, -cy);
+      ctx.beginPath(); ctx.ellipse(0, 0, R, R * 0.18, 0, 0, Math.PI * 2); ctx.stroke();
 
-      // Shield silhouette (soft fill + crisp stroke)
-      ctx.beginPath();
-      ctx.moveTo(cx, cy - s);
-      ctx.bezierCurveTo(cx + s * .72, cy - s * .82, cx + s * .94, cy - s * .28, cx + s * .94, cy + s * .12);
-      ctx.bezierCurveTo(cx + s * .94, cy + s * .64, cx, cy + s * 1.02, cx, cy + s * 1.02);
-      ctx.bezierCurveTo(cx, cy + s * 1.02, cx - s * .94, cy + s * .64, cx - s * .94, cy + s * .12);
-      ctx.bezierCurveTo(cx - s * .94, cy - s * .28, cx - s * .72, cy - s * .82, cx, cy - s);
+      // Inner luminous core — pulsing
+      const coreA = 0.55 + Math.sin(ti * .04) * .18;
+      const coreGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, R * 0.32);
+      coreGrad.addColorStop(0, `rgba(186,230,253,${coreA})`);
+      coreGrad.addColorStop(0.5, `rgba(96,165,250,${coreA * 0.55})`);
+      coreGrad.addColorStop(1, "rgba(59,130,246,0)");
+      ctx.fillStyle = coreGrad;
+      ctx.beginPath(); ctx.arc(0, 0, R * 0.32, 0, Math.PI * 2); ctx.fill();
 
-      const shieldGrad = ctx.createLinearGradient(cx, cy - s, cx, cy + s);
-      shieldGrad.addColorStop(0, "rgba(30,64,175,0.55)");
-      shieldGrad.addColorStop(1, "rgba(15,23,42,0.65)");
-      ctx.fillStyle = shieldGrad;
-      ctx.fill();
+      // Specular highlight (top-left)
+      const specGrad = ctx.createRadialGradient(-R * 0.42, -R * 0.42, 0, -R * 0.42, -R * 0.42, R * 0.55);
+      specGrad.addColorStop(0, "rgba(255,255,255,0.32)");
+      specGrad.addColorStop(0.6, "rgba(255,255,255,0.05)");
+      specGrad.addColorStop(1, "rgba(255,255,255,0)");
+      ctx.fillStyle = specGrad;
+      ctx.beginPath(); ctx.arc(0, 0, R, 0, Math.PI * 2); ctx.fill();
 
-      ctx.strokeStyle = `rgba(96,165,250,${.55 + Math.sin(ti * .025) * .18})`;
-      ctx.lineWidth = 2;
-      ctx.stroke();
+      // Apex sparkle
+      const sparkA = 0.5 + Math.sin(ti * .08) * .35;
+      ctx.fillStyle = `rgba(255,255,255,${sparkA})`;
+      ctx.shadowBlur = 14; ctx.shadowColor = "rgba(186,230,253,0.9)";
+      ctx.beginPath(); ctx.arc(-R * 0.45, -R * 0.45, 1.6, 0, Math.PI * 2); ctx.fill();
 
-      // Check mark
-      const cs = s * .42;
-      ctx.beginPath();
-      ctx.moveTo(cx - cs * .7, cy + cs * .05);
-      ctx.lineTo(cx - cs * .05, cy + cs * .72);
-      ctx.lineTo(cx + cs * .82, cy - cs * .52);
-      ctx.strokeStyle = `rgba(52,211,153,${.85 + Math.sin(ti * .04) * .12})`;
-      ctx.lineWidth = s * .07;
-      ctx.lineCap = "round"; ctx.lineJoin = "round";
-      ctx.stroke();
-
-      // Inner check glow
-      ctx.shadowBlur = 18;
-      ctx.shadowColor = "rgba(52,211,153,0.6)";
-      ctx.stroke();
+      ctx.restore();
       ctx.restore();
     }
 
