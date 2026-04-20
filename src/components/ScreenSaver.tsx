@@ -76,12 +76,19 @@ export function ScreenSaver({ idleMinutes = 3, projectLabel }: Props) {
     const onVis = () => { if (!document.hidden) reset(); };
     document.addEventListener("visibilitychange", onVis);
     window.addEventListener("focus", reset);
+    // Manual activation via global event
+    const onManual = () => {
+      clearTimeout(timerRef.current);
+      setActive(true);
+    };
+    window.addEventListener("atlas:screensaver:activate", onManual as EventListener);
     reset();
     return () => {
       clearTimeout(timerRef.current);
       events.forEach(e => window.removeEventListener(e, reset));
       document.removeEventListener("visibilitychange", onVis);
       window.removeEventListener("focus", reset);
+      window.removeEventListener("atlas:screensaver:activate", onManual as EventListener);
     };
   }, [idleMinutes]);
 
