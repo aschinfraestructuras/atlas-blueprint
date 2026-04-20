@@ -153,6 +153,7 @@ export default function DashboardPage() {
   // Live indicator state — must stay above any early return (Rules of Hooks)
   const [lastUpdated, setLastUpdated] = useState<number>(Date.now());
   const [, forceTick] = useState(0);
+  const hpCountForHero = useHpPendingCount(activeProject?.id);
   useEffect(() => { if (!kpiLoading) setLastUpdated(Date.now()); }, [kpiLoading, kpis]);
   useEffect(() => { const id = setInterval(() => forceTick((v) => v + 1), 30_000); return () => clearInterval(id); }, []);
 
