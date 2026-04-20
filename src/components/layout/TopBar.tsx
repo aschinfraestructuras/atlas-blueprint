@@ -41,6 +41,7 @@ const QUICK_CREATE_ITEMS = [
 
 export function TopBar({ onMobileMenuOpen }: TopBarProps) {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { projects, activeProject, setActiveProject, loading: projectsLoading } = useProject();
   const { role } = useProjectRole();
