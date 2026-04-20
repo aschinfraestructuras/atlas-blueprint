@@ -43,27 +43,21 @@ import { KeyboardShortcutsOverlay } from "@/components/dashboard/KeyboardShortcu
 import { QualityChecklistCard } from "@/components/dashboard/QualityChecklistCard";
 import { cn } from "@/lib/utils";
 
-function HPPendingAlert({ projectId }: { projectId: string }) {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
+// Hook utilitário: contagem de HPs pendentes (antes mostrado como banner separado, agora integrado no Hero)
+function useHpPendingCount(projectId: string | undefined): number {
   const [count, setCount] = useState(0);
   useEffect(() => {
+    if (!projectId) { setCount(0); return; }
+    let cancelled = false;
     (async () => {
       const { count: c } = await supabase.from("hp_notifications")
         .select("id", { count: "exact", head: true })
         .eq("project_id", projectId).eq("status", "pending");
-      setCount(c ?? 0);
+      if (!cancelled) setCount(c ?? 0);
     })();
+    return () => { cancelled = true; };
   }, [projectId]);
-  if (count === 0) return null;
-  return (
-    <div className="flex items-center gap-3 px-4 py-3 rounded-xl border animate-fade-in bg-amber-500/5 border-amber-500/25 text-amber-700 cursor-pointer hover:bg-amber-500/10 transition-colors"
-      onClick={() => navigate("/deadlines")}>
-      <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse flex-shrink-0" />
-      <span className="text-sm flex-1">{t("dashboard.hpPending", { defaultValue: "HPs Sem Confirmação" })}: <strong>{count}</strong></span>
-      <ArrowRight className="h-3 w-3 opacity-50" />
-    </div>
-  );
+  return count;
 }
 
 function MonthlyReportAlert({ projectId }: { projectId: string }) {
@@ -159,6 +153,7 @@ export default function DashboardPage() {
   // Live indicator state — must stay above any early return (Rules of Hooks)
   const [lastUpdated, setLastUpdated] = useState<number>(Date.now());
   const [, forceTick] = useState(0);
+  const hpCountForHero = useHpPendingCount(activeProject?.id);
   useEffect(() => { if (!kpiLoading) setLastUpdated(Date.now()); }, [kpiLoading, kpis]);
   useEffect(() => { const id = setInterval(() => forceTick((v) => v + 1), 30_000); return () => clearInterval(id); }, []);
 
@@ -289,7 +284,7 @@ export default function DashboardPage() {
       {/* Keyboard shortcuts overlay (global '?') */}
       <KeyboardShortcutsOverlay />
 
-      {/* HERO HEADER — Command Bar + Breadcrumb + Live + Accent dinâmico */}
+      {/* HERO HEADER — Executive Cockpit (pills PAME/HP integradas) */}
       <DashboardHero
         displayName={displayName}
         projectName={activeProject.name}
@@ -301,15 +296,17 @@ export default function DashboardPage() {
         onPeriodChange={setPeriod}
         accentTone={heroAccent}
         liveUpdatedAgo={liveAgo}
+        pamePending={kpis.pamePending}
+        ncOpen={kpis.ncOpen}
+        hpPending={hpCountForHero}
       />
 
-      {/* ALERTAS */}
+      {/* ALERTAS — só críticos (NC vencidas, EMEs a expirar) e RMSGQ */}
       {hasAlerts && (
         <div className="space-y-2 animate-fade-in">
           <CriticalAlertsBanner ncOpen={kpis.ncOpen} ncOverdue={health.total_nc_overdue}
-            emesExpiring={kpis.emesExpiring30d} pamePending={kpis.pamePending} />
+            emesExpiring={kpis.emesExpiring30d} pamePending={0} />
           <MonthlyReportAlert projectId={activeProject.id} />
-          <HPPendingAlert     projectId={activeProject.id} />
         </div>
       )}
 

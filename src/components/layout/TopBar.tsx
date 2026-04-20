@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProject } from "@/contexts/ProjectContext";
 import { useProjectRole } from "@/hooks/useProjectRole";
@@ -7,19 +8,9 @@ import { useTheme } from "@/components/theme/ThemeProvider";
 import { GlobalSearchDialog } from "@/components/search/GlobalSearchDialog";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import {
-  LogOut,
-  User,
-  Globe,
-  Menu,
-  ChevronDown,
-  Building2,
-  Check,
-  Loader2,
-  Search,
-  Sun,
-  Moon,
-  Monitor,
-  Lock,
+  LogOut, User, Globe, Menu, ChevronDown, Building2, Check, Loader2,
+  Search, Sun, Moon, Monitor, Lock, Plus,
+  AlertTriangle, ClipboardCheck, FlaskConical, FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -41,8 +32,16 @@ interface TopBarProps {
   onMobileMenuOpen: () => void;
 }
 
+const QUICK_CREATE_ITEMS = [
+  { route: "/non-conformities", labelKey: "dashboard.quick.nc",     defaultLabel: "Nova NC",        Icon: AlertTriangle,  color: "text-destructive" },
+  { route: "/ppi",              labelKey: "dashboard.quick.ppi",    defaultLabel: "Novo PPI",       Icon: ClipboardCheck, color: "text-emerald-600 dark:text-emerald-400" },
+  { route: "/tests",            labelKey: "dashboard.quick.test",   defaultLabel: "Registar Ensaio",Icon: FlaskConical,   color: "text-amber-600 dark:text-amber-400" },
+  { route: "/daily-reports",    labelKey: "dashboard.quick.report", defaultLabel: "Parte Diária",   Icon: FileText,       color: "text-primary" },
+];
+
 export function TopBar({ onMobileMenuOpen }: TopBarProps) {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { projects, activeProject, setActiveProject, loading: projectsLoading } = useProject();
   const { role } = useProjectRole();
@@ -144,6 +143,43 @@ export function TopBar({ onMobileMenuOpen }: TopBarProps) {
 
       {/* Spacer */}
       <div className="flex-1" />
+
+      {/* Quick create menu (only when a project is active and role is not viewer) */}
+      {activeProject && role !== "viewer" && (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="default"
+              size="sm"
+              className="gap-1.5 h-8 px-2.5 text-xs font-semibold shadow-sm"
+              aria-label={t("topbar.create", { defaultValue: "Criar" })}
+            >
+              <Plus className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">{t("topbar.create", { defaultValue: "Criar" })}</span>
+              <ChevronDown className="h-3 w-3 opacity-70 hidden sm:inline" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-52">
+            <DropdownMenuLabel className="text-xs text-muted-foreground">
+              {t("topbar.createNew", { defaultValue: "Criar novo" })}
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {QUICK_CREATE_ITEMS.map((item) => {
+              const Icon = item.Icon;
+              return (
+                <DropdownMenuItem
+                  key={item.route}
+                  onClick={() => navigate(item.route)}
+                  className="gap-2.5 text-sm cursor-pointer"
+                >
+                  <Icon className={cn("h-3.5 w-3.5", item.color)} />
+                  <span>{t(item.labelKey, { defaultValue: item.defaultLabel })}</span>
+                </DropdownMenuItem>
+              );
+            })}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
 
       {/* Global search */}
       <Button
