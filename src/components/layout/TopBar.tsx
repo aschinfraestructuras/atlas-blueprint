@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProject } from "@/contexts/ProjectContext";
 import { useProjectRole } from "@/hooks/useProjectRole";
@@ -7,19 +8,9 @@ import { useTheme } from "@/components/theme/ThemeProvider";
 import { GlobalSearchDialog } from "@/components/search/GlobalSearchDialog";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import {
-  LogOut,
-  User,
-  Globe,
-  Menu,
-  ChevronDown,
-  Building2,
-  Check,
-  Loader2,
-  Search,
-  Sun,
-  Moon,
-  Monitor,
-  Lock,
+  LogOut, User, Globe, Menu, ChevronDown, Building2, Check, Loader2,
+  Search, Sun, Moon, Monitor, Lock, Plus,
+  AlertTriangle, ClipboardCheck, FlaskConical, FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
