@@ -198,6 +198,12 @@ export default function NCDetailPage() {
   const { user } = useAuth();
   const { logoBase64 } = useProjectLogo();
 
+  // PDF preview state
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
+
+  useEffect(() => () => revokeHtmlPreviewUrl(previewUrl), [previewUrl]);
+
   const loadNc = useCallback(async () => {
     if (!id) return;
     setLoading(true);
