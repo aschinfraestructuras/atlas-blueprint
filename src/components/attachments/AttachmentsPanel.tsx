@@ -199,6 +199,9 @@ export function AttachmentsPanel({
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewGeo, setPreviewGeo] = useState<GeoData | null>(null);
   const [compressing, setCompressing] = useState(false);
+  // PDF inline preview
+  const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
+  const [pdfPreviewName, setPdfPreviewName] = useState<string>("");
 
   const showCamera = isTouchDevice();
 
@@ -305,12 +308,17 @@ export function AttachmentsPanel({
 
   const handleView = async (att: Attachment) => {
     const isImg = isImageFile(att.file_name);
+    const isPdf = att.file_name.toLowerCase().endsWith(".pdf");
     setViewingId(att.id);
     try {
       const url = await getSignedUrlForPath(att.file_path, 300);
       if (isImg) {
         setLightboxUrl(url);
         setLightboxName(att.file_name);
+      } else if (isPdf) {
+        // Abrir PDF inline em Dialog — sem janela externa
+        setPdfPreviewUrl(url);
+        setPdfPreviewName(att.file_name);
       } else {
         window.open(url, "_blank", "noopener,noreferrer");
       }
@@ -534,14 +542,12 @@ export function AttachmentsPanel({
                         >
                           {viewingId === att.id
                             ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                            : att.file_name.toLowerCase().endsWith(".pdf")
-                              ? <ExternalLink className="h-3.5 w-3.5" />
-                              : <Eye className="h-3.5 w-3.5" />}
+                            : <Eye className="h-3.5 w-3.5" />}
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent side="top">
                         {att.file_name.toLowerCase().endsWith(".pdf")
-                          ? t("attachments.openPdf", { defaultValue: "Abrir PDF" })
+                          ? t("attachments.previewPdf", { defaultValue: "Pré-visualizar PDF" })
                           : t("attachments.view", { defaultValue: "Ver imagem" })}
                       </TooltipContent>
                     </Tooltip>
@@ -679,6 +685,24 @@ export function AttachmentsPanel({
           </div>
         </div>
       )}
+
+      {/* ── Visualizador PDF inline ───────────────────────────────────────── */}
+      <Dialog open={!!pdfPreviewUrl} onOpenChange={v => { if (!v) { setPdfPreviewUrl(null); setPdfPreviewName(""); } }}>
+        <DialogContent className="max-w-5xl w-[96vw] max-h-[92vh] flex flex-col p-3 gap-2">
+          <DialogHeader className="pb-0">
+            <DialogTitle className="text-xs font-semibold truncate pr-8 text-muted-foreground">
+              {pdfPreviewName}
+            </DialogTitle>
+          </DialogHeader>
+          {pdfPreviewUrl && (
+            <iframe
+              src={pdfPreviewUrl}
+              className="flex-1 min-h-[75vh] w-full rounded-lg border border-border bg-muted/20"
+              title={pdfPreviewName}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </TooltipProvider>
   );
 }

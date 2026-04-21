@@ -3175,7 +3175,8 @@
       "unavailable": "GPS não disponível"
     },
     "view": "Ver imagem",
-    "openPdf": "Abrir PDF"
+    "openPdf": "Abrir PDF",
+    "previewPdf": "Pré-visualizar PDF"
   },
   "report": {
     "generatedOn": "Gerado em",
