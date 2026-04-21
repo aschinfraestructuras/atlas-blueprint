@@ -87,6 +87,7 @@ const MyTasksPage = lazy(() => import("./pages/MyTasksPage"));
 const ConfirmReceiptPage = lazy(() => import("./pages/ConfirmReceiptPage"));
 const MqtPage = lazy(() => import("./pages/MqtPage"));
 const ProjectSelectorPage = lazy(() => import("./pages/ProjectSelectorPage"));
+const QualityAnalyticsPage = lazy(() => import("./pages/QualityAnalyticsPage"));
 
 // Rotas permitidas para o role viewer — tudo o resto é redirecionado para /direction-portal
 const VIEWER_ALLOWED_ROUTES = [
@@ -276,6 +277,7 @@ const App = () => (
                 <Route path="/action-plan" element={<ProtectedLayout><ActionPlanPage /></ProtectedLayout>} />
                 <Route path="/submittals" element={<ProtectedLayout><SubmittalsPage /></ProtectedLayout>} />
                 <Route path="/mqt" element={<ProtectedLayout><MqtPage /></ProtectedLayout>} />
+                <Route path="/quality-analytics" element={<ProtectedLayout><QualityAnalyticsPage /></ProtectedLayout>} />
 
                 {/* Catch-all */}
                 <Route path="*" element={<NotFound />} />

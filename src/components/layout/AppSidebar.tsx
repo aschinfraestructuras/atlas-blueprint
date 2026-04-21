@@ -117,6 +117,7 @@ const NAV_SECTIONS: SidebarSection[] = [
       { labelKey: "nav.monthlyReport",  url: "/reports/monthly", icon: FileBarChart2 },
       { labelKey: "nav.sgqMatrix",      url: "/sgq-matrix",     icon: ShieldCheck },
       { labelKey: "nav.contractKpis",   url: "/contract-kpis",  icon: TrendingUp },
+      { labelKey: "nav.qualityAnalytics", url: "/quality-analytics", icon: Activity, requiredAction: "viewAudit" },
       { labelKey: "nav.mqt",            url: "/mqt",            icon: FileSpreadsheet },
     ],
   },
