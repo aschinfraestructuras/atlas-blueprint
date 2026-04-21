@@ -221,7 +221,7 @@ export default function DocumentsPage() {
 
         {/* ── Formulários SGQ ────────────────────────────────────────────── */}
         {(() => {
-          const forms = documents.filter(d => d.form_schema != null && !d.is_deleted);
+          const forms = documents.filter(d => (d as any).form_schema != null && !d.is_deleted);
           if (forms.length === 0) return null;
           return (
             <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 space-y-3">
