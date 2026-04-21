@@ -112,17 +112,63 @@ function ViewerGuard({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+/**
+ * Inteligent redirect:
+ * If the user lands on "/" without an active project AND has 2+ projects to
+ * choose from, send them to /select-project. With exactly 1 project the
+ * ProjectContext auto-selects it; with 0 projects we let the dashboard show
+ * its own empty state.
+ */
+function ProjectSelectorRedirect({ children }: { children: React.ReactNode }) {
+  const { projects, activeProject, loading } = useProject();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (loading) return;
+    if (location.pathname !== "/") return;
+    const hasSavedChoice = !!localStorage.getItem(PROJECT_STORAGE_KEY);
+    const visible = projects.filter(
+      (p) => p.status !== "archived" && p.status !== "inactive",
+    );
+    if (!hasSavedChoice && visible.length >= 2 && !activeProject) {
+      navigate("/select-project", { replace: true });
+    }
+  }, [loading, projects, activeProject, location.pathname, navigate]);
+
+  return <>{children}</>;
+}
+
 function ProtectedLayout({ children }: { children: React.ReactNode }) {
   return (
     <ProtectedRoute>
       <MainLayout>
         <ViewerGuard>
-          <PageTransition>{children}</PageTransition>
+          <ProjectSelectorRedirect>
+            <PageTransition>{children}</PageTransition>
+          </ProjectSelectorRedirect>
         </ViewerGuard>
       </MainLayout>
       <ScreenSaver idleMinutes={3} />
     </ProtectedRoute>
   );
+}
+
+/**
+ * Auth-only wrapper for the project selector page — protected by login but
+ * deliberately renders WITHOUT MainLayout (no sidebar / no topbar).
+ */
+function AuthOnlyRoute({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAuth();
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+  if (!user) return <Navigate to="/login" replace />;
+  return <>{children}</>;
 }
 
 function PageLoader() {
