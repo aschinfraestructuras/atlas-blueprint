@@ -85,6 +85,7 @@ const SubmittalsPage = lazy(() => import("./pages/SubmittalsPage"));
 const MyTasksPage = lazy(() => import("./pages/MyTasksPage"));
 const ConfirmReceiptPage = lazy(() => import("./pages/ConfirmReceiptPage"));
 const MqtPage = lazy(() => import("./pages/MqtPage"));
+const ProjectSelectorPage = lazy(() => import("./pages/ProjectSelectorPage"));
 
 // Rotas permitidas para o role viewer — tudo o resto é redirecionado para /direction-portal
 const VIEWER_ALLOWED_ROUTES = [
