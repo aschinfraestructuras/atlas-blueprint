@@ -12,7 +12,7 @@ import { useCountUp } from "@/hooks/useCountUp";
 import {
   AlertTriangle, Package, Clock, ArrowRight, Leaf,
   ClipboardCheck, FlaskConical, Calendar,
-  ShieldCheck, LayoutDashboard, BarChart3, Layers, Info, MapPin,
+  ShieldCheck, LayoutDashboard, BarChart3, Layers, Info, MapPin, TrendingUp,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -41,6 +41,7 @@ import { PredictiveInsightsCard } from "@/components/dashboard/PredictiveInsight
 import { TopCriticalFrentes } from "@/components/dashboard/TopCriticalFrentes";
 import { KeyboardShortcutsOverlay } from "@/components/dashboard/KeyboardShortcutsOverlay";
 import { QualityChecklistCard } from "@/components/dashboard/QualityChecklistCard";
+import { MonthlyTrendCards } from "@/components/dashboard/MonthlyTrendCards";
 import { cn } from "@/lib/utils";
 
 // Hook utilitário: contagem de HPs pendentes (antes mostrado como banner separado, agora integrado no Hero)
@@ -559,6 +560,14 @@ export default function DashboardPage() {
 
         {/* TAB: TENDÊNCIAS */}
         <TabsContent value="trends" className="space-y-5 mt-4">
+          {/* Sparklines mensais reais — substitui os 3 ProgressCircle estáticos */}
+          <div>
+            <p className="text-[9px] font-extrabold uppercase tracking-[0.22em] text-muted-foreground/50 mb-3 flex items-center gap-1.5">
+              <TrendingUp className="h-3 w-3" />{t("dashboard.trends.last6Months", { defaultValue: "Tendência — Últimos 6 meses" })}
+            </p>
+            <MonthlyTrendCards />
+          </div>
+
           <div>
             <p className="text-[9px] font-extrabold uppercase tracking-[0.22em] text-muted-foreground/50 mb-3 flex items-center gap-1.5">
               <BarChart3 className="h-3 w-3" />{t("dashboard.trends.monthly", { defaultValue: "Tendência Mensal" })}
