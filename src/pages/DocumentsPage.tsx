@@ -44,6 +44,7 @@ import { FilterBar } from "@/components/ui/filter-bar";
 import { EmptyState } from "@/components/EmptyState";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { DocumentFormDialog } from "@/components/documents/DocumentFormDialog";
+import { PdfPreviewDialog } from "@/components/ui/pdf-preview-dialog";
 import { cn } from "@/lib/utils";
 import { DistributionBar, StackedBar } from "@/components/dashboard/DistributionBar";
 import { ShareButton } from "@/components/ui/share-button";
