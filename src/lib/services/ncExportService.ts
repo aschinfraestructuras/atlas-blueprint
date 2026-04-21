@@ -281,6 +281,26 @@ ${bodyHtml}
 
 // ─── PUBLIC API ───────────────────────────────────────────────────────────────
 
+/**
+ * Builds the full HTML document for a single NC, ready to be rendered in an
+ * in-app PDF preview iframe (via Blob URL) or printed.
+ */
+export function buildNCDetailHtml(
+  nc: NonConformity,
+  labels: NCExportLabels,
+  projectName: string,
+  logoBase64?: string | null,
+  projectCode?: string,
+): string {
+  const meta: ReportMeta = {
+    projectName,
+    projectCode: projectCode ?? "—",
+    locale: "pt",
+  };
+  const bodyHtml = renderNCHtml(nc, labels);
+  return buildNCDocument(bodyHtml, nc, meta, logoBase64);
+}
+
 /** PDF individual */
 export async function exportNCPdf(
   nc: NonConformity,
@@ -294,8 +314,7 @@ export async function exportNCPdf(
     projectCode: projectCode ?? "—",
     locale: "pt",
   };
-  const bodyHtml = renderNCHtml(nc, labels);
-  const html = buildNCDocument(bodyHtml, nc, meta, logoBase64);
+  const html = buildNCDetailHtml(nc, labels, projectName, logoBase64, projectCode);
   const code = (nc.code ?? nc.reference ?? nc.id.slice(0, 8)).replace(/[^a-zA-Z0-9_-]/g, "_");
   printHtml(html, buildReportFilename("RNC", meta.projectCode, code));
 }
