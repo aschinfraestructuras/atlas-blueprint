@@ -1035,6 +1035,18 @@
       "toast": {
         "created": "Registro RDC creado",
         "error": "Error al registrar distribución"
+      },
+      "tabManual": "Distribución Formal",
+      "tabAuto": "Envíos Automáticos",
+      "autoDesc": "Registro automático de todas las notificaciones enviadas por email desde Atlas — HP, NCs, informes y otros documentos.",
+      "autoEmpty": "Sin envíos registrados",
+      "autoEmptyDesc": "Los emails enviados desde Atlas aparecen aquí automáticamente.",
+      "noPlan": "Plano no encontrado",
+      "noPlanDesc": "Introduzca el código exacto de un plano registrado en el sistema.",
+      "confirmedLabel": "Recepción confirmada por el destinatario",
+      "placeholders": {
+        "docCode": "ej: PEPF17A001",
+        "ackRef": "Referencia de acuse de recibo"
       }
     },
     "linkedPanel": {
@@ -1114,6 +1126,10 @@
     "exportLmd": "Exportar LMD",
     "dynamicForm": {
       "title": "Formulario Dinámico"
+    },
+    "forms": {
+      "title": "Formularios SGQ",
+      "subtitle": "Documentos con formulario rellenable directamente en Atlas"
     }
   },
   "tests": {

@@ -172,7 +172,7 @@ export default function DocumentsPage() {
       refetch();
       setDeleteDoc(null);
     } catch (err) {
-      toast({ title: t("documents.toast.deleteError"), description: err instanceof Error ? err.message : String(err), variant: "destructive" });
+      toast({ title: t("documents.toast.deleteError"), description: err instanceof Error ? err.message : (err as any)?.message ?? (err as any)?.details ?? t("common.error"), variant: "destructive" });
     } finally { setDeleting(false); }
   };
 
@@ -218,6 +218,47 @@ export default function DocumentsPage() {
             <ModuleKPICard label={t("moduleKpi.total")} value={`${approvedCount}/${totalDocs}`} icon={CheckCircle2} />
           </div>
         )}
+
+        {/* ── Formulários SGQ ────────────────────────────────────────────── */}
+        {(() => {
+          const forms = documents.filter(d => d.form_schema != null && !d.is_deleted);
+          if (forms.length === 0) return null;
+          return (
+            <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 space-y-3">
+              <div className="flex items-center gap-2">
+                <FileText className="h-4 w-4 text-primary" />
+                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-primary">
+                  {t("documents.forms.title", { defaultValue: "Formulários SGQ" })}
+                </p>
+                <span className="ml-auto text-[10px] text-muted-foreground">
+                  {t("documents.forms.subtitle", { defaultValue: "Documentos com formulário preenchível directamente no Atlas" })}
+                </span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+                {forms.map(form => (
+                  <button
+                    key={form.id}
+                    onClick={() => navigate(`/documents/${form.id}`)}
+                    className="group flex items-start gap-3 rounded-lg border border-border/60 bg-background p-3 text-left hover:border-primary/40 hover:bg-primary/5 transition-all"
+                  >
+                    <div className="mt-0.5 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-md bg-primary/10">
+                      <FileText className="h-3.5 w-3.5 text-primary" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-xs font-semibold text-foreground group-hover:text-primary transition-colors">
+                        {form.title}
+                      </p>
+                      <p className="mt-0.5 text-[10px] text-muted-foreground capitalize">
+                        {t(`documents.docTypes.${form.doc_type}`, { defaultValue: form.doc_type })}
+                      </p>
+                    </div>
+                    <Eye className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-muted-foreground/40 group-hover:text-primary/60 transition-colors" />
+                  </button>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
 
         {/* ── Distribution Charts ────────────────────────────────────────── */}
         {!loading && documents.length > 0 && (
