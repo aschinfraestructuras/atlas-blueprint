@@ -1,11 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { useProjects } from "@/hooks/useProjects";
+import { useProject } from "@/contexts/ProjectContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Building2, AlertTriangle, ClipboardCheck, FlaskConical, Package, Heart, ArrowRight, TrendingUp, TrendingDown } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -46,6 +47,8 @@ function MiniMetric({ label, value, icon: Icon, danger }: { label: string; value
  */
 export function MultiProjectOverview() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { setActiveProject } = useProject();
   const { data: projects, loading: loadingProjects } = useProjects();
   const [kpis, setKpis] = useState<Record<string, ProjectKpi>>({});
   const [loading, setLoading] = useState(false);
@@ -168,11 +171,13 @@ export function MultiProjectOverview() {
         {sorted.slice(0, 6).map((p) => {
           const k = kpis[p.id] ?? { project_id: p.id, ...EMPTY_KPI };
           return (
-            <Link
+            <div
               key={p.id}
-              to="/"
-              onClick={() => { try { localStorage.setItem("atlas_active_project_id", p.id); } catch {} }}
-              className="block group"
+              className="block group cursor-pointer"
+              onClick={() => {
+                setActiveProject(p);
+                navigate("/");
+              }}
             >
               <div className="flex items-center justify-between gap-3 p-3 rounded-lg border border-border hover:border-primary/40 hover:bg-muted/40 transition-all">
                 <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -194,7 +199,7 @@ export function MultiProjectOverview() {
                 </div>
                 <ArrowRight className="h-4 w-4 text-muted-foreground/40 group-hover:text-primary group-hover:translate-x-0.5 transition-all flex-shrink-0" />
               </div>
-            </Link>
+            </div>
           );
         })}
         {sorted.length > 6 && (
