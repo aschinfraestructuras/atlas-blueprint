@@ -238,7 +238,7 @@ export default function AuditsPage() {
                     </style></head><body>`;
                     html += fullPdfHeader(logoBase64, projectName, "PAI-" + activeProject.code, "0", date);
                     html += `<h2 style="text-align:center;font-size:12px;color:#192F48;margin:8px 0">${t("audits.title")}</h2>`;
-                    html += `<table><tr><th>${t("common.code")}</th><th>${t("audits.type")}</th><th>${t("common.date")}</th><th>${t("audits.auditor")}</th><th>${t("audits.scope")}</th><th>${t("audits.findings")}</th><th>${t("common.status")}</th></tr>`;
+                    html += `<table><tr><th>${t("common.code")}</th><th>${t("audits.form.type")}</th><th>${t("common.date")}</th><th>${t("audits.auditor")}</th><th>${t("audits.scope")}</th><th>${t("audits.findings")}</th><th>${t("common.status")}</th></tr>`;
                     audits.forEach(a => {
                       html += `<tr><td>${a.code}</td><td>${t(TYPE_KEYS[a.audit_type])}</td><td>${new Date(a.planned_date).toLocaleDateString("pt-PT")}</td><td>${a.auditor_name ?? "—"}</td><td>${a.scope ?? "—"}</td><td>${a.findings ?? "—"}</td><td>${t(STATUS_KEYS[a.status])}</td></tr>`;
                     });
@@ -355,7 +355,7 @@ export default function AuditsPage() {
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label className="text-xs">{t("audits.type")} *</Label>
+                <Label className="text-xs">{t("audits.form.type")} *</Label>
                 <Select value={fAuditType} onValueChange={setFAuditType}>
                   <SelectTrigger className="text-sm"><SelectValue /></SelectTrigger>
                   <SelectContent>
