@@ -325,7 +325,13 @@ export default function ProjectSelectorPage() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={t("projectSelector.searchPlaceholder")}
-                className="h-11 border-white/10 bg-white/[0.04] pl-10 pr-16 text-sm text-white placeholder:text-white/30 transition-all focus-visible:border-white/30 focus-visible:bg-white/[0.06] focus-visible:ring-2 focus-visible:ring-sky-400/15 focus-visible:ring-offset-0"
+                style={{
+                  backgroundColor: "hsl(215 40% 16%)",
+                  color: "rgb(255 255 255)",
+                  borderColor: "hsl(0 0% 100% / 0.12)",
+                  caretColor: "rgb(255 255 255)",
+                }}
+                className="h-11 pl-10 pr-16 text-sm font-medium placeholder:text-white/40 placeholder:font-normal transition-all focus-visible:!border-white/35 focus-visible:!shadow-[0_0_0_3px_hsl(199_89%_48%/0.18)]"
               />
               <kbd className="pointer-events-none absolute right-3 top-1/2 hidden -translate-y-1/2 items-center gap-0.5 rounded border border-white/15 bg-white/[0.04] px-1.5 py-0.5 text-[10px] font-mono text-white/45 sm:inline-flex">
                 ⌘K
