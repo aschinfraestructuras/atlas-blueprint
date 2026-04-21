@@ -122,22 +122,32 @@ export default function QualityAnalyticsPage() {
       sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
       const sinceIso = sixMonthsAgo.toISOString();
 
+      // 1) Get PPI instance IDs for this project first
+      const { data: ppiInstancesData } = await supabase
+        .from("ppi_instances")
+        .select("id, status")
+        .eq("project_id", pid)
+        .eq("is_deleted", false)
+        .limit(2000);
+      const ppiInstanceIds = (ppiInstancesData ?? []).map((i: any) => i.id);
+
       const results = await Promise.allSettled([
-        // NCs
+        // [0] NCs
         supabase
           .from("non_conformities")
           .select("id, severity, status, discipline, root_cause, detected_at, closure_date, ac_efficacy_indicator")
           .eq("project_id", pid)
           .eq("is_deleted", false)
           .limit(2000),
-        // PPI instances (for status chart + filter de items)
-        supabase
-          .from("ppi_instances")
-          .select("id, status")
-          .eq("project_id", pid)
-          .eq("is_deleted", false)
-          .limit(2000),
-        // Tests
+        // [1] PPI items (filtered by instance IDs from this project)
+        ppiInstanceIds.length > 0
+          ? supabase
+              .from("ppi_instance_items")
+              .select("id, result, label, inspection_point_type")
+              .in("instance_id", ppiInstanceIds)
+              .limit(5000)
+          : Promise.resolve({ data: [], error: null } as any),
+        // [2] Tests
         supabase
           .from("test_results")
           .select("id, date, result_status")
@@ -145,6 +155,8 @@ export default function QualityAnalyticsPage() {
           .gte("date", sinceIso.slice(0, 10))
           .limit(5000),
       ]);
+
+      const ppiInstances = ppiInstancesData ?? [];
 
       if (cancelled) return;
 
