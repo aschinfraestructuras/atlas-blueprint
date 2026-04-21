@@ -124,8 +124,14 @@ function ViewerGuard({ children }: { children: React.ReactNode }) {
  * MainLayout before the redirect.
  */
 function ProjectSelectorRedirect({ children }: { children: React.ReactNode }) {
-  const { projects, activeProject, loading } = useProject();
+  const { projects, loading } = useProject();
   const location = useLocation();
+
+  // Hold the render while projects are loading on the root path. This prevents
+  // a brief flash of the Dashboard before redirecting to /select-project.
+  if (loading && location.pathname === "/") {
+    return <PageLoader />;
+  }
 
   if (!loading && location.pathname === "/") {
     const sessionChosen = sessionStorage.getItem(SESSION_PROJECT_CHOSEN_KEY) === "1";
