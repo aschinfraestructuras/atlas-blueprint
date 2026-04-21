@@ -211,17 +211,10 @@ export function TopBar({ onMobileMenuOpen }: TopBarProps) {
       {/* Notifications */}
       <NotificationBell />
 
-      {/* Manual screensaver / lock screen trigger */}
-      <Button
-        variant="ghost"
-        size="icon"
-        className="h-8 w-8 text-muted-foreground hidden sm:inline-flex hover:text-primary"
-        onClick={() => window.dispatchEvent(new CustomEvent("atlas:screensaver:activate"))}
-        aria-label={t("topbar.screensaver", { defaultValue: "Bloquear ecrã" })}
-        title={t("topbar.screensaver", { defaultValue: "Bloquear ecrã (protetor)" })}
-      >
-        <Lock className="h-3.5 w-3.5" />
-      </Button>
+      {/* Manual screensaver — press & hold 600ms to avoid accidental triggers */}
+      <LockHoldButton
+        label={t("topbar.screensaver", { defaultValue: "Manter premido para bloquear ecrã" })}
+      />
 
       {/* Theme toggle */}
       <DropdownMenu>
