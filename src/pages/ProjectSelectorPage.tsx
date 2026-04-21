@@ -81,11 +81,6 @@ export default function ProjectSelectorPage() {
   const [roleByProject, setRoleByProject] = useState<Record<string, string | null>>({});
   const searchInputRef = useRef<HTMLInputElement | null>(null);
 
-  /* ── Auth gate ─────────────────────────────────────────────────────── */
-  if (!authLoading && !user) {
-    return <Navigate to="/login" replace />;
-  }
-
   /* ── Auto-skip when only 1 active project ──────────────────────────── */
   useEffect(() => {
     if (projectsLoading) return;
