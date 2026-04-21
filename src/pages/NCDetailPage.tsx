@@ -818,6 +818,22 @@ export default function NCDetailPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* In-app PDF preview */}
+      <PdfPreviewDialog
+        open={previewOpen}
+        onOpenChange={(o) => {
+          setPreviewOpen(o);
+          if (!o) {
+            revokeHtmlPreviewUrl(previewUrl);
+            setPreviewUrl(null);
+          }
+        }}
+        url={previewUrl}
+        title={`${nc?.code ?? "NC"} — ${nc?.title ?? ""}`}
+        subtitle={activeProject?.name}
+        downloadName={`RNC_${activeProject?.code ?? ""}_${nc?.code ?? "detail"}.pdf`}
+      />
     </div>
   );
 }
