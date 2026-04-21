@@ -959,7 +959,9 @@
       "placeholders": {
         "docCode": "ex: PEPF17A001",
         "ackRef": "Referência de acuse de recibo"
-      }
+      },
+      "empty": "Sem registos de distribuição",
+      "emptyDesc": "Registe as cópias controladas distribuídas fisicamente ou por email formal."
     },
     "linkedPanel": {
       "title": "Documentos Vinculados",
@@ -1341,7 +1343,8 @@
         "archived": "Resultado arquivado",
         "created": "Resultado registado",
         "updated": "Resultado atualizado"
-      }
+      },
+      "empty": "Nenhum ensaio registado."
     },
     "stats": {
       "approved": "Aprovados",
