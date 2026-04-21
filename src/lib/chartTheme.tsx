@@ -3,6 +3,8 @@
  * Uma fonte de verdade. Todos os gráficos importam daqui.
  * Paleta coerente com o primary (navy azul) e neutros quentes.
  */
+import * as React from "react";
+
 
 // Paleta principal — 6 cores harmoniosas
 export const CHART_COLORS = {
@@ -49,17 +51,16 @@ export const CHART_STYLE = {
 } as const;
 
 // Tooltip personalizado — componente React
-export function ChartTooltipContent({
-  active, payload, label, unit,
-}: {
+// Wrapped in forwardRef because Recharts forwards a ref to the tooltip content.
+export const ChartTooltipContent = React.forwardRef<HTMLDivElement, {
   active?: boolean;
   payload?: Array<{ name: string; value: number; color: string }>;
   label?: string;
   unit?: string;
-}) {
+}>(function ChartTooltipContent({ active, payload, label, unit }, ref) {
   if (!active || !payload?.length) return null;
   return (
-    <div style={{
+    <div ref={ref} style={{
       background: "hsl(var(--card))",
       border: "1px solid hsl(var(--border))",
       borderRadius: "0.625rem",
@@ -92,4 +93,5 @@ export function ChartTooltipContent({
       ))}
     </div>
   );
-}
+});
+
