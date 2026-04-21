@@ -45,8 +45,11 @@ ${bodyHtml}
   printHtml(html, buildReportFilename("RFI", meta.projectCode, "lista"));
 }
 
-/** Export a single RFI detail with messages thread and attachments list */
-export function exportRfiDetailPdf(rfi: Rfi, messages: RfiMessage[], meta: ReportMeta, logoBase64?: string | null) {
+/**
+ * Builds the full HTML document for a single RFI detail.
+ * Exposed so the UI can show a Blob-based PDF preview without re-printing.
+ */
+export function buildRfiDetailHtml(rfi: Rfi, messages: RfiMessage[], meta: ReportMeta, logoBase64?: string | null): string {
   const today = new Date().toLocaleDateString("pt-PT");
   const header = fullPdfHeader(
     logoBase64 ?? null,
@@ -88,7 +91,7 @@ export function exportRfiDetailPdf(rfi: Rfi, messages: RfiMessage[], meta: Repor
 
   const bodyHtml = `${info}${descHtml}${msgsHtml}`;
 
-  const html = `<!DOCTYPE html>
+  return `<!DOCTYPE html>
 <html lang="${meta.locale}">
 <head><meta charset="UTF-8"/><title>RFI ${rfi.code ?? ""} — Atlas QMS</title>
 <style>${sharedCss()}</style></head>
@@ -97,6 +100,10 @@ ${header}
 ${bodyHtml}
 <div class="atlas-footer"><span>Atlas QMS</span><span>RFI-${meta.projectCode}-${rfi.code ?? ""}</span></div>
 </body></html>`;
+}
 
+/** Export a single RFI detail with messages thread and attachments list */
+export function exportRfiDetailPdf(rfi: Rfi, messages: RfiMessage[], meta: ReportMeta, logoBase64?: string | null) {
+  const html = buildRfiDetailHtml(rfi, messages, meta, logoBase64);
   printHtml(html, buildReportFilename("RFI", meta.projectCode, rfi.code ?? "detail"));
 }

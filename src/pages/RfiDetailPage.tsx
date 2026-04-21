@@ -10,7 +10,10 @@ import { useWorkItems } from "@/hooks/useWorkItems";
 import { rfiService, type Rfi, type RfiMessage } from "@/lib/services/rfiService";
 import { useRfiMessages } from "@/hooks/useRfis";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
-import { exportRfiDetailPdf } from "@/lib/services/rfiExportService";
+import { exportRfiDetailPdf, buildRfiDetailHtml } from "@/lib/services/rfiExportService";
+import { PdfPreviewDialog } from "@/components/ui/pdf-preview-dialog";
+import { buildHtmlPreviewUrl, revokeHtmlPreviewUrl } from "@/lib/utils/htmlPreview";
+import { Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -81,6 +84,10 @@ export default function RfiDetailPage() {
   const [respondedBy, setRespondedBy] = useState("");
   const [submittingResponse, setSubmittingResponse] = useState(false);
 
+  // PDF preview state
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
+
   const workItemMap = useMemo(() => new Map(workItems.map((w) => [w.id, w.sector])), [workItems]);
 
   // Fetch RFI
@@ -105,6 +112,9 @@ export default function RfiDetailPage() {
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages]);
+
+  // Cleanup PDF preview blob URL on unmount or URL change
+  useEffect(() => () => revokeHtmlPreviewUrl(previewUrl), [previewUrl]);
 
   if (!activeProject) return <NoProjectBanner />;
 
@@ -225,6 +235,15 @@ export default function RfiDetailPage() {
     exportRfiDetailPdf(rfi, messages, meta, logoBase64);
   };
 
+  const handlePreviewPdf = () => {
+    if (!rfi) return;
+    revokeHtmlPreviewUrl(previewUrl);
+    const html = buildRfiDetailHtml(rfi, messages, meta, logoBase64);
+    const url = buildHtmlPreviewUrl(html);
+    setPreviewUrl(url);
+    setPreviewOpen(true);
+  };
+
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
       {/* Top bar */}
@@ -241,6 +260,10 @@ export default function RfiDetailPage() {
             entityCode={rfi.code}
             defaultSubject={`RFI — ${rfi.code} — ${rfi.subject}`}
           />
+          <Button variant="outline" size="sm" onClick={handlePreviewPdf} className="gap-1.5">
+            <Eye className="h-3.5 w-3.5" />
+            {t("common.preview", { defaultValue: "Pré-visualizar" })}
+          </Button>
           <Button variant="outline" size="sm" onClick={handleExportPdf} className="gap-1.5">
             <Download className="h-3.5 w-3.5" />
             PDF
@@ -618,6 +641,22 @@ export default function RfiDetailPage() {
 
       {/* Email notification history */}
       <NotificationHistory projectId={activeProject.id} entityType="rfi" entityId={rfi.id} />
+
+      {/* In-app PDF preview */}
+      <PdfPreviewDialog
+        open={previewOpen}
+        onOpenChange={(o) => {
+          setPreviewOpen(o);
+          if (!o) {
+            revokeHtmlPreviewUrl(previewUrl);
+            setPreviewUrl(null);
+          }
+        }}
+        url={previewUrl}
+        title={`RFI ${rfi.code ?? ""} — ${rfi.subject}`}
+        subtitle={activeProject.name}
+        downloadName={`RFI_${activeProject.code}_${rfi.code ?? rfi.id.slice(0, 8)}.pdf`}
+      />
     </div>
   );
 }

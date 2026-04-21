@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   ArrowLeft, AlertTriangle, Calendar, Clock, User, Tag, Pencil,
-  CheckCircle2, RotateCcw, Archive, Loader2,
+  CheckCircle2, RotateCcw, Archive, Loader2, Eye,
   FileText, Shield, Link2, ClipboardList, Printer, FileDown, Trash2,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,8 +11,11 @@ import { ncService, type NonConformity } from "@/lib/services/ncService";
 import { auditService, type AuditEntry } from "@/lib/services/auditService";
 import {
   exportNCPdf,
+  buildNCDetailHtml,
   type NCExportLabels,
 } from "@/lib/services/ncExportService";
+import { PdfPreviewDialog } from "@/components/ui/pdf-preview-dialog";
+import { buildHtmlPreviewUrl, revokeHtmlPreviewUrl } from "@/lib/utils/htmlPreview";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { NCFormDialog } from "@/components/nc/NCFormDialog";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
@@ -195,6 +198,12 @@ export default function NCDetailPage() {
   const { user } = useAuth();
   const { logoBase64 } = useProjectLogo();
 
+  // PDF preview state
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
+
+  useEffect(() => () => revokeHtmlPreviewUrl(previewUrl), [previewUrl]);
+
   const loadNc = useCallback(async () => {
     if (!id) return;
     setLoading(true);
@@ -275,6 +284,42 @@ export default function NCDetailPage() {
     } finally {
       setExporting(false);
     }
+  };
+
+  /** Build NC HTML using the same labels resolver as the export above. */
+  const buildLabels = (): NCExportLabels => ({
+    appName: "Atlas QMS", reportTitle: t("nc.export.reportTitle", { defaultValue: "Relatório de Não Conformidade" }),
+    bulkTitle: t("nc.export.bulkTitle", { defaultValue: "Relatório de NCs" }),
+    wiSummaryTitle: t("nc.export.wiSummaryTitle", { defaultValue: "Resumo NC por Work Item" }),
+    generatedOn: t("nc.export.generatedOn", { defaultValue: "Gerado em" }),
+    page: t("nc.export.page", { defaultValue: "Página" }), of: t("nc.export.of", { defaultValue: "de" }),
+    code: t("nc.table.code"), title: t("nc.form.title"), description: t("nc.form.description"),
+    severity: t("nc.table.severity"), category: t("nc.form.category"), origin: t("nc.table.origin"),
+    status: t("common.status"), responsible: t("nc.table.responsible"), assignedTo: t("nc.detail.assignedTo"),
+    detectedAt: t("nc.form.detectedAt"), dueDate: t("nc.table.dueDate"), closureDate: t("nc.detail.closureDate"),
+    reference: t("nc.table.reference"), workItem: t("nc.detail.workItem"),
+    capaTitle: t("nc.form.tabs.capa"), correction: t("nc.form.correction"), rootCause: t("nc.form.rootCause"),
+    correctiveAction: t("nc.form.correctiveAction"), preventiveAction: t("nc.form.preventiveAction"),
+    verificationMethod: t("nc.form.verificationMethod"), verificationResult: t("nc.form.verificationResult"),
+    verifiedBy: t("nc.detail.verifiedBy"), verifiedAt: t("nc.detail.verifiedAt"),
+    wiSector: t("workItems.detail.sector", { defaultValue: "Sector" }),
+    wiBySeverity: t("nc.export.wiBySeverity", { defaultValue: "Por Gravidade" }),
+    wiByStatus: t("nc.export.wiByStatus", { defaultValue: "Por Estado" }),
+    wiOpenNcs: t("nc.export.wiOpenNcs", { defaultValue: "NCs em Aberto" }),
+    severity_minor: t("nc.severity.minor"), severity_major: t("nc.severity.major"), severity_critical: t("nc.severity.critical"),
+    status_draft: t("nc.status.draft"), status_open: t("nc.status.open"), status_in_progress: t("nc.status.in_progress"),
+    status_pending_verification: t("nc.status.pending_verification"), status_closed: t("nc.status.closed"), status_archived: t("nc.status.archived"),
+    origin_manual: t("nc.origin.manual"), origin_ppi: t("nc.origin.ppi"), origin_test: t("nc.origin.test"),
+    origin_document: t("nc.origin.document"), origin_audit: t("nc.origin.audit"),
+  });
+
+  const handlePreviewPdf = () => {
+    if (!nc || !activeProject) return;
+    revokeHtmlPreviewUrl(previewUrl);
+    const html = buildNCDetailHtml(nc, buildLabels(), activeProject.name, logoBase64, activeProject.code);
+    const url = buildHtmlPreviewUrl(html);
+    setPreviewUrl(url);
+    setPreviewOpen(true);
   };
 
   const handleDeleteDraft = async () => {
@@ -396,6 +441,14 @@ export default function NCDetailPage() {
               })}
             </div>
           )}
+          <Button
+            size="sm" variant="outline"
+            onClick={handlePreviewPdf}
+            className="gap-1.5 flex-shrink-0"
+          >
+            <Eye className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">{t("common.preview", { defaultValue: "Pré-visualizar" })}</span>
+          </Button>
           <Button
             size="sm" variant="outline"
             onClick={() => handleExportPdf()}
@@ -765,6 +818,22 @@ export default function NCDetailPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* In-app PDF preview */}
+      <PdfPreviewDialog
+        open={previewOpen}
+        onOpenChange={(o) => {
+          setPreviewOpen(o);
+          if (!o) {
+            revokeHtmlPreviewUrl(previewUrl);
+            setPreviewUrl(null);
+          }
+        }}
+        url={previewUrl}
+        title={`${nc?.code ?? "NC"} — ${nc?.title ?? ""}`}
+        subtitle={activeProject?.name}
+        downloadName={`RNC_${activeProject?.code ?? ""}_${nc?.code ?? "detail"}.pdf`}
+      />
     </div>
   );
 }
