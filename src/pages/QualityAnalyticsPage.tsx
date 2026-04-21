@@ -279,15 +279,9 @@ export default function QualityAnalyticsPage() {
       }
 
       // ─── SECÇÃO B: PPI ────────────────────────────────────────────
-      const ppiItems = results[1].status === "fulfilled" ? (results[1].value.data ?? []) as any[] : [];
-      const ppiInstances = results[2].status === "fulfilled" ? (results[2].value.data ?? []) as any[] : [];
-      const checkpoints = results[3].status === "fulfilled" ? (results[3].value.data ?? []) as any[] : [];
+      const ppiItems = results[1].status === "fulfilled" ? ((results[1].value as any).data ?? []) as any[] : [];
+      // ppiInstances já definido em cima
 
-      // Mapa label -> point_type
-      const cpTypeMap = new Map<string, string>();
-      for (const cp of checkpoints) {
-        if (cp.label && cp.point_type) cpTypeMap.set(cp.label, cp.point_type);
-      }
 
       // Conformidade geral
       const verifiable = ppiItems.filter((it) => it.result === "ok" || it.result === "nok");
