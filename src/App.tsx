@@ -3,9 +3,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
-import { AuthProvider } from "@/contexts/AuthContext";
-import { ProjectProvider } from "@/contexts/ProjectContext";
+import { BrowserRouter, Routes, Route, useLocation, useNavigate, Navigate } from "react-router-dom";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { ProjectProvider, useProject } from "@/contexts/ProjectContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { PageTransition } from "@/components/layout/PageTransition";
@@ -16,6 +16,8 @@ import { Loader2 } from "lucide-react";
 import { queryClient } from "@/lib/queryClient";
 import { PWAInstallBanner } from "@/components/pwa/PWAInstallBanner";
 import { useProjectRole } from "@/hooks/useProjectRole";
+
+const PROJECT_STORAGE_KEY = "atlas_active_project_id";
 
 // Static imports — needed before auth redirect
 import LoginPage from "./pages/LoginPage";
