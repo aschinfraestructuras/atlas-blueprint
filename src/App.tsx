@@ -118,23 +118,23 @@ function ViewerGuard({ children }: { children: React.ReactNode }) {
  * choose from, send them to /select-project. With exactly 1 project the
  * ProjectContext auto-selects it; with 0 projects we let the dashboard show
  * its own empty state.
+ *
+ * Renders <Navigate> synchronously (no useEffect) to avoid a flash of the
+ * MainLayout before the redirect.
  */
 function ProjectSelectorRedirect({ children }: { children: React.ReactNode }) {
   const { projects, activeProject, loading } = useProject();
   const location = useLocation();
-  const navigate = useNavigate();
 
-  useEffect(() => {
-    if (loading) return;
-    if (location.pathname !== "/") return;
+  if (!loading && location.pathname === "/") {
     const hasSavedChoice = !!localStorage.getItem(PROJECT_STORAGE_KEY);
     const visible = projects.filter(
       (p) => p.status !== "archived" && p.status !== "inactive",
     );
     if (!hasSavedChoice && visible.length >= 2 && !activeProject) {
-      navigate("/select-project", { replace: true });
+      return <Navigate to="/select-project" replace />;
     }
-  }, [loading, projects, activeProject, location.pathname, navigate]);
+  }
 
   return <>{children}</>;
 }
@@ -142,14 +142,14 @@ function ProjectSelectorRedirect({ children }: { children: React.ReactNode }) {
 function ProtectedLayout({ children }: { children: React.ReactNode }) {
   return (
     <ProtectedRoute>
-      <MainLayout>
-        <ViewerGuard>
-          <ProjectSelectorRedirect>
+      <ProjectSelectorRedirect>
+        <MainLayout>
+          <ViewerGuard>
             <PageTransition>{children}</PageTransition>
-          </ProjectSelectorRedirect>
-        </ViewerGuard>
-      </MainLayout>
-      <ScreenSaver idleMinutes={3} />
+          </ViewerGuard>
+        </MainLayout>
+        <ScreenSaver idleMinutes={3} />
+      </ProjectSelectorRedirect>
     </ProtectedRoute>
   );
 }
