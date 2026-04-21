@@ -113,6 +113,9 @@ export default function RfiDetailPage() {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages]);
 
+  // Cleanup PDF preview blob URL on unmount or URL change
+  useEffect(() => () => revokeHtmlPreviewUrl(previewUrl), [previewUrl]);
+
   if (!activeProject) return <NoProjectBanner />;
 
   if (loading)
@@ -240,9 +243,6 @@ export default function RfiDetailPage() {
     setPreviewUrl(url);
     setPreviewOpen(true);
   };
-
-  // Cleanup preview URL when component unmounts
-  useEffect(() => () => revokeHtmlPreviewUrl(previewUrl), [previewUrl]);
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
