@@ -443,6 +443,14 @@ export default function NCDetailPage() {
           )}
           <Button
             size="sm" variant="outline"
+            onClick={handlePreviewPdf}
+            className="gap-1.5 flex-shrink-0"
+          >
+            <Eye className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">{t("common.preview", { defaultValue: "Pré-visualizar" })}</span>
+          </Button>
+          <Button
+            size="sm" variant="outline"
             onClick={() => handleExportPdf()}
             className="gap-1.5 flex-shrink-0"
             disabled={exporting}
