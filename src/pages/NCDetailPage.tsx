@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   ArrowLeft, AlertTriangle, Calendar, Clock, User, Tag, Pencil,
-  CheckCircle2, RotateCcw, Archive, Loader2,
+  CheckCircle2, RotateCcw, Archive, Loader2, Eye,
   FileText, Shield, Link2, ClipboardList, Printer, FileDown, Trash2,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,8 +11,11 @@ import { ncService, type NonConformity } from "@/lib/services/ncService";
 import { auditService, type AuditEntry } from "@/lib/services/auditService";
 import {
   exportNCPdf,
+  buildNCDetailHtml,
   type NCExportLabels,
 } from "@/lib/services/ncExportService";
+import { PdfPreviewDialog } from "@/components/ui/pdf-preview-dialog";
+import { buildHtmlPreviewUrl, revokeHtmlPreviewUrl } from "@/lib/utils/htmlPreview";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { NCFormDialog } from "@/components/nc/NCFormDialog";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
