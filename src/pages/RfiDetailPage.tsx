@@ -232,6 +232,18 @@ export default function RfiDetailPage() {
     exportRfiDetailPdf(rfi, messages, meta, logoBase64);
   };
 
+  const handlePreviewPdf = () => {
+    if (!rfi) return;
+    revokeHtmlPreviewUrl(previewUrl);
+    const html = buildRfiDetailHtml(rfi, messages, meta, logoBase64);
+    const url = buildHtmlPreviewUrl(html);
+    setPreviewUrl(url);
+    setPreviewOpen(true);
+  };
+
+  // Cleanup preview URL when component unmounts
+  useEffect(() => () => revokeHtmlPreviewUrl(previewUrl), [previewUrl]);
+
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
       {/* Top bar */}
@@ -248,6 +260,10 @@ export default function RfiDetailPage() {
             entityCode={rfi.code}
             defaultSubject={`RFI — ${rfi.code} — ${rfi.subject}`}
           />
+          <Button variant="outline" size="sm" onClick={handlePreviewPdf} className="gap-1.5">
+            <Eye className="h-3.5 w-3.5" />
+            {t("common.preview", { defaultValue: "Pré-visualizar" })}
+          </Button>
           <Button variant="outline" size="sm" onClick={handleExportPdf} className="gap-1.5">
             <Download className="h-3.5 w-3.5" />
             PDF
