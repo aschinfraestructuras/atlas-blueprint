@@ -196,6 +196,7 @@ const App = () => (
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/reset-password" element={<ResetPasswordPage />} />
                 <Route path="/confirm-receipt" element={<ConfirmReceiptPage />} />
+                <Route path="/select-project" element={<AuthOnlyRoute><ProjectSelectorPage /></AuthOnlyRoute>} />
                 <Route path="/invite/accept" element={<ProtectedLayout><AcceptInvitePage /></ProtectedLayout>} />
 
                 {/* Protected – all share MainLayout */}
