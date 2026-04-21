@@ -46,6 +46,7 @@ import {
   CheckCircle2, XCircle, Clock, AlertTriangle, CloudSun, Sun, Cloud,
   CloudRain, Wind, Thermometer,
 } from "lucide-react";
+import { FieldRecordDetailDialog } from "@/components/field-records/FieldRecordDetailDialog";
 
 // ── Cores por resultado ────────────────────────────────────────────────────────
 const RESULT_CFG: Record<string, { cls: string; icon: React.ElementType; label: string }> = {
@@ -391,6 +392,7 @@ export default function FieldRecordsPage() {
   const [filterType, setFilterType] = useState("all");
   const [formOpen, setFormOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [viewId, setViewId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     if (!activeProject) return;
@@ -534,7 +536,11 @@ export default function FieldRecordsPage() {
               const ResultIcon = resultCfg.icon;
               const typeCfg = TYPE_CFG[r.point_type] ?? TYPE_CFG.rp;
               return (
-                <TableRow key={r.id} className="hover:bg-muted/20 cursor-pointer group">
+                <TableRow
+                  key={r.id}
+                  className="hover:bg-muted/20 cursor-pointer group"
+                  onClick={() => setViewId(r.id)}
+                >
                   <TableCell className="font-mono text-xs text-muted-foreground">{r.code}</TableCell>
                   <TableCell>
                     <span className={cn("inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold", typeCfg.cls)}>
@@ -553,14 +559,21 @@ export default function FieldRecordsPage() {
                       {resultCfg.label}
                     </span>
                   </TableCell>
-                  <TableCell>
+                  <TableCell onClick={e => e.stopPropagation()}>
                     <div className="flex items-center gap-1 justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button size="icon" variant="ghost" className="h-7 w-7 hover:text-primary"
+                        title={t("common.view", { defaultValue: "Ver" })}
+                        onClick={() => setViewId(r.id)}>
+                        <Eye className="h-3.5 w-3.5" />
+                      </Button>
                       <Button size="icon" variant="ghost" className="h-7 w-7"
+                        title={t("common.exportPdf", { defaultValue: "Exportar PDF" })}
                         onClick={() => fieldRecordService.exportPdf(r as any, activeProject.name)}>
                         <FileDown className="h-3.5 w-3.5" />
                       </Button>
                       {canDelete && (
                         <Button size="icon" variant="ghost" className="h-7 w-7 hover:text-destructive"
+                          title={t("common.delete")}
                           onClick={() => setDeleteId(r.id)}>
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>
