@@ -90,6 +90,7 @@ export default function ProjectSelectorPage() {
     if (visible.length === 1) {
       setActiveProject(visible[0]);
       markProjectAccessed(visible[0].id);
+      sessionStorage.setItem("atlas_session_project_chosen", "1");
       navigate("/", { replace: true });
     }
   }, [projects, projectsLoading, setActiveProject, navigate]);
@@ -185,6 +186,7 @@ export default function ProjectSelectorPage() {
 
   const handleSelect = (project: Project) => {
     markProjectAccessed(project.id);
+    sessionStorage.setItem("atlas_session_project_chosen", "1");
     setActiveProject(project);
     navigate("/");
   };

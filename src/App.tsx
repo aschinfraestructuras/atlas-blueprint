@@ -18,6 +18,7 @@ import { PWAInstallBanner } from "@/components/pwa/PWAInstallBanner";
 import { useProjectRole } from "@/hooks/useProjectRole";
 
 const PROJECT_STORAGE_KEY = "atlas_active_project_id";
+const SESSION_PROJECT_CHOSEN_KEY = "atlas_session_project_chosen";
 
 // Static imports — needed before auth redirect
 import LoginPage from "./pages/LoginPage";
@@ -127,11 +128,13 @@ function ProjectSelectorRedirect({ children }: { children: React.ReactNode }) {
   const location = useLocation();
 
   if (!loading && location.pathname === "/") {
-    const hasSavedChoice = !!localStorage.getItem(PROJECT_STORAGE_KEY);
+    const sessionChosen = sessionStorage.getItem(SESSION_PROJECT_CHOSEN_KEY) === "1";
     const visible = projects.filter(
       (p) => p.status !== "archived" && p.status !== "inactive",
     );
-    if (!hasSavedChoice && visible.length >= 2 && !activeProject) {
+    // Always show selector once per session when the user has 2+ visible projects.
+    // Within the same session, after picking one, navigation to "/" goes straight to the dashboard.
+    if (!sessionChosen && visible.length >= 2) {
       return <Navigate to="/select-project" replace />;
     }
   }
