@@ -131,6 +131,18 @@ export function TopBar({ onMobileMenuOpen }: TopBarProps) {
               </DropdownMenuItem>
             ))
           )}
+          {projects.length > 1 && (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => navigate("/select-project")}
+                className="gap-2 text-sm font-medium text-primary"
+              >
+                <LayoutGrid className="h-3.5 w-3.5" />
+                {t("topbar.projectSelector.viewAll", { defaultValue: "Ver todas as obras" })}
+              </DropdownMenuItem>
+            </>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
 
