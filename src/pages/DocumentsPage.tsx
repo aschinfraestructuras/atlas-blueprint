@@ -98,6 +98,9 @@ export default function DocumentsPage() {
   const [deleteDoc, setDeleteDoc] = useState<Document | null>(null);
   const [deleting, setDeleting]   = useState(false);
 
+  // ── PDF preview ───────────────────────────────────────────────────────────
+  const [previewDoc, setPreviewDoc] = useState<Document | null>(null);
+
   // ── Role check (replaces manual admin check) ──────────────────────────────
   const { isAdmin, canCreate, canEdit, canDelete } = useProjectRole();
 
@@ -475,7 +478,13 @@ export default function DocumentsPage() {
                         <RowActionMenu
                           shareUrl={`${window.location.origin}/documents/${doc.id}`}
                           actions={[
-                            { key: "view", label: t("common.view"), icon: Eye, onClick: () => navigate(`/documents/${doc.id}`) },
+                            ...((doc as any).file_url ? [{
+                              key: "preview",
+                              label: t("documents.previewPdf", { defaultValue: "Pré-visualizar" }),
+                              icon: Eye,
+                              onClick: () => setPreviewDoc(doc),
+                            }] : []),
+                            { key: "view", label: t("common.view"), icon: ExternalLink, onClick: () => navigate(`/documents/${doc.id}`) },
                             { key: "edit", label: t("common.edit"), icon: Pencil, onClick: () => { setEditDoc(doc); setFormOpen(true); }, hidden: !canEdit },
                             { key: "delete", label: t("common.delete"), icon: Trash2, onClick: () => setDeleteDoc(doc), variant: "destructive", hidden: !isAdmin },
                           ]}
@@ -511,6 +520,16 @@ export default function DocumentsPage() {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        {/* PDF Preview Dialog */}
+        <PdfPreviewDialog
+          open={!!previewDoc}
+          onOpenChange={(v) => { if (!v) setPreviewDoc(null); }}
+          url={(previewDoc as any)?.file_url}
+          title={previewDoc?.title}
+          subtitle={previewDoc?.revision ? `Revisão ${previewDoc.revision}` : (previewDoc as any)?.code}
+          downloadName={previewDoc ? `${previewDoc.title}.pdf` : null}
+        />
 
         {/* Meeting Actions Panel */}
         <MeetingActionsPanel />
