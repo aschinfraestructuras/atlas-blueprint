@@ -66,6 +66,8 @@ const ActivityDetailPage = lazy(() => import("./pages/ActivityDetailPage"));
 const ExpirationsPage = lazy(() => import("./pages/ExpirationsPage"));
 const DeadlinesPage = lazy(() => import("./pages/DeadlinesPage"));
 const QCReportPage = lazy(() => import("./pages/QCReportPage"));
+const ReportsPage = lazy(() => import("./pages/ReportsPage"));
+const IndicatorsPage = lazy(() => import("./pages/IndicatorsPage"));
 const LaboratoriesPage = lazy(() => import("./pages/LaboratoriesPage"));
 const DailyReportsPage = lazy(() => import("./pages/DailyReportsPage"));
 const DailyReportDetailPage = lazy(() => import("./pages/DailyReportDetailPage"));
@@ -254,7 +256,12 @@ const App = () => (
 
                 <Route path="/expirations" element={<ProtectedLayout><ExpirationsPage /></ProtectedLayout>} />
                 <Route path="/deadlines" element={<ProtectedLayout><DeadlinesPage /></ProtectedLayout>} />
-                <Route path="/reports/qc" element={<ProtectedLayout><QCReportPage /></ProtectedLayout>} />
+                <Route path="/reports/qc" element={<Navigate to="/reports?tab=qc" replace />} />
+                <Route path="/reports/monthly" element={<Navigate to="/reports?tab=monthly" replace />} />
+                <Route path="/reports" element={<ProtectedLayout><ReportsPage /></ProtectedLayout>} />
+                <Route path="/sgq-matrix" element={<Navigate to="/indicators?tab=sgq" replace />} />
+                <Route path="/contract-kpis" element={<Navigate to="/indicators?tab=kpis" replace />} />
+                <Route path="/indicators" element={<ProtectedLayout><IndicatorsPage /></ProtectedLayout>} />
                 <Route path="/topography" element={<ProtectedLayout><TopographyPage /></ProtectedLayout>} />
                 <Route path="/planning" element={<ProtectedLayout><PlanningPage /></ProtectedLayout>} />
                 <Route path="/planning/activities/:id" element={<ProtectedLayout><ActivityDetailPage /></ProtectedLayout>} />
@@ -263,10 +270,7 @@ const App = () => (
                 <Route path="/daily-reports/:id" element={<ProtectedLayout><DailyReportDetailPage /></ProtectedLayout>} />
                 <Route path="/recycled-materials" element={<ProtectedLayout><RecycledMaterialsPage /></ProtectedLayout>} />
                 <Route path="/admin/health" element={<ProtectedLayout><HealthCheckPage /></ProtectedLayout>} />
-                <Route path="/sgq-matrix" element={<ProtectedLayout><SGQMatrixPage /></ProtectedLayout>} />
-                <Route path="/contract-kpis" element={<ProtectedLayout><ContractKPIsPage /></ProtectedLayout>} />
                 <Route path="/training" element={<ProtectedLayout><TrainingPage /></ProtectedLayout>} />
-                <Route path="/reports/monthly" element={<ProtectedLayout><MonthlyReportPage /></ProtectedLayout>} />
                 <Route path="/dfo" element={<ProtectedLayout><DFOPage /></ProtectedLayout>} />
                 <Route path="/tests/concrete" element={<ProtectedLayout><ConcretePage /></ProtectedLayout>} />
                 <Route path="/tests/compaction" element={<ProtectedLayout><CompactionPage /></ProtectedLayout>} />

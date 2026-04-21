@@ -224,7 +224,9 @@
     "qualityAnalytics": "Análise de Qualidade",
     "map": "Mapa da Obra",
     "fieldRecords": "Grelhas de Campo",
-    "notifications": "Notificações"
+    "notifications": "Notificações",
+    "reports": "Relatórios",
+    "indicators": "Indicadores SGQ"
   },
   "topbar": {
     "language": "Idioma",
@@ -2250,7 +2252,8 @@
       "uploadTitle": "Carregar nova versão",
       "versionsTitle": "Histórico de Revisões",
       "workflow": "Fluxo de Aprovação"
-    }
+    },
+    "pdfPreview": "Pré-visualizar PDF"
   },
   "survey": {
     "newRecord": "Novo Levantamento",

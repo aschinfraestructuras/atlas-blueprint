@@ -113,10 +113,8 @@ const NAV_SECTIONS: SidebarSection[] = [
       { labelKey: "nav.notifications",  url: "/notifications",  icon: Bell },
       // Prazos e Vencimentos removidos — acessíveis via /notifications (rotas /deadlines e /expirations mantidas)
       { labelKey: "nav.traceability",   url: "/traceability",   icon: Link2 },
-      { labelKey: "nav.qcReport",      url: "/reports/qc",     icon: BarChart3 },
-      { labelKey: "nav.monthlyReport",  url: "/reports/monthly", icon: FileBarChart2 },
-      { labelKey: "nav.sgqMatrix",      url: "/sgq-matrix",     icon: ShieldCheck },
-      { labelKey: "nav.contractKpis",   url: "/contract-kpis",  icon: TrendingUp },
+      { labelKey: "nav.reports",         url: "/reports",        icon: FileBarChart2 },
+      { labelKey: "nav.indicators",      url: "/indicators",     icon: TrendingUp },
       { labelKey: "nav.qualityAnalytics", url: "/quality-analytics", icon: Activity, requiredAction: "viewAudit" },
       { labelKey: "nav.mqt",            url: "/mqt",            icon: FileSpreadsheet },
     ],

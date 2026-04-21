@@ -26,6 +26,9 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle,
+} from "@/components/ui/dialog";
 import { FilterBar } from "@/components/ui/filter-bar";
 import { EmptyState } from "@/components/EmptyState";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
@@ -72,6 +75,8 @@ export default function PlansPage() {
   const [editingPlan, setEditingPlan] = useState<Plan | null>(null);
   const [deletingPlan, setDeletingPlan] = useState<Plan | null>(null);
   const [deleting, setDeleting] = useState(false);
+  // PDF quick-preview
+  const [previewPlan, setPreviewPlan] = useState<Plan | null>(null);
 
   // Filters
   const [search, setSearch] = useState("");
@@ -312,6 +317,17 @@ export default function PlansPage() {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
+                      {/* Preview rápido PDF — só para planos com file_url PDF */}
+                      {(plan as any).file_url?.toLowerCase().endsWith(".pdf") && (
+                        <Button
+                          variant="ghost" size="icon"
+                          className="h-7 w-7 text-primary/60 hover:text-primary"
+                          title={t("plans.pdfPreview", { defaultValue: "Pré-visualizar PDF" })}
+                          onClick={() => setPreviewPlan(plan)}
+                        >
+                          <Eye className="h-3.5 w-3.5" />
+                        </Button>
+                      )}
                       <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-primary" onClick={() => navigate(`/plans/${plan.id}`)}>
                         <Eye className="h-3.5 w-3.5" />
                       </Button>
@@ -335,6 +351,24 @@ export default function PlansPage() {
       )}
 
       <PlanFormDialog open={dialogOpen} onOpenChange={setDialogOpen} plan={editingPlan} onSuccess={refetch} />
+
+      {/* ── PDF Quick Preview Dialog ─────────────────────────────────────── */}
+      <Dialog open={!!previewPlan} onOpenChange={v => { if (!v) setPreviewPlan(null); }}>
+        <DialogContent className="max-w-4xl w-[95vw] max-h-[90vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="text-sm font-semibold truncate pr-8">
+              {previewPlan?.title} {previewPlan?.revision && <span className="text-muted-foreground font-normal">— {previewPlan.revision}</span>}
+            </DialogTitle>
+          </DialogHeader>
+          {previewPlan && (
+            <iframe
+              src={(previewPlan as any).file_url}
+              className="flex-1 min-h-[60vh] w-full rounded-lg border border-border"
+              title={previewPlan.title}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
 
       <AlertDialog open={!!deletingPlan} onOpenChange={(v) => { if (!v) setDeletingPlan(null); }}>
         <AlertDialogContent>

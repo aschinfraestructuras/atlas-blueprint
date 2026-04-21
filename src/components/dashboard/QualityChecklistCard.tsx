@@ -189,7 +189,7 @@ export function QualityChecklistCard({ items, loading, globalPct }: Props) {
               variant="outline"
               size="sm"
               className="h-7 gap-1.5 text-[11px] font-semibold border-primary/30 text-primary hover:bg-primary/5"
-              onClick={() => navigate("/sgq-matrix")}
+              onClick={() => navigate("/indicators?tab=sgq")}
             >
               {t("dashboard.checklist.viewAll")}
               <ArrowRight className="h-3 w-3" />

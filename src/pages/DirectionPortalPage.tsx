@@ -176,8 +176,8 @@ export default function DirectionPortalPage() {
         <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground mb-3">{t("portal.reportsTitle")}</p>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {[
-            { icon: FileBarChart2, labelKey: "nav.monthlyReport",  fallback: "Relatório Mensal SGQ", route: "/reports/monthly" },
-            { icon: TrendingUp,    labelKey: "nav.contractKpis",   fallback: "KPIs Contratuais",     route: "/contract-kpis" },
+            { icon: FileBarChart2, labelKey: "nav.monthlyReport",  fallback: "Relatório Mensal SGQ", route: "/reports?tab=monthly" },
+            { icon: TrendingUp,    labelKey: "nav.contractKpis",   fallback: "KPIs Contratuais",     route: "/indicators?tab=kpis" },
             { icon: ClipboardCheck,labelKey: "portal.ppiLabel",    fallback: "PPIs",                 route: "/ppi" },
             { icon: AlertTriangle, labelKey: "portal.ncLabel",     fallback: "NCs",                  route: "/non-conformities" },
             { icon: FlaskConical,  labelKey: "nav.tests",          fallback: "Ensaios",              route: "/tests" },

@@ -224,7 +224,9 @@
     "map": "Mapa de Obra",
     "mqt": "MQT — Mapa Cantidades",
     "fieldRecords": "Registros de Campo",
-    "notifications": "Notificaciones"
+    "notifications": "Notificaciones",
+    "reports": "Informes",
+    "indicators": "Indicadores SGQ"
   },
   "topbar": {
     "language": "Idioma",
@@ -2340,7 +2342,8 @@
       "uploadTitle": "Cargar nueva versión",
       "versionsTitle": "Historial de Revisiones",
       "workflow": "Flujo de Aprobación"
-    }
+    },
+    "pdfPreview": "Previsualizar PDF"
   },
   "survey": {
     "newRecord": "Nuevo Levantamiento",
