@@ -130,24 +130,13 @@ export default function QualityAnalyticsPage() {
           .eq("project_id", pid)
           .eq("is_deleted", false)
           .limit(2000),
-        // PPI items
-        supabase
-          .from("ppi_instance_items")
-          .select("id, result, label, ppi_instance:ppi_instances!inner(project_id, status, is_deleted)")
-          .eq("ppi_instance.project_id", pid)
-          .eq("ppi_instance.is_deleted", false)
-          .limit(5000),
-        // PPI instances (for status chart)
+        // PPI instances (for status chart + filter de items)
         supabase
           .from("ppi_instances")
           .select("id, status")
           .eq("project_id", pid)
           .eq("is_deleted", false)
           .limit(2000),
-        // PPI checkpoints (for HP/RP/WP type)
-        supabase
-          .from("ppi_template_checkpoints")
-          .select("id, label, point_type"),
         // Tests
         supabase
           .from("test_results")
