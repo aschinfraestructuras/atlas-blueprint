@@ -10,7 +10,7 @@ import { NotificationBell } from "@/components/notifications/NotificationBell";
 import {
   LogOut, User, Globe, Menu, ChevronDown, Building2, Check, Loader2,
   Search, Sun, Moon, Monitor, Lock, Plus,
-  AlertTriangle, ClipboardCheck, FlaskConical, FileText,
+  AlertTriangle, ClipboardCheck, FlaskConical, FileText, LayoutGrid,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
