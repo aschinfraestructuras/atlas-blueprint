@@ -197,6 +197,11 @@ export default function ProjectSelectorPage() {
   /* ── Loading state (full page) ─────────────────────────────────────── */
   const showInitialLoader = authLoading || projectsLoading;
 
+  /* ── Auth gate (after all hooks) ───────────────────────────────────── */
+  if (!authLoading && !user) {
+    return <Navigate to="/login" replace />;
+  }
+
   return (
     <div className="relative min-h-screen overflow-hidden text-white"
          style={{ background: "hsl(215 45% 11%)" }}>
