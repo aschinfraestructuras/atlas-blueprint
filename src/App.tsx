@@ -171,7 +171,12 @@ function AuthOnlyRoute({ children }: { children: React.ReactNode }) {
     );
   }
   if (!user) return <Navigate to="/login" replace />;
-  return <>{children}</>;
+  return (
+    <>
+      {children}
+      <ScreenSaver idleMinutes={3} />
+    </>
+  );
 }
 
 function PageLoader() {
