@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useProject } from "@/contexts/ProjectContext";
 import { useAllProjectsHealth } from "@/hooks/useProjectHealth";
 import { useLastProjectAccess, markProjectAccessed } from "@/hooks/useLastProjectAccess";
+import { useCountUp } from "@/hooks/useCountUp";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,7 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import {
-  ShieldCheck, LogOut, Globe, Search, Loader2, ArrowRight,
+  ShieldCheck, LogOut, Globe, Search, ArrowRight,
   Building2, MapPin, Briefcase, Clock, AlertTriangle, ClipboardCheck,
   FlaskConical, Sparkles, Mail,
 } from "lucide-react";
@@ -33,7 +34,6 @@ const ADMIN_CONTACT = "support@aschquality.com";
    Helpers
    ───────────────────────────────────────────────────────────────────────── */
 
-// Deterministic colour from a string (hue 0-359). Always the same for a given input.
 function hueFromString(s: string): number {
   let h = 0;
   for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
@@ -60,6 +60,14 @@ function formatRelative(date: Date | null, lang: string): string | null {
   return date.toLocaleDateString(lang === "es" ? "es-ES" : "pt-PT", {
     day: "2-digit", month: "short", year: "numeric",
   });
+}
+
+function formatLongDate(lang: string): string {
+  const locale = lang === "es" ? "es-ES" : "pt-PT";
+  const formatted = new Date().toLocaleDateString(locale, {
+    weekday: "long", day: "numeric", month: "long",
+  });
+  return formatted.charAt(0).toUpperCase() + formatted.slice(1);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -95,7 +103,7 @@ export default function ProjectSelectorPage() {
     }
   }, [projects, projectsLoading, setActiveProject, navigate]);
 
-  /* ── Fetch role per project (parallel, lightweight) ────────────────── */
+  /* ── Fetch role per project ────────────────────────────────────────── */
   useEffect(() => {
     if (!user || projects.length === 0) return;
     let cancelled = false;
@@ -120,7 +128,7 @@ export default function ProjectSelectorPage() {
     return () => { cancelled = true; };
   }, [user, projects]);
 
-  /* ── ⌘K / Ctrl+K → focus search ────────────────────────────────────── */
+  /* ── ⌘K → focus search ─────────────────────────────────────────────── */
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
@@ -137,13 +145,15 @@ export default function ProjectSelectorPage() {
     return () => window.removeEventListener("keydown", handler);
   }, []);
 
-  /* ── Greeting based on local time ──────────────────────────────────── */
+  /* ── Greeting + date ───────────────────────────────────────────────── */
   const greeting = useMemo(() => {
     const h = new Date().getHours();
     if (h < 12) return t("projectSelector.greetingMorning");
     if (h < 19) return t("projectSelector.greetingAfternoon");
     return t("projectSelector.greetingEvening");
   }, [t, i18n.language]);
+
+  const longDate = useMemo(() => formatLongDate(i18n.language), [i18n.language]);
 
   const userName = useMemo(() => {
     const meta = (user?.user_metadata ?? {}) as { full_name?: string; name?: string };
@@ -166,7 +176,6 @@ export default function ProjectSelectorPage() {
         (p.contractor?.toLowerCase().includes(q) ?? false)
       );
     });
-    // Last accessed first, then alphabetical by name
     list.sort((a, b) => {
       if (a.id === lastAccessedId) return -1;
       if (b.id === lastAccessedId) return 1;
@@ -174,6 +183,17 @@ export default function ProjectSelectorPage() {
     });
     return list;
   }, [projects, query, statusFilter, lastAccessedId]);
+
+  /* ── Hero project (last accessed, only when no filter applied) ─────── */
+  const heroProject = useMemo(() => {
+    if (query.trim() || statusFilter !== "active") return null;
+    return filtered.find((p) => p.id === lastAccessedId) ?? null;
+  }, [filtered, query, statusFilter, lastAccessedId]);
+
+  const restProjects = useMemo(
+    () => (heroProject ? filtered.filter((p) => p.id !== heroProject.id) : filtered),
+    [filtered, heroProject],
+  );
 
   const counts = useMemo(() => {
     let active = 0, archived = 0;
@@ -196,18 +216,20 @@ export default function ProjectSelectorPage() {
     navigate("/login", { replace: true });
   };
 
-  /* ── Loading state (full page) ─────────────────────────────────────── */
   const showInitialLoader = authLoading || projectsLoading;
 
-  /* ── Auth gate (after all hooks) ───────────────────────────────────── */
   if (!authLoading && !user) {
     return <Navigate to="/login" replace />;
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden text-white"
-         style={{ background: "hsl(215 45% 11%)" }}>
-      {/* ── Ambient background — extremely subtle ────────────────────── */}
+    <div
+      className="relative min-h-screen overflow-hidden text-white"
+      style={{
+        background: "hsl(215 45% 11%)",
+        fontFeatureSettings: '"ss01", "cv11", "rlig" 1, "calt" 1',
+      }}
+    >
       <BackgroundLayer />
 
       {/* ── Header ───────────────────────────────────────────────────── */}
@@ -217,17 +239,16 @@ export default function ProjectSelectorPage() {
             <ShieldCheck className="h-4.5 w-4.5 text-white/90" strokeWidth={1.6} />
           </div>
           <div className="flex flex-col leading-tight">
-            <span className="text-[11px] font-bold tracking-[0.32em] uppercase text-white/95">
+            <span className="text-[11px] font-bold tracking-[0.28em] uppercase text-white/95">
               {t("common.appName")}
             </span>
-            <span className="text-[9px] tracking-[0.28em] uppercase text-white/40">
+            <span className="text-[9px] tracking-[0.24em] uppercase text-white/40">
               {t("projectSelector.qmsLabel")}
             </span>
           </div>
         </div>
 
         <div className="flex items-center gap-1.5">
-          {/* Language */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -252,7 +273,6 @@ export default function ProjectSelectorPage() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Logout — icon only, with tooltip via title */}
           <Button
             variant="ghost"
             size="icon"
@@ -267,32 +287,45 @@ export default function ProjectSelectorPage() {
       </header>
 
       {/* ── Main ─────────────────────────────────────────────────────── */}
-      <main className="relative z-10 mx-auto w-full max-w-7xl px-6 pb-24 pt-4 sm:px-10 sm:pt-8">
-        {/* Hero — greeting */}
-        <section className="mb-10 sm:mb-14 max-w-3xl">
-          <p className="mb-2 text-[10px] font-semibold tracking-[0.36em] uppercase text-white/35">
-            {t("projectSelector.eyebrow")}
-          </p>
-          <h1 className="text-[2rem] sm:text-[2.6rem] font-light leading-[1.05] tracking-tight text-white">
+      <main className="relative z-10 mx-auto w-full max-w-7xl px-6 pb-24 pt-4 sm:px-10 sm:pt-10">
+        {/* Hero — greeting (refinamento #1 + #5) */}
+        <section className="mb-12 sm:mb-16 max-w-3xl">
+          <div className="mb-4 flex items-center gap-3">
+            <span className="text-[10px] font-semibold tracking-[0.28em] uppercase text-white/40">
+              {t("projectSelector.eyebrow")}
+            </span>
+            <span className="h-3 w-px bg-white/15" aria-hidden="true" />
+            <span className="text-[10px] font-medium tracking-[0.18em] uppercase text-white/35">
+              {longDate}
+            </span>
+          </div>
+          <h1
+            className="font-light text-white"
+            style={{
+              fontSize: "clamp(2.25rem, 5vw, 3.75rem)",
+              lineHeight: "1.02",
+              letterSpacing: "-0.035em",
+            }}
+          >
             {greeting}
             {userName ? <span className="text-white/55">, {userName}</span> : ""}.
           </h1>
-          <p className="mt-3 text-sm sm:text-[15px] leading-relaxed text-white/55 max-w-xl">
+          <p className="mt-4 text-[15px] sm:text-base leading-relaxed text-white/55 max-w-xl">
             {t("projectSelector.subtitle")}
           </p>
         </section>
 
-        {/* Toolbar — search + filter */}
+        {/* Toolbar — search + filter (refinamento #7) */}
         {!showInitialLoader && projects.length > 0 && (
           <section className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="relative w-full sm:max-w-sm">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-white/35" />
+            <div className="relative w-full sm:max-w-sm group/search">
+              <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-white/35 transition-colors group-focus-within/search:text-white/70" />
               <Input
                 ref={searchInputRef}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={t("projectSelector.searchPlaceholder")}
-                className="h-10 border-white/10 bg-white/[0.04] pl-9 pr-16 text-sm text-white placeholder:text-white/30 focus-visible:border-white/30 focus-visible:ring-0"
+                className="h-11 border-white/10 bg-white/[0.04] pl-10 pr-16 text-sm text-white placeholder:text-white/30 transition-all focus-visible:border-white/30 focus-visible:bg-white/[0.06] focus-visible:ring-2 focus-visible:ring-sky-400/15 focus-visible:ring-offset-0"
               />
               <kbd className="pointer-events-none absolute right-3 top-1/2 hidden -translate-y-1/2 items-center gap-0.5 rounded border border-white/15 bg-white/[0.04] px-1.5 py-0.5 text-[10px] font-mono text-white/45 sm:inline-flex">
                 ⌘K
@@ -326,18 +359,38 @@ export default function ProjectSelectorPage() {
           <NoMatchState query={query} onClear={() => setQuery("")} />
         ) : (
           <ul className="grid grid-cols-1 gap-4 sm:gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {filtered.map((project, i) => (
+            {/* Hero card — span 2 (refinamento #2) */}
+            {heroProject && (
+              <li
+                key={heroProject.id}
+                className="opacity-0 md:col-span-2 xl:col-span-2"
+                style={{
+                  animation: "psFadeIn 480ms cubic-bezier(0.22, 1, 0.36, 1) forwards",
+                }}
+              >
+                <HeroProjectCard
+                  project={heroProject}
+                  lastAccess={getLastAccess(heroProject.id)}
+                  health={healthMap.find((h) => h.project_id === heroProject.id)}
+                  role={roleByProject[heroProject.id] ?? null}
+                  onSelect={() => handleSelect(heroProject)}
+                  lang={i18n.language}
+                />
+              </li>
+            )}
+
+            {restProjects.map((project, i) => (
               <li
                 key={project.id}
                 className="opacity-0"
                 style={{
                   animation: "psFadeIn 480ms cubic-bezier(0.22, 1, 0.36, 1) forwards",
-                  animationDelay: `${Math.min(i, 12) * 55}ms`,
+                  animationDelay: `${Math.min(i + (heroProject ? 1 : 0), 12) * 55}ms`,
                 }}
               >
                 <ProjectCard
                   project={project}
-                  isLast={project.id === lastAccessedId}
+                  isLast={false}
                   lastAccess={getLastAccess(project.id)}
                   health={healthMap.find((h) => h.project_id === project.id)}
                   role={roleByProject[project.id] ?? null}
@@ -350,15 +403,23 @@ export default function ProjectSelectorPage() {
         )}
       </main>
 
-      {/* ── Footer ───────────────────────────────────────────────────── */}
+      {/* ── Footer (refinamento #6) ──────────────────────────────────── */}
       <footer className="relative z-10 border-t border-white/[0.06] px-6 py-5 sm:px-10">
         <div className="mx-auto flex w-full max-w-7xl flex-col items-center justify-between gap-2 text-[10px] tracking-[0.18em] uppercase text-white/30 sm:flex-row">
-          <span>Atlas QMS · v1.0</span>
-          <span>Asch Infraestructuras y Servicios · Quality Management</span>
+          <span>
+            Atlas QMS <span className="text-white/15">·</span> v1.0 <span className="text-white/15">·</span> Asch Infraestructuras y Servicios
+          </span>
+          <span className="inline-flex items-center gap-2">
+            <span className="relative inline-flex h-1.5 w-1.5">
+              <span className="absolute inset-0 rounded-full bg-emerald-400/60 ps-pulse-soft" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
+            </span>
+            <span className="text-white/45">{t("projectSelector.systemsOperational")}</span>
+          </span>
         </div>
       </footer>
 
-      {/* Animations */}
+      {/* Animations + grain (refinamento #3) */}
       <style>{`
         @keyframes psFadeIn {
           from { opacity: 0; transform: translateY(8px); }
@@ -368,34 +429,54 @@ export default function ProjectSelectorPage() {
           0%, 100% { transform: scale(1);   box-shadow: 0 0 0 0 hsl(155 65% 50% / 0.55); }
           70%      { transform: scale(1.1); box-shadow: 0 0 0 6px hsl(155 65% 50% / 0); }
         }
+        @keyframes psPulseSoft {
+          0%, 100% { opacity: 0.4; transform: scale(1); }
+          50%      { opacity: 0; transform: scale(2.4); }
+        }
         @keyframes psDrift {
           0%, 100% { transform: translate(0, 0); }
           50%      { transform: translate(20px, -16px); }
         }
+        @keyframes psDriftSlow {
+          0%, 100% { transform: translate(0, 0); }
+          50%      { transform: translate(-24px, 18px); }
+        }
+        @keyframes psShimmer {
+          0%   { transform: translateX(-120%); }
+          100% { transform: translateX(120%); }
+        }
         .ps-pulse { animation: psPulse 2.4s ease-in-out infinite; }
-        .ps-drift { animation: psDrift 18s ease-in-out infinite; }
+        .ps-pulse-soft { animation: psPulseSoft 2.6s ease-in-out infinite; }
+        .ps-drift { animation: psDrift 22s ease-in-out infinite; }
+        .ps-drift-slow { animation: psDriftSlow 28s ease-in-out infinite; }
       `}</style>
     </div>
   );
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
-   Background — extremely subtle ambient layer
+   Background — refinamento #3 (grain + 3 orbs)
    ───────────────────────────────────────────────────────────────────────── */
 
 function BackgroundLayer() {
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-      {/* Top vignette glow — navy-blue */}
+      {/* Top vignette glow — navy */}
       <div
         className="ps-drift absolute -top-40 left-1/2 h-[40rem] w-[60rem] -translate-x-1/2 rounded-full blur-3xl"
         style={{ background: "hsl(215 70% 30% / 0.35)" }}
       />
       {/* Bottom-right emerald breath */}
       <div
-        className="ps-drift absolute -bottom-32 -right-24 h-[28rem] w-[28rem] rounded-full blur-3xl"
-        style={{ background: "hsl(160 55% 35% / 0.18)", animationDelay: "6s" }}
+        className="ps-drift-slow absolute -bottom-32 -right-24 h-[28rem] w-[28rem] rounded-full blur-3xl"
+        style={{ background: "hsl(160 55% 35% / 0.18)" }}
       />
+      {/* Left violet whisper (NEW — refinamento #3) */}
+      <div
+        className="ps-drift-slow absolute top-1/3 -left-32 h-[22rem] w-[22rem] rounded-full blur-3xl"
+        style={{ background: "hsl(255 50% 45% / 0.12)", animationDelay: "9s" }}
+      />
+
       {/* Subtle grid overlay */}
       <div
         className="absolute inset-0 opacity-[0.04]"
@@ -407,6 +488,17 @@ function BackgroundLayer() {
           WebkitMaskImage: "radial-gradient(ellipse 70% 50% at 50% 30%, black 0%, transparent 70%)",
         }}
       />
+
+      {/* Grain noise overlay (NEW — refinamento #3) */}
+      <div
+        className="absolute inset-0 opacity-[0.035] mix-blend-overlay"
+        style={{
+          backgroundImage:
+            "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>\")",
+          backgroundSize: "160px 160px",
+        }}
+      />
+
       {/* Vignette bottom */}
       <div
         className="absolute inset-x-0 bottom-0 h-64"
@@ -417,7 +509,7 @@ function BackgroundLayer() {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
-   Filter Pill
+   Filter Pill — refinamento #7 (mais presente quando activo)
    ───────────────────────────────────────────────────────────────────────── */
 
 function FilterPill({
@@ -429,17 +521,17 @@ function FilterPill({
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        "inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-xs font-medium transition-colors",
+        "inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-xs transition-all duration-200",
         "disabled:cursor-not-allowed disabled:opacity-40",
         active
-          ? "bg-white/[0.10] text-white"
-          : "text-white/55 hover:text-white/85",
+          ? "bg-white/[0.10] text-white font-semibold shadow-[inset_0_1px_0_0_hsl(0_0%_100%/0.08)]"
+          : "font-medium text-white/55 hover:text-white/85",
       )}
     >
       {label}
       <span className={cn(
         "rounded px-1.5 py-0.5 text-[10px] font-mono",
-        active ? "bg-white/[0.12] text-white/80" : "bg-white/[0.04] text-white/40",
+        active ? "bg-white/[0.14] text-white/85" : "bg-white/[0.04] text-white/40",
       )}>
         {count}
       </span>
@@ -448,7 +540,147 @@ function FilterPill({
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
-   Project Card
+   Hero Project Card — refinamento #2 (último projecto destacado)
+   ───────────────────────────────────────────────────────────────────────── */
+
+function HeroProjectCard({
+  project, lastAccess, health, role, onSelect, lang,
+}: {
+  project: Project;
+  lastAccess: Date | null;
+  health: { total_nc_open: number; total_ppi_pending: number; total_tests_pending: number; health_status: string } | undefined;
+  role: string | null;
+  onSelect: () => void;
+  lang: string;
+}) {
+  const { t } = useTranslation();
+  const hue = hueFromString(project.code || project.name);
+
+  const ncOpen = health?.total_nc_open ?? 0;
+  const ppiPending = health?.total_ppi_pending ?? 0;
+  const testsPending = health?.total_tests_pending ?? 0;
+
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      className={cn(
+        "group relative flex h-full w-full flex-col overflow-hidden rounded-xl text-left transition-all duration-300",
+        "border bg-white/[0.035] backdrop-blur-sm",
+        "border-white/[0.12] hover:border-white/[0.22]",
+        "hover:shadow-[0_30px_80px_-30px_hsl(215_70%_3%/0.95)]",
+        "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/40",
+      )}
+      style={{
+        boxShadow: `0 0 0 1px hsl(${hue} 60% 50% / 0.08), 0 24px 60px -30px hsl(${hue} 60% 20% / 0.6)`,
+      }}
+    >
+      {/* Animated diagonal gradient on hover (refinamento #4) */}
+      <span
+        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        style={{
+          background: `linear-gradient(125deg, transparent 30%, hsl(${hue} 70% 55% / 0.08) 50%, transparent 70%)`,
+        }}
+      />
+      {/* Top accent line (personalised colour) */}
+      <span
+        className="absolute inset-x-0 top-0 h-px"
+        style={{
+          background: `linear-gradient(90deg, transparent, hsl(${hue} 80% 65% / 0.7), transparent)`,
+        }}
+      />
+
+      <div className="relative flex flex-1 flex-col gap-6 p-6 sm:p-8">
+        {/* Top row */}
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-sky-400/20 bg-sky-400/[0.06] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-sky-200/90">
+              <Sparkles className="h-3 w-3" />
+              {t("projectSelector.lastAccess")}
+            </span>
+            <span className="inline-flex items-center rounded border border-white/10 bg-white/[0.04] px-1.5 py-0.5 text-[10px] font-mono text-white/55">
+              {project.code}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            {role && (
+              <span className="inline-flex items-center rounded-full border border-white/10 bg-white/[0.03] px-2 py-0.5 text-[9px] font-medium uppercase tracking-wider text-white/45">
+                {role.replace("_", " ")}
+              </span>
+            )}
+            <StatusDot archived={false} status={health?.health_status} />
+          </div>
+        </div>
+
+        {/* Identity row */}
+        <div className="flex items-start gap-5">
+          <div
+            className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-xl text-base font-bold tracking-wide ring-1 ring-white/15 shadow-lg"
+            style={{
+              background: `linear-gradient(135deg, hsl(${hue} 50% 38%) 0%, hsl(${(hue + 30) % 360} 55% 26%) 100%)`,
+              color: "hsl(0 0% 98%)",
+              boxShadow: `0 8px 24px -8px hsl(${hue} 60% 25% / 0.7)`,
+            }}
+            aria-hidden="true"
+          >
+            {initials(project.name)}
+          </div>
+          <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+            <h2
+              className="truncate text-xl sm:text-2xl font-semibold leading-tight text-white"
+              style={{ letterSpacing: "-0.02em" }}
+            >
+              {project.name}
+            </h2>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px] text-white/50">
+              {project.location && (
+                <span className="inline-flex items-center gap-1.5">
+                  <MapPin className="h-3.5 w-3.5" />
+                  <span className="truncate">{project.location}</span>
+                </span>
+              )}
+              {project.client && (
+                <span className="inline-flex items-center gap-1.5">
+                  <Briefcase className="h-3.5 w-3.5" />
+                  <span className="truncate">{project.client}</span>
+                </span>
+              )}
+              {lastAccess && (
+                <span className="inline-flex items-center gap-1.5">
+                  <Clock className="h-3.5 w-3.5" />
+                  <span>{formatRelative(lastAccess, lang)}</span>
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Big KPIs */}
+        <div className="grid grid-cols-3 gap-4 border-t border-white/[0.06] pt-5">
+          <KpiBig icon={AlertTriangle} value={ncOpen} label={t("projectSelector.kpi.nc")} tone={ncOpen > 0 ? "warn" : "neutral"} delay={120} />
+          <KpiBig icon={ClipboardCheck} value={ppiPending} label={t("projectSelector.kpi.ppi")} tone={ppiPending > 0 ? "info" : "neutral"} delay={220} />
+          <KpiBig icon={FlaskConical} value={testsPending} label={t("projectSelector.kpi.tests")} tone={testsPending > 0 ? "info" : "neutral"} delay={320} />
+        </div>
+
+        {/* CTA */}
+        <div className="mt-auto flex items-center justify-end pt-2">
+          <span
+            className="inline-flex items-center gap-2 rounded-md border border-white/15 bg-white/[0.06] px-4 py-2 text-sm font-semibold text-white transition-all duration-300 group-hover:border-white/30 group-hover:bg-white/[0.12]"
+            style={{
+              boxShadow: `0 0 0 0 hsl(${hue} 70% 55% / 0)`,
+            }}
+          >
+            {t("projectSelector.continueWorking")}
+            <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1.5" />
+          </span>
+        </div>
+      </div>
+    </button>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Project Card (standard) — refinamentos #4 + #5
    ───────────────────────────────────────────────────────────────────────── */
 
 function ProjectCard({
@@ -475,24 +707,43 @@ function ProjectCard({
       type="button"
       onClick={onSelect}
       className={cn(
-        "group relative flex h-full w-full flex-col overflow-hidden rounded-xl text-left transition-all duration-200",
+        "group relative flex h-full w-full flex-col overflow-hidden rounded-xl text-left transition-all duration-300",
         "border bg-white/[0.025] backdrop-blur-sm",
-        "border-white/[0.07] hover:border-white/[0.18]",
-        "hover:bg-white/[0.045] hover:shadow-[0_24px_60px_-30px_hsl(215_60%_3%/0.9)]",
+        "border-white/[0.07]",
+        "hover:bg-white/[0.045]",
         "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/40",
         isLast && "ring-1 ring-white/[0.18]",
       )}
+      style={{
+        // Personalised glow on hover via CSS variable trick
+        ["--card-hue" as string]: String(hue),
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.borderColor = `hsl(${hue} 70% 55% / 0.35)`;
+        e.currentTarget.style.boxShadow = `0 24px 60px -30px hsl(${hue} 70% 15% / 0.85), 0 0 0 1px hsl(${hue} 70% 55% / 0.15)`;
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.borderColor = "";
+        e.currentTarget.style.boxShadow = "";
+      }}
     >
-      {/* Last-accessed accent line */}
+      {/* Animated diagonal sheen on hover (refinamento #4) */}
+      <span
+        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        style={{
+          background: `linear-gradient(125deg, transparent 35%, hsl(${hue} 80% 60% / 0.07) 50%, transparent 65%)`,
+        }}
+      />
+
       {isLast && (
         <span
           className="absolute inset-x-0 top-0 h-px"
-          style={{ background: "linear-gradient(90deg, transparent, hsl(200 90% 70% / 0.6), transparent)" }}
+          style={{ background: `linear-gradient(90deg, transparent, hsl(${hue} 80% 65% / 0.6), transparent)` }}
         />
       )}
 
-      <div className="flex flex-1 flex-col gap-5 p-5 sm:p-6">
-        {/* Top row: badge + role */}
+      <div className="relative flex flex-1 flex-col gap-5 p-5 sm:p-6">
+        {/* Top row */}
         <div className="flex items-center justify-between gap-2">
           <span className="inline-flex items-center rounded border border-white/10 bg-white/[0.04] px-1.5 py-0.5 text-[10px] font-mono text-white/55">
             {project.code}
@@ -507,7 +758,7 @@ function ProjectCard({
           </div>
         </div>
 
-        {/* Identity row: monogram + name + location */}
+        {/* Identity row */}
         <div className="flex items-start gap-4">
           <div
             className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg text-[13px] font-bold tracking-wide ring-1 ring-white/10"
@@ -520,7 +771,10 @@ function ProjectCard({
             {initials(project.name)}
           </div>
           <div className="flex min-w-0 flex-1 flex-col gap-1">
-            <h2 className="truncate text-[17px] font-semibold leading-tight tracking-tight text-white">
+            <h2
+              className="truncate text-[18px] font-semibold leading-tight text-white"
+              style={{ letterSpacing: "-0.012em" }}
+            >
               {project.name}
             </h2>
             <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[12px] text-white/45">
@@ -540,38 +794,17 @@ function ProjectCard({
           </div>
         </div>
 
-        {/* Mini-KPIs */}
+        {/* Mini-KPIs (count-up — refinamento #7/8a) */}
         <div className="grid grid-cols-3 gap-2 border-t border-white/[0.05] pt-4">
-          <Kpi
-            icon={AlertTriangle}
-            value={ncOpen}
-            label={t("projectSelector.kpi.nc")}
-            tone={ncOpen > 0 ? "warn" : "neutral"}
-          />
-          <Kpi
-            icon={ClipboardCheck}
-            value={ppiPending}
-            label={t("projectSelector.kpi.ppi")}
-            tone={ppiPending > 0 ? "info" : "neutral"}
-          />
-          <Kpi
-            icon={FlaskConical}
-            value={testsPending}
-            label={t("projectSelector.kpi.tests")}
-            tone={testsPending > 0 ? "info" : "neutral"}
-          />
+          <Kpi icon={AlertTriangle} value={ncOpen} label={t("projectSelector.kpi.nc")} tone={ncOpen > 0 ? "warn" : "neutral"} delay={150} />
+          <Kpi icon={ClipboardCheck} value={ppiPending} label={t("projectSelector.kpi.ppi")} tone={ppiPending > 0 ? "info" : "neutral"} delay={250} />
+          <Kpi icon={FlaskConical} value={testsPending} label={t("projectSelector.kpi.tests")} tone={testsPending > 0 ? "info" : "neutral"} delay={350} />
         </div>
 
-        {/* Footer row: last access + arrow */}
+        {/* Footer row */}
         <div className="mt-auto flex items-center justify-between border-t border-white/[0.05] pt-4 text-[11px] text-white/40">
           <span className="inline-flex items-center gap-1.5">
-            {isLast ? (
-              <>
-                <Sparkles className="h-3 w-3 text-white/60" />
-                <span className="text-white/65">{t("projectSelector.lastAccess")}</span>
-                {lastAccess && <span>· {formatRelative(lastAccess, lang)}</span>}
-              </>
-            ) : lastAccess ? (
+            {lastAccess ? (
               <>
                 <Clock className="h-3 w-3" />
                 <span>{formatRelative(lastAccess, lang)}</span>
@@ -580,9 +813,9 @@ function ProjectCard({
               <span className="text-white/30">{t("projectSelector.neverOpened")}</span>
             )}
           </span>
-          <span className="inline-flex items-center gap-1 text-white/40 transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-white/85">
+          <span className="inline-flex items-center gap-1.5 text-white/40 transition-all duration-300 group-hover:gap-2.5 group-hover:text-white/90">
             {t("projectSelector.open")}
-            <ArrowRight className="h-3.5 w-3.5" />
+            <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
           </span>
         </div>
       </div>
@@ -613,14 +846,18 @@ function StatusDot({ archived, status }: { archived: boolean; status?: string })
   );
 }
 
+/* ── KPIs com count-up (refinamento #7/8a) ─────────────────────────── */
+
 function Kpi({
-  icon: Icon, value, label, tone,
+  icon: Icon, value, label, tone, delay,
 }: {
   icon: typeof AlertTriangle;
   value: number;
   label: string;
   tone: "neutral" | "warn" | "info";
+  delay?: number;
 }) {
+  const animated = useCountUp(value, { duration: 900, delay });
   const valueColour =
     tone === "warn" ? "text-amber-300/95" :
     tone === "info" ? "text-white" :
@@ -630,11 +867,43 @@ function Kpi({
       <div className="flex items-baseline gap-1.5">
         <Icon className={cn("h-3 w-3", tone === "neutral" ? "text-white/30" : "text-white/55")} />
         <span className={cn("text-base font-semibold tabular-nums leading-none", valueColour)}>
-          {value}
+          {animated}
         </span>
       </div>
       <span className="text-[9px] font-medium uppercase tracking-wider text-white/35">
         {label}
+      </span>
+    </div>
+  );
+}
+
+function KpiBig({
+  icon: Icon, value, label, tone, delay,
+}: {
+  icon: typeof AlertTriangle;
+  value: number;
+  label: string;
+  tone: "neutral" | "warn" | "info";
+  delay?: number;
+}) {
+  const animated = useCountUp(value, { duration: 1000, delay });
+  const valueColour =
+    tone === "warn" ? "text-amber-300" :
+    tone === "info" ? "text-white" :
+    "text-white/45";
+  return (
+    <div className="flex flex-col gap-1.5">
+      <div className="flex items-center gap-2">
+        <Icon className={cn("h-3.5 w-3.5", tone === "neutral" ? "text-white/30" : "text-white/60")} />
+        <span className="text-[10px] font-semibold uppercase tracking-wider text-white/45">
+          {label}
+        </span>
+      </div>
+      <span
+        className={cn("text-3xl font-light tabular-nums leading-none", valueColour)}
+        style={{ letterSpacing: "-0.02em" }}
+      >
+        {animated}
       </span>
     </div>
   );

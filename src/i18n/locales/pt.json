@@ -263,7 +263,11 @@
       "nc": "NCs abertas",
       "ppi": "PPIs pendentes",
       "tests": "Ensaios pendentes"
-    }
+    },
+    "continueWorking": "Continuar a trabalhar",
+    "resumeIn": "Retomar em",
+    "systemsOperational": "Todos os sistemas operacionais",
+    "version": "Versão"
   },
   "noProject": {
     "title": "Nenhum projeto selecionado",
