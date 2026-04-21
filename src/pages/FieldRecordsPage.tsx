@@ -596,6 +596,13 @@ export default function FieldRecordsPage() {
         userId={user?.id ?? ""}
       />
 
+      {/* Detail Dialog */}
+      <FieldRecordDetailDialog
+        open={!!viewId}
+        onOpenChange={(v) => { if (!v) setViewId(null); }}
+        recordId={viewId}
+      />
+
       {/* Delete Confirm */}
       <AlertDialog open={!!deleteId} onOpenChange={open => !open && setDeleteId(null)}>
         <AlertDialogContent>
