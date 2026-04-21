@@ -641,6 +641,22 @@ export default function RfiDetailPage() {
 
       {/* Email notification history */}
       <NotificationHistory projectId={activeProject.id} entityType="rfi" entityId={rfi.id} />
+
+      {/* In-app PDF preview */}
+      <PdfPreviewDialog
+        open={previewOpen}
+        onOpenChange={(o) => {
+          setPreviewOpen(o);
+          if (!o) {
+            revokeHtmlPreviewUrl(previewUrl);
+            setPreviewUrl(null);
+          }
+        }}
+        url={previewUrl}
+        title={`RFI ${rfi.code ?? ""} — ${rfi.subject}`}
+        subtitle={activeProject.name}
+        downloadName={`RFI_${activeProject.code}_${rfi.code ?? rfi.id.slice(0, 8)}.pdf`}
+      />
     </div>
   );
 }
