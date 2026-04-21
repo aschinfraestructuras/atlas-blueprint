@@ -10,7 +10,10 @@ import { useWorkItems } from "@/hooks/useWorkItems";
 import { rfiService, type Rfi, type RfiMessage } from "@/lib/services/rfiService";
 import { useRfiMessages } from "@/hooks/useRfis";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
-import { exportRfiDetailPdf } from "@/lib/services/rfiExportService";
+import { exportRfiDetailPdf, buildRfiDetailHtml } from "@/lib/services/rfiExportService";
+import { PdfPreviewDialog } from "@/components/ui/pdf-preview-dialog";
+import { buildHtmlPreviewUrl, revokeHtmlPreviewUrl } from "@/lib/utils/htmlPreview";
+import { Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -80,6 +83,10 @@ export default function RfiDetailPage() {
   const [responseText, setResponseText] = useState("");
   const [respondedBy, setRespondedBy] = useState("");
   const [submittingResponse, setSubmittingResponse] = useState(false);
+
+  // PDF preview state
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
 
   const workItemMap = useMemo(() => new Map(workItems.map((w) => [w.id, w.sector])), [workItems]);
 
