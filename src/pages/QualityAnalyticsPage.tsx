@@ -296,11 +296,11 @@ export default function QualityAnalyticsPage() {
         ? Math.round((okCount / verifiable.length) * 100)
         : 0;
 
-      // Por tipo de ponto
+      // Por tipo de ponto — agora vem directamente em inspection_point_type
       const typeMap = new Map<string, { ok: number; total: number }>();
       for (const it of ppiItems) {
         if (it.result !== "ok" && it.result !== "nok") continue;
-        const type = cpTypeMap.get(it.label) || "RP";
+        const type = (it.inspection_point_type || "RP").toUpperCase();
         if (!typeMap.has(type)) typeMap.set(type, { ok: 0, total: 0 });
         const b = typeMap.get(type)!;
         b.total++;
@@ -345,8 +345,8 @@ export default function QualityAnalyticsPage() {
       setPpi({ conformityRate, byPointType, byStatus, topNok });
 
       // ─── SECÇÃO C: Ensaios ────────────────────────────────────────
-      if (results[4].status === "fulfilled" && results[4].value.data) {
-        const trs = results[4].value.data as Array<{ date: string | null; result_status: string | null }>;
+      if (results[2].status === "fulfilled" && (results[2].value as any).data) {
+        const trs = (results[2].value as any).data as Array<{ date: string | null; result_status: string | null }>;
 
         const monthlyMap = new Map<string, { pass: number; fail: number }>();
         for (const m of months) monthlyMap.set(m.key, { pass: 0, fail: 0 });
