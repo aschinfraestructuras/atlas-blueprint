@@ -3,6 +3,8 @@
  * Uma fonte de verdade. Todos os gráficos importam daqui.
  * Paleta coerente com o primary (navy azul) e neutros quentes.
  */
+import * as React from "react";
+
 
 // Paleta principal — 6 cores harmoniosas
 export const CHART_COLORS = {
