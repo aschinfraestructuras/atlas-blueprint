@@ -29,6 +29,7 @@ import {
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
+import { PdfPreviewDialog } from "@/components/ui/pdf-preview-dialog";
 import { FilterBar } from "@/components/ui/filter-bar";
 import { EmptyState } from "@/components/EmptyState";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
@@ -352,23 +353,15 @@ export default function PlansPage() {
 
       <PlanFormDialog open={dialogOpen} onOpenChange={setDialogOpen} plan={editingPlan} onSuccess={refetch} />
 
-      {/* ── PDF Quick Preview Dialog ─────────────────────────────────────── */}
-      <Dialog open={!!previewPlan} onOpenChange={v => { if (!v) setPreviewPlan(null); }}>
-        <DialogContent className="max-w-4xl w-[95vw] max-h-[90vh] flex flex-col">
-          <DialogHeader>
-            <DialogTitle className="text-sm font-semibold truncate pr-8">
-              {previewPlan?.title} {previewPlan?.revision && <span className="text-muted-foreground font-normal">— {previewPlan.revision}</span>}
-            </DialogTitle>
-          </DialogHeader>
-          {previewPlan && (
-            <iframe
-              src={(previewPlan as any).file_url}
-              className="flex-1 min-h-[60vh] w-full rounded-lg border border-border"
-              title={previewPlan.title}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
+      {/* ── PDF Quick Preview Dialog (large, reusable) ───────────────────── */}
+      <PdfPreviewDialog
+        open={!!previewPlan}
+        onOpenChange={(v) => { if (!v) setPreviewPlan(null); }}
+        url={(previewPlan as any)?.file_url}
+        title={previewPlan?.title}
+        subtitle={previewPlan?.revision ? `Revisão ${previewPlan.revision}` : null}
+        downloadName={previewPlan ? `${previewPlan.title}.pdf` : null}
+      />
 
       <AlertDialog open={!!deletingPlan} onOpenChange={(v) => { if (!v) setDeletingPlan(null); }}>
         <AlertDialogContent>
