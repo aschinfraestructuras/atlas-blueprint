@@ -3,9 +3,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
-import { AuthProvider } from "@/contexts/AuthContext";
-import { ProjectProvider } from "@/contexts/ProjectContext";
+import { BrowserRouter, Routes, Route, useLocation, useNavigate, Navigate } from "react-router-dom";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { ProjectProvider, useProject } from "@/contexts/ProjectContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { PageTransition } from "@/components/layout/PageTransition";
@@ -16,6 +16,8 @@ import { Loader2 } from "lucide-react";
 import { queryClient } from "@/lib/queryClient";
 import { PWAInstallBanner } from "@/components/pwa/PWAInstallBanner";
 import { useProjectRole } from "@/hooks/useProjectRole";
+
+const PROJECT_STORAGE_KEY = "atlas_active_project_id";
 
 // Static imports — needed before auth redirect
 import LoginPage from "./pages/LoginPage";
@@ -83,6 +85,7 @@ const SubmittalsPage = lazy(() => import("./pages/SubmittalsPage"));
 const MyTasksPage = lazy(() => import("./pages/MyTasksPage"));
 const ConfirmReceiptPage = lazy(() => import("./pages/ConfirmReceiptPage"));
 const MqtPage = lazy(() => import("./pages/MqtPage"));
+const ProjectSelectorPage = lazy(() => import("./pages/ProjectSelectorPage"));
 
 // Rotas permitidas para o role viewer — tudo o resto é redirecionado para /direction-portal
 const VIEWER_ALLOWED_ROUTES = [
@@ -109,17 +112,63 @@ function ViewerGuard({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+/**
+ * Inteligent redirect:
+ * If the user lands on "/" without an active project AND has 2+ projects to
+ * choose from, send them to /select-project. With exactly 1 project the
+ * ProjectContext auto-selects it; with 0 projects we let the dashboard show
+ * its own empty state.
+ *
+ * Renders <Navigate> synchronously (no useEffect) to avoid a flash of the
+ * MainLayout before the redirect.
+ */
+function ProjectSelectorRedirect({ children }: { children: React.ReactNode }) {
+  const { projects, activeProject, loading } = useProject();
+  const location = useLocation();
+
+  if (!loading && location.pathname === "/") {
+    const hasSavedChoice = !!localStorage.getItem(PROJECT_STORAGE_KEY);
+    const visible = projects.filter(
+      (p) => p.status !== "archived" && p.status !== "inactive",
+    );
+    if (!hasSavedChoice && visible.length >= 2 && !activeProject) {
+      return <Navigate to="/select-project" replace />;
+    }
+  }
+
+  return <>{children}</>;
+}
+
 function ProtectedLayout({ children }: { children: React.ReactNode }) {
   return (
     <ProtectedRoute>
-      <MainLayout>
-        <ViewerGuard>
-          <PageTransition>{children}</PageTransition>
-        </ViewerGuard>
-      </MainLayout>
-      <ScreenSaver idleMinutes={3} />
+      <ProjectSelectorRedirect>
+        <MainLayout>
+          <ViewerGuard>
+            <PageTransition>{children}</PageTransition>
+          </ViewerGuard>
+        </MainLayout>
+        <ScreenSaver idleMinutes={3} />
+      </ProjectSelectorRedirect>
     </ProtectedRoute>
   );
+}
+
+/**
+ * Auth-only wrapper for the project selector page — protected by login but
+ * deliberately renders WITHOUT MainLayout (no sidebar / no topbar).
+ */
+function AuthOnlyRoute({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAuth();
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+  if (!user) return <Navigate to="/login" replace />;
+  return <>{children}</>;
 }
 
 function PageLoader() {
@@ -147,6 +196,7 @@ const App = () => (
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/reset-password" element={<ResetPasswordPage />} />
                 <Route path="/confirm-receipt" element={<ConfirmReceiptPage />} />
+                <Route path="/select-project" element={<AuthOnlyRoute><ProjectSelectorPage /></AuthOnlyRoute>} />
                 <Route path="/invite/accept" element={<ProtectedLayout><AcceptInvitePage /></ProtectedLayout>} />
 
                 {/* Protected – all share MainLayout */}

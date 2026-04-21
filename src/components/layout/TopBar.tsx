@@ -10,7 +10,7 @@ import { NotificationBell } from "@/components/notifications/NotificationBell";
 import {
   LogOut, User, Globe, Menu, ChevronDown, Building2, Check, Loader2,
   Search, Sun, Moon, Monitor, Lock, Plus,
-  AlertTriangle, ClipboardCheck, FlaskConical, FileText,
+  AlertTriangle, ClipboardCheck, FlaskConical, FileText, LayoutGrid,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -130,6 +130,18 @@ export function TopBar({ onMobileMenuOpen }: TopBarProps) {
                 )}
               </DropdownMenuItem>
             ))
+          )}
+          {projects.length > 1 && (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => navigate("/select-project")}
+                className="gap-2 text-sm font-medium text-primary"
+              >
+                <LayoutGrid className="h-3.5 w-3.5" />
+                {t("topbar.projectSelector.viewAll", { defaultValue: "Ver todas as obras" })}
+              </DropdownMenuItem>
+            </>
           )}
         </DropdownMenuContent>
       </DropdownMenu>

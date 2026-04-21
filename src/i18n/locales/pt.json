@@ -236,7 +236,33 @@
     "projectSelector": {
       "label": "Projeto ativo",
       "placeholder": "Selecionar projeto…",
-      "noProjects": "Sem projetos ativos"
+      "noProjects": "Sem projetos ativos",
+      "viewAll": "Ver todas as obras"
+    }
+  },
+  "projectSelector": {
+    "eyebrow": "Atlas QMS · Selecção de Obra",
+    "qmsLabel": "Quality Management",
+    "greetingMorning": "Bom dia",
+    "greetingAfternoon": "Boa tarde",
+    "greetingEvening": "Boa noite",
+    "subtitle": "Seleccione a obra em que pretende trabalhar. Cada projecto mantém o seu próprio painel de qualidade, conformidade e rastreabilidade.",
+    "searchPlaceholder": "Pesquisar por nome, código, cliente…",
+    "filterActive": "Activos",
+    "filterArchived": "Arquivados",
+    "lastAccess": "Último acesso",
+    "neverOpened": "Ainda não aberto",
+    "open": "Abrir",
+    "noProjects": "Sem obras atribuídas",
+    "noProjectsDesc": "A sua conta ainda não tem nenhuma obra associada. Contacte o administrador para receber um convite.",
+    "contactAdmin": "Contactar administrador",
+    "noMatch": "Sem resultados",
+    "noMatchDesc": "Nenhuma obra corresponde a “{{query}}”.",
+    "clearSearch": "Limpar pesquisa",
+    "kpi": {
+      "nc": "NCs abertas",
+      "ppi": "PPIs pendentes",
+      "tests": "Ensaios pendentes"
     }
   },
   "noProject": {
