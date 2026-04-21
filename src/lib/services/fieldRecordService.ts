@@ -133,6 +133,7 @@ export const fieldRecordService = {
       .from("field_records" as any)
       .select("*, ppi_instances(code)")
       .eq("project_id", projectId)
+      .eq("is_deleted", false)
       .order("created_at", { ascending: false });
     if (error) throw error;
     return ((data ?? []) as any[]).map((r) => ({
@@ -147,6 +148,7 @@ export const fieldRecordService = {
       .from("field_records" as any)
       .select("*")
       .eq("ppi_instance_id", instanceId)
+      .eq("is_deleted", false)
       .order("created_at", { ascending: false });
     if (error) throw error;
     return (data ?? []) as unknown as FieldRecord[];
