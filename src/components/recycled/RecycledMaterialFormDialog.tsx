@@ -251,7 +251,7 @@ export function RecycledMaterialFormDialog({ open, onOpenChange, existing, onSuc
               <Separator />
               <AttachmentsPanel
                 projectId={activeProject.id}
-                entityType={"recycled_materials" as any}
+                entityType="recycled_materials"
                 entityId={existing.id}
               />
             </>

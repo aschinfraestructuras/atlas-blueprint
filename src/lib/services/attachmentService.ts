@@ -28,6 +28,7 @@ export type EntityType =
   | "soil_samples"
   | "compaction_tests"
   | "recycled_materials"
+  | "field_records"
   | "daily_reports"
   | "material_lot"
   | "materials";
