@@ -2449,7 +2449,13 @@
         "created": "Habilitação adicionada",
         "deleted": "Habilitação eliminada",
         "error": "Erro ao guardar habilitação"
-      }
+      },
+      "standardRef": "Norma de qualificação",
+      "scope": "Âmbito / processos qualificados",
+      "ipCode": "Código IP (GR.PR.005)",
+      "renewalDate": "Data de renovação",
+      "examEntity": "Entidade avaliadora",
+      "trainingHours": "Horas de formação"
     },
     "docTypes": {
       "seguros": "Seguros",
@@ -3266,7 +3272,18 @@
       "pameDocsReq": "Documentos Requeridos",
       "pameDocsReqPlaceholder": "ex: FT, CE, DA, Relatório de ensaio",
       "pamePpiRef": "Referência PPI",
-      "sectionIdentification": "Identificação"
+      "sectionIdentification": "Identificação",
+      "certSection": "Certificação Ferroviária",
+      "applicableStandard": "Norma de produto",
+      "steelGrade": "Grau do aço / classe",
+      "millCertRef": "Ref. certificado de fábrica",
+      "dopRef": "Ref. Declaração de Desempenho (DoP)",
+      "ceMark": "Marcação CE",
+      "ceMarkHas": "Produto com Marcação CE",
+      "ceMarkRef": "Ref. Marcação CE",
+      "manufacturerRef": "Ref. fabricante",
+      "countryOfOrigin": "País de fabrico",
+      "technicalDatasheetRef": "Ref. ficha técnica aprovada"
     },
     "pame": {
       "title": "Plano de Materiais (PAME)",
@@ -3334,7 +3351,17 @@
         "physicalState": "Estado físico do material",
         "storageLocation": "Local de armazenagem no estaleiro",
         "notes": "Observações",
-        "rejectionReason": "Motivo de rejeição / quarentena"
+        "rejectionReason": "Motivo de rejeição / quarentena",
+        "certSection": "Certificação do Lote",
+        "millCertRef": "Ref. certificado de fábrica",
+        "dopRef": "Ref. Declaração de Desempenho (DoP)",
+        "heatNumber": "N.º corrida siderúrgica (heat)",
+        "steelGrade": "Grau do aço / classe",
+        "manufacturingDate": "Data de fabrico",
+        "countryOfOrigin": "País de fabrico",
+        "pkStart": "PK início instalação",
+        "pkEnd": "PK fim instalação",
+        "inspectionReportRef": "Ref. relatório inspecção recepção"
       },
       "status": {
         "pending": "Pendente",
@@ -5108,7 +5135,15 @@
       "preheatEquipmentPlaceholder": "Marca, modelo, n.º série",
       "utSerial": "N.º Série Equipamento",
       "utFrequency": "Frequência (MHz)",
-      "utNormClass": "Norma / Classe"
+      "utNormClass": "Norma / Classe",
+      "certValidUntil": "Validade cert. soldador",
+      "certEntity": "Entidade emissora cert.",
+      "certStandard": "Norma qualificação (ex: NP EN 14730-2)",
+      "portionCeRef": "Ref. CE porção aluminotérmica",
+      "approvalBodyRef": "Ref. organismo notificado (NoBo/DeBo)",
+      "utCertRef": "Ref. cert. UT (EN ISO 9712)",
+      "utCertValidUntil": "Validade cert. UT",
+      "utCertLevel": "Nível cert. UT"
     },
     "utStatus": {
       "aceite": "Aceite",

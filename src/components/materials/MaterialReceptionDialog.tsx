@@ -91,6 +91,16 @@ export function MaterialReceptionDialog({ open, onOpenChange, projectId, materia
   const [storageLocation, setStorageLocation] = useState("");
   const [notes, setNotes] = useState("");
   const [rejectionReason, setRejectionReason] = useState("");
+  // Certificação por lote (EN 13674, IP)
+  const [millCertRefLot, setMillCertRefLot]         = useState("");
+  const [dopRefLot, setDopRefLot]                   = useState("");
+  const [heatNumber, setHeatNumber]                 = useState("");
+  const [steelGradeLot, setSteelGradeLot]           = useState("");
+  const [manufacturingDate, setManufacturingDate]   = useState("");
+  const [countryOfOriginLot, setCountryOfOriginLot] = useState("");
+  const [pkInstallStart, setPkInstallStart]         = useState("");
+  const [pkInstallEnd, setPkInstallEnd]             = useState("");
+  const [inspectionReportRef, setInspectionReportRef] = useState("");
 
   // Fotos
   const [photos, setPhotos] = useState<PendingPhoto[]>([]);
@@ -191,6 +201,16 @@ export function MaterialReceptionDialog({ open, onOpenChange, projectId, materia
           rejection_reason: (physicalState === "nao_conforme" || receptionStatus !== "approved")
             ? (rejectionReason.trim() || null) : null,
           received_by: user?.id ?? null,
+          // Certificação por lote
+          mill_cert_ref: millCertRefLot.trim() || null,
+          dop_ref: dopRefLot.trim() || null,
+          heat_number: heatNumber.trim() || null,
+          steel_grade: steelGradeLot.trim() || null,
+          manufacturing_date: manufacturingDate || null,
+          country_of_origin: countryOfOriginLot.trim() || null,
+          pk_installation_start: pkInstallStart.trim() || null,
+          pk_installation_end: pkInstallEnd.trim() || null,
+          inspection_report_ref: inspectionReportRef.trim() || null,
         })
         .select("id")
         .single();
@@ -376,6 +396,51 @@ export function MaterialReceptionDialog({ open, onOpenChange, projectId, materia
             <div className="grid gap-1.5 md:col-span-2">
               <Label>{t("materials.reception.form.storageLocation")}</Label>
               <Input value={storageLocation} onChange={e => setStorageLocation(e.target.value)} placeholder="Zona A / Palete 3 / Estaleiro Norte" />
+            </div>
+
+            {/* ── Certificação do lote (EN 13674, DoP, rastreabilidade) ── */}
+            <div className="md:col-span-2">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">
+                {t("materials.reception.form.certSection", { defaultValue: "Certificação do Lote" })}
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="grid gap-1.5">
+                  <Label>{t("materials.reception.form.millCertRef", { defaultValue: "Ref. certificado de fábrica" })}</Label>
+                  <Input value={millCertRefLot} onChange={e => setMillCertRefLot(e.target.value)} placeholder="Ex: MC-2024-00123" />
+                </div>
+                <div className="grid gap-1.5">
+                  <Label>{t("materials.reception.form.dopRef", { defaultValue: "Ref. Declaração de Desempenho (DoP)" })}</Label>
+                  <Input value={dopRefLot} onChange={e => setDopRefLot(e.target.value)} placeholder="Ex: DoP-EN13674-2024" />
+                </div>
+                <div className="grid gap-1.5">
+                  <Label>{t("materials.reception.form.heatNumber", { defaultValue: "N.º corrida siderúrgica (heat)" })}</Label>
+                  <Input value={heatNumber} onChange={e => setHeatNumber(e.target.value)} placeholder="Ex: H-2024-45678" />
+                </div>
+                <div className="grid gap-1.5">
+                  <Label>{t("materials.reception.form.steelGrade", { defaultValue: "Grau do aço / classe" })}</Label>
+                  <Input value={steelGradeLot} onChange={e => setSteelGradeLot(e.target.value)} placeholder="R260, R350HT, C40/50..." />
+                </div>
+                <div className="grid gap-1.5">
+                  <Label>{t("materials.reception.form.manufacturingDate", { defaultValue: "Data de fabrico" })}</Label>
+                  <Input type="date" value={manufacturingDate} onChange={e => setManufacturingDate(e.target.value)} />
+                </div>
+                <div className="grid gap-1.5">
+                  <Label>{t("materials.reception.form.countryOfOrigin", { defaultValue: "País de fabrico" })}</Label>
+                  <Input value={countryOfOriginLot} onChange={e => setCountryOfOriginLot(e.target.value)} placeholder="Ex: Portugal, Áustria, Alemanha" />
+                </div>
+                <div className="grid gap-1.5">
+                  <Label>{t("materials.reception.form.pkStart", { defaultValue: "PK início instalação" })}</Label>
+                  <Input value={pkInstallStart} onChange={e => setPkInstallStart(e.target.value)} placeholder="Ex: 29+730" />
+                </div>
+                <div className="grid gap-1.5">
+                  <Label>{t("materials.reception.form.pkEnd", { defaultValue: "PK fim instalação" })}</Label>
+                  <Input value={pkInstallEnd} onChange={e => setPkInstallEnd(e.target.value)} placeholder="Ex: 31+200" />
+                </div>
+                <div className="grid gap-1.5 md:col-span-2">
+                  <Label>{t("materials.reception.form.inspectionReportRef", { defaultValue: "Ref. relatório inspecção recepção" })}</Label>
+                  <Input value={inspectionReportRef} onChange={e => setInspectionReportRef(e.target.value)} placeholder="Ex: RIR-2024-001" />
+                </div>
+              </div>
             </div>
 
             {/* Notas */}

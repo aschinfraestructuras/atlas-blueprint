@@ -340,6 +340,27 @@ export default function WeldPage() {
                   <Input type="date" value={(form as any).operator_cert_expiry ?? ""} onChange={e => setField("operator_cert_expiry", e.target.value)} />
                   <CertExpiryBadge date={(form as any).operator_cert_expiry} />
                 </div>
+                {/* ── Novos campos EN 14730-2 ── */}
+                <div>
+                  <Label>{t("weld.form.certValidUntil", { defaultValue: "Validade cert. soldador" })}</Label>
+                  <Input type="date" value={(form as any).operator_cert_valid_until ?? ""} onChange={e => setField("operator_cert_valid_until", e.target.value)} />
+                </div>
+                <div>
+                  <Label>{t("weld.form.certEntity", { defaultValue: "Entidade emissora cert." })}</Label>
+                  <Input value={(form as any).operator_cert_entity ?? ""} onChange={e => setField("operator_cert_entity", e.target.value)} placeholder="IP, ADIF, REFER..." />
+                </div>
+                <div>
+                  <Label>{t("weld.form.certStandard", { defaultValue: "Norma qualificação" })}</Label>
+                  <Input value={(form as any).operator_cert_standard ?? ""} onChange={e => setField("operator_cert_standard", e.target.value)} placeholder="NP EN 14730-2" />
+                </div>
+                <div>
+                  <Label>{t("weld.form.portionCeRef", { defaultValue: "Ref. CE porção aluminotérmica" })}</Label>
+                  <Input value={(form as any).portion_ce_ref ?? ""} onChange={e => setField("portion_ce_ref", e.target.value)} placeholder="Ex: DoP/2024/0123" />
+                </div>
+                <div>
+                  <Label>{t("weld.form.approvalBodyRef", { defaultValue: "Ref. organismo notificado" })}</Label>
+                  <Input value={(form as any).approval_body_ref ?? ""} onChange={e => setField("approval_body_ref", e.target.value)} placeholder="NoBo/DeBo ref." />
+                </div>
                 <div>
                    <Label>{t("weld.form.calibrationBlock", { defaultValue: "Bloco calibração (ref.)" })}</Label>
                    <Input value={(form as any).bloco_calibracao_ref ?? ""} onChange={e => setField("bloco_calibracao_ref", e.target.value)} placeholder="V1, V2, IIW..." />
@@ -395,6 +416,27 @@ export default function WeldPage() {
                     {(form as any).fus_code && <div><Label>{t("weld.form.fusCode")}</Label><Input value={(form as any).fus_code ?? ""} readOnly className="bg-muted/30" /></div>}
                     <div><Label>{t("weld.form.fusDate")}</Label><Input type="date" value={(form as any).fus_date ?? ""} onChange={e => setField("fus_date", e.target.value)} /></div>
                     <div className="col-span-2"><Label>{t("weld.form.certOperatorUs")}</Label><Input value={(form as any).cert_operator_us ?? ""} onChange={e => setField("cert_operator_us", e.target.value)} placeholder={t("weld.form.certOperatorUsPlaceholder")} /></div>
+                    {/* ── Certificação UT EN ISO 9712 ── */}
+                    <div>
+                      <Label>{t("weld.form.utCertRef", { defaultValue: "Ref. cert. UT (EN ISO 9712)" })}</Label>
+                      <Input value={(form as any).ut_cert_ref ?? ""} onChange={e => setField("ut_cert_ref", e.target.value)} placeholder="Ex: PT-UT-2024-0456" />
+                    </div>
+                    <div>
+                      <Label>{t("weld.form.utCertValidUntil", { defaultValue: "Validade cert. UT" })}</Label>
+                      <Input type="date" value={(form as any).ut_cert_valid_until ?? ""} onChange={e => setField("ut_cert_valid_until", e.target.value)} />
+                    </div>
+                    <div>
+                      <Label>{t("weld.form.utCertLevel", { defaultValue: "Nível cert. UT" })}</Label>
+                      <Select value={(form as any).ut_cert_level ?? "__none__"} onValueChange={v => setField("ut_cert_level", v === "__none__" ? null : v)}>
+                        <SelectTrigger><SelectValue placeholder={t("common.select")} /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="__none__">—</SelectItem>
+                          <SelectItem value="nivel_1">Nível 1</SelectItem>
+                          <SelectItem value="nivel_2">Nível 2</SelectItem>
+                          <SelectItem value="nivel_3">Nível 3</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                 )}
               </div>

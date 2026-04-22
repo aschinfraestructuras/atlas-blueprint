@@ -60,6 +60,17 @@ export function MaterialFormDialog({ open, onOpenChange, material, onSuccess }: 
   const [pameDocsReq, setPameDocsReq] = useState("");
   const [pamePpiRef, setPamePpiRef] = useState("");
 
+  // Certificação ferroviária
+  const [applicableStandard, setApplicableStandard]       = useState("");
+  const [steelGrade, setSteelGrade]                       = useState("");
+  const [millCertRef, setMillCertRef]                     = useState("");
+  const [dopRef, setDopRef]                               = useState("");
+  const [ceMarking, setCeMarking]                         = useState(false);
+  const [ceMarkingRef, setCeMarkingRef]                   = useState("");
+  const [manufacturerRef, setManufacturerRef]             = useState("");
+  const [countryOfOrigin, setCountryOfOrigin]             = useState("");
+  const [technicalDatasheetRef, setTechnicalDatasheetRef] = useState("");
+
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -78,11 +89,23 @@ export function MaterialFormDialog({ open, onOpenChange, material, onSuccess }: 
       setPameNorma((material as any).pame_norma ?? "");
       setPameDocsReq((material as any).pame_docs_req ?? "");
       setPamePpiRef((material as any).pame_ppi_ref ?? "");
+      // Certificação ferroviária
+      setApplicableStandard((material as any).applicable_standard ?? "");
+      setSteelGrade((material as any).steel_grade ?? "");
+      setMillCertRef((material as any).mill_certificate_ref ?? "");
+      setDopRef((material as any).declaration_of_performance_ref ?? "");
+      setCeMarking((material as any).ce_marking ?? false);
+      setCeMarkingRef((material as any).ce_marking_ref ?? "");
+      setManufacturerRef((material as any).manufacturer_ref ?? "");
+      setCountryOfOrigin((material as any).country_of_origin ?? "");
+      setTechnicalDatasheetRef((material as any).technical_datasheet_ref ?? "");
     } else {
       setName(""); setCategory("betao"); setSubcategory("");
       setSpecification(""); setUnit(""); setNormativeRefs(""); setAcceptanceCriteria("");
       setPameCode(""); setPameStatus("pending"); setPameDisciplina("");
       setPamePrioridade(""); setPameNorma(""); setPameDocsReq(""); setPamePpiRef("");
+      setApplicableStandard(""); setSteelGrade(""); setMillCertRef(""); setDopRef("");
+      setCeMarking(false); setCeMarkingRef(""); setManufacturerRef(""); setCountryOfOrigin(""); setTechnicalDatasheetRef("");
     }
   }, [material, open]);
 
@@ -105,6 +128,16 @@ export function MaterialFormDialog({ open, onOpenChange, material, onSuccess }: 
         pame_norma: pameNorma || undefined,
         pame_docs_req: pameDocsReq || undefined,
         pame_ppi_ref: pamePpiRef || undefined,
+        // Certificação ferroviária
+        applicable_standard: applicableStandard || undefined,
+        steel_grade: steelGrade || undefined,
+        mill_certificate_ref: millCertRef || undefined,
+        declaration_of_performance_ref: dopRef || undefined,
+        ce_marking: ceMarking,
+        ce_marking_ref: ceMarkingRef || undefined,
+        manufacturer_ref: manufacturerRef || undefined,
+        country_of_origin: countryOfOrigin || undefined,
+        technical_datasheet_ref: technicalDatasheetRef || undefined,
       };
 
       if (isEdit && material) {
@@ -189,6 +222,53 @@ export function MaterialFormDialog({ open, onOpenChange, material, onSuccess }: 
             </div>
 
             <Separator />
+
+            {/* ── Section: Certificação Ferroviária (EN 13674, EN 13230, etc.) ── */}
+            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+              {t("materials.form.certSection", { defaultValue: "Certificação Ferroviária" })}
+            </p>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-1.5">
+                <Label>{t("materials.form.applicableStandard", { defaultValue: "Norma de produto" })}</Label>
+                <Input value={(form as any)?.applicable_standard ?? applicableStandard} onChange={e => setApplicableStandard(e.target.value)} placeholder="EN 13674-1, EN 13230..." />
+              </div>
+              <div className="grid gap-1.5">
+                <Label>{t("materials.form.steelGrade", { defaultValue: "Grau do aço / classe" })}</Label>
+                <Input value={steelGrade} onChange={e => setSteelGrade(e.target.value)} placeholder="R260, R350HT, C40/50..." />
+              </div>
+              <div className="grid gap-1.5">
+                <Label>{t("materials.form.millCertRef", { defaultValue: "Ref. certificado de fábrica" })}</Label>
+                <Input value={millCertRef} onChange={e => setMillCertRef(e.target.value)} placeholder="Ex: MC-2024-00123" />
+              </div>
+              <div className="grid gap-1.5">
+                <Label>{t("materials.form.dopRef", { defaultValue: "Ref. Declaração de Desempenho (DoP)" })}</Label>
+                <Input value={dopRef} onChange={e => setDopRef(e.target.value)} placeholder="Ex: DoP-EN13674-2024" />
+              </div>
+              <div className="grid gap-1.5">
+                <Label>{t("materials.form.ceMark", { defaultValue: "Marcação CE" })}</Label>
+                <div className="flex items-center gap-3 pt-1">
+                  <input type="checkbox" checked={ceMarking} onChange={e => setCeMarking(e.target.checked)} className="h-4 w-4 rounded" id="ce_marking" />
+                  <label htmlFor="ce_marking" className="text-sm cursor-pointer">{t("materials.form.ceMarkHas", { defaultValue: "Produto com Marcação CE" })}</label>
+                </div>
+              </div>
+              <div className="grid gap-1.5">
+                <Label>{t("materials.form.ceMarkRef", { defaultValue: "Ref. Marcação CE" })}</Label>
+                <Input value={ceMarkingRef} onChange={e => setCeMarkingRef(e.target.value)} placeholder="Ex: 0051-CPR-2024-001" disabled={!ceMarking} />
+              </div>
+              <div className="grid gap-1.5">
+                <Label>{t("materials.form.manufacturerRef", { defaultValue: "Ref. fabricante" })}</Label>
+                <Input value={manufacturerRef} onChange={e => setManufacturerRef(e.target.value)} placeholder="Referência interna do fabricante" />
+              </div>
+              <div className="grid gap-1.5">
+                <Label>{t("materials.form.countryOfOrigin", { defaultValue: "País de fabrico" })}</Label>
+                <Input value={countryOfOrigin} onChange={e => setCountryOfOrigin(e.target.value)} placeholder="Ex: Portugal, Espanha, Áustria" />
+              </div>
+              <div className="col-span-2 grid gap-1.5">
+                <Label>{t("materials.form.technicalDatasheetRef", { defaultValue: "Ref. ficha técnica aprovada" })}</Label>
+                <Input value={technicalDatasheetRef} onChange={e => setTechnicalDatasheetRef(e.target.value)} placeholder="Referência da ficha técnica validada pela Fiscalização" />
+              </div>
+            </div>
 
             {/* ── Section 2: PAME ── */}
             <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">PAME</p>

@@ -74,7 +74,12 @@ export default function SubcontractorDetailPage() {
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
   const [qualifications, setQualifications] = useState<any[]>([]);
   const [qualDialogOpen, setQualDialogOpen] = useState(false);
-  const [newQual, setNewQual] = useState({ worker_name: "", qualification: "IET77_DIR_TECNICO", certificate_ref: "", issued_by: "", valid_until: "" });
+  const [newQual, setNewQual] = useState({
+    worker_name: "", qualification: "IET77_DIR_TECNICO",
+    certificate_ref: "", issued_by: "", valid_until: "",
+    standard_ref: "", scope: "", ip_qualification_code: "",
+    renewal_date: "", exam_entity: "", training_hours: "",
+  });
 
   // New doc form
   const [newDoc, setNewDoc] = useState({ doc_type: "seguros", title: "", valid_from: "", valid_to: "", status: "valid" });
@@ -217,11 +222,22 @@ export default function SubcontractorDetailPage() {
         certificate_ref: newQual.certificate_ref || null,
         issued_by: newQual.issued_by || null,
         valid_until: newQual.valid_until || null,
+        standard_ref: newQual.standard_ref || null,
+        scope: newQual.scope || null,
+        ip_qualification_code: newQual.ip_qualification_code || null,
+        renewal_date: newQual.renewal_date || null,
+        exam_entity: newQual.exam_entity || null,
+        training_hours: newQual.training_hours ? Number(newQual.training_hours) : null,
         created_by: user?.id,
       });
       toast({ title: t("subcontractors.qualifications.toast.created") });
       setQualDialogOpen(false);
-      setNewQual({ worker_name: "", qualification: "IET77_DIR_TECNICO", certificate_ref: "", issued_by: "", valid_until: "" });
+      setNewQual({
+        worker_name: "", qualification: "IET77_DIR_TECNICO",
+        certificate_ref: "", issued_by: "", valid_until: "",
+        standard_ref: "", scope: "", ip_qualification_code: "",
+        renewal_date: "", exam_entity: "", training_hours: "",
+      });
       fetchQualifications();
     } catch (err: any) {
       toast({ title: t("subcontractors.qualifications.toast.error"), description: err.message, variant: "destructive" });
@@ -827,6 +843,33 @@ export default function SubcontractorDetailPage() {
                 <div>
                   <Label>{t("subcontractors.qualifications.validUntil")}</Label>
                   <Input type="date" value={newQual.valid_until} onChange={e => setNewQual(p => ({ ...p, valid_until: e.target.value }))} />
+                </div>
+                {/* ── Campos EN 14730-2 / IP GR.PR.005 ── */}
+                <div>
+                  <Label>{t("subcontractors.qualifications.standardRef", { defaultValue: "Norma de qualificação" })}</Label>
+                  <Input value={newQual.standard_ref} onChange={e => setNewQual(p => ({ ...p, standard_ref: e.target.value }))} placeholder="EN 14730-2, EN ISO 9712, IP GR.PR.005..." />
+                </div>
+                <div>
+                  <Label>{t("subcontractors.qualifications.scope", { defaultValue: "Âmbito / processos qualificados" })}</Label>
+                  <Input value={newQual.scope} onChange={e => setNewQual(p => ({ ...p, scope: e.target.value }))} placeholder="Ex: Soldadura aluminotérmica 60E1, UT Nível 2 ferrovia" />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label>{t("subcontractors.qualifications.ipCode", { defaultValue: "Código IP (GR.PR.005)" })}</Label>
+                    <Input value={newQual.ip_qualification_code} onChange={e => setNewQual(p => ({ ...p, ip_qualification_code: e.target.value }))} placeholder="Ex: IP-Q-2024-0123" />
+                  </div>
+                  <div>
+                    <Label>{t("subcontractors.qualifications.renewalDate", { defaultValue: "Data de renovação" })}</Label>
+                    <Input type="date" value={newQual.renewal_date} onChange={e => setNewQual(p => ({ ...p, renewal_date: e.target.value }))} />
+                  </div>
+                  <div>
+                    <Label>{t("subcontractors.qualifications.examEntity", { defaultValue: "Entidade avaliadora" })}</Label>
+                    <Input value={newQual.exam_entity} onChange={e => setNewQual(p => ({ ...p, exam_entity: e.target.value }))} placeholder="IP, laboratório acreditado..." />
+                  </div>
+                  <div>
+                    <Label>{t("subcontractors.qualifications.trainingHours", { defaultValue: "Horas de formação" })}</Label>
+                    <Input type="number" min={0} value={newQual.training_hours} onChange={e => setNewQual(p => ({ ...p, training_hours: e.target.value }))} placeholder="Ex: 40" />
+                  </div>
                 </div>
               </div>
               <DialogFooter>
