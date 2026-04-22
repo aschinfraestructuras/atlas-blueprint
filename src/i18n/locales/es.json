@@ -226,7 +226,8 @@
     "fieldRecords": "Registros de Campo",
     "notifications": "Notificaciones",
     "reports": "Informes",
-    "indicators": "Indicadores SGQ"
+    "indicators": "Indicadores SGQ",
+    "team": "Equipo de Obra"
   },
   "topbar": {
     "language": "Idioma",
@@ -5806,6 +5807,132 @@
         "uncovered": "Sin cobertura",
         "critical": "Crítico"
       }
+    }
+  },
+  "team": {
+    "title": "Equipo de Obra",
+    "subtitle": "Registro de personal, cualificaciones y formaciones — IP GR.PR.005",
+    "tab": {
+      "workers": "Personal",
+      "qualifications": "Cualificaciones",
+      "trainings": "Formaciones"
+    },
+    "kpi": {
+      "total": "Total personal",
+      "active": "Activos",
+      "safetyTrained": "Formación seg.",
+      "companies": "Empresas",
+      "expiringCerts": "Cert. por expirar"
+    },
+    "section": {
+      "identification": "Identificación",
+      "presence": "Presencia en Obra"
+    },
+    "status": {
+      "active": "Activo",
+      "inactive": "Inactivo",
+      "suspended": "Suspendido"
+    },
+    "ipStatus": {
+      "qualified": "Cualificado IP",
+      "pending": "Pendiente",
+      "expired": "Expirado",
+      "not_required": "No aplicable"
+    },
+    "expiry": {
+      "ok": "Válido",
+      "alert": "Atención",
+      "urgent": "Urgente",
+      "expired": "Expirado",
+      "none": "Sin fecha"
+    },
+    "workers": {
+      "add": "Añadir Trabajador",
+      "edit": "Editar Trabajador",
+      "search": "Buscar por nombre, función, empresa...",
+      "empty": "Ningún trabajador encontrado",
+      "deleteTitle": "¿Eliminar trabajador?",
+      "deleteDesc": "El trabajador {{name}} será eliminado del registro de obra.",
+      "col": {
+        "name": "Nombre",
+        "company": "Empresa",
+        "function": "Función"
+      },
+      "form": {
+        "name": "Nombre completo",
+        "company": "Empresa",
+        "subcontractor": "Subcontratado",
+        "asch": "Recursos propios",
+        "function": "Función / Cargo",
+        "discipline": "Disciplina",
+        "workerNumber": "N.º trabajador",
+        "idNumber": "N.º Identificación (DNI/NIF)",
+        "birthDate": "Fecha de nacimiento",
+        "contactPhone": "Contacto telefónico",
+        "contactEmail": "Email",
+        "entryDate": "Fecha de entrada en obra",
+        "exitDate": "Fecha de salida de obra",
+        "status": "Estado",
+        "ipQualStatus": "Estado cualif. IP GR.PR.005",
+        "safetyTraining": "Formación de seguridad completada",
+        "notes": "Notas"
+      }
+    },
+    "qualifications": {
+      "add": "Registrar Cualificación",
+      "search": "Buscar por trabajador, certificado...",
+      "empty": "Ninguna cualificación registrada",
+      "worker": "Trabajador",
+      "selectWorker": "Seleccionar trabajador...",
+      "externalWorker": "Trabajador externo (sin ficha)",
+      "workerNamePlaceholder": "Nombre del trabajador...",
+      "type": "Tipo de cualificación",
+      "certRef": "Ref. certificado",
+      "issuedBy": "Emitido por",
+      "validFrom": "Válido desde",
+      "validUntil": "Válido hasta",
+      "status": "Estado de validez"
+    },
+    "trainings": {
+      "empty": "Ninguna formación registrada",
+      "emptyHint": "Las formaciones se gestionan en el módulo Formaciones"
+    },
+    "detail": {
+      "info": "Información",
+      "qualifications": "Cualificaciones",
+      "trainings": "Formaciones",
+      "documents": "Documentos"
+    },
+    "filter": {
+      "allStatus": "Todos los estados",
+      "allCompanies": "Todas las empresas",
+      "allDisciplines": "Todas las disciplinas",
+      "allExpiry": "Todos",
+      "expiringSoon": "Por expirar (90 días)"
+    },
+    "disciplines": {
+      "terraplenagem": "Terraplén",
+      "via_ferrovia": "Vía Ferroviaria",
+      "drenagem": "Drenaje",
+      "catenaria": "Catenaria",
+      "sinalizacao": "Señalización",
+      "telecomunicacoes": "Telecomunicaciones",
+      "topografia": "Topografía",
+      "betao": "Hormigón",
+      "geral": "General"
+    },
+    "pdf": {
+      "title": "Registro de Personal de Obra — IP GR.PR.005",
+      "export": "Exportar PDF",
+      "quals": "Cualificaciones",
+      "ipStatus": "Estado IP"
+    },
+    "toast": {
+      "workerCreated": "Trabajador creado con éxito",
+      "workerUpdated": "Trabajador actualizado",
+      "workerDeleted": "Trabajador eliminado",
+      "qualCreated": "Cualificación registrada",
+      "error": "Error al guardar"
     }
   }
 }

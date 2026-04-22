@@ -68,6 +68,7 @@ export function MainLayout({ children }: MainLayoutProps) {
         "/deadlines": t("nav.deadlines"),
         "/reports": t("nav.reports", { defaultValue: "Relatórios" }),
         "/indicators": t("nav.indicators", { defaultValue: "Indicadores SGQ" }),
+        "/team": t("nav.team", { defaultValue: "Equipa de Obra" }),
         "/audit-log": t("nav.auditLog"),
         "/settings": t("nav.settings"),
         "/laboratories": t("nav.laboratories"),
