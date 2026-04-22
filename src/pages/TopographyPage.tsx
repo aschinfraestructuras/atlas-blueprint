@@ -393,6 +393,9 @@ export default function TopographyPage() {
                       <TableCell className={cn("text-sm", validityClass)}>{validityText}</TableCell>
                       <TableCell onClick={e => e.stopPropagation()}>
                         <div className="flex gap-1">
+                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleViewEquipment(eq)} title={t("common.view", { defaultValue: "Ver" })}>
+                            <Eye className="h-3.5 w-3.5" />
+                          </Button>
                           <Button size="sm" variant="outline" onClick={() => handleAddCalibration(eq.id)}><Plus className="h-3 w-3 mr-1" />{t("topography.calibrations")}</Button>
                           {isAdmin && <DeleteButton onConfirm={() => handleDeleteEquipment(eq.id)} />}
                         </div>
@@ -458,7 +461,8 @@ export default function TopographyPage() {
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-1">
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditRequest(req)}><Pencil className="h-3.5 w-3.5" /></Button>
+                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditRequest(req)} title={t("common.view", { defaultValue: "Ver" })}><Eye className="h-3.5 w-3.5" /></Button>
+                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditRequest(req)} title={t("common.edit")}><Pencil className="h-3.5 w-3.5" /></Button>
                           {isAdmin && <DeleteButton onConfirm={() => handleDeleteRequest(req.id)} />}
                         </div>
                       </TableCell>
@@ -516,7 +520,8 @@ export default function TopographyPage() {
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-1">
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditControl(ctrl)}><Pencil className="h-3.5 w-3.5" /></Button>
+                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditControl(ctrl)} title={t("common.view", { defaultValue: "Ver" })}><Eye className="h-3.5 w-3.5" /></Button>
+                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditControl(ctrl)} title={t("common.edit")}><Pencil className="h-3.5 w-3.5" /></Button>
                           {isAdmin && <DeleteButton onConfirm={() => handleDeleteControl(ctrl.id)} />}
                         </div>
                       </TableCell>
@@ -556,7 +561,8 @@ export default function TopographyPage() {
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-1">
-                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditSurvey(s)}><Pencil className="h-3.5 w-3.5" /></Button>
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditSurvey(s)} title={t("common.view", { defaultValue: "Ver" })}><Eye className="h-3.5 w-3.5" /></Button>
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditSurvey(s)} title={t("common.edit")}><Pencil className="h-3.5 w-3.5" /></Button>
                         {canDelete && <DeleteButton onConfirm={() => handleDeleteSurvey(s.id)} />}
                       </div>
                     </TableCell>
