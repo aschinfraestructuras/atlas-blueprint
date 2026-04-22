@@ -33,19 +33,36 @@ export function useProjectHealth(projectId?: string) {
     if (!projectId) { setData(EMPTY); setLoading(false); return; }
     setLoading(true);
     try {
+      // 1) Carrega a vista agregada (KPIs gerais)
       const { data: row } = await (supabase as any)
         .from("vw_project_health")
         .select("*")
         .eq("project_id", projectId)
         .maybeSingle();
+
+      // 2) Recalcula contagens críticas a partir das tabelas reais
+      // (a vista pode incluir registos draft/scheduled fantasmas; aqui usamos
+      // apenas o estado real dos test_results não eliminados)
+      const [{ count: testsPending }, { count: ppiPending }] = await Promise.all([
+        (supabase as any).from("test_results")
+          .select("id", { count: "exact", head: true })
+          .eq("project_id", projectId)
+          .in("status", ["draft", "in_progress", "submitted", "pending"]),
+        (supabase as any).from("ppi_instances")
+          .select("id", { count: "exact", head: true })
+          .eq("project_id", projectId)
+          .eq("is_deleted", false)
+          .in("status", ["draft", "in_progress", "pending_approval", "open"]),
+      ]);
+
       if (row) {
         setData({
           project_id: row.project_id,
           total_nc_open: Number(row.total_nc_open) || 0,
           total_nc_overdue: Number(row.total_nc_overdue) || 0,
-          total_tests_pending: Number(row.total_tests_pending) || 0,
+          total_tests_pending: Number(testsPending ?? 0),
           total_tests_fail_30d: Number(row.total_tests_fail_30d) || 0,
-          total_ppi_pending: Number(row.total_ppi_pending) || 0,
+          total_ppi_pending: Number(ppiPending ?? row.total_ppi_pending ?? 0),
           total_documents_expired: Number(row.total_documents_expired) || 0,
           total_calibrations_expired: Number(row.total_calibrations_expired) || 0,
           activities_blocked: Number(row.activities_blocked) || 0,
@@ -54,7 +71,12 @@ export function useProjectHealth(projectId?: string) {
           health_status: row.health_status ?? "healthy",
         });
       } else {
-        setData({ ...EMPTY, project_id: projectId });
+        setData({
+          ...EMPTY,
+          project_id: projectId,
+          total_tests_pending: Number(testsPending ?? 0),
+          total_ppi_pending: Number(ppiPending ?? 0),
+        });
       }
     } catch (err) {
       console.error("[useProjectHealth]", err);
