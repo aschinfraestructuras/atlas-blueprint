@@ -1311,8 +1311,11 @@ export default function WorkItemDetailPage() {
       <ReadinessCard itemId={item.id} readinessStatus={item.readiness_status} hasOpenNc={item.has_open_nc} hasPendingPpi={item.has_pending_ppi} hasPendingTests={item.has_pending_tests} />
 
       <Tabs defaultValue="ppi">
-        <div className="relative">
-          <TabsList className="w-full overflow-x-auto flex-nowrap justify-start gap-0.5 h-auto p-1 scrollbar-none">
+        <div className="relative -mx-1 px-1">
+          {/* Fades laterais para indicar overflow horizontal */}
+          <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-background to-transparent z-10" />
+          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-background to-transparent z-10" />
+          <TabsList className="w-full overflow-x-auto flex-nowrap justify-start gap-0.5 h-auto p-1 scrollbar-thin">
             <TabsTrigger value="ppi" className="flex-shrink-0 gap-1.5 text-xs">
               <ClipboardCheck className="h-3.5 w-3.5" />
               {t("workItems.detail.tabs.ppi")}

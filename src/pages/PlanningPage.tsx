@@ -524,13 +524,16 @@ export default function PlanningPage() {
                       <TableCell className="text-sm text-muted-foreground">{n.responsible || "—"}</TableCell>
                       <TableCell>
                         <div className="flex gap-1">
+                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={(e) => { e.stopPropagation(); handleWbsSelect(n); }} title={t("common.view", { defaultValue: "Ver actividades" })}>
+                            <Eye className="h-3.5 w-3.5" />
+                          </Button>
                           <RoleGate action="create">
-                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleNewWbs(n.id)} title={t("planning.wbs.addChild")}>
+                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={(e) => { e.stopPropagation(); handleNewWbs(n.id); }} title={t("planning.wbs.addChild")}>
                               <FolderPlus className="h-3.5 w-3.5" />
                             </Button>
                           </RoleGate>
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditWbs(n)}><Pencil className="h-3.5 w-3.5" /></Button>
-                          {isAdmin && <DeleteButton onConfirm={() => handleDeleteWbs(n.id)} />}
+                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={(e) => { e.stopPropagation(); handleEditWbs(n); }}><Pencil className="h-3.5 w-3.5" /></Button>
+                          {isAdmin && <span onClick={(e) => e.stopPropagation()}><DeleteButton onConfirm={() => handleDeleteWbs(n.id)} /></span>}
                         </div>
                       </TableCell>
                     </TableRow>

@@ -47,6 +47,8 @@ import {
   CloudRain, Wind, Thermometer,
 } from "lucide-react";
 import { FieldRecordDetailDialog } from "@/components/field-records/FieldRecordDetailDialog";
+import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
+import { Separator } from "@/components/ui/separator";
 
 // ── Cores por resultado ────────────────────────────────────────────────────────
 const RESULT_CFG: Record<string, { cls: string; icon: React.ElementType; label: string }> = {
@@ -111,9 +113,11 @@ function FieldRecordFormDialog({ open, onOpenChange, onSuccess, projectId, userI
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
   const [ppiOptions, setPpiOptions] = useState<{ id: string; code: string }[]>([]);
+  // Após gravação, guardamos o ID para mostrar o painel de anexos inline
+  const [createdId, setCreatedId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!open) { setForm(EMPTY_FORM); return; }
+    if (!open) { setForm(EMPTY_FORM); setCreatedId(null); return; }
     (supabase as any).from("ppi_instances").select("id, code")
       .eq("project_id", projectId).eq("is_deleted", false)
       .order("code").then(({ data }: any) => setPpiOptions(data ?? []));
@@ -158,10 +162,11 @@ function FieldRecordFormDialog({ open, onOpenChange, onSuccess, projectId, userI
           quantity: m.quantity.trim() || null,
         })),
       };
-      await fieldRecordService.create(input);
-      toast({ title: t("fieldRecords.toast.created", { defaultValue: "Grelha de Registo criada" }) });
+      const created = await fieldRecordService.create(input);
+      toast({ title: t("fieldRecords.toast.created", { defaultValue: "Grelha de Registo criada — pode agora anexar fotografias / documentos." }) });
+      // Mantém o dialog aberto para permitir anexar fotos / documentos
+      setCreatedId((created as any)?.id ?? null);
       onSuccess();
-      onOpenChange(false);
     } catch (e: any) {
       toast({ title: e.message ?? t("common.saveError"), variant: "destructive" });
     } finally {
@@ -363,14 +368,34 @@ function FieldRecordFormDialog({ open, onOpenChange, onSuccess, projectId, userI
               </label>
             </div>
           </div>
+
+          {/* Anexos — disponíveis após primeira gravação */}
+          {createdId ? (
+            <>
+              <Separator />
+              <AttachmentsPanel
+                projectId={projectId}
+                entityType="field_records"
+                entityId={createdId}
+              />
+            </>
+          ) : (
+            <p className="text-xs text-muted-foreground italic border-t pt-3">
+              {t("fieldRecords.form.attachmentsHint", { defaultValue: "Após guardar a grelha poderá anexar fotografias e documentos (até 20 MB cada)." })}
+            </p>
+          )}
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={saving}>{t("common.cancel")}</Button>
-          <Button onClick={handleSave} disabled={saving}>
-            {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-            {t("common.save")}
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={saving}>
+            {createdId ? t("common.close", { defaultValue: "Fechar" }) : t("common.cancel")}
           </Button>
+          {!createdId && (
+            <Button onClick={handleSave} disabled={saving}>
+              {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              {t("common.save")}
+            </Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

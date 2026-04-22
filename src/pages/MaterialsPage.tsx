@@ -210,31 +210,31 @@ export default function MaterialsPage() {
               <p className="text-xs text-muted-foreground">{t("materials.reception_tab.sectionSubtitle")}</p>
             </div>
             {canCreate && materials.length > 0 && (
-              <div className="flex items-center gap-2">
-                <Select
-                  value={undefined}
-                  onValueChange={(matId) => {
-                    const mat = materials.find(m => m.id === matId);
-                    if (mat) {
-                      setReceptionTarget(mat);
-                      // pequeno delay para garantir que o Select fecha antes do dialog abrir
-                      setTimeout(() => setReceptionOpen(true), 50);
-                    }
-                  }}
-                >
-                  <SelectTrigger className="h-8 w-[180px] text-sm gap-1.5">
-                    <Plus className="h-3.5 w-3.5 text-muted-foreground" />
-                    <SelectValue placeholder={t("materials.reception_tab.newReception")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {materials.filter(m => m.status !== "archived").map(m => (
-                      <SelectItem key={m.id} value={m.id}>
-                        <span className="font-mono text-xs">{m.code}</span> — {m.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              <Select
+                value=""
+                onValueChange={(matId) => {
+                  const mat = materials.find(m => m.id === matId);
+                  if (mat) {
+                    setReceptionTarget(mat);
+                    setTimeout(() => setReceptionOpen(true), 50);
+                  }
+                }}
+              >
+                <SelectTrigger className="h-9 w-[220px] text-sm gap-1.5">
+                  <Plus className="h-3.5 w-3.5 text-primary" />
+                  <SelectValue placeholder={t("materials.reception_tab.newReception", { defaultValue: "+ Nova Recepção…" })} />
+                </SelectTrigger>
+                <SelectContent>
+                  <div className="px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground border-b">
+                    {t("materials.reception_tab.pickMaterial", { defaultValue: "Escolher material para registar recepção" })}
+                  </div>
+                  {materials.filter(m => m.status !== "archived").map(m => (
+                    <SelectItem key={m.id} value={m.id}>
+                      <span className="font-mono text-xs">{m.code}</span> — {m.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             )}
           </div>
 
