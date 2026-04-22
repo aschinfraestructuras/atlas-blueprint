@@ -368,14 +368,34 @@ function FieldRecordFormDialog({ open, onOpenChange, onSuccess, projectId, userI
               </label>
             </div>
           </div>
+
+          {/* Anexos — disponíveis após primeira gravação */}
+          {createdId ? (
+            <>
+              <Separator />
+              <AttachmentsPanel
+                projectId={projectId}
+                entityType="field_records"
+                entityId={createdId}
+              />
+            </>
+          ) : (
+            <p className="text-xs text-muted-foreground italic border-t pt-3">
+              {t("fieldRecords.form.attachmentsHint", { defaultValue: "Após guardar a grelha poderá anexar fotografias e documentos (até 20 MB cada)." })}
+            </p>
+          )}
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={saving}>{t("common.cancel")}</Button>
-          <Button onClick={handleSave} disabled={saving}>
-            {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-            {t("common.save")}
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={saving}>
+            {createdId ? t("common.close", { defaultValue: "Fechar" }) : t("common.cancel")}
           </Button>
+          {!createdId && (
+            <Button onClick={handleSave} disabled={saving}>
+              {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              {t("common.save")}
+            </Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>
