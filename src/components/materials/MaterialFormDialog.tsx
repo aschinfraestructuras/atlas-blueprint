@@ -231,7 +231,7 @@ export function MaterialFormDialog({ open, onOpenChange, material, onSuccess }: 
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-1.5">
                 <Label>{t("materials.form.applicableStandard", { defaultValue: "Norma de produto" })}</Label>
-                <Input value={(form as any)?.applicable_standard ?? applicableStandard} onChange={e => setApplicableStandard(e.target.value)} placeholder="EN 13674-1, EN 13230..." />
+                <Input value={applicableStandard} onChange={e => setApplicableStandard(e.target.value)} placeholder="EN 13674-1, EN 13230..." />
               </div>
               <div className="grid gap-1.5">
                 <Label>{t("materials.form.steelGrade", { defaultValue: "Grau do aço / classe" })}</Label>
