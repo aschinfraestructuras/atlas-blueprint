@@ -25,6 +25,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
+// Nota: AttachmentsPanel é renderizado em modo edição (após guardar a 1ª vez).
 
 const schema = z.object({
   type: z.enum(TECH_OFFICE_TYPES),

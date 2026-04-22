@@ -6,11 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 import { toast } from "@/lib/utils/toast";
 import { useProject } from "@/contexts/ProjectContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSuppliers } from "@/hooks/useSuppliers";
 import { recycledMaterialService, type RecycledMaterial, type RecycledMaterialInput } from "@/lib/services/recycledMaterialService";
+import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 
 interface Props {
   open: boolean;
@@ -242,6 +244,23 @@ export function RecycledMaterialFormDialog({ open, onOpenChange, existing, onSuc
             <Label>{t("recycled.fields.observations")}</Label>
             <Textarea value={observations} onChange={e => setObservations(e.target.value)} rows={2} />
           </div>
+
+          {/* Anexos — apenas em edição (após guardar pela primeira vez) */}
+          {existing && activeProject && (
+            <>
+              <Separator />
+              <AttachmentsPanel
+                projectId={activeProject.id}
+                entityType={"recycled_materials" as any}
+                entityId={existing.id}
+              />
+            </>
+          )}
+          {!existing && (
+            <p className="text-xs text-muted-foreground italic border-t pt-3">
+              {t("recycled.attachments.afterSaveHint", { defaultValue: "Os anexos (certificados, fichas técnicas, fotografias) podem ser adicionados após guardar o registo." })}
+            </p>
+          )}
         </div>
 
         <DialogFooter>
