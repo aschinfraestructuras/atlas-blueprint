@@ -11,10 +11,12 @@ import {
   type SupplierDetailMetrics,
   type SupplierEvaluation,
 } from "@/lib/services/supplierService";
-import { exportSupplierPdf } from "@/lib/services/supplierExportService";
+import { exportSupplierPdf, buildSupplierDetailHtml } from "@/lib/services/supplierExportService";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, Truck, FileText, Package, FlaskConical, AlertTriangle, History, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, Truck, FileText, Package, FlaskConical, AlertTriangle, History, Plus, Trash2, Eye } from "lucide-react";
+import { PdfPreviewDialog } from "@/components/ui/pdf-preview-dialog";
+import { buildHtmlPreviewUrl, revokeHtmlPreviewUrl } from "@/lib/utils/htmlPreview";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -166,6 +168,9 @@ export default function SupplierDetailPage() {
   const [addMaterialOpen, setAddMaterialOpen] = useState(false);
   const [evalDialogOpen, setEvalDialogOpen] = useState(false);
   const [evalLoading, setEvalLoading] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  useEffect(() => () => revokeHtmlPreviewUrl(previewUrl), [previewUrl]);
   const [evalForm, setEvalForm] = useState({
     quality: 75,
     delivery: 75,
@@ -242,18 +247,27 @@ export default function SupplierDetailPage() {
     } catch { toast({ title: t("suppliers.toast.error"), variant: "destructive" }); }
   };
 
-  const handleExportPdf = () => {
-    exportSupplierPdf({
-      supplier,
-      metrics,
-      docs,
-      materials,
-      ncs: ncs.map(nc => ({ code: nc.code ?? "", title: nc.title ?? "", severity: nc.severity ?? "", status: nc.status ?? "" })),
-      projectName: activeProject.name,
-      projectCode: activeProject.code,
-      t,
-      logoBase64,
-    });
+  const buildPreviewData = () => ({
+    supplier: supplier!,
+    metrics,
+    docs,
+    materials,
+    ncs: ncs.map(nc => ({ code: nc.code ?? "", title: nc.title ?? "", severity: nc.severity ?? "", status: nc.status ?? "" })),
+    projectName: activeProject!.name,
+    projectCode: activeProject!.code,
+    t,
+    logoBase64,
+  });
+
+  const handleExportPdf = () => exportSupplierPdf(buildPreviewData());
+
+  const handlePreviewPdf = () => {
+    if (!supplier || !activeProject) return;
+    revokeHtmlPreviewUrl(previewUrl);
+    const html = buildSupplierDetailHtml(buildPreviewData());
+    const url = buildHtmlPreviewUrl(html);
+    setPreviewUrl(url);
+    setPreviewOpen(true);
   };
 
   return (
@@ -273,6 +287,10 @@ export default function SupplierDetailPage() {
           <p className="text-sm text-muted-foreground mt-0.5">{supplier.code} · {supplier.nif_cif ?? "—"}</p>
         </div>
         <div className="flex gap-2">
+          <Button size="sm" variant="outline" className="gap-1.5" onClick={handlePreviewPdf}>
+            <Eye className="h-3.5 w-3.5" />
+            {t("common.preview", { defaultValue: "Pré-visualizar" })}
+          </Button>
           <ReportExportMenu
             options={[
               { label: "PDF", icon: "pdf" as const, action: handleExportPdf },
@@ -630,6 +648,18 @@ export default function SupplierDetailPage() {
 
       <SupplierFormDialog open={editOpen} onOpenChange={setEditOpen} supplier={supplier} onSuccess={fetchAll} />
       <AddMaterialDialog open={addMaterialOpen} onOpenChange={setAddMaterialOpen} projectId={activeProject.id} supplierId={supplier.id} onSuccess={fetchAll} />
+
+      <PdfPreviewDialog
+        open={previewOpen}
+        onOpenChange={(o) => {
+          setPreviewOpen(o);
+          if (!o) { revokeHtmlPreviewUrl(previewUrl); setPreviewUrl(null); }
+        }}
+        url={previewUrl}
+        title={`Fornecedor ${supplier.code ?? ""} — ${supplier.name}`}
+        subtitle={activeProject.name}
+        downloadName={`SUP_${activeProject.code}_${supplier.code ?? supplier.id.slice(0,8)}.pdf`}
+      />
     </div>
   );
 }

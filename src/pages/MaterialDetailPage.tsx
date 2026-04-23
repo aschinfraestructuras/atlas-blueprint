@@ -11,11 +11,13 @@ import {
   type MaterialDetailMetrics,
   type WorkItemMaterial,
 } from "@/lib/services/materialService";
-import { exportMaterialPdf, exportFavPdf } from "@/lib/services/materialExportService";
+import { exportMaterialPdf, exportFavPdf, buildMaterialDetailHtml } from "@/lib/services/materialExportService";
 import { printQuarantineLabel } from "@/components/materials/QuarantineLabelView";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, Package, Plus, History, CheckCircle2, XCircle, SendHorizontal, AlertTriangle, Clock, Loader2, Tag, FileDown, ShieldCheck, ShieldAlert, Ban } from "lucide-react";
+import { ArrowLeft, Package, Plus, History, CheckCircle2, XCircle, SendHorizontal, AlertTriangle, Clock, Loader2, Tag, FileDown, ShieldCheck, ShieldAlert, Ban, Eye } from "lucide-react";
+import { PdfPreviewDialog } from "@/components/ui/pdf-preview-dialog";
+import { buildHtmlPreviewUrl, revokeHtmlPreviewUrl } from "@/lib/utils/htmlPreview";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -150,6 +152,10 @@ export default function MaterialDetailPage() {
   const [loading, setLoading] = useState(true);
   const [editOpen, setEditOpen] = useState(false);
   const [receptionOpen, setReceptionOpen] = useState(false);
+  // PDF in-app preview
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  useEffect(() => () => revokeHtmlPreviewUrl(previewUrl), [previewUrl]);
 
   async function handleLotStatus(lotId: string, newStatus: "approved" | "quarantine" | "rejected") {
     if (!user) return;
@@ -260,19 +266,30 @@ export default function MaterialDetailPage() {
     }
   };
 
+  const buildPreviewData = () => ({
+    material: material!,
+    metrics,
+    docs,
+    workItemLinks,
+    ncs: ncs.map(nc => ({ code: nc.code ?? "", title: nc.title ?? "", severity: nc.severity ?? "", status: nc.status ?? "" })),
+    tests: tests.map(tr => ({ code: tr.code ?? "", date: tr.date, pass_fail: tr.pass_fail ?? "", status: tr.status ?? "" })),
+    projectName: activeProject!.name,
+    projectCode: activeProject!.code,
+    logoBase64,
+    t,
+  });
+
   const handleExportPdf = () => {
-    exportMaterialPdf({
-      material,
-      metrics,
-      docs,
-      workItemLinks,
-      ncs: ncs.map(nc => ({ code: nc.code ?? "", title: nc.title ?? "", severity: nc.severity ?? "", status: nc.status ?? "" })),
-      tests: tests.map(tr => ({ code: tr.code ?? "", date: tr.date, pass_fail: tr.pass_fail ?? "", status: tr.status ?? "" })),
-      projectName: activeProject.name,
-      projectCode: activeProject.code,
-      logoBase64,
-      t,
-    });
+    exportMaterialPdf(buildPreviewData());
+  };
+
+  const handlePreviewPdf = () => {
+    if (!material || !activeProject) return;
+    revokeHtmlPreviewUrl(previewUrl);
+    const html = buildMaterialDetailHtml(buildPreviewData());
+    const url = buildHtmlPreviewUrl(html);
+    setPreviewUrl(url);
+    setPreviewOpen(true);
   };
 
   return (
@@ -293,6 +310,10 @@ export default function MaterialDetailPage() {
           <p className="text-sm text-muted-foreground mt-0.5">{material.code} · {t(`materials.categories.${material.category}`, { defaultValue: material.category })}</p>
         </div>
         <div className="flex gap-2 flex-wrap">
+          <Button size="sm" variant="outline" className="gap-1.5" onClick={handlePreviewPdf}>
+            <Eye className="h-3.5 w-3.5" />
+            {t("common.preview", { defaultValue: "Pré-visualizar" })}
+          </Button>
           <ReportExportMenu options={[{ label: "PDF", icon: "pdf" as const, action: handleExportPdf }]} />
           {/* FAV Export */}
           {material.pame_code && (
@@ -857,6 +878,18 @@ export default function MaterialDetailPage() {
 
       <MaterialFormDialog open={editOpen} onOpenChange={setEditOpen} material={material} onSuccess={fetchAll} />
       <MaterialReceptionDialog open={receptionOpen} onOpenChange={setReceptionOpen} projectId={activeProject.id} material={material} onSuccess={fetchAll} />
+
+      <PdfPreviewDialog
+        open={previewOpen}
+        onOpenChange={(o) => {
+          setPreviewOpen(o);
+          if (!o) { revokeHtmlPreviewUrl(previewUrl); setPreviewUrl(null); }
+        }}
+        url={previewUrl}
+        title={`MAT ${material.code} — ${material.name}`}
+        subtitle={activeProject.name}
+        downloadName={`MAT_${activeProject.code}_${material.code}.pdf`}
+      />
     </div>
   );
 }

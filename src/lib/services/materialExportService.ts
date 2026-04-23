@@ -93,7 +93,122 @@ function infoRow(label: string, value: string): string {
   return `<div class="mat-row"><label>${escapeHtml(label)}</label><div class="val">${escapeHtml(value)}</div></div>`;
 }
 
+/** Build the printable HTML (without opening a print window) for in-app preview. */
+export function buildMaterialDetailHtml(data: ExportData): string {
+  const { material, metrics, docs, workItemLinks, ncs, tests, projectName, projectCode, logoBase64, t } = data;
+  const today = new Date().toLocaleDateString("pt-PT");
+  const docCode = `MAT-${projectCode}-${material.code}`;
+
+  const header = fullPdfHeader(
+    logoBase64 ?? null,
+    projectName ?? projectCode,
+    docCode,
+    "0",
+    today,
+  );
+
+  let body = "";
+
+  // Identification
+  body += `<div class="mat-section">${t("materials.detail.tabs.summary", { defaultValue: "Resumo" })}</div>`;
+  body += `<div class="mat-grid">
+    ${infoRow(t("materials.form.category"), t(`materials.categories.${material.category}`, { defaultValue: material.category }))}
+    ${infoRow(t("materials.form.subcategory"), esc(material.subcategory))}
+    ${infoRow(t("materials.form.specification"), esc(material.specification))}
+    ${infoRow(t("materials.form.unit"), esc(material.unit))}
+    ${infoRow(t("materials.form.normativeRefs"), esc(material.normative_refs))}
+    ${infoRow(t("materials.form.acceptanceCriteria"), esc(material.acceptance_criteria))}
+    ${infoRow(t("common.status"), t(`materials.status.${material.status}`))}
+    ${infoRow(t("materials.approval.status"), t(`materials.approval.statuses.${material.approval_status}`, { defaultValue: material.approval_status }))}
+    ${material.rejection_reason ? infoRow(t("materials.approval.rejectionReason"), esc(material.rejection_reason)) : ""}
+  </div>`;
+
+  if (metrics) {
+    body += `<div class="mat-section">KPIs</div>`;
+    body += `<div class="mat-grid">
+      ${infoRow(t("materials.detail.suppliersCount"), String(metrics.suppliers_count))}
+      ${infoRow(t("materials.detail.testsTotal"), String(metrics.tests_total))}
+      ${infoRow(t("materials.detail.testsNC"), String(metrics.tests_nonconform))}
+      ${infoRow(t("materials.detail.ncOpen"), String(metrics.nc_open_count))}
+      ${infoRow(t("materials.detail.docsExpiring"), String(metrics.docs_expiring_30d))}
+      ${infoRow(t("materials.detail.docsExpired"), String(metrics.docs_expired))}
+      ${infoRow(t("materials.detail.workItems"), String(metrics.work_items_count))}
+    </div>`;
+  }
+
+  if (docs.length > 0) {
+    body += `<div class="mat-section">${t("materials.detail.tabs.documents", { defaultValue: "Documentos" })}</div>`;
+    body += `<table class="mat-table"><thead><tr><th>Tipo</th><th>Validade</th><th>Estado</th></tr></thead><tbody>`;
+    docs.forEach(d => {
+      body += `<tr><td>${t(`materials.docTypes.${d.doc_type}`, { defaultValue: d.doc_type })}</td><td>${d.valid_to ? fmtDate(d.valid_to) : "—"}</td><td>${d.status}</td></tr>`;
+    });
+    body += `</tbody></table>`;
+  }
+
+  if (tests.length > 0) {
+    body += `<div class="mat-section">${t("materials.detail.tabs.tests", { defaultValue: "Ensaios" })}</div>`;
+    body += `<table class="mat-table"><thead><tr><th>Código</th><th>Data</th><th>Resultado</th></tr></thead><tbody>`;
+    tests.slice(0, 20).forEach(tr => {
+      body += `<tr><td>${esc(tr.code)}</td><td>${fmtDate(tr.date)}</td><td>${esc(tr.pass_fail)}</td></tr>`;
+    });
+    body += `</tbody></table>`;
+  }
+
+  if (ncs.length > 0) {
+    body += `<div class="mat-section">${t("materials.detail.tabs.ncs", { defaultValue: "Não Conformidades" })}</div>`;
+    body += `<table class="mat-table"><thead><tr><th>Código</th><th>Título</th><th>Gravidade</th><th>Estado</th></tr></thead><tbody>`;
+    ncs.forEach(nc => {
+      body += `<tr><td>${esc(nc.code)}</td><td>${esc(nc.title)}</td><td>${t(`nc.severity.${nc.severity}`, { defaultValue: nc.severity })}</td><td>${t(`nc.status.${nc.status}`, { defaultValue: nc.status })}</td></tr>`;
+    });
+    body += `</tbody></table>`;
+  }
+
+  if (workItemLinks.length > 0) {
+    body += `<div class="mat-section">${t("materials.detail.tabs.workItems", { defaultValue: "Aplicação em Obra" })}</div>`;
+    body += `<table class="mat-table"><thead><tr><th>WI</th><th>Lote</th><th>Quantidade</th></tr></thead><tbody>`;
+    workItemLinks.slice(0, 20).forEach(wl => {
+      body += `<tr><td>${wl.work_item_id.substring(0, 8)}…</td><td>${esc(wl.lot_ref)}</td><td>${wl.quantity ?? "—"} ${wl.unit ?? ""}</td></tr>`;
+    });
+    body += `</tbody></table>`;
+  }
+
+  body += `<div style="margin-top:30px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;font-size:9px;text-align:center;">
+    <div style="border-top:1px solid ${ATLAS_PDF.colors.rule};padding-top:6px;">Elaborado por</div>
+    <div style="border-top:1px solid ${ATLAS_PDF.colors.rule};padding-top:6px;">Verificado por</div>
+    <div style="border-top:1px solid ${ATLAS_PDF.colors.rule};padding-top:6px;">Aprovado por</div>
+  </div>`;
+
+  return `<!DOCTYPE html>
+<html lang="pt">
+<head><meta charset="UTF-8"/><title>${docCode} — Atlas QMS</title>
+<style>${sharedCss()}${localCss}</style></head>
+<body>
+${header}
+${body}
+<div class="atlas-footer">
+  <span>Atlas QMS · Sistema de Gestão da Qualidade</span>
+  <span>${docCode} · Gerado em ${today}</span>
+</div>
+</body></html>`;
+}
+
 export async function exportMaterialPdf(data: ExportData) {
+  const html = buildMaterialDetailHtml(data);
+  const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+  printHtml(html, `MAT_${data.projectCode}_${data.material.code}_${dateStr}.pdf`);
+
+  await auditService.log({
+    projectId: data.material.project_id,
+    entity: "materials",
+    entityId: data.material.id,
+    action: "EXPORT",
+    module: "materials",
+    description: `PDF exportado: ${data.material.code}`,
+  }).catch(() => null);
+}
+
+/** @deprecated kept for ABI; use exportMaterialPdf above */
+async function _legacyExportMaterialPdf(data: ExportData) {
   const { material, metrics, docs, workItemLinks, ncs, tests, projectName, projectCode, logoBase64, t } = data;
   const today = new Date().toLocaleDateString("pt-PT");
   const docCode = `MAT-${projectCode}-${material.code}`;
