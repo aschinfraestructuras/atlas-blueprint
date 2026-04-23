@@ -11,11 +11,13 @@ import {
   type MaterialDetailMetrics,
   type WorkItemMaterial,
 } from "@/lib/services/materialService";
-import { exportMaterialPdf, exportFavPdf } from "@/lib/services/materialExportService";
+import { exportMaterialPdf, exportFavPdf, buildMaterialDetailHtml } from "@/lib/services/materialExportService";
 import { printQuarantineLabel } from "@/components/materials/QuarantineLabelView";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, Package, Plus, History, CheckCircle2, XCircle, SendHorizontal, AlertTriangle, Clock, Loader2, Tag, FileDown, ShieldCheck, ShieldAlert, Ban } from "lucide-react";
+import { ArrowLeft, Package, Plus, History, CheckCircle2, XCircle, SendHorizontal, AlertTriangle, Clock, Loader2, Tag, FileDown, ShieldCheck, ShieldAlert, Ban, Eye } from "lucide-react";
+import { PdfPreviewDialog } from "@/components/ui/pdf-preview-dialog";
+import { buildHtmlPreviewUrl, revokeHtmlPreviewUrl } from "@/lib/utils/htmlPreview";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";

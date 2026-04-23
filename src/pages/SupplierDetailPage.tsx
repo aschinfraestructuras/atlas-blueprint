@@ -11,10 +11,12 @@ import {
   type SupplierDetailMetrics,
   type SupplierEvaluation,
 } from "@/lib/services/supplierService";
-import { exportSupplierPdf } from "@/lib/services/supplierExportService";
+import { exportSupplierPdf, buildSupplierDetailHtml } from "@/lib/services/supplierExportService";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, Truck, FileText, Package, FlaskConical, AlertTriangle, History, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, Truck, FileText, Package, FlaskConical, AlertTriangle, History, Plus, Trash2, Eye } from "lucide-react";
+import { PdfPreviewDialog } from "@/components/ui/pdf-preview-dialog";
+import { buildHtmlPreviewUrl, revokeHtmlPreviewUrl } from "@/lib/utils/htmlPreview";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
