@@ -244,18 +244,27 @@ export default function SupplierDetailPage() {
     } catch { toast({ title: t("suppliers.toast.error"), variant: "destructive" }); }
   };
 
-  const handleExportPdf = () => {
-    exportSupplierPdf({
-      supplier,
-      metrics,
-      docs,
-      materials,
-      ncs: ncs.map(nc => ({ code: nc.code ?? "", title: nc.title ?? "", severity: nc.severity ?? "", status: nc.status ?? "" })),
-      projectName: activeProject.name,
-      projectCode: activeProject.code,
-      t,
-      logoBase64,
-    });
+  const buildPreviewData = () => ({
+    supplier: supplier!,
+    metrics,
+    docs,
+    materials,
+    ncs: ncs.map(nc => ({ code: nc.code ?? "", title: nc.title ?? "", severity: nc.severity ?? "", status: nc.status ?? "" })),
+    projectName: activeProject!.name,
+    projectCode: activeProject!.code,
+    t,
+    logoBase64,
+  });
+
+  const handleExportPdf = () => exportSupplierPdf(buildPreviewData());
+
+  const handlePreviewPdf = () => {
+    if (!supplier || !activeProject) return;
+    revokeHtmlPreviewUrl(previewUrl);
+    const html = buildSupplierDetailHtml(buildPreviewData());
+    const url = buildHtmlPreviewUrl(html);
+    setPreviewUrl(url);
+    setPreviewOpen(true);
   };
 
   return (
