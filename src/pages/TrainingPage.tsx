@@ -580,12 +580,12 @@ export default function TrainingPage() {
                   </TableBody>
                 </Table>
               </div>
-              {projectId && (
+              {activeProject && (
                 <div>
                   <p className="text-xs font-semibold text-muted-foreground uppercase mb-2">
                     {t("team.attachments.title", { defaultValue: "Anexos" })}
                   </p>
-                  <AttachmentsPanel projectId={projectId} entityType="training_sessions" entityId={detailSession.id} />
+                  <AttachmentsPanel projectId={activeProject.id} entityType="training_sessions" entityId={detailSession.id} />
                 </div>
               )}
             </div>
