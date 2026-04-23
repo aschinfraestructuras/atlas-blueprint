@@ -5897,6 +5897,13 @@
       "empty": "Ninguna formación registrada",
       "emptyHint": "Las formaciones se gestionan en el módulo Formaciones"
     },
+    "attachments": {
+      "title": "Adjuntos",
+      "show": "Mostrar adjuntos",
+      "hide": "Ocultar adjuntos",
+      "empty": "Sin adjuntos",
+      "addHint": "Suba certificados, fotos o documentos relacionados"
+    },
     "detail": {
       "info": "Información",
       "qualifications": "Cualificaciones",
