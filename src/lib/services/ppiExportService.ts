@@ -123,7 +123,7 @@ function sanitize(s: string): string {
     .slice(0, 40);
 }
 
-function buildFilename(inst: PpiInstanceForExport, projectName: string): string {
+export function buildPpiFilename(inst: PpiInstanceForExport, projectName: string): string {
   const proj   = sanitize(projectName);
   const wi     = sanitize(inst.work_item_sector ?? inst.work_item_id.slice(0, 8));
   const code   = sanitize(inst.code);
@@ -167,7 +167,7 @@ function iptTypeBadge(ipt: string | null | undefined): string {
 
 // ─── Single PDF HTML builder (v2 — enhanced) ─────────────────────────────────
 
-function buildSinglePdfHtml(
+export function buildSinglePdfHtml(
   inst: PpiInstanceForExport,
   labels: ExportLabels,
   locale: string,
@@ -485,7 +485,7 @@ export function exportSinglePdf(
   logoUrl?: string | null,
 ): void {
   const html = buildSinglePdfHtml(inst, labels, locale, projectName, logoUrl);
-  printHtml(html, buildFilename(inst, projectName));
+  printHtml(html, buildPpiFilename(inst, projectName));
 }
 
 /**
