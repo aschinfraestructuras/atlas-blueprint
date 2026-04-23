@@ -2932,26 +2932,35 @@ export type Database = {
           approved_at: string | null
           approved_by: string | null
           ce_marking_ok: boolean | null
+          country_of_origin: string | null
           created_at: string
           deleted_at: string | null
           deleted_by: string | null
           delivery_note_ref: string | null
+          dop_ref: string | null
           drive_url: string | null
+          heat_number: string | null
           id: string
+          inspection_report_ref: string | null
           is_deleted: boolean
           lot_code: string
           lot_ref: string | null
+          manufacturing_date: string | null
           material_id: string
+          mill_cert_ref: string | null
           nc_id: string | null
           notes: string | null
           pame_code: string | null
           physical_state: string
+          pk_installation_end: string | null
+          pk_installation_start: string | null
           project_id: string
           quantity_received: number | null
           received_by: string | null
           reception_date: string
           reception_status: string
           rejection_reason: string | null
+          steel_grade: string | null
           storage_location: string | null
           supplier_id: string | null
           unit: string | null
@@ -2962,26 +2971,35 @@ export type Database = {
           approved_at?: string | null
           approved_by?: string | null
           ce_marking_ok?: boolean | null
+          country_of_origin?: string | null
           created_at?: string
           deleted_at?: string | null
           deleted_by?: string | null
           delivery_note_ref?: string | null
+          dop_ref?: string | null
           drive_url?: string | null
+          heat_number?: string | null
           id?: string
+          inspection_report_ref?: string | null
           is_deleted?: boolean
           lot_code: string
           lot_ref?: string | null
+          manufacturing_date?: string | null
           material_id: string
+          mill_cert_ref?: string | null
           nc_id?: string | null
           notes?: string | null
           pame_code?: string | null
           physical_state?: string
+          pk_installation_end?: string | null
+          pk_installation_start?: string | null
           project_id: string
           quantity_received?: number | null
           received_by?: string | null
           reception_date?: string
           reception_status?: string
           rejection_reason?: string | null
+          steel_grade?: string | null
           storage_location?: string | null
           supplier_id?: string | null
           unit?: string | null
@@ -2992,26 +3010,35 @@ export type Database = {
           approved_at?: string | null
           approved_by?: string | null
           ce_marking_ok?: boolean | null
+          country_of_origin?: string | null
           created_at?: string
           deleted_at?: string | null
           deleted_by?: string | null
           delivery_note_ref?: string | null
+          dop_ref?: string | null
           drive_url?: string | null
+          heat_number?: string | null
           id?: string
+          inspection_report_ref?: string | null
           is_deleted?: boolean
           lot_code?: string
           lot_ref?: string | null
+          manufacturing_date?: string | null
           material_id?: string
+          mill_cert_ref?: string | null
           nc_id?: string | null
           notes?: string | null
           pame_code?: string | null
           physical_state?: string
+          pk_installation_end?: string | null
+          pk_installation_start?: string | null
           project_id?: string
           quantity_received?: number | null
           received_by?: string | null
           reception_date?: string
           reception_status?: string
           rejection_reason?: string | null
+          steel_grade?: string | null
           storage_location?: string | null
           supplier_id?: string | null
           unit?: string | null
@@ -3164,6 +3191,7 @@ export type Database = {
       materials: {
         Row: {
           acceptance_criteria: string | null
+          applicable_standard: string | null
           approval_required: boolean
           approval_status: string
           approved_at: string | null
@@ -3172,16 +3200,22 @@ export type Database = {
           block_reasons: string[]
           blocked_at: string | null
           category: string
+          ce_marking: boolean | null
+          ce_marking_ref: string | null
           code: string
+          country_of_origin: string | null
           created_at: string
           created_by: string | null
           current_approved_doc_id: string | null
+          declaration_of_performance_ref: string | null
           deleted_at: string | null
           deleted_by: string | null
           fav_documents: Json | null
           id: string
           is_blocked: boolean
           is_deleted: boolean
+          manufacturer_ref: string | null
+          mill_certificate_ref: string | null
           name: string
           normative_refs: string | null
           pame_approved_at: string | null
@@ -3198,16 +3232,19 @@ export type Database = {
           rejection_reason: string | null
           specification: string | null
           status: string
+          steel_grade: string | null
           subcategory: string | null
           submitted_at: string | null
           submitted_by: string | null
           supplier_id: string | null
           technical_comparison: Json | null
+          technical_datasheet_ref: string | null
           unit: string | null
           updated_at: string
         }
         Insert: {
           acceptance_criteria?: string | null
+          applicable_standard?: string | null
           approval_required?: boolean
           approval_status?: string
           approved_at?: string | null
@@ -3216,16 +3253,22 @@ export type Database = {
           block_reasons?: string[]
           blocked_at?: string | null
           category: string
+          ce_marking?: boolean | null
+          ce_marking_ref?: string | null
           code: string
+          country_of_origin?: string | null
           created_at?: string
           created_by?: string | null
           current_approved_doc_id?: string | null
+          declaration_of_performance_ref?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
           fav_documents?: Json | null
           id?: string
           is_blocked?: boolean
           is_deleted?: boolean
+          manufacturer_ref?: string | null
+          mill_certificate_ref?: string | null
           name: string
           normative_refs?: string | null
           pame_approved_at?: string | null
@@ -3242,16 +3285,19 @@ export type Database = {
           rejection_reason?: string | null
           specification?: string | null
           status?: string
+          steel_grade?: string | null
           subcategory?: string | null
           submitted_at?: string | null
           submitted_by?: string | null
           supplier_id?: string | null
           technical_comparison?: Json | null
+          technical_datasheet_ref?: string | null
           unit?: string | null
           updated_at?: string
         }
         Update: {
           acceptance_criteria?: string | null
+          applicable_standard?: string | null
           approval_required?: boolean
           approval_status?: string
           approved_at?: string | null
@@ -3260,16 +3306,22 @@ export type Database = {
           block_reasons?: string[]
           blocked_at?: string | null
           category?: string
+          ce_marking?: boolean | null
+          ce_marking_ref?: string | null
           code?: string
+          country_of_origin?: string | null
           created_at?: string
           created_by?: string | null
           current_approved_doc_id?: string | null
+          declaration_of_performance_ref?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
           fav_documents?: Json | null
           id?: string
           is_blocked?: boolean
           is_deleted?: boolean
+          manufacturer_ref?: string | null
+          mill_certificate_ref?: string | null
           name?: string
           normative_refs?: string | null
           pame_approved_at?: string | null
@@ -3286,11 +3338,13 @@ export type Database = {
           rejection_reason?: string | null
           specification?: string | null
           status?: string
+          steel_grade?: string | null
           subcategory?: string | null
           submitted_at?: string | null
           submitted_by?: string | null
           supplier_id?: string | null
           technical_comparison?: Json | null
+          technical_datasheet_ref?: string | null
           unit?: string | null
           updated_at?: string
         }
@@ -5816,10 +5870,18 @@ export type Database = {
       }
       project_workers: {
         Row: {
+          birth_date: string | null
           company: string | null
+          contact_email: string | null
+          contact_phone: string | null
           created_at: string
+          discipline: string | null
+          entry_date: string | null
+          exit_date: string | null
           has_safety_training: boolean
           id: string
+          id_number: string | null
+          ip_qual_status: string | null
           name: string
           notes: string | null
           project_id: string
@@ -5830,10 +5892,18 @@ export type Database = {
           worker_number: string | null
         }
         Insert: {
+          birth_date?: string | null
           company?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
           created_at?: string
+          discipline?: string | null
+          entry_date?: string | null
+          exit_date?: string | null
           has_safety_training?: boolean
           id?: string
+          id_number?: string | null
+          ip_qual_status?: string | null
           name: string
           notes?: string | null
           project_id: string
@@ -5844,10 +5914,18 @@ export type Database = {
           worker_number?: string | null
         }
         Update: {
+          birth_date?: string | null
           company?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
           created_at?: string
+          discipline?: string | null
+          entry_date?: string | null
+          exit_date?: string | null
           has_safety_training?: boolean
           id?: string
+          id_number?: string | null
+          ip_qual_status?: string | null
           name?: string
           notes?: string | null
           project_id?: string
@@ -9701,6 +9779,7 @@ export type Database = {
           alignment_criteria: number | null
           alignment_mm: number | null
           alignment_pass: boolean | null
+          approval_body_ref: string | null
           cert_operator_us: string | null
           code: string
           created_at: string
@@ -9719,11 +9798,15 @@ export type Database = {
           id: string
           mold_type: string | null
           notes: string | null
+          operator_cert_entity: string | null
           operator_cert_ref: string | null
+          operator_cert_standard: string | null
+          operator_cert_valid_until: string | null
           operator_name: string | null
           overall_result: string
           pk_location: string
           portion_brand: string | null
+          portion_ce_ref: string | null
           portion_lot: string | null
           post_weld_checks: Json | null
           ppi_instance_id: string | null
@@ -9742,6 +9825,9 @@ export type Database = {
           us_inspection_zones: Json | null
           us_norm_class: string | null
           ut_calibration_date: string | null
+          ut_cert_level: string | null
+          ut_cert_ref: string | null
+          ut_cert_valid_until: string | null
           ut_defect_desc: string | null
           ut_equipment_code: string | null
           ut_operator: string | null
@@ -9757,6 +9843,7 @@ export type Database = {
           alignment_criteria?: number | null
           alignment_mm?: number | null
           alignment_pass?: boolean | null
+          approval_body_ref?: string | null
           cert_operator_us?: string | null
           code: string
           created_at?: string
@@ -9775,11 +9862,15 @@ export type Database = {
           id?: string
           mold_type?: string | null
           notes?: string | null
+          operator_cert_entity?: string | null
           operator_cert_ref?: string | null
+          operator_cert_standard?: string | null
+          operator_cert_valid_until?: string | null
           operator_name?: string | null
           overall_result?: string
           pk_location: string
           portion_brand?: string | null
+          portion_ce_ref?: string | null
           portion_lot?: string | null
           post_weld_checks?: Json | null
           ppi_instance_id?: string | null
@@ -9798,6 +9889,9 @@ export type Database = {
           us_inspection_zones?: Json | null
           us_norm_class?: string | null
           ut_calibration_date?: string | null
+          ut_cert_level?: string | null
+          ut_cert_ref?: string | null
+          ut_cert_valid_until?: string | null
           ut_defect_desc?: string | null
           ut_equipment_code?: string | null
           ut_operator?: string | null
@@ -9813,6 +9907,7 @@ export type Database = {
           alignment_criteria?: number | null
           alignment_mm?: number | null
           alignment_pass?: boolean | null
+          approval_body_ref?: string | null
           cert_operator_us?: string | null
           code?: string
           created_at?: string
@@ -9831,11 +9926,15 @@ export type Database = {
           id?: string
           mold_type?: string | null
           notes?: string | null
+          operator_cert_entity?: string | null
           operator_cert_ref?: string | null
+          operator_cert_standard?: string | null
+          operator_cert_valid_until?: string | null
           operator_name?: string | null
           overall_result?: string
           pk_location?: string
           portion_brand?: string | null
+          portion_ce_ref?: string | null
           portion_lot?: string | null
           post_weld_checks?: Json | null
           ppi_instance_id?: string | null
@@ -9854,6 +9953,9 @@ export type Database = {
           us_inspection_zones?: Json | null
           us_norm_class?: string | null
           ut_calibration_date?: string | null
+          ut_cert_level?: string | null
+          ut_cert_ref?: string | null
+          ut_cert_valid_until?: string | null
           ut_defect_desc?: string | null
           ut_equipment_code?: string | null
           ut_operator?: string | null
@@ -10302,12 +10404,19 @@ export type Database = {
           cert_ref: string | null
           created_at: string
           created_by: string | null
+          exam_entity: string | null
           id: string
+          ip_qualification_code: string | null
           issued_by: string | null
           notes: string | null
           project_id: string
           qual_code: string
           qualification: string
+          qualification_type: string | null
+          renewal_date: string | null
+          scope: string | null
+          standard_ref: string | null
+          training_hours: number | null
           updated_at: string
           valid_from: string | null
           valid_until: string | null
@@ -10318,12 +10427,19 @@ export type Database = {
           cert_ref?: string | null
           created_at?: string
           created_by?: string | null
+          exam_entity?: string | null
           id?: string
+          ip_qualification_code?: string | null
           issued_by?: string | null
           notes?: string | null
           project_id: string
           qual_code: string
           qualification: string
+          qualification_type?: string | null
+          renewal_date?: string | null
+          scope?: string | null
+          standard_ref?: string | null
+          training_hours?: number | null
           updated_at?: string
           valid_from?: string | null
           valid_until?: string | null
@@ -10334,12 +10450,19 @@ export type Database = {
           cert_ref?: string | null
           created_at?: string
           created_by?: string | null
+          exam_entity?: string | null
           id?: string
+          ip_qualification_code?: string | null
           issued_by?: string | null
           notes?: string | null
           project_id?: string
           qual_code?: string
           qualification?: string
+          qualification_type?: string | null
+          renewal_date?: string | null
+          scope?: string | null
+          standard_ref?: string | null
+          training_hours?: number | null
           updated_at?: string
           valid_from?: string | null
           valid_until?: string | null
@@ -13444,6 +13567,7 @@ export type Database = {
         }
         Returns: {
           acceptance_criteria: string | null
+          applicable_standard: string | null
           approval_required: boolean
           approval_status: string
           approved_at: string | null
@@ -13452,16 +13576,22 @@ export type Database = {
           block_reasons: string[]
           blocked_at: string | null
           category: string
+          ce_marking: boolean | null
+          ce_marking_ref: string | null
           code: string
+          country_of_origin: string | null
           created_at: string
           created_by: string | null
           current_approved_doc_id: string | null
+          declaration_of_performance_ref: string | null
           deleted_at: string | null
           deleted_by: string | null
           fav_documents: Json | null
           id: string
           is_blocked: boolean
           is_deleted: boolean
+          manufacturer_ref: string | null
+          mill_certificate_ref: string | null
           name: string
           normative_refs: string | null
           pame_approved_at: string | null
@@ -13478,11 +13608,13 @@ export type Database = {
           rejection_reason: string | null
           specification: string | null
           status: string
+          steel_grade: string | null
           subcategory: string | null
           submitted_at: string | null
           submitted_by: string | null
           supplier_id: string | null
           technical_comparison: Json | null
+          technical_datasheet_ref: string | null
           unit: string | null
           updated_at: string
         }
