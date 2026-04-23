@@ -31,7 +31,10 @@ export type EntityType =
   | "field_records"
   | "daily_reports"
   | "material_lot"
-  | "materials";
+  | "materials"
+  | "project_workers"
+  | "worker_qualifications"
+  | "training_sessions";
 
 export interface GeoData {
   latitude: number;
