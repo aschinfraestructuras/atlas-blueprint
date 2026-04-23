@@ -310,6 +310,10 @@ export default function MaterialDetailPage() {
           <p className="text-sm text-muted-foreground mt-0.5">{material.code} · {t(`materials.categories.${material.category}`, { defaultValue: material.category })}</p>
         </div>
         <div className="flex gap-2 flex-wrap">
+          <Button size="sm" variant="outline" className="gap-1.5" onClick={handlePreviewPdf}>
+            <Eye className="h-3.5 w-3.5" />
+            {t("common.preview", { defaultValue: "Pré-visualizar" })}
+          </Button>
           <ReportExportMenu options={[{ label: "PDF", icon: "pdf" as const, action: handleExportPdf }]} />
           {/* FAV Export */}
           {material.pame_code && (
