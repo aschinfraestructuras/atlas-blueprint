@@ -152,6 +152,10 @@ export default function MaterialDetailPage() {
   const [loading, setLoading] = useState(true);
   const [editOpen, setEditOpen] = useState(false);
   const [receptionOpen, setReceptionOpen] = useState(false);
+  // PDF in-app preview
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  useEffect(() => () => revokeHtmlPreviewUrl(previewUrl), [previewUrl]);
 
   async function handleLotStatus(lotId: string, newStatus: "approved" | "quarantine" | "rejected") {
     if (!user) return;
@@ -262,19 +266,30 @@ export default function MaterialDetailPage() {
     }
   };
 
+  const buildPreviewData = () => ({
+    material: material!,
+    metrics,
+    docs,
+    workItemLinks,
+    ncs: ncs.map(nc => ({ code: nc.code ?? "", title: nc.title ?? "", severity: nc.severity ?? "", status: nc.status ?? "" })),
+    tests: tests.map(tr => ({ code: tr.code ?? "", date: tr.date, pass_fail: tr.pass_fail ?? "", status: tr.status ?? "" })),
+    projectName: activeProject!.name,
+    projectCode: activeProject!.code,
+    logoBase64,
+    t,
+  });
+
   const handleExportPdf = () => {
-    exportMaterialPdf({
-      material,
-      metrics,
-      docs,
-      workItemLinks,
-      ncs: ncs.map(nc => ({ code: nc.code ?? "", title: nc.title ?? "", severity: nc.severity ?? "", status: nc.status ?? "" })),
-      tests: tests.map(tr => ({ code: tr.code ?? "", date: tr.date, pass_fail: tr.pass_fail ?? "", status: tr.status ?? "" })),
-      projectName: activeProject.name,
-      projectCode: activeProject.code,
-      logoBase64,
-      t,
-    });
+    exportMaterialPdf(buildPreviewData());
+  };
+
+  const handlePreviewPdf = () => {
+    if (!material || !activeProject) return;
+    revokeHtmlPreviewUrl(previewUrl);
+    const html = buildMaterialDetailHtml(buildPreviewData());
+    const url = buildHtmlPreviewUrl(html);
+    setPreviewUrl(url);
+    setPreviewOpen(true);
   };
 
   return (
