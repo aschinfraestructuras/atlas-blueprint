@@ -25,6 +25,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/EmptyState";
 import { NoProjectBanner } from "@/components/NoProjectBanner";
+import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { toast } from "@/lib/utils/toast";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 
@@ -579,6 +580,14 @@ export default function TrainingPage() {
                   </TableBody>
                 </Table>
               </div>
+              {projectId && (
+                <div>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase mb-2">
+                    {t("team.attachments.title", { defaultValue: "Anexos" })}
+                  </p>
+                  <AttachmentsPanel projectId={projectId} entityType="training_sessions" entityId={detailSession.id} />
+                </div>
+              )}
             </div>
           )}
         </DialogContent>
