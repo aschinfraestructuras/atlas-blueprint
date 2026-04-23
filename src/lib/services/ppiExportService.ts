@@ -530,7 +530,7 @@ ${pages.join("\n")}
 </html>`;
 
   const bulkFilename = instances.length === 1
-    ? buildFilename(instances[0], projectName)
+    ? buildPpiFilename(instances[0], projectName)
     : `PPI_${sanitize(projectName)}_bulk_${instances.length}_${Date.now()}.pdf`;
   printHtml(combined, bulkFilename);
 }
