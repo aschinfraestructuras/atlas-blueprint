@@ -30,7 +30,7 @@ import jsPDF from "jspdf";
 import {
   Users, Plus, Pencil, Trash2, Search, Download, ShieldCheck,
   GraduationCap, FileText, AlertTriangle, CheckCircle2, Clock,
-  Building2, HardHat, Phone, Mail, Calendar, ChevronRight,
+  Building2, HardHat, Phone, Mail, Calendar, ChevronRight, Paperclip,
 } from "lucide-react";
 
 // ── Tipos ──────────────────────────────────────────────────────────────────
@@ -963,28 +963,12 @@ export default function TeamPage() {
                       <TableHead className="text-xs">{t("subcontractors.qualifications.standardRef")}</TableHead>
                       <TableHead className="text-xs">{t("team.qualifications.validUntil")}</TableHead>
                       <TableHead className="text-xs">{t("team.qualifications.status")}</TableHead>
+                      <TableHead className="text-xs w-10" />
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {filteredQuals.map(q => (
-                      <TableRow key={q.id}>
-                        <TableCell className="text-xs font-medium">
-                          {(q as any).worker?.name ?? q.worker_name ?? "—"}
-                          {(q as any).worker?.company && (
-                            <span className="text-[10px] text-muted-foreground ml-1">({(q as any).worker.company})</span>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-xs">
-                          {t(`subcontractors.qualifications.types.${q.qualification}`, { defaultValue: q.qualification })}
-                        </TableCell>
-                        <TableCell className="text-xs font-mono text-muted-foreground">{q.cert_ref ?? "—"}</TableCell>
-                        <TableCell className="text-xs text-muted-foreground">{q.issued_by ?? "—"}</TableCell>
-                        <TableCell className="text-xs text-muted-foreground">{q.standard_ref ?? "—"}</TableCell>
-                        <TableCell className="text-xs text-muted-foreground">
-                          {q.valid_until ? new Date(q.valid_until).toLocaleDateString("pt-PT") : "—"}
-                        </TableCell>
-                        <TableCell><ExpiryBadge date={q.valid_until} t={t} /></TableCell>
-                      </TableRow>
+                      <QualRow key={q.id} q={q} t={t} projectId={pid} />
                     ))}
                   </TableBody>
                 </Table>
@@ -1006,29 +990,7 @@ export default function TeamPage() {
           ) : (
             <div className="space-y-2">
               {trainings.map(s => (
-                <div key={s.id} className="rounded-xl border border-border bg-card p-4 space-y-2">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-sm font-semibold">{s.title}</p>
-                      <div className="flex items-center gap-3 text-[10px] text-muted-foreground mt-0.5">
-                        <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{new Date(s.session_date).toLocaleDateString("pt-PT")}</span>
-                        {s.hours && <span>{s.hours}h</span>}
-                        {s.trainer && <span>{s.trainer}</span>}
-                        {s.location && <span>{s.location}</span>}
-                      </div>
-                    </div>
-                    <Badge variant="outline" className="text-[10px]">{t(`training.types.${s.session_type}`, { defaultValue: s.session_type })}</Badge>
-                  </div>
-                  {s.attendees.length > 0 && (
-                    <div className="flex flex-wrap gap-1">
-                      {s.attendees.map(a => (
-                        <span key={a.id} className={cn("text-[10px] px-1.5 py-0.5 rounded-md border", a.signed ? "border-green-500/30 bg-green-500/10 text-green-700" : "border-border bg-muted/50 text-muted-foreground")}>
-                          {a.signed && <CheckCircle2 className="h-2.5 w-2.5 inline mr-0.5" />}{a.name}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                <TrainingRowCard key={s.id} s={s} t={t} projectId={pid} />
               ))}
             </div>
           )}
