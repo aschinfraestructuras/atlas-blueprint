@@ -4581,6 +4581,7 @@
     "title": "Formação",
     "subtitle": "Sessões de formação e sensibilização",
     "newSession": "Nova Sessão",
+    "empty": "Ainda sem sessões de formação registadas.",
     "expired": "Expirada",
     "validUntil": "Válida até",
     "noSafetyTraining": "Sem formação de segurança",
