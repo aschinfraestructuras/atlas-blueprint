@@ -168,6 +168,9 @@ export default function SupplierDetailPage() {
   const [addMaterialOpen, setAddMaterialOpen] = useState(false);
   const [evalDialogOpen, setEvalDialogOpen] = useState(false);
   const [evalLoading, setEvalLoading] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  useEffect(() => () => revokeHtmlPreviewUrl(previewUrl), [previewUrl]);
   const [evalForm, setEvalForm] = useState({
     quality: 75,
     delivery: 75,
