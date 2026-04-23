@@ -878,6 +878,18 @@ export default function MaterialDetailPage() {
 
       <MaterialFormDialog open={editOpen} onOpenChange={setEditOpen} material={material} onSuccess={fetchAll} />
       <MaterialReceptionDialog open={receptionOpen} onOpenChange={setReceptionOpen} projectId={activeProject.id} material={material} onSuccess={fetchAll} />
+
+      <PdfPreviewDialog
+        open={previewOpen}
+        onOpenChange={(o) => {
+          setPreviewOpen(o);
+          if (!o) { revokeHtmlPreviewUrl(previewUrl); setPreviewUrl(null); }
+        }}
+        url={previewUrl}
+        title={`MAT ${material.code} — ${material.name}`}
+        subtitle={activeProject.name}
+        downloadName={`MAT_${activeProject.code}_${material.code}.pdf`}
+      />
     </div>
   );
 }
