@@ -648,6 +648,18 @@ export default function SupplierDetailPage() {
 
       <SupplierFormDialog open={editOpen} onOpenChange={setEditOpen} supplier={supplier} onSuccess={fetchAll} />
       <AddMaterialDialog open={addMaterialOpen} onOpenChange={setAddMaterialOpen} projectId={activeProject.id} supplierId={supplier.id} onSuccess={fetchAll} />
+
+      <PdfPreviewDialog
+        open={previewOpen}
+        onOpenChange={(o) => {
+          setPreviewOpen(o);
+          if (!o) { revokeHtmlPreviewUrl(previewUrl); setPreviewUrl(null); }
+        }}
+        url={previewUrl}
+        title={`Fornecedor ${supplier.code ?? ""} — ${supplier.name}`}
+        subtitle={activeProject.name}
+        downloadName={`SUP_${activeProject.code}_${supplier.code ?? supplier.id.slice(0,8)}.pdf`}
+      />
     </div>
   );
 }
