@@ -287,6 +287,10 @@ export default function SupplierDetailPage() {
           <p className="text-sm text-muted-foreground mt-0.5">{supplier.code} · {supplier.nif_cif ?? "—"}</p>
         </div>
         <div className="flex gap-2">
+          <Button size="sm" variant="outline" className="gap-1.5" onClick={handlePreviewPdf}>
+            <Eye className="h-3.5 w-3.5" />
+            {t("common.preview", { defaultValue: "Pré-visualizar" })}
+          </Button>
           <ReportExportMenu
             options={[
               { label: "PDF", icon: "pdf" as const, action: handleExportPdf },
