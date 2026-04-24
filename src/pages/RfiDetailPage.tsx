@@ -88,6 +88,7 @@ export default function RfiDetailPage() {
   // PDF preview state
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const workItemMap = useMemo(() => new Map(workItems.map((w) => [w.id, w.sector])), [workItems]);
 
@@ -261,22 +262,15 @@ export default function RfiDetailPage() {
             entityCode={rfi.code}
             defaultSubject={`RFI — ${rfi.code} — ${rfi.subject}`}
           />
-          {/* Unified actions bar — Preview / Download PDF / Delete (RFI has no edit form, message thread is the workflow) */}
-          <AlertDialog>
-            <DocumentActionsBar
-              onPreview={handlePreviewPdf}
-              onDownload={handleExportPdf}
-              onDelete={isAdmin ? () => {
-                // open the confirmation dialog manually since DocumentActionsBar wires the click
-                const trigger = document.getElementById("rfi-delete-trigger") as HTMLButtonElement | null;
-                trigger?.click();
-              } : undefined}
-              canDelete={isAdmin}
-              size="md"
-            />
-            <AlertDialogTrigger asChild>
-              <button id="rfi-delete-trigger" className="hidden" aria-hidden />
-            </AlertDialogTrigger>
+          {/* Unified actions bar — Preview / Download PDF / Delete (RFI uses message thread instead of edit form) */}
+          <DocumentActionsBar
+            onPreview={handlePreviewPdf}
+            onDownload={handleExportPdf}
+            onDelete={isAdmin ? () => setDeleteDialogOpen(true) : undefined}
+            canDelete={isAdmin}
+            size="md"
+          />
+          <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>{t("technicalOffice.rfi.deleteTitle", { defaultValue: "Eliminar RFI?" })}</AlertDialogTitle>
