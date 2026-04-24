@@ -335,53 +335,69 @@ export default function DocumentDetailPage() {
     documentService.getVersions(doc.id).then(setVersions).catch(() => {});
   }, [doc?.id, versionKey]);
 
+  /** Build label map shared by export + preview. */
+  const buildLabels = (): DocExportLabels => ({
+    appName: "Atlas QMS",
+    reportTitle: t("documents.export.reportTitle"),
+    listReportTitle: t("documents.export.listReportTitle"),
+    generatedOn: t("documents.export.generatedOn"),
+    page: t("documents.export.page"),
+    of: t("documents.export.of"),
+    code: t("documents.detail.code"),
+    title: t("documents.form.title"),
+    type: t("documents.form.type"),
+    disciplina: t("documents.form.disciplina"),
+    revision: t("documents.form.revision"),
+    status: t("common.status"),
+    createdAt: t("documents.detail.createdAt"),
+    approvedAt: t("documents.detail.approvedAt"),
+    approvedBy: t("documents.export.approvedBy"),
+    version: t("documents.export.version"),
+    fileName: t("documents.table.fileName"),
+    fileSize: t("documents.table.size"),
+    statuses: {
+      draft: t("documents.status.draft"),
+      in_review: t("documents.status.in_review"),
+      approved: t("documents.status.approved"),
+      obsolete: t("documents.status.obsolete"),
+      archived: t("documents.status.archived"),
+    },
+    docTypes: Object.fromEntries(
+      ["procedure", "instruction", "plan", "report", "certificate", "drawing", "specification", "form", "record", "other"]
+        .map(k => [k, t(`documents.docTypes.${k}`)]),
+    ),
+    disciplinas: Object.fromEntries(
+      ["geral", "estruturas", "geotecnia", "hidraulica", "estradas", "ambiente", "seguranca", "eletrica", "mecanica", "outro"]
+        .map(k => [k, t(`documents.disciplinas.${k}`)]),
+    ),
+    versionsTitle: t("documents.versions.title"),
+    versionNo: t("documents.export.versionNo"),
+    changeDescription: t("documents.form.changeDescription"),
+    uploadedAt: t("documents.export.uploadedAt"),
+    projectName: activeProject?.name,
+    projectCode: activeProject?.code,
+  });
+
   const handleExportPdf = async () => {
     if (!doc || !activeProject) return;
     setExporting(true);
     try {
-      const labels: DocExportLabels = {
-        appName: "Atlas QMS",
-        reportTitle: t("documents.export.reportTitle"),
-        listReportTitle: t("documents.export.listReportTitle"),
-        generatedOn: t("documents.export.generatedOn"),
-        page: t("documents.export.page"),
-        of: t("documents.export.of"),
-        code: t("documents.detail.code"),
-        title: t("documents.form.title"),
-        type: t("documents.form.type"),
-        disciplina: t("documents.form.disciplina"),
-        revision: t("documents.form.revision"),
-        status: t("common.status"),
-        createdAt: t("documents.detail.createdAt"),
-        approvedAt: t("documents.detail.approvedAt"),
-        approvedBy: t("documents.export.approvedBy"),
-        version: t("documents.export.version"),
-        fileName: t("documents.table.fileName"),
-        fileSize: t("documents.table.size"),
-        statuses: {
-          draft: t("documents.status.draft"),
-          in_review: t("documents.status.in_review"),
-          approved: t("documents.status.approved"),
-          obsolete: t("documents.status.obsolete"),
-          archived: t("documents.status.archived"),
-        },
-        docTypes: Object.fromEntries(
-          ["procedure", "instruction", "plan", "report", "certificate", "drawing", "specification", "form", "record", "other"]
-            .map(k => [k, t(`documents.docTypes.${k}`)])
-        ),
-        disciplinas: Object.fromEntries(
-          ["geral", "estruturas", "geotecnia", "hidraulica", "estradas", "ambiente", "seguranca", "eletrica", "mecanica", "outro"]
-            .map(k => [k, t(`documents.disciplinas.${k}`)])
-        ),
-        versionsTitle: t("documents.versions.title"),
-        versionNo: t("documents.export.versionNo"),
-        changeDescription: t("documents.form.changeDescription"),
-        uploadedAt: t("documents.export.uploadedAt"),
-      };
-      await exportDocumentPdf(doc, versions, labels, i18n.language, activeProject.name, activeProject.code, logoBase64 || logoUrl);
+      await exportDocumentPdf(doc, versions, buildLabels(), i18n.language, activeProject.name, activeProject.code, logoBase64 || logoUrl);
     } catch {
       toast({ title: t("documents.toast.error"), variant: "destructive" });
     } finally { setExporting(false); }
+  };
+
+  const handlePreviewPdf = () => {
+    if (!doc || !activeProject) return;
+    try {
+      const html = buildDocumentDetailHtml(doc, versions, buildLabels(), i18n.language, activeProject.name, logoBase64 || logoUrl);
+      revokeHtmlPreviewUrl(previewUrl);
+      setPreviewUrl(buildHtmlPreviewUrl(html));
+      setPreviewOpen(true);
+    } catch {
+      toast({ title: t("documents.toast.error"), variant: "destructive" });
+    }
   };
 
   const handleStatusTransition = async (toStatus: DocumentStatus) => {
