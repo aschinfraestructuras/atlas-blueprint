@@ -496,6 +496,24 @@ export default function PPIDetailPage() {
 
         {/* Action buttons — scrollable on mobile */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1 -mb-1 sm:pb-0 sm:mb-0 sm:flex-wrap flex-shrink-0">
+          {/* Pré-visualizar */}
+          {exportInst && activeProject && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5 flex-shrink-0"
+              onClick={() => {
+                revokeHtmlPreviewUrl(previewUrl);
+                const labels = buildPpiLabels(t);
+                const html = buildSinglePdfHtml(exportInst, labels, locale, activeProject.name, logo);
+                setPreviewUrl(buildHtmlPreviewUrl(html));
+                setPreviewOpen(true);
+              }}
+            >
+              <Eye className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">{t("common.preview", { defaultValue: "Pré-visualizar" })}</span>
+            </Button>
+          )}
           {/* Export */}
           {exportInst && (
             <PPIExportMenu instances={[exportInst]} projectName={activeProject?.name ?? ""} variant="single" />
