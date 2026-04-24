@@ -380,10 +380,25 @@ export default function SubcontractorDetailPage() {
             <p className="text-sm text-muted-foreground mt-0.5">{sub.trade ?? "—"} · {sub.contact_email ?? "—"}</p>
           </div>
         </div>
-        <ReportExportMenu options={[
-          { label: "PDF", icon: "pdf", action: () => exportSubcontractorDetailPdf(sub, docsWithStatus, activities, meta, logoBase64) },
-        ]} />
-      </div>
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            className="gap-1.5"
+            onClick={() => {
+              revokeHtmlPreviewUrl(previewUrl);
+              const html = buildSubcontractorDetailHtml(sub, docsWithStatus, activities, meta, logoBase64);
+              setPreviewUrl(buildHtmlPreviewUrl(html));
+              setPreviewOpen(true);
+            }}
+          >
+            <Eye className="h-3.5 w-3.5" />
+            {t("common.preview", { defaultValue: "Pré-visualizar" })}
+          </Button>
+          <ReportExportMenu options={[
+            { label: "PDF", icon: "pdf", action: () => exportSubcontractorDetailPdf(sub, docsWithStatus, activities, meta, logoBase64) },
+          ]} />
+        </div>
 
       {/* Alerts */}
       {expiredDocs.length > 0 && (
@@ -1022,6 +1037,20 @@ function SubMaterialsSection({ projectId, subId, supplierId }: { projectId: stri
           </CardContent>
         </Card>
       )}
+
+      <PdfPreviewDialog
+        open={previewOpen}
+        onOpenChange={(o) => {
+          setPreviewOpen(o);
+          if (!o) {
+            revokeHtmlPreviewUrl(previewUrl);
+            setPreviewUrl(null);
+          }
+        }}
+        url={previewUrl}
+        title={`SUB · ${sub?.name ?? ""}`}
+        subtitle={activeProject?.name}
+      />
     </div>
   );
 }
