@@ -847,6 +847,13 @@ export default function TeamPage() {
   const [sheetWorker, setSheetWorker] = useState<Worker | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
 
+  // PDF preview state — used by per-row "eye" action
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewTitle, setPreviewTitle] = useState<string>("");
+  const [previewSubtitle, setPreviewSubtitle] = useState<string>("");
+  const [previewName, setPreviewName] = useState<string>("");
+  const [previewOpen, setPreviewOpen] = useState(false);
+
   // Filtros
   const [search, setSearch] = useState("");
   const [filterCompany, setFilterCompany] = useState("__all__");
@@ -931,6 +938,70 @@ export default function TeamPage() {
       toast({ title: t("team.toast.error"), description: err?.message, variant: "destructive" });
     } finally { setDeleting(false); }
   };
+
+  // ── Worker individual sheet (Ficha Pessoal) ─────────────────────────
+  const buildWorkerPayload = useCallback((w: Worker) => {
+    const wQuals = qualifications
+      .filter(q => q.worker_id === w.id)
+      .map(q => ({
+        id: q.id,
+        qualification: q.qualification,
+        cert_ref: q.cert_ref,
+        issued_by: q.issued_by,
+        valid_from: q.valid_from,
+        valid_until: q.valid_until,
+        standard_ref: q.standard_ref,
+        scope: q.scope,
+        ip_qualification_code: q.ip_qualification_code,
+        renewal_date: q.renewal_date,
+        exam_entity: q.exam_entity,
+        training_hours: q.training_hours,
+      }));
+    const wTrainings = trainings
+      .filter(s => s.attendees.some(a => a.worker_id === w.id))
+      .map(s => {
+        const att = s.attendees.find(a => a.worker_id === w.id);
+        return {
+          id: s.id,
+          title: s.title,
+          session_date: s.session_date,
+          session_type: s.session_type,
+          trainer: s.trainer,
+          hours: s.hours,
+          signed: !!att?.signed,
+        };
+      });
+    return { wQuals, wTrainings };
+  }, [qualifications, trainings]);
+
+  const handlePrintWorker = useCallback((w: Worker) => {
+    if (!activeProject) return;
+    const { wQuals, wTrainings } = buildWorkerPayload(w);
+    const labels = buildWorkerLabels(t);
+    const locale = i18n.language?.startsWith("es") ? "es" : "pt";
+    exportWorkerSheetPdf(w, wQuals, wTrainings, labels, locale, activeProject.name, activeProject.code, logoBase64);
+  }, [activeProject, buildWorkerPayload, t, logoBase64]);
+
+  const handlePreviewWorker = useCallback((w: Worker) => {
+    if (!activeProject) return;
+    const { wQuals, wTrainings } = buildWorkerPayload(w);
+    const labels = buildWorkerLabels(t);
+    const locale = i18n.language?.startsWith("es") ? "es" : "pt";
+    const html = buildWorkerSheetHtml(w, wQuals, wTrainings, labels, locale, activeProject.name, activeProject.code, logoBase64);
+    if (previewUrl) revokeHtmlPreviewUrl(previewUrl);
+    const url = buildHtmlPreviewUrl(html);
+    setPreviewUrl(url);
+    setPreviewTitle(`${labels.reportTitle} — ${w.name}`);
+    setPreviewSubtitle(`${w.company ?? "ASCH"}${w.role_function ? " · " + w.role_function : ""}`);
+    setPreviewName(`FichaPessoal_${w.name.replace(/\s+/g, "_")}`);
+    setPreviewOpen(true);
+  }, [activeProject, buildWorkerPayload, t, logoBase64, previewUrl]);
+
+  // Cleanup preview blob on unmount / project change
+  useEffect(() => {
+    return () => { if (previewUrl) revokeHtmlPreviewUrl(previewUrl); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // ── PDF export (IP GR.PR.005) ─────────────────────────────────────────
   const handleExportPdf = () => {
@@ -1101,43 +1172,19 @@ export default function TeamPage() {
                       const wQuals = qualifications.filter(q => q.worker_id === w.id);
                       const hasExpiring = wQuals.some(q => ["alert","urgent","expired"].includes(certExpiry(q.valid_until)));
                       return (
-                        <TableRow key={w.id} className="cursor-pointer hover:bg-muted/20"
-                          onClick={() => { setSheetWorker(w); setSheetOpen(true); }}>
-                          <TableCell className="text-xs font-semibold">{w.name}</TableCell>
-                          <TableCell className="text-xs text-muted-foreground">{w.company ?? "ASCH"}</TableCell>
-                          <TableCell className="text-xs">{w.role_function ?? "—"}</TableCell>
-                          <TableCell className="text-xs text-muted-foreground">
-                            {w.discipline ? t(`team.disciplines.${w.discipline}`, { defaultValue: w.discipline }) : "—"}
-                          </TableCell>
-                          <TableCell>
-                            <Badge className={cn("text-[10px]", w.status === "active" ? "bg-green-500/15 text-green-700" : "bg-muted text-muted-foreground")}>
-                              {t(`team.status.${w.status}`)}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            {w.has_safety_training
-                              ? <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
-                              : <AlertTriangle className="h-3.5 w-3.5 text-amber-400" />}
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-1">
-                              {wQuals.length > 0 && (
-                                <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-semibold">{wQuals.length}</span>
-                              )}
-                              {hasExpiring && <AlertTriangle className="h-3 w-3 text-amber-500" />}
-                            </div>
-                          </TableCell>
-                          <TableCell onClick={e => e.stopPropagation()}>
-                            <div className="flex items-center gap-0.5">
-                              <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleOpenEdit(w)}>
-                                <Pencil className="h-3 w-3" />
-                              </Button>
-                              <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive/70 hover:text-destructive" onClick={() => setDeleteWorker(w)}>
-                                <Trash2 className="h-3 w-3" />
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
+                        <WorkerRow
+                          key={w.id}
+                          w={w}
+                          wQuals={wQuals}
+                          hasExpiring={hasExpiring}
+                          t={t}
+                          projectId={pid}
+                          onOpenSheet={(worker) => { setSheetWorker(worker); setSheetOpen(true); }}
+                          onEdit={handleOpenEdit}
+                          onDelete={(worker) => setDeleteWorker(worker)}
+                          onPrint={handlePrintWorker}
+                          onPreview={handlePreviewWorker}
+                        />
                       );
                     })}
                   </TableBody>
@@ -1253,6 +1300,20 @@ export default function TeamPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* PDF preview (Ficha Pessoal) */}
+      <PdfPreviewDialog
+        open={previewOpen}
+        onOpenChange={(o) => {
+          setPreviewOpen(o);
+          if (!o && previewUrl) { revokeHtmlPreviewUrl(previewUrl); setPreviewUrl(null); }
+        }}
+        url={previewUrl}
+        title={previewTitle}
+        subtitle={previewSubtitle}
+        downloadName={previewName}
+        htmlSource
+      />
     </div>
   );
 }

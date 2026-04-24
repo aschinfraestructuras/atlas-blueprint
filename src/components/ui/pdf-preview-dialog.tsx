@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Download, ExternalLink, FileText, Loader2, Printer } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -78,7 +78,7 @@ export function PdfPreviewDialog({
         throw new Error("iframe-not-ready");
       }
 
-      // Force a deterministic width so the canvas captures the full A4 page
+      // Render the full document at high DPI
       const renderTarget = doc.documentElement;
       const canvas = await html2canvas(renderTarget, {
         scale: 2,
@@ -89,24 +89,56 @@ export function PdfPreviewDialog({
         windowHeight: renderTarget.scrollHeight,
       });
 
-      const imgData = canvas.toDataURL("image/jpeg", 0.92);
+      // ── A4 layout with proper margins ──────────────────────────────
+      // 10mm safety margin on all sides (matches @page margin used in templates)
       const pdf = new jsPDF("p", "mm", "a4");
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
-      const imgWidth = pageWidth;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      const pageW = pdf.internal.pageSize.getWidth();   // 210mm
+      const pageH = pdf.internal.pageSize.getHeight();  // 297mm
+      const marginX = 10;
+      const marginY = 10;
+      const printableW = pageW - marginX * 2;
+      const printableH = pageH - marginY * 2;
 
-      let heightLeft = imgHeight;
-      let position = 0;
+      // Scale image to printable width keeping aspect ratio
+      const imgW = printableW;
+      const imgH = (canvas.height * imgW) / canvas.width;
 
-      pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight, undefined, "FAST");
-      heightLeft -= pageHeight;
+      const imgData = canvas.toDataURL("image/jpeg", 0.92);
 
-      while (heightLeft > 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight, undefined, "FAST");
-        heightLeft -= pageHeight;
+      if (imgH <= printableH) {
+        // Fits on one page
+        pdf.addImage(imgData, "JPEG", marginX, marginY, imgW, imgH, undefined, "FAST");
+      } else {
+        // Slice the canvas into A4-printable chunks and add one image per page,
+        // so margins are preserved on every page (no edge-to-edge bleed).
+        const pxPerMm = canvas.width / printableW;
+        const sliceHpx = Math.floor(printableH * pxPerMm);
+        let renderedPx = 0;
+        let pageIndex = 0;
+
+        const sliceCanvas = document.createElement("canvas");
+        sliceCanvas.width = canvas.width;
+        const sctx = sliceCanvas.getContext("2d");
+        if (!sctx) throw new Error("canvas-2d-context-unavailable");
+
+        while (renderedPx < canvas.height) {
+          const remainingPx = canvas.height - renderedPx;
+          const currentSlicePx = Math.min(sliceHpx, remainingPx);
+          sliceCanvas.height = currentSlicePx;
+          sctx.fillStyle = "#ffffff";
+          sctx.fillRect(0, 0, sliceCanvas.width, sliceCanvas.height);
+          sctx.drawImage(
+            canvas,
+            0, renderedPx, canvas.width, currentSlicePx,
+            0, 0, canvas.width, currentSlicePx,
+          );
+          const sliceData = sliceCanvas.toDataURL("image/jpeg", 0.92);
+          const sliceMm = currentSlicePx / pxPerMm;
+          if (pageIndex > 0) pdf.addPage();
+          pdf.addImage(sliceData, "JPEG", marginX, marginY, imgW, sliceMm, undefined, "FAST");
+          renderedPx += currentSlicePx;
+          pageIndex += 1;
+        }
       }
 
       pdf.save(pdfName);
@@ -148,8 +180,10 @@ export function PdfPreviewDialog({
               <DialogTitle className="text-sm font-semibold truncate text-left">
                 {title || t("pdfPreview.untitled", { defaultValue: "Documento" })}
               </DialogTitle>
-              {subtitle && (
-                <p className="text-[11px] text-muted-foreground truncate mt-0.5">{subtitle}</p>
+              {subtitle ? (
+                <DialogDescription className="text-[11px] truncate mt-0.5">{subtitle}</DialogDescription>
+              ) : (
+                <DialogDescription className="sr-only">{t("pdfPreview.a11yDesc", { defaultValue: "Pré-visualização de documento PDF." })}</DialogDescription>
               )}
             </div>
           </div>

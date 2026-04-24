@@ -640,6 +640,23 @@ export default function PlanningPage() {
 
       {/* WBS Detail Drawer */}
       {(() => {
+        // ── Sub-componentes locais usados no drawer ──────────────────────
+        function InfoCell({ label, value }: { label: string; value: string }) {
+          return (
+            <div className="space-y-0.5">
+              <p className="text-[9px] font-bold uppercase tracking-[0.14em] text-muted-foreground">{label}</p>
+              <p className="text-xs text-foreground">{value}</p>
+            </div>
+          );
+        }
+        function KpiMini({ label, value, cls }: { label: string; value: number; cls?: string }) {
+          return (
+            <div className="rounded-md bg-muted/40 py-1.5 px-1">
+              <p className={cn("text-base font-bold tabular-nums", cls)}>{value}</p>
+              <p className="text-[9px] text-muted-foreground leading-tight mt-0.5">{label}</p>
+            </div>
+          );
+        }
         const node = drawerWbsId ? wbs.find(w => w.id === drawerWbsId) : null;
         const open = !!node;
         const childIds = node ? getWbsDescendantIds(node.id) : new Set<string>();
