@@ -1321,6 +1321,22 @@ export default function PPIDetailPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* PDF Preview Dialog */}
+      <PdfPreviewDialog
+        open={previewOpen}
+        onOpenChange={(v) => {
+          setPreviewOpen(v);
+          if (!v) {
+            revokeHtmlPreviewUrl(previewUrl);
+            setPreviewUrl(null);
+          }
+        }}
+        url={previewUrl}
+        title={instance?.code ?? null}
+        subtitle={t("ppi.instances.detail.title", { defaultValue: "Plano de Inspeção e Ensaio" })}
+        downloadName={instance ? `PPI_${instance.code}.pdf` : null}
+      />
     </div>
   );
 }
