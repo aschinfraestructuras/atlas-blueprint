@@ -6,7 +6,9 @@ import { useMaterials } from "@/hooks/useMaterials";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { materialService } from "@/lib/services/materialService";
-import { exportMaterialsListPdf } from "@/lib/services/materialExportService";
+import { buildMaterialsListHtml } from "@/lib/services/materialExportService";
+import { PdfPreviewDialog } from "@/components/ui/pdf-preview-dialog";
+import { buildHtmlPreviewUrl, revokeHtmlPreviewUrl } from "@/lib/utils/htmlPreview";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Package, Plus, Pencil, Search, Archive, RotateCcw, Eye, Trash2,
