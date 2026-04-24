@@ -1,5 +1,12 @@
-import { exportToCSV, generateListPdf, buildReportFilename, type ReportMeta, type ReportLabels } from "./reportService";
-import type { TopographyEquipment, TopographyRequest, TopographyControl } from "./topographyService";
+import {
+  exportToCSV, generateListPdf, generatePdfDocument, infoGridHtml,
+  buildReportFilename,
+  type ReportMeta, type ReportLabels,
+} from "./reportService";
+import type {
+  TopographyEquipment, TopographyRequest, TopographyControl, EquipmentCalibration,
+} from "./topographyService";
+import type { SurveyRecord } from "./surveyService";
 
 const labels = (locale: string): ReportLabels => ({
   appName: "Atlas QMS",
