@@ -71,6 +71,9 @@ export default function MaterialsPage() {
   const [lotsLoading, setLotsLoading] = useState(true);
   const [receptionTarget, setReceptionTarget] = useState<Material | null>(null);
   const [receptionOpen, setReceptionOpen] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewMeta, setPreviewMeta] = useState<{ title: string; subtitle: string; filename: string } | null>(null);
 
   // Carregar todos os lotes do projecto com joins
   useEffect(() => {
