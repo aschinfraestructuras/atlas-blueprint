@@ -847,6 +847,13 @@ export default function TeamPage() {
   const [sheetWorker, setSheetWorker] = useState<Worker | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
 
+  // PDF preview state — used by per-row "eye" action
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewTitle, setPreviewTitle] = useState<string>("");
+  const [previewSubtitle, setPreviewSubtitle] = useState<string>("");
+  const [previewName, setPreviewName] = useState<string>("");
+  const [previewOpen, setPreviewOpen] = useState(false);
+
   // Filtros
   const [search, setSearch] = useState("");
   const [filterCompany, setFilterCompany] = useState("__all__");
@@ -931,6 +938,70 @@ export default function TeamPage() {
       toast({ title: t("team.toast.error"), description: err?.message, variant: "destructive" });
     } finally { setDeleting(false); }
   };
+
+  // ── Worker individual sheet (Ficha Pessoal) ─────────────────────────
+  const buildWorkerPayload = useCallback((w: Worker) => {
+    const wQuals = qualifications
+      .filter(q => q.worker_id === w.id)
+      .map(q => ({
+        id: q.id,
+        qualification: q.qualification,
+        cert_ref: q.cert_ref,
+        issued_by: q.issued_by,
+        valid_from: q.valid_from,
+        valid_until: q.valid_until,
+        standard_ref: q.standard_ref,
+        scope: q.scope,
+        ip_qualification_code: q.ip_qualification_code,
+        renewal_date: q.renewal_date,
+        exam_entity: q.exam_entity,
+        training_hours: q.training_hours,
+      }));
+    const wTrainings = trainings
+      .filter(s => s.attendees.some(a => a.worker_id === w.id))
+      .map(s => {
+        const att = s.attendees.find(a => a.worker_id === w.id);
+        return {
+          id: s.id,
+          title: s.title,
+          session_date: s.session_date,
+          session_type: s.session_type,
+          trainer: s.trainer,
+          hours: s.hours,
+          signed: !!att?.signed,
+        };
+      });
+    return { wQuals, wTrainings };
+  }, [qualifications, trainings]);
+
+  const handlePrintWorker = useCallback((w: Worker) => {
+    if (!activeProject) return;
+    const { wQuals, wTrainings } = buildWorkerPayload(w);
+    const labels = buildWorkerLabels(t);
+    const locale = i18n.language?.startsWith("es") ? "es" : "pt";
+    exportWorkerSheetPdf(w, wQuals, wTrainings, labels, locale, activeProject.name, activeProject.code, logoBase64);
+  }, [activeProject, buildWorkerPayload, t, logoBase64]);
+
+  const handlePreviewWorker = useCallback((w: Worker) => {
+    if (!activeProject) return;
+    const { wQuals, wTrainings } = buildWorkerPayload(w);
+    const labels = buildWorkerLabels(t);
+    const locale = i18n.language?.startsWith("es") ? "es" : "pt";
+    const html = buildWorkerSheetHtml(w, wQuals, wTrainings, labels, locale, activeProject.name, activeProject.code, logoBase64);
+    if (previewUrl) revokeHtmlPreviewUrl(previewUrl);
+    const url = buildHtmlPreviewUrl(html);
+    setPreviewUrl(url);
+    setPreviewTitle(`${labels.reportTitle} — ${w.name}`);
+    setPreviewSubtitle(`${w.company ?? "ASCH"}${w.role_function ? " · " + w.role_function : ""}`);
+    setPreviewName(`FichaPessoal_${w.name.replace(/\s+/g, "_")}`);
+    setPreviewOpen(true);
+  }, [activeProject, buildWorkerPayload, t, logoBase64, previewUrl]);
+
+  // Cleanup preview blob on unmount / project change
+  useEffect(() => {
+    return () => { if (previewUrl) revokeHtmlPreviewUrl(previewUrl); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // ── PDF export (IP GR.PR.005) ─────────────────────────────────────────
   const handleExportPdf = () => {
