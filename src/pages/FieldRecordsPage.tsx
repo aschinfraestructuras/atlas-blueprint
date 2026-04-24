@@ -663,21 +663,11 @@ export default function FieldRecordsPage() {
                           }
                         }}
                         previewLoading={previewBusyId === r.id}
-                        onEdit={() => setViewId(r.id)}
-                        editIcon={Eye}
-                        editLabel={t("fieldRecords.actions.viewDetail", { defaultValue: "Ver detalhe (anexos, fotos, ensaios)" })}
+                        onEdit={!isArchived ? () => { setEditId(r.id); setFormOpen(true); } : undefined}
+                        canEdit={!isArchived}
                         onDelete={canDelete ? () => setDeleteId(r.id) : undefined}
                         canDelete={canDelete}
                       />
-                      {!isArchived && (
-                        <Button
-                          variant="ghost" size="icon" className="h-7 w-7 hover:text-primary"
-                          onClick={() => { setEditId(r.id); setFormOpen(true); }}
-                          title={t("common.edit", { defaultValue: "Editar" })}
-                        >
-                          <Pencil className="h-3.5 w-3.5" />
-                        </Button>
-                      )}
                     </div>
                   </TableCell>
                 </TableRow>

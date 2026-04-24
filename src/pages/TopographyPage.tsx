@@ -35,6 +35,8 @@ import {
   exportTopographyEquipmentCsv, exportTopographyEquipmentPdf,
   exportTopographyRequestsCsv, exportTopographyControlsCsv,
   exportTopographyControlsPdf,
+  buildEquipmentDetailHtml, buildRequestDetailHtml,
+  buildControlDetailHtml, buildSurveyDetailHtml,
 } from "@/lib/services/topographyExportService";
 import { exportSurveysCsv, exportSurveysPdf } from "@/lib/services/surveyExportService";
 import {
@@ -54,6 +56,10 @@ import type { TopographyRequest, TopographyControl } from "@/lib/services/topogr
 import type { SurveyRecord } from "@/lib/services/surveyService";
 import { seedTopographyDocuments, TOPOGRAPHY_SEED_COUNT } from "@/lib/services/topographyDocSeedService";
 import { cn } from "@/lib/utils";
+import { PdfPreviewDialog } from "@/components/ui/pdf-preview-dialog";
+import { DocumentActionsBar } from "@/components/ui/document-actions-bar";
+import { buildHtmlPreviewUrl, revokeHtmlPreviewUrl } from "@/lib/utils/htmlPreview";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 
 function CalibrationBadge({ status }: { status: string }) {
   const { t } = useTranslation();
@@ -135,6 +141,19 @@ export default function TopographyPage() {
   const [cycleData, setCycleData] = useState<any[]>([]);
   const [detailSheetOpen, setDetailSheetOpen] = useState(false);
   const [selectedCycle, setSelectedCycle] = useState<any>(null);
+
+  // ── In-app PDF previewer (per-record) ──────────────────────────────────
+  const { logoBase64, logoUrl } = useProjectLogo();
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewTitle, setPreviewTitle] = useState<string>("");
+  const [previewBusyId, setPreviewBusyId] = useState<string | null>(null);
+  useEffect(() => () => revokeHtmlPreviewUrl(previewUrl), [previewUrl]);
+
+  const openPreview = (built: { html: string; filename: string }, title: string) => {
+    revokeHtmlPreviewUrl(previewUrl);
+    setPreviewUrl(buildHtmlPreviewUrl(built.html));
+    setPreviewTitle(title);
+  };
 
   // Load topography cycle data
   useEffect(() => {
@@ -392,12 +411,26 @@ export default function TopographyPage() {
                       <TableCell><CalibrationBadge status={eq.calibration_status} /></TableCell>
                       <TableCell className={cn("text-sm", validityClass)}>{validityText}</TableCell>
                       <TableCell onClick={e => e.stopPropagation()}>
-                        <div className="flex gap-1">
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleViewEquipment(eq)} title={t("common.view", { defaultValue: "Ver" })}>
-                            <Eye className="h-3.5 w-3.5" />
+                        <div className="flex items-center justify-end gap-0.5">
+                          <DocumentActionsBar
+                            previewLoading={previewBusyId === eq.id}
+                            onPreview={() => {
+                              setPreviewBusyId(eq.id);
+                              try {
+                                const built = buildEquipmentDetailHtml(eq, calibrations, meta, logoBase64 || logoUrl);
+                                openPreview(built, eq.code);
+                              } finally {
+                                setPreviewBusyId(null);
+                              }
+                            }}
+                            onEdit={() => handleViewEquipment(eq)}
+                            editLabel={t("common.edit")}
+                            onDelete={isAdmin ? () => handleDeleteEquipment(eq.id) : undefined}
+                            canDelete={isAdmin}
+                          />
+                          <Button size="sm" variant="outline" className="ml-1" onClick={() => handleAddCalibration(eq.id)}>
+                            <Plus className="h-3 w-3 mr-1" />{t("topography.calibrations")}
                           </Button>
-                          <Button size="sm" variant="outline" onClick={() => handleAddCalibration(eq.id)}><Plus className="h-3 w-3 mr-1" />{t("topography.calibrations")}</Button>
-                          {isAdmin && <DeleteButton onConfirm={() => handleDeleteEquipment(eq.id)} />}
                         </div>
                       </TableCell>
                     </TableRow>
@@ -459,11 +492,20 @@ export default function TopographyPage() {
                           </div>
                         ) : <span className="text-muted-foreground text-xs">—</span>}
                       </TableCell>
-                      <TableCell>
-                        <div className="flex gap-1">
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditRequest(req)} title={t("common.edit")}><Pencil className="h-3.5 w-3.5" /></Button>
-                          {isAdmin && <DeleteButton onConfirm={() => handleDeleteRequest(req.id)} />}
-                        </div>
+                      <TableCell onClick={e => e.stopPropagation()}>
+                        <DocumentActionsBar
+                          previewLoading={previewBusyId === req.id}
+                          onPreview={() => {
+                            setPreviewBusyId(req.id);
+                            try {
+                              const built = buildRequestDetailHtml(req, meta, logoBase64 || logoUrl);
+                              openPreview(built, (req as any).code ?? req.request_type);
+                            } finally { setPreviewBusyId(null); }
+                          }}
+                          onEdit={() => handleEditRequest(req)}
+                          onDelete={isAdmin ? () => handleDeleteRequest(req.id) : undefined}
+                          canDelete={isAdmin}
+                        />
                       </TableCell>
                     </TableRow>
                   );
@@ -517,11 +559,20 @@ export default function TopographyPage() {
                           {!wi && !ppi && !nc && <span className="text-[10px] text-muted-foreground">—</span>}
                         </div>
                       </TableCell>
-                      <TableCell>
-                        <div className="flex gap-1">
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditControl(ctrl)} title={t("common.edit")}><Pencil className="h-3.5 w-3.5" /></Button>
-                          {isAdmin && <DeleteButton onConfirm={() => handleDeleteControl(ctrl.id)} />}
-                        </div>
+                      <TableCell onClick={e => e.stopPropagation()}>
+                        <DocumentActionsBar
+                          previewLoading={previewBusyId === ctrl.id}
+                          onPreview={() => {
+                            setPreviewBusyId(ctrl.id);
+                            try {
+                              const built = buildControlDetailHtml(ctrl, equipment, meta, logoBase64 || logoUrl);
+                              openPreview(built, (ctrl as any).ft_code ?? ctrl.element);
+                            } finally { setPreviewBusyId(null); }
+                          }}
+                          onEdit={() => handleEditControl(ctrl)}
+                          onDelete={isAdmin ? () => handleDeleteControl(ctrl.id) : undefined}
+                          canDelete={isAdmin}
+                        />
                       </TableCell>
                     </TableRow>
                   );
@@ -557,11 +608,20 @@ export default function TopographyPage() {
                         {t(`survey.status.${s.status}`, { defaultValue: s.status })}
                       </Badge>
                     </TableCell>
-                    <TableCell>
-                      <div className="flex gap-1">
-                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditSurvey(s)} title={t("common.edit")}><Pencil className="h-3.5 w-3.5" /></Button>
-                        {canDelete && <DeleteButton onConfirm={() => handleDeleteSurvey(s.id)} />}
-                      </div>
+                    <TableCell onClick={e => e.stopPropagation()}>
+                      <DocumentActionsBar
+                        previewLoading={previewBusyId === s.id}
+                        onPreview={() => {
+                          setPreviewBusyId(s.id);
+                          try {
+                            const built = buildSurveyDetailHtml(s, meta, logoBase64 || logoUrl);
+                            openPreview(built, s.area_or_pk);
+                          } finally { setPreviewBusyId(null); }
+                        }}
+                        onEdit={() => handleEditSurvey(s)}
+                        onDelete={canDelete ? () => handleDeleteSurvey(s.id) : undefined}
+                        canDelete={canDelete}
+                      />
                     </TableCell>
                   </TableRow>
                 ))}
