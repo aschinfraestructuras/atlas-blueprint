@@ -44,7 +44,7 @@ import {
 import {
   ClipboardCheck, Plus, Search, Trash2, Loader2,
   CheckCircle2, XCircle, Clock, AlertTriangle, CloudSun, Sun, Cloud,
-  CloudRain, Wind, Thermometer,
+  CloudRain, Wind, Thermometer, Eye,
 } from "lucide-react";
 import { FieldRecordDetailDialog } from "@/components/field-records/FieldRecordDetailDialog";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
@@ -616,6 +616,8 @@ export default function FieldRecordsPage() {
                       }}
                       previewLoading={previewBusyId === r.id}
                       onEdit={() => setViewId(r.id)}
+                      editIcon={Eye}
+                      editLabel={t("fieldRecords.actions.viewDetail", { defaultValue: "Ver detalhe (anexos, fotos, ensaios)" })}
                       onDelete={canDelete ? () => setDeleteId(r.id) : undefined}
                       canDelete={canDelete}
                     />

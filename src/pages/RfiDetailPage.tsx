@@ -13,6 +13,7 @@ import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { exportRfiDetailPdf, buildRfiDetailHtml } from "@/lib/services/rfiExportService";
 import { PdfPreviewDialog } from "@/components/ui/pdf-preview-dialog";
 import { buildHtmlPreviewUrl, revokeHtmlPreviewUrl } from "@/lib/utils/htmlPreview";
+import { DocumentActionsBar } from "@/components/ui/document-actions-bar";
 import { Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -87,6 +88,7 @@ export default function RfiDetailPage() {
   // PDF preview state
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const workItemMap = useMemo(() => new Map(workItems.map((w) => [w.id, w.sector])), [workItems]);
 
@@ -260,21 +262,15 @@ export default function RfiDetailPage() {
             entityCode={rfi.code}
             defaultSubject={`RFI — ${rfi.code} — ${rfi.subject}`}
           />
-          <Button variant="outline" size="sm" onClick={handlePreviewPdf} className="gap-1.5">
-            <Eye className="h-3.5 w-3.5" />
-            {t("common.preview", { defaultValue: "Pré-visualizar" })}
-          </Button>
-          <Button variant="outline" size="sm" onClick={handleExportPdf} className="gap-1.5">
-            <Download className="h-3.5 w-3.5" />
-            PDF
-          </Button>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive gap-1.5">
-                <Trash2 className="h-3.5 w-3.5" />
-                {t("common.delete")}
-              </Button>
-            </AlertDialogTrigger>
+          {/* Unified actions bar — Preview / Download PDF / Delete (RFI uses message thread instead of edit form) */}
+          <DocumentActionsBar
+            onPreview={handlePreviewPdf}
+            onDownload={handleExportPdf}
+            onDelete={isAdmin ? () => setDeleteDialogOpen(true) : undefined}
+            canDelete={isAdmin}
+            size="md"
+          />
+          <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>{t("technicalOffice.rfi.deleteTitle", { defaultValue: "Eliminar RFI?" })}</AlertDialogTitle>
