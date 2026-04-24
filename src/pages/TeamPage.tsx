@@ -26,11 +26,15 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { toast } from "@/lib/utils/toast";
 import { cn } from "@/lib/utils";
 import { fullPdfHeader } from "@/lib/services/pdfProjectHeader";
+import { exportWorkerSheetPdf, buildWorkerSheetHtml, type WorkerSheetLabels } from "@/lib/services/workerSheetExportService";
+import { PdfPreviewDialog } from "@/components/ui/pdf-preview-dialog";
+import { buildHtmlPreviewUrl, revokeHtmlPreviewUrl } from "@/lib/utils/htmlPreview";
+import i18n from "@/i18n";
 import jsPDF from "jspdf";
 import {
   Users, Plus, Pencil, Trash2, Search, Download, ShieldCheck,
   GraduationCap, FileText, AlertTriangle, CheckCircle2, Clock,
-  Building2, HardHat, Phone, Mail, Calendar, ChevronRight, Paperclip,
+  Building2, HardHat, Phone, Mail, Calendar, ChevronRight, Paperclip, Eye, Printer,
 } from "lucide-react";
 
 // ── Tipos ──────────────────────────────────────────────────────────────────
@@ -637,6 +641,136 @@ function QualRow({ q, t, projectId }: { q: Qualification; t: any; projectId: str
         <TableRow>
           <TableCell colSpan={8} className="bg-muted/20 p-3">
             <AttachmentsPanel projectId={projectId} entityType="worker_qualifications" entityId={q.id} />
+          </TableCell>
+        </TableRow>
+      )}
+    </>
+  );
+}
+
+// ── Helpers para ficha pessoal ─────────────────────────────────────────────
+
+function buildWorkerLabels(t: (k: string, opts?: Record<string, unknown>) => string): WorkerSheetLabels {
+  return {
+    appName: t("common.appName", { defaultValue: "Atlas QMS" }),
+    reportTitle: t("team.sheet.title", { defaultValue: "Ficha Pessoal de Trabalhador" }),
+    generatedOn: t("common.generatedOn", { defaultValue: "Gerado em" }),
+    identification: t("team.section.identification", { defaultValue: "Identificação" }),
+    presence: t("team.section.presence", { defaultValue: "Presença em obra" }),
+    qualifications: t("team.tab.qualifications", { defaultValue: "Qualificações" }),
+    trainings: t("team.tab.trainings", { defaultValue: "Formações" }),
+    observations: t("common.notes", { defaultValue: "Observações" }),
+    name: t("team.workers.form.name", { defaultValue: "Nome" }),
+    company: t("team.workers.form.company", { defaultValue: "Empresa" }),
+    function: t("team.workers.form.function", { defaultValue: "Função" }),
+    workerNumber: t("team.workers.form.workerNumber", { defaultValue: "Nº" }),
+    idNumber: t("team.workers.form.idNumber", { defaultValue: "BI/CC" }),
+    birthDate: t("team.workers.form.birthDate", { defaultValue: "Data nasc." }),
+    contactPhone: t("team.workers.form.contactPhone", { defaultValue: "Telefone" }),
+    contactEmail: t("team.workers.form.contactEmail", { defaultValue: "Email" }),
+    discipline: t("team.workers.form.discipline", { defaultValue: "Disciplina" }),
+    status: t("team.workers.form.status", { defaultValue: "Estado" }),
+    ipQualStatus: t("team.workers.form.ipQualStatus", { defaultValue: "Estado IP" }),
+    entryDate: t("team.workers.form.entryDate", { defaultValue: "Entrada" }),
+    exitDate: t("team.workers.form.exitDate", { defaultValue: "Saída" }),
+    safetyTraining: t("team.workers.form.safetyTraining", { defaultValue: "Formação Segurança" }),
+    qualType: t("team.qualifications.type", { defaultValue: "Qualificação" }),
+    certRef: t("team.qualifications.certRef", { defaultValue: "Cert. Ref" }),
+    issuedBy: t("team.qualifications.issuedBy", { defaultValue: "Emitido por" }),
+    standardRef: t("subcontractors.qualifications.standardRef", { defaultValue: "Norma" }),
+    validUntil: t("team.qualifications.validUntil", { defaultValue: "Válido até" }),
+    trainingTitle: t("training.fields.title", { defaultValue: "Formação" }),
+    trainingDate: t("training.fields.date", { defaultValue: "Data" }),
+    trainingType: t("training.fields.type", { defaultValue: "Tipo" }),
+    trainer: t("training.fields.trainer", { defaultValue: "Formador" }),
+    hours: t("training.fields.hours", { defaultValue: "Horas" }),
+    signed: t("training.fields.signed", { defaultValue: "Assinado" }),
+    empty: t("common.noData", { defaultValue: "Sem registos" }),
+    signatureWorker: t("team.sheet.signatureWorker", { defaultValue: "Trabalhador" }),
+    signatureManager: t("team.sheet.signatureManager", { defaultValue: "Responsável" }),
+  };
+}
+
+// ── WorkerRow: linha com anexos colapsáveis + ações de impressão ──────────
+
+interface WorkerRowProps {
+  w: Worker;
+  wQuals: Qualification[];
+  hasExpiring: boolean;
+  t: any;
+  projectId: string;
+  onOpenSheet: (w: Worker) => void;
+  onEdit: (w: Worker) => void;
+  onDelete: (w: Worker) => void;
+  onPrint: (w: Worker) => void;
+  onPreview: (w: Worker) => void;
+}
+
+function WorkerRow({ w, wQuals, hasExpiring, t, projectId, onOpenSheet, onEdit, onDelete, onPrint, onPreview }: WorkerRowProps) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <TableRow className="cursor-pointer hover:bg-muted/20" onClick={() => onOpenSheet(w)}>
+        <TableCell className="text-xs font-semibold">{w.name}</TableCell>
+        <TableCell className="text-xs text-muted-foreground">{w.company ?? "ASCH"}</TableCell>
+        <TableCell className="text-xs">{w.role_function ?? "—"}</TableCell>
+        <TableCell className="text-xs text-muted-foreground">
+          {w.discipline ? t(`team.disciplines.${w.discipline}`, { defaultValue: w.discipline }) : "—"}
+        </TableCell>
+        <TableCell>
+          <Badge className={cn("text-[10px]", w.status === "active" ? "bg-green-500/15 text-green-700" : "bg-muted text-muted-foreground")}>
+            {t(`team.status.${w.status}`)}
+          </Badge>
+        </TableCell>
+        <TableCell>
+          {w.has_safety_training
+            ? <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
+            : <AlertTriangle className="h-3.5 w-3.5 text-amber-400" />}
+        </TableCell>
+        <TableCell>
+          <div className="flex items-center gap-1">
+            {wQuals.length > 0 && (
+              <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-semibold">{wQuals.length}</span>
+            )}
+            {hasExpiring && <AlertTriangle className="h-3 w-3 text-amber-500" />}
+          </div>
+        </TableCell>
+        <TableCell onClick={e => e.stopPropagation()}>
+          <div className="flex items-center gap-0.5">
+            <Button
+              variant="ghost" size="icon" className="h-6 w-6"
+              onClick={() => setOpen(o => !o)}
+              title={open ? t("team.attachments.hide", { defaultValue: "Esconder anexos" }) : t("team.attachments.show", { defaultValue: "Ver anexos" })}
+            >
+              <Paperclip className="h-3 w-3" />
+            </Button>
+            <Button
+              variant="ghost" size="icon" className="h-6 w-6"
+              onClick={() => onPreview(w)}
+              title={t("common.preview", { defaultValue: "Pré-visualizar" })}
+            >
+              <Eye className="h-3 w-3" />
+            </Button>
+            <Button
+              variant="ghost" size="icon" className="h-6 w-6"
+              onClick={() => onPrint(w)}
+              title={t("team.sheet.print", { defaultValue: "Imprimir ficha pessoal" })}
+            >
+              <Printer className="h-3 w-3" />
+            </Button>
+            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => onEdit(w)} title={t("common.edit")}>
+              <Pencil className="h-3 w-3" />
+            </Button>
+            <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive/70 hover:text-destructive" onClick={() => onDelete(w)} title={t("common.delete")}>
+              <Trash2 className="h-3 w-3" />
+            </Button>
+          </div>
+        </TableCell>
+      </TableRow>
+      {open && (
+        <TableRow>
+          <TableCell colSpan={8} className="bg-muted/20 p-3">
+            <AttachmentsPanel projectId={projectId} entityType="project_workers" entityId={w.id} />
           </TableCell>
         </TableRow>
       )}

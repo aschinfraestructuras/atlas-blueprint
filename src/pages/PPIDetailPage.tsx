@@ -24,6 +24,11 @@ import {
   Eye,
 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { PdfPreviewDialog } from "@/components/ui/pdf-preview-dialog";
+import { buildHtmlPreviewUrl, revokeHtmlPreviewUrl } from "@/lib/utils/htmlPreview";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
+import i18n from "@/i18n";
+import { buildSinglePdfHtml, type ExportLabels } from "@/lib/services/ppiExportService";
 import { HPNotificationPanel } from "@/components/ppi/HPNotificationPanel";
 import { PPIExportMenu } from "@/components/ppi/PPIExportMenu";
 import { FieldRecordsTab } from "@/components/ppi/FieldRecordsTab";
@@ -126,6 +131,56 @@ const TRANSITIONS: Transition[] = [
 // Editable statuses
 const EDITABLE_STATUSES: PpiInstanceStatus[] = ["draft", "in_progress", "rejected"];
 
+// Build PPI export labels from i18n (mirror of PPIExportMenu's helper).
+function buildPpiLabels(t: (k: string, opts?: Record<string, unknown>) => string): ExportLabels {
+  return {
+    appName:        t("common.appName"),
+    reportTitle:    t("ppi.export.reportTitle"),
+    generatedOn:    t("ppi.export.generatedOn"),
+    project:        t("ppi.export.fields.project"),
+    code:           t("ppi.instances.table.code"),
+    workItem:       t("ppi.instances.detail.workItem"),
+    template:       t("ppi.instances.detail.template"),
+    status:         t("common.status"),
+    openedAt:       t("ppi.instances.table.openedAt"),
+    closedAt:       t("ppi.instances.table.closedAt"),
+    inspector:      t("ppi.instances.table.inspector"),
+    discipline:     t("ppi.export.fields.discipline"),
+    inspectionDate: t("ppi.export.inspectionDate"),
+    checklistTitle: t("ppi.instances.detail.checklistTitle"),
+    itemNo:         t("ppi.instances.items.itemNo"),
+    checkCode:      t("ppi.instances.items.checkCode"),
+    label:          t("ppi.instances.items.label"),
+    result:         t("ppi.instances.items.result"),
+    notes:          t("ppi.instances.items.notes"),
+    checkedBy:      t("ppi.instances.items.checkedBy"),
+    checkedAt:      t("ppi.instances.items.checkedAt"),
+    requiresNc:     t("ppi.instances.items.requiresNc"),
+    linkedNc:       t("ppi.export.fields.linkedNc"),
+    attachmentCount: t("ppi.export.fields.attachmentCount"),
+    progress:       t("ppi.instances.table.progress"),
+    reviewed:       t("ppi.instances.detail.reviewed"),
+    ok:             t("ppi.instances.results.ok"),
+    nok:            t("ppi.instances.results.nok"),
+    na:             t("ppi.instances.results.na"),
+    pending:        t("ppi.instances.results.pending"),
+    bulkReportTitle: t("ppi.export.bulkReportTitle"),
+    page:           t("ppi.export.page"),
+    of:             t("ppi.export.of"),
+    projectName:    t("ppi.export.fields.project"),
+    resultLabels: {
+      ok: t("ppi.instances.results.ok"), pass: t("ppi.instances.results.ok"),
+      nok: t("ppi.instances.results.nok"), fail: t("ppi.instances.results.nok"),
+      na: t("ppi.instances.results.na"), pending: t("ppi.instances.results.pending"),
+    },
+    statusLabels: {
+      draft: t("ppi.status.draft"), in_progress: t("ppi.status.in_progress"),
+      submitted: t("ppi.status.submitted"), approved: t("ppi.status.approved"),
+      rejected: t("ppi.status.rejected"), archived: t("ppi.status.archived"),
+    },
+  };
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function PPIDetailPage() {
@@ -136,6 +191,14 @@ export default function PPIDetailPage() {
   const { role } = useProjectRole();
   const isViewer = role === "viewer";
   const { user } = useAuth();
+  const { logoBase64, logoUrl } = useProjectLogo();
+  const logo = logoBase64 || logoUrl;
+  const locale = i18n.language?.slice(0, 2) ?? "pt";
+
+  // PDF in-app preview
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  useEffect(() => () => revokeHtmlPreviewUrl(previewUrl), [previewUrl]);
 
   useEffect(() => {
     if (!id || id === "undefined" || id.trim() === "") {
@@ -483,6 +546,24 @@ export default function PPIDetailPage() {
 
         {/* Action buttons — scrollable on mobile */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1 -mb-1 sm:pb-0 sm:mb-0 sm:flex-wrap flex-shrink-0">
+          {/* Pré-visualizar */}
+          {exportInst && activeProject && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5 flex-shrink-0"
+              onClick={() => {
+                revokeHtmlPreviewUrl(previewUrl);
+                const labels = buildPpiLabels(t);
+                const html = buildSinglePdfHtml(exportInst, labels, locale, activeProject.name, logo);
+                setPreviewUrl(buildHtmlPreviewUrl(html));
+                setPreviewOpen(true);
+              }}
+            >
+              <Eye className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">{t("common.preview", { defaultValue: "Pré-visualizar" })}</span>
+            </Button>
+          )}
           {/* Export */}
           {exportInst && (
             <PPIExportMenu instances={[exportInst]} projectName={activeProject?.name ?? ""} variant="single" />
@@ -1240,6 +1321,22 @@ export default function PPIDetailPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* PDF Preview Dialog */}
+      <PdfPreviewDialog
+        open={previewOpen}
+        onOpenChange={(v) => {
+          setPreviewOpen(v);
+          if (!v) {
+            revokeHtmlPreviewUrl(previewUrl);
+            setPreviewUrl(null);
+          }
+        }}
+        url={previewUrl}
+        title={instance?.code ?? null}
+        subtitle={t("ppi.instances.detail.title", { defaultValue: "Plano de Inspeção e Ensaio" })}
+        downloadName={instance ? `PPI_${instance.code}.pdf` : null}
+      />
     </div>
   );
 }
