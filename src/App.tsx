@@ -265,6 +265,7 @@ const App = () => (
                 <Route path="/indicators" element={<ProtectedLayout><IndicatorsPage /></ProtectedLayout>} />
                 <Route path="/topography" element={<ProtectedLayout><TopographyPage /></ProtectedLayout>} />
                 <Route path="/planning" element={<ProtectedLayout><PlanningPage /></ProtectedLayout>} />
+                <Route path="/planning/activities" element={<Navigate to="/planning?tab=activities" replace />} />
                 <Route path="/planning/activities/:id" element={<ProtectedLayout><ActivityDetailPage /></ProtectedLayout>} />
                 <Route path="/audits" element={<ProtectedLayout><AuditsPage /></ProtectedLayout>} />
                 <Route path="/daily-reports" element={<ProtectedLayout><DailyReportsPage /></ProtectedLayout>} />
