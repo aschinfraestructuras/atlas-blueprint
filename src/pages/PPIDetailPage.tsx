@@ -612,18 +612,7 @@ export default function PPIDetailPage() {
             </Button>
           ))}
 
-          {/* Delete draft button — only for draft status */}
-          {!isViewer && instance.status === "draft" && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setDeleteDialogOpen(true)}
-              className="gap-1.5 text-destructive hover:text-destructive hover:bg-destructive/10 flex-shrink-0"
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">{t("ppi.instances.detail.deleteDraft", { defaultValue: "Eliminar rascunho" })}</span>
-            </Button>
-          )}
+          {/* Delete draft now lives inside the unified DocumentActionsBar above */}
         </div>
       </div>
 
