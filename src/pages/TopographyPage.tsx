@@ -608,11 +608,20 @@ export default function TopographyPage() {
                         {t(`survey.status.${s.status}`, { defaultValue: s.status })}
                       </Badge>
                     </TableCell>
-                    <TableCell>
-                      <div className="flex gap-1">
-                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditSurvey(s)} title={t("common.edit")}><Pencil className="h-3.5 w-3.5" /></Button>
-                        {canDelete && <DeleteButton onConfirm={() => handleDeleteSurvey(s.id)} />}
-                      </div>
+                    <TableCell onClick={e => e.stopPropagation()}>
+                      <DocumentActionsBar
+                        previewLoading={previewBusyId === s.id}
+                        onPreview={() => {
+                          setPreviewBusyId(s.id);
+                          try {
+                            const built = buildSurveyDetailHtml(s, meta, logoBase64 || logoUrl);
+                            openPreview(built, s.area_or_pk);
+                          } finally { setPreviewBusyId(null); }
+                        }}
+                        onEdit={() => handleEditSurvey(s)}
+                        onDelete={canDelete ? () => handleDeleteSurvey(s.id) : undefined}
+                        canDelete={canDelete}
+                      />
                     </TableCell>
                   </TableRow>
                 ))}
