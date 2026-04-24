@@ -368,10 +368,7 @@ export default function DailyReportDetailPage() {
         <Badge className={STATUS_COLORS[report.status]}>{t(`dailyReports.status.${report.status}`, { defaultValue: report.status })}</Badge>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={openPreview}>
-            <Eye className="h-4 w-4 mr-1" /> {t("common.preview", { defaultValue: "Pré-visualizar" })}
-          </Button>
-          <Button variant="outline" size="sm" onClick={exportPdf}>
-            <FileText className="h-4 w-4 mr-1" /> {t("common.exportPdf")}
+            <Eye className="h-4 w-4 mr-1" /> {t("common.previewExportPdf", { defaultValue: "Pré-visualizar / PDF" })}
           </Button>
           {(report.status === "submitted" || report.status === "validated") && (
             <Button variant="outline" size="sm" onClick={handleReopen}>
