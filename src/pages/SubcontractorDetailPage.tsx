@@ -88,6 +88,11 @@ export default function SubcontractorDetailPage() {
   const [addingDoc, setAddingDoc] = useState(false);
   const [deletingDoc, setDeletingDoc] = useState<SubcontractorDocument | null>(null);
 
+  // PDF in-app preview
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  useEffect(() => () => revokeHtmlPreviewUrl(previewUrl), [previewUrl]);
+
   const fetchSub = useCallback(async () => {
     if (!id || !activeProject) return;
     setLoading(true);
