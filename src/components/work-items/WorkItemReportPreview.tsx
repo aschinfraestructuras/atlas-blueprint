@@ -1,9 +1,24 @@
+/**
+ * WorkItemReportPreview — Ficha de Frente de Obra
+ *
+ * Migrated to the unified Atlas QMS report pattern:
+ *   1. Build a full institutional HTML (logo + project header strip + footer)
+ *      via `generatePdfDocument` from reportService.
+ *   2. Render it inside the standard `PdfPreviewDialog`, which gives the user
+ *      Preview → Imprimir / Descarregar PDF (real, multi-page A4) / Nova aba.
+ *
+ * This replaces the previous self-contained Dialog that called window.print()
+ * without project branding.
+ */
+
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Printer, X } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { PdfPreviewDialog } from "@/components/ui/pdf-preview-dialog";
+import { buildHtmlPreviewUrl, revokeHtmlPreviewUrl } from "@/lib/utils/htmlPreview";
+import { generatePdfDocument, buildReportFilename, type ReportLabels } from "@/lib/services/reportService";
+import { useReportMeta } from "@/hooks/useReportMeta";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
+import { escapeHtml } from "@/lib/utils/escapeHtml";
 
 export interface WorkItemReportData {
   work_item: Record<string, any>;
@@ -42,224 +57,201 @@ export interface WorkItemReportData {
   }>;
 }
 
-function PointTypeBadge({ type }: { type: string }) {
+// ── HTML helpers (presentation only) ─────────────────────────────────────────
+
+function fmtDate(iso?: string | null): string {
+  if (!iso) return "—";
+  try { return new Date(iso).toLocaleDateString("pt-PT"); } catch { return iso; }
+}
+
+function statusPill(status: string): string {
+  const s = (status ?? "").toLowerCase();
+  let bg = "#F3F4F6", color = "#374151";
+  if (s === "aprovado" || s === "approved" || s === "pass" || s === "conforme") { bg = "#DCFCE7"; color = "#166534"; }
+  else if (s === "reprovado" || s === "rejected" || s === "fail" || s === "nao_conforme" || s === "aberta" || s === "open") { bg = "#FEE2E2"; color = "#991B1B"; }
+  else if (s === "pendente" || s === "pending") { bg = "#FEF3C7"; color = "#92400E"; }
+  else if (s === "fechada" || s === "closed") { bg = "#DCFCE7"; color = "#166534"; }
+  return `<span style="display:inline-block;padding:1px 6px;border-radius:10px;background:${bg};color:${color};font-size:9px;font-weight:600;">${escapeHtml(status ?? "—")}</span>`;
+}
+
+function pointTypeBadge(type: string): string {
   const u = (type ?? "").toUpperCase();
-  if (u === "HP") return <Badge className="text-[10px] py-0 bg-red-100 text-red-700 border-red-200 hover:bg-red-100">HP</Badge>;
-  if (u === "WP") return <Badge className="text-[10px] py-0 bg-blue-100 text-blue-700 border-blue-200 hover:bg-blue-100">WP</Badge>;
-  return <Badge variant="outline" className="text-[10px] py-0 text-muted-foreground">{u || "RP"}</Badge>;
+  let bg = "#F3F4F6", color = "#6B7280";
+  if (u === "HP") { bg = "#FEE2E2"; color = "#991B1B"; }
+  else if (u === "WP") { bg = "#DBEAFE"; color = "#1E40AF"; }
+  return `<span style="display:inline-block;padding:1px 6px;border-radius:10px;background:${bg};color:${color};font-size:9px;font-weight:700;">${escapeHtml(u || "RP")}</span>`;
 }
 
-function PpiItemStatus({ status }: { status: string }) {
-  if (status === "aprovado" || status === "approved") return <span>✅</span>;
-  if (status === "reprovado" || status === "rejected" || status === "fail") return <span>❌</span>;
-  if (status === "pendente" || status === "pending") return <span>⏳</span>;
-  return <span className="text-xs text-muted-foreground">{status}</span>;
+function sectionTitle(text: string): string {
+  return `<h3 style="font-size:12px;font-weight:700;color:#192F48;margin:14px 0 6px 0;border-bottom:1px solid #E5E7EB;padding-bottom:3px;">${escapeHtml(text)}</h3>`;
 }
 
-function TestStatusBadge({ status }: { status?: string }) {
-  const s = (status ?? "").toLowerCase();
-  if (s === "pass" || s === "conforme") return <Badge className="text-[10px] py-0 bg-green-100 text-green-700 border-green-200 hover:bg-green-100">Conforme</Badge>;
-  if (s === "fail" || s === "nao_conforme") return <Badge className="text-[10px] py-0 bg-red-100 text-red-700 border-red-200 hover:bg-red-100">Não Conforme</Badge>;
-  return <Badge variant="outline" className="text-[10px] py-0 text-muted-foreground">{status ?? "—"}</Badge>;
+function emptyHint(text: string): string {
+  return `<p style="font-size:10px;color:#6B7280;font-style:italic;margin:4px 0;">${escapeHtml(text)}</p>`;
 }
 
-function NcStatusBadge({ status }: { status: string }) {
-  const s = (status ?? "").toLowerCase();
-  if (s === "aberta" || s === "open") return <Badge className="text-[10px] py-0 bg-red-100 text-red-700 border-red-200 hover:bg-red-100">{status}</Badge>;
-  if (s === "fechada" || s === "closed") return <Badge className="text-[10px] py-0 bg-green-100 text-green-700 border-green-200 hover:bg-green-100">{status}</Badge>;
-  return <Badge variant="outline" className="text-[10px] py-0 text-muted-foreground">{status}</Badge>;
+function buildBody(data: WorkItemReportData): string {
+  const wi = data.work_item ?? {};
+  const pkRange = wi.pk_inicio != null
+    ? `${escapeHtml(String(wi.pk_inicio))}${wi.pk_fim != null ? ` → ${escapeHtml(String(wi.pk_fim))}` : ""}`
+    : "—";
+
+  // Activity identification card
+  const headerInfo = `
+    <div style="border:1px solid #E5E7EB;border-radius:6px;padding:10px;margin-bottom:12px;background:#F9FAFB;">
+      <div style="text-align:center;margin-bottom:8px;">
+        <div style="font-size:13px;font-weight:800;color:#192F48;letter-spacing:0.5px;">FICHA DE FRENTE DE OBRA</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;font-size:10px;">
+        <div><span style="color:#6B7280;font-weight:600;">SECTOR</span><br>${escapeHtml(wi.sector ?? "—")}</div>
+        <div><span style="color:#6B7280;font-weight:600;">DISCIPLINA</span><br>${escapeHtml(wi.disciplina ?? "—")}</div>
+        <div><span style="color:#6B7280;font-weight:600;">ELEMENTO</span><br>${escapeHtml(wi.elemento ?? wi.element ?? "—")}</div>
+        <div><span style="color:#6B7280;font-weight:600;">PARTE</span><br>${escapeHtml(wi.parte ?? "—")}</div>
+        <div><span style="color:#6B7280;font-weight:600;">PK</span><br>${pkRange}</div>
+        <div><span style="color:#6B7280;font-weight:600;">CÓDIGO</span><br>${escapeHtml(wi.code ?? "—")}</div>
+      </div>
+    </div>`;
+
+  // 1. PPIs
+  let ppiBlock = sectionTitle("1. Plano de Inspecção (PPI)");
+  if (!data.ppi_instances?.length) {
+    ppiBlock += emptyHint("Sem PPI associados a este elemento.");
+  } else {
+    for (const ppi of data.ppi_instances) {
+      ppiBlock += `<div style="margin-bottom:10px;">
+        <div style="font-size:10px;margin-bottom:4px;">
+          <strong>${escapeHtml(ppi.code)}</strong>
+          <span style="color:#6B7280;"> · ${escapeHtml(ppi.template_name)}</span>
+          ${statusPill(ppi.status)}
+        </div>`;
+      if (ppi.items?.length) {
+        ppiBlock += `<table class="atlas-table"><thead><tr>
+          <th>Fase / Descrição</th><th style="width:60px;">Tipo</th><th style="width:80px;">Estado</th>
+        </tr></thead><tbody>`;
+        for (const item of ppi.items) {
+          ppiBlock += `<tr>
+            <td>${escapeHtml(item.description)}</td>
+            <td>${pointTypeBadge(item.point_type)}</td>
+            <td>${statusPill(item.status)}</td>
+          </tr>`;
+        }
+        ppiBlock += `</tbody></table>`;
+      }
+      ppiBlock += `</div>`;
+    }
+  }
+
+  // 2. Tests
+  let testBlock = sectionTitle("2. Ensaios Realizados");
+  if (!data.test_results?.length) {
+    testBlock += emptyHint("Sem ensaios registados.");
+  } else {
+    testBlock += `<table class="atlas-table"><thead><tr>
+      <th>Ensaio</th><th>Norma</th><th>Amostra</th><th>Data</th><th>Resultado</th>
+    </tr></thead><tbody>`;
+    for (const tr of data.test_results) {
+      testBlock += `<tr>
+        <td>${escapeHtml(tr.test_name)}${tr.laboratory_name ? `<br><span style="font-size:9px;color:#6B7280;">${escapeHtml(tr.laboratory_name)}${tr.report_number ? ` · ${escapeHtml(tr.report_number)}` : ""}</span>` : ""}</td>
+        <td>${escapeHtml(tr.standard ?? "—")}</td>
+        <td>${escapeHtml(tr.sample_ref ?? "—")}</td>
+        <td>${fmtDate(tr.date)}</td>
+        <td>${statusPill(tr.result_status ?? "—")}</td>
+      </tr>`;
+    }
+    testBlock += `</tbody></table>`;
+  }
+
+  // 3. NCs
+  let ncBlock = sectionTitle("3. Não Conformidades");
+  if (!data.non_conformities?.length) {
+    ncBlock += `<p style="font-size:10px;color:#166534;margin:4px 0;">✅ Sem não conformidades registadas.</p>`;
+  } else {
+    ncBlock += `<table class="atlas-table"><thead><tr>
+      <th>Código</th><th>Título</th><th>Gravidade</th><th>Estado</th><th>Prazo</th>
+    </tr></thead><tbody>`;
+    for (const nc of data.non_conformities) {
+      ncBlock += `<tr>
+        <td>${escapeHtml(nc.code ?? "—")}</td>
+        <td>${escapeHtml(nc.title)}</td>
+        <td>${escapeHtml(nc.severity ?? "—")}</td>
+        <td>${statusPill(nc.status)}</td>
+        <td>${fmtDate(nc.due_date)}</td>
+      </tr>`;
+    }
+    ncBlock += `</tbody></table>`;
+  }
+
+  // 4. Materials
+  let matBlock = sectionTitle("4. Materiais Aprovados (PAME)");
+  if (!data.materials?.length) {
+    matBlock += emptyHint("Sem materiais associados.");
+  } else {
+    matBlock += `<table class="atlas-table"><thead><tr>
+      <th>Material</th><th>PAME</th><th>Quantidade</th><th>Unidade</th>
+    </tr></thead><tbody>`;
+    for (const m of data.materials) {
+      matBlock += `<tr>
+        <td>${escapeHtml(m.material_name)}</td>
+        <td>${statusPill(m.pame_status ?? "Pendente")}</td>
+        <td>${m.quantity != null ? escapeHtml(String(m.quantity)) : "—"}</td>
+        <td>${escapeHtml(m.unit ?? "—")}</td>
+      </tr>`;
+    }
+    matBlock += `</tbody></table>`;
+  }
+
+  return headerInfo + ppiBlock + testBlock + ncBlock + matBlock;
 }
 
-function PameBadge({ status }: { status?: string }) {
-  const s = (status ?? "").toLowerCase();
-  if (s === "approved" || s === "aprovado") return <Badge className="text-[10px] py-0 bg-green-100 text-green-700 border-green-200 hover:bg-green-100">Aprovado</Badge>;
-  return <Badge className="text-[10px] py-0 bg-yellow-100 text-yellow-700 border-yellow-200 hover:bg-yellow-100">{status ?? "Pendente"}</Badge>;
-}
+// ── Component ────────────────────────────────────────────────────────────────
 
 export function WorkItemReportPreview({ data, onClose }: { data: WorkItemReportData; onClose: () => void }) {
   const { t } = useTranslation();
+  const meta = useReportMeta();
+  const { logoBase64 } = useProjectLogo();
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
   const wi = data.work_item ?? {};
-  const now = new Date();
-  const pkRange = wi.pk_inicio != null ? `${wi.pk_inicio}${wi.pk_fim != null ? ` → ${wi.pk_fim}` : ""}` : "—";
+  const docCode = `FFO-${wi.code ?? wi.id ?? "elemento"}`;
+
+  const html = useMemo(() => {
+    if (!meta) return null;
+    const labels: ReportLabels = {
+      appName: "Atlas QMS",
+      reportTitle: "FICHA DE FRENTE DE OBRA",
+      generatedOn: "Gerado a",
+    };
+    return generatePdfDocument({
+      title: `${docCode} — Atlas QMS`,
+      labels,
+      meta,
+      bodyHtml: buildBody(data),
+      footerRef: docCode,
+      logoBase64,
+    });
+  }, [data, meta, logoBase64, docCode]);
+
+  // Build blob URL once HTML is ready and revoke on unmount/close
+  useEffect(() => {
+    if (!html) return;
+    const url = buildHtmlPreviewUrl(html);
+    setPreviewUrl(url);
+    return () => { revokeHtmlPreviewUrl(url); };
+  }, [html]);
+
+  const filename = meta
+    ? buildReportFilename("FFO", meta.projectCode, wi.code ?? "elemento")
+    : "ficha-frente-obra.pdf";
 
   return (
-    <>
-      <style>{`@media print { body > *:not(.print-root) { display: none !important; } .no-print { display: none !important; } }`}</style>
-      <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}>
-        <DialogContent className="print-root max-w-4xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>{t("workItems.report.title", { defaultValue: "Ficha de Frente de Obra" })}</DialogTitle>
-
-            <div className="flex gap-2 no-print">
-              <Button size="sm" onClick={() => window.print()} className="gap-1.5">
-                <Printer className="h-3.5 w-3.5" />
-                {t("workItems.report.printSave", { defaultValue: "Imprimir / PDF" })}
-              </Button>
-              <Button size="sm" variant="ghost" onClick={onClose}>
-                <X className="h-3.5 w-3.5" />
-              </Button>
-            </div>
-          </DialogHeader>
-
-          <div className="space-y-6 text-sm">
-            {/* Header */}
-            <div className="border rounded-lg p-4 space-y-3">
-              <div className="text-center">
-                <h2 className="text-base font-bold uppercase tracking-wide text-foreground">FICHA DE FRENTE DE OBRA</h2>
-                <p className="text-xs text-muted-foreground">Atlas QMS</p>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                <p><span className="font-semibold">Actividade</span> {wi.name ?? wi.sector ?? "—"}</p>
-                <p><span className="font-semibold">Código</span> {wi.code ?? "—"}</p>
-                <p><span className="font-semibold">Elemento</span> {wi.element ?? wi.elemento ?? "—"}</p>
-                <p><span className="font-semibold">PK</span> {pkRange}</p>
-                <p><span className="font-semibold">Data geração</span> {now.toLocaleDateString("pt-PT")}</p>
-              </div>
-            </div>
-
-            {/* 1. PPI */}
-            <div className="space-y-2">
-              <h3 className="font-semibold text-foreground">1. Plano de Inspecção PPI</h3>
-              {data.ppi_instances.length === 0 ? (
-                <p className="text-xs text-muted-foreground italic">{t("workItems.report.noPPI", { defaultValue: "Sem PPI associados" })}</p>
-              ) : data.ppi_instances.map((ppi, idx) => (
-                <div key={idx} className="border rounded p-3 space-y-2">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium text-xs">{ppi.code}</span>
-                    <span className="text-xs text-muted-foreground">{ppi.template_name}</span>
-                    <Badge variant="outline" className="text-[10px] py-0">{t(`ppi.status.${ppi.status}`, { defaultValue: ppi.status })}</Badge>
-                  </div>
-
-                  {ppi.items?.length > 0 && (
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead className="text-xs h-8">Fase / Descrição</TableHead>
-                          <TableHead className="text-xs h-8 w-16">Tipo</TableHead>
-                          <TableHead className="text-xs h-8 w-16">Estado</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {ppi.items.map((item, iIdx) => (
-                          <TableRow key={iIdx}>
-                            <TableCell className="text-xs py-1.5">{item.description}</TableCell>
-                            <TableCell className="py-1.5"><PointTypeBadge type={item.point_type} /></TableCell>
-                            <TableCell className="py-1.5"><PpiItemStatus status={item.status} /></TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  )}
-                </div>
-              ))}
-            </div>
-
-            {/* 2. Tests */}
-            <div className="space-y-2">
-              <h3 className="font-semibold text-foreground">2. Ensaios Realizados</h3>
-              {data.test_results.length === 0 ? (
-                <p className="text-xs text-muted-foreground italic">{t("workItems.report.noTests", { defaultValue: "Sem ensaios registados" })}</p>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="text-xs h-8">Ensaio</TableHead>
-                      <TableHead className="text-xs h-8">Norma</TableHead>
-                      <TableHead className="text-xs h-8">Amostra</TableHead>
-                      <TableHead className="text-xs h-8">Data</TableHead>
-                      <TableHead className="text-xs h-8">Resultado</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {data.test_results.map((tr, idx) => (
-                      <TableRow key={idx}>
-                        <TableCell className="text-xs py-1.5">
-                          {tr.test_name}
-                          {tr.laboratory_name && (
-                            <p className="text-[10px] text-muted-foreground">
-                              {tr.laboratory_name}{tr.report_number ? ` · ${tr.report_number}` : ""}
-                            </p>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-xs py-1.5">{tr.standard ?? "—"}</TableCell>
-                        <TableCell className="text-xs py-1.5">{tr.sample_ref ?? "—"}</TableCell>
-                        <TableCell className="text-xs py-1.5">{tr.date ? new Date(tr.date).toLocaleDateString("pt-PT") : "—"}</TableCell>
-                        <TableCell className="py-1.5"><TestStatusBadge status={tr.result_status} /></TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
-            </div>
-
-            {/* 3. NCs */}
-            <div className="space-y-2">
-              <h3 className="font-semibold text-foreground">3. Não Conformidades</h3>
-              {data.non_conformities.length === 0 ? (
-                <p className="text-xs text-muted-foreground italic">✅ {t("workItems.report.noNCs", { defaultValue: "Sem não conformidades" })}</p>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="text-xs h-8">Código</TableHead>
-                      <TableHead className="text-xs h-8">Título</TableHead>
-                      <TableHead className="text-xs h-8">Gravidade</TableHead>
-                      <TableHead className="text-xs h-8">Estado</TableHead>
-                      <TableHead className="text-xs h-8">Prazo</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {data.non_conformities.map((nc, idx) => (
-                      <TableRow key={idx}>
-                        <TableCell className="text-xs py-1.5">{nc.code ?? "—"}</TableCell>
-                        <TableCell className="text-xs py-1.5">{nc.title}</TableCell>
-                        <TableCell className="text-xs py-1.5">{nc.severity ?? "—"}</TableCell>
-                        <TableCell className="py-1.5"><NcStatusBadge status={nc.status} /></TableCell>
-                        <TableCell className="text-xs py-1.5">{nc.due_date ? new Date(nc.due_date).toLocaleDateString("pt-PT") : "—"}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
-            </div>
-
-            {/* 4. Materials */}
-            <div className="space-y-2">
-              <h3 className="font-semibold text-foreground">4. Materiais Aprovados (PAME)</h3>
-              {data.materials.length === 0 ? (
-                <p className="text-xs text-muted-foreground italic">{t("workItems.report.noMaterials", { defaultValue: "Sem materiais associados" })}</p>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="text-xs h-8">Material</TableHead>
-                      <TableHead className="text-xs h-8">PAME</TableHead>
-                      <TableHead className="text-xs h-8">Quantidade</TableHead>
-                      <TableHead className="text-xs h-8">Unidade</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {data.materials.map((mat, idx) => (
-                      <TableRow key={idx}>
-                        <TableCell className="text-xs py-1.5">{mat.material_name}</TableCell>
-                        <TableCell className="py-1.5"><PameBadge status={mat.pame_status} /></TableCell>
-                        <TableCell className="text-xs py-1.5">{mat.quantity != null ? mat.quantity : "—"}</TableCell>
-                        <TableCell className="text-xs py-1.5">{mat.unit ?? "—"}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
-            </div>
-
-            {/* Footer */}
-            <div className="text-[10px] text-muted-foreground text-center border-t pt-2">
-              {t("workItems.report.footer", { defaultValue: "Gerado automaticamente" })} em {now.toLocaleString("pt-PT")} · Para uso interno — UTE OHLA-ASCH
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </>
+    <PdfPreviewDialog
+      open
+      onOpenChange={(open) => { if (!open) onClose(); }}
+      url={previewUrl}
+      title={t("workItems.report.title", { defaultValue: "Ficha de Frente de Obra" })}
+      subtitle={`${wi.sector ?? ""}${wi.elemento ? ` · ${wi.elemento}` : ""}`}
+      downloadName={filename}
+      htmlSource
+    />
   );
 }

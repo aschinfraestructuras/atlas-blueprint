@@ -921,6 +921,17 @@ export default function SubcontractorDetailPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Institutional PDF preview (logo + project header + Print/Download/New tab) */}
+      <PdfPreviewDialog
+        open={previewOpen}
+        onOpenChange={setPreviewOpen}
+        url={previewUrl}
+        title={t("subcontractors.preview.title", { defaultValue: "Ficha de Subempreiteiro" })}
+        subtitle={sub?.name ?? undefined}
+        downloadName={meta && sub ? `SUB_${meta.projectCode}_${sub.name.replace(/\s+/g, "_")}.pdf` : "subempreiteiro.pdf"}
+        htmlSource
+      />
     </div>
   );
 }

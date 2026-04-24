@@ -1,7 +1,9 @@
 import { useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { ArrowLeft, FileText, Send, CheckCircle, Plus, Trash2, AlertTriangle, RotateCcw, FlaskConical, ClipboardCheck } from "lucide-react";
+import { ArrowLeft, FileText, Send, CheckCircle, Plus, Trash2, AlertTriangle, RotateCcw, FlaskConical, ClipboardCheck, Eye } from "lucide-react";
+import { PdfPreviewDialog } from "@/components/ui/pdf-preview-dialog";
+import { buildHtmlPreviewUrl, revokeHtmlPreviewUrl } from "@/lib/utils/htmlPreview";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -250,8 +252,9 @@ export default function DailyReportDetailPage() {
   };
 
   // ── PDF Export ──────────────────────────────────────────────────────────
-  const exportPdf = () => {
-    if (!report || !meta) return;
+  // Build the institutional HTML once and reuse for both Print and Preview.
+  const buildPdfHtml = (): { html: string; filename: string } | null => {
+    if (!report || !meta) return null;
     const labels: ReportLabels = { appName: "ATLAS QMS", reportTitle: "PARTE DIÁRIA DE OBRA — IP.MOD.102", generatedOn: t("common.date") };
 
     const sectionHtml = (title: string, content: string) =>
@@ -316,8 +319,28 @@ export default function DailyReportDetailPage() {
       footerRef: `IP.MOD.102 · ${report.report_number}`,
       logoBase64,
     });
-    printHtml(html, buildReportFilename("PD", meta.projectCode, report.report_number));
+    return { html, filename: buildReportFilename("PD", meta.projectCode, report.report_number) };
   };
+
+  const exportPdf = () => {
+    const built = buildPdfHtml();
+    if (!built) return;
+    printHtml(built.html, built.filename);
+  };
+
+  // In-app PDF preview (with logo + institutional header)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  useEffect(() => () => revokeHtmlPreviewUrl(previewUrl), [previewUrl]);
+
+  const openPreview = () => {
+    const built = buildPdfHtml();
+    if (!built) return;
+    revokeHtmlPreviewUrl(previewUrl);
+    setPreviewUrl(buildHtmlPreviewUrl(built.html));
+    setPreviewOpen(true);
+  };
+
 
   const handleReopen = async () => {
     if (!id) return;
@@ -344,6 +367,9 @@ export default function DailyReportDetailPage() {
         </div>
         <Badge className={STATUS_COLORS[report.status]}>{t(`dailyReports.status.${report.status}`, { defaultValue: report.status })}</Badge>
         <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={openPreview}>
+            <Eye className="h-4 w-4 mr-1" /> {t("common.preview", { defaultValue: "Pré-visualizar" })}
+          </Button>
           <Button variant="outline" size="sm" onClick={exportPdf}>
             <FileText className="h-4 w-4 mr-1" /> {t("common.exportPdf")}
           </Button>
@@ -689,6 +715,17 @@ export default function DailyReportDetailPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Institutional PDF preview (logo + project header + Print/Download/New tab) */}
+      <PdfPreviewDialog
+        open={previewOpen}
+        onOpenChange={setPreviewOpen}
+        url={previewUrl}
+        title={t("dailyReports.preview.title", { defaultValue: "Parte Diária — Pré-visualização" })}
+        subtitle={report.report_number ? `${report.report_number} · ${report.report_date}` : undefined}
+        downloadName={meta ? `PD_${meta.projectCode}_${report.report_number}.pdf` : "parte-diaria.pdf"}
+        htmlSource
+      />
     </div>
   );
 }
