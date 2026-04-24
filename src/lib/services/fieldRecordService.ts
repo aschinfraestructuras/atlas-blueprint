@@ -170,10 +170,16 @@ export const fieldRecordService = {
     };
   },
 
-  async exportPdf(record: FieldRecord & { materials?: FieldRecordMaterial[]; checks?: FieldRecordCheck[] }, projectName: string, logoBase64?: string | null) {
-    const w = window.open("", "_blank");
-    if (!w) return;
-
+  /**
+   * Build the printable HTML for a Field Record (Grelha de Registo).
+   * Pure function — does NOT open a window. Use `previewPdf` for the in-app
+   * dialog or `printPdf` for the legacy print-window flow.
+   */
+  async buildPdfHtml(
+    record: FieldRecord & { materials?: FieldRecordMaterial[]; checks?: FieldRecordCheck[] },
+    projectName: string,
+    logoBase64?: string | null,
+  ): Promise<string> {
     // Fallback: if logoBase64 wasn't provided by the caller (e.g. hook not ready),
     // fetch the active project's configured logo on-demand so the PDF always uses
     // the same brand image as the rest of the app.
@@ -238,7 +244,7 @@ export const fieldRecordService = {
       new Date(record.inspection_date || Date.now()).toLocaleDateString("pt-PT"),
     );
 
-    w.document.write(`<!DOCTYPE html><html><head><title>${record.code}</title>
+    return `<!DOCTYPE html><html><head><title>${record.code}</title>
       <style>
         body{font-family:Arial,sans-serif;margin:14mm 12mm;font-size:11px;color:#1A1A1A}
         h2{margin:0 0 4px;font-size:16px}
@@ -304,7 +310,22 @@ export const fieldRecordService = {
         <span>Atlas QMS · ${projectName}</span>
         <span>${record.code}</span>
       </div>
-    </body></html>`);
+    </body></html>`;
+  },
+
+  /**
+   * Legacy: open a print window directly. Kept for backwards compatibility
+   * with callers that haven't migrated to the in-app preview yet.
+   */
+  async exportPdf(
+    record: FieldRecord & { materials?: FieldRecordMaterial[]; checks?: FieldRecordCheck[] },
+    projectName: string,
+    logoBase64?: string | null,
+  ) {
+    const w = window.open("", "_blank");
+    if (!w) return;
+    const html = await this.buildPdfHtml(record, projectName, logoBase64);
+    w.document.write(html);
     w.document.close();
     w.print();
   },

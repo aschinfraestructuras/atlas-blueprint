@@ -42,13 +42,17 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
-  ClipboardCheck, Plus, Search, FileDown, Eye, Trash2, Loader2,
+  ClipboardCheck, Plus, Search, Trash2, Loader2,
   CheckCircle2, XCircle, Clock, AlertTriangle, CloudSun, Sun, Cloud,
   CloudRain, Wind, Thermometer,
 } from "lucide-react";
 import { FieldRecordDetailDialog } from "@/components/field-records/FieldRecordDetailDialog";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { Separator } from "@/components/ui/separator";
+import { DocumentActionsBar } from "@/components/ui/document-actions-bar";
+import { PdfPreviewDialog } from "@/components/ui/pdf-preview-dialog";
+import { buildHtmlPreviewUrl, revokeHtmlPreviewUrl } from "@/lib/utils/htmlPreview";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
 
 // ── Cores por resultado ────────────────────────────────────────────────────────
 const RESULT_CFG: Record<string, { cls: string; icon: React.ElementType; label: string }> = {
@@ -418,6 +422,11 @@ export default function FieldRecordsPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [viewId, setViewId] = useState<string | null>(null);
+  const { logoBase64, logoUrl } = useProjectLogo();
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewTitle, setPreviewTitle] = useState<string>("");
+  const [previewBusyId, setPreviewBusyId] = useState<string | null>(null);
+  useEffect(() => () => revokeHtmlPreviewUrl(previewUrl), [previewUrl]);
 
   const load = useCallback(async () => {
     if (!activeProject) return;
@@ -585,25 +594,31 @@ export default function FieldRecordsPage() {
                     </span>
                   </TableCell>
                   <TableCell onClick={e => e.stopPropagation()}>
-                    <div className="flex items-center gap-1 justify-end opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Button size="icon" variant="ghost" className="h-7 w-7 hover:text-primary"
-                        title={t("common.view", { defaultValue: "Ver" })}
-                        onClick={() => setViewId(r.id)}>
-                        <Eye className="h-3.5 w-3.5" />
-                      </Button>
-                      <Button size="icon" variant="ghost" className="h-7 w-7"
-                        title={t("common.exportPdf", { defaultValue: "Exportar PDF" })}
-                        onClick={() => fieldRecordService.exportPdf(r as any, activeProject.name)}>
-                        <FileDown className="h-3.5 w-3.5" />
-                      </Button>
-                      {canDelete && (
-                        <Button size="icon" variant="ghost" className="h-7 w-7 hover:text-destructive"
-                          title={t("common.delete")}
-                          onClick={() => setDeleteId(r.id)}>
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
-                      )}
-                    </div>
+                    <DocumentActionsBar
+                      onPreview={async () => {
+                        setPreviewBusyId(r.id);
+                        try {
+                          // Re-fetch full record (with materials + checks) to render the preview
+                          const full = await fieldRecordService.getById(r.id);
+                          const html = await fieldRecordService.buildPdfHtml(
+                            full as any,
+                            activeProject.name,
+                            logoBase64 || logoUrl,
+                          );
+                          revokeHtmlPreviewUrl(previewUrl);
+                          setPreviewUrl(buildHtmlPreviewUrl(html));
+                          setPreviewTitle(r.code);
+                        } catch (e: any) {
+                          toast({ title: e?.message ?? "Erro", variant: "destructive" });
+                        } finally {
+                          setPreviewBusyId(null);
+                        }
+                      }}
+                      previewLoading={previewBusyId === r.id}
+                      onEdit={() => setViewId(r.id)}
+                      onDelete={canDelete ? () => setDeleteId(r.id) : undefined}
+                      canDelete={canDelete}
+                    />
                   </TableCell>
                 </TableRow>
               );
@@ -641,6 +656,15 @@ export default function FieldRecordsPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* In-app PDF preview (Pré-visualizar + Descarregar PDF real) */}
+      <PdfPreviewDialog
+        open={!!previewUrl}
+        onOpenChange={(v) => { if (!v) { revokeHtmlPreviewUrl(previewUrl); setPreviewUrl(null); } }}
+        url={previewUrl}
+        title={previewTitle}
+        downloadName={previewTitle}
+      />
     </div>
   );
 }
