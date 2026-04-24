@@ -131,6 +131,56 @@ const TRANSITIONS: Transition[] = [
 // Editable statuses
 const EDITABLE_STATUSES: PpiInstanceStatus[] = ["draft", "in_progress", "rejected"];
 
+// Build PPI export labels from i18n (mirror of PPIExportMenu's helper).
+function buildPpiLabels(t: (k: string, opts?: Record<string, unknown>) => string): ExportLabels {
+  return {
+    appName:        t("common.appName"),
+    reportTitle:    t("ppi.export.reportTitle"),
+    generatedOn:    t("ppi.export.generatedOn"),
+    project:        t("ppi.export.fields.project"),
+    code:           t("ppi.instances.table.code"),
+    workItem:       t("ppi.instances.detail.workItem"),
+    template:       t("ppi.instances.detail.template"),
+    status:         t("common.status"),
+    openedAt:       t("ppi.instances.table.openedAt"),
+    closedAt:       t("ppi.instances.table.closedAt"),
+    inspector:      t("ppi.instances.table.inspector"),
+    discipline:     t("ppi.export.fields.discipline"),
+    inspectionDate: t("ppi.export.inspectionDate"),
+    checklistTitle: t("ppi.instances.detail.checklistTitle"),
+    itemNo:         t("ppi.instances.items.itemNo"),
+    checkCode:      t("ppi.instances.items.checkCode"),
+    label:          t("ppi.instances.items.label"),
+    result:         t("ppi.instances.items.result"),
+    notes:          t("ppi.instances.items.notes"),
+    checkedBy:      t("ppi.instances.items.checkedBy"),
+    checkedAt:      t("ppi.instances.items.checkedAt"),
+    requiresNc:     t("ppi.instances.items.requiresNc"),
+    linkedNc:       t("ppi.export.fields.linkedNc"),
+    attachmentCount: t("ppi.export.fields.attachmentCount"),
+    progress:       t("ppi.instances.table.progress"),
+    reviewed:       t("ppi.instances.detail.reviewed"),
+    ok:             t("ppi.instances.results.ok"),
+    nok:            t("ppi.instances.results.nok"),
+    na:             t("ppi.instances.results.na"),
+    pending:        t("ppi.instances.results.pending"),
+    bulkReportTitle: t("ppi.export.bulkReportTitle"),
+    page:           t("ppi.export.page"),
+    of:             t("ppi.export.of"),
+    projectName:    t("ppi.export.fields.project"),
+    resultLabels: {
+      ok: t("ppi.instances.results.ok"), pass: t("ppi.instances.results.ok"),
+      nok: t("ppi.instances.results.nok"), fail: t("ppi.instances.results.nok"),
+      na: t("ppi.instances.results.na"), pending: t("ppi.instances.results.pending"),
+    },
+    statusLabels: {
+      draft: t("ppi.status.draft"), in_progress: t("ppi.status.in_progress"),
+      submitted: t("ppi.status.submitted"), approved: t("ppi.status.approved"),
+      rejected: t("ppi.status.rejected"), archived: t("ppi.status.archived"),
+    },
+  };
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function PPIDetailPage() {
