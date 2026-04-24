@@ -60,7 +60,13 @@ export function ScreenSaver({ idleMinutes = 3, projectLabel }: Props) {
 
   // Idle detection — uses refs to avoid effect re-runs that reset the timer
   const activeRef = useRef(false);
-  useEffect(() => { activeRef.current = active; }, [active]);
+  useEffect(() => {
+    activeRef.current = active;
+    // Notify external UI (e.g. TopBar lock toggle) so its icon stays in sync.
+    window.dispatchEvent(
+      new CustomEvent("atlas:screensaver:active-changed", { detail: { active } }),
+    );
+  }, [active]);
 
   useEffect(() => {
     const IDLE_MS = idleMinutes * 60 * 1000;
