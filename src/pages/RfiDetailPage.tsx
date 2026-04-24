@@ -13,6 +13,7 @@ import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { exportRfiDetailPdf, buildRfiDetailHtml } from "@/lib/services/rfiExportService";
 import { PdfPreviewDialog } from "@/components/ui/pdf-preview-dialog";
 import { buildHtmlPreviewUrl, revokeHtmlPreviewUrl } from "@/lib/utils/htmlPreview";
+import { DocumentActionsBar } from "@/components/ui/document-actions-bar";
 import { Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -260,20 +261,21 @@ export default function RfiDetailPage() {
             entityCode={rfi.code}
             defaultSubject={`RFI — ${rfi.code} — ${rfi.subject}`}
           />
-          <Button variant="outline" size="sm" onClick={handlePreviewPdf} className="gap-1.5">
-            <Eye className="h-3.5 w-3.5" />
-            {t("common.preview", { defaultValue: "Pré-visualizar" })}
-          </Button>
-          <Button variant="outline" size="sm" onClick={handleExportPdf} className="gap-1.5">
-            <Download className="h-3.5 w-3.5" />
-            PDF
-          </Button>
+          {/* Unified actions bar — Preview / Download PDF / Delete (RFI has no edit form, message thread is the workflow) */}
           <AlertDialog>
+            <DocumentActionsBar
+              onPreview={handlePreviewPdf}
+              onDownload={handleExportPdf}
+              onDelete={isAdmin ? () => {
+                // open the confirmation dialog manually since DocumentActionsBar wires the click
+                const trigger = document.getElementById("rfi-delete-trigger") as HTMLButtonElement | null;
+                trigger?.click();
+              } : undefined}
+              canDelete={isAdmin}
+              size="md"
+            />
             <AlertDialogTrigger asChild>
-              <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive gap-1.5">
-                <Trash2 className="h-3.5 w-3.5" />
-                {t("common.delete")}
-              </Button>
+              <button id="rfi-delete-trigger" className="hidden" aria-hidden />
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
