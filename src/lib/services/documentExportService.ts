@@ -353,30 +353,23 @@ function buildListHtml(
 </body></html>`;
 }
 
-// ─── Print helper ─────────────────────────────────────────────────────────────
+// ─── Print helper (uses central printHtml from reportService) ────────────────
 
-function printHtml(html: string, filename: string): void {
-  const win = window.open("", "_blank", "width=900,height=700");
-  if (!win) {
-    const blob = new Blob([html], { type: "text/html" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = filename.replace(".pdf", ".html");
-    a.click();
-    return;
-  }
-  win.document.open();
-  win.document.write(html);
-  win.document.close();
-  win.onload = () => { setTimeout(() => { win.focus(); win.print(); }, 400); };
-  setTimeout(() => {
-    if (!win.document.readyState || win.document.readyState === "complete") {
-      win.focus(); win.print();
-    }
-  }, 800);
-}
+import { printHtml } from "./reportService";
 
 // ─── Public API ───────────────────────────────────────────────────────────────
+
+/** Build a printable HTML for a document — exposed for in-app PDF preview. */
+export function buildDocumentDetailHtml(
+  doc: Document,
+  versions: DocumentVersion[],
+  labels: DocExportLabels,
+  locale: string,
+  projectName: string,
+  logoUrl?: string | null,
+): string {
+  return buildSingleHtml(doc, versions, labels, locale, projectName, logoUrl);
+}
 
 export async function exportDocumentPdf(
   doc: Document,
