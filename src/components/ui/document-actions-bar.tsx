@@ -20,7 +20,7 @@
  * adopt the bar incrementally without breaking anything.
  */
 
-import { Eye, Download, Pencil, Paperclip, Trash2, Loader2 } from "lucide-react";
+import { Eye, Download, Pencil, Paperclip, Trash2, Loader2, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
@@ -31,7 +31,7 @@ export interface DocumentActionsBarProps {
   onPreview?: () => void;
   /** Trigger a file download. Skip the preview. */
   onDownload?: () => void;
-  /** Open the edit form. */
+  /** Open the edit form (or generic "open detail" when no real edit form exists — see editIcon/editLabel). */
   onEdit?: () => void;
   /** Open the attachments panel / dialog. */
   onAttachments?: () => void;
@@ -46,6 +46,14 @@ export interface DocumentActionsBarProps {
   /** Hide individual actions when permissions / status forbid them. */
   canEdit?: boolean;
   canDelete?: boolean;
+
+  /**
+   * Override the icon used for the "edit" slot. Useful for read-only modules
+   * that reuse the slot to open a detail viewer (e.g. Field Records uses Eye).
+   */
+  editIcon?: LucideIcon;
+  /** Override the label/tooltip for the "edit" slot (e.g. "Ver detalhe"). */
+  editLabel?: string;
 
   /** Optional accent for the row (e.g. small / inline / large). */
   size?: "sm" | "md";
@@ -65,6 +73,8 @@ export function DocumentActionsBar({
   downloadLoading,
   canEdit = true,
   canDelete = true,
+  editIcon,
+  editLabel,
   size = "sm",
   className,
   iconOnly = true,
@@ -139,12 +149,14 @@ export function DocumentActionsBar({
           { disabled: downloadLoading },
         )}
 
-      {onEdit && canEdit &&
-        item(
-          <Pencil className={iconSize} />,
-          t("docActions.edit", { defaultValue: "Editar" }),
+      {onEdit && canEdit && (() => {
+        const EditIcon = editIcon ?? Pencil;
+        return item(
+          <EditIcon className={iconSize} />,
+          editLabel ?? t("docActions.edit", { defaultValue: "Editar" }),
           onEdit,
-        )}
+        );
+      })()}
 
       {onAttachments &&
         item(
