@@ -492,11 +492,20 @@ export default function TopographyPage() {
                           </div>
                         ) : <span className="text-muted-foreground text-xs">—</span>}
                       </TableCell>
-                      <TableCell>
-                        <div className="flex gap-1">
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditRequest(req)} title={t("common.edit")}><Pencil className="h-3.5 w-3.5" /></Button>
-                          {isAdmin && <DeleteButton onConfirm={() => handleDeleteRequest(req.id)} />}
-                        </div>
+                      <TableCell onClick={e => e.stopPropagation()}>
+                        <DocumentActionsBar
+                          previewLoading={previewBusyId === req.id}
+                          onPreview={() => {
+                            setPreviewBusyId(req.id);
+                            try {
+                              const built = buildRequestDetailHtml(req, meta, logoBase64 || logoUrl);
+                              openPreview(built, (req as any).code ?? req.request_type);
+                            } finally { setPreviewBusyId(null); }
+                          }}
+                          onEdit={() => handleEditRequest(req)}
+                          onDelete={isAdmin ? () => handleDeleteRequest(req.id) : undefined}
+                          canDelete={isAdmin}
+                        />
                       </TableCell>
                     </TableRow>
                   );
