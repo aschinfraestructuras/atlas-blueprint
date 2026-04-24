@@ -24,6 +24,11 @@ import {
   Eye,
 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { PdfPreviewDialog } from "@/components/ui/pdf-preview-dialog";
+import { buildHtmlPreviewUrl, revokeHtmlPreviewUrl } from "@/lib/utils/htmlPreview";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
+import i18n from "@/i18n";
+import { buildSinglePdfHtml, type ExportLabels } from "@/lib/services/ppiExportService";
 import { HPNotificationPanel } from "@/components/ppi/HPNotificationPanel";
 import { PPIExportMenu } from "@/components/ppi/PPIExportMenu";
 import { FieldRecordsTab } from "@/components/ppi/FieldRecordsTab";
