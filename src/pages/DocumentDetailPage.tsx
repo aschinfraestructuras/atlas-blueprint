@@ -516,9 +516,13 @@ export default function DocumentDetailPage() {
               {t("documents.actions.obsolete")}
             </Button>
           )}
+          <Button variant="outline" size="sm" onClick={handlePreviewPdf} className="gap-1.5 text-xs" title={t("common.preview", { defaultValue: "Pré-visualizar" })}>
+            <Eye className="h-3 w-3" />
+            <span className="hidden sm:inline">{t("common.preview", { defaultValue: "Pré-visualizar" })}</span>
+          </Button>
           <Button variant="outline" size="sm" onClick={handleExportPdf} className="gap-1.5 text-xs" disabled={exporting}>
             {exporting ? <Loader2 className="h-3 w-3 animate-spin" /> : <FileDown className="h-3 w-3" />}
-            {t("documents.export.exportPdf")}
+            <span className="hidden sm:inline">{t("documents.export.exportPdf")}</span>
           </Button>
           <Button variant="outline" size="sm" onClick={() => setEditOpen(true)} className="gap-1.5 text-xs">
             <Pencil className="h-3 w-3" /> {t("common.edit")}
