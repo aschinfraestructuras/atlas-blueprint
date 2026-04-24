@@ -28,11 +28,12 @@ import { PdfPreviewDialog } from "@/components/ui/pdf-preview-dialog";
 import { buildHtmlPreviewUrl, revokeHtmlPreviewUrl } from "@/lib/utils/htmlPreview";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
 import i18n from "@/i18n";
-import { buildSinglePdfHtml, type ExportLabels } from "@/lib/services/ppiExportService";
+import { buildSinglePdfHtml, exportSinglePdf, type ExportLabels } from "@/lib/services/ppiExportService";
 import { HPNotificationPanel } from "@/components/ppi/HPNotificationPanel";
 import { PPIExportMenu } from "@/components/ppi/PPIExportMenu";
 import { FieldRecordsTab } from "@/components/ppi/FieldRecordsTab";
 import { PPITestsTab } from "@/components/ppi/PPITestsTab";
+import { DocumentActionsBar } from "@/components/ui/document-actions-bar";
 import type { PpiInstanceForExport } from "@/lib/services/ppiExportService";
 import {
   ppiService,
@@ -546,25 +547,26 @@ export default function PPIDetailPage() {
 
         {/* Action buttons — scrollable on mobile */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1 -mb-1 sm:pb-0 sm:mb-0 sm:flex-wrap flex-shrink-0">
-          {/* Pré-visualizar */}
+          {/* Unified actions: Preview / Download PDF (real, via dialog) — Edit/Delete handled by status flow below */}
           {exportInst && activeProject && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-1.5 flex-shrink-0"
-              onClick={() => {
+            <DocumentActionsBar
+              size="md"
+              onPreview={() => {
                 revokeHtmlPreviewUrl(previewUrl);
                 const labels = buildPpiLabels(t);
                 const html = buildSinglePdfHtml(exportInst, labels, locale, activeProject.name, logo);
                 setPreviewUrl(buildHtmlPreviewUrl(html));
                 setPreviewOpen(true);
               }}
-            >
-              <Eye className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">{t("common.preview", { defaultValue: "Pré-visualizar" })}</span>
-            </Button>
+              onDownload={() => {
+                const labels = buildPpiLabels(t);
+                exportSinglePdf(exportInst, labels, locale, activeProject.name, logo);
+              }}
+              onDelete={!isViewer && instance.status === "draft" ? () => setDeleteDialogOpen(true) : undefined}
+              canDelete={!isViewer && instance.status === "draft"}
+            />
           )}
-          {/* Export */}
+          {/* Export menu — kept for CSV exports */}
           {exportInst && (
             <PPIExportMenu instances={[exportInst]} projectName={activeProject?.name ?? ""} variant="single" />
           )}
