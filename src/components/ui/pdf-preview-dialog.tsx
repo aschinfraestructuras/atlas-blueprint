@@ -180,8 +180,10 @@ export function PdfPreviewDialog({
               <DialogTitle className="text-sm font-semibold truncate text-left">
                 {title || t("pdfPreview.untitled", { defaultValue: "Documento" })}
               </DialogTitle>
-              {subtitle && (
-                <p className="text-[11px] text-muted-foreground truncate mt-0.5">{subtitle}</p>
+              {subtitle ? (
+                <DialogDescription className="text-[11px] truncate mt-0.5">{subtitle}</DialogDescription>
+              ) : (
+                <DialogDescription className="sr-only">{t("pdfPreview.a11yDesc", { defaultValue: "Pré-visualização de documento PDF." })}</DialogDescription>
               )}
             </div>
           </div>
