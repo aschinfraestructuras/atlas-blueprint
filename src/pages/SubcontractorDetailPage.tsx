@@ -1039,10 +1039,19 @@ function SubMaterialsSection({ projectId, subId, supplierId }: { projectId: stri
         </Card>
       )}
 
-  return (
-    <div className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border/40 bg-card/50">
-      <Leaf className="h-3.5 w-3.5 text-chart-2" />
-      <span className="text-xs">{label}: <strong>{value}</strong></span>
+      <PdfPreviewDialog
+        open={previewOpen}
+        onOpenChange={(o) => {
+          setPreviewOpen(o);
+          if (!o) {
+            revokeHtmlPreviewUrl(previewUrl);
+            setPreviewUrl(null);
+          }
+        }}
+        url={previewUrl}
+        title={`SUB · ${sub?.name ?? ""}`}
+        subtitle={projectId}
+      />
     </div>
   );
 }
