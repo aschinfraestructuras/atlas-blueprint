@@ -10,13 +10,13 @@ import { escapeHtml, esc } from "@/lib/utils/escapeHtml";
 import { auditService } from "./auditService";
 import type { Material, MaterialDocument, MaterialDetailMetrics, WorkItemMaterial } from "./materialService";
 
-/** Export a filtered materials list as PDF */
-export function exportMaterialsListPdf(
+/** Build the printable HTML for the materials list (used by PdfPreviewDialog). */
+export function buildMaterialsListHtml(
   materials: Material[],
   projectCode: string,
   logoBase64?: string | null,
   t: (k: string, opts?: Record<string, unknown>) => string = (k) => k,
-) {
+): { html: string; filename: string; docCode: string } {
   const today = new Date().toLocaleDateString("pt-PT");
   const docCode = `MAT-${projectCode}-LISTA`;
   const header = fullPdfHeader(logoBase64 ?? null, projectCode || "Atlas QMS", docCode, "0", today);
@@ -55,7 +55,21 @@ ${header}
 <div class="atlas-footer"><span>Atlas QMS</span><span>${docCode}</span></div>
 </body></html>`;
 
-  printHtml(html, buildReportFilename("MAT", projectCode, "lista"));
+  return { html, filename: buildReportFilename("MAT", projectCode, "lista"), docCode };
+}
+
+/**
+ * @deprecated Use `buildMaterialsListHtml` + `PdfPreviewDialog` for the new
+ * institutional preview/download flow. Kept for backwards compatibility.
+ */
+export function exportMaterialsListPdf(
+  materials: Material[],
+  projectCode: string,
+  logoBase64?: string | null,
+  t: (k: string, opts?: Record<string, unknown>) => string = (k) => k,
+) {
+  const { html, filename } = buildMaterialsListHtml(materials, projectCode, logoBase64, t);
+  printHtml(html, filename);
 }
 
 interface ExportData {
