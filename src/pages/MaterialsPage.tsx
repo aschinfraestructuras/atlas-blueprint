@@ -733,6 +733,23 @@ function PameTab({ materials, navigate }: { materials: Material[]; navigate: (pa
           </Table>
         </div>
       )}
+
+      {/* Institutional PDF preview (logo + project header + Print/Download/New tab) */}
+      <PdfPreviewDialog
+        open={previewOpen}
+        onOpenChange={(o) => {
+          setPreviewOpen(o);
+          if (!o) {
+            revokeHtmlPreviewUrl(previewUrl);
+            setPreviewUrl(null);
+            setPreviewMeta(null);
+          }
+        }}
+        url={previewUrl}
+        title={previewMeta?.title ?? t("pages.materials.title")}
+        subtitle={previewMeta?.subtitle ?? null}
+        downloadName={previewMeta?.filename ?? "materiais.pdf"}
+      />
     </div>
   );
 }
