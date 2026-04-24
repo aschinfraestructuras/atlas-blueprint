@@ -1,4 +1,5 @@
-import { exportToCSV, generateListPdf, buildReportFilename, type ReportMeta, type ReportLabels } from "./reportService";
+import { exportToCSV, generateListPdf, buildReportFilename, sharedCss, type ReportMeta, type ReportLabels } from "./reportService";
+import { fullPdfHeader } from "./pdfProjectHeader";
 import type { Subcontractor } from "./subcontractorService";
 
 const labels = (locale: string): ReportLabels => ({
