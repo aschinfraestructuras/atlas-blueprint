@@ -44,7 +44,7 @@ import {
 import {
   ClipboardCheck, Plus, Search, Trash2, Loader2,
   CheckCircle2, XCircle, Clock, AlertTriangle, CloudSun, Sun, Cloud,
-  CloudRain, Wind, Thermometer, Eye,
+  CloudRain, Wind, Thermometer, Eye, Pencil,
 } from "lucide-react";
 import { FieldRecordDetailDialog } from "@/components/field-records/FieldRecordDetailDialog";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
