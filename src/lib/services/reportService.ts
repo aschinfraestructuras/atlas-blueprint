@@ -303,38 +303,120 @@ export function infoGridHtml(rows: [string, string][]): string {
 }
 
 /**
- * Open a styled print window via Blob URL and trigger print dialog.
+ * Generate and download a real PDF (.pdf binary) from an HTML string.
  *
- * Why Blob URL (not document.write)?
- *  - When users choose "Save as PDF" in the print dialog, Chrome generates a real PDF
- *    from the rendered page. Using a Blob URL with a proper title gives the saved file
- *    a clean name and ensures the print dialog operates on a fully-loaded document
- *    (avoids the "Failed to load PDF document" error caused by racing print() calls).
- *  - Falls back to downloading the HTML if popups are blocked.
+ * Strategy: render HTML inside an off-screen iframe, rasterise via html2canvas,
+ * paginate into A4 with proper margins via jsPDF, then trigger a binary download.
+ * This guarantees that every export is a true PDF (never .html / never a print
+ * dialog), matching the institutional standard used elsewhere in Atlas QMS.
  *
- * Note: filename hint is informational — the browser's print-to-PDF picks the saved
- * filename from the document <title>, which we set in the HTML when building it.
+ * Falls back to opening the HTML in a new tab if PDF generation fails for any
+ * reason (e.g. CSP block on data URIs).
  */
 export function printHtml(html: string, filename: string): void {
-  const blob = new Blob([html], { type: "text/html;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const win = window.open(url, "_blank", "noopener,noreferrer");
-  if (!win) {
-    // Popup blocked — fall back to HTML download
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename.replace(/\.pdf$/i, ".html");
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(url), 4000);
-    return;
-  }
-  // Trigger print dialog once the document is fully loaded
-  const triggerPrint = () => {
-    try { win.focus(); win.print(); } catch { /* user cancelled */ }
+  const baseName = filename.replace(/\.[a-z0-9]+$/i, "");
+  const pdfName = `${baseName}.pdf`;
+
+  // Off-screen iframe — large viewport so the layout matches a desktop print
+  const iframe = document.createElement("iframe");
+  iframe.setAttribute("aria-hidden", "true");
+  iframe.style.cssText =
+    "position:fixed;left:-10000px;top:0;width:1024px;height:1400px;border:0;visibility:hidden;";
+  document.body.appendChild(iframe);
+
+  const cleanup = () => {
+    try { document.body.removeChild(iframe); } catch { /* noop */ }
   };
-  win.addEventListener("load", () => setTimeout(triggerPrint, 350), { once: true });
-  // Safety: revoke the blob after the window has had time to load
-  setTimeout(() => URL.revokeObjectURL(url), 60000);
+
+  const fallbackToNewTab = () => {
+    cleanup();
+    const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    window.open(url, "_blank", "noopener,noreferrer");
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  };
+
+  const doc = iframe.contentDocument;
+  if (!doc) { fallbackToNewTab(); return; }
+  doc.open(); doc.write(html); doc.close();
+
+  // Wait for fonts/images to settle, then rasterise
+  const renderToPdf = async () => {
+    try {
+      const [{ default: html2canvas }, { default: jsPDF }] = await Promise.all([
+        import("html2canvas"),
+        import("jspdf"),
+      ]);
+
+      // Give the iframe a brief moment to fully layout (images, web fonts)
+      await new Promise((r) => setTimeout(r, 200));
+
+      const target = doc.documentElement;
+      const canvas = await html2canvas(target, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#ffffff",
+        logging: false,
+        windowWidth: target.scrollWidth,
+        windowHeight: target.scrollHeight,
+      });
+
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pageW = pdf.internal.pageSize.getWidth();
+      const pageH = pdf.internal.pageSize.getHeight();
+      const marginX = 10;
+      const marginY = 10;
+      const printableW = pageW - marginX * 2;
+      const printableH = pageH - marginY * 2;
+      const imgW = printableW;
+      const imgH = (canvas.height * imgW) / canvas.width;
+      const imgData = canvas.toDataURL("image/jpeg", 0.92);
+
+      if (imgH <= printableH) {
+        pdf.addImage(imgData, "JPEG", marginX, marginY, imgW, imgH, undefined, "FAST");
+      } else {
+        const pxPerMm = canvas.width / printableW;
+        const sliceHpx = Math.floor(printableH * pxPerMm);
+        let renderedPx = 0;
+        let pageIndex = 0;
+        const sliceCanvas = document.createElement("canvas");
+        sliceCanvas.width = canvas.width;
+        const sctx = sliceCanvas.getContext("2d");
+        if (!sctx) throw new Error("canvas-2d-context-unavailable");
+
+        while (renderedPx < canvas.height) {
+          const remainingPx = canvas.height - renderedPx;
+          const currentSlicePx = Math.min(sliceHpx, remainingPx);
+          sliceCanvas.height = currentSlicePx;
+          sctx.fillStyle = "#ffffff";
+          sctx.fillRect(0, 0, sliceCanvas.width, sliceCanvas.height);
+          sctx.drawImage(canvas, 0, renderedPx, canvas.width, currentSlicePx, 0, 0, canvas.width, currentSlicePx);
+          const sliceData = sliceCanvas.toDataURL("image/jpeg", 0.92);
+          const sliceMm = currentSlicePx / pxPerMm;
+          if (pageIndex > 0) pdf.addPage();
+          pdf.addImage(sliceData, "JPEG", marginX, marginY, imgW, sliceMm, undefined, "FAST");
+          renderedPx += currentSlicePx;
+          pageIndex += 1;
+        }
+      }
+
+      pdf.save(pdfName);
+    } catch (err) {
+      console.error("[printHtml] PDF rasterisation failed, falling back to new tab", err);
+      fallbackToNewTab();
+      return;
+    }
+    cleanup();
+  };
+
+  // Wait for the iframe load event before rasterising
+  if (doc.readyState === "complete") {
+    void renderToPdf();
+  } else {
+    iframe.addEventListener("load", () => { void renderToPdf(); }, { once: true });
+    // Safety timeout in case load never fires
+    setTimeout(() => { if (document.body.contains(iframe)) void renderToPdf(); }, 1500);
+  }
 }
 
 /**
