@@ -663,9 +663,8 @@ export default function FieldRecordsPage() {
                           }
                         }}
                         previewLoading={previewBusyId === r.id}
-                        onEdit={() => setViewId(r.id)}
-                        editIcon={Eye}
-                        editLabel={t("fieldRecords.actions.viewDetail", { defaultValue: "Ver detalhe (anexos, fotos, ensaios)" })}
+                        onEdit={!isArchived ? () => { setEditId(r.id); setFormOpen(true); } : undefined}
+                        canEdit={!isArchived}
                         onDelete={canDelete ? () => setDeleteId(r.id) : undefined}
                         canDelete={canDelete}
                       />
