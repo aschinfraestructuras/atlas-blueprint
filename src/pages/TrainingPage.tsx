@@ -360,14 +360,19 @@ export default function TrainingPage() {
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-1">
-                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleViewDetail(s)} title={t("common.view")}>
+                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleViewDetail(s)} title={t("common.view", { defaultValue: "Ver detalhe" })}>
                         <Eye className="h-3.5 w-3.5" />
                       </Button>
                       <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleExportPdf(s)} title="PDF">
                         <FileText className="h-3.5 w-3.5" />
                       </Button>
                       {canEdit && (
-                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setDeleteTargetId(s.id)} title={t("common.delete")}>
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEdit(s)} title={t("common.edit", { defaultValue: "Editar" })}>
+                          <Pencil className="h-3.5 w-3.5" />
+                        </Button>
+                      )}
+                      {canEdit && (
+                        <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => setDeleteTargetId(s.id)} title={t("common.delete")}>
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>
                       )}
