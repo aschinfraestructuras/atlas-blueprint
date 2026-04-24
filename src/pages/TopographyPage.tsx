@@ -35,6 +35,8 @@ import {
   exportTopographyEquipmentCsv, exportTopographyEquipmentPdf,
   exportTopographyRequestsCsv, exportTopographyControlsCsv,
   exportTopographyControlsPdf,
+  buildEquipmentDetailHtml, buildRequestDetailHtml,
+  buildControlDetailHtml, buildSurveyDetailHtml,
 } from "@/lib/services/topographyExportService";
 import { exportSurveysCsv, exportSurveysPdf } from "@/lib/services/surveyExportService";
 import {
