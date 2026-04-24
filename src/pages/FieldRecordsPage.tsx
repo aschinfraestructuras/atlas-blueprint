@@ -668,15 +668,6 @@ export default function FieldRecordsPage() {
                         onDelete={canDelete ? () => setDeleteId(r.id) : undefined}
                         canDelete={canDelete}
                       />
-                      {!isArchived && (
-                        <Button
-                          variant="ghost" size="icon" className="h-7 w-7 hover:text-primary"
-                          onClick={() => { setEditId(r.id); setFormOpen(true); }}
-                          title={t("common.edit", { defaultValue: "Editar" })}
-                        >
-                          <Pencil className="h-3.5 w-3.5" />
-                        </Button>
-                      )}
                     </div>
                   </TableCell>
                 </TableRow>
