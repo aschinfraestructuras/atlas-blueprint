@@ -43,6 +43,10 @@ export function MachineryPanel({ projectId, subcontractorId, company }: Machiner
   const [form, setForm] = useState({
     designation: "", type: "", plate: "", serial_number: "",
     sound_power_db: "", status: "on_site", notes: "",
+    // Novos campos
+    itv_cert_ref: "", itv_valid_until: "", insurance_valid_until: "",
+    calibration_valid_until: "", last_maintenance_date: "",
+    next_maintenance_date: "", horimetro_current: "", max_load_t: "", discipline: "__none__",
   });
 
   const fetchData = useCallback(async () => {
@@ -64,7 +68,12 @@ export function MachineryPanel({ projectId, subcontractorId, company }: Machiner
 
   const openNew = () => {
     setEditing(null);
-    setForm({ designation: "", type: "", plate: "", serial_number: "", sound_power_db: "", status: "on_site", notes: "" });
+    setForm({
+      designation: "", type: "", plate: "", serial_number: "", sound_power_db: "",
+      status: "on_site", notes: "", itv_cert_ref: "", itv_valid_until: "",
+      insurance_valid_until: "", calibration_valid_until: "", last_maintenance_date: "",
+      next_maintenance_date: "", horimetro_current: "", max_load_t: "", discipline: "__none__",
+    });
     setDialogOpen(true);
   };
 
@@ -75,6 +84,15 @@ export function MachineryPanel({ projectId, subcontractorId, company }: Machiner
       serial_number: m.serial_number ?? "",
       sound_power_db: m.sound_power_db?.toString() ?? "",
       status: m.status, notes: m.notes ?? "",
+      itv_cert_ref: (m as any).itv_cert_ref ?? "",
+      itv_valid_until: (m as any).itv_valid_until ?? "",
+      insurance_valid_until: (m as any).insurance_valid_until ?? "",
+      calibration_valid_until: (m as any).calibration_valid_until ?? "",
+      last_maintenance_date: (m as any).last_maintenance_date ?? "",
+      next_maintenance_date: (m as any).next_maintenance_date ?? "",
+      horimetro_current: (m as any).horimetro_current?.toString() ?? "",
+      max_load_t: (m as any).max_load_t?.toString() ?? "",
+      discipline: (m as any).discipline ?? "__none__",
     });
     setDialogOpen(true);
   };
@@ -91,6 +109,16 @@ export function MachineryPanel({ projectId, subcontractorId, company }: Machiner
         sound_power_db: form.sound_power_db ? Number(form.sound_power_db) : null,
         status: form.status,
         notes: form.notes || null,
+        // Campos novos
+        itv_cert_ref: form.itv_cert_ref.trim() || null,
+        itv_valid_until: form.itv_valid_until || null,
+        insurance_valid_until: form.insurance_valid_until || null,
+        calibration_valid_until: form.calibration_valid_until || null,
+        last_maintenance_date: form.last_maintenance_date || null,
+        next_maintenance_date: form.next_maintenance_date || null,
+        horimetro_current: form.horimetro_current ? Number(form.horimetro_current) : null,
+        max_load_t: form.max_load_t ? Number(form.max_load_t) : null,
+        discipline: form.discipline === "__none__" ? null : form.discipline,
       };
       if (editing) {
         await projectMachineryService.update(editing.id, payload);
@@ -251,6 +279,47 @@ export function MachineryPanel({ projectId, subcontractorId, company }: Machiner
             <div>
               <Label>{t("common.notes")}</Label>
               <Textarea value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} rows={2} />
+            </div>
+
+            {/* Secção certificações e manutenção */}
+            <div className="pt-1">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">
+                {t("machinery.sectionCerts", { defaultValue: "Certificações e Manutenção" })}
+              </p>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label className="text-xs">{t("machinery.itvCertRef", { defaultValue: "Ref. ITV/IPO" })}</Label>
+                  <Input className="h-8 text-xs" value={form.itv_cert_ref} onChange={e => setForm(f => ({ ...f, itv_cert_ref: e.target.value }))} />
+                </div>
+                <div>
+                  <Label className="text-xs">{t("machinery.itvValidUntil", { defaultValue: "Validade ITV" })}</Label>
+                  <Input type="date" className="h-8 text-xs" value={form.itv_valid_until} onChange={e => setForm(f => ({ ...f, itv_valid_until: e.target.value }))} />
+                </div>
+                <div>
+                  <Label className="text-xs">{t("machinery.insuranceValidUntil", { defaultValue: "Validade Seguro" })}</Label>
+                  <Input type="date" className="h-8 text-xs" value={form.insurance_valid_until} onChange={e => setForm(f => ({ ...f, insurance_valid_until: e.target.value }))} />
+                </div>
+                <div>
+                  <Label className="text-xs">{t("machinery.calibrationValidUntil", { defaultValue: "Validade Calibração (EME)" })}</Label>
+                  <Input type="date" className="h-8 text-xs" value={form.calibration_valid_until} onChange={e => setForm(f => ({ ...f, calibration_valid_until: e.target.value }))} />
+                </div>
+                <div>
+                  <Label className="text-xs">{t("machinery.lastMaintenance", { defaultValue: "Última manutenção" })}</Label>
+                  <Input type="date" className="h-8 text-xs" value={form.last_maintenance_date} onChange={e => setForm(f => ({ ...f, last_maintenance_date: e.target.value }))} />
+                </div>
+                <div>
+                  <Label className="text-xs">{t("machinery.nextMaintenance", { defaultValue: "Próxima manutenção" })}</Label>
+                  <Input type="date" className="h-8 text-xs" value={form.next_maintenance_date} onChange={e => setForm(f => ({ ...f, next_maintenance_date: e.target.value }))} />
+                </div>
+                <div>
+                  <Label className="text-xs">{t("machinery.horimetro", { defaultValue: "Horímetro (h)" })}</Label>
+                  <Input type="number" min={0} className="h-8 text-xs" value={form.horimetro_current} onChange={e => setForm(f => ({ ...f, horimetro_current: e.target.value }))} />
+                </div>
+                <div>
+                  <Label className="text-xs">{t("machinery.maxLoad", { defaultValue: "Carga máx. (t)" })}</Label>
+                  <Input type="number" min={0} step="0.1" className="h-8 text-xs" value={form.max_load_t} onChange={e => setForm(f => ({ ...f, max_load_t: e.target.value }))} />
+                </div>
+              </div>
             </div>
           </div>
           <DialogFooter>

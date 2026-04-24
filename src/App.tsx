@@ -60,6 +60,7 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const HealthCheckPage = lazy(() => import("./pages/HealthCheckPage"));
 const AcceptInvitePage = lazy(() => import("./pages/AcceptInvitePage"));
 const TopographyPage = lazy(() => import("./pages/TopographyPage"));
+const TrackGeometryPage = lazy(() => import("./pages/TrackGeometryPage"));
 const PlanningPage = lazy(() => import("./pages/PlanningPage"));
 const AuditsPage = lazy(() => import("./pages/AuditsPage"));
 const ActivityDetailPage = lazy(() => import("./pages/ActivityDetailPage"));
@@ -292,6 +293,7 @@ const App = () => (
                 <Route path="/contract-kpis" element={<Navigate to="/indicators?tab=kpis" replace />} />
                 <Route path="/indicators" element={<ProtectedLayout><IndicatorsPage /></ProtectedLayout>} />
                 <Route path="/topography" element={<ProtectedLayout><TopographyPage /></ProtectedLayout>} />
+                <Route path="/track-geometry" element={<ProtectedLayout><TrackGeometryPage /></ProtectedLayout>} />
                 <Route path="/planning" element={<ProtectedLayout><PlanningPage /></ProtectedLayout>} />
                 <Route path="/planning/activities" element={<Navigate to="/planning?tab=activities" replace />} />
                 <Route path="/planning/activities/:id" element={<ProtectedLayout><ActivityDetailPage /></ProtectedLayout>} />

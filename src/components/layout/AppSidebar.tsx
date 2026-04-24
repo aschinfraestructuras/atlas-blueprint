@@ -13,7 +13,7 @@ import {
   Inbox, BookOpen, HardHat, Construction, ClipboardCheck, Crosshair, CalendarClock,
   Clock, BarChart3, Building2, ClipboardList, Leaf, GraduationCap, FileBarChart2,
   Users, Link2, Hammer, CheckSquare, FileStack, PieChart, Cog, CalendarCheck, Activity,
-  Download, Zap, TrendingUp, Map, FileSpreadsheet,
+  Download, Zap, TrendingUp, Map, FileSpreadsheet, Ruler,
   Send, ScanSearch, Bell } from "lucide-react";
 import { usePWAInstall } from "@/hooks/usePWAInstall";
 import { NavLink } from "@/components/NavLink";
@@ -72,7 +72,8 @@ const NAV_SECTIONS: SidebarSection[] = [
       { labelKey: "nav.dailyReports", url: "/daily-reports", icon: ClipboardList },
       { labelKey: "nav.myTasks",      url: "/my-tasks",      icon: CalendarCheck },
       { labelKey: "nav.fieldRecords", url: "/field-records", icon: ClipboardList },
-      { labelKey: "nav.topography",   url: "/topography",    icon: Crosshair },
+      { labelKey: "nav.topography",    url: "/topography",     icon: Crosshair },
+      { labelKey: "nav.trackGeometry", url: "/track-geometry", icon: Ruler },
       // PPI Templates removido — agora tab dentro de /ppi (rota /ppi/templates mantida)
     ],
   },

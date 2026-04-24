@@ -227,7 +227,8 @@
     "notifications": "Notificações",
     "reports": "Relatórios",
     "indicators": "Indicadores SGQ",
-    "team": "Equipa de Obra"
+    "team": "Equipa de Obra",
+    "trackGeometry": "Geometria de Via"
   },
   "topbar": {
     "language": "Idioma",
@@ -4370,7 +4371,13 @@
       "foremanName": "Encarregado",
       "contractorRep": "Representante Empreiteiro",
       "supervisorRep": "Representante Fiscalização",
-      "ipRep": "Representante IP"
+      "ipRep": "Representante IP",
+      "tempMinNew": "Temp. mín. (°C)",
+      "tempMaxNew": "Temp. máx. (°C)",
+      "windSpeed": "Vento",
+      "workHours": "Horas de trabalho",
+      "workersCount": "N.º trabalhadores",
+      "responsibleName": "Responsável (TQ/Encarregado)"
     },
     "labour": {
       "category": "Categoria",
@@ -5298,7 +5305,9 @@
       "recipient": "Destinatário",
       "workItem": "Atividade",
       "approvalResult": "Resultado da Aprovação",
-      "descPlaceholder": "Observações, justificação técnica..."
+      "descPlaceholder": "Observações, justificação técnica...",
+      "material": "Material (PAME)",
+      "pameRef": "Ref. PAME"
     },
     "detail": {
       "techData": "Dados Técnicos do Submittal",
@@ -5486,7 +5495,16 @@
       "active": "Activo",
       "inactive": "Inactivo",
       "rented": "Alugado"
-    }
+    },
+    "sectionCerts": "Certificações e Manutenção",
+    "itvCertRef": "Ref. ITV/IPO",
+    "itvValidUntil": "Validade ITV",
+    "insuranceValidUntil": "Validade Seguro",
+    "calibrationValidUntil": "Validade Calibração (EME)",
+    "lastMaintenance": "Última manutenção",
+    "nextMaintenance": "Próxima manutenção",
+    "horimetro": "Horímetro (h)",
+    "maxLoad": "Carga máx. (t)"
   },
   "contacts": {
     "title": "Contactos do Projecto",
@@ -5897,11 +5915,9 @@
       "emptyHint": "As formações são geridas no módulo Formações"
     },
     "attachments": {
-      "title": "Anexos",
-      "show": "Mostrar anexos",
-      "hide": "Ocultar anexos",
-      "empty": "Sem anexos",
-      "addHint": "Carregue certificados, fotos ou documentos relacionados"
+      "hide": "Ocultar documentos",
+      "showCert": "Ver certificados / documentos",
+      "showTraining": "Ver documentos da formação"
     },
     "detail": {
       "info": "Informação",
@@ -5939,11 +5955,66 @@
       "workerDeleted": "Trabalhador removido",
       "qualCreated": "Qualificação registada",
       "error": "Erro ao guardar"
+    }
+  },
+  "trackGeometry": {
+    "title": "Geometria de Via",
+    "subtitle": "Campanhas de medição — EN 13231-1",
+    "newCampaign": "Nova Campanha",
+    "editCampaign": "Editar Campanha",
+    "addReading": "Adicionar Leitura",
+    "readings": "Leituras",
+    "nonConformingReadings": "leitura(s) não conforme(s)",
+    "search": "Pesquisar por código, PK, operador...",
+    "empty": "Sem campanhas registadas",
+    "emptyDesc": "Registe campanhas de medição de geometria de via (bitola, empeno, nivelamento, alinhamento).",
+    "deleteTitle": "Eliminar campanha?",
+    "deleteDesc": "A campanha {{code}} e todas as leituras serão eliminadas.",
+    "kpi": {
+      "total": "Total campanhas"
     },
-    "attachments": {
-      "hide": "Ocultar documentos",
-      "showCert": "Ver certificados / documentos",
-      "showTraining": "Ver documentos da formação"
+    "result": {
+      "conforme": "Conforme",
+      "nao_conforme": "Não conforme",
+      "pendente": "Pendente"
+    },
+    "filter": {
+      "allResults": "Todos os resultados"
+    },
+    "col": {
+      "code": "Código"
+    },
+    "section": {
+      "identification": "Identificação",
+      "execution": "Execução",
+      "measurements": "Medições"
+    },
+    "form": {
+      "date": "Data",
+      "track": "Via",
+      "pkStart": "PK Início",
+      "pkEnd": "PK Fim",
+      "operator": "Operador / Técnico",
+      "equipment": "Equipamento de medição",
+      "normClass": "Classe EN 13231",
+      "result": "Resultado global",
+      "workItem": "Frente de obra",
+      "pkPosition": "PK da leitura",
+      "railProfile": "Perfil de carril",
+      "conforming": "Conformidade"
+    },
+    "param": {
+      "gaugeDeviation": "Desvio bitola",
+      "twist": "Empeno",
+      "crosslevel": "Nível transversal",
+      "longLevel": "Niv. longitudinal",
+      "alignment": "Alinhamento"
+    },
+    "toast": {
+      "created": "Campanha criada com sucesso",
+      "updated": "Campanha actualizada",
+      "deleted": "Campanha eliminada",
+      "readingAdded": "Leitura adicionada"
     }
   }
 }

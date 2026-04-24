@@ -63,6 +63,11 @@ export interface FieldRecordInput {
   point_type: PointType;
   activity: string;
   location_pk?: string | null;
+  pk_fim?: string | null;
+  disciplina?: string | null;
+  elemento?: string | null;
+  tq_name?: string | null;
+  next_inspection?: string | null;
   inspection_date?: string;
   weather?: Weather | null;
   inspector_id?: string | null;
@@ -94,6 +99,11 @@ export const fieldRecordService = {
         point_type: input.point_type,
         activity: input.activity,
         location_pk: input.location_pk ?? null,
+        pk_fim: input.pk_fim ?? null,
+        disciplina: input.disciplina ?? null,
+        elemento: input.elemento ?? null,
+        tq_name: input.tq_name ?? null,
+        next_inspection: input.next_inspection ?? null,
         inspection_date: input.inspection_date ?? new Date().toISOString().split("T")[0],
         weather: input.weather ?? "bom",
         inspector_id: input.inspector_id ?? null,
@@ -144,6 +154,11 @@ export const fieldRecordService = {
         point_type: input.point_type,
         activity: input.activity,
         location_pk: input.location_pk ?? null,
+        pk_fim: input.pk_fim ?? null,
+        disciplina: input.disciplina ?? null,
+        elemento: input.elemento ?? null,
+        tq_name: input.tq_name ?? null,
+        next_inspection: input.next_inspection ?? null,
         inspection_date: input.inspection_date ?? new Date().toISOString().split("T")[0],
         weather: input.weather ?? "bom",
         inspector_id: input.inspector_id ?? null,

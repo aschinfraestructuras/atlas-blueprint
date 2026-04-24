@@ -5,6 +5,7 @@ import { useProject } from "@/contexts/ProjectContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTechnicalOffice } from "@/hooks/useTechnicalOffice";
 import { useSuppliers } from "@/hooks/useSuppliers";
+import { useMaterials } from "@/hooks/useMaterials";
 import { useSubcontractors } from "@/hooks/useSubcontractors";
 import { useWorkItems } from "@/hooks/useWorkItems";
 import { technicalOfficeService } from "@/lib/services/technicalOfficeService";
@@ -85,6 +86,7 @@ export default function SubmittalsPage() {
   const navigate = useNavigate();
   const { data: allItems, loading, refetch } = useTechnicalOffice();
   const { data: suppliers } = useSuppliers();
+  const { data: materials } = useMaterials();
   const { data: subcontractors } = useSubcontractors();
   const { data: workItems } = useWorkItems();
   const { canCreate, canDelete, isManager } = useProjectRole();
@@ -122,6 +124,8 @@ export default function SubmittalsPage() {
   const [formRecipient, setFormRecipient] = useState("");
   const [formWorkItemId, setFormWorkItemId] = useState("");
   const [formApproval, setFormApproval] = useState("pending");
+  const [formMaterialId, setFormMaterialId] = useState("__none__");
+  const [formPameRef, setFormPameRef] = useState("");
 
   const resetForm = useCallback(() => {
     setFormTitle(""); setFormDescription(""); setFormPriority("normal");
@@ -129,6 +133,7 @@ export default function SubmittalsPage() {
     setFormSupplier(""); setFormSubcontractor(""); setFormSpecRef("");
     setFormRevision("0"); setFormDeadline(""); setFormRecipient("");
     setFormWorkItemId(""); setFormApproval("pending");
+    setFormMaterialId("__none__"); setFormPameRef("");
     setEditingItem(null);
   }, []);
 
@@ -200,7 +205,9 @@ export default function SubmittalsPage() {
           deadline: formDeadline || undefined,
           recipient: formRecipient || undefined,
           work_item_id: formWorkItemId || null,
-        });
+          material_id: formMaterialId === "__none__" ? null : formMaterialId,
+          pame_ref: formPameRef.trim() || null,
+        } as any);
         toast.success(t("submittals.toast.updated", { defaultValue: "Submittal atualizado" }));
       } else {
         await technicalOfficeService.create({
@@ -214,7 +221,9 @@ export default function SubmittalsPage() {
           deadline: formDeadline || undefined,
           recipient: formRecipient || undefined,
           work_item_id: formWorkItemId || null,
-        });
+          material_id: formMaterialId === "__none__" ? null : formMaterialId,
+          pame_ref: formPameRef.trim() || null,
+        } as any);
         toast.success(t("submittals.toast.created", { defaultValue: "Submittal criado com sucesso" }));
       }
       setDialogOpen(false);
@@ -524,6 +533,24 @@ export default function SubmittalsPage() {
                       ))}
                     </SelectContent>
                   </Select>
+                </div>
+
+                {/* Ligação ao PAME/Material */}
+                <div>
+                  <Label>{t("submittals.form.material", { defaultValue: "Material (PAME)" })}</Label>
+                  <Select value={formMaterialId} onValueChange={setFormMaterialId}>
+                    <SelectTrigger><SelectValue placeholder="—" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="__none__">—</SelectItem>
+                      {(materials ?? []).map((m: any) => (
+                        <SelectItem key={m.id} value={m.id}>{m.pame_code ? `${m.pame_code} — ` : ""}{m.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>{t("submittals.form.pameRef", { defaultValue: "Ref. PAME" })}</Label>
+                  <Input value={formPameRef} onChange={e => setFormPameRef(e.target.value)} placeholder="Ex: PAME-PF17A-001" />
                 </div>
               </div>
 
