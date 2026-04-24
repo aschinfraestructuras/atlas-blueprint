@@ -1038,20 +1038,6 @@ function SubMaterialsSection({ projectId, subId, supplierId }: { projectId: stri
           </CardContent>
         </Card>
       )}
-
-      <PdfPreviewDialog
-        open={previewOpen}
-        onOpenChange={(o) => {
-          setPreviewOpen(o);
-          if (!o) {
-            revokeHtmlPreviewUrl(previewUrl);
-            setPreviewUrl(null);
-          }
-        }}
-        url={previewUrl}
-        title={`SUB · ${sub?.name ?? ""}`}
-        subtitle={projectId}
-      />
     </div>
   );
 }
