@@ -6,6 +6,7 @@ import {
   CheckCircle2, RotateCcw, Archive, Loader2, Eye,
   FileText, Shield, Link2, ClipboardList, Printer, FileDown, Trash2,
 } from "lucide-react";
+import { DocumentActionsBar } from "@/components/ui/document-actions-bar";
 import { supabase } from "@/integrations/supabase/client";
 import { ncService, type NonConformity } from "@/lib/services/ncService";
 import { auditService, type AuditEntry } from "@/lib/services/auditService";
@@ -441,36 +442,18 @@ export default function NCDetailPage() {
               })}
             </div>
           )}
-          <Button
-            size="sm" variant="outline"
-            onClick={handlePreviewPdf}
-            className="gap-1.5 flex-shrink-0"
-          >
-            <Eye className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">{t("common.preview", { defaultValue: "Pré-visualizar" })}</span>
-          </Button>
-          <Button
-            size="sm" variant="outline"
-            onClick={() => handleExportPdf()}
-            className="gap-1.5 flex-shrink-0"
-            disabled={exporting}
-          >
-            {exporting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FileDown className="h-3.5 w-3.5" />}
-            <span className="hidden sm:inline">{t("common.exportPdf", { defaultValue: "Exportar PDF" })}</span>
-            <span className="sm:hidden">PDF</span>
-          </Button>
-          {canEdit && (
-            <Button size="sm" variant="outline" onClick={() => setEditOpen(true)} className="gap-1.5 flex-shrink-0">
-              <Pencil className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">{t("common.edit")}</span>
-            </Button>
-          )}
-          {canDelete && (
-            <Button size="sm" variant="destructive" onClick={() => setDeleteDialogOpen(true)} className="gap-1.5 flex-shrink-0">
-              <Trash2 className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">{t("common.delete")}</span>
-            </Button>
-          )}
+          {/* Unified actions bar — Preview / Download PDF / Edit / Delete */}
+          <DocumentActionsBar
+            onPreview={handlePreviewPdf}
+            onDownload={handleExportPdf}
+            downloadLoading={exporting}
+            onEdit={canEdit ? () => setEditOpen(true) : undefined}
+            canEdit={canEdit}
+            onDelete={canDelete ? () => setDeleteDialogOpen(true) : undefined}
+            canDelete={canDelete}
+            size="md"
+            className="flex-shrink-0"
+          />
         </div>
       </div>
 
