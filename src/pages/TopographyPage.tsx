@@ -559,7 +559,6 @@ export default function TopographyPage() {
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-1">
-                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditSurvey(s)} title={t("common.view", { defaultValue: "Ver" })}><Eye className="h-3.5 w-3.5" /></Button>
                         <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditSurvey(s)} title={t("common.edit")}><Pencil className="h-3.5 w-3.5" /></Button>
                         {canDelete && <DeleteButton onConfirm={() => handleDeleteSurvey(s.id)} />}
                       </div>
