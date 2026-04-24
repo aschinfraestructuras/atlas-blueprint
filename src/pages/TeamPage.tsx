@@ -1172,43 +1172,19 @@ export default function TeamPage() {
                       const wQuals = qualifications.filter(q => q.worker_id === w.id);
                       const hasExpiring = wQuals.some(q => ["alert","urgent","expired"].includes(certExpiry(q.valid_until)));
                       return (
-                        <TableRow key={w.id} className="cursor-pointer hover:bg-muted/20"
-                          onClick={() => { setSheetWorker(w); setSheetOpen(true); }}>
-                          <TableCell className="text-xs font-semibold">{w.name}</TableCell>
-                          <TableCell className="text-xs text-muted-foreground">{w.company ?? "ASCH"}</TableCell>
-                          <TableCell className="text-xs">{w.role_function ?? "—"}</TableCell>
-                          <TableCell className="text-xs text-muted-foreground">
-                            {w.discipline ? t(`team.disciplines.${w.discipline}`, { defaultValue: w.discipline }) : "—"}
-                          </TableCell>
-                          <TableCell>
-                            <Badge className={cn("text-[10px]", w.status === "active" ? "bg-green-500/15 text-green-700" : "bg-muted text-muted-foreground")}>
-                              {t(`team.status.${w.status}`)}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            {w.has_safety_training
-                              ? <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
-                              : <AlertTriangle className="h-3.5 w-3.5 text-amber-400" />}
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-1">
-                              {wQuals.length > 0 && (
-                                <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-semibold">{wQuals.length}</span>
-                              )}
-                              {hasExpiring && <AlertTriangle className="h-3 w-3 text-amber-500" />}
-                            </div>
-                          </TableCell>
-                          <TableCell onClick={e => e.stopPropagation()}>
-                            <div className="flex items-center gap-0.5">
-                              <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleOpenEdit(w)}>
-                                <Pencil className="h-3 w-3" />
-                              </Button>
-                              <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive/70 hover:text-destructive" onClick={() => setDeleteWorker(w)}>
-                                <Trash2 className="h-3 w-3" />
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
+                        <WorkerRow
+                          key={w.id}
+                          w={w}
+                          wQuals={wQuals}
+                          hasExpiring={hasExpiring}
+                          t={t}
+                          projectId={pid}
+                          onOpenSheet={(worker) => { setSheetWorker(worker); setSheetOpen(true); }}
+                          onEdit={handleOpenEdit}
+                          onDelete={(worker) => setDeleteWorker(worker)}
+                          onPrint={handlePrintWorker}
+                          onPreview={handlePreviewWorker}
+                        />
                       );
                     })}
                   </TableBody>
