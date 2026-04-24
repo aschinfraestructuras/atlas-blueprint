@@ -252,8 +252,9 @@ export default function DailyReportDetailPage() {
   };
 
   // ── PDF Export ──────────────────────────────────────────────────────────
-  const exportPdf = () => {
-    if (!report || !meta) return;
+  // Build the institutional HTML once and reuse for both Print and Preview.
+  const buildPdfHtml = (): { html: string; filename: string } | null => {
+    if (!report || !meta) return null;
     const labels: ReportLabels = { appName: "ATLAS QMS", reportTitle: "PARTE DIÁRIA DE OBRA — IP.MOD.102", generatedOn: t("common.date") };
 
     const sectionHtml = (title: string, content: string) =>
@@ -318,8 +319,28 @@ export default function DailyReportDetailPage() {
       footerRef: `IP.MOD.102 · ${report.report_number}`,
       logoBase64,
     });
-    printHtml(html, buildReportFilename("PD", meta.projectCode, report.report_number));
+    return { html, filename: buildReportFilename("PD", meta.projectCode, report.report_number) };
   };
+
+  const exportPdf = () => {
+    const built = buildPdfHtml();
+    if (!built) return;
+    printHtml(built.html, built.filename);
+  };
+
+  // In-app PDF preview (with logo + institutional header)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  useEffect(() => () => revokeHtmlPreviewUrl(previewUrl), [previewUrl]);
+
+  const openPreview = () => {
+    const built = buildPdfHtml();
+    if (!built) return;
+    revokeHtmlPreviewUrl(previewUrl);
+    setPreviewUrl(buildHtmlPreviewUrl(built.html));
+    setPreviewOpen(true);
+  };
+
 
   const handleReopen = async () => {
     if (!id) return;
