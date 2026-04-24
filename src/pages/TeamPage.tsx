@@ -26,11 +26,15 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { toast } from "@/lib/utils/toast";
 import { cn } from "@/lib/utils";
 import { fullPdfHeader } from "@/lib/services/pdfProjectHeader";
+import { exportWorkerSheetPdf, buildWorkerSheetHtml, type WorkerSheetLabels } from "@/lib/services/workerSheetExportService";
+import { PdfPreviewDialog } from "@/components/ui/pdf-preview-dialog";
+import { buildHtmlPreviewUrl, revokeHtmlPreviewUrl } from "@/lib/utils/htmlPreview";
+import i18n from "@/i18n";
 import jsPDF from "jspdf";
 import {
   Users, Plus, Pencil, Trash2, Search, Download, ShieldCheck,
   GraduationCap, FileText, AlertTriangle, CheckCircle2, Clock,
-  Building2, HardHat, Phone, Mail, Calendar, ChevronRight, Paperclip,
+  Building2, HardHat, Phone, Mail, Calendar, ChevronRight, Paperclip, Eye, Printer,
 } from "lucide-react";
 
 // ── Tipos ──────────────────────────────────────────────────────────────────
