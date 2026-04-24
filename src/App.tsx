@@ -1,4 +1,4 @@
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { lazyWithRetry as lazy } from "@/lib/lazyWithRetry";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -194,18 +194,31 @@ function AuthOnlyRoute({ children }: { children: React.ReactNode }) {
 }
 
 function PageLoader() {
-  // Branded fullscreen splash — replaces the brief Dashboard flash that used to
-  // appear right after login while AuthContext + ProjectContext resolved.
+  // Premium splash with 250ms delay — most chunk loads finish faster than this,
+  // so the user typically sees a clean, instant transition with no flash.
+  // When loading does take longer, we present a polished, breathing brand mark.
+  const [show, setShow] = useState(false);
+  useEffect(() => {
+    const timer = setTimeout(() => setShow(true), 250);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!show) return null;
+
   return (
-    <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center gap-4 bg-background">
-      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 border border-primary/20 shadow-sm">
-        <Loader2 className="animate-spin h-6 w-6 text-primary" />
+    <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center gap-5 bg-background animate-in fade-in duration-300">
+      <div className="relative flex h-16 w-16 items-center justify-center">
+        <div className="absolute inset-0 rounded-2xl bg-primary/10 animate-pulse" />
+        <div className="absolute inset-1 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/30 shadow-lg shadow-primary/10" />
+        <Loader2 className="relative animate-spin h-6 w-6 text-primary" strokeWidth={2.5} />
       </div>
-      <div className="flex flex-col items-center gap-0.5">
-        <span className="text-[11px] font-black tracking-[0.32em] uppercase text-foreground">
-          ATLAS
-        </span>
-        <span className="text-[9px] font-medium tracking-[0.18em] uppercase text-muted-foreground">
+      <div className="flex flex-col items-center gap-1">
+        <div className="flex items-baseline gap-1.5">
+          <span className="text-sm font-black tracking-[0.28em] uppercase text-foreground">ATLAS</span>
+          <span className="text-sm font-light tracking-[0.18em] uppercase text-primary">QMS</span>
+        </div>
+        <div className="h-px w-12 bg-gradient-to-r from-transparent via-border to-transparent" />
+        <span className="text-[9px] font-medium tracking-[0.22em] uppercase text-muted-foreground/80">
           Quality Platform
         </span>
       </div>

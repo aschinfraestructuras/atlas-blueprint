@@ -742,6 +742,16 @@ export default function TopographyPage() {
         onSuccess={() => { refetchDocs(); setDocDialogOpen(false); }}
       />
 
+      {/* In-app PDF preview (Pré-visualizar + Descarregar PDF real) */}
+      <PdfPreviewDialog
+        open={!!previewUrl}
+        onOpenChange={(v) => { if (!v) { revokeHtmlPreviewUrl(previewUrl); setPreviewUrl(null); } }}
+        url={previewUrl}
+        title={previewTitle}
+        downloadName={previewTitle}
+        htmlSource
+      />
+
       {/* Cycle Detail Sheet */}
       <Sheet open={detailSheetOpen} onOpenChange={setDetailSheetOpen}>
         <SheetContent className="sm:max-w-lg">
