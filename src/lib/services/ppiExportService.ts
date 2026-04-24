@@ -10,6 +10,7 @@
 import type { PpiInstance, PpiInstanceItem } from "./ppiService";
 import type { HpNotification } from "./hpNotificationService";
 import { projectInfoStripHtml } from "./pdfProjectHeader";
+import { printHtml } from "./reportService";
 import { esc } from "@/lib/utils/escapeHtml";
 
 // ─── Shared types ─────────────────────────────────────────────────────────────
@@ -414,35 +415,6 @@ export function buildSinglePdfHtml(
   </div>
 </body>
 </html>`;
-}
-
-// ─── Open print window ────────────────────────────────────────────────────────
-
-function printHtml(html: string, filename: string): void {
-  const win = window.open("", "_blank", "width=900,height=700");
-  if (!win) {
-    const blob = new Blob([html], { type: "text/html" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = filename.replace(".pdf", ".html");
-    a.click();
-    return;
-  }
-  win.document.open();
-  win.document.write(html);
-  win.document.close();
-  win.onload = () => {
-    setTimeout(() => {
-      win.focus();
-      win.print();
-    }, 400);
-  };
-  setTimeout(() => {
-    if (!win.document.readyState || win.document.readyState === "complete") {
-      win.focus();
-      win.print();
-    }
-  }, 800);
 }
 
 // ─── CSV helpers ──────────────────────────────────────────────────────────────
