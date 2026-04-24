@@ -77,7 +77,8 @@ export function ControlFormDialog({ open, onOpenChange, projectId, equipment, ed
         setPpiInstances(data ?? []);
       });
       (supabase as any).from("non_conformities").select("id, code, title").eq("project_id", projectId)
-        .not("status", "in", '("closed","archived")').order("code").then(({ data }: any) => {
+        .eq("is_deleted", false)
+        .not("status", "in", '("closed","archived","cancelled")').order("code").then(({ data }: any) => {
         setNcs(data ?? []);
       });
     }
