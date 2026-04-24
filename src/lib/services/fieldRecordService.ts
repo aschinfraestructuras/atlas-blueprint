@@ -128,6 +128,52 @@ export const fieldRecordService = {
     return record;
   },
 
+  /**
+   * Update an existing field record. Mirrors `create`: the row itself is
+   * patched, then materials and checks are *replaced* (drop + reinsert) so the
+   * caller can simply send the new arrays without juggling per-row IDs.
+   */
+  async update(
+    id: string,
+    input: Omit<FieldRecordInput, "project_id" | "created_by">,
+  ): Promise<void> {
+    const { error } = await supabase
+      .from("field_records" as any)
+      .update({
+        ppi_instance_id: input.ppi_instance_id ?? null,
+        point_type: input.point_type,
+        activity: input.activity,
+        location_pk: input.location_pk ?? null,
+        inspection_date: input.inspection_date ?? new Date().toISOString().split("T")[0],
+        weather: input.weather ?? "bom",
+        inspector_id: input.inspector_id ?? null,
+        specialist_name: input.specialist_name ?? null,
+        result: input.result ?? "pendente",
+        has_photos: input.has_photos ?? false,
+        observations: input.observations ?? null,
+      })
+      .eq("id", id);
+    if (error) throw error;
+
+    // Replace materials
+    await supabase.from("field_record_materials" as any).delete().eq("record_id", id);
+    if (input.materials && input.materials.length > 0) {
+      const { error: matErr } = await supabase
+        .from("field_record_materials" as any)
+        .insert(input.materials.map((m) => ({ ...m, record_id: id })));
+      if (matErr) throw matErr;
+    }
+
+    // Replace checks
+    await supabase.from("field_record_checks" as any).delete().eq("record_id", id);
+    if (input.checks && input.checks.length > 0) {
+      const { error: chkErr } = await supabase
+        .from("field_record_checks" as any)
+        .insert(input.checks.map((c) => ({ ...c, record_id: id })));
+      if (chkErr) throw chkErr;
+    }
+  },
+
   async listByProject(projectId: string): Promise<FieldRecord[]> {
     const { data, error } = await supabase
       .from("field_records" as any)
