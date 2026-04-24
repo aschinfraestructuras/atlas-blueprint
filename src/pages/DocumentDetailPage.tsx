@@ -310,6 +310,11 @@ export default function DocumentDetailPage() {
   const [exporting, setExporting] = useState(false);
   const [versions, setVersions] = useState<DocumentVersion[]>([]);
 
+  // PDF in-app preview
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  useEffect(() => () => revokeHtmlPreviewUrl(previewUrl), [previewUrl]);
+
   const loadDoc = useCallback(async () => {
     if (!id) return;
     setLoading(true);
