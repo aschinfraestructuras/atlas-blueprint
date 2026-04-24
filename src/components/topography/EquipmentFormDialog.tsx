@@ -10,8 +10,11 @@ import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { topographyEquipmentService, calibrationService, type TopographyEquipment, type EquipmentCalibration } from "@/lib/services/topographyService";
-import { CheckCircle, Clock, AlertTriangle } from "lucide-react";
+import { CalibrationFormDialog } from "@/components/topography/CalibrationFormDialog";
+import { useProjectRole } from "@/hooks/useProjectRole";
+import { CheckCircle, Clock, AlertTriangle, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 interface Props {
@@ -25,9 +28,13 @@ interface Props {
 export function EquipmentFormDialog({ open, onOpenChange, projectId, equipment, onSuccess }: Props) {
   const { t } = useTranslation();
   const isEdit = !!equipment;
+  const { isAdmin } = useProjectRole();
   const [loading, setLoading] = useState(false);
   const [calibrations, setCalibrations] = useState<EquipmentCalibration[]>([]);
   const [calLoading, setCalLoading] = useState(false);
+  const [editCalibration, setEditCalibration] = useState<EquipmentCalibration | null>(null);
+  const [calDialogOpen, setCalDialogOpen] = useState(false);
+  const [deleteCalId, setDeleteCalId] = useState<string | null>(null);
 
   const equipmentTypes = [
     { value: "estacao_total", label: t("topography.equipmentType.estacao_total") },
@@ -191,6 +198,7 @@ export function EquipmentFormDialog({ open, onOpenChange, projectId, equipment, 
                           <TableHead className="text-xs">{t("topography.form.issueDate")}</TableHead>
                           <TableHead className="text-xs">{t("topography.table.validity")}</TableHead>
                           <TableHead className="text-xs">{t("common.status")}</TableHead>
+                          <TableHead className="text-xs w-20" />
                         </TableRow></TableHeader>
                         <TableBody>
                           {calibrations.map(cal => (
@@ -200,6 +208,20 @@ export function EquipmentFormDialog({ open, onOpenChange, projectId, equipment, 
                               <TableCell className="text-sm">{cal.issue_date}</TableCell>
                               <TableCell className="text-sm">{cal.valid_until}</TableCell>
                               <TableCell>{calStatusBadge(cal)}</TableCell>
+                              <TableCell>
+                                <div className="flex gap-0.5">
+                                  <Button variant="ghost" size="icon" className="h-7 w-7" title={t("common.edit", { defaultValue: "Editar" })}
+                                    onClick={() => { setEditCalibration(cal); setCalDialogOpen(true); }}>
+                                    <Pencil className="h-3.5 w-3.5" />
+                                  </Button>
+                                  {isAdmin && (
+                                    <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" title={t("common.delete")}
+                                      onClick={() => setDeleteCalId(cal.id)}>
+                                      <Trash2 className="h-3.5 w-3.5" />
+                                    </Button>
+                                  )}
+                                </div>
+                              </TableCell>
                             </TableRow>
                           ))}
                         </TableBody>
