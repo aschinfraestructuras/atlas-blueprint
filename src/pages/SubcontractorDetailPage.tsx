@@ -399,6 +399,7 @@ export default function SubcontractorDetailPage() {
             { label: "PDF", icon: "pdf", action: () => exportSubcontractorDetailPdf(sub, docsWithStatus, activities, meta, logoBase64) },
           ]} />
         </div>
+      </div>
 
       {/* Alerts */}
       {expiredDocs.length > 0 && (
