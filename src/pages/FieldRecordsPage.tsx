@@ -656,6 +656,15 @@ export default function FieldRecordsPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* In-app PDF preview (Pré-visualizar + Descarregar PDF real) */}
+      <PdfPreviewDialog
+        open={!!previewUrl}
+        onOpenChange={(v) => { if (!v) { revokeHtmlPreviewUrl(previewUrl); setPreviewUrl(null); } }}
+        url={previewUrl}
+        title={previewTitle}
+        downloadName={previewTitle}
+      />
     </div>
   );
 }
