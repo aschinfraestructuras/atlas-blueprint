@@ -411,12 +411,26 @@ export default function TopographyPage() {
                       <TableCell><CalibrationBadge status={eq.calibration_status} /></TableCell>
                       <TableCell className={cn("text-sm", validityClass)}>{validityText}</TableCell>
                       <TableCell onClick={e => e.stopPropagation()}>
-                        <div className="flex gap-1">
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleViewEquipment(eq)} title={t("common.view", { defaultValue: "Ver" })}>
-                            <Eye className="h-3.5 w-3.5" />
+                        <div className="flex items-center justify-end gap-0.5">
+                          <DocumentActionsBar
+                            previewLoading={previewBusyId === eq.id}
+                            onPreview={() => {
+                              setPreviewBusyId(eq.id);
+                              try {
+                                const built = buildEquipmentDetailHtml(eq, calibrations, meta, logoBase64 || logoUrl);
+                                openPreview(built, eq.code);
+                              } finally {
+                                setPreviewBusyId(null);
+                              }
+                            }}
+                            onEdit={() => handleViewEquipment(eq)}
+                            editLabel={t("common.edit")}
+                            onDelete={isAdmin ? () => handleDeleteEquipment(eq.id) : undefined}
+                            canDelete={isAdmin}
+                          />
+                          <Button size="sm" variant="outline" className="ml-1" onClick={() => handleAddCalibration(eq.id)}>
+                            <Plus className="h-3 w-3 mr-1" />{t("topography.calibrations")}
                           </Button>
-                          <Button size="sm" variant="outline" onClick={() => handleAddCalibration(eq.id)}><Plus className="h-3 w-3 mr-1" />{t("topography.calibrations")}</Button>
-                          {isAdmin && <DeleteButton onConfirm={() => handleDeleteEquipment(eq.id)} />}
                         </div>
                       </TableCell>
                     </TableRow>
