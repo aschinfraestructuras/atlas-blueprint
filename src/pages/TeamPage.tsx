@@ -1300,6 +1300,20 @@ export default function TeamPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* PDF preview (Ficha Pessoal) */}
+      <PdfPreviewDialog
+        open={previewOpen}
+        onOpenChange={(o) => {
+          setPreviewOpen(o);
+          if (!o && previewUrl) { revokeHtmlPreviewUrl(previewUrl); setPreviewUrl(null); }
+        }}
+        url={previewUrl}
+        title={previewTitle}
+        subtitle={previewSubtitle}
+        downloadName={previewName}
+        htmlSource
+      />
     </div>
   );
 }
