@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -9,7 +9,7 @@ import { GlobalSearchDialog } from "@/components/search/GlobalSearchDialog";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import {
   LogOut, User, Globe, Menu, ChevronDown, Building2, Check, Loader2,
-  Search, Sun, Moon, Monitor, Lock, Plus,
+  Search, Sun, Moon, Monitor, Lock, LockOpen, Plus,
   AlertTriangle, ClipboardCheck, FlaskConical, FileText, LayoutGrid,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -24,74 +24,44 @@ import {
 import { cn } from "@/lib/utils";
 
 /**
- * Lock button — requires press & hold (~600ms) to activate the screensaver.
- * Avoids accidental triggers from a single tap. Shows a circular fill progress.
+ * Lock toggle — single click activates the Atlas QMS screensaver immediately.
+ * Open lock = idle (will trigger after inactivity). Filled lock = active now.
+ * Listens to the same `atlas:screensaver:active-changed` event that the
+ * ScreenSaver dispatches when its visible state changes, so the icon stays
+ * in sync regardless of how it was triggered (timer, click, key, etc).
  */
-function LockHoldButton({ label }: { label: string }) {
-  const HOLD_MS = 600;
-  const [progress, setProgress] = useState(0); // 0..1
-  const startRef = useRef<number | null>(null);
-  const rafRef = useRef<number | null>(null);
-  const firedRef = useRef(false);
+function LockToggleButton({ label }: { label: string }) {
+  const [active, setActive] = useState(false);
 
-  const cancel = () => {
-    if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
-    rafRef.current = null;
-    startRef.current = null;
-    firedRef.current = false;
-    setProgress(0);
+  useEffect(() => {
+    const onChanged = (e: Event) => {
+      const detail = (e as CustomEvent<{ active: boolean }>).detail;
+      setActive(!!detail?.active);
+    };
+    window.addEventListener("atlas:screensaver:active-changed", onChanged as EventListener);
+    return () =>
+      window.removeEventListener("atlas:screensaver:active-changed", onChanged as EventListener);
+  }, []);
+
+  const handleClick = () => {
+    // The ScreenSaver itself handles the dismiss path (any user input closes it),
+    // so the toggle only needs to *activate* it. We dispatch the same event used
+    // by the legacy long-press flow to avoid any behavioural change.
+    if (active) return;
+    window.dispatchEvent(new CustomEvent("atlas:screensaver:activate"));
   };
-
-  const tick = () => {
-    if (startRef.current == null) return;
-    const elapsed = performance.now() - startRef.current;
-    const p = Math.min(1, elapsed / HOLD_MS);
-    setProgress(p);
-    if (p >= 1) {
-      if (!firedRef.current) {
-        firedRef.current = true;
-        window.dispatchEvent(new CustomEvent("atlas:screensaver:activate"));
-      }
-      cancel();
-      return;
-    }
-    rafRef.current = requestAnimationFrame(tick);
-  };
-
-  const start = (e: React.PointerEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    if (startRef.current != null) return;
-    startRef.current = performance.now();
-    firedRef.current = false;
-    rafRef.current = requestAnimationFrame(tick);
-  };
-
-  useEffect(() => () => { if (rafRef.current != null) cancelAnimationFrame(rafRef.current); }, []);
-
-  const pct = Math.round(progress * 100);
 
   return (
     <Button
       variant="ghost"
       size="icon"
-      className="relative h-8 w-8 text-muted-foreground hidden sm:inline-flex hover:text-primary touch-none select-none"
-      onPointerDown={start}
-      onPointerUp={cancel}
-      onPointerLeave={cancel}
-      onPointerCancel={cancel}
-      onContextMenu={(e) => e.preventDefault()}
+      onClick={handleClick}
+      className="h-8 w-8 text-muted-foreground hidden sm:inline-flex hover:text-primary"
       aria-label={label}
+      aria-pressed={active}
       title={label}
     >
-      <Lock className="h-3.5 w-3.5 relative z-10" />
-      {progress > 0 && (
-        <span
-          className="absolute inset-0 rounded-md pointer-events-none transition-none"
-          style={{
-            background: `conic-gradient(hsl(var(--primary) / 0.35) ${pct}%, transparent ${pct}%)`,
-          }}
-        />
-      )}
+      {active ? <Lock className="h-3.5 w-3.5 text-primary" /> : <LockOpen className="h-3.5 w-3.5" />}
     </Button>
   );
 }
@@ -285,9 +255,9 @@ export function TopBar({ onMobileMenuOpen }: TopBarProps) {
       {/* Notifications */}
       <NotificationBell />
 
-      {/* Manual screensaver — press & hold 600ms to avoid accidental triggers */}
-      <LockHoldButton
-        label={t("topbar.screensaver", { defaultValue: "Manter premido para bloquear ecrã" })}
+      {/* Manual screensaver — single click toggles Atlas QMS lock screen */}
+      <LockToggleButton
+        label={t("topbar.screensaver", { defaultValue: "Bloquear ecrã (Atlas QMS)" })}
       />
 
       {/* Theme toggle */}
