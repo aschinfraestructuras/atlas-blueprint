@@ -741,6 +741,22 @@ export default function DocumentDetailPage() {
         document={doc}
         onSuccess={() => { loadDoc(); setVersionKey((k) => k + 1); }}
       />
+
+      {/* ── PDF preview dialog ───────────────────────────────────────── */}
+      <PdfPreviewDialog
+        open={previewOpen}
+        onOpenChange={(v) => {
+          setPreviewOpen(v);
+          if (!v) {
+            revokeHtmlPreviewUrl(previewUrl);
+            setPreviewUrl(null);
+          }
+        }}
+        url={previewUrl}
+        title={doc.code ?? doc.title}
+        subtitle={activeProject ? `${activeProject.name} — ${activeProject.code ?? ""}` : null}
+        downloadName={activeProject ? buildDocFilename(doc, activeProject.name, activeProject.code) : doc.code ?? doc.title}
+      />
     </div>
   );
 }
