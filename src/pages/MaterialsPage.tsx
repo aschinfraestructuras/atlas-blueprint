@@ -173,7 +173,17 @@ export default function MaterialsPage() {
               },
               {
                 label: "PDF", icon: "pdf" as const,
-                action: () => exportMaterialsListPdf(filtered, activeProject.code ?? "PROJ", logoBase64, t),
+                action: () => {
+                  const { html, filename, docCode } = buildMaterialsListHtml(filtered, activeProject.code ?? "PROJ", logoBase64, t);
+                  revokeHtmlPreviewUrl(previewUrl);
+                  setPreviewUrl(buildHtmlPreviewUrl(html));
+                  setPreviewMeta({
+                    title: t("pages.materials.title"),
+                    subtitle: `${docCode} · ${filtered.length} registo(s)`,
+                    filename,
+                  });
+                  setPreviewOpen(true);
+                },
               },
             ]}
           />
