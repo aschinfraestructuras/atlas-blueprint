@@ -303,28 +303,38 @@ export function infoGridHtml(rows: [string, string][]): string {
 }
 
 /**
- * Open a styled print window. Falls back to downloading HTML if popup blocked.
+ * Open a styled print window via Blob URL and trigger print dialog.
+ *
+ * Why Blob URL (not document.write)?
+ *  - When users choose "Save as PDF" in the print dialog, Chrome generates a real PDF
+ *    from the rendered page. Using a Blob URL with a proper title gives the saved file
+ *    a clean name and ensures the print dialog operates on a fully-loaded document
+ *    (avoids the "Failed to load PDF document" error caused by racing print() calls).
+ *  - Falls back to downloading the HTML if popups are blocked.
+ *
+ * Note: filename hint is informational — the browser's print-to-PDF picks the saved
+ * filename from the document <title>, which we set in the HTML when building it.
  */
 export function printHtml(html: string, filename: string): void {
-  const win = window.open("", "_blank", "width=900,height=700");
+  const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const win = window.open(url, "_blank", "noopener,noreferrer");
   if (!win) {
-    const blob = new Blob([html], { type: "text/html" });
+    // Popup blocked — fall back to HTML download
     const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = filename.replace(".pdf", ".html");
+    a.href = url;
+    a.download = filename.replace(/\.pdf$/i, ".html");
     a.click();
-    URL.revokeObjectURL(a.href);
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
     return;
   }
-  win.document.open();
-  win.document.write(html);
-  win.document.close();
-  win.onload = () => { setTimeout(() => { win.focus(); win.print(); }, 400); };
-  setTimeout(() => {
-    if (!win.document.readyState || win.document.readyState === "complete") {
-      win.focus(); win.print();
-    }
-  }, 800);
+  // Trigger print dialog once the document is fully loaded
+  const triggerPrint = () => {
+    try { win.focus(); win.print(); } catch { /* user cancelled */ }
+  };
+  win.addEventListener("load", () => setTimeout(triggerPrint, 350), { once: true });
+  // Safety: revoke the blob after the window has had time to load
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
 }
 
 /**

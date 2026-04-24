@@ -33,9 +33,11 @@ import { cn } from "@/lib/utils";
 import { WorkersPanel } from "@/components/workers/WorkersPanel";
 import { MachineryPanel } from "@/components/workers/MachineryPanel";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
-import { exportSubcontractorDetailPdf } from "@/lib/services/subcontractorExportService";
+import { exportSubcontractorDetailPdf, buildSubcontractorDetailHtml } from "@/lib/services/subcontractorExportService";
 import type { ReportMeta } from "@/lib/services/reportService";
 import { useReportMeta } from "@/hooks/useReportMeta";
+import { PdfPreviewDialog } from "@/components/ui/pdf-preview-dialog";
+import { buildHtmlPreviewUrl, revokeHtmlPreviewUrl } from "@/lib/utils/htmlPreview";
 
 const DOC_STATUS_COLORS: Record<string, string> = {
   valid: "bg-primary/20 text-primary",
@@ -85,6 +87,11 @@ export default function SubcontractorDetailPage() {
   const [newDoc, setNewDoc] = useState({ doc_type: "seguros", title: "", valid_from: "", valid_to: "", status: "valid" });
   const [addingDoc, setAddingDoc] = useState(false);
   const [deletingDoc, setDeletingDoc] = useState<SubcontractorDocument | null>(null);
+
+  // PDF in-app preview
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  useEffect(() => () => revokeHtmlPreviewUrl(previewUrl), [previewUrl]);
 
   const fetchSub = useCallback(async () => {
     if (!id || !activeProject) return;
@@ -373,9 +380,25 @@ export default function SubcontractorDetailPage() {
             <p className="text-sm text-muted-foreground mt-0.5">{sub.trade ?? "—"} · {sub.contact_email ?? "—"}</p>
           </div>
         </div>
-        <ReportExportMenu options={[
-          { label: "PDF", icon: "pdf", action: () => exportSubcontractorDetailPdf(sub, docsWithStatus, activities, meta, logoBase64) },
-        ]} />
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            className="gap-1.5"
+            onClick={() => {
+              revokeHtmlPreviewUrl(previewUrl);
+              const html = buildSubcontractorDetailHtml(sub, docsWithStatus, activities, meta, logoBase64);
+              setPreviewUrl(buildHtmlPreviewUrl(html));
+              setPreviewOpen(true);
+            }}
+          >
+            <Eye className="h-3.5 w-3.5" />
+            {t("common.preview", { defaultValue: "Pré-visualizar" })}
+          </Button>
+          <ReportExportMenu options={[
+            { label: "PDF", icon: "pdf", action: () => exportSubcontractorDetailPdf(sub, docsWithStatus, activities, meta, logoBase64) },
+          ]} />
+        </div>
       </div>
 
       {/* Alerts */}
@@ -1018,3 +1041,4 @@ function SubMaterialsSection({ projectId, subId, supplierId }: { projectId: stri
     </div>
   );
 }
+
