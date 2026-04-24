@@ -141,6 +141,14 @@ export default function PPIDetailPage() {
   const { role } = useProjectRole();
   const isViewer = role === "viewer";
   const { user } = useAuth();
+  const { logoBase64, logoUrl } = useProjectLogo();
+  const logo = logoBase64 || logoUrl;
+  const locale = i18n.language?.slice(0, 2) ?? "pt";
+
+  // PDF in-app preview
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  useEffect(() => () => revokeHtmlPreviewUrl(previewUrl), [previewUrl]);
 
   useEffect(() => {
     if (!id || id === "undefined" || id.trim() === "") {
