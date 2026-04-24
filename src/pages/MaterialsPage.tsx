@@ -6,7 +6,9 @@ import { useMaterials } from "@/hooks/useMaterials";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { materialService } from "@/lib/services/materialService";
-import { exportMaterialsListPdf } from "@/lib/services/materialExportService";
+import { buildMaterialsListHtml } from "@/lib/services/materialExportService";
+import { PdfPreviewDialog } from "@/components/ui/pdf-preview-dialog";
+import { buildHtmlPreviewUrl, revokeHtmlPreviewUrl } from "@/lib/utils/htmlPreview";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Package, Plus, Pencil, Search, Archive, RotateCcw, Eye, Trash2,
@@ -69,6 +71,9 @@ export default function MaterialsPage() {
   const [lotsLoading, setLotsLoading] = useState(true);
   const [receptionTarget, setReceptionTarget] = useState<Material | null>(null);
   const [receptionOpen, setReceptionOpen] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewMeta, setPreviewMeta] = useState<{ title: string; subtitle: string; filename: string } | null>(null);
 
   // Carregar todos os lotes do projecto com joins
   useEffect(() => {
@@ -168,7 +173,17 @@ export default function MaterialsPage() {
               },
               {
                 label: "PDF", icon: "pdf" as const,
-                action: () => exportMaterialsListPdf(filtered, activeProject.code ?? "PROJ", logoBase64, t),
+                action: () => {
+                  const { html, filename, docCode } = buildMaterialsListHtml(filtered, activeProject.code ?? "PROJ", logoBase64, t);
+                  revokeHtmlPreviewUrl(previewUrl);
+                  setPreviewUrl(buildHtmlPreviewUrl(html));
+                  setPreviewMeta({
+                    title: t("pages.materials.title"),
+                    subtitle: `${docCode} · ${filtered.length} registo(s)`,
+                    filename,
+                  });
+                  setPreviewOpen(true);
+                },
               },
             ]}
           />
@@ -617,6 +632,23 @@ export default function MaterialsPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Institutional PDF preview (logo + project header + Print/Download/New tab) */}
+      <PdfPreviewDialog
+        open={previewOpen}
+        onOpenChange={(o) => {
+          setPreviewOpen(o);
+          if (!o) {
+            revokeHtmlPreviewUrl(previewUrl);
+            setPreviewUrl(null);
+            setPreviewMeta(null);
+          }
+        }}
+        url={previewUrl}
+        title={previewMeta?.title ?? t("pages.materials.title")}
+        subtitle={previewMeta?.subtitle ?? null}
+        downloadName={previewMeta?.filename ?? "materiais.pdf"}
+      />
 
     </div>
   );

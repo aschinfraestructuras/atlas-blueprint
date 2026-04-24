@@ -184,7 +184,17 @@ export function EquipmentFormDialog({ open, onOpenChange, projectId, equipment, 
               <>
                 <Separator />
                 <div className="space-y-2">
-                  <h3 className="text-sm font-semibold">{t("topography.calibrationHistory")}</h3>
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-semibold">{t("topography.calibrationHistory")}</h3>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => { setEditCalibration(null); setCalDialogOpen(true); }}
+                    >
+                      {t("topography.newCalibration")}
+                    </Button>
+                  </div>
                   {calLoading ? (
                     <p className="text-sm text-muted-foreground">{t("common.loading")}</p>
                   ) : calibrations.length === 0 ? (
@@ -240,6 +250,51 @@ export function EquipmentFormDialog({ open, onOpenChange, projectId, equipment, 
             )}
           </div>
         </ScrollArea>
+
+        {/* Sub-dialog: criar/editar calibração */}
+        {isEdit && equipment && (
+          <CalibrationFormDialog
+            open={calDialogOpen}
+            onOpenChange={(o) => { setCalDialogOpen(o); if (!o) setEditCalibration(null); }}
+            projectId={projectId}
+            equipmentId={equipment.id}
+            editCalibration={editCalibration}
+            onSuccess={() => { setCalDialogOpen(false); setEditCalibration(null); loadCalibrations(); }}
+          />
+        )}
+
+        {/* Confirmação eliminação calibração */}
+        <AlertDialog open={!!deleteCalId} onOpenChange={(o) => { if (!o) setDeleteCalId(null); }}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{t("common.confirmDelete", { defaultValue: "Confirmar eliminação" })}</AlertDialogTitle>
+              <AlertDialogDescription>
+                {t("topography.confirmDeleteCalibration", {
+                  defaultValue: "Esta acção elimina permanentemente o certificado de calibração. Não pode ser revertida.",
+                })}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+              <AlertDialogAction
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                onClick={async () => {
+                  if (!deleteCalId) return;
+                  try {
+                    await calibrationService.delete(deleteCalId, projectId);
+                    toast.success(t("topography.toast.calibrationDeleted", { defaultValue: "Calibração eliminada" }));
+                    setDeleteCalId(null);
+                    loadCalibrations();
+                  } catch (e: any) {
+                    toast.error(e.message || t("topography.toast.error"));
+                  }
+                }}
+              >
+                {t("common.delete")}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </DialogContent>
     </Dialog>
   );
