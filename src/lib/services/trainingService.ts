@@ -136,6 +136,49 @@ export const trainingService = {
     await db.from("training_sessions").update({ attendee_count: count ?? 0 }).eq("id", sessionId);
   },
 
+  /**
+   * Update an existing training session and replace its attendees list.
+   * Atomic from the user's POV: session update first, then replace attendees,
+   * then refresh the count. Errors propagate so the caller can toast/rollback UI.
+   */
+  async update(
+    id: string,
+    input: Omit<TrainingSessionInput, "project_id">,
+  ): Promise<TrainingSession> {
+    const { data: session, error: upErr } = await db
+      .from("training_sessions")
+      .update({
+        session_date: input.session_date,
+        session_type: input.session_type,
+        title: input.title,
+        location: input.location || null,
+        start_time: input.start_time || null,
+        end_time: input.end_time || null,
+        trainer_name: input.trainer_name || null,
+        topics: input.topics || null,
+        attendee_count: input.attendees.length,
+      })
+      .eq("id", id)
+      .select()
+      .single();
+    if (upErr) throw upErr;
+
+    // Replace attendees: drop existing, re-insert
+    const { error: delErr } = await db.from("training_attendees").delete().eq("session_id", id);
+    if (delErr) throw delErr;
+    if (input.attendees.length > 0) {
+      const rows = input.attendees.map(a => ({
+        session_id: id,
+        name: a.name,
+        role_function: a.role_function || null,
+        company: a.company || null,
+      }));
+      const { error: insErr } = await db.from("training_attendees").insert(rows);
+      if (insErr) throw insErr;
+    }
+    return session as TrainingSession;
+  },
+
   async deleteSession(id: string): Promise<void> {
     const { error } = await db.from("training_sessions").delete().eq("id", id);
     if (error) throw error;

@@ -8,7 +8,7 @@ import { trainingService, type TrainingSession, type TrainingAttendee } from "@/
 import { projectWorkerService, type ProjectWorker } from "@/lib/services/projectWorkerService";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
-import { GraduationCap, Plus, FileText, Trash2, Eye, X, Users, AlertTriangle, BarChart2 } from "lucide-react";
+import { GraduationCap, Plus, FileText, Trash2, Eye, X, Users, AlertTriangle, BarChart2, Pencil } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -92,6 +92,8 @@ export default function TrainingPage() {
   const [formTrainer, setFormTrainer] = useState("");
   const [formTopics, setFormTopics] = useState("");
   const [formAttendees, setFormAttendees] = useState<AttendeeRow[]>([{ name: "", role_function: "", company: "" }]);
+  // null = create mode; non-null = edit mode (id of session being edited)
+  const [editingSessionId, setEditingSessionId] = useState<string | null>(null);
 
   const fetchSessions = useCallback(async () => {
     if (!activeProject) return;
@@ -147,6 +149,31 @@ export default function TrainingPage() {
     setFormTrainer("");
     setFormTopics("");
     setFormAttendees([{ name: "", role_function: "", company: "" }]);
+    setEditingSessionId(null);
+  };
+
+  /** Open dialog pre-filled with the session for editing (loads attendees too). */
+  const handleEdit = async (session: TrainingSession) => {
+    try {
+      const { attendees } = await trainingService.getById(session.id);
+      setFormType(session.session_type);
+      setFormTitle(session.title);
+      setFormDate(session.session_date);
+      setFormLocation(session.location ?? "");
+      setFormStartTime(session.start_time ?? "");
+      setFormEndTime(session.end_time ?? "");
+      setFormTrainer(session.trainer_name ?? "");
+      setFormTopics(session.topics ?? "");
+      setFormAttendees(
+        attendees.length > 0
+          ? attendees.map(a => ({ name: a.name, role_function: a.role_function ?? "", company: a.company ?? "" }))
+          : [{ name: "", role_function: "", company: "" }],
+      );
+      setEditingSessionId(session.id);
+      setDialogOpen(true);
+    } catch {
+      toast({ title: t("training.toast.loadError", { defaultValue: "Erro ao carregar detalhes" }), variant: "destructive" });
+    }
   };
 
   const handleCreate = async () => {
@@ -157,8 +184,7 @@ export default function TrainingPage() {
     const validAttendees = formAttendees.filter(a => a.name.trim());
     setSaving(true);
     try {
-      await trainingService.create({
-        project_id: activeProject.id,
+      const payload = {
         session_date: formDate,
         session_type: formType,
         title: formTitle.trim(),
@@ -172,8 +198,14 @@ export default function TrainingPage() {
           role_function: a.role_function.trim() || undefined,
           company: a.company.trim() || undefined,
         })),
-      });
-      toast({ title: t("training.toast.created", { defaultValue: "Sessão de formação criada" }) });
+      };
+      if (editingSessionId) {
+        await trainingService.update(editingSessionId, payload);
+        toast({ title: t("training.toast.updated", { defaultValue: "Sessão actualizada" }) });
+      } else {
+        await trainingService.create({ project_id: activeProject.id, ...payload });
+        toast({ title: t("training.toast.created", { defaultValue: "Sessão de formação criada" }) });
+      }
       setDialogOpen(false);
       resetForm();
       fetchSessions();
@@ -328,14 +360,19 @@ export default function TrainingPage() {
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-1">
-                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleViewDetail(s)} title={t("common.view")}>
+                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleViewDetail(s)} title={t("common.view", { defaultValue: "Ver detalhe" })}>
                         <Eye className="h-3.5 w-3.5" />
                       </Button>
                       <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleExportPdf(s)} title="PDF">
                         <FileText className="h-3.5 w-3.5" />
                       </Button>
                       {canEdit && (
-                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setDeleteTargetId(s.id)} title={t("common.delete")}>
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEdit(s)} title={t("common.edit", { defaultValue: "Editar" })}>
+                          <Pencil className="h-3.5 w-3.5" />
+                        </Button>
+                      )}
+                      {canEdit && (
+                        <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => setDeleteTargetId(s.id)} title={t("common.delete")}>
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>
                       )}
@@ -439,10 +476,12 @@ export default function TrainingPage() {
         </TabsContent>
       </Tabs>
       {/* Create Dialog */}
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      <Dialog open={dialogOpen} onOpenChange={(o) => { setDialogOpen(o); if (!o) resetForm(); }}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{t("training.newSession", { defaultValue: "Nova Sessão de Formação" })}</DialogTitle>
+            <DialogTitle>{editingSessionId
+              ? t("training.editSession", { defaultValue: "Editar Sessão de Formação" })
+              : t("training.newSession", { defaultValue: "Nova Sessão de Formação" })}</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-2 md:grid-cols-2">
             <div className="grid gap-1.5">

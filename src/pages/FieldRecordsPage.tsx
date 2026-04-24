@@ -44,7 +44,7 @@ import {
 import {
   ClipboardCheck, Plus, Search, Trash2, Loader2,
   CheckCircle2, XCircle, Clock, AlertTriangle, CloudSun, Sun, Cloud,
-  CloudRain, Wind, Thermometer, Eye,
+  CloudRain, Wind, Thermometer, Eye, Pencil,
 } from "lucide-react";
 import { FieldRecordDetailDialog } from "@/components/field-records/FieldRecordDetailDialog";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
@@ -110,22 +110,58 @@ interface FormDialogProps {
   onSuccess: () => void;
   projectId: string;
   userId: string;
+  /** When set, the dialog opens in EDIT mode and pre-loads the record. */
+  editId?: string | null;
 }
 
-function FieldRecordFormDialog({ open, onOpenChange, onSuccess, projectId, userId }: FormDialogProps) {
+function FieldRecordFormDialog({ open, onOpenChange, onSuccess, projectId, userId, editId }: FormDialogProps) {
   const { t } = useTranslation();
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
   const [ppiOptions, setPpiOptions] = useState<{ id: string; code: string }[]>([]);
   // Após gravação, guardamos o ID para mostrar o painel de anexos inline
   const [createdId, setCreatedId] = useState<string | null>(null);
+  const isEdit = !!editId;
 
   useEffect(() => {
     if (!open) { setForm(EMPTY_FORM); setCreatedId(null); return; }
     (supabase as any).from("ppi_instances").select("id, code")
       .eq("project_id", projectId).eq("is_deleted", false)
       .order("code").then(({ data }: any) => setPpiOptions(data ?? []));
-  }, [open, projectId]);
+
+    // Pre-load record when in edit mode
+    if (editId) {
+      fieldRecordService.getById(editId).then(rec => {
+        setForm({
+          point_type: rec.point_type,
+          activity: rec.activity ?? "",
+          disciplina: "",
+          location_pk: rec.location_pk ?? "",
+          pk_fim: "",
+          elemento: "",
+          inspection_date: rec.inspection_date ?? new Date().toISOString().split("T")[0],
+          weather: (rec.weather ?? "bom") as string,
+          tq_name: "",
+          specialist_name: rec.specialist_name ?? "",
+          ppi_instance_id: rec.ppi_instance_id ?? "",
+          result: rec.result ?? "pendente",
+          observations: rec.observations ?? "",
+          next_inspection: "",
+          has_photos: rec.has_photos ?? false,
+          checks: (rec.checks ?? []).map(c => ({
+            description: c.description, criteria: c.criteria ?? "",
+            method: c.method ?? "", result: c.result, measured_value: c.measured_value ?? "",
+          })),
+          materials: (rec.materials ?? []).map(m => ({
+            material_name: m.material_name, fav_pame_ref: m.fav_pame_ref ?? "",
+            lot_ref: m.lot_ref ?? "", quantity: m.quantity ?? "",
+          })),
+        });
+        // In edit mode the attachments panel is immediately available.
+        setCreatedId(editId);
+      }).catch((e) => toast({ title: e?.message ?? "Erro a carregar registo", variant: "destructive" }));
+    }
+  }, [open, projectId, editId]);
 
   const setF = (k: keyof FormState, v: any) => setForm(p => ({ ...p, [k]: v }));
 
@@ -141,9 +177,7 @@ function FieldRecordFormDialog({ open, onOpenChange, onSuccess, projectId, userI
     if (!form.activity.trim()) { toast({ title: t("fieldRecords.form.activityRequired", { defaultValue: "Actividade obrigatória" }), variant: "destructive" }); return; }
     setSaving(true);
     try {
-      const input: FieldRecordInput = {
-        project_id: projectId,
-        created_by: userId,
+      const payload = {
         point_type: form.point_type,
         activity: form.activity.trim(),
         location_pk: form.location_pk.trim() || null,
@@ -166,11 +200,22 @@ function FieldRecordFormDialog({ open, onOpenChange, onSuccess, projectId, userI
           quantity: m.quantity.trim() || null,
         })),
       };
-      const created = await fieldRecordService.create(input);
-      toast({ title: t("fieldRecords.toast.created", { defaultValue: "Grelha de Registo criada — pode agora anexar fotografias / documentos." }) });
-      // Mantém o dialog aberto para permitir anexar fotos / documentos
-      setCreatedId((created as any)?.id ?? null);
-      onSuccess();
+      if (isEdit && editId) {
+        await fieldRecordService.update(editId, payload);
+        toast({ title: t("fieldRecords.toast.updated", { defaultValue: "Grelha actualizada" }) });
+        onSuccess();
+        onOpenChange(false);
+      } else {
+        const created = await fieldRecordService.create({
+          project_id: projectId,
+          created_by: userId,
+          ...payload,
+        });
+        toast({ title: t("fieldRecords.toast.created", { defaultValue: "Grelha de Registo criada — pode agora anexar fotografias / documentos." }) });
+        // Mantém o dialog aberto para permitir anexar fotos / documentos
+        setCreatedId((created as any)?.id ?? null);
+        onSuccess();
+      }
     } catch (e: any) {
       toast({ title: e.message ?? t("common.saveError"), variant: "destructive" });
     } finally {
@@ -184,7 +229,9 @@ function FieldRecordFormDialog({ open, onOpenChange, onSuccess, projectId, userI
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <ClipboardCheck className="h-5 w-5 text-primary" />
-            {t("fieldRecords.form.title", { defaultValue: "Nova Grelha de Registo de Campo" })}
+            {isEdit
+              ? t("fieldRecords.form.editTitle", { defaultValue: "Editar Grelha de Registo de Campo" })
+              : t("fieldRecords.form.title", { defaultValue: "Nova Grelha de Registo de Campo" })}
           </DialogTitle>
         </DialogHeader>
 
@@ -420,6 +467,7 @@ export default function FieldRecordsPage() {
   const [filterResult, setFilterResult] = useState("all");
   const [filterType, setFilterType] = useState("all");
   const [formOpen, setFormOpen] = useState(false);
+  const [editId, setEditId] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [viewId, setViewId] = useState<string | null>(null);
   const { logoBase64, logoUrl } = useProjectLogo();
@@ -594,33 +642,43 @@ export default function FieldRecordsPage() {
                     </span>
                   </TableCell>
                   <TableCell onClick={e => e.stopPropagation()}>
-                    <DocumentActionsBar
-                      onPreview={async () => {
-                        setPreviewBusyId(r.id);
-                        try {
-                          // Re-fetch full record (with materials + checks) to render the preview
-                          const full = await fieldRecordService.getById(r.id);
-                          const html = await fieldRecordService.buildPdfHtml(
-                            full as any,
-                            activeProject.name,
-                            logoBase64 || logoUrl,
-                          );
-                          revokeHtmlPreviewUrl(previewUrl);
-                          setPreviewUrl(buildHtmlPreviewUrl(html));
-                          setPreviewTitle(r.code);
-                        } catch (e: any) {
-                          toast({ title: e?.message ?? "Erro", variant: "destructive" });
-                        } finally {
-                          setPreviewBusyId(null);
-                        }
-                      }}
-                      previewLoading={previewBusyId === r.id}
-                      onEdit={() => setViewId(r.id)}
-                      editIcon={Eye}
-                      editLabel={t("fieldRecords.actions.viewDetail", { defaultValue: "Ver detalhe (anexos, fotos, ensaios)" })}
-                      onDelete={canDelete ? () => setDeleteId(r.id) : undefined}
-                      canDelete={canDelete}
-                    />
+                    <div className="flex items-center justify-end gap-0.5">
+                      <DocumentActionsBar
+                        onPreview={async () => {
+                          setPreviewBusyId(r.id);
+                          try {
+                            const full = await fieldRecordService.getById(r.id);
+                            const html = await fieldRecordService.buildPdfHtml(
+                              full as any,
+                              activeProject.name,
+                              logoBase64 || logoUrl,
+                            );
+                            revokeHtmlPreviewUrl(previewUrl);
+                            setPreviewUrl(buildHtmlPreviewUrl(html));
+                            setPreviewTitle(r.code);
+                          } catch (e: any) {
+                            toast({ title: e?.message ?? "Erro", variant: "destructive" });
+                          } finally {
+                            setPreviewBusyId(null);
+                          }
+                        }}
+                        previewLoading={previewBusyId === r.id}
+                        onEdit={() => setViewId(r.id)}
+                        editIcon={Eye}
+                        editLabel={t("fieldRecords.actions.viewDetail", { defaultValue: "Ver detalhe (anexos, fotos, ensaios)" })}
+                        onDelete={canDelete ? () => setDeleteId(r.id) : undefined}
+                        canDelete={canDelete}
+                      />
+                      {!isArchived && (
+                        <Button
+                          variant="ghost" size="icon" className="h-7 w-7 hover:text-primary"
+                          onClick={() => { setEditId(r.id); setFormOpen(true); }}
+                          title={t("common.edit", { defaultValue: "Editar" })}
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                        </Button>
+                      )}
+                    </div>
                   </TableCell>
                 </TableRow>
               );
@@ -629,13 +687,14 @@ export default function FieldRecordsPage() {
         </Table>
       </Card>
 
-      {/* Form Dialog */}
+      {/* Form Dialog (create OR edit, controlled by editId) */}
       <FieldRecordFormDialog
         open={formOpen}
-        onOpenChange={setFormOpen}
+        onOpenChange={(o) => { setFormOpen(o); if (!o) setEditId(null); }}
         onSuccess={load}
         projectId={activeProject.id}
         userId={user?.id ?? ""}
+        editId={editId}
       />
 
       {/* Detail Dialog */}
