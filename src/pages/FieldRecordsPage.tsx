@@ -229,7 +229,9 @@ function FieldRecordFormDialog({ open, onOpenChange, onSuccess, projectId, userI
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <ClipboardCheck className="h-5 w-5 text-primary" />
-            {t("fieldRecords.form.title", { defaultValue: "Nova Grelha de Registo de Campo" })}
+            {isEdit
+              ? t("fieldRecords.form.editTitle", { defaultValue: "Editar Grelha de Registo de Campo" })
+              : t("fieldRecords.form.title", { defaultValue: "Nova Grelha de Registo de Campo" })}
           </DialogTitle>
         </DialogHeader>
 
@@ -465,6 +467,7 @@ export default function FieldRecordsPage() {
   const [filterResult, setFilterResult] = useState("all");
   const [filterType, setFilterType] = useState("all");
   const [formOpen, setFormOpen] = useState(false);
+  const [editId, setEditId] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [viewId, setViewId] = useState<string | null>(null);
   const { logoBase64, logoUrl } = useProjectLogo();
@@ -639,33 +642,43 @@ export default function FieldRecordsPage() {
                     </span>
                   </TableCell>
                   <TableCell onClick={e => e.stopPropagation()}>
-                    <DocumentActionsBar
-                      onPreview={async () => {
-                        setPreviewBusyId(r.id);
-                        try {
-                          // Re-fetch full record (with materials + checks) to render the preview
-                          const full = await fieldRecordService.getById(r.id);
-                          const html = await fieldRecordService.buildPdfHtml(
-                            full as any,
-                            activeProject.name,
-                            logoBase64 || logoUrl,
-                          );
-                          revokeHtmlPreviewUrl(previewUrl);
-                          setPreviewUrl(buildHtmlPreviewUrl(html));
-                          setPreviewTitle(r.code);
-                        } catch (e: any) {
-                          toast({ title: e?.message ?? "Erro", variant: "destructive" });
-                        } finally {
-                          setPreviewBusyId(null);
-                        }
-                      }}
-                      previewLoading={previewBusyId === r.id}
-                      onEdit={() => setViewId(r.id)}
-                      editIcon={Eye}
-                      editLabel={t("fieldRecords.actions.viewDetail", { defaultValue: "Ver detalhe (anexos, fotos, ensaios)" })}
-                      onDelete={canDelete ? () => setDeleteId(r.id) : undefined}
-                      canDelete={canDelete}
-                    />
+                    <div className="flex items-center justify-end gap-0.5">
+                      <DocumentActionsBar
+                        onPreview={async () => {
+                          setPreviewBusyId(r.id);
+                          try {
+                            const full = await fieldRecordService.getById(r.id);
+                            const html = await fieldRecordService.buildPdfHtml(
+                              full as any,
+                              activeProject.name,
+                              logoBase64 || logoUrl,
+                            );
+                            revokeHtmlPreviewUrl(previewUrl);
+                            setPreviewUrl(buildHtmlPreviewUrl(html));
+                            setPreviewTitle(r.code);
+                          } catch (e: any) {
+                            toast({ title: e?.message ?? "Erro", variant: "destructive" });
+                          } finally {
+                            setPreviewBusyId(null);
+                          }
+                        }}
+                        previewLoading={previewBusyId === r.id}
+                        onEdit={() => setViewId(r.id)}
+                        editIcon={Eye}
+                        editLabel={t("fieldRecords.actions.viewDetail", { defaultValue: "Ver detalhe (anexos, fotos, ensaios)" })}
+                        onDelete={canDelete ? () => setDeleteId(r.id) : undefined}
+                        canDelete={canDelete}
+                      />
+                      {!isArchived && (
+                        <Button
+                          variant="ghost" size="icon" className="h-7 w-7 hover:text-primary"
+                          onClick={() => { setEditId(r.id); setFormOpen(true); }}
+                          title={t("common.edit", { defaultValue: "Editar" })}
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                        </Button>
+                      )}
+                    </div>
                   </TableCell>
                 </TableRow>
               );
@@ -674,13 +687,14 @@ export default function FieldRecordsPage() {
         </Table>
       </Card>
 
-      {/* Form Dialog */}
+      {/* Form Dialog (create OR edit, controlled by editId) */}
       <FieldRecordFormDialog
         open={formOpen}
-        onOpenChange={setFormOpen}
+        onOpenChange={(o) => { setFormOpen(o); if (!o) setEditId(null); }}
         onSuccess={load}
         projectId={activeProject.id}
         userId={user?.id ?? ""}
+        editId={editId}
       />
 
       {/* Detail Dialog */}
