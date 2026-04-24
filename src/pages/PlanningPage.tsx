@@ -144,6 +144,7 @@ export default function PlanningPage() {
   const [checkDialog, setCheckDialog] = useState<{ open: boolean; id: string; desc: string }>({ open: false, id: "", desc: "" });
   const [expandedWbs, setExpandedWbs] = useState<Set<string>>(new Set());
   const [selectedWbsId, setSelectedWbsId] = useState<string | null>(null);
+  const [drawerWbsId, setDrawerWbsId] = useState<string | null>(null);
 
   // Filters
   const [search, setSearch] = useState("");
@@ -524,8 +525,11 @@ export default function PlanningPage() {
                       <TableCell className="text-sm text-muted-foreground">{n.responsible || "—"}</TableCell>
                       <TableCell>
                         <div className="flex gap-1">
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={(e) => { e.stopPropagation(); handleWbsSelect(n); }} title={t("common.view", { defaultValue: "Ver actividades" })}>
+                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={(e) => { e.stopPropagation(); setDrawerWbsId(n.id); }} title={t("planning.wbs.viewDetail", { defaultValue: "Ver detalhe do WBS" })}>
                             <Eye className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={(e) => { e.stopPropagation(); handleWbsSelect(n); }} title={t("planning.wbs.filterActivities", { defaultValue: "Filtrar frentes deste WBS" })}>
+                            <ListChecks className="h-3.5 w-3.5" />
                           </Button>
                           <RoleGate action="create">
                             <Button variant="ghost" size="icon" className="h-7 w-7" onClick={(e) => { e.stopPropagation(); handleNewWbs(n.id); }} title={t("planning.wbs.addChild")}>
