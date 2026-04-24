@@ -25,7 +25,10 @@ import {
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { DocumentFormDialog } from "@/components/documents/DocumentFormDialog";
 import { DynamicFormRenderer, type FormSchema } from "@/components/documents/DynamicFormRenderer";
-import { exportDocumentPdf, type DocExportLabels } from "@/lib/services/documentExportService";
+import { exportDocumentPdf, buildDocumentDetailHtml, buildDocFilename, type DocExportLabels } from "@/lib/services/documentExportService";
+import { PdfPreviewDialog } from "@/components/ui/pdf-preview-dialog";
+import { buildHtmlPreviewUrl, revokeHtmlPreviewUrl } from "@/lib/utils/htmlPreview";
+import { Eye } from "lucide-react";
 import { toast } from "@/lib/utils/toast";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { cn } from "@/lib/utils";
@@ -307,6 +310,11 @@ export default function DocumentDetailPage() {
   const [exporting, setExporting] = useState(false);
   const [versions, setVersions] = useState<DocumentVersion[]>([]);
 
+  // PDF in-app preview
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  useEffect(() => () => revokeHtmlPreviewUrl(previewUrl), [previewUrl]);
+
   const loadDoc = useCallback(async () => {
     if (!id) return;
     setLoading(true);
@@ -327,53 +335,69 @@ export default function DocumentDetailPage() {
     documentService.getVersions(doc.id).then(setVersions).catch(() => {});
   }, [doc?.id, versionKey]);
 
+  /** Build label map shared by export + preview. */
+  const buildLabels = (): DocExportLabels => ({
+    appName: "Atlas QMS",
+    reportTitle: t("documents.export.reportTitle"),
+    listReportTitle: t("documents.export.listReportTitle"),
+    generatedOn: t("documents.export.generatedOn"),
+    page: t("documents.export.page"),
+    of: t("documents.export.of"),
+    code: t("documents.detail.code"),
+    title: t("documents.form.title"),
+    type: t("documents.form.type"),
+    disciplina: t("documents.form.disciplina"),
+    revision: t("documents.form.revision"),
+    status: t("common.status"),
+    createdAt: t("documents.detail.createdAt"),
+    approvedAt: t("documents.detail.approvedAt"),
+    approvedBy: t("documents.export.approvedBy"),
+    version: t("documents.export.version"),
+    fileName: t("documents.table.fileName"),
+    fileSize: t("documents.table.size"),
+    statuses: {
+      draft: t("documents.status.draft"),
+      in_review: t("documents.status.in_review"),
+      approved: t("documents.status.approved"),
+      obsolete: t("documents.status.obsolete"),
+      archived: t("documents.status.archived"),
+    },
+    docTypes: Object.fromEntries(
+      ["procedure", "instruction", "plan", "report", "certificate", "drawing", "specification", "form", "record", "other"]
+        .map(k => [k, t(`documents.docTypes.${k}`)]),
+    ),
+    disciplinas: Object.fromEntries(
+      ["geral", "estruturas", "geotecnia", "hidraulica", "estradas", "ambiente", "seguranca", "eletrica", "mecanica", "outro"]
+        .map(k => [k, t(`documents.disciplinas.${k}`)]),
+    ),
+    versionsTitle: t("documents.versions.title"),
+    versionNo: t("documents.export.versionNo"),
+    changeDescription: t("documents.form.changeDescription"),
+    uploadedAt: t("documents.export.uploadedAt"),
+    projectName: activeProject?.name,
+    projectCode: activeProject?.code,
+  });
+
   const handleExportPdf = async () => {
     if (!doc || !activeProject) return;
     setExporting(true);
     try {
-      const labels: DocExportLabels = {
-        appName: "Atlas QMS",
-        reportTitle: t("documents.export.reportTitle"),
-        listReportTitle: t("documents.export.listReportTitle"),
-        generatedOn: t("documents.export.generatedOn"),
-        page: t("documents.export.page"),
-        of: t("documents.export.of"),
-        code: t("documents.detail.code"),
-        title: t("documents.form.title"),
-        type: t("documents.form.type"),
-        disciplina: t("documents.form.disciplina"),
-        revision: t("documents.form.revision"),
-        status: t("common.status"),
-        createdAt: t("documents.detail.createdAt"),
-        approvedAt: t("documents.detail.approvedAt"),
-        approvedBy: t("documents.export.approvedBy"),
-        version: t("documents.export.version"),
-        fileName: t("documents.table.fileName"),
-        fileSize: t("documents.table.size"),
-        statuses: {
-          draft: t("documents.status.draft"),
-          in_review: t("documents.status.in_review"),
-          approved: t("documents.status.approved"),
-          obsolete: t("documents.status.obsolete"),
-          archived: t("documents.status.archived"),
-        },
-        docTypes: Object.fromEntries(
-          ["procedure", "instruction", "plan", "report", "certificate", "drawing", "specification", "form", "record", "other"]
-            .map(k => [k, t(`documents.docTypes.${k}`)])
-        ),
-        disciplinas: Object.fromEntries(
-          ["geral", "estruturas", "geotecnia", "hidraulica", "estradas", "ambiente", "seguranca", "eletrica", "mecanica", "outro"]
-            .map(k => [k, t(`documents.disciplinas.${k}`)])
-        ),
-        versionsTitle: t("documents.versions.title"),
-        versionNo: t("documents.export.versionNo"),
-        changeDescription: t("documents.form.changeDescription"),
-        uploadedAt: t("documents.export.uploadedAt"),
-      };
-      await exportDocumentPdf(doc, versions, labels, i18n.language, activeProject.name, activeProject.code, logoBase64 || logoUrl);
+      await exportDocumentPdf(doc, versions, buildLabels(), i18n.language, activeProject.name, activeProject.code, logoBase64 || logoUrl);
     } catch {
       toast({ title: t("documents.toast.error"), variant: "destructive" });
     } finally { setExporting(false); }
+  };
+
+  const handlePreviewPdf = () => {
+    if (!doc || !activeProject) return;
+    try {
+      const html = buildDocumentDetailHtml(doc, versions, buildLabels(), i18n.language, activeProject.name, logoBase64 || logoUrl);
+      revokeHtmlPreviewUrl(previewUrl);
+      setPreviewUrl(buildHtmlPreviewUrl(html));
+      setPreviewOpen(true);
+    } catch {
+      toast({ title: t("documents.toast.error"), variant: "destructive" });
+    }
   };
 
   const handleStatusTransition = async (toStatus: DocumentStatus) => {
@@ -492,9 +516,13 @@ export default function DocumentDetailPage() {
               {t("documents.actions.obsolete")}
             </Button>
           )}
+          <Button variant="outline" size="sm" onClick={handlePreviewPdf} className="gap-1.5 text-xs" title={t("common.preview", { defaultValue: "Pré-visualizar" })}>
+            <Eye className="h-3 w-3" />
+            <span className="hidden sm:inline">{t("common.preview", { defaultValue: "Pré-visualizar" })}</span>
+          </Button>
           <Button variant="outline" size="sm" onClick={handleExportPdf} className="gap-1.5 text-xs" disabled={exporting}>
             {exporting ? <Loader2 className="h-3 w-3 animate-spin" /> : <FileDown className="h-3 w-3" />}
-            {t("documents.export.exportPdf")}
+            <span className="hidden sm:inline">{t("documents.export.exportPdf")}</span>
           </Button>
           <Button variant="outline" size="sm" onClick={() => setEditOpen(true)} className="gap-1.5 text-xs">
             <Pencil className="h-3 w-3" /> {t("common.edit")}
@@ -712,6 +740,22 @@ export default function DocumentDetailPage() {
         onOpenChange={setEditOpen}
         document={doc}
         onSuccess={() => { loadDoc(); setVersionKey((k) => k + 1); }}
+      />
+
+      {/* ── PDF preview dialog ───────────────────────────────────────── */}
+      <PdfPreviewDialog
+        open={previewOpen}
+        onOpenChange={(v) => {
+          setPreviewOpen(v);
+          if (!v) {
+            revokeHtmlPreviewUrl(previewUrl);
+            setPreviewUrl(null);
+          }
+        }}
+        url={previewUrl}
+        title={doc.code ?? doc.title}
+        subtitle={activeProject ? `${activeProject.name} — ${activeProject.code ?? ""}` : null}
+        downloadName={activeProject ? buildDocFilename(doc, activeProject.name, activeProject.code) : doc.code ?? doc.title}
       />
     </div>
   );

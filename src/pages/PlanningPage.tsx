@@ -27,6 +27,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
@@ -144,6 +145,7 @@ export default function PlanningPage() {
   const [checkDialog, setCheckDialog] = useState<{ open: boolean; id: string; desc: string }>({ open: false, id: "", desc: "" });
   const [expandedWbs, setExpandedWbs] = useState<Set<string>>(new Set());
   const [selectedWbsId, setSelectedWbsId] = useState<string | null>(null);
+  const [drawerWbsId, setDrawerWbsId] = useState<string | null>(null);
 
   // Filters
   const [search, setSearch] = useState("");
@@ -524,8 +526,11 @@ export default function PlanningPage() {
                       <TableCell className="text-sm text-muted-foreground">{n.responsible || "—"}</TableCell>
                       <TableCell>
                         <div className="flex gap-1">
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={(e) => { e.stopPropagation(); handleWbsSelect(n); }} title={t("common.view", { defaultValue: "Ver actividades" })}>
+                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={(e) => { e.stopPropagation(); setDrawerWbsId(n.id); }} title={t("planning.wbs.viewDetail", { defaultValue: "Ver detalhe do WBS" })}>
                             <Eye className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={(e) => { e.stopPropagation(); handleWbsSelect(n); }} title={t("planning.wbs.filterActivities", { defaultValue: "Filtrar frentes deste WBS" })}>
+                            <ListChecks className="h-3.5 w-3.5" />
                           </Button>
                           <RoleGate action="create">
                             <Button variant="ghost" size="icon" className="h-7 w-7" onClick={(e) => { e.stopPropagation(); handleNewWbs(n.id); }} title={t("planning.wbs.addChild")}>
@@ -632,6 +637,82 @@ export default function PlanningPage() {
       <WbsFormDialog open={wbsDialogOpen} onOpenChange={setWbsDialogOpen} wbsNodes={wbs} editNode={editWbs} defaultParentId={parentWbs} onSuccess={refetch} />
       <ActivityFormDialog open={actDialogOpen} onOpenChange={setActDialogOpen} wbsNodes={wbs} editActivity={editAct} onSuccess={refetch} preselectedWbsId={editAct ? null : selectedWbsId} />
       <CompletionCheckDialog open={checkDialog.open} onOpenChange={(v) => setCheckDialog(p => ({ ...p, open: v }))} activityId={checkDialog.id} activityDesc={checkDialog.desc} />
+
+      {/* WBS Detail Drawer */}
+      {(() => {
+        const node = drawerWbsId ? wbs.find(w => w.id === drawerWbsId) : null;
+        const open = !!node;
+        const childIds = node ? getWbsDescendantIds(node.id) : new Set<string>();
+        const nodeActs = node ? activities.filter(a => a.wbs_id != null && childIds.has(a.wbs_id)) : [];
+        const total = nodeActs.length;
+        const done = nodeActs.filter(a => a.status === "completed").length;
+        const inP = nodeActs.filter(a => a.status === "in_progress").length;
+        const blk = nodeActs.filter(a => a.status === "blocked").length;
+        const avg = total > 0 ? Math.round(nodeActs.reduce((s, a) => s + a.progress_pct, 0) / total) : 0;
+        return (
+          <Sheet open={open} onOpenChange={(v) => { if (!v) setDrawerWbsId(null); }}>
+            <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto">
+              {node && (
+                <>
+                  <SheetHeader className="space-y-1 pb-4 border-b">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">{t("planning.wbs.detail", { defaultValue: "Detalhe WBS" })}</p>
+                    <SheetTitle className="text-lg flex items-center gap-2">
+                      <Network className="h-4 w-4 text-primary" />
+                      <span className="font-mono">{node.wbs_code}</span>
+                    </SheetTitle>
+                    <p className="text-sm text-foreground">{node.description}</p>
+                  </SheetHeader>
+                  <div className="space-y-4 mt-4">
+                    <div className="grid grid-cols-2 gap-3">
+                      {node.zone && <InfoCell label={t("planning.fields.zone", { defaultValue: "Zona" })} value={node.zone} />}
+                      {node.responsible && <InfoCell label={t("planning.fields.responsible", { defaultValue: "Responsável" })} value={node.responsible} />}
+                      {node.planned_start && <InfoCell label={t("planning.fields.start", { defaultValue: "Início" })} value={node.planned_start} />}
+                      {node.planned_end && <InfoCell label={t("planning.fields.end", { defaultValue: "Fim" })} value={node.planned_end} />}
+                    </div>
+                    <div className="rounded-xl border border-border p-4 space-y-3">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">{t("planning.kpis.activities", { defaultValue: "Frentes de Trabalho" })}</p>
+                      <div className="grid grid-cols-4 gap-2 text-center">
+                        <KpiMini label={t("common.total", { defaultValue: "Total" })} value={total} />
+                        <KpiMini label={t("planning.status.in_progress", { defaultValue: "Em curso" })} value={inP} cls="text-primary" />
+                        <KpiMini label={t("planning.status.completed", { defaultValue: "Concluídas" })} value={done} cls="text-emerald-600" />
+                        <KpiMini label={t("planning.status.blocked", { defaultValue: "Bloqueadas" })} value={blk} cls="text-destructive" />
+                      </div>
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-xs"><span className="text-muted-foreground">{t("planning.kpis.avgProgress", { defaultValue: "Progresso médio" })}</span><span className="font-semibold">{avg}%</span></div>
+                        <Progress value={avg} className="h-1.5" />
+                      </div>
+                    </div>
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">{t("planning.activity.list", { defaultValue: "Frentes" })} ({total})</p>
+                        {total > 0 && (
+                          <Button size="sm" variant="outline" className="h-7 text-xs gap-1.5" onClick={() => { handleWbsSelect({ ...node, depth: 0, children: [] } as any); setDrawerWbsId(null); }}>
+                            <ListChecks className="h-3 w-3" /> {t("planning.wbs.openInTab", { defaultValue: "Abrir na aba" })}
+                          </Button>
+                        )}
+                      </div>
+                      {nodeActs.length === 0 ? (
+                        <p className="text-xs text-muted-foreground italic py-3">{t("planning.wbs.noActivities", { defaultValue: "Sem frentes associadas." })}</p>
+                      ) : (
+                        <ul className="divide-y divide-border rounded-md border border-border max-h-72 overflow-y-auto">
+                          {nodeActs.slice(0, 30).map(a => (
+                            <li key={a.id} className="flex items-center gap-2 px-3 py-2 hover:bg-muted/40">
+                              <ReadinessBadge activity={a} />
+                              <button className="flex-1 min-w-0 text-left text-xs truncate hover:text-primary" onClick={() => { setDrawerWbsId(null); navigate(`/planning/activities/${a.id}`); }}>{a.description}</button>
+                              <span className="text-[10px] font-mono text-muted-foreground tabular-nums">{a.progress_pct}%</span>
+                            </li>
+                          ))}
+                          {nodeActs.length > 30 && <li className="px-3 py-2 text-[10px] text-muted-foreground text-center">+{nodeActs.length - 30}…</li>}
+                        </ul>
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
+            </SheetContent>
+          </Sheet>
+        );
+      })()}
     </div>
   );
 }
