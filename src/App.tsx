@@ -194,9 +194,21 @@ function AuthOnlyRoute({ children }: { children: React.ReactNode }) {
 }
 
 function PageLoader() {
+  // Branded fullscreen splash — replaces the brief Dashboard flash that used to
+  // appear right after login while AuthContext + ProjectContext resolved.
   return (
-    <div className="flex items-center justify-center h-screen">
-      <Loader2 className="animate-spin h-8 w-8 text-primary" />
+    <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center gap-4 bg-background">
+      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 border border-primary/20 shadow-sm">
+        <Loader2 className="animate-spin h-6 w-6 text-primary" />
+      </div>
+      <div className="flex flex-col items-center gap-0.5">
+        <span className="text-[11px] font-black tracking-[0.32em] uppercase text-foreground">
+          ATLAS
+        </span>
+        <span className="text-[9px] font-medium tracking-[0.18em] uppercase text-muted-foreground">
+          Quality Platform
+        </span>
+      </div>
     </div>
   );
 }
