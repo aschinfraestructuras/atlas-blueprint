@@ -142,6 +142,19 @@ export default function TopographyPage() {
   const [detailSheetOpen, setDetailSheetOpen] = useState(false);
   const [selectedCycle, setSelectedCycle] = useState<any>(null);
 
+  // ── In-app PDF previewer (per-record) ──────────────────────────────────
+  const { logoBase64, logoUrl } = useProjectLogo();
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewTitle, setPreviewTitle] = useState<string>("");
+  const [previewBusyId, setPreviewBusyId] = useState<string | null>(null);
+  useEffect(() => () => revokeHtmlPreviewUrl(previewUrl), [previewUrl]);
+
+  const openPreview = (built: { html: string; filename: string }, title: string) => {
+    revokeHtmlPreviewUrl(previewUrl);
+    setPreviewUrl(buildHtmlPreviewUrl(built.html));
+    setPreviewTitle(title);
+  };
+
   // Load topography cycle data
   useEffect(() => {
     if (!activeProject) return;
