@@ -476,10 +476,12 @@ export default function TrainingPage() {
         </TabsContent>
       </Tabs>
       {/* Create Dialog */}
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      <Dialog open={dialogOpen} onOpenChange={(o) => { setDialogOpen(o); if (!o) resetForm(); }}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{t("training.newSession", { defaultValue: "Nova Sessão de Formação" })}</DialogTitle>
+            <DialogTitle>{editingSessionId
+              ? t("training.editSession", { defaultValue: "Editar Sessão de Formação" })
+              : t("training.newSession", { defaultValue: "Nova Sessão de Formação" })}</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-2 md:grid-cols-2">
             <div className="grid gap-1.5">
