@@ -530,6 +530,7 @@ export default function DocumentsPage() {
           title={previewDoc?.title}
           subtitle={previewDoc?.revision ? `Revisão ${previewDoc.revision}` : (previewDoc as any)?.code}
           downloadName={previewDoc ? `${previewDoc.title}.pdf` : null}
+          htmlSource={false}
         />
 
         {/* Meeting Actions Panel */}

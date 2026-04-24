@@ -439,9 +439,10 @@ function FieldRecordFormDialog({ open, onOpenChange, onSuccess, projectId, userI
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={saving}>
-            {createdId ? t("common.close", { defaultValue: "Fechar" }) : t("common.cancel")}
+            {!isEdit && createdId ? t("common.close", { defaultValue: "Fechar" }) : t("common.cancel")}
           </Button>
-          {!createdId && (
+          {/* Mostrar Guardar sempre em edição; em criação só antes de ter createdId */}
+          {(isEdit || !createdId) && (
             <Button onClick={handleSave} disabled={saving}>
               {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
               {t("common.save")}

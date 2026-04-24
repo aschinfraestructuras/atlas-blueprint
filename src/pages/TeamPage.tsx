@@ -475,6 +475,72 @@ function QualFormDialog({ open, onOpenChange, workers, projectId, onSaved, prese
   );
 }
 
+// ── Card de Qualificação com anexos colapsáveis ────────────────────────────
+
+function QualCard({ qual, projectId, t }: { qual: Qualification; projectId: string; t: (k: string, o?: any) => string }) {
+  const [showDocs, setShowDocs] = useState(false);
+  return (
+    <div className="rounded-lg border border-border p-3 space-y-2">
+      <div className="flex items-start justify-between gap-2">
+        <p className="text-xs font-semibold">{t(`subcontractors.qualifications.types.${qual.qualification}`, { defaultValue: qual.qualification })}</p>
+        <ExpiryBadge date={qual.valid_until} t={t} />
+      </div>
+      <div className="grid grid-cols-2 gap-1 text-[10px] text-muted-foreground">
+        {qual.cert_ref && <span>Ref: {qual.cert_ref}</span>}
+        {qual.issued_by && <span>{t("team.qualifications.issuedBy")}: {qual.issued_by}</span>}
+        {qual.valid_until && <span>{t("team.qualifications.validUntil")}: {new Date(qual.valid_until).toLocaleDateString("pt-PT")}</span>}
+        {qual.ip_qualification_code && <span>IP: {qual.ip_qualification_code}</span>}
+        {qual.standard_ref && <span className="col-span-2">Norma: {qual.standard_ref}</span>}
+        {qual.scope && <span className="col-span-2">{t("subcontractors.qualifications.scope")}: {qual.scope}</span>}
+        {qual.exam_entity && <span>{t("subcontractors.qualifications.examEntity")}: {qual.exam_entity}</span>}
+        {qual.renewal_date && <span>{t("subcontractors.qualifications.renewalDate")}: {new Date(qual.renewal_date).toLocaleDateString("pt-PT")}</span>}
+        {qual.training_hours != null && <span>{t("subcontractors.qualifications.trainingHours")}: {qual.training_hours}h</span>}
+      </div>
+      <button
+        className="flex items-center gap-1 text-[10px] text-primary hover:underline"
+        onClick={() => setShowDocs(v => !v)}
+      >
+        <FileText className="h-3 w-3" />
+        {showDocs ? t("team.attachments.hide") : t("team.attachments.showCert")}
+      </button>
+      {showDocs && (
+        <div className="pt-1 border-t border-border/50">
+          <AttachmentsPanel projectId={projectId} entityType="worker_qualifications" entityId={qual.id} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Card de Sessão de Formação com anexos colapsáveis ──────────────────────
+
+function TrainingCard({ session, projectId, t }: { session: TrainingSession; projectId: string; t: (k: string, o?: any) => string }) {
+  const [showDocs, setShowDocs] = useState(false);
+  return (
+    <div className="rounded-lg border border-border p-3 space-y-2">
+      <p className="text-xs font-semibold">{session.title}</p>
+      <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
+        <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{new Date(session.session_date).toLocaleDateString("pt-PT")}</span>
+        {session.hours != null && <span>{session.hours}h</span>}
+        {session.trainer && <span>{session.trainer}</span>}
+        {session.location && <span>{session.location}</span>}
+      </div>
+      <button
+        className="flex items-center gap-1 text-[10px] text-primary hover:underline"
+        onClick={() => setShowDocs(v => !v)}
+      >
+        <FileText className="h-3 w-3" />
+        {showDocs ? t("team.attachments.hide") : t("team.attachments.showTraining")}
+      </button>
+      {showDocs && (
+        <div className="pt-1 border-t border-border/50">
+          <AttachmentsPanel projectId={projectId} entityType="training_sessions" entityId={session.id} />
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Ficha do Trabalhador (Sheet lateral) ────────────────────────────────────
 
 interface WorkerSheetProps {
@@ -564,19 +630,7 @@ function WorkerSheet({ worker, open, onOpenChange, qualifications, trainings, pr
             {workerQuals.length === 0
               ? <p className="text-xs text-muted-foreground text-center py-4">{t("team.qualifications.empty")}</p>
               : workerQuals.map(q => (
-                <div key={q.id} className="rounded-lg border border-border p-3 space-y-1.5">
-                  <div className="flex items-start justify-between gap-2">
-                    <p className="text-xs font-semibold">{t(`subcontractors.qualifications.types.${q.qualification}`, { defaultValue: q.qualification })}</p>
-                    <ExpiryBadge date={q.valid_until} t={t} />
-                  </div>
-                  <div className="grid grid-cols-2 gap-1 text-[10px] text-muted-foreground">
-                    {q.cert_ref && <span>Ref: {q.cert_ref}</span>}
-                    {q.issued_by && <span>{t("team.qualifications.issuedBy")}: {q.issued_by}</span>}
-                    {q.valid_until && <span>{t("team.qualifications.validUntil")}: {new Date(q.valid_until).toLocaleDateString("pt-PT")}</span>}
-                    {q.ip_qualification_code && <span>IP: {q.ip_qualification_code}</span>}
-                    {q.standard_ref && <span className="col-span-2">Norma: {q.standard_ref}</span>}
-                  </div>
-                </div>
+                <QualCard key={q.id} qual={q} projectId={projectId} t={t} />
               ))}
           </TabsContent>
 
@@ -584,14 +638,7 @@ function WorkerSheet({ worker, open, onOpenChange, qualifications, trainings, pr
             {workerTrainings.length === 0
               ? <p className="text-xs text-muted-foreground text-center py-4">{t("team.trainings.empty")}</p>
               : workerTrainings.map(s => (
-                <div key={s.id} className="rounded-lg border border-border p-3 space-y-1">
-                  <p className="text-xs font-semibold">{s.title}</p>
-                  <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
-                    <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{new Date(s.session_date).toLocaleDateString("pt-PT")}</span>
-                    {s.hours && <span>{s.hours}h</span>}
-                    {s.location && <span>{s.location}</span>}
-                  </div>
-                </div>
+                <TrainingCard key={s.id} session={s} projectId={projectId} t={t} />
               ))}
           </TabsContent>
 

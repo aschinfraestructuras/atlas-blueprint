@@ -4632,7 +4632,8 @@
       "attendees": "Asistencias",
       "coverage": "Cobertura"
     },
-    "attendeeGeneric": "Asistente {{n}}"
+    "attendeeGeneric": "Asistente {{n}}",
+    "attachments": "Documentos y Certificados"
   },
   "audits": {
     "title": "Programa de Auditorías",
@@ -5941,6 +5942,11 @@
       "workerDeleted": "Trabajador eliminado",
       "qualCreated": "Cualificación registrada",
       "error": "Error al guardar"
+    },
+    "attachments": {
+      "hide": "Ocultar documentos",
+      "showCert": "Ver certificados / documentos",
+      "showTraining": "Ver documentos de la formación"
     }
   }
 }

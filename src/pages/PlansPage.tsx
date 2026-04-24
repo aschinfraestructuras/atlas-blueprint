@@ -361,6 +361,7 @@ export default function PlansPage() {
         title={previewPlan?.title}
         subtitle={previewPlan?.revision ? `Revisão ${previewPlan.revision}` : null}
         downloadName={previewPlan ? `${previewPlan.title}.pdf` : null}
+        htmlSource={false}
       />
 
       <AlertDialog open={!!deletingPlan} onOpenChange={(v) => { if (!v) setDeletingPlan(null); }}>
