@@ -148,11 +148,13 @@ export function RisksTab() {
   return (
     <div className="space-y-4">
       {/* KPIs */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
         {[{label:t("risks.kpi.total"),value:kpis.total,color:""},{label:t("risks.kpi.open"),value:kpis.open,color:"text-destructive"},{label:t("risks.kpi.critical"),value:kpis.critical,color:kpis.critical>0?"text-destructive":""},{label:t("risks.kpi.overdue"),value:kpis.overdue,color:kpis.overdue>0?"text-orange-600":""},{label:t("risks.kpi.opps"),value:kpis.opps,color:"text-blue-600"}].map(({label,value,color})=>(
-          <div key={label} className="rounded-xl border bg-card p-3">
-            <p className="text-[10px] text-muted-foreground">{label}</p>
-            <p className={cn("text-xl font-bold",color)}>{value}</p>
+          <div key={label} className="rounded-xl border bg-card p-3 flex items-center gap-2">
+            <div>
+              <p className="text-[10px] text-muted-foreground leading-tight">{label}</p>
+              <p className={cn("text-2xl font-bold leading-tight",color)}>{value}</p>
+            </div>
           </div>
         ))}
       </div>

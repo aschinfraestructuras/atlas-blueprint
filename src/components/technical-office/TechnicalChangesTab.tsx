@@ -224,17 +224,19 @@ export function TechnicalChangesTab() {
 
   return (
     <div className="space-y-4">
-      {/* KPIs */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+      {/* KPIs — linha completa, sem colapso em 2 colunas em tablet */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
         {[
           { label: t("tc.kpi.total"),    value: kpis.total,    color: "" },
           { label: t("tc.kpi.pending"),  value: kpis.pending,  color: "text-amber-600" },
           { label: t("tc.kpi.approved"), value: kpis.approved, color: "text-green-600" },
           { label: t("tc.kpi.overdue"),  value: kpis.overdue,  color: kpis.overdue > 0 ? "text-destructive" : "" },
         ].map(({ label, value, color }) => (
-          <div key={label} className="rounded-xl border bg-card p-3">
-            <p className="text-[10px] text-muted-foreground">{label}</p>
-            <p className={cn("text-xl font-bold", color)}>{value}</p>
+          <div key={label} className="rounded-xl border bg-card p-3 flex items-center gap-2">
+            <div>
+              <p className="text-[10px] text-muted-foreground leading-tight">{label}</p>
+              <p className={cn("text-2xl font-bold leading-tight", color)}>{value}</p>
+            </div>
           </div>
         ))}
       </div>
@@ -278,6 +280,7 @@ export function TechnicalChangesTab() {
         </div>
       ) : (
         <div className="rounded-xl border border-border bg-card overflow-hidden">
+          <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
@@ -336,6 +339,7 @@ export function TechnicalChangesTab() {
               ))}
             </TableBody>
           </Table>
+          </div>
         </div>
       )}
 

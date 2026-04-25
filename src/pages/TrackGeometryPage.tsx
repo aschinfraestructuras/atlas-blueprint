@@ -528,33 +528,35 @@ export default function TrackGeometryPage() {
   if (!activeProject) return <NoProjectBanner />;
 
   return (
-    <div className="space-y-5 max-w-7xl mx-auto">
-      <PageHeader
-        title={t("trackGeometry.title")}
-        subtitle={t("trackGeometry.subtitle")}
-        icon={Ruler}
-        actions={canCreate ? (
-          <Button size="sm" className="gap-1.5" onClick={() => { setEditing(null); setDialogOpen(true); }}>
+    <div className="space-y-5">
+      {/* Cabeçalho inline — sem PageHeader autónomo pois é tab */}
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <p className="text-sm font-semibold text-foreground">{t("trackGeometry.title")}</p>
+          <p className="text-xs text-muted-foreground">{t("trackGeometry.subtitle")}</p>
+        </div>
+        {canCreate && (
+          <Button size="sm" className="gap-1.5 flex-shrink-0" onClick={() => { setEditing(null); setDialogOpen(true); }}>
             <Plus className="h-3.5 w-3.5" />{t("trackGeometry.newCampaign")}
           </Button>
-        ) : undefined}
-      />
+        )}
+      </div>
 
       {/* KPIs */}
       {!loading && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {[
             { label: t("trackGeometry.kpi.total"),       value: kpis.total,       color: "" },
             { label: t("trackGeometry.result.conforme"), value: kpis.conforme,    color: "text-green-600" },
             { label: t("trackGeometry.result.nao_conforme"), value: kpis.naoConforme, color: "text-destructive" },
             { label: t("trackGeometry.result.pendente"), value: kpis.pendente,    color: "text-amber-600" },
           ].map(({ label, value, color }) => (
-            <Card key={label} className="border bg-card">
-              <CardContent className="p-3">
-                <p className="text-[10px] text-muted-foreground">{label}</p>
-                <p className={cn("text-xl font-bold", color)}>{value}</p>
-              </CardContent>
-            </Card>
+            <div key={label} className="rounded-xl border bg-card p-3 flex items-center gap-2">
+              <div>
+                <p className="text-[10px] text-muted-foreground leading-tight">{label}</p>
+                <p className={cn("text-2xl font-bold leading-tight", color)}>{value}</p>
+              </div>
+            </div>
           ))}
         </div>
       )}
@@ -587,6 +589,7 @@ export default function TrackGeometryPage() {
       ) : (
         <Card className="border bg-card">
           <CardContent className="p-0">
+            <div className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -625,6 +628,7 @@ export default function TrackGeometryPage() {
                 ))}
               </TableBody>
             </Table>
+            </div>
           </CardContent>
         </Card>
       )}
