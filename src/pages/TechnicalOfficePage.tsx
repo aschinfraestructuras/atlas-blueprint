@@ -13,7 +13,8 @@ import { rfiService } from "@/lib/services/rfiService";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import { exportRfisCsv, exportRfisPdf } from "@/lib/services/rfiExportService";
 import { exportTechOfficeCsv, exportTechOfficePdf } from "@/lib/services/techOfficeExportService";
-import { Inbox, Plus, Trash2, MessageSquareText, Search, Eye, AlertTriangle, Clock, CheckCircle, FileText, Map } from "lucide-react";
+import { Inbox, Plus, Trash2, MessageSquareText, Search, Eye, AlertTriangle, Clock, CheckCircle, FileText, Map, GitMerge } from "lucide-react";
+import { TechnicalChangesTab } from "@/components/technical-office/TechnicalChangesTab";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
@@ -374,6 +375,7 @@ export default function TechnicalOfficePage() {
           <TabsTrigger value="transmittals">Transmittals</TabsTrigger>
           <TabsTrigger value="others">{t("technicalOffice.tabs.others", { defaultValue: "Outros" })}</TabsTrigger>
           <TabsTrigger value="topo_drawings"><Map className="h-4 w-4 mr-1" />{t("topography.topoDrawings")}</TabsTrigger>
+          <TabsTrigger value="changes" className="gap-1"><GitMerge className="h-4 w-4" />{t("tc.tabLabel")}</TabsTrigger>
         </TabsList>
 
         <div className="mt-4">
@@ -530,6 +532,13 @@ export default function TechnicalOfficePage() {
         {/* Topography Drawings — linked from Topography module */}
         {isTopoDrawingsTab && (
           <TopoDrawingsView documents={allDocuments} navigate={navigate} />
+        )}
+
+        {/* Alterações Técnicas e Desvios */}
+        {activeTab === "changes" && (
+          <div className="mt-4">
+            <TechnicalChangesTab />
+          </div>
         )}
       </Tabs>
 

@@ -6019,5 +6019,178 @@
       "deleted": "Campaña eliminada",
       "readingAdded": "Lectura añadida"
     }
+  },
+  "tc": {
+    "tabLabel": "Cambios y Desviaciones",
+    "new": "Nuevo Cambio",
+    "edit": "Editar Cambio",
+    "search": "Buscar por código, título, referencia...",
+    "empty": "Sin cambios registrados",
+    "emptyDesc": "Registre instrucciones de fiscalización, desviaciones aprobadas y soluciones alternativas.",
+    "export": "Exportar PDF",
+    "attachments": "Documentos y Evidencias",
+    "deleteTitle": "¿Eliminar cambio?",
+    "deleteDesc": "El cambio {{code}} será eliminado permanentemente.",
+    "kpi": {
+      "total": "Total",
+      "pending": "En revisión",
+      "approved": "Aprobados",
+      "overdue": "Vencidos"
+    },
+    "section": {
+      "identification": "Identificación",
+      "approval": "Aprobación",
+      "implementation": "Implementación"
+    },
+    "fields": {
+      "code": "Código",
+      "type": "Tipo",
+      "title": "Título",
+      "status": "Estado",
+      "priority": "Prioridad",
+      "description": "Descripción",
+      "originRef": "Ref. de origen",
+      "requestedBy": "Solicitado por",
+      "submittedAt": "Fecha de emisión",
+      "approvedAt": "Fecha de aprobación",
+      "approvedBy": "Aprobado por",
+      "approvalRef": "Ref. aprobación formal",
+      "deadline": "Plazo de implementación",
+      "implementedAt": "Fecha de implementación",
+      "requiresTest": "Requiere nuevo ensayo",
+      "dfoImpact": "Impacto en el DFO",
+      "workItem": "Frente de obra"
+    },
+    "types": {
+      "design_change": "Cambio de Proyecto",
+      "site_instruction": "Instrucción de Fiscalización",
+      "rfi_decision": "RFI → Decisión",
+      "alternative_solution": "Solución Alternativa",
+      "derogation": "Derogación Técnica",
+      "exceptional_approval": "Aprobación Excepcional"
+    },
+    "status": {
+      "draft": "Borrador",
+      "under_review": "En revisión",
+      "approved": "Aprobado",
+      "rejected": "Rechazado",
+      "implemented": "Implementado",
+      "closed": "Cerrado"
+    },
+    "priority": {
+      "low": "Baja",
+      "medium": "Media",
+      "high": "Alta",
+      "critical": "Crítica"
+    },
+    "placeholders": {
+      "dfoImpact": "Describa el impacto de este cambio en el Dossier Final de Obra..."
+    },
+    "filter": {
+      "allStatus": "Todos los estados",
+      "allTypes": "Todos los tipos"
+    },
+    "toast": {
+      "created": "Cambio registrado con éxito",
+      "updated": "Cambio actualizado",
+      "deleted": "Cambio eliminado"
+    },
+    "pdf": {
+      "title": "Registro de Cambio Técnico"
+    }
+  },
+  "risks": {
+    "tabLabel": "Riesgos y Oportunidades",
+    "risk": "Riesgo",
+    "opportunity": "Oportunidad",
+    "new": "Nuevo Riesgo",
+    "newOpp": "Nueva Oportunidad",
+    "edit": "Editar",
+    "isOpportunity": "Registrar como Oportunidad",
+    "search": "Buscar por código, título, responsable...",
+    "empty": "Sin riesgos registrados",
+    "emptyOpps": "Sin oportunidades registradas",
+    "emptyDesc": "Registre los riesgos identificados y las medidas de mitigación.",
+    "viewList": "Lista",
+    "viewMatrix": "Matriz",
+    "matrixDesc": "Matriz de riesgo 5×5 — Probabilidad (eje Y) × Impacto (eje X)",
+    "deleteTitle": "¿Eliminar riesgo?",
+    "deleteDesc": "El riesgo {{code}} será eliminado permanentemente.",
+    "kpi": {
+      "total": "Total",
+      "open": "Abiertos",
+      "critical": "Críticos",
+      "overdue": "A revisar",
+      "opps": "Oportunidades"
+    },
+    "section": {
+      "identification": "Identificación",
+      "assessment": "Evaluación",
+      "mitigation": "Mitigación y Control"
+    },
+    "fields": {
+      "code": "Código",
+      "category": "Categoría",
+      "title": "Título",
+      "status": "Estado",
+      "description": "Descripción",
+      "origin": "Origen/Contexto",
+      "probability": "Probabilidad",
+      "impact": "Impacto",
+      "level": "Nivel",
+      "preventive": "Medida preventiva",
+      "contingency": "Medida de contingencia",
+      "responsible": "Responsable",
+      "reviewDate": "Fecha de revisión",
+      "residualProb": "Prob. residual",
+      "residualImpact": "Impacto residual",
+      "residualLevel": "Nivel residual"
+    },
+    "level": {
+      "low": "Bajo",
+      "medium": "Medio",
+      "high": "Alto",
+      "critical": "Crítico"
+    },
+    "status": {
+      "open": "Abierto",
+      "mitigated": "Mitigado",
+      "accepted": "Aceptado",
+      "closed": "Cerrado"
+    },
+    "categories": {
+      "test_delay": "Retraso en ensayos",
+      "lab_capacity": "Capacidad del laboratorio",
+      "material_approval": "Material sin aprobación",
+      "critical_supplier": "Proveedor crítico",
+      "traceability": "Trazabilidad",
+      "recurring_failure": "Ensayo reprobado recurrente",
+      "subcontractor": "Subcontratista",
+      "weather": "Condiciones meteorológicas",
+      "regulatory": "Requisito reglamentario",
+      "other": "Otro"
+    },
+    "probLabel": {
+      "1": "Muy baja",
+      "2": "Baja",
+      "3": "Media",
+      "4": "Alta",
+      "5": "Muy alta"
+    },
+    "filter": {
+      "allStatus": "Todos los estados",
+      "allLevels": "Todos los niveles"
+    },
+    "placeholders": {
+      "origin": "¿Cómo fue identificado este riesgo? Experiencia, análisis, auditoría..."
+    },
+    "toast": {
+      "created": "Riesgo registrado con éxito",
+      "updated": "Riesgo actualizado",
+      "deleted": "Riesgo eliminado"
+    },
+    "pdf": {
+      "title": "Registro de Riesgos y Oportunidades — ISO 9001:2015 §6.1"
+    }
   }
 }

@@ -293,7 +293,7 @@ const App = () => (
                 <Route path="/contract-kpis" element={<Navigate to="/indicators?tab=kpis" replace />} />
                 <Route path="/indicators" element={<ProtectedLayout><IndicatorsPage /></ProtectedLayout>} />
                 <Route path="/topography" element={<ProtectedLayout><TopographyPage /></ProtectedLayout>} />
-                <Route path="/track-geometry" element={<ProtectedLayout><TrackGeometryPage /></ProtectedLayout>} />
+                <Route path="/track-geometry" element={<Navigate to="/topography" replace />} />
                 <Route path="/planning" element={<ProtectedLayout><PlanningPage /></ProtectedLayout>} />
                 <Route path="/planning/activities" element={<Navigate to="/planning?tab=activities" replace />} />
                 <Route path="/planning/activities/:id" element={<ProtectedLayout><ActivityDetailPage /></ProtectedLayout>} />

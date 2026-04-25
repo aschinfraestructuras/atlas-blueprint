@@ -3,7 +3,8 @@ import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { TrendingUp, ShieldCheck } from "lucide-react";
+import { TrendingUp, ShieldCheck, ShieldAlert } from "lucide-react";
+import { RisksTab } from "@/components/indicators/RisksTab";
 
 const SGQMatrixPage    = lazy(() => import("./SGQMatrixPage"));
 const ContractKPIsPage = lazy(() => import("./ContractKPIsPage"));
@@ -31,6 +32,10 @@ export default function IndicatorsPage() {
             <TrendingUp className="h-3.5 w-3.5" />
             {t("nav.contractKpis", { defaultValue: "KPIs Contratuais" })}
           </TabsTrigger>
+          <TabsTrigger value="risks" className="gap-1.5 text-xs rounded-lg">
+            <ShieldAlert className="h-3.5 w-3.5" />
+            {t("risks.tabLabel", { defaultValue: "Riscos e Oportunidades" })}
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="sgq" className="mt-0">
           <Suspense fallback={<PageSkeleton />}>
@@ -41,6 +46,9 @@ export default function IndicatorsPage() {
           <Suspense fallback={<PageSkeleton />}>
             <ContractKPIsPage />
           </Suspense>
+        </TabsContent>
+        <TabsContent value="risks" className="mt-4">
+          <RisksTab />
         </TabsContent>
       </Tabs>
     </div>

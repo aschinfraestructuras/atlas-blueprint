@@ -73,7 +73,6 @@ const NAV_SECTIONS: SidebarSection[] = [
       { labelKey: "nav.myTasks",      url: "/my-tasks",      icon: CalendarCheck },
       { labelKey: "nav.fieldRecords", url: "/field-records", icon: ClipboardList },
       { labelKey: "nav.topography",    url: "/topography",     icon: Crosshair },
-      { labelKey: "nav.trackGeometry", url: "/track-geometry", icon: Ruler },
       // PPI Templates removido — agora tab dentro de /ppi (rota /ppi/templates mantida)
     ],
   },

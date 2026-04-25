@@ -26,8 +26,11 @@ import { FilterBar } from "@/components/ui/filter-bar";
 import { PKRangeFilter } from "@/components/ui/pk-range-filter";
 import {
   Plus, AlertTriangle, CheckCircle, Clock, Wrench, FileText, Target, Trash2, Pencil, Search,
-  Map, ShieldAlert, FolderOpen, Eye,
+  Map, ShieldAlert, FolderOpen, Eye, Ruler,
 } from "lucide-react";
+import { Suspense, lazy } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+const TrackGeometryPage = lazy(() => import("./TrackGeometryPage"));
 import { toast } from "sonner";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import { exportREQ } from "@/lib/services/sgqListExportService";
@@ -318,6 +321,7 @@ export default function TopographyPage() {
           <TabsTrigger value="controls"><Target className="h-4 w-4 mr-1" />{t("topography.controls")}</TabsTrigger>
           <TabsTrigger value="surveys"><Map className="h-4 w-4 mr-1" />{t("topography.surveys")}</TabsTrigger>
           <TabsTrigger value="documents"><FolderOpen className="h-4 w-4 mr-1" />{t("topography.archiveTab")}<Badge variant="secondary" className="ml-1.5 text-[10px] px-1.5 py-0">{topoDocuments.length}</Badge></TabsTrigger>
+          <TabsTrigger value="geometry"><Ruler className="h-4 w-4 mr-1" />{t("nav.trackGeometry", { defaultValue: "Geometria de Via" })}</TabsTrigger>
         </TabsList>
 
         <div className="mt-4">
@@ -798,6 +802,15 @@ export default function TopographyPage() {
           )}
         </SheetContent>
       </Sheet>
+
+      {/* Geometria de Via — EN 13231 */}
+      {activeTab === "geometry" && (
+        <div className="mt-4">
+          <Suspense fallback={<div className="space-y-2">{[1,2,3].map(i=><Skeleton key={i} className="h-16 rounded-xl"/>)}</div>}>
+            <TrackGeometryPage />
+          </Suspense>
+        </div>
+      )}
     </div>
   );
 }
