@@ -128,11 +128,18 @@ export function RisksTab() {
   const PISelect = ({fk,label}:{fk:string,label:string}) => (
     <div className="space-y-1">
       <Label className="text-xs">{label}</Label>
-      <Select value={String((form as any)[fk]||"")} onValueChange={v=>setF(fk,v?Number(v):"")}>
+      <Select
+        value={String((form as any)[fk] || "__none__")}
+        onValueChange={v => setF(fk, v === "__none__" ? "" : Number(v))}
+      >
         <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="—"/></SelectTrigger>
         <SelectContent>
-          {fk.includes("residual")&&<SelectItem value="">—</SelectItem>}
-          {[1,2,3,4,5].map(n=><SelectItem key={n} value={String(n)}>{n} — {t(`risks.probLabel.${n}`,{defaultValue:String(n)})}</SelectItem>)}
+          {fk.includes("residual") && <SelectItem value="__none__">—</SelectItem>}
+          {[1,2,3,4,5].map(n => (
+            <SelectItem key={n} value={String(n)}>
+              {n} — {t(`risks.probLabel.${n}`, { defaultValue: String(n) })}
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
     </div>
