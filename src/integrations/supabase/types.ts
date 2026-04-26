@@ -1378,22 +1378,30 @@ export type Database = {
           created_by: string | null
           foreman_name: string | null
           id: string
+          incidents_count: number | null
           ip_rep: string | null
           is_deleted: boolean | null
           observations: string | null
           project_id: string
           report_date: string
           report_number: string
+          responsible_name: string | null
           signed_contractor: boolean | null
           signed_ip: boolean | null
           signed_supervisor: boolean | null
           status: string
+          subcontractor_id_dr: string | null
           supervisor_rep: string | null
+          temp_max_c: number | null
+          temp_min_c: number | null
           temperature_max: number | null
           temperature_min: number | null
           updated_at: string | null
           weather: string | null
+          wind_speed: string | null
+          work_hours: number | null
           work_item_id: string | null
+          workers_count: number | null
         }
         Insert: {
           contractor_rep?: string | null
@@ -1401,22 +1409,30 @@ export type Database = {
           created_by?: string | null
           foreman_name?: string | null
           id?: string
+          incidents_count?: number | null
           ip_rep?: string | null
           is_deleted?: boolean | null
           observations?: string | null
           project_id: string
           report_date: string
           report_number: string
+          responsible_name?: string | null
           signed_contractor?: boolean | null
           signed_ip?: boolean | null
           signed_supervisor?: boolean | null
           status?: string
+          subcontractor_id_dr?: string | null
           supervisor_rep?: string | null
+          temp_max_c?: number | null
+          temp_min_c?: number | null
           temperature_max?: number | null
           temperature_min?: number | null
           updated_at?: string | null
           weather?: string | null
+          wind_speed?: string | null
+          work_hours?: number | null
           work_item_id?: string | null
+          workers_count?: number | null
         }
         Update: {
           contractor_rep?: string | null
@@ -1424,22 +1440,30 @@ export type Database = {
           created_by?: string | null
           foreman_name?: string | null
           id?: string
+          incidents_count?: number | null
           ip_rep?: string | null
           is_deleted?: boolean | null
           observations?: string | null
           project_id?: string
           report_date?: string
           report_number?: string
+          responsible_name?: string | null
           signed_contractor?: boolean | null
           signed_ip?: boolean | null
           signed_supervisor?: boolean | null
           status?: string
+          subcontractor_id_dr?: string | null
           supervisor_rep?: string | null
+          temp_max_c?: number | null
+          temp_min_c?: number | null
           temperature_max?: number | null
           temperature_min?: number | null
           updated_at?: string | null
           weather?: string | null
+          wind_speed?: string | null
+          work_hours?: number | null
           work_item_id?: string | null
+          workers_count?: number | null
         }
         Relationships: [
           {
@@ -1490,6 +1514,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_sgq_matrix_summary"
             referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "daily_reports_subcontractor_id_dr_fkey"
+            columns: ["subcontractor_id_dr"]
+            isOneToOne: false
+            referencedRelation: "subcontractors"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "daily_reports_work_item_id_fkey"
@@ -5684,11 +5715,21 @@ export type Database = {
       }
       project_machinery: {
         Row: {
+          calibration_valid_until: string | null
           company: string | null
           created_at: string
           designation: string
+          discipline: string | null
+          horimetro_current: number | null
           id: string
+          insurance_valid_until: string | null
+          itv_cert_ref: string | null
+          itv_valid_until: string | null
+          last_maintenance_date: string | null
+          max_load_t: number | null
+          next_maintenance_date: string | null
           notes: string | null
+          operator_worker_id: string | null
           plate: string | null
           project_id: string
           serial_number: string | null
@@ -5699,11 +5740,21 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          calibration_valid_until?: string | null
           company?: string | null
           created_at?: string
           designation: string
+          discipline?: string | null
+          horimetro_current?: number | null
           id?: string
+          insurance_valid_until?: string | null
+          itv_cert_ref?: string | null
+          itv_valid_until?: string | null
+          last_maintenance_date?: string | null
+          max_load_t?: number | null
+          next_maintenance_date?: string | null
           notes?: string | null
+          operator_worker_id?: string | null
           plate?: string | null
           project_id: string
           serial_number?: string | null
@@ -5714,11 +5765,21 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          calibration_valid_until?: string | null
           company?: string | null
           created_at?: string
           designation?: string
+          discipline?: string | null
+          horimetro_current?: number | null
           id?: string
+          insurance_valid_until?: string | null
+          itv_cert_ref?: string | null
+          itv_valid_until?: string | null
+          last_maintenance_date?: string | null
+          max_load_t?: number | null
+          next_maintenance_date?: string | null
           notes?: string | null
+          operator_worker_id?: string | null
           plate?: string | null
           project_id?: string
           serial_number?: string | null
@@ -5729,6 +5790,27 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "project_machinery_operator_worker_id_fkey"
+            columns: ["operator_worker_id"]
+            isOneToOne: false
+            referencedRelation: "project_workers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_machinery_operator_worker_id_fkey"
+            columns: ["operator_worker_id"]
+            isOneToOne: false
+            referencedRelation: "vw_worker_training_gap"
+            referencedColumns: ["worker_id"]
+          },
+          {
+            foreignKeyName: "project_machinery_operator_worker_id_fkey"
+            columns: ["operator_worker_id"]
+            isOneToOne: false
+            referencedRelation: "vw_workers_training_status"
+            referencedColumns: ["worker_id"]
+          },
           {
             foreignKeyName: "project_machinery_project_id_fkey"
             columns: ["project_id"]
@@ -6582,6 +6664,178 @@ export type Database = {
           },
           {
             foreignKeyName: "rfis_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      risk_register: {
+        Row: {
+          code: string
+          contingency_measure: string | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          description: string | null
+          id: string
+          impact: number
+          is_deleted: boolean
+          is_opportunity: boolean
+          notes: string | null
+          origin: string | null
+          preventive_measure: string | null
+          probability: number
+          project_id: string
+          residual_impact: number | null
+          residual_level: string | null
+          residual_probability: number | null
+          responsible_name: string | null
+          review_date: string | null
+          risk_category: string
+          risk_level: string | null
+          status: string
+          title: string
+          updated_at: string
+          work_item_id: string | null
+        }
+        Insert: {
+          code?: string
+          contingency_measure?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          id?: string
+          impact?: number
+          is_deleted?: boolean
+          is_opportunity?: boolean
+          notes?: string | null
+          origin?: string | null
+          preventive_measure?: string | null
+          probability?: number
+          project_id: string
+          residual_impact?: number | null
+          residual_level?: string | null
+          residual_probability?: number | null
+          responsible_name?: string | null
+          review_date?: string | null
+          risk_category?: string
+          risk_level?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+          work_item_id?: string | null
+        }
+        Update: {
+          code?: string
+          contingency_measure?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          id?: string
+          impact?: number
+          is_deleted?: boolean
+          is_opportunity?: boolean
+          notes?: string | null
+          origin?: string | null
+          preventive_measure?: string | null
+          probability?: number
+          project_id?: string
+          residual_impact?: number | null
+          residual_level?: string | null
+          residual_probability?: number | null
+          responsible_name?: string | null
+          review_date?: string | null
+          risk_category?: string
+          risk_level?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+          work_item_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "risk_register_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "risk_register_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "risk_register_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "risk_register_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "risk_register_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "risk_register_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_rm_kpis"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "risk_register_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_sgq_matrix_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "risk_register_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_hp_calendar"
+            referencedColumns: ["work_item_id"]
+          },
+          {
+            foreignKeyName: "risk_register_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_traceability_matrix"
+            referencedColumns: ["work_item_id"]
+          },
+          {
+            foreignKeyName: "risk_register_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_work_item_quality_summary"
+            referencedColumns: ["work_item_id"]
+          },
+          {
+            foreignKeyName: "risk_register_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_work_item_readiness_detail"
+            referencedColumns: ["work_item_id"]
+          },
+          {
+            foreignKeyName: "risk_register_work_item_id_fkey"
             columns: ["work_item_id"]
             isOneToOne: false
             referencedRelation: "work_items"
@@ -7740,6 +7994,205 @@ export type Database = {
           },
         ]
       }
+      technical_changes: {
+        Row: {
+          affected_document_id: string | null
+          affected_work_item_id: string | null
+          approval_ref: string | null
+          approved_at: string | null
+          approved_by: string | null
+          change_type: string
+          code: string
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          description: string | null
+          dfo_impact: string | null
+          id: string
+          implementation_deadline: string | null
+          implemented_at: string | null
+          is_deleted: boolean
+          notes: string | null
+          origin_ref: string | null
+          priority: string
+          project_id: string
+          requested_by: string | null
+          requires_new_test: boolean
+          rfi_id: string | null
+          status: string
+          submitted_at: string | null
+          test_result_id: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          affected_document_id?: string | null
+          affected_work_item_id?: string | null
+          approval_ref?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          change_type?: string
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          dfo_impact?: string | null
+          id?: string
+          implementation_deadline?: string | null
+          implemented_at?: string | null
+          is_deleted?: boolean
+          notes?: string | null
+          origin_ref?: string | null
+          priority?: string
+          project_id: string
+          requested_by?: string | null
+          requires_new_test?: boolean
+          rfi_id?: string | null
+          status?: string
+          submitted_at?: string | null
+          test_result_id?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          affected_document_id?: string | null
+          affected_work_item_id?: string | null
+          approval_ref?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          change_type?: string
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          dfo_impact?: string | null
+          id?: string
+          implementation_deadline?: string | null
+          implemented_at?: string | null
+          is_deleted?: boolean
+          notes?: string | null
+          origin_ref?: string | null
+          priority?: string
+          project_id?: string
+          requested_by?: string | null
+          requires_new_test?: boolean
+          rfi_id?: string | null
+          status?: string
+          submitted_at?: string | null
+          test_result_id?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "technical_changes_affected_document_id_fkey"
+            columns: ["affected_document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "technical_changes_affected_work_item_id_fkey"
+            columns: ["affected_work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_hp_calendar"
+            referencedColumns: ["work_item_id"]
+          },
+          {
+            foreignKeyName: "technical_changes_affected_work_item_id_fkey"
+            columns: ["affected_work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_traceability_matrix"
+            referencedColumns: ["work_item_id"]
+          },
+          {
+            foreignKeyName: "technical_changes_affected_work_item_id_fkey"
+            columns: ["affected_work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_work_item_quality_summary"
+            referencedColumns: ["work_item_id"]
+          },
+          {
+            foreignKeyName: "technical_changes_affected_work_item_id_fkey"
+            columns: ["affected_work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_work_item_readiness_detail"
+            referencedColumns: ["work_item_id"]
+          },
+          {
+            foreignKeyName: "technical_changes_affected_work_item_id_fkey"
+            columns: ["affected_work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "technical_changes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "technical_changes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "technical_changes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "technical_changes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "technical_changes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "technical_changes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_rm_kpis"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "technical_changes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_sgq_matrix_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "technical_changes_rfi_id_fkey"
+            columns: ["rfi_id"]
+            isOneToOne: false
+            referencedRelation: "rfis"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "technical_changes_test_result_id_fkey"
+            columns: ["test_result_id"]
+            isOneToOne: false
+            referencedRelation: "test_results"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       technical_office_items: {
         Row: {
           assigned_to: string | null
@@ -7754,16 +8207,22 @@ export type Database = {
           due_date: string | null
           id: string
           is_deleted: boolean
+          material_id: string | null
           nc_id: string | null
+          pame_ref: string | null
           priority: string
           project_id: string
           recipient: string | null
           responded_at: string | null
+          response_due: string | null
+          revision_no: string | null
+          spec_ref: string | null
           status: string
           title: string
           type: string
           updated_at: string
           work_item_id: string | null
+          work_item_id_sub: string | null
         }
         Insert: {
           assigned_to?: string | null
@@ -7778,16 +8237,22 @@ export type Database = {
           due_date?: string | null
           id?: string
           is_deleted?: boolean
+          material_id?: string | null
           nc_id?: string | null
+          pame_ref?: string | null
           priority?: string
           project_id: string
           recipient?: string | null
           responded_at?: string | null
+          response_due?: string | null
+          revision_no?: string | null
+          spec_ref?: string | null
           status?: string
           title: string
           type?: string
           updated_at?: string
           work_item_id?: string | null
+          work_item_id_sub?: string | null
         }
         Update: {
           assigned_to?: string | null
@@ -7802,16 +8267,22 @@ export type Database = {
           due_date?: string | null
           id?: string
           is_deleted?: boolean
+          material_id?: string | null
           nc_id?: string | null
+          pame_ref?: string | null
           priority?: string
           project_id?: string
           recipient?: string | null
           responded_at?: string | null
+          response_due?: string | null
+          revision_no?: string | null
+          spec_ref?: string | null
           status?: string
           title?: string
           type?: string
           updated_at?: string
           work_item_id?: string | null
+          work_item_id_sub?: string | null
         }
         Relationships: [
           {
@@ -7820,6 +8291,27 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "documents"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "technical_office_items_material_id_fkey"
+            columns: ["material_id"]
+            isOneToOne: false
+            referencedRelation: "materials"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "technical_office_items_material_id_fkey"
+            columns: ["material_id"]
+            isOneToOne: false
+            referencedRelation: "view_material_detail_metrics"
+            referencedColumns: ["material_id"]
+          },
+          {
+            foreignKeyName: "technical_office_items_material_id_fkey"
+            columns: ["material_id"]
+            isOneToOne: false
+            referencedRelation: "vw_traceability_matrix"
+            referencedColumns: ["material_id"]
           },
           {
             foreignKeyName: "technical_office_items_nc_id_fkey"
@@ -7908,6 +8400,41 @@ export type Database = {
           {
             foreignKeyName: "technical_office_items_work_item_id_fkey"
             columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "technical_office_items_work_item_id_sub_fkey"
+            columns: ["work_item_id_sub"]
+            isOneToOne: false
+            referencedRelation: "vw_hp_calendar"
+            referencedColumns: ["work_item_id"]
+          },
+          {
+            foreignKeyName: "technical_office_items_work_item_id_sub_fkey"
+            columns: ["work_item_id_sub"]
+            isOneToOne: false
+            referencedRelation: "vw_traceability_matrix"
+            referencedColumns: ["work_item_id"]
+          },
+          {
+            foreignKeyName: "technical_office_items_work_item_id_sub_fkey"
+            columns: ["work_item_id_sub"]
+            isOneToOne: false
+            referencedRelation: "vw_work_item_quality_summary"
+            referencedColumns: ["work_item_id"]
+          },
+          {
+            foreignKeyName: "technical_office_items_work_item_id_sub_fkey"
+            columns: ["work_item_id_sub"]
+            isOneToOne: false
+            referencedRelation: "vw_work_item_readiness_detail"
+            referencedColumns: ["work_item_id"]
+          },
+          {
+            foreignKeyName: "technical_office_items_work_item_id_sub_fkey"
+            columns: ["work_item_id_sub"]
             isOneToOne: false
             referencedRelation: "work_items"
             referencedColumns: ["id"]
@@ -9592,6 +10119,261 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      track_geometry_campaigns: {
+        Row: {
+          campaign_code: string
+          campaign_date: string
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          equipment_ref: string | null
+          id: string
+          is_deleted: boolean
+          norm_class: string
+          observations: string | null
+          operator_name: string | null
+          overall_result: string
+          pk_end: string
+          pk_start: string
+          ppi_instance_id: string | null
+          project_id: string
+          track: string | null
+          updated_at: string
+          work_item_id: string | null
+        }
+        Insert: {
+          campaign_code: string
+          campaign_date: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          equipment_ref?: string | null
+          id?: string
+          is_deleted?: boolean
+          norm_class?: string
+          observations?: string | null
+          operator_name?: string | null
+          overall_result?: string
+          pk_end: string
+          pk_start: string
+          ppi_instance_id?: string | null
+          project_id: string
+          track?: string | null
+          updated_at?: string
+          work_item_id?: string | null
+        }
+        Update: {
+          campaign_code?: string
+          campaign_date?: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          equipment_ref?: string | null
+          id?: string
+          is_deleted?: boolean
+          norm_class?: string
+          observations?: string | null
+          operator_name?: string | null
+          overall_result?: string
+          pk_end?: string
+          pk_start?: string
+          ppi_instance_id?: string | null
+          project_id?: string
+          track?: string | null
+          updated_at?: string
+          work_item_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "track_geometry_campaigns_ppi_instance_id_fkey"
+            columns: ["ppi_instance_id"]
+            isOneToOne: false
+            referencedRelation: "ppi_instances"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "track_geometry_campaigns_ppi_instance_id_fkey"
+            columns: ["ppi_instance_id"]
+            isOneToOne: false
+            referencedRelation: "vw_hp_calendar"
+            referencedColumns: ["ppi_instance_id"]
+          },
+          {
+            foreignKeyName: "track_geometry_campaigns_ppi_instance_id_fkey"
+            columns: ["ppi_instance_id"]
+            isOneToOne: false
+            referencedRelation: "vw_traceability_matrix"
+            referencedColumns: ["ppi_id"]
+          },
+          {
+            foreignKeyName: "track_geometry_campaigns_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "track_geometry_campaigns_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "track_geometry_campaigns_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "track_geometry_campaigns_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "track_geometry_campaigns_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "track_geometry_campaigns_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_rm_kpis"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "track_geometry_campaigns_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_sgq_matrix_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "track_geometry_campaigns_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_hp_calendar"
+            referencedColumns: ["work_item_id"]
+          },
+          {
+            foreignKeyName: "track_geometry_campaigns_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_traceability_matrix"
+            referencedColumns: ["work_item_id"]
+          },
+          {
+            foreignKeyName: "track_geometry_campaigns_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_work_item_quality_summary"
+            referencedColumns: ["work_item_id"]
+          },
+          {
+            foreignKeyName: "track_geometry_campaigns_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_work_item_readiness_detail"
+            referencedColumns: ["work_item_id"]
+          },
+          {
+            foreignKeyName: "track_geometry_campaigns_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      track_geometry_readings: {
+        Row: {
+          alignment_mm: number | null
+          campaign_id: string
+          conforming: boolean | null
+          created_at: string
+          crosslevel_mm: number | null
+          gauge_deviation_mm: number | null
+          gauge_mm: number | null
+          id: string
+          longitudinal_level_mm: number | null
+          pk_position: string
+          rail_profile: string | null
+          remarks: string | null
+          twist_mm: number | null
+        }
+        Insert: {
+          alignment_mm?: number | null
+          campaign_id: string
+          conforming?: boolean | null
+          created_at?: string
+          crosslevel_mm?: number | null
+          gauge_deviation_mm?: number | null
+          gauge_mm?: number | null
+          id?: string
+          longitudinal_level_mm?: number | null
+          pk_position: string
+          rail_profile?: string | null
+          remarks?: string | null
+          twist_mm?: number | null
+        }
+        Update: {
+          alignment_mm?: number | null
+          campaign_id?: string
+          conforming?: boolean | null
+          created_at?: string
+          crosslevel_mm?: number | null
+          gauge_deviation_mm?: number | null
+          gauge_mm?: number | null
+          id?: string
+          longitudinal_level_mm?: number | null
+          pk_position?: string
+          rail_profile?: string | null
+          remarks?: string | null
+          twist_mm?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "track_geometry_readings_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "track_geometry_campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      track_geometry_tolerances: {
+        Row: {
+          id: string
+          limit_value_mm: number
+          norm_class: string
+          notes: string | null
+          parameter: string
+          track_speed_kph: string | null
+        }
+        Insert: {
+          id?: string
+          limit_value_mm: number
+          norm_class: string
+          notes?: string | null
+          parameter: string
+          track_speed_kph?: string | null
+        }
+        Update: {
+          id?: string
+          limit_value_mm?: number
+          norm_class?: string
+          notes?: string | null
+          parameter?: string
+          track_speed_kph?: string | null
+        }
+        Relationships: []
       }
       training_attendees: {
         Row: {
