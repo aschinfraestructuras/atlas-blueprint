@@ -229,8 +229,10 @@ export default function SubmittalsPage() {
       setDialogOpen(false);
       resetForm();
       refetch();
-    } catch {
-      toast.error(t("common.error", { defaultValue: "Erro ao guardar" }));
+    } catch (err) {
+      console.error("[Submittals] save error:", err);
+      const msg = (err as { message?: string })?.message ?? t("common.error", { defaultValue: "Erro ao guardar" });
+      toast.error(msg);
     }
   };
 

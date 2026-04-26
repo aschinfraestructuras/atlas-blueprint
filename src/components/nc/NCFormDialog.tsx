@@ -32,6 +32,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Loader2, AlertCircle, AlertTriangle } from "lucide-react";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
+import { MemberPicker } from "@/components/members/MemberPicker";
 import { cn } from "@/lib/utils";
 
 // ─── Schema ───────────────────────────────────────────────────────────────────
@@ -69,7 +70,7 @@ const schema = (t: (k: string) => string) =>
     // Corrective action
     corrective_action:   z.string().trim().max(2000).optional().or(z.literal("")),
     preventive_action:   z.string().trim().max(2000).optional().or(z.literal("")),
-    assigned_to:         z.string().trim().max(200).optional().or(z.literal("")),
+    assigned_to:         z.string().trim().max(64).optional().or(z.literal("")),
     ac_efficacy_indicator: z.string().trim().max(500).optional().or(z.literal("")),
     // Closure
     verification_method: z.string().trim().max(500).optional().or(z.literal("")),
@@ -175,7 +176,7 @@ export function NCFormDialog({
       root_cause:          nc.root_cause ?? "",
       corrective_action:   nc.corrective_action ?? "",
       preventive_action:   (nc as any).preventive_action ?? "",
-      assigned_to:         "",
+      assigned_to:         nc.assigned_to ?? "",
       ac_efficacy_indicator: (nc as any).ac_efficacy_indicator ?? "",
       verification_method: nc.verification_method ?? "",
       verification_result: nc.verification_result ?? "",
@@ -210,6 +211,7 @@ export function NCFormDialog({
         origin:              values.origin,
         reference:           values.reference || undefined,
         responsible:         values.responsible || undefined,
+        assigned_to:         values.assigned_to && values.assigned_to.trim() ? values.assigned_to : undefined,
         due_date:            values.due_date || undefined,
         detected_at:         values.detected_at || undefined,
         location_pk:         values.location_pk || undefined,
@@ -690,7 +692,12 @@ export function NCFormDialog({
                   <FormField control={form.control} name="assigned_to" render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t("nc.form.assignedTo", { defaultValue: "Responsável pela acção" })}</FormLabel>
-                      <FormControl><Input {...field} /></FormControl>
+                      <FormControl>
+                        <MemberPicker
+                          value={field.value}
+                          onChange={(uid) => field.onChange(uid ?? "")}
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )} />

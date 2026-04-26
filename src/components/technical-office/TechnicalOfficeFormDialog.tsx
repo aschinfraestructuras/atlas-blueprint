@@ -25,6 +25,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
+import { MemberPicker } from "@/components/members/MemberPicker";
 // Nota: AttachmentsPanel é renderizado em modo edição (após guardar a 1ª vez).
 
 const schema = z.object({
@@ -138,7 +139,7 @@ export function TechnicalOfficeFormDialog({ open, onOpenChange, item, onSuccess 
           priority: values.priority,
           deadline: values.deadline || undefined,
           recipient: values.recipient || undefined,
-          assigned_to: values.assigned_to || undefined,
+          assigned_to: values.assigned_to && values.assigned_to.trim() ? values.assigned_to : undefined,
           work_item_id: values.work_item_id || null,
           nc_id: values.nc_id || null,
         });
@@ -154,7 +155,7 @@ export function TechnicalOfficeFormDialog({ open, onOpenChange, item, onSuccess 
           priority: values.priority,
           deadline: values.deadline || undefined,
           recipient: values.recipient || undefined,
-          assigned_to: values.assigned_to || undefined,
+          assigned_to: values.assigned_to && values.assigned_to.trim() ? values.assigned_to : undefined,
           work_item_id: values.work_item_id || null,
           nc_id: values.nc_id || null,
         });
@@ -335,7 +336,13 @@ export function TechnicalOfficeFormDialog({ open, onOpenChange, item, onSuccess 
                 <FormField control={form.control} name="assigned_to" render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t("technicalOffice.form.assignedTo")} <span className="text-muted-foreground text-xs">({t("common.optional")})</span></FormLabel>
-                    <FormControl><Input placeholder={t("technicalOffice.form.assignedToPlaceholder", { defaultValue: "Nome do responsável" })} {...field} /></FormControl>
+                    <FormControl>
+                      <MemberPicker
+                        value={field.value}
+                        onChange={(uid) => field.onChange(uid ?? "")}
+                        placeholder={t("technicalOffice.form.assignedToPlaceholder", { defaultValue: "Selecionar responsável…" })}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />

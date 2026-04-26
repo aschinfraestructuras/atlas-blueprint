@@ -110,7 +110,7 @@ export function buildRiskListHtml(
       </thead>
       <tbody>${rows}</tbody>
     </table>
-    ${footerHtml(labels.appName, labels.generatedOn, today, labels.page)}
+    ${footerHtml(`${labels.appName} — ${labels.generatedOn} ${today} — ${labels.page}`, { appName: labels.appName } as any)}
   `;
 
   return `<!DOCTYPE html><html lang="pt"><head><meta charset="UTF-8">
