@@ -32,6 +32,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Loader2, AlertCircle, AlertTriangle } from "lucide-react";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
+import { MemberPicker } from "@/components/members/MemberPicker";
 import { cn } from "@/lib/utils";
 
 // ─── Schema ───────────────────────────────────────────────────────────────────
