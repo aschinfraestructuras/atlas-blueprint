@@ -176,7 +176,7 @@ export function NCFormDialog({
       root_cause:          nc.root_cause ?? "",
       corrective_action:   nc.corrective_action ?? "",
       preventive_action:   (nc as any).preventive_action ?? "",
-      assigned_to:         "",
+      assigned_to:         nc.assigned_to ?? "",
       ac_efficacy_indicator: (nc as any).ac_efficacy_indicator ?? "",
       verification_method: nc.verification_method ?? "",
       verification_result: nc.verification_result ?? "",
