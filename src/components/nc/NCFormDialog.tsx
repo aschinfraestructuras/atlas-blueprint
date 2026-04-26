@@ -691,7 +691,12 @@ export function NCFormDialog({
                   <FormField control={form.control} name="assigned_to" render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t("nc.form.assignedTo", { defaultValue: "Responsável pela acção" })}</FormLabel>
-                      <FormControl><Input {...field} /></FormControl>
+                      <FormControl>
+                        <MemberPicker
+                          value={field.value}
+                          onChange={(uid) => field.onChange(uid ?? "")}
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )} />
