@@ -155,7 +155,7 @@ export function TechnicalOfficeFormDialog({ open, onOpenChange, item, onSuccess 
           priority: values.priority,
           deadline: values.deadline || undefined,
           recipient: values.recipient || undefined,
-          assigned_to: values.assigned_to || undefined,
+          assigned_to: values.assigned_to && values.assigned_to.trim() ? values.assigned_to : undefined,
           work_item_id: values.work_item_id || null,
           nc_id: values.nc_id || null,
         });
