@@ -70,7 +70,7 @@ const schema = (t: (k: string) => string) =>
     // Corrective action
     corrective_action:   z.string().trim().max(2000).optional().or(z.literal("")),
     preventive_action:   z.string().trim().max(2000).optional().or(z.literal("")),
-    assigned_to:         z.string().trim().max(200).optional().or(z.literal("")),
+    assigned_to:         z.string().trim().max(64).optional().or(z.literal("")),
     ac_efficacy_indicator: z.string().trim().max(500).optional().or(z.literal("")),
     // Closure
     verification_method: z.string().trim().max(500).optional().or(z.literal("")),
