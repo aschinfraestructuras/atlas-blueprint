@@ -336,7 +336,13 @@ export function TechnicalOfficeFormDialog({ open, onOpenChange, item, onSuccess 
                 <FormField control={form.control} name="assigned_to" render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t("technicalOffice.form.assignedTo")} <span className="text-muted-foreground text-xs">({t("common.optional")})</span></FormLabel>
-                    <FormControl><Input placeholder={t("technicalOffice.form.assignedToPlaceholder", { defaultValue: "Nome do responsável" })} {...field} /></FormControl>
+                    <FormControl>
+                      <MemberPicker
+                        value={field.value}
+                        onChange={(uid) => field.onChange(uid ?? "")}
+                        placeholder={t("technicalOffice.form.assignedToPlaceholder", { defaultValue: "Selecionar responsável…" })}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
