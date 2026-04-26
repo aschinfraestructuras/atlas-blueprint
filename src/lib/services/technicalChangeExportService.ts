@@ -158,7 +158,7 @@ export function buildTechnicalChangeHtml(
       <div style="white-space:pre-wrap">${esc(tc.notes)}</div>
     </div>` : ""}
 
-    ${footerHtml(labels.appName, labels.generatedOn, today, labels.page)}
+    ${footerHtml(`${labels.appName} — ${labels.generatedOn} ${today} — ${labels.page}`, { appName: labels.appName } as any)}
   `;
 
   return `<!DOCTYPE html><html lang="pt"><head><meta charset="UTF-8">
