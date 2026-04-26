@@ -211,6 +211,7 @@ export function NCFormDialog({
         origin:              values.origin,
         reference:           values.reference || undefined,
         responsible:         values.responsible || undefined,
+        assigned_to:         values.assigned_to && values.assigned_to.trim() ? values.assigned_to : undefined,
         due_date:            values.due_date || undefined,
         detected_at:         values.detected_at || undefined,
         location_pk:         values.location_pk || undefined,
