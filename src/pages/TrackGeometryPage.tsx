@@ -446,7 +446,6 @@ function CampaignSheet({ campaign, open, onOpenChange, projectId, onReadingAdded
                 </div>
               )}
 
-              {/* Acções */}
               <Separator />
               <div className="flex gap-2">
                 <Button size="sm" variant="outline" className="gap-1.5 flex-1"
