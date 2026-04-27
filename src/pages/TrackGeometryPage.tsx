@@ -725,7 +725,7 @@ export default function TrackGeometryPage() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground">
+            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground">
               {t("common.delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
