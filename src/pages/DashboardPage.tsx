@@ -90,10 +90,15 @@ function MonthlyReportAlert({ projectId }: { projectId: string }) {
   }, [projectId]);
   if (!show) return null;
   return (
-    <div className={cn("flex items-center gap-3 px-4 py-3 rounded-xl border cursor-pointer transition-colors animate-fade-in",
-        show.overdue ? "bg-destructive/5 border-destructive/25 text-destructive hover:bg-destructive/8"
-          : "bg-amber-500/5 border-amber-500/25 text-amber-700 hover:bg-amber-500/10")}
-      onClick={() => navigate("/monthly-reports")}>
+    <div
+      className={cn(
+        "flex items-center gap-3 px-4 py-3 rounded-xl border cursor-pointer transition-colors animate-fade-in",
+        show.overdue
+          ? "bg-destructive/5 border-destructive/25 text-destructive hover:bg-destructive/8"
+          : "bg-amber-500/5 border-amber-500/25 text-amber-700 hover:bg-amber-500/10"
+      )}
+      onClick={() => navigate("/reports?tab=monthly")}
+    >
       <div className={cn("w-2 h-2 rounded-full flex-shrink-0 animate-pulse", show.overdue ? "bg-destructive" : "bg-amber-500")} />
       <span className="text-sm flex-1">
         {show.overdue
