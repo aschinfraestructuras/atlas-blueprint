@@ -212,7 +212,7 @@ export function ControlFormDialog({ open, onOpenChange, projectId, equipment, ed
               <div>
                 <Label>{t("topography.form.workItem")}</Label>
                 <WorkItemSelect
-                  workItems={workItems}
+                  workItems={workItems as any}
                   value={form.work_item_id || ""}
                   onValueChange={v => setForm(f => ({ ...f, work_item_id: v || "" }))}
                   placeholder={t("topography.form.none")}
