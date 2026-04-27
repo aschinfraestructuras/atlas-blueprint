@@ -578,6 +578,8 @@ export default function TrackGeometryPage() {
     </body></html>`;
     printHtml(html, `${c.campaign_code}.pdf`);
   };
+
+  const confirmDelete = async () => {
     if (!deleteTarget) return;
     await db.from("track_geometry_campaigns")
       .update({ is_deleted: true, deleted_at: new Date().toISOString() })
