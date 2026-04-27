@@ -261,6 +261,7 @@ function ProjectMetadataEditor({ projectId, project, onSaved }: {
   const [client, setClient] = useState((project as any)?.client ?? "");
   const [location, setLocation] = useState((project as any)?.location ?? "");
   const [contractNumber, setContractNumber] = useState((project as any)?.contract_number ?? "");
+  const [startDate, setStartDate] = useState((project as any)?.start_date ?? "");
   const [saving, setSaving] = useState(false);
 
   const handleSave = async () => {
@@ -271,6 +272,7 @@ function ProjectMetadataEditor({ projectId, project, onSaved }: {
         client: client || null,
         location: location || null,
         contract_number: contractNumber || null,
+        start_date: startDate || null,
       } as any).eq("id", projectId);
       if (error) throw error;
       await onSaved();
@@ -281,6 +283,39 @@ function ProjectMetadataEditor({ projectId, project, onSaved }: {
       setSaving(false);
     }
   };
+
+  return (
+    <div className="space-y-3 py-3 border-b border-border/50">
+      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{t("settings.project.metadata", { defaultValue: "Dados do Projecto (PDF)" })}</p>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1">
+          <Label className="text-xs">{t("settings.project.contractor")}</Label>
+          <Input value={contractor} onChange={e => setContractor(e.target.value)} className="h-8 text-xs" placeholder={t("settings.project.contractor")} />
+        </div>
+        <div className="space-y-1">
+          <Label className="text-xs">{t("settings.project.client")}</Label>
+          <Input value={client} onChange={e => setClient(e.target.value)} className="h-8 text-xs" placeholder={t("settings.project.client")} />
+        </div>
+        <div className="space-y-1">
+          <Label className="text-xs">{t("settings.project.location")}</Label>
+          <Input value={location} onChange={e => setLocation(e.target.value)} className="h-8 text-xs" placeholder={t("settings.project.location")} />
+        </div>
+        <div className="space-y-1">
+          <Label className="text-xs">{t("settings.project.contractNumber")}</Label>
+          <Input value={contractNumber} onChange={e => setContractNumber(e.target.value)} className="h-8 text-xs" placeholder={t("settings.project.contractNumber")} />
+        </div>
+        <div className="space-y-1">
+          <Label className="text-xs">{t("settings.project.startDate", { defaultValue: "Data de Início da Obra" })}</Label>
+          <Input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className="h-8 text-xs" />
+        </div>
+      </div>
+      <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={handleSave} disabled={saving}>
+        {saving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Check className="h-3 w-3" />}
+        {t("common.save")}
+      </Button>
+    </div>
+  );
+}
 
   return (
     <div className="space-y-3 py-3 border-b border-border/50">

@@ -3565,7 +3565,8 @@
       "notifications": "Notificações",
       "notificationsDesc": "Configurar alertas e emails",
       "exportData": "Exportar dados",
-      "exportDataDesc": "Exportar todos os dados do projeto"
+      "exportDataDesc": "Exportar todos os dados do projeto",
+      "startDate": "Data de Início da Obra"
     },
     "members": {
       "title": "Gestão de Utilizadores",
