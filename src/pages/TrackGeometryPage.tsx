@@ -340,7 +340,7 @@ function ReadingDialog({ open, onOpenChange, campaignId, onSaved }: any) {
 }
 
 // ── Detalhe da campanha ─────────────────────────────────────────────────
-function CampaignSheet({ campaign, open, onOpenChange, projectId, onReadingAdded }: any) {
+function CampaignSheet({ campaign, open, onOpenChange, projectId, onReadingAdded, onExport, onEdit }: any) {
   const { t } = useTranslation();
   const { canCreate } = useProjectRole();
   const [readings, setReadings] = useState<Reading[]>([]);
@@ -449,11 +449,11 @@ function CampaignSheet({ campaign, open, onOpenChange, projectId, onReadingAdded
               <Separator />
               <div className="flex gap-2">
                 <Button size="sm" variant="outline" className="gap-1.5 flex-1"
-                  onClick={() => handleExportCampaign(campaign, readings)}>
+                  onClick={() => onExport?.(campaign, readings)}>
                   <Download className="h-3.5 w-3.5" />Exportar PDF
                 </Button>
                 <Button size="sm" variant="outline" className="gap-1.5 flex-1"
-                  onClick={() => { setSheetOpen(false); setEditing(campaign); setDialogOpen(true); }}>
+                  onClick={() => { onOpenChange(false); onEdit?.(campaign); }}>
                   <Pencil className="h-3.5 w-3.5" />Editar
                 </Button>
               </div>
@@ -578,6 +578,8 @@ export default function TrackGeometryPage() {
     </body></html>`;
     printHtml(html, `${c.campaign_code}.pdf`);
   };
+
+  const confirmDelete = async () => {
     if (!deleteTarget) return;
     await db.from("track_geometry_campaigns")
       .update({ is_deleted: true, deleted_at: new Date().toISOString() })
@@ -713,6 +715,8 @@ export default function TrackGeometryPage() {
         campaign={sheetCampaign} open={sheetOpen}
         onOpenChange={setSheetOpen} projectId={pid}
         onReadingAdded={fetch}
+        onExport={handleExportCampaign}
+        onEdit={(c: Campaign) => { setEditing(c); setDialogOpen(true); }}
       />
 
       <AlertDialog open={!!deleteTarget} onOpenChange={v => { if (!v) setDeleteTarget(null); }}>
@@ -723,7 +727,7 @@ export default function TrackGeometryPage() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground">
+            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground">
               {t("common.delete")}
             </AlertDialogAction>
           </AlertDialogFooter>

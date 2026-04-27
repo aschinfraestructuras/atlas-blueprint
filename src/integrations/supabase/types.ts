@@ -5966,7 +5966,10 @@ export type Database = {
           ip_qual_status: string | null
           name: string
           notes: string | null
+          org_function: string | null
+          org_order: number | null
           project_id: string
+          reports_to: string | null
           role_function: string | null
           status: string
           subcontractor_id: string | null
@@ -5988,7 +5991,10 @@ export type Database = {
           ip_qual_status?: string | null
           name: string
           notes?: string | null
+          org_function?: string | null
+          org_order?: number | null
           project_id: string
+          reports_to?: string | null
           role_function?: string | null
           status?: string
           subcontractor_id?: string | null
@@ -6010,7 +6016,10 @@ export type Database = {
           ip_qual_status?: string | null
           name?: string
           notes?: string | null
+          org_function?: string | null
+          org_order?: number | null
           project_id?: string
+          reports_to?: string | null
           role_function?: string | null
           status?: string
           subcontractor_id?: string | null
@@ -6066,6 +6075,27 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_sgq_matrix_summary"
             referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_workers_reports_to_fkey"
+            columns: ["reports_to"]
+            isOneToOne: false
+            referencedRelation: "project_workers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_workers_reports_to_fkey"
+            columns: ["reports_to"]
+            isOneToOne: false
+            referencedRelation: "vw_worker_training_gap"
+            referencedColumns: ["worker_id"]
+          },
+          {
+            foreignKeyName: "project_workers_reports_to_fkey"
+            columns: ["reports_to"]
+            isOneToOne: false
+            referencedRelation: "vw_workers_training_status"
+            referencedColumns: ["worker_id"]
           },
           {
             foreignKeyName: "project_workers_subcontractor_id_fkey"
