@@ -25,6 +25,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, AlertTriangle, Info, LayoutTemplate, ExternalLink, Calendar, Sparkles } from "lucide-react";
 import { toast } from "@/lib/utils/toast";
 import { supabase } from "@/integrations/supabase/client";
+import { WorkItemSelect } from "@/components/ui/work-item-select";
 
 // ─── Schema ───────────────────────────────────────────────────────────────────
 
@@ -289,39 +290,15 @@ export function PPIInstanceFormDialog({
                     {t("ppi.instances.form.workItem")}{" "}
                     <span className="text-destructive">*</span>
                   </FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    disabled={loadingWI || !!preselectedWorkItemId}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue
-                          placeholder={
-                            loadingWI
-                              ? t("common.loading")
-                              : t("ppi.instances.form.selectWorkItem")
-                          }
-                        />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {workItems.map((wi) => (
-                        <SelectItem key={wi.id} value={wi.id}>
-                          <span className="flex items-center gap-2 w-full">
-                            <span className="flex-1 truncate">
-                              {wi.sector}
-                              {wi.elemento ? ` — ${wi.elemento}` : ""}
-                              {wi.parte ? ` (${wi.parte})` : ""}
-                            </span>
-                            <span className="text-[10px] font-mono text-muted-foreground shrink-0">
-                              {t(`workItems.disciplines.${wi.disciplina}`, { defaultValue: wi.disciplina })}
-                            </span>
-                          </span>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <WorkItemSelect
+                      workItems={workItems}
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      disabled={loadingWI || !!preselectedWorkItemId}
+                      loading={loadingWI}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
