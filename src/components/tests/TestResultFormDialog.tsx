@@ -362,18 +362,14 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
             <FormField control={form.control} name="work_item_id" render={({ field }) => (
               <FormItem>
                 <FormLabel>{t("tests.results.form.workItem")} <span className="text-xs text-muted-foreground">({t("common.optional")})</span></FormLabel>
-                <Select
-                  onValueChange={(v) => field.onChange(v === "__none__" ? "" : v)}
-                  value={field.value || "__none__"}
-                >
-                  <FormControl>
-                    <WorkItemSelect
-                      workItems={workItems}
-                      value={field.value || ""}
-                      onValueChange={v => field.onChange(v || "")}
-                      placeholder={t("tests.results.form.workItemPlaceholder")}
-                    />
-                  </FormControl>
+                <FormControl>
+                  <WorkItemSelect
+                    workItems={workItems}
+                    value={field.value || ""}
+                    onValueChange={v => field.onChange(v || "")}
+                    placeholder={t("tests.results.form.workItemPlaceholder")}
+                  />
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )} />
