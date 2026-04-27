@@ -25,6 +25,7 @@ import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import { Badge } from "@/components/ui/badge";
 import { Camera, Upload, X, MapPin, Loader2, FlaskConical } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { WorkItemSelect } from "@/components/ui/work-item-select";
 
 interface Props {
   open: boolean;
@@ -321,19 +322,12 @@ export function MaterialReceptionDialog({ open, onOpenChange, projectId, materia
                 {t("workItems.singular", { defaultValue: "Elemento de Obra" })}
                 <span className="text-xs text-muted-foreground">(opcional — onde será aplicado)</span>
               </Label>
-              <Select value={workItemId} onValueChange={setWorkItemId}>
-                <SelectTrigger>
-                  <SelectValue placeholder={t("common.none", { defaultValue: "Sem associação" })} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__none__">{t("common.none", { defaultValue: "Sem associação" })}</SelectItem>
-                  {workItems.map(wi => (
-                    <SelectItem key={wi.id} value={wi.id}>
-                      {wi.sector} {wi.disciplina ? `· ${wi.disciplina}` : ""} {wi.elemento ? `— ${wi.elemento}` : ""}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <WorkItemSelect
+                workItems={workItems}
+                value={workItemId === "__none__" ? "" : workItemId}
+                onValueChange={v => setWorkItemId(v || "__none__")}
+                placeholder={t("common.none", { defaultValue: "Sem associação" })}
+              />
             </div>
 
             {/* PAME / GR */}

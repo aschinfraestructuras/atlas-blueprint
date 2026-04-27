@@ -26,6 +26,7 @@ import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { MemberPicker } from "@/components/members/MemberPicker";
+import { WorkItemSelect } from "@/components/ui/work-item-select";
 // Nota: AttachmentsPanel é renderizado em modo edição (após guardar a 1ª vez).
 
 const schema = z.object({
@@ -350,17 +351,14 @@ export function TechnicalOfficeFormDialog({ open, onOpenChange, item, onSuccess 
                 <FormField control={form.control} name="work_item_id" render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t("technicalOffice.rfi.workItem", { defaultValue: "Atividade" })} <span className="text-muted-foreground text-xs">({t("common.optional")})</span></FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value || "__none__"}>
-                      <FormControl><SelectTrigger><SelectValue placeholder={t("technicalOffice.rfi.selectWorkItem", { defaultValue: "Selecionar…" })} /></SelectTrigger></FormControl>
-                      <SelectContent>
-                        <SelectItem value="__none__">—</SelectItem>
-                        {workItems.map(wi => (
-                          <SelectItem key={wi.id} value={wi.id}>
-                            {wi.sector} — {t(`workItems.disciplines.${wi.disciplina}`, { defaultValue: wi.disciplina })}{wi.elemento ? ` — ${wi.elemento}` : ""}{wi.parte ? ` (${wi.parte})` : ""}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <FormControl>
+                      <WorkItemSelect
+                        workItems={workItems}
+                        value={field.value || ""}
+                        onValueChange={v => field.onChange(v || "")}
+                        placeholder={t("technicalOffice.rfi.selectWorkItem", { defaultValue: "Selecionar…" })}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />

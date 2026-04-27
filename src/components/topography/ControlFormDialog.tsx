@@ -15,6 +15,7 @@ import { topographyControlService, type TopographyEquipment, type TopographyCont
 import { auditService } from "@/lib/services/auditService";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { WorkItemSelect } from "@/components/ui/work-item-select";
 
 interface Props {
   open: boolean;
@@ -211,12 +212,14 @@ export function ControlFormDialog({ open, onOpenChange, projectId, equipment, ed
               <div>
                 <Label>{t("topography.form.workItem")}</Label>
                 <Select value={form.work_item_id} onValueChange={v => setForm(f => ({ ...f, work_item_id: v }))}>
-                  <SelectTrigger><SelectValue placeholder={t("topography.form.none")} /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__none__">{t("topography.form.none")}</SelectItem>
-                    {workItems.map(wi => <SelectItem key={wi.id} value={wi.id}>{wi.sector}{wi.elemento ? ` — ${wi.elemento}` : ""}{wi.parte ? ` (${wi.parte})` : ""}</SelectItem>)}
-                  </SelectContent>
-                </Select>
+                  <FormControl>
+                    <WorkItemSelect
+                      workItems={workItems}
+                      value={field?.value || ""}
+                      onValueChange={v => field?.onChange && field.onChange(v || "")}
+                      placeholder={t("topography.form.none")}
+                    />
+                  </FormControl>
               </div>
               <div>
                 <Label>{t("topography.form.ppiLinked", { defaultValue: "PPI associada" })}</Label>

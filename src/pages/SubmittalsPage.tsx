@@ -50,6 +50,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Trash2 } from "lucide-react";
 import type { TechnicalOfficeItem } from "@/lib/services/technicalOfficeService";
+import { WorkItemSelect } from "@/components/ui/work-item-select";
 
 /* ─── Status Styles ─────────────────────────────────────────────────── */
 const STATUS_STYLES: Record<string, string> = {
@@ -526,15 +527,12 @@ export default function SubmittalsPage() {
                 </div>
                 <div className="space-y-2">
                   <Label>{t("submittals.form.workItem", { defaultValue: "Atividade" })}</Label>
-                  <Select value={formWorkItemId || "__none__"} onValueChange={v => setFormWorkItemId(v === "__none__" ? "" : v)}>
-                    <SelectTrigger><SelectValue placeholder="—" /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="__none__">—</SelectItem>
-                      {workItems.map(w => (
-                        <SelectItem key={w.id} value={w.id}>{w.sector}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <WorkItemSelect
+                    workItems={workItems ?? []}
+                    value={formWorkItemId || ""}
+                    onValueChange={v => setFormWorkItemId(v || "")}
+                    placeholder="—"
+                  />
                 </div>
 
                 {/* Ligação ao PAME/Material */}

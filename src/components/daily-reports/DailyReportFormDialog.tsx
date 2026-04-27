@@ -12,6 +12,7 @@ import { useProject } from "@/contexts/ProjectContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWorkItems } from "@/hooks/useWorkItems";
 import { dailyReportService } from "@/lib/services/dailyReportService";
+import { WorkItemSelect } from "@/components/ui/work-item-select";
 
 interface Props {
   open: boolean;
@@ -97,17 +98,12 @@ export const DailyReportFormDialog = React.forwardRef<HTMLDivElement, Props>(
 
             <div className="space-y-1.5">
               <Label>{t("nav.workItems")}</Label>
-              <Select value={workItemId} onValueChange={setWorkItemId}>
-                <SelectTrigger><SelectValue placeholder="—" /></SelectTrigger>
-                <SelectContent>
-                  {workItems.map(wi => (
-                    <SelectItem key={wi.id} value={wi.id}>
-                      {wi.sector} — {wi.obra ?? wi.disciplina}
-                      {wi.elemento ? ` / ${wi.elemento}` : ""}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <WorkItemSelect
+                workItems={workItems}
+                value={workItemId}
+                onValueChange={setWorkItemId}
+                placeholder="—"
+              />
             </div>
 
             <div className="grid grid-cols-3 gap-3">

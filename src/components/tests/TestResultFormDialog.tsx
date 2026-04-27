@@ -35,6 +35,7 @@ import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { supabase } from "@/integrations/supabase/client";
 import { TraceabilityChain } from "@/components/tests/TraceabilityChain";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { WorkItemSelect } from "@/components/ui/work-item-select";
 
 const schema = (t: (k: string) => string) =>
   z.object({
@@ -367,14 +368,14 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
                   onValueChange={(v) => field.onChange(v === "__none__" ? "" : v)}
                   value={field.value || "__none__"}
                 >
-                  <FormControl><SelectTrigger><SelectValue placeholder={t("tests.results.form.workItemPlaceholder")} /></SelectTrigger></FormControl>
-                  <SelectContent>
-                    <SelectItem value="__none__">{t("tests.results.form.noWorkItem")}</SelectItem>
-                    {workItems.map((wi) => (
-                      <SelectItem key={wi.id} value={wi.id}>{wi.sector}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  <FormControl>
+                    <WorkItemSelect
+                      workItems={workItems}
+                      value={field.value || ""}
+                      onValueChange={v => field.onChange(v || "")}
+                      placeholder={t("tests.results.form.workItemPlaceholder")}
+                    />
+                  </FormControl>
                 <FormMessage />
               </FormItem>
             )} />

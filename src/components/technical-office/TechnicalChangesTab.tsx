@@ -23,6 +23,7 @@ import { toast } from "@/lib/utils/toast";
 import { cn } from "@/lib/utils";
 import { exportTechnicalChangePdf, type TechnicalChange, type TechnicalChangeLabels } from "@/lib/services/technicalChangeExportService";
 import { GitMerge, Plus, Pencil, Trash2, Download, Eye, AlertTriangle, CheckCircle2, Clock, FileText, Search } from "lucide-react";
+import { WorkItemSelect } from "@/components/ui/work-item-select";
 
 const db = supabase as any;
 
@@ -391,13 +392,11 @@ export function TechnicalChangesTab() {
               </div>
               <div className="space-y-1">
                 <Label className="text-xs">{t("tc.fields.workItem")}</Label>
-                <Select value={form.affected_work_item_id} onValueChange={v => setF("affected_work_item_id", v)}>
-                  <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__none__">—</SelectItem>
-                    {workItems.map(w => <SelectItem key={w.id} value={w.id}>{w.lote || w.obra} — {w.parte || ""}</SelectItem>)}
-                  </SelectContent>
-                </Select>
+                <WorkItemSelect
+                  workItems={workItems}
+                  value={form.affected_work_item_id === "__none__" ? "" : form.affected_work_item_id}
+                  onValueChange={v => setF("affected_work_item_id", v || "__none__")}
+                />
               </div>
               <div className="space-y-1">
                 <Label className="text-xs">{t("tc.fields.submittedAt")}</Label>

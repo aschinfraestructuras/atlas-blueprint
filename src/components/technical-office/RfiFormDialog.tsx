@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProject } from "@/contexts/ProjectContext";
 import { useWorkItems } from "@/hooks/useWorkItems";
+import { WorkItemSelect } from "@/components/ui/work-item-select";
 import { useNonConformities } from "@/hooks/useNonConformities";
 import { rfiService, type Rfi } from "@/lib/services/rfiService";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
@@ -269,17 +270,14 @@ export function RfiFormDialog({ open, onOpenChange, rfi, onSuccess }: Props) {
                 <FormField control={form.control} name="work_item_id" render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t("technicalOffice.rfi.workItem", { defaultValue: "Atividade" })} <span className="text-muted-foreground text-xs">({t("common.optional")})</span></FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value || "__none__"}>
-                      <FormControl><SelectTrigger><SelectValue placeholder={t("technicalOffice.rfi.selectWorkItem", { defaultValue: "Selecionar atividade…" })} /></SelectTrigger></FormControl>
-                      <SelectContent>
-                        <SelectItem value="__none__">—</SelectItem>
-                        {workItems.map(wi => (
-                          <SelectItem key={wi.id} value={wi.id}>
-                            {wi.sector} — {t(`workItems.disciplines.${wi.disciplina}`, { defaultValue: wi.disciplina })}{wi.elemento ? ` — ${wi.elemento}` : ""}{wi.parte ? ` (${wi.parte})` : ""}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <FormControl>
+                      <WorkItemSelect
+                        workItems={workItems}
+                        value={field.value || ""}
+                        onValueChange={v => field.onChange(v || "")}
+                        placeholder={t("technicalOffice.rfi.selectWorkItem", { defaultValue: "Selecionar atividade…" })}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
