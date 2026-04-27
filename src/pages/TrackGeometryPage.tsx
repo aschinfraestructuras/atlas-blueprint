@@ -715,6 +715,8 @@ export default function TrackGeometryPage() {
         campaign={sheetCampaign} open={sheetOpen}
         onOpenChange={setSheetOpen} projectId={pid}
         onReadingAdded={fetch}
+        onExport={handleExportCampaign}
+        onEdit={(c: Campaign) => { setEditing(c); setDialogOpen(true); }}
       />
 
       <AlertDialog open={!!deleteTarget} onOpenChange={v => { if (!v) setDeleteTarget(null); }}>
