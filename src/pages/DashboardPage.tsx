@@ -68,6 +68,14 @@ function MonthlyReportAlert({ projectId }: { projectId: string }) {
   useEffect(() => {
     (async () => {
       const now = new Date();
+      // Não mostrar alerta se a obra ainda não começou (verificar project.start_date)
+      const { data: proj } = await (supabase as any).from("projects").select("start_date").eq("id", projectId).single();
+      if (proj?.start_date) {
+        const startDate = new Date(proj.start_date);
+        // Só começar a contar RMSGQ após o primeiro mês completo de obra
+        const firstReportDeadline = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 5);
+        if (now < firstReportDeadline) { setShow(null); return; }
+      }
       const prevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
       const { data } = await (supabase as any).from("monthly_quality_reports").select("id")
         .eq("project_id", projectId).neq("status", "draft")

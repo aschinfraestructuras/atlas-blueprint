@@ -22,8 +22,11 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Separator } from "@/components/ui/separator";
 import { toast } from "@/lib/utils/toast";
 import { cn } from "@/lib/utils";
-import { Ruler, Plus, ChevronRight, CheckCircle2, AlertTriangle, XCircle, Pencil, Trash2, Search } from "lucide-react";
+import { Ruler, Plus, ChevronRight, CheckCircle2, AlertTriangle, XCircle, Pencil, Trash2, Search, Download, Eye } from "lucide-react";
 import { WorkItemSelect } from "@/components/ui/work-item-select";
+import { useProjectLogo } from "@/hooks/useProjectLogo";
+import { printHtml } from "@/lib/services/reportService";
+import { fullPdfHeader } from "@/lib/services/pdfProjectHeader";
 
 // ── Tipos ──────────────────────────────────────────────────────────────
 interface Campaign {
@@ -409,6 +412,7 @@ function CampaignSheet({ campaign, open, onOpenChange, projectId, onReadingAdded
                   </Button>
                 )}
               </div>
+              </div>
 
               {readings.length > 0 && (
                 <div className="rounded-lg border border-border overflow-auto">
@@ -442,6 +446,19 @@ function CampaignSheet({ campaign, open, onOpenChange, projectId, onReadingAdded
                   </Table>
                 </div>
               )}
+
+              {/* Acções */}
+              <Separator />
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline" className="gap-1.5 flex-1"
+                  onClick={() => handleExportCampaign(campaign, readings)}>
+                  <Download className="h-3.5 w-3.5" />Exportar PDF
+                </Button>
+                <Button size="sm" variant="outline" className="gap-1.5 flex-1"
+                  onClick={() => { setSheetOpen(false); setEditing(campaign); setDialogOpen(true); }}>
+                  <Pencil className="h-3.5 w-3.5" />Editar
+                </Button>
+              </div>
             </div>
           )}
         </SheetContent>
@@ -462,6 +479,7 @@ export default function TrackGeometryPage() {
   const { t } = useTranslation();
   const { activeProject } = useProject();
   const { canCreate } = useProjectRole();
+  const { logoBase64 } = useProjectLogo();
   const pid = activeProject?.id ?? "";
 
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
@@ -513,7 +531,55 @@ export default function TrackGeometryPage() {
     pendente: campaigns.filter(c => c.overall_result === "pendente").length,
   }), [campaigns]);
 
-  const handleDelete = async () => {
+  const handleExportCampaign = (c: Campaign, reads: Reading[]) => {
+    const today = new Date().toLocaleDateString("pt-PT");
+    const header = fullPdfHeader(logoBase64 ?? null, activeProject?.name ?? "", c.campaign_code, "0", today);
+    const LEVEL_COLORS: Record<string,string> = { conforme:"#22c55e", nao_conforme:"#ef4444", pendente:"#f59e0b" };
+    const col = LEVEL_COLORS[c.overall_result] ?? "#94a3b8";
+    const rows = reads.map((r, i) => `
+      <tr style="background:${i%2===0?"#fff":"#f8fafc"}">
+        <td style="padding:4px;border:1px solid #ddd;font-family:monospace">${r.pk_position}</td>
+        <td style="padding:4px;border:1px solid #ddd;text-align:center">${r.gauge_deviation_mm ?? "—"}</td>
+        <td style="padding:4px;border:1px solid #ddd;text-align:center">${r.twist_mm ?? "—"}</td>
+        <td style="padding:4px;border:1px solid #ddd;text-align:center">${r.longitudinal_level_mm ?? "—"}</td>
+        <td style="padding:4px;border:1px solid #ddd;text-align:center">${r.alignment_mm ?? "—"}</td>
+        <td style="padding:4px;border:1px solid #ddd;text-align:center;font-size:16px">${r.conforming===true?"✓":r.conforming===false?"✗":"—"}</td>
+      </tr>`).join("");
+    const html = `<!DOCTYPE html><html lang="pt"><head><meta charset="UTF-8">
+      <title>${c.campaign_code}</title>
+      <style>@page{size:A4;margin:18mm 15mm}body{font-family:Arial,sans-serif;font-size:11px;color:#1e293b}table{border-collapse:collapse;width:100%}</style>
+    </head><body>
+      ${header}
+      <div style="font-size:16px;font-weight:bold;color:#1e3a5f;margin-bottom:10px;border-bottom:2px solid #1e3a5f;padding-bottom:4px">
+        ${c.campaign_code} — Campanha de Geometria de Via (EN 13231-1)
+      </div>
+      <table style="margin-bottom:12px">
+        <tr><td style="font-weight:bold;padding:4px;border:1px solid #ddd;width:25%">Data</td><td style="padding:4px;border:1px solid #ddd">${new Date(c.campaign_date).toLocaleDateString("pt-PT")}</td>
+            <td style="font-weight:bold;padding:4px;border:1px solid #ddd;width:25%">Via</td><td style="padding:4px;border:1px solid #ddd">${c.track ?? "—"}</td></tr>
+        <tr><td style="font-weight:bold;padding:4px;border:1px solid #ddd">PK Início</td><td style="padding:4px;border:1px solid #ddd;font-family:monospace">${c.pk_start}</td>
+            <td style="font-weight:bold;padding:4px;border:1px solid #ddd">PK Fim</td><td style="padding:4px;border:1px solid #ddd;font-family:monospace">${c.pk_end}</td></tr>
+        <tr><td style="font-weight:bold;padding:4px;border:1px solid #ddd">Operador</td><td style="padding:4px;border:1px solid #ddd">${c.operator_name ?? "—"}</td>
+            <td style="font-weight:bold;padding:4px;border:1px solid #ddd">Equipamento</td><td style="padding:4px;border:1px solid #ddd">${c.equipment_ref ?? "—"}</td></tr>
+        <tr><td style="font-weight:bold;padding:4px;border:1px solid #ddd">Norma</td><td style="padding:4px;border:1px solid #ddd">EN 13231-1 — Classe ${c.norm_class}</td>
+            <td style="font-weight:bold;padding:4px;border:1px solid #ddd">Resultado</td><td style="padding:4px;border:1px solid #ddd"><span style="color:${col};font-weight:bold">${c.overall_result.toUpperCase()}</span></td></tr>
+      </table>
+      ${reads.length > 0 ? `
+      <div style="font-weight:bold;font-size:12px;color:#1e3a5f;margin:10px 0 6px">Leituras (${reads.length})</div>
+      <table>
+        <thead><tr style="background:#1e3a5f;color:#fff">
+          <th style="padding:5px;text-align:left">PK</th>
+          <th style="padding:5px">Desvio Bitola (mm)</th>
+          <th style="padding:5px">Empeno (mm)</th>
+          <th style="padding:5px">Niv. Long. (mm)</th>
+          <th style="padding:5px">Alinhamento (mm)</th>
+          <th style="padding:5px">Conformidade</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>` : "<p style='color:#6b7280;font-size:11px'>Sem leituras registadas.</p>"}
+      ${c.observations ? `<div style="margin-top:12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:4px;padding:8px"><strong>Observações:</strong> ${c.observations}</div>` : ""}
+    </body></html>`;
+    printHtml(html, `${c.campaign_code}.pdf`);
+  };
     if (!deleteTarget) return;
     await db.from("track_geometry_campaigns")
       .update({ is_deleted: true, deleted_at: new Date().toISOString() })
@@ -613,6 +679,14 @@ export default function TrackGeometryPage() {
                     <TableCell><ResultBadge result={c.overall_result} t={t} /></TableCell>
                     <TableCell onClick={e => e.stopPropagation()}>
                       <div className="flex items-center gap-0.5">
+                        <Button variant="ghost" size="icon" className="h-6 w-6" title="Ver detalhe"
+                          onClick={() => { setSheetCampaign(c); setSheetOpen(true); }}>
+                          <Eye className="h-3 w-3" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-6 w-6" title="Exportar PDF"
+                          onClick={() => handleExportCampaign(c, [])}>
+                          <Download className="h-3 w-3" />
+                        </Button>
                         <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => { setEditing(c); setDialogOpen(true); }}>
                           <Pencil className="h-3 w-3" />
                         </Button>
