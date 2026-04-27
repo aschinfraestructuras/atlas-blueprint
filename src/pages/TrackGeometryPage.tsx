@@ -412,7 +412,6 @@ function CampaignSheet({ campaign, open, onOpenChange, projectId, onReadingAdded
                   </Button>
                 )}
               </div>
-              </div>
 
               {readings.length > 0 && (
                 <div className="rounded-lg border border-border overflow-auto">
