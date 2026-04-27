@@ -364,7 +364,7 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
                 <FormLabel>{t("tests.results.form.workItem")} <span className="text-xs text-muted-foreground">({t("common.optional")})</span></FormLabel>
                 <FormControl>
                   <WorkItemSelect
-                    workItems={workItems}
+                    workItems={workItems as any}
                     value={field.value || ""}
                     onValueChange={v => field.onChange(v || "")}
                     placeholder={t("tests.results.form.workItemPlaceholder")}
