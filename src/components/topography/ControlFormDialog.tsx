@@ -215,8 +215,8 @@ export function ControlFormDialog({ open, onOpenChange, projectId, equipment, ed
                   <FormControl>
                     <WorkItemSelect
                       workItems={workItems}
-                      value={field?.value || ""}
-                      onValueChange={v => field?.onChange && field.onChange(v || "")}
+                      value={field.value || ""}
+                      onValueChange={v => field.onChange(v || "")}
                       placeholder={t("topography.form.none")}
                     />
                   </FormControl>
