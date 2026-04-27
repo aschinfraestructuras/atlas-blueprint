@@ -36,6 +36,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { TraceabilityChain } from "@/components/tests/TraceabilityChain";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { WorkItemSelect } from "@/components/ui/work-item-select";
+import { TestCatalogSelect } from "@/components/ui/test-catalog-select";
 
 const schema = (t: (k: string) => string) =>
   z.object({
@@ -273,17 +274,14 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
                     <Loader2 className="h-3 w-3 animate-spin" />{t("common.loading")}
                   </div>
                 ) : (
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl><SelectTrigger><SelectValue placeholder={t("tests.results.form.testTypePlaceholder")} /></SelectTrigger></FormControl>
-                    <SelectContent>
-                      {catalog.map((c) => (
-                        <SelectItem key={c.id} value={c.id}>
-                          <span className="font-mono text-xs text-muted-foreground mr-1">{c.code}</span>
-                          {c.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <TestCatalogSelect
+                      catalog={catalog}
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      loading={loadingCatalog}
+                    />
+                  </FormControl>
                 )}
                 <FormMessage />
               </FormItem>

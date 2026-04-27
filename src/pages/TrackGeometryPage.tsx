@@ -23,6 +23,7 @@ import { Separator } from "@/components/ui/separator";
 import { toast } from "@/lib/utils/toast";
 import { cn } from "@/lib/utils";
 import { Ruler, Plus, ChevronRight, CheckCircle2, AlertTriangle, XCircle, Pencil, Trash2, Search } from "lucide-react";
+import { WorkItemSelect } from "@/components/ui/work-item-select";
 
 // ── Tipos ──────────────────────────────────────────────────────────────
 interface Campaign {
@@ -207,15 +208,11 @@ function CampaignDialog({ open, onOpenChange, campaign, projectId, workItems, on
           </div>
           <div className="space-y-1">
             <Label className="text-xs">{t("trackGeometry.form.workItem")}</Label>
-            <Select value={form.work_item_id} onValueChange={v => f("work_item_id", v)}>
-              <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="__none__">—</SelectItem>
-                {workItems.map((w: any) => (
-                  <SelectItem key={w.id} value={w.id}>{w.lote || w.obra} — {w.parte || w.elemento}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <WorkItemSelect
+              workItems={workItems}
+              value={form.work_item_id === "__none__" ? "" : form.work_item_id}
+              onValueChange={v => f("work_item_id", v || "__none__")}
+            />
           </div>
           <div className="space-y-1">
             <Label className="text-xs">{t("common.notes")}</Label>

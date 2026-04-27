@@ -25,6 +25,7 @@ import { RowActionMenu } from "@/components/ui/row-action-menu";
 import { EmptyState } from "@/components/EmptyState";
 import { ModuleKPICard } from "@/components/ModuleKPICard";
 import { toast } from "@/lib/utils/toast";
+import { WorkItemSelect } from "@/components/ui/work-item-select";
 
 const MATERIAL_TYPE_KEYS = [
   { value: "clay", key: "soils.materialTypes.clay" },
@@ -403,12 +404,11 @@ export default function SoilPage() {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label>Atividade</Label>
-                <Select value={form.work_item_id} onValueChange={(v) => setForm((f) => ({ ...f, work_item_id: v }))}>
-                  <SelectTrigger><SelectValue placeholder={t("common.selectPlaceholder")} /></SelectTrigger>
-                  <SelectContent>
-                    {workItems.map((wi) => <SelectItem key={wi.id} value={wi.id}>{wi.sector} — {wi.elemento ?? wi.obra ?? wi.disciplina}</SelectItem>)}
-                  </SelectContent>
-                </Select>
+                <WorkItemSelect
+                workItems={workItems}
+                value={form.work_item_id}
+                onValueChange={(v) => setForm((f) => ({ ...f, work_item_id: v }))}
+              />
               </div>
               <div><Label>Ref. Amostra *</Label><Input value={form.sample_ref} onChange={(e) => setForm((f) => ({ ...f, sample_ref: e.target.value }))} placeholder="S1-C2" /></div>
             </div>

@@ -31,6 +31,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { ModuleKPICard } from "@/components/ModuleKPICard";
 import { toast } from "@/lib/utils/toast";
 import { cn } from "@/lib/utils";
+import { WorkItemSelect } from "@/components/ui/work-item-select";
 
 const CONCRETE_CLASSES = ["C16/20", "C20/25", "C25/30", "C30/37", "C35/45", "C40/50"];
 const CONSISTENCY_CLASSES = ["S1", "S2", "S3", "S4", "S5"];
@@ -306,13 +307,11 @@ function LotsTab({
             </div>
             <div>
               <Label>Atividade</Label>
-              <Select value={lotForm.work_item_id || "__none__"} onValueChange={(v) => setLotForm((f) => ({ ...f, work_item_id: v === "__none__" ? "" : v }))}>
-                <SelectTrigger><SelectValue placeholder={t("common.selectPlaceholder")} /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__none__">—</SelectItem>
-                  {workItems.map((wi) => <SelectItem key={wi.id} value={wi.id}>{wi.sector} — {wi.elemento ?? wi.obra ?? wi.disciplina}</SelectItem>)}
-                </SelectContent>
-              </Select>
+              <WorkItemSelect
+                workItems={workItems}
+                value={lotForm.work_item_id || ""}
+                onValueChange={(v) => setLotForm((f) => ({ ...f, work_item_id: v || "" }))}
+              />
             </div>
             <div>
               <Label>Notas</Label>
@@ -834,12 +833,11 @@ export default function ConcretePage() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <Label>{t("common.activity")}</Label>
-                  <Select value={form.work_item_id} onValueChange={(v) => setForm((f) => ({ ...f, work_item_id: v, ppi_instance_id: "" }))}>
-                    <SelectTrigger><SelectValue placeholder={t("common.selectPlaceholder")} /></SelectTrigger>
-                    <SelectContent>
-                      {workItems.map((wi) => <SelectItem key={wi.id} value={wi.id}>{wi.sector} — {wi.elemento ?? wi.obra ?? wi.disciplina}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
+                  <WorkItemSelect
+                    workItems={workItems}
+                    value={form.work_item_id}
+                    onValueChange={(v) => setForm((f) => ({ ...f, work_item_id: v, ppi_instance_id: "" }))}
+                  />
                 </div>
                 <div>
                   <Label>{t("concrete.form.ppiAssociated")}</Label>
