@@ -211,15 +211,12 @@ export function ControlFormDialog({ open, onOpenChange, projectId, equipment, ed
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label>{t("topography.form.workItem")}</Label>
-                <Select value={form.work_item_id} onValueChange={v => setForm(f => ({ ...f, work_item_id: v }))}>
-                  <FormControl>
-                    <WorkItemSelect
-                      workItems={workItems}
-                      value={field.value || ""}
-                      onValueChange={v => field.onChange(v || "")}
-                      placeholder={t("topography.form.none")}
-                    />
-                  </FormControl>
+                <WorkItemSelect
+                  workItems={workItems}
+                  value={form.work_item_id || ""}
+                  onValueChange={v => setForm(f => ({ ...f, work_item_id: v || "" }))}
+                  placeholder={t("topography.form.none")}
+                />
               </div>
               <div>
                 <Label>{t("topography.form.ppiLinked", { defaultValue: "PPI associada" })}</Label>
