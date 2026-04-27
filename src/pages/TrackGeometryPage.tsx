@@ -340,7 +340,7 @@ function ReadingDialog({ open, onOpenChange, campaignId, onSaved }: any) {
 }
 
 // ── Detalhe da campanha ─────────────────────────────────────────────────
-function CampaignSheet({ campaign, open, onOpenChange, projectId, onReadingAdded }: any) {
+function CampaignSheet({ campaign, open, onOpenChange, projectId, onReadingAdded, onExport, onEdit }: any) {
   const { t } = useTranslation();
   const { canCreate } = useProjectRole();
   const [readings, setReadings] = useState<Reading[]>([]);
