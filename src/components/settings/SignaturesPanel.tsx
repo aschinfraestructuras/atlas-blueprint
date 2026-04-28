@@ -82,7 +82,7 @@ export function SignaturesPanel() {
     })));
 
     setWorkers(wsWithSig);
-    setConfigs((cRes.data ?? []) as SigConfig[]);
+    setConfigs((cRes.data ?? []) as unknown as SigConfig[]);
     setLoading(false);
   }, [activeProject]);
 

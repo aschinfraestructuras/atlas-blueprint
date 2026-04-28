@@ -317,10 +317,10 @@ export default function NCDetailPage() {
     origin_document: t("nc.origin.document"), origin_audit: t("nc.origin.audit"),
   });
 
-  const handlePreviewPdf = () => {
+  const handlePreviewPdf = async () => {
     if (!nc || !activeProject) return;
     revokeHtmlPreviewUrl(previewUrl);
-    const html = buildNCDetailHtml(nc, buildLabels(), activeProject.name, logoBase64, activeProject.code);
+    const html = await buildNCDetailHtml(nc, buildLabels(), activeProject.name, logoBase64, activeProject.code);
     const url = buildHtmlPreviewUrl(html);
     setPreviewUrl(url);
     setPreviewOpen(true);

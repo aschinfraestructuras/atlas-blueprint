@@ -90,12 +90,6 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
   const [weldingPayload, setWeldingPayload] = useState<WeldingPayload>({});
   const isEdit = !!testResult;
 
-  // Detectar se o ensaio seleccionado é de soldadura
-  const watchedTestId = form.watch("test_id");
-  const selectedTestCode = useMemo(() => {
-    return catalog.find(c => c.id === watchedTestId)?.code ?? "";
-  }, [catalog, watchedTestId]);
-
   // Modal "criar NC" após gravar fail
   const [ncPrompt, setNcPrompt] = useState<{
     testResultId: string;
@@ -113,6 +107,12 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
       be_campo_code: "", eme_code: "", eme_calibration_date: "", location_pk: "", weather: "", ambient_temperature: "",
     },
   });
+
+  // Detectar se o ensaio seleccionado é de soldadura
+  const watchedTestId = form.watch("test_id");
+  const selectedTestCode = useMemo(() => {
+    return catalog.find(c => c.id === watchedTestId)?.code ?? "";
+  }, [catalog, watchedTestId]);
 
   useEffect(() => {
     if (!open || !activeProject) return;
