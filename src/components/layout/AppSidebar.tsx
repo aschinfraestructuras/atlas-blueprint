@@ -14,7 +14,7 @@ import {
   Clock, BarChart3, Building2, ClipboardList, Leaf, GraduationCap, FileBarChart2,
   Users, Link2, Hammer, CheckSquare, FileStack, PieChart, Cog, CalendarCheck, Activity,
   Download, Zap, TrendingUp, Map, FileSpreadsheet, Ruler,
-  Send, ScanSearch, Bell } from "lucide-react";
+  Send, ScanSearch, Bell, Flame } from "lucide-react";
 import { usePWAInstall } from "@/hooks/usePWAInstall";
 import { NavLink } from "@/components/NavLink";
 import { cn } from "@/lib/utils";
@@ -83,6 +83,7 @@ const NAV_SECTIONS: SidebarSection[] = [
     items: [
       { labelKey: "nav.materials",         url: "/materials",         icon: Package },
       { labelKey: "nav.tests",             url: "/tests",             icon: FlaskConical },
+      { labelKey: "nav.welding",            url: "/tests/welding",     icon: Flame },
       { labelKey: "nav.nonConformities",   url: "/non-conformities",  icon: AlertTriangle, viewerVisible: true },
       // Plano de Ações removido — já é tab dentro de /non-conformities (rota /action-plan mantida)
       { labelKey: "nav.recycledMaterials", url: "/recycled-materials",icon: Leaf },
