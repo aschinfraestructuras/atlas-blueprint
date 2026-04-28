@@ -565,7 +565,7 @@ export const monthlyReportService = {
   </div>
 
   ${signatureSlots && signatureSlots.length > 0
-    ? (await import("./signatureService")).signatureBlockHtml(signatureSlots)
+    ? signatureBlockHtml(signatureSlots)
     : `<div style="margin-top:28px;border-top:2px solid #1e3a5f;padding-top:14px;">
         <div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#6b7280;margin-bottom:12px;">Aprovação e Assinaturas</div>
         <div style="display:flex;gap:0;">
