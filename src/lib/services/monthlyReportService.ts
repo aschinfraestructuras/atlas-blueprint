@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { projectInfoStripHtml, fullPdfHeader, type PdfProjectInfo } from "./pdfProjectHeader";
+import { signatureBlockHtml, type SignatureSlot } from "./signatureService";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const db = supabase as any;
@@ -378,7 +379,7 @@ export const monthlyReportService = {
     logoBase64?: string | null,
     projectMeta?: PdfProjectInfo | null,
     testsData?: { concreteBatches: number; concreteLots: number; concreteConform: number; weldsTotal: number; weldsWithUT: number; soilsTotal: number; soilsConform: number; compactionTotal: number; compactionConform: number } | null,
-    signatureSlots?: import("./signatureService").SignatureSlot[] | null,
+    signatureSlots?: SignatureSlot[] | null,
   ) {
     const refDate = new Date(report.reference_month);
     const monthLabel = refDate.toLocaleDateString("pt-PT", { year: "numeric", month: "long" });
@@ -564,7 +565,7 @@ export const monthlyReportService = {
   </div>
 
   ${signatureSlots && signatureSlots.length > 0
-    ? (await import("./signatureService")).signatureBlockHtml(signatureSlots)
+    ? signatureBlockHtml(signatureSlots)
     : `<div style="margin-top:28px;border-top:2px solid #1e3a5f;padding-top:14px;">
         <div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#6b7280;margin-bottom:12px;">Aprovação e Assinaturas</div>
         <div style="display:flex;gap:0;">
