@@ -65,7 +65,7 @@ interface AttendeeRow {
 
 export default function TrainingPage() {
   const { t } = useTranslation();
-  const signatureSlots = useSignatureSlots("field_record");
+  const signatureSlots = useSignatureSlots("training");
   const navigate = useNavigate();
   const { activeProject } = useProject();
   const { canCreate, canEdit } = useProjectRole();
