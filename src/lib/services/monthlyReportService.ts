@@ -378,6 +378,7 @@ export const monthlyReportService = {
     logoBase64?: string | null,
     projectMeta?: PdfProjectInfo | null,
     testsData?: { concreteBatches: number; concreteLots: number; concreteConform: number; weldsTotal: number; weldsWithUT: number; soilsTotal: number; soilsConform: number; compactionTotal: number; compactionConform: number } | null,
+    signatureSlots?: import("./signatureService").SignatureSlot[] | null,
   ) {
     const refDate = new Date(report.reference_month);
     const monthLabel = refDate.toLocaleDateString("pt-PT", { year: "numeric", month: "long" });
@@ -561,6 +562,24 @@ export const monthlyReportService = {
       </div>
     </div>
   </div>
+
+  ${signatureSlots && signatureSlots.length > 0
+    ? (await import("./signatureService")).signatureBlockHtml(signatureSlots)
+    : `<div style="margin-top:28px;border-top:2px solid #1e3a5f;padding-top:14px;">
+        <div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#6b7280;margin-bottom:12px;">Aprovação e Assinaturas</div>
+        <div style="display:flex;gap:0;">
+          <div style="flex:1;text-align:center;padding:0 12px;">
+            <div style="border-bottom:1.5px solid #1e3a5f;min-height:52px;margin-bottom:4px;"></div>
+            <div style="font-size:8.5px;font-weight:600;color:#1e3a5f;">Técnico de Qualidade</div>
+            <div style="font-size:7px;color:#9ca3af;margin-top:1px;">Data: ___/___/______</div>
+          </div>
+          <div style="flex:1;text-align:center;padding:0 12px;">
+            <div style="border-bottom:1.5px solid #1e3a5f;min-height:52px;margin-bottom:4px;"></div>
+            <div style="font-size:8.5px;font-weight:600;color:#1e3a5f;">Director de Obra</div>
+            <div style="font-size:7px;color:#9ca3af;margin-top:1px;">Data: ___/___/______</div>
+          </div>
+        </div>
+      </div>`}
 
   <div style="text-align:center;font-size:8px;color:#999;margin-top:20px;padding:8px;">
     Atlas QMS · CE Cláusula 35.ª §11 · Gerado em ${new Date().toLocaleString("pt-PT")}

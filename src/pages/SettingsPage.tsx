@@ -6,7 +6,7 @@ import { useTheme } from "@/components/theme/ThemeProvider";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
 import {
   Settings, Users, ShieldCheck, Sliders, Globe, Bell, Lock,
-  Building2, Mail, UserCheck, Key, Database, ChevronRight,
+  Building2, Mail, UserCheck, Key, Database, ChevronRight, Pen,
   Plus, Trash2, UserMinus, Loader2, Sun, Moon, Monitor,
   ImageIcon, Upload, X, ClipboardList, HardDrive, Check, Eye, EyeOff, Pencil, ShieldAlert, Rocket, Wrench,
   BarChart3, GitBranch, ExternalLink, MessageSquare, Save,
@@ -39,6 +39,7 @@ import { toast } from "sonner";
 import { WorkersPanel } from "@/components/workers/WorkersPanel";
 import { MachineryPanel } from "@/components/workers/MachineryPanel";
 import { ContactsNotificationsSection } from "@/components/settings/ContactsNotificationsSection";
+import { SignaturesPanel } from "@/components/settings/SignaturesPanel";
 import { ppiSeedService } from "@/lib/services/ppiSeedService";
 import { MultiProjectOverview } from "@/components/dashboard/MultiProjectOverview";
 
@@ -559,11 +560,12 @@ export default function SettingsPage() {
 
       {/* ── Navegação por tabs ─────────────────────────────────────────── */}
       <Tabs defaultValue="project" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4 h-10">
-          <TabsTrigger value="project"  className="gap-1.5 text-xs"><Building2   className="h-3.5 w-3.5 flex-shrink-0 hidden sm:block" /><span>{t("pages.settings.tabs.project",  { defaultValue: "Projecto" })}</span></TabsTrigger>
-          <TabsTrigger value="profile"  className="gap-1.5 text-xs"><UserCheck   className="h-3.5 w-3.5 flex-shrink-0 hidden sm:block" /><span>{t("pages.settings.tabs.profile",  { defaultValue: "Perfil" })}</span></TabsTrigger>
-          <TabsTrigger value="members"  className="gap-1.5 text-xs"><Users       className="h-3.5 w-3.5 flex-shrink-0 hidden sm:block" /><span>{t("pages.settings.tabs.members",  { defaultValue: "Membros" })}</span></TabsTrigger>
-          <TabsTrigger value="system"   className="gap-1.5 text-xs"><ShieldCheck className="h-3.5 w-3.5 flex-shrink-0 hidden sm:block" /><span>{t("pages.settings.tabs.system",   { defaultValue: "Sistema" })}</span></TabsTrigger>
+        <TabsList className="grid w-full grid-cols-5 h-10">
+          <TabsTrigger value="project"    className="gap-1.5 text-xs"><Building2   className="h-3.5 w-3.5 flex-shrink-0 hidden sm:block" /><span>{t("pages.settings.tabs.project",  { defaultValue: "Projecto" })}</span></TabsTrigger>
+          <TabsTrigger value="profile"    className="gap-1.5 text-xs"><UserCheck   className="h-3.5 w-3.5 flex-shrink-0 hidden sm:block" /><span>{t("pages.settings.tabs.profile",  { defaultValue: "Perfil" })}</span></TabsTrigger>
+          <TabsTrigger value="members"    className="gap-1.5 text-xs"><Users       className="h-3.5 w-3.5 flex-shrink-0 hidden sm:block" /><span>{t("pages.settings.tabs.members",  { defaultValue: "Membros" })}</span></TabsTrigger>
+          <TabsTrigger value="signatures" className="gap-1.5 text-xs"><Pen         className="h-3.5 w-3.5 flex-shrink-0 hidden sm:block" /><span>{t("pages.settings.tabs.signatures", { defaultValue: "Assinaturas" })}</span></TabsTrigger>
+          <TabsTrigger value="system"     className="gap-1.5 text-xs"><ShieldCheck className="h-3.5 w-3.5 flex-shrink-0 hidden sm:block" /><span>{t("pages.settings.tabs.system",   { defaultValue: "Sistema" })}</span></TabsTrigger>
         </TabsList>
 
         {/* ═══ TAB 1 — PROJECTO ════════════════════════════════════════════ */}
@@ -1086,7 +1088,12 @@ ${usageStats ? `
 
         </TabsContent>
 
-        {/* ═══ TAB 4 — SISTEMA ═════════════════════════════════════════════ */}
+        {/* ═══ TAB 4 — ASSINATURAS ═══════════════════════════════════════════ */}
+        <TabsContent value="signatures" className="space-y-4 mt-2">
+          <SignaturesPanel />
+        </TabsContent>
+
+        {/* ═══ TAB 5 — SISTEMA ═════════════════════════════════════════════ */}
         <TabsContent value="system" className="space-y-6 mt-2">
       {/* ── 8. System Audit ──────────────────────────────────────────── */}
       {(isAdmin || myRole === "project_manager" || myRole === "quality_manager") && (
