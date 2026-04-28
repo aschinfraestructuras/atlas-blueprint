@@ -313,11 +313,7 @@ export const compactionService = {
           ${isPass ? "CONFORME" : overall === "pending" ? "PENDENTE" : "NÃO CONFORME"}
         </span>
       </div>
-      <div class="sig-block">
-        <div><div class="sig-line">Técnico</div></div>
-        <div><div class="sig-line">Técnico de Qualidade</div></div>
-      </div>
-      ${sigHtml}
+      ${sigHtml || '<div class="sig-block"><div><div class="sig-line">Técnico</div></div><div><div class="sig-line">Técnico de Qualidade</div></div></div>'}
       <div style="margin-top:24px;font-size:7pt;color:${ATLAS_PDF.colors.muted};text-align:center;">
         Atlas QMS · ${projectName} · ${zone.code}
       </div>

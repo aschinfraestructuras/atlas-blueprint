@@ -422,11 +422,7 @@ export const concreteService = {
           ${isPass ? "CONFORME" : result.overall === "pending" ? "PENDENTE" : "NÃO CONFORME"}
         </span>
       </div>
-      <div class="sig-block">
-        <div><div class="sig-line">Técnico Laboratório</div></div>
-        <div><div class="sig-line">Técnico de Qualidade</div></div>
-      </div>
-      ${sigHtml}
+      ${sigHtml || '<div class="sig-block"><div><div class="sig-line">Técnico Laboratório</div></div><div><div class="sig-line">Técnico de Qualidade</div></div></div>'}
       <div style="margin-top:24px;font-size:7pt;color:${ATLAS_PDF.colors.muted};text-align:center;">
         Atlas QMS · ${projectName} · ${batch.code}
       </div>

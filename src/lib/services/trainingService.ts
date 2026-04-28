@@ -279,7 +279,7 @@ export const trainingService = {
       </tbody>
     </table>
 
-    <div style="margin-top:40px;display:flex;justify-content:space-between;">
+    ${sigHtml ? sigHtml : `<div style="margin-top:40px;display:flex;justify-content:space-between;">
       <div style="width:45%;">
         <div style="font-weight:700;font-size:11px;margin-bottom:30px;">Formador</div>
         <div style="border-top:1px solid #000;padding-top:4px;font-size:10px;">Nome: ${session.trainer_name ?? "________________"}</div>
@@ -290,8 +290,7 @@ export const trainingService = {
         <div style="border-top:1px solid #000;padding-top:4px;font-size:10px;">Nome: ________________</div>
         <div style="font-size:10px;margin-top:4px;">Assinatura: ________________</div>
       </div>
-    </div>
-    ${sigHtml}
+    </div>`}
   </div>
 
   <div style="text-align:center;font-size:8px;color:#999;margin-top:20px;padding:8px;">

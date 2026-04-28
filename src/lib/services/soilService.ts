@@ -292,11 +292,7 @@ export const soilService = {
       <div style="text-align:center;margin:16px 0;">
         <span class="badge ${resultClass}" style="font-size:14pt;padding:8px 24px;">${resultLabel}</span>
       </div>
-      <div class="sig-block">
-        <div><div class="sig-line">Técnico Laboratório</div></div>
-        <div><div class="sig-line">Técnico de Qualidade</div></div>
-      </div>
-      ${sigHtml}
+      ${sigHtml || '<div class="sig-block"><div><div class="sig-line">Técnico Laboratório</div></div><div><div class="sig-line">Técnico de Qualidade</div></div></div>'}
       <div style="margin-top:24px;font-size:7pt;color:${ATLAS_PDF.colors.muted};text-align:center;">
         Atlas QMS · ${projectName} · ${sample.code}
       </div>
