@@ -8,11 +8,13 @@ import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { toast } from "@/lib/utils/toast";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
 import {
-  Flame, Plus, Search, Trash2, FileDown, CheckCircle2, XCircle, Wrench, Clock, AlertTriangle, ShieldAlert, Pencil,
+  Flame, Plus, Search, Trash2, FileDown, CheckCircle2, XCircle, Wrench, Clock, AlertTriangle, ShieldAlert, Pencil, Eye,
 } from "lucide-react";
 import { ModuleKPICard } from "@/components/ModuleKPICard";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -68,6 +70,7 @@ export default function WeldPage() {
   const [saving, setSaving] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteTargetIdState, setDeleteTargetIdState] = useState<string | null>(null);
+  const [viewingWeld, setViewingWeld] = useState<WeldRecord | null>(null);
 
   // Form state
   const [form, setForm] = useState<Partial<WeldInput>>({
@@ -275,6 +278,7 @@ export default function WeldPage() {
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-1">
+                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setViewingWeld(w)}><Eye className="h-3.5 w-3.5" /></Button>
                       <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(w)}><Pencil className="h-3.5 w-3.5" /></Button>
                       <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => weldService.exportPdf(w, activeProject.name ?? "Atlas", logoBase64)}><FileDown className="h-3.5 w-3.5" /></Button>
                       <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => setDeleteTargetIdState(w.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
@@ -485,6 +489,163 @@ export default function WeldPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Sheet de detalhe — Ver soldadura */}
+      <Sheet open={!!viewingWeld} onOpenChange={v => { if (!v) setViewingWeld(null); }}>
+        <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
+          {viewingWeld && (
+            <>
+              <SheetHeader className="pb-3">
+                <SheetTitle className="flex items-center gap-2 text-base">
+                  <Flame className="h-4 w-4 text-amber-600" />
+                  {viewingWeld.code}
+                </SheetTitle>
+                <Badge variant="secondary" className={resultColor(viewingWeld.overall_result)}>
+                  {t(`welding.result.${viewingWeld.overall_result}`, { defaultValue: viewingWeld.overall_result })}
+                </Badge>
+              </SheetHeader>
+
+              <div className="space-y-4 text-sm">
+                {/* Identificação */}
+                <div className="space-y-2">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Identificação</p>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
+                    {[
+                      ["PK", viewingWeld.pk_location],
+                      ["Data", viewingWeld.weld_date],
+                      ["Tipo", viewingWeld.weld_type],
+                      ["Perfil Carril", viewingWeld.rail_profile],
+                      ["Lado", viewingWeld.track_side],
+                      ["WPS", (viewingWeld as any).wps_ref],
+                    ].map(([l, v]) => v ? (
+                      <div key={String(l)}><span className="text-muted-foreground">{l}: </span><span className="font-medium">{String(v)}</span></div>
+                    ) : null)}
+                  </div>
+                </div>
+
+                <Separator />
+
+                {/* Operador */}
+                <div className="space-y-2">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Operador / Soldador</p>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
+                    {[
+                      ["Nome", viewingWeld.operator_name],
+                      ["Cert. Ref.", viewingWeld.operator_cert_ref],
+                      ["Válido até", (viewingWeld as any).operator_cert_valid_until],
+                      ["Entidade", (viewingWeld as any).operator_cert_entity],
+                      ["Norma", (viewingWeld as any).operator_cert_standard],
+                    ].map(([l, v]) => v ? (
+                      <div key={String(l)}><span className="text-muted-foreground">{l}: </span><span className="font-medium">{String(v)}</span></div>
+                    ) : null)}
+                  </div>
+                </div>
+
+                <Separator />
+
+                {/* Materiais */}
+                <div className="space-y-2">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Materiais</p>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
+                    {[
+                      ["Porção (marca)", viewingWeld.portion_brand],
+                      ["Lote", viewingWeld.portion_lot],
+                      ["Molde", viewingWeld.mold_type],
+                      ["CE Ref.", (viewingWeld as any).portion_ce_ref],
+                      ["Organismo", (viewingWeld as any).approval_body_ref],
+                    ].map(([l, v]) => v ? (
+                      <div key={String(l)}><span className="text-muted-foreground">{l}: </span><span className="font-medium">{String(v)}</span></div>
+                    ) : null)}
+                  </div>
+                </div>
+
+                <Separator />
+
+                {/* Inspecção */}
+                <div className="space-y-2">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Inspecção Visual</p>
+                  <div className="flex items-center gap-2">
+                    {viewingWeld.visual_pass === true
+                      ? <><CheckCircle2 className="h-4 w-4 text-emerald-600" /><span className="font-medium text-emerald-700">Conforme</span></>
+                      : viewingWeld.visual_pass === false
+                      ? <><XCircle className="h-4 w-4 text-destructive" /><span className="font-medium text-destructive">Não Conforme</span></>
+                      : <span className="text-muted-foreground">Pendente</span>}
+                  </div>
+                  {viewingWeld.visual_notes && <p className="text-muted-foreground text-xs">{viewingWeld.visual_notes}</p>}
+                </div>
+
+                {/* UT */}
+                {viewingWeld.has_ut && (
+                  <>
+                    <Separator />
+                    <div className="space-y-2">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Ensaio Ultrassónico (UT)</p>
+                      <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
+                        {[
+                          ["Operador UT", viewingWeld.ut_operator],
+                          ["Equipamento", viewingWeld.ut_equipment_code],
+                          ["Calibração até", viewingWeld.ut_calibration_date],
+                          ["Nível", (viewingWeld as any).ut_cert_level],
+                          ["Resultado", viewingWeld.ut_result],
+                          ["FUS Ref.", (viewingWeld as any).fus_code],
+                        ].map(([l, v]) => v ? (
+                          <div key={String(l)}><span className="text-muted-foreground">{l}: </span><span className="font-medium">{String(v)}</span></div>
+                        ) : null)}
+                      </div>
+                      {viewingWeld.ut_defect_desc && <p className="text-xs text-muted-foreground">{viewingWeld.ut_defect_desc}</p>}
+                    </div>
+                  </>
+                )}
+
+                {/* Dureza */}
+                {viewingWeld.has_hardness && (
+                  <>
+                    <Separator />
+                    <div className="space-y-2">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Dureza (HV)</p>
+                      <div className="grid grid-cols-3 gap-2 text-center">
+                        {[
+                          ["Carril E.", viewingWeld.hv_rail_left],
+                          ["Centro", viewingWeld.hv_weld_center],
+                          ["Carril D.", viewingWeld.hv_rail_right],
+                        ].map(([l, v]) => (
+                          <div key={String(l)} className="rounded-lg border border-border/50 py-1.5">
+                            <div className="text-[10px] text-muted-foreground">{l}</div>
+                            <div className="font-bold">{v ?? "—"}</div>
+                          </div>
+                        ))}
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Critério: {viewingWeld.hv_criteria_min ?? "—"} – {viewingWeld.hv_criteria_max ?? "—"} HV
+                        {" "}{viewingWeld.hv_pass === true ? "✅ Conforme" : viewingWeld.hv_pass === false ? "❌ NC" : ""}
+                      </p>
+                    </div>
+                  </>
+                )}
+
+                {viewingWeld.notes && (
+                  <>
+                    <Separator />
+                    <p className="text-xs text-muted-foreground">{viewingWeld.notes}</p>
+                  </>
+                )}
+
+                {/* Botões */}
+                <div className="flex gap-2 pt-2">
+                  <Button size="sm" variant="outline" className="flex-1 h-8 text-xs gap-1"
+                    onClick={() => { setViewingWeld(null); openEdit(viewingWeld); }}>
+                    <Pencil className="h-3 w-3" /> Editar
+                  </Button>
+                  <Button size="sm" variant="outline" className="flex-1 h-8 text-xs gap-1"
+                    onClick={() => weldService.exportPdf(viewingWeld, activeProject?.name ?? "Atlas", logoBase64)}>
+                    <FileDown className="h-3 w-3" /> PDF
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }
