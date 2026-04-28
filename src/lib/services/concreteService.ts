@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { signatureBlockHtml } from "./signatureService";
 import { ATLAS_PDF } from "@/lib/atlas-pdf-theme";
 import { fullPdfHeader, projectInfoStripHtml } from "./pdfProjectHeader";
 

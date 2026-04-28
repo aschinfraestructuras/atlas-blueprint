@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { signatureBlockHtml } from "./signatureService";
 import { fullPdfHeader, projectInfoStripHtml } from "./pdfProjectHeader";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
