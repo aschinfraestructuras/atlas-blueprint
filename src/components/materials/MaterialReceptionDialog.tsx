@@ -169,7 +169,7 @@ export function MaterialReceptionDialog({ open, onOpenChange, projectId, materia
 
   // ── Gravar ─────────────────────────────────────────────────────────────────
   const handleSave = async (receptionStatus: "approved" | "quarantine" | "rejected") => {
-    if (!supplierId || !deliveryNoteRef.trim() || !lotRef.trim() || !quantityReceived || !unit.trim() || !storageLocation.trim()) {
+    if (!deliveryNoteRef.trim() || !lotRef.trim() || !quantityReceived || !unit.trim() || !storageLocation.trim()) {
       toast({ title: t("errors.notNull.title"), description: t("errors.notNull.description"), variant: "destructive" });
       return;
     }
@@ -185,7 +185,7 @@ export function MaterialReceptionDialog({ open, onOpenChange, projectId, materia
         .insert({
           project_id: projectId,
           material_id: material.id,
-          supplier_id: supplierId,
+          supplier_id: supplierId || null,
           work_item_id: workItemId === "__none__" ? null : workItemId,
           lot_code: generatedCode,
           reception_date: receptionDate,
