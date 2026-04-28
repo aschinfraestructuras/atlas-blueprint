@@ -379,7 +379,7 @@ export const monthlyReportService = {
     logoBase64?: string | null,
     projectMeta?: PdfProjectInfo | null,
     testsData?: { concreteBatches: number; concreteLots: number; concreteConform: number; weldsTotal: number; weldsWithUT: number; soilsTotal: number; soilsConform: number; compactionTotal: number; compactionConform: number } | null,
-    signatureSlots?: import("./signatureService").SignatureSlot[] | null,
+    signatureSlots?: SignatureSlot[] | null,
   ) {
     const refDate = new Date(report.reference_month);
     const monthLabel = refDate.toLocaleDateString("pt-PT", { year: "numeric", month: "long" });
