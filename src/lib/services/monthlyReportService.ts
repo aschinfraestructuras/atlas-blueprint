@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { projectInfoStripHtml, fullPdfHeader, type PdfProjectInfo } from "./pdfProjectHeader";
+import { signatureBlockHtml, type SignatureSlot } from "./signatureService";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const db = supabase as any;
