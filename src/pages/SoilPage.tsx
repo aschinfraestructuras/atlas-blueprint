@@ -656,7 +656,7 @@ export default function SoilPage() {
               />
 
               <DialogFooter>
-                <Button variant="outline" onClick={() => soilService.exportPdf(detailData, activeProject?.name ?? "PF17A", logoBase64)}>
+                <Button variant="outline" onClick={() => soilService.exportPdf(detailData, activeProject?.name ?? "PF17A", logoBase64, signatureSlots)}>
                   <FileDown className="h-4 w-4 mr-1.5" /> {t("common.exportPdf")}
                 </Button>
                 <DialogClose asChild><Button>{t("common.close")}</Button></DialogClose>

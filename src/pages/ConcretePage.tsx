@@ -1121,7 +1121,7 @@ export default function ConcretePage() {
 
               <DialogFooter>
                 <Button variant="outline" onClick={() => {
-                  if (detailData) concreteService.exportPdf(detailData.batch, detailData.specimens, activeProject?.name ?? "PF17A", logoBase64);
+                  if (detailData) concreteService.exportPdf(detailData.batch, detailData.specimens, activeProject?.name ?? "PF17A", logoBase64, signatureSlots);
                 }}>
                   <FileDown className="h-4 w-4 mr-1.5" /> {t("common.exportPdf")}
                 </Button>

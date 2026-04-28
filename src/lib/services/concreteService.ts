@@ -331,7 +331,8 @@ export const concreteService = {
     if (error) throw error;
   },
 
-  async exportPdf(batch: ConcreteBatch, specimens: ConcreteSpecimen[], projectName: string, logoBase64?: string | null, signatureSlots?: import('./signatureService').SignatureSlot[] | null): void {
+  async exportPdf(batch: ConcreteBatch, specimens: ConcreteSpecimen[], projectName: string, logoBase64?: string | null, signatureSlots?: import('./signatureService').SignatureSlot[] | null): Promise<void> {
+    const sigHtml = signatureSlots && signatureSlots.length > 0 ? signatureBlockHtml(signatureSlots) : '';
     const fck = parseFck(batch.concrete_class);
     const result = computeBatchResult(batch.concrete_class, specimens);
     const isPass = result.overall === "pass";
@@ -424,7 +425,7 @@ export const concreteService = {
         <div><div class="sig-line">Técnico Laboratório</div></div>
         <div><div class="sig-line">Técnico de Qualidade</div></div>
       </div>
-      ${signatureSlots && signatureSlots.length > 0 ? (await import("./signatureService")).signatureBlockHtml(signatureSlots) : ''}
+      ${sigHtml}
       <div style="margin-top:24px;font-size:7pt;color:${ATLAS_PDF.colors.muted};text-align:center;">
         Atlas QMS · ${projectName} · ${batch.code}
       </div>

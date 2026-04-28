@@ -482,7 +482,7 @@ export default function CompactionPage() {
 
               <DialogFooter>
                 <Button variant="outline" onClick={() => {
-                  if (detailData) compactionService.exportPdf(detailData.zone, detailData.nuclear, detailData.plates, activeProject?.name ?? "PF17A", logoBase64);
+                  if (detailData) compactionService.exportPdf(detailData.zone, detailData.nuclear, detailData.plates, activeProject?.name ?? "PF17A", logoBase64, signatureSlots);
                 }}>
                   <FileDown className="h-4 w-4 mr-1.5" /> {t("common.exportPdf")}
                 </Button>

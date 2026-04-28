@@ -185,6 +185,7 @@ export const trainingService = {
   },
 
   async exportPdf(session: TrainingSession, attendees: TrainingAttendee[], projectName: string, logoBase64?: string | null, signatureSlots?: import("./signatureService").SignatureSlot[] | null) {
+    const sigHtml = signatureSlots && signatureSlots.length > 0 ? signatureBlockHtml(signatureSlots) : '';
     const typeLabels: Record<string, string> = {
       initial: "Formação Inicial",
       new_personnel: "Integração de Novos Colaboradores",
@@ -289,7 +290,7 @@ export const trainingService = {
         <div style="font-size:10px;margin-top:4px;">Assinatura: ________________</div>
       </div>
     </div>
-    ${signatureSlots && signatureSlots.length > 0 ? (await import("./signatureService")).signatureBlockHtml(signatureSlots) : ''}
+    ${sigHtml}
   </div>
 
   <div style="text-align:center;font-size:8px;color:#999;margin-top:20px;padding:8px;">

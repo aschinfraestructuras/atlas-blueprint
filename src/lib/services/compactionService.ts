@@ -236,7 +236,8 @@ export const compactionService = {
     if (error) throw error;
   },
 
-  async exportPdf(zone: CompactionZone, nuclear: NuclearPoint[], plates: PlateTest[], projectName: string, logoBase64?: string | null, signatureSlots?: import('./signatureService').SignatureSlot[] | null): void {
+  async exportPdf(zone: CompactionZone, nuclear: NuclearPoint[], plates: PlateTest[], projectName: string, logoBase64?: string | null, signatureSlots?: import('./signatureService').SignatureSlot[] | null): Promise<void> {
+    const sigHtml = signatureSlots && signatureSlots.length > 0 ? signatureBlockHtml(signatureSlots) : '';
     const overall = compactionService.computeZoneResult(nuclear, plates);
     const isPass = overall === "pass";
 
@@ -315,7 +316,7 @@ export const compactionService = {
         <div><div class="sig-line">Técnico</div></div>
         <div><div class="sig-line">Técnico de Qualidade</div></div>
       </div>
-      ${signatureSlots && signatureSlots.length > 0 ? (await import("./signatureService")).signatureBlockHtml(signatureSlots) : ''}
+      ${sigHtml}
       <div style="margin-top:24px;font-size:7pt;color:${ATLAS_PDF.colors.muted};text-align:center;">
         Atlas QMS · ${projectName} · ${zone.code}
       </div>
