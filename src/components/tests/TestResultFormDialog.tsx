@@ -1,4 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { WeldingFields, WELDING_TEST_CODES } from "./WeldingFields";
+import type { WeldingPayload } from "./WeldingFields";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -85,7 +87,14 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
   const [newTestCode, setNewTestCode]     = useState("");
   const [creatingNew, setCreatingNew]     = useState(false);
   const [equipmentCals, setEquipmentCals] = useState<any[]>([]);
+  const [weldingPayload, setWeldingPayload] = useState<WeldingPayload>({});
   const isEdit = !!testResult;
+
+  // Detectar se o ensaio seleccionado é de soldadura
+  const watchedTestId = form.watch("test_id");
+  const selectedTestCode = useMemo(() => {
+    return catalog.find(c => c.id === watchedTestId)?.code ?? "";
+  }, [catalog, watchedTestId]);
 
   // Modal "criar NC" após gravar fail
   const [ncPrompt, setNcPrompt] = useState<{
@@ -156,6 +165,8 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
     });
     setCreatingNew(false);
     setNewTestName(""); setNewTestCode("");
+    // Carregar payload de soldadura se existir
+    setWeldingPayload((testResult as any)?.result_payload?.welding ?? {});
   }, [open, testResult, form, preselectedWorkItemId, preselectedPpiInstanceId]);
 
   const handleCreateCatalogEntry = async () => {
@@ -199,6 +210,9 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
         work_item_id:     values.work_item_id  || undefined,
         ppi_instance_id:  values.ppi_instance_id || undefined,
         supplier_id:      values.supplier_id   || undefined,
+        result_payload:   WELDING_TEST_CODES.includes(selectedTestCode) && Object.keys(weldingPayload).length > 0
+          ? { welding: weldingPayload }
+          : undefined,
       };
 
       let savedId: string | undefined;
@@ -523,6 +537,15 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
               </FormItem>
             )} />
 
+            {/* Campos específicos de soldadura — aparecem automaticamente quando o ensaio é de soldadura */}
+            {WELDING_TEST_CODES.includes(selectedTestCode) && (
+              <WeldingFields
+                testCode={selectedTestCode}
+                value={weldingPayload}
+                onChange={setWeldingPayload}
+                disabled={submitting}
+              />
+            )}
 
             <FormField control={form.control} name="notes" render={({ field }) => (
               <FormItem>

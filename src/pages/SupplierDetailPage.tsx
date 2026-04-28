@@ -32,6 +32,7 @@ import { SupplierFormDialog } from "@/components/suppliers/SupplierFormDialog";
 import { AddMaterialDialog } from "@/components/suppliers/AddMaterialDialog";
 import { LinkedDocumentsPanel } from "@/components/documents/LinkedDocumentsPanel";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
+import { SupplierEvaluationTab } from "@/components/suppliers/SupplierEvaluationTab";
 import { toast } from "@/lib/utils/toast";
 import { cn } from "@/lib/utils";
 
@@ -512,50 +513,14 @@ export default function SupplierDetailPage() {
         {/* Evaluations */}
         <TabsContent value="evaluations">
           <Card className="border-0 shadow-card">
-            <CardHeader className="pb-2 flex flex-row items-center justify-between">
+            <CardHeader className="pb-2">
               <CardTitle className="text-sm">{t("suppliers.evaluations.title")}</CardTitle>
-              {canCreate && (
-                <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setEvalDialogOpen(true)}>
-                  <Plus className="h-3.5 w-3.5" />
-                  {t("suppliers.evaluations.new")}
-                </Button>
-              )}
             </CardHeader>
             <CardContent className="p-6 pt-2">
-              {evals.length === 0 ? (
-                <p className="text-sm text-muted-foreground text-center py-6">{t("common.noData")}</p>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>{t("common.date")}</TableHead>
-                      <TableHead>{t("suppliers.evaluations.score")}</TableHead>
-                      <TableHead>{t("suppliers.evaluations.result")}</TableHead>
-                      <TableHead>{t("suppliers.evaluations.notes")}</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {evals.map(ev => (
-                      <TableRow key={ev.id}>
-                        <TableCell className="text-sm">{new Date(ev.eval_date).toLocaleDateString()}</TableCell>
-                        <TableCell className="text-sm font-medium">{ev.score != null ? `${ev.score}/100` : "—"}</TableCell>
-                        <TableCell>
-                          <Badge variant="secondary" className={cn(
-                            "text-xs",
-                            ev.result === "approved" ? "bg-primary/15 text-primary" :
-                            ev.result === "conditional" ? "bg-yellow-500/15 text-yellow-700 dark:text-yellow-400" :
-                            ev.result === "rejected" ? "bg-destructive/10 text-destructive" :
-                            "bg-muted text-muted-foreground"
-                          )}>
-                            {t(`suppliers.evaluations.results.${ev.result}`, { defaultValue: ev.result })}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">{ev.notes ?? "—"}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
+              <SupplierEvaluationTab
+                supplierId={supplier.id}
+                supplierName={supplier.name}
+              />
             </CardContent>
           </Card>
           
