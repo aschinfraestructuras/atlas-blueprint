@@ -124,7 +124,7 @@ function ncCss(): string {
 
 // ─── Render single NC HTML ────────────────────────────────────────────────────
 
-function renderNCHtml(nc: NonConformity, labels: NCExportLabels): string {
+async function renderNCHtml(nc: NonConformity, labels: NCExportLabels, signatureSlots?: import("./signatureService").SignatureSlot[] | null): Promise<string> {
   const sevLabel = (labels as Record<string, string>)[`severity_${nc.severity}`] ?? nc.severity;
   const stLabel = (labels as Record<string, string>)[`status_${nc.status}`] ?? nc.status;
   const originLabel = (labels as Record<string, string>)[`origin_${nc.origin}`] ?? nc.origin;
@@ -224,7 +224,11 @@ function renderNCHtml(nc: NonConformity, labels: NCExportLabels): string {
   ]);
 
   // 10. Assinaturas
-  html += `<div class="nc-sig-grid">
+  if (signatureSlots && signatureSlots.length > 0) {
+    const { signatureBlockHtml } = await import("./signatureService");
+    html += signatureBlockHtml(signatureSlots);
+  } else {
+    html += `<div class="nc-sig-grid">
     <div class="nc-sig-box">
       <div class="nc-sig-lbl">Emitido por (Empreiteiro)</div>
       <div class="nc-sig-line"></div>
@@ -238,6 +242,7 @@ function renderNCHtml(nc: NonConformity, labels: NCExportLabels): string {
       <div class="nc-sig-line"></div>
     </div>
   </div>`;
+  }
 
   return html;
 }
@@ -285,19 +290,20 @@ ${bodyHtml}
  * Builds the full HTML document for a single NC, ready to be rendered in an
  * in-app PDF preview iframe (via Blob URL) or printed.
  */
-export function buildNCDetailHtml(
+export async function buildNCDetailHtml(
   nc: NonConformity,
   labels: NCExportLabels,
   projectName: string,
   logoBase64?: string | null,
   projectCode?: string,
-): string {
+  signatureSlots?: import("./signatureService").SignatureSlot[] | null,
+): Promise<string> {
   const meta: ReportMeta = {
     projectName,
     projectCode: projectCode ?? "—",
     locale: "pt",
   };
-  const bodyHtml = renderNCHtml(nc, labels);
+  const bodyHtml = await renderNCHtml(nc, labels, signatureSlots);
   return buildNCDocument(bodyHtml, nc, meta, logoBase64);
 }
 
@@ -308,13 +314,14 @@ export async function exportNCPdf(
   projectName: string,
   logoBase64?: string | null,
   projectCode?: string,
+  signatureSlots?: import("./signatureService").SignatureSlot[] | null,
 ): Promise<void> {
   const meta: ReportMeta = {
     projectName,
     projectCode: projectCode ?? "—",
     locale: "pt",
   };
-  const html = buildNCDetailHtml(nc, labels, projectName, logoBase64, projectCode);
+  const html = await buildNCDetailHtml(nc, labels, projectName, logoBase64, projectCode, signatureSlots);
   const code = (nc.code ?? nc.reference ?? nc.id.slice(0, 8)).replace(/[^a-zA-Z0-9_-]/g, "_");
   printHtml(html, buildReportFilename("RNC", meta.projectCode, code));
 }

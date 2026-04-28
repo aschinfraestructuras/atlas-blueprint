@@ -181,6 +181,11 @@ export const weldService = {
     if (error) throw error;
   },
 
+  async exportPdfWithSignatures(record: WeldRecord, projectName: string, logoBase64?: string | null, signatureSlots?: import("./signatureService").SignatureSlot[] | null) {
+    const { signatureBlockHtml } = await import("./signatureService");
+    this._exportPdfInternal(record, projectName, logoBase64, signatureSlots ? signatureBlockHtml(signatureSlots) : null);
+  }
+
   exportPdf(record: WeldRecord, projectName: string, logoBase64?: string | null) {
     const passBadge = (v: boolean | null | undefined, passLabel = "OK", failLabel = "NC") =>
       v === true
