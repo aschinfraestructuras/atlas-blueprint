@@ -1989,6 +1989,107 @@ export type Database = {
           },
         ]
       }
+      document_signature_config: {
+        Row: {
+          created_at: string | null
+          doc_type: string
+          id: string
+          project_id: string
+          slot_label: string
+          slot_order: number
+          worker_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          doc_type: string
+          id?: string
+          project_id: string
+          slot_label: string
+          slot_order?: number
+          worker_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          doc_type?: string
+          id?: string
+          project_id?: string
+          slot_label?: string
+          slot_order?: number
+          worker_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_signature_config_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_signature_config_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "document_signature_config_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "document_signature_config_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "document_signature_config_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "document_signature_config_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_rm_kpis"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "document_signature_config_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_sgq_matrix_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "document_signature_config_worker_id_fkey"
+            columns: ["worker_id"]
+            isOneToOne: false
+            referencedRelation: "project_workers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_signature_config_worker_id_fkey"
+            columns: ["worker_id"]
+            isOneToOne: false
+            referencedRelation: "vw_worker_training_gap"
+            referencedColumns: ["worker_id"]
+          },
+          {
+            foreignKeyName: "document_signature_config_worker_id_fkey"
+            columns: ["worker_id"]
+            isOneToOne: false
+            referencedRelation: "vw_workers_training_status"
+            referencedColumns: ["worker_id"]
+          },
+        ]
+      }
       document_versions: {
         Row: {
           change_description: string | null
@@ -5971,6 +6072,8 @@ export type Database = {
           project_id: string
           reports_to: string | null
           role_function: string | null
+          signature_storage_path: string | null
+          signature_updated_at: string | null
           status: string
           subcontractor_id: string | null
           updated_at: string
@@ -5996,6 +6099,8 @@ export type Database = {
           project_id: string
           reports_to?: string | null
           role_function?: string | null
+          signature_storage_path?: string | null
+          signature_updated_at?: string | null
           status?: string
           subcontractor_id?: string | null
           updated_at?: string
@@ -6021,6 +6126,8 @@ export type Database = {
           project_id?: string
           reports_to?: string | null
           role_function?: string | null
+          signature_storage_path?: string | null
+          signature_updated_at?: string | null
           status?: string
           subcontractor_id?: string | null
           updated_at?: string
@@ -7554,37 +7661,85 @@ export type Database = {
           created_at: string
           created_by: string | null
           criteria: Json
+          deliveries_on_time: number | null
+          deliveries_total: number | null
           eval_date: string
+          evaluated_by: string | null
           id: string
+          lots_approved: number | null
+          lots_total: number | null
+          ncs_closed_on_time: number | null
+          ncs_total: number | null
           notes: string | null
+          period_end: string | null
+          period_label: string | null
+          period_start: string | null
           project_id: string
           result: string
           score: number | null
+          score_certificates: number | null
+          score_conformity: number | null
+          score_delivery: number | null
+          score_nc_response: number | null
           supplier_id: string
+          total_score: number | null
+          updated_at: string | null
         }
         Insert: {
           created_at?: string
           created_by?: string | null
           criteria?: Json
+          deliveries_on_time?: number | null
+          deliveries_total?: number | null
           eval_date?: string
+          evaluated_by?: string | null
           id?: string
+          lots_approved?: number | null
+          lots_total?: number | null
+          ncs_closed_on_time?: number | null
+          ncs_total?: number | null
           notes?: string | null
+          period_end?: string | null
+          period_label?: string | null
+          period_start?: string | null
           project_id: string
           result?: string
           score?: number | null
+          score_certificates?: number | null
+          score_conformity?: number | null
+          score_delivery?: number | null
+          score_nc_response?: number | null
           supplier_id: string
+          total_score?: number | null
+          updated_at?: string | null
         }
         Update: {
           created_at?: string
           created_by?: string | null
           criteria?: Json
+          deliveries_on_time?: number | null
+          deliveries_total?: number | null
           eval_date?: string
+          evaluated_by?: string | null
           id?: string
+          lots_approved?: number | null
+          lots_total?: number | null
+          ncs_closed_on_time?: number | null
+          ncs_total?: number | null
           notes?: string | null
+          period_end?: string | null
+          period_label?: string | null
+          period_start?: string | null
           project_id?: string
           result?: string
           score?: number | null
+          score_certificates?: number | null
+          score_conformity?: number | null
+          score_delivery?: number | null
+          score_nc_response?: number | null
           supplier_id?: string
+          total_score?: number | null
+          updated_at?: string | null
         }
         Relationships: [
           {
@@ -10592,6 +10747,7 @@ export type Database = {
           alignment_mm: number | null
           alignment_pass: boolean | null
           approval_body_ref: string | null
+          bloco_calibracao_ref: string | null
           cert_operator_us: string | null
           code: string
           created_at: string
@@ -10608,14 +10764,17 @@ export type Database = {
           hv_rail_right: number | null
           hv_weld_center: number | null
           id: string
+          is_deleted: boolean | null
           mold_type: string | null
           notes: string | null
           operator_cert_entity: string | null
+          operator_cert_expiry: string | null
           operator_cert_ref: string | null
           operator_cert_standard: string | null
           operator_cert_valid_until: string | null
           operator_name: string | null
           overall_result: string
+          pk_end: string | null
           pk_location: string
           portion_brand: string | null
           portion_ce_ref: string | null
@@ -10656,6 +10815,7 @@ export type Database = {
           alignment_mm?: number | null
           alignment_pass?: boolean | null
           approval_body_ref?: string | null
+          bloco_calibracao_ref?: string | null
           cert_operator_us?: string | null
           code: string
           created_at?: string
@@ -10672,14 +10832,17 @@ export type Database = {
           hv_rail_right?: number | null
           hv_weld_center?: number | null
           id?: string
+          is_deleted?: boolean | null
           mold_type?: string | null
           notes?: string | null
           operator_cert_entity?: string | null
+          operator_cert_expiry?: string | null
           operator_cert_ref?: string | null
           operator_cert_standard?: string | null
           operator_cert_valid_until?: string | null
           operator_name?: string | null
           overall_result?: string
+          pk_end?: string | null
           pk_location: string
           portion_brand?: string | null
           portion_ce_ref?: string | null
@@ -10720,6 +10883,7 @@ export type Database = {
           alignment_mm?: number | null
           alignment_pass?: boolean | null
           approval_body_ref?: string | null
+          bloco_calibracao_ref?: string | null
           cert_operator_us?: string | null
           code?: string
           created_at?: string
@@ -10736,14 +10900,17 @@ export type Database = {
           hv_rail_right?: number | null
           hv_weld_center?: number | null
           id?: string
+          is_deleted?: boolean | null
           mold_type?: string | null
           notes?: string | null
           operator_cert_entity?: string | null
+          operator_cert_expiry?: string | null
           operator_cert_ref?: string | null
           operator_cert_standard?: string | null
           operator_cert_valid_until?: string | null
           operator_name?: string | null
           overall_result?: string
+          pk_end?: string | null
           pk_location?: string
           portion_brand?: string | null
           portion_ce_ref?: string | null
