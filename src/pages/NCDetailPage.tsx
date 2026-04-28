@@ -40,6 +40,7 @@ import { cn } from "@/lib/utils";
 import { getNCTransitions, canDeleteNC, canEditNC } from "@/lib/stateMachines";
 import { NotifyEmailButton, NotificationHistory } from "@/components/notifications/EmailNotificationSection";
 import { NCSourceBadge } from "@/components/nc/NCSourceBadge";
+import { useSignatureSlots } from "@/hooks/useSignatureSlots";
 
 // ─── Colour maps ──────────────────────────────────────────────────────────────
 
@@ -136,6 +137,7 @@ const NC_FLOW = ["draft", "open", "in_progress", "pending_verification", "closed
 
 function NCStatusStepper({ currentStatus }: { currentStatus: string }) {
   const { t } = useTranslation();
+  const signatureSlots = useSignatureSlots("nc");
   const currentIdx = NC_FLOW.indexOf(currentStatus as any);
 
   return (
@@ -176,6 +178,7 @@ function NCStatusStepper({ currentStatus }: { currentStatus: string }) {
 
 export default function NCDetailPage() {
   const { t } = useTranslation();
+  const signatureSlots = useSignatureSlots("nc");
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { activeProject } = useProject();
@@ -279,7 +282,7 @@ export default function NCDetailPage() {
         origin_manual: t("nc.origin.manual"), origin_ppi: t("nc.origin.ppi"), origin_test: t("nc.origin.test"),
         origin_document: t("nc.origin.document"), origin_audit: t("nc.origin.audit"),
       };
-      await exportNCPdf(nc, labels, activeProject.name, logoBase64, activeProject.code);
+      await exportNCPdf(nc, labels, activeProject.name, logoBase64, activeProject.code, signatureSlots);
     } catch {
       toast({ title: t("nc.export.noData", { defaultValue: "Erro ao exportar" }), variant: "destructive" });
     } finally {

@@ -28,9 +28,11 @@ import { ModuleKPICard } from "@/components/ModuleKPICard";
 import { toast } from "@/lib/utils/toast";
 import { supabase } from "@/integrations/supabase/client";
 import { WorkItemSelect } from "@/components/ui/work-item-select";
+import { useSignatureSlots } from "@/hooks/useSignatureSlots";
 
 function ResultBadge({ result }: { result: string }) {
   const { t } = useTranslation();
+  const signatureSlots = useSignatureSlots("compaction");
   if (result === "pass") return <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-0">{t("common.compliant")}</Badge>;
   if (result === "fail") return <Badge variant="destructive">{t("common.nonCompliant")}</Badge>;
   return <Badge variant="outline" className="text-amber-600">{t("common.pendingStatus")}</Badge>;
@@ -38,6 +40,7 @@ function ResultBadge({ result }: { result: string }) {
 
 export default function CompactionPage() {
   const { t } = useTranslation();
+  const signatureSlots = useSignatureSlots("compaction");
   const navigate = useNavigate();
   const { activeProject } = useProject();
   const { logoBase64 } = useProjectLogo();
@@ -303,7 +306,7 @@ export default function CompactionPage() {
                         { key: "edit", label: t("common.edit"), icon: Pencil, onClick: () => openEdit(z) },
                         { key: "pdf", label: t("common.exportPdf"), icon: FileDown, onClick: () => {
                           compactionService.getById(z.id).then((d) => {
-                            if (d) compactionService.exportPdf(d.zone, d.nuclear, d.plates, activeProject?.name ?? "PF17A", logoBase64);
+                            if (d) compactionService.exportPdf(d.zone, d.nuclear, d.plates, activeProject?.name ?? "PF17A", logoBase64, signatureSlots);
                           });
                         }},
                         { key: "delete", label: t("common.delete"), icon: Trash2, onClick: () => setDeleteTargetId(z.id), variant: "destructive" as const },

@@ -26,6 +26,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { ModuleKPICard } from "@/components/ModuleKPICard";
 import { toast } from "@/lib/utils/toast";
 import { WorkItemSelect } from "@/components/ui/work-item-select";
+import { useSignatureSlots } from "@/hooks/useSignatureSlots";
 
 const MATERIAL_TYPE_KEYS = [
   { value: "clay", key: "soils.materialTypes.clay" },
@@ -60,6 +61,7 @@ function SoilResultBadge({ result }: { result: string }) {
 
 export default function SoilPage() {
   const { t } = useTranslation();
+  const signatureSlots = useSignatureSlots("soil");
   const { activeProject } = useProject();
   const { logoBase64 } = useProjectLogo();
   const { data: workItems } = useWorkItems();
@@ -380,7 +382,7 @@ export default function SoilPage() {
                       <RowActionMenu actions={[
                         { key: "view", label: t("common.view"), icon: Eye, onClick: () => setDetailId(s.id) },
                         { key: "edit", label: t("common.edit"), icon: Pencil, onClick: () => openEdit(s) },
-                        { key: "pdf", label: t("common.exportPdf"), icon: FileDown, onClick: () => soilService.exportPdf(s, activeProject?.name ?? "PF17A", logoBase64) },
+                        { key: "pdf", label: t("common.exportPdf"), icon: FileDown, onClick: () => soilService.exportPdf(s, activeProject?.name ?? "PF17A", logoBase64, signatureSlots) },
                         { key: "delete", label: t("common.delete"), icon: Trash2, onClick: () => setDeleteTargetId(s.id), variant: "destructive" as const },
                       ]} />
                     </TableCell>

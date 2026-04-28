@@ -33,6 +33,7 @@ import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { PageHeader } from "@/components/ui/page-header";
 import { FilterBar } from "@/components/ui/filter-bar";
 import { supabase } from "@/integrations/supabase/client";
+import { useSignatureSlots } from "@/hooks/useSignatureSlots";
 
 const RAIL_PROFILES = ["60E1", "54E1", "55G2", "46E3", "50E6"];
 const WELD_TYPES = ["aluminotermica", "continua", "flash_butt"];
@@ -47,6 +48,7 @@ function resultColor(r: string) {
 
 function CertExpiryBadge({ date }: { date: string | null | undefined }) {
   const { t } = useTranslation();
+  const signatureSlots = useSignatureSlots("weld");
   if (!date) return null;
   const today = new Date();
   const expiry = new Date(date);
@@ -58,6 +60,7 @@ function CertExpiryBadge({ date }: { date: string | null | undefined }) {
 
 export default function WeldPage() {
   const { t } = useTranslation();
+  const signatureSlots = useSignatureSlots("weld");
   const { activeProject } = useProject();
   const { logoBase64 } = useProjectLogo();
   const { data: workItems } = useWorkItems();
@@ -280,7 +283,7 @@ export default function WeldPage() {
                     <div className="flex gap-1">
                       <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setViewingWeld(w)}><Eye className="h-3.5 w-3.5" /></Button>
                       <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(w)}><Pencil className="h-3.5 w-3.5" /></Button>
-                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => weldService.exportPdf(w, activeProject.name ?? "Atlas", logoBase64)}><FileDown className="h-3.5 w-3.5" /></Button>
+                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => weldService.exportPdfWithSignatures(w, activeProject.name ?? "Atlas", logoBase64, signatureSlots)}><FileDown className="h-3.5 w-3.5" /></Button>
                       <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => setDeleteTargetIdState(w.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
                     </div>
                   </TableCell>
@@ -637,7 +640,7 @@ export default function WeldPage() {
                     <Pencil className="h-3 w-3" /> Editar
                   </Button>
                   <Button size="sm" variant="outline" className="flex-1 h-8 text-xs gap-1"
-                    onClick={() => weldService.exportPdf(viewingWeld, activeProject?.name ?? "Atlas", logoBase64)}>
+                    onClick={() => weldService.exportPdfWithSignatures(viewingWeld, activeProject?.name ?? "Atlas", logoBase64, signatureSlots)}>
                     <FileDown className="h-3 w-3" /> PDF
                   </Button>
                 </div>

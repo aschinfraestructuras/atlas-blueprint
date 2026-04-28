@@ -167,7 +167,7 @@ export const soilService = {
     if (error) throw error;
   },
 
-  exportPdf(sample: SoilSample, projectName: string, logoBase64?: string | null): void {
+  async exportPdf(sample: SoilSample, projectName: string, logoBase64?: string | null, signatureSlots?: import('./signatureService').SignatureSlot[] | null): void {
     const overall = computeOverallResult(sample);
     const resultLabel = overall === "apto" ? "APTO" : overall === "inapto" ? "INAPTO" : overall === "conditional" ? "CONDICIONAL" : "PENDENTE";
     const resultClass = overall === "apto" ? "pass" : overall === "pending" ? "pending" : "fail";
@@ -294,6 +294,7 @@ export const soilService = {
         <div><div class="sig-line">Técnico Laboratório</div></div>
         <div><div class="sig-line">Técnico de Qualidade</div></div>
       </div>
+      ${signatureSlots && signatureSlots.length > 0 ? (await import("./signatureService")).signatureBlockHtml(signatureSlots) : ''}
       <div style="margin-top:24px;font-size:7pt;color:${ATLAS_PDF.colors.muted};text-align:center;">
         Atlas QMS · ${projectName} · ${sample.code}
       </div>

@@ -29,6 +29,7 @@ import {
 import { toast } from "@/lib/utils/toast";
 import { cn } from "@/lib/utils";
 import {
+import { useSignatureSlots } from "@/hooks/useSignatureSlots";
   monthlyReportService,
   getDeadlineForMonth,
   isOnTime,
@@ -62,6 +63,7 @@ function getMonthOptions(): { value: string; label: string }[] {
 
 export default function MonthlyReportPage() {
   const { t } = useTranslation();
+  const signatureSlots = useSignatureSlots("rmsgq");
   const { activeProject } = useProject();
   const { canCreate, canEdit, canDelete } = useProjectRole();
   const { logoBase64 } = useProjectLogo();
@@ -77,7 +79,7 @@ export default function MonthlyReportPage() {
 
   const doPdf = useCallback(async (r: MonthlyReport) => {
     const testsData = await fetchTestsDataForMonth(r.project_id, r.reference_month);
-    monthlyReportService.exportPdf(r, activeProject?.name ?? "", logoBase64, projectMeta, testsData);
+    monthlyReportService.exportPdf(r, activeProject?.name ?? "", logoBase64, projectMeta, testsData, signatureSlots);
   }, [activeProject, logoBase64, projectMeta]);
 
   const [reports, setReports] = useState<MonthlyReport[]>([]);

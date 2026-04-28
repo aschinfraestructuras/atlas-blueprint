@@ -28,6 +28,7 @@ import { NoProjectBanner } from "@/components/NoProjectBanner";
 import { AttachmentsPanel } from "@/components/attachments/AttachmentsPanel";
 import { toast } from "@/lib/utils/toast";
 import { classifySupabaseError } from "@/lib/utils/supabaseError";
+import { useSignatureSlots } from "@/hooks/useSignatureSlots";
 
 const SESSION_TYPE_COLORS: Record<string, string> = {
   initial: "bg-primary/15 text-primary",
@@ -64,6 +65,7 @@ interface AttendeeRow {
 
 export default function TrainingPage() {
   const { t } = useTranslation();
+  const signatureSlots = useSignatureSlots("field_record");
   const navigate = useNavigate();
   const { activeProject } = useProject();
   const { canCreate, canEdit } = useProjectRole();

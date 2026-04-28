@@ -32,6 +32,7 @@ import { ModuleKPICard } from "@/components/ModuleKPICard";
 import { toast } from "@/lib/utils/toast";
 import { cn } from "@/lib/utils";
 import { WorkItemSelect } from "@/components/ui/work-item-select";
+import { useSignatureSlots } from "@/hooks/useSignatureSlots";
 
 const CONCRETE_CLASSES = ["C16/20", "C20/25", "C25/30", "C30/37", "C35/45", "C40/50"];
 const CONSISTENCY_CLASSES = ["S1", "S2", "S3", "S4", "S5"];
@@ -62,6 +63,7 @@ function makeDefaultSpecimen(no: number) {
 
 function ResultBadge({ result }: { result: string }) {
   const { t } = useTranslation();
+  const signatureSlots = useSignatureSlots("concrete");
   if (result === "pass") return <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-0">{t("common.compliant")}</Badge>;
   if (result === "fail") return <Badge variant="destructive">{t("common.nonCompliant")}</Badge>;
   return <Badge variant="outline" className="text-amber-600">{t("common.pendingStatus")}</Badge>;
@@ -96,6 +98,7 @@ function LotsTab({
   onRefreshBatches: () => void;
 }) {
   const { t } = useTranslation();
+  const signatureSlots = useSignatureSlots("concrete");
   const { data: workItems } = useWorkItems();
   const [lots, setLots] = useState<ConcreteLotConformity[]>([]);
   const [loading, setLoading] = useState(true);
@@ -379,6 +382,7 @@ function LotsTab({
 
 function ConformityByClassPanel({ projectId }: { projectId: string }) {
   const { t } = useTranslation();
+  const signatureSlots = useSignatureSlots("concrete");
   const [rows, setRows] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -445,6 +449,7 @@ function ConformityByClassPanel({ projectId }: { projectId: string }) {
 
 export default function ConcretePage() {
   const { t } = useTranslation();
+  const signatureSlots = useSignatureSlots("concrete");
   const { activeProject } = useProject();
   const { data: workItems } = useWorkItems();
   const { data: ppis } = usePPIInstances();
@@ -618,7 +623,7 @@ export default function ConcretePage() {
 
   function handleExport(batch: ConcreteBatchWithCounts) {
     concreteService.getById(batch.id).then((d) => {
-      if (d) concreteService.exportPdf(d.batch, d.specimens, activeProject?.name ?? "PF17A", logoBase64);
+      if (d) concreteService.exportPdf(d.batch, d.specimens, activeProject?.name ?? "PF17A", logoBase64, signatureSlots);
     });
   }
 
