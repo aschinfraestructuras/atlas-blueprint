@@ -138,7 +138,7 @@ export function SupplierEvaluationTab({ supplierId, supplierName }: Props) {
         .eq("project_id", activeProject.id)
         .eq("supplier_id", supplierId)
         .is("is_deleted", false),
-      supabase.from("non_conformities").select("id, status, due_date, closed_at")
+      supabase.from("non_conformities").select("id, status, due_date")
         .eq("project_id", activeProject.id)
         .eq("supplier_id", supplierId)
         .is("is_deleted", false),
