@@ -73,6 +73,7 @@ export default function AuditsPage() {
   const { canCreate, canEdit, canDelete } = useProjectRole();
   const reportMeta = useReportMeta();
   const { logoBase64 } = useProjectLogo();
+  const auditSlots = useSignatureSlots("audit");
 
   const [audits, setAudits] = useState<QualityAudit[]>([]);
   const [loading, setLoading] = useState(true);
