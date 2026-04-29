@@ -13,6 +13,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
+import { useSignatureSlots } from "@/hooks/useSignatureSlots";
 import { FileDown, FileText, Table2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
