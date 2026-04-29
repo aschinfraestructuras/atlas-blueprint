@@ -238,7 +238,6 @@ export const fieldRecordService = {
    * dialog or `printPdf` for the legacy print-window flow.
    */
   async buildPdfHtml(
-  async buildPdfHtml(
     record: FieldRecord & { materials?: FieldRecordMaterial[]; checks?: FieldRecordCheck[] },
     projectName: string,
     logoBase64?: string | null,
