@@ -483,14 +483,9 @@ ${n.notes ? `<div class="field" style="margin-top:6px"><span class="label">Notas
 </div>
 
 <!-- ASSINATURAS PAG 1 -->
-<div class="sig-row" style="margin-top:24px">
-  <div class="sig-block">
-    <div class="role">Emitida Por — TQ / RMSGQ</div>
-    <div>Nome: ______________________________</div>
-    <div style="margin-top:4px">Data/Hora: ____/____/____ ______h</div>
-    <div class="sig-line">Assinatura</div>
-  </div>
-  <div class="sig-block">
+${signatureBlockHtml(signatureSlots, fmtDate(n.notified_at ?? n.created_at))}
+<div class="sig-row" style="margin-top:16px">
+  <div class="sig-block" style="flex:1">
     <div class="role">Recebida Pela Fiscalização / IP</div>
     <div>Nome: ______________________________</div>
     <div style="margin-top:4px">Data/Hora: ____/____/____ ______h</div>
@@ -538,14 +533,9 @@ ${infoStrip}
   <span class="value">RNC-PF17A- ____________ &nbsp;&nbsp; ${checkbox()} Não aplicável</span>
 </div>
 
-<div class="sig-row" style="margin-top:32px">
-  <div class="sig-block">
-    <div class="role">Emitida Por — TQ</div>
-    <div>Nome: ______________________________</div>
-    <div style="margin-top:4px">Data/Hora: ____/____/____ ______h</div>
-    <div class="sig-line">Assinatura</div>
-  </div>
-  <div class="sig-block">
+${signatureBlockHtml(signatureSlots, fmtDate(n.confirmed_at ?? n.notified_at ?? n.created_at))}
+<div class="sig-row" style="margin-top:16px">
+  <div class="sig-block" style="flex:1">
     <div class="role">Recebida Pela Fiscalização / IP</div>
     <div>Nome: ______________________________</div>
     <div style="margin-top:4px">Data/Hora de recepção: ____/____/________</div>
