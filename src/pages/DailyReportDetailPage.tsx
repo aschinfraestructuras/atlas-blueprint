@@ -14,6 +14,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/lib/utils/toast";
 import { useReportMeta } from "@/hooks/useReportMeta";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
+import { useSignatureSlots } from "@/hooks/useSignatureSlots";
+import { signatureBlockHtml } from "@/lib/services/signatureService";
 import { useProject } from "@/contexts/ProjectContext";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -99,6 +101,7 @@ export default function DailyReportDetailPage() {
   const navigate = useNavigate();
   const meta = useReportMeta();
   const { logoBase64 } = useProjectLogo();
+  const dailyReportSlots = useSignatureSlots("daily_report");
   const { activeProject } = useProject();
 
   const [report, setReport] = useState<DailyReport | null>(null);
@@ -293,22 +296,9 @@ export default function DailyReportDetailPage() {
         [t("dailyReports.waste.type"), t("dailyReports.waste.packaging"), t("dailyReports.waste.quantity"), t("dailyReports.waste.unit"), t("dailyReports.waste.storage"), t("dailyReports.waste.destination")],
         waste.map(r => [r.type, r.packaging_type ?? "", String(r.quantity ?? ""), r.unit ?? "", r.preliminary_storage ?? "", r.final_destination ?? ""])
       )),
-      // Signatures block
+      // Signatures block — slots dinâmicos configurados em Definições → Assinaturas
       `<div class="atlas-section">${t("dailyReports.sections.observations")}</div>
-       <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:12px;">
-         ${[
-           [t("dailyReports.signatures.foreman"), report.foreman_name],
-           [t("dailyReports.signatures.contractor"), report.contractor_rep],
-           [t("dailyReports.signatures.supervisor"), report.supervisor_rep],
-           [t("dailyReports.signatures.ip"), report.ip_rep],
-         ].map(([label, name]) =>
-           `<div style="border:1px solid #e5e7eb;border-radius:6px;padding:10px;">
-             <div style="font-size:8px;font-weight:700;text-transform:uppercase;color:#6b7280;margin-bottom:4px;">${label}</div>
-             <div style="font-size:11px;margin-bottom:20px;">${name ?? "—"}</div>
-             <div style="border-top:1px solid #d1d5db;padding-top:4px;font-size:8px;color:#9ca3af;">Data: ______/______/______&nbsp;&nbsp;&nbsp;Assinatura: _______________________</div>
-           </div>`
-         ).join("")}
-       </div>`,
+       ${signatureBlockHtml(dailyReportSlots, new Date(report.report_date || Date.now()).toLocaleDateString("pt-PT"))}`,
     ].join("");
 
     const html = generatePdfDocument({
