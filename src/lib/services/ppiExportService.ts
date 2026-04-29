@@ -451,11 +451,12 @@ export function exportBulkPdf(
   locale: string,
   projectName: string,
   logoUrl?: string | null,
+  signatureSlots: SignatureSlot[] = [],
 ): void {
   if (instances.length === 0) return;
 
   const pages = instances.map((inst) =>
-    buildSinglePdfHtml(inst, labels, locale, projectName, logoUrl)
+    buildSinglePdfHtml(inst, labels, locale, projectName, logoUrl, signatureSlots)
       .replace("<!DOCTYPE html>", "")
       .replace(/<html[^>]*>/, "")
       .replace("</html>", "")
@@ -464,7 +465,7 @@ export function exportBulkPdf(
       .replace("</body>", "</div>")
   );
 
-  const firstHtml = buildSinglePdfHtml(instances[0], labels, locale, projectName, logoUrl);
+  const firstHtml = buildSinglePdfHtml(instances[0], labels, locale, projectName, logoUrl, signatureSlots);
   const styleMatch = firstHtml.match(/<style>([\s\S]*?)<\/style>/);
   const css = styleMatch ? styleMatch[1] : "";
 
