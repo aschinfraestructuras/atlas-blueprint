@@ -11,6 +11,7 @@ import type { PpiInstance, PpiInstanceItem } from "./ppiService";
 import type { HpNotification } from "./hpNotificationService";
 import { projectInfoStripHtml } from "./pdfProjectHeader";
 import { printHtml } from "./reportService";
+import { signatureBlockHtml, type SignatureSlot } from "./signatureService";
 import { esc } from "@/lib/utils/escapeHtml";
 
 // ─── Shared types ─────────────────────────────────────────────────────────────
@@ -174,6 +175,7 @@ export function buildSinglePdfHtml(
   locale: string,
   projectName: string,
   logoUrl?: string | null,
+  signatureSlots: SignatureSlot[] = [],
 ): string {
   const okCount      = inst.items.filter((i) => i.result === "pass").length;
   const nokCount     = inst.items.filter((i) => i.result === "fail").length;
@@ -385,28 +387,7 @@ export function buildSinglePdfHtml(
   </table>
 
   <!-- Signatures -->
-  <div class="signatures">
-    <div class="sig-block">
-      <div class="sig-role">TQ / Inspector</div>
-      <div class="sig-line">
-        <div class="sig-field">Nome: _________________________</div>
-        <div class="sig-field">Data: ___________</div>
-      </div>
-      <div class="sig-line" style="margin-top:12px;">
-        <div class="sig-field">Assinatura: _________________________</div>
-      </div>
-    </div>
-    <div class="sig-block">
-      <div class="sig-role">Fiscalização</div>
-      <div class="sig-line">
-        <div class="sig-field">Nome: _________________________</div>
-        <div class="sig-field">Data: ___________</div>
-      </div>
-      <div class="sig-line" style="margin-top:12px;">
-        <div class="sig-field">Assinatura: _________________________</div>
-      </div>
-    </div>
-  </div>
+  ${signatureBlockHtml(signatureSlots, new Date().toLocaleDateString(locale === "es" ? "es-ES" : "pt-PT"))}
 
   <!-- Footer -->
   <div class="footer">
@@ -455,8 +436,9 @@ export function exportSinglePdf(
   locale: string,
   projectName: string,
   logoUrl?: string | null,
+  signatureSlots: SignatureSlot[] = [],
 ): void {
-  const html = buildSinglePdfHtml(inst, labels, locale, projectName, logoUrl);
+  const html = buildSinglePdfHtml(inst, labels, locale, projectName, logoUrl, signatureSlots);
   printHtml(html, buildPpiFilename(inst, projectName));
 }
 
@@ -469,11 +451,12 @@ export function exportBulkPdf(
   locale: string,
   projectName: string,
   logoUrl?: string | null,
+  signatureSlots: SignatureSlot[] = [],
 ): void {
   if (instances.length === 0) return;
 
   const pages = instances.map((inst) =>
-    buildSinglePdfHtml(inst, labels, locale, projectName, logoUrl)
+    buildSinglePdfHtml(inst, labels, locale, projectName, logoUrl, signatureSlots)
       .replace("<!DOCTYPE html>", "")
       .replace(/<html[^>]*>/, "")
       .replace("</html>", "")
@@ -482,7 +465,7 @@ export function exportBulkPdf(
       .replace("</body>", "</div>")
   );
 
-  const firstHtml = buildSinglePdfHtml(instances[0], labels, locale, projectName, logoUrl);
+  const firstHtml = buildSinglePdfHtml(instances[0], labels, locale, projectName, logoUrl, signatureSlots);
   const styleMatch = firstHtml.match(/<style>([\s\S]*?)<\/style>/);
   const css = styleMatch ? styleMatch[1] : "";
 

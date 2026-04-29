@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
+import { useSignatureSlots } from "@/hooks/useSignatureSlots";
 import {
   fieldRecordService,
   type FieldRecord,
@@ -50,6 +51,7 @@ export function FieldRecordsTab({ instanceId, ppiCode, disciplina }: Props) {
   const { activeProject } = useProject();
   const { user } = useAuth();
   const { logoBase64 } = useProjectLogo();
+  const fieldRecordSlots = useSignatureSlots("field_record");
 
   const [records, setRecords] = useState<FieldRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -121,7 +123,7 @@ export function FieldRecordsTab({ instanceId, ppiCode, disciplina }: Props) {
   async function handleExport(record: FieldRecord) {
     try {
       const full = await fieldRecordService.getById(record.id);
-      fieldRecordService.exportPdf(full, activeProject?.name ?? "Atlas QMS", logoBase64);
+      fieldRecordService.exportPdf(full, activeProject?.name ?? "Atlas QMS", logoBase64, fieldRecordSlots);
     } catch (err) {
       toast({ title: "Erro ao exportar", variant: "destructive" });
     }

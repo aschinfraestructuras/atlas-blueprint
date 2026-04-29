@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { useProjectRole } from "@/hooks/useProjectRole";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
+import { useSignatureSlots } from "@/hooks/useSignatureSlots";
 import {
   qualityAuditService,
   type QualityAudit,
@@ -72,6 +73,7 @@ export default function AuditsPage() {
   const { canCreate, canEdit, canDelete } = useProjectRole();
   const reportMeta = useReportMeta();
   const { logoBase64 } = useProjectLogo();
+  const auditSlots = useSignatureSlots("audit");
 
   const [audits, setAudits] = useState<QualityAudit[]>([]);
   const [loading, setLoading] = useState(true);
@@ -332,7 +334,7 @@ export default function AuditsPage() {
                      <RowActionMenu
                        actions={[
                          ...(canEdit ? [{ key: "edit", labelKey: "common.edit", onClick: () => openEdit(audit) }] : []),
-                         { key: "export", label: t("audits.exportRai"), onClick: () => qualityAuditService.exportRaiPdf(audit, activeProject.name ?? "Projeto", logoBase64) },
+                         { key: "export", label: t("audits.exportRai"), onClick: () => qualityAuditService.exportRaiPdf(audit, activeProject.name ?? "Projeto", logoBase64, auditSlots) },
                          ...(canDelete ? [{ key: "delete", labelKey: "common.delete", onClick: () => setDeleteTarget(audit), variant: "destructive" as const }] : []),
                        ]}
                      />

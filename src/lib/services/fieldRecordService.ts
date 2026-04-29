@@ -1,6 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { fullPdfHeader } from "./pdfProjectHeader";
 import { resolveProjectLogoBase64 } from "./projectLogoResolver";
+import { signatureBlockHtml, type SignatureSlot } from "./signatureService";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -240,6 +241,7 @@ export const fieldRecordService = {
     record: FieldRecord & { materials?: FieldRecordMaterial[]; checks?: FieldRecordCheck[] },
     projectName: string,
     logoBase64?: string | null,
+    signatureSlots: SignatureSlot[] = [],
   ): Promise<string> {
     // Fallback: if logoBase64 wasn't provided by the caller (e.g. hook not ready),
     // fetch the active project's configured logo on-demand so the PDF always uses
@@ -352,20 +354,7 @@ export const fieldRecordService = {
         ${record.has_photos ? "Sim — n.º _____" : "N/A ☐"}
       </div>
 
-      <div class="sig-row">
-        <div class="sig-block">
-          <div class="role">TQ — Técnico de Qualidade</div>
-          <div>Nome: ______________________</div>
-          <div>Data: ______________________</div>
-          <div class="line">Assinatura</div>
-        </div>
-        <div class="sig-block">
-          <div class="role">Resp. Especialidade / Encarregado</div>
-          <div>Nome: ______________________</div>
-          <div>Data: ______________________</div>
-          <div class="line">Assinatura</div>
-        </div>
-      </div>
+      ${signatureBlockHtml(signatureSlots, new Date(record.inspection_date || Date.now()).toLocaleDateString("pt-PT"))}
 
       <div style="margin-top:30px;padding-top:8px;border-top:1px solid #ccc;font-size:8px;color:#999;display:flex;justify-content:space-between">
         <span>Atlas QMS · ${projectName}</span>
@@ -382,10 +371,11 @@ export const fieldRecordService = {
     record: FieldRecord & { materials?: FieldRecordMaterial[]; checks?: FieldRecordCheck[] },
     projectName: string,
     logoBase64?: string | null,
+    signatureSlots: SignatureSlot[] = [],
   ) {
     const w = window.open("", "_blank");
     if (!w) return;
-    const html = await this.buildPdfHtml(record, projectName, logoBase64);
+    const html = await this.buildPdfHtml(record, projectName, logoBase64, signatureSlots);
     w.document.write(html);
     w.document.close();
     w.print();

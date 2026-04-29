@@ -30,6 +30,7 @@ import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import { useProject } from "@/contexts/ProjectContext";
 import { useReportMeta } from "@/hooks/useReportMeta";
+import { useSignatureSlots } from "@/hooks/useSignatureSlots";
 import {
   AlertTriangle,
   Bell,
@@ -61,6 +62,7 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
   const navigate = useNavigate();
   const { activeProject } = useProject();
   const reportMeta = useReportMeta();
+  const hpSignatureSlots = useSignatureSlots("hp_notification");
   const [notifications, setNotifications] = useState<HpNotification[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -528,6 +530,7 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
                           location: (activeProject as any).location ?? null,
                           contract_number: (activeProject as any).contract_number ?? null,
                         } : null,
+                        signatureSlots: hpSignatureSlots,
                       };
                       // Abrir via Blob URL — funciona em tablet sem popup blocker
                       exportHpNotificationPdf(opts);

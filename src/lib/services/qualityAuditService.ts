@@ -3,6 +3,7 @@
  */
 import { supabase } from "@/integrations/supabase/client";
 import { fullPdfHeader, projectInfoStripHtml } from "./pdfProjectHeader";
+import { signatureBlockHtml, type SignatureSlot } from "./signatureService";
 
 export interface QualityAudit {
   id: string;
@@ -105,7 +106,7 @@ export const qualityAuditService = {
     if (error) throw error;
   },
 
-  exportRaiPdf(audit: QualityAudit, projectName: string, logoBase64?: string | null) {
+  exportRaiPdf(audit: QualityAudit, projectName: string, logoBase64?: string | null, signatureSlots: SignatureSlot[] = []) {
     const today = new Date().toLocaleDateString("pt-PT");
     const header = fullPdfHeader(logoBase64 ?? null, projectName, audit.code, "0", today);
 
@@ -124,10 +125,6 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; font-size: 11px; color: #
 .count-box { padding: 12px 20px; border: 1px solid #ddd; border-radius: 6px; text-align: center; }
 .count-box .num { font-size: 24px; font-weight: 700; }
 .count-box .lbl { font-size: 9px; text-transform: uppercase; color: #888; }
-.sig-block { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-top: 40px; border-top: 1px solid #ddd; padding-top: 20px; }
-.sig-item { text-align: center; }
-.sig-item .line { border-bottom: 1px solid #333; height: 40px; margin-bottom: 4px; }
-.sig-item .role { font-size: 9px; text-transform: uppercase; color: #888; }
 .footer { margin-top: 40px; text-align: center; font-size: 9px; color: #999; border-top: 1px solid #eee; padding-top: 8px; }
 </style></head><body>
 ${header}
@@ -147,11 +144,7 @@ ${audit.scope ? `<div class="section"><h2>Âmbito</h2><p>${audit.scope}</p></div
 ${audit.findings ? `<div class="section"><h2>Constatações</h2><p>${audit.findings}</p></div>` : ""}
 ${audit.observations ? `<div class="section"><h2>Observações</h2><p>${audit.observations}</p></div>` : ""}
 ${audit.report_ref ? `<div class="section"><h2>Referência do Relatório</h2><p>${audit.report_ref}</p></div>` : ""}
-<div class="sig-block">
-  <div class="sig-item"><div class="line"></div><div class="role">Auditor</div></div>
-  <div class="sig-item"><div class="line"></div><div class="role">Director de Obra (DO)</div></div>
-  <div class="sig-item"><div class="line"></div><div class="role">Resp. Qualidade (RQ)</div></div>
-</div>
+${signatureBlockHtml(signatureSlots, today)}
 <div class="footer">Atlas QMS · ${projectName}</div>
 </body></html>`;
 
