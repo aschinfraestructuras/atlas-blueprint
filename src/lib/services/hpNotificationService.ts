@@ -6,6 +6,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { fullPdfHeader, projectInfoStripHtml, type PdfProjectInfo } from "./pdfProjectHeader";
 import { resolveProjectLogoBase64 } from "./projectLogoResolver";
+import { signatureBlockHtml, type SignatureSlot } from "./signatureService";
 
 export interface HpNotification {
   id: string;
@@ -220,14 +221,15 @@ export interface HpNotificationPdfOptions {
   projectName: string;
   projectId: string;
   projectMeta?: PdfProjectInfo | null;
+  signatureSlots?: SignatureSlot[];
 }
 
 export async function exportHpNotificationPdf(opts: HpNotificationPdfOptions): Promise<void> {
-  const { notification: n, instance, projectName, projectId, projectMeta } = opts;
+  const { notification: n, instance, projectName, projectId, projectMeta, signatureSlots } = opts;
 
   // Resolver logo (pode ser null se não configurado)
   const logoBase64 = await resolveProjectLogoBase64(projectId);
-  const html = buildHpNotificationHtml(n, instance, projectName, projectMeta, logoBase64);
+  const html = buildHpNotificationHtml(n, instance, projectName, projectMeta, logoBase64, signatureSlots ?? []);
 
   // Usar Blob URL em vez de window.open("") — funciona em tablets e evita popup blockers
   const blob = new Blob([html], { type: "text/html;charset=utf-8" });
@@ -250,9 +252,9 @@ export async function exportHpNotificationPdf(opts: HpNotificationPdfOptions): P
 export async function generateHpNotificationHtmlBase64(
   opts: HpNotificationPdfOptions,
 ): Promise<{ base64: string; filename: string; mimeType: string }> {
-  const { notification: n, instance, projectName, projectId, projectMeta } = opts;
+  const { notification: n, instance, projectName, projectId, projectMeta, signatureSlots } = opts;
   const logoBase64 = await resolveProjectLogoBase64(projectId);
-  const html = buildHpNotificationHtml(n, instance, projectName, projectMeta, logoBase64);
+  const html = buildHpNotificationHtml(n, instance, projectName, projectMeta, logoBase64, signatureSlots ?? []);
   const base64 = btoa(unescape(encodeURIComponent(html)));
   return {
     base64,
@@ -268,6 +270,7 @@ function buildHpNotificationHtml(
   projectName: string,
   projectMeta: PdfProjectInfo | null | undefined,
   logoBase64: string | null,
+  signatureSlots: SignatureSlot[] = [],
 ): string {
 
   const esc = (v?: string | null) => (v ?? "—").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
