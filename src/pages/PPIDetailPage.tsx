@@ -27,6 +27,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { PdfPreviewDialog } from "@/components/ui/pdf-preview-dialog";
 import { buildHtmlPreviewUrl, revokeHtmlPreviewUrl } from "@/lib/utils/htmlPreview";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
+import { useSignatureSlots } from "@/hooks/useSignatureSlots";
 import i18n from "@/i18n";
 import { buildSinglePdfHtml, exportSinglePdf, type ExportLabels } from "@/lib/services/ppiExportService";
 import { HPNotificationPanel } from "@/components/ppi/HPNotificationPanel";
@@ -194,6 +195,7 @@ export default function PPIDetailPage() {
   const { user } = useAuth();
   const { logoBase64, logoUrl } = useProjectLogo();
   const logo = logoBase64 || logoUrl;
+  const ppiSignatureSlots = useSignatureSlots("ppi");
   const locale = i18n.language?.slice(0, 2) ?? "pt";
 
   // PDF in-app preview
@@ -554,13 +556,13 @@ export default function PPIDetailPage() {
               onPreview={() => {
                 revokeHtmlPreviewUrl(previewUrl);
                 const labels = buildPpiLabels(t);
-                const html = buildSinglePdfHtml(exportInst, labels, locale, activeProject.name, logo);
+                const html = buildSinglePdfHtml(exportInst, labels, locale, activeProject.name, logo, ppiSignatureSlots);
                 setPreviewUrl(buildHtmlPreviewUrl(html));
                 setPreviewOpen(true);
               }}
               onDownload={() => {
                 const labels = buildPpiLabels(t);
-                exportSinglePdf(exportInst, labels, locale, activeProject.name, logo);
+                exportSinglePdf(exportInst, labels, locale, activeProject.name, logo, ppiSignatureSlots);
               }}
               onDelete={!isViewer && instance.status === "draft" ? () => setDeleteDialogOpen(true) : undefined}
               canDelete={!isViewer && instance.status === "draft"}
