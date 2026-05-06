@@ -1104,7 +1104,8 @@
       "cte": "CTE",
       "egt": "EGT",
       "interoperability_report": "Informe Interoperabilidad",
-      "other": "Otro"
+      "other": "Otro",
+      "template": "Modelo / Plantilla"
     },
     "disciplinas": {
       "geral": "General",
