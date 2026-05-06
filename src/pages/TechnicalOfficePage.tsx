@@ -13,8 +13,9 @@ import { rfiService } from "@/lib/services/rfiService";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import { exportRfisCsv, exportRfisPdf } from "@/lib/services/rfiExportService";
 import { exportTechOfficeCsv, exportTechOfficePdf } from "@/lib/services/techOfficeExportService";
-import { Inbox, Plus, Trash2, MessageSquareText, Search, Eye, AlertTriangle, Clock, CheckCircle, FileText, Map, GitMerge } from "lucide-react";
+import { Inbox, Plus, Trash2, MessageSquareText, Search, Eye, AlertTriangle, Clock, CheckCircle, FileText, Map, GitMerge, CalendarDays } from "lucide-react";
 import { TechnicalChangesTab } from "@/components/technical-office/TechnicalChangesTab";
+import { MeetingsTab } from "@/components/technical-office/MeetingsTab";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
@@ -376,6 +377,7 @@ export default function TechnicalOfficePage() {
           <TabsTrigger value="others">{t("technicalOffice.tabs.others", { defaultValue: "Outros" })}</TabsTrigger>
           <TabsTrigger value="topo_drawings"><Map className="h-4 w-4 mr-1" />{t("topography.topoDrawings")}</TabsTrigger>
           <TabsTrigger value="changes" className="gap-1"><GitMerge className="h-4 w-4" />{t("tc.tabLabel")}</TabsTrigger>
+          <TabsTrigger value="meetings" className="gap-1"><CalendarDays className="h-4 w-4" />{t("meetings.tab", { defaultValue: "Reuniões" })}</TabsTrigger>
         </TabsList>
 
         <div className="mt-4">
@@ -538,6 +540,13 @@ export default function TechnicalOfficePage() {
         {activeTab === "changes" && (
           <div className="mt-4">
             <TechnicalChangesTab />
+          </div>
+        )}
+
+        {/* Reuniões SGQ */}
+        {activeTab === "meetings" && (
+          <div className="mt-4">
+            <MeetingsTab />
           </div>
         )}
       </Tabs>

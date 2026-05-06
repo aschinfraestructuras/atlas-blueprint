@@ -5505,7 +5505,8 @@
     "lastMaintenance": "Última manutenção",
     "nextMaintenance": "Próxima manutenção",
     "horimetro": "Horímetro (h)",
-    "maxLoad": "Carga máx. (t)"
+    "maxLoad": "Carga máx. (t)",
+    "log": "Diário"
   },
   "contacts": {
     "title": "Contactos do Projecto",
@@ -6189,6 +6190,26 @@
     },
     "pdf": {
       "title": "Registo de Riscos e Oportunidades — ISO 9001:2015 §6.1"
+    }
+  },
+  "meetings": {
+    "tab": "Reuniões",
+    "new": "Nova Acta",
+    "edit": "Editar Acta",
+    "empty": "Sem actas de reunião registadas",
+    "allTypes": "Todos os tipos",
+    "type": {
+      "kickoff": "Kick-off",
+      "monthly": "Mensal SGQ",
+      "hp": "Hold Point",
+      "audit": "Auditoria",
+      "extraordinary": "Extraordinária",
+      "closure": "Encerramento"
+    },
+    "status": {
+      "draft": "Rascunho",
+      "approved": "Aprovada",
+      "distributed": "Distribuída"
     }
   }
 }

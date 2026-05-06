@@ -32,6 +32,7 @@ import { ArrowLeft, HardHat, Plus, Trash2, FileCheck, AlertTriangle, ClipboardLi
 import { cn } from "@/lib/utils";
 import { WorkersPanel } from "@/components/workers/WorkersPanel";
 import { MachineryPanel } from "@/components/workers/MachineryPanel";
+import { MachineryLogTab } from "@/components/workers/MachineryLogTab";
 import { ReportExportMenu } from "@/components/reports/ReportExportMenu";
 import { exportSubcontractorDetailPdf, buildSubcontractorDetailHtml } from "@/lib/services/subcontractorExportService";
 import type { ReportMeta } from "@/lib/services/reportService";
@@ -781,7 +782,18 @@ export default function SubcontractorDetailPage() {
 
         {/* Machinery */}
         <TabsContent value="machinery">
-          <MachineryPanel projectId={activeProject.id} subcontractorId={sub.id} company={sub.name} />
+          <Tabs defaultValue="list">
+            <TabsList className="h-8 mb-3">
+              <TabsTrigger value="list" className="text-xs h-7">{t("machinery.title", { defaultValue: "Máquinas" })}</TabsTrigger>
+              <TabsTrigger value="log" className="text-xs h-7">{t("machinery.log", { defaultValue: "Diário" })}</TabsTrigger>
+            </TabsList>
+            <TabsContent value="list">
+              <MachineryPanel projectId={activeProject.id} subcontractorId={sub.id} company={sub.name} />
+            </TabsContent>
+            <TabsContent value="log">
+              <MachineryLogTab />
+            </TabsContent>
+          </Tabs>
         </TabsContent>
 
         {/* Qualifications Tab */}
