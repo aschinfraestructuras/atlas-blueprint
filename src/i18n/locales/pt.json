@@ -6196,9 +6196,34 @@
   "meetings": {
     "tab": "Reuniões",
     "new": "Nova Acta",
+    "newAta": "Nova Acta ATA-Q",
     "edit": "Editar Acta",
-    "empty": "Sem actas de reunião registadas",
+    "empty": "Sem actas de reunião — cria a primeira em Documentos → ATA-Q",
     "allTypes": "Todos os tipos",
+    "searchPlaceholder": "Pesquisar actas...",
+    "sourceNotice": "As actas são criadas em Documentos → ATA-Q e aparecem aqui automaticamente.",
+    "goToDocs": "Ir para Documentos",
+    "editInDoc": "Editar no documento",
+    "fields": {
+      "ataNumber": "N.º Ata",
+      "type": "Tipo",
+      "date": "Data",
+      "location": "Local",
+      "schedule": "Horário",
+      "calledBy": "Convocada por",
+      "decisionsCount": "Decisões",
+      "attendeesContractor": "Participantes — Empreiteiro",
+      "attendeesSupervisor": "Participantes — Fiscalização",
+      "attendeesOwner": "Participantes — Dono de Obra",
+      "attendeesOthers": "Outros Participantes",
+      "agenda": "Ordem de Trabalhos",
+      "discussions": "Assuntos Tratados / Deliberações",
+      "decisions": "Decisões / Plano de Acção",
+      "nextMeeting": "Próxima reunião",
+      "elaboratedBy": "Elaborado por",
+      "verifiedBy": "Verificado / Aprovado por",
+      "pendingActions": "Acções Pendentes de Reuniões Anteriores"
+    },
     "type": {
       "kickoff": "Kick-off",
       "monthly": "Mensal SGQ",
@@ -6215,8 +6240,8 @@
     "actionPanel": {
       "title": "Plano de Acção — Reuniões SGQ",
       "open": "em aberto",
-      "empty": "Sem acções em aberto — tudo resolvido ✅",
-      "goToMeetings": "Ver todas as actas"
+      "empty": "Sem acções pendentes das reuniões ✅",
+      "goToMeetings": "Ver reuniões"
     }
   }
 }

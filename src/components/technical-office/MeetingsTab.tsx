@@ -55,7 +55,7 @@ function parseDecisoes(text: string) {
 }
 
 export function MeetingsTab() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { activeProject } = useProject();
   const navigate = useNavigate();
   const { logoBase64 } = useProjectLogo();
@@ -96,10 +96,10 @@ export function MeetingsTab() {
     const sigHtml = sigSlots.length > 0 ? signatureBlockHtml(sigSlots) : `
       <div style="display:flex;gap:40px;margin-top:32px;border-top:2px solid #1e3a5f;padding-top:16px;">
         <div style="flex:1;text-align:center;"><div style="border-bottom:1px solid #1e3a5f;height:40px;margin-bottom:4px;"></div>
-          <div style="font-size:9px;font-weight:700;color:#1e3a5f;">Elaborado por</div>
+          <div style="font-size:9px;font-weight:700;color:#1e3a5f;">${t("meetings.fields.elaboratedBy")}</div>
           <div style="font-size:8px;color:#6b7280;">${fd.elaborado_por ?? ""}</div></div>
         <div style="flex:1;text-align:center;"><div style="border-bottom:1px solid #1e3a5f;height:40px;margin-bottom:4px;"></div>
-          <div style="font-size:9px;font-weight:700;color:#1e3a5f;">Verificado / Aprovado por</div>
+          <div style="font-size:9px;font-weight:700;color:#1e3a5f;">${t("meetings.fields.verifiedBy")}</div>
           <div style="font-size:8px;color:#6b7280;">${fd.verificado_por ?? ""}</div></div>
       </div>`;
 
@@ -119,7 +119,7 @@ export function MeetingsTab() {
       : "";
 
     const header = fullPdfHeader(logoBase64 ?? null, activeProject?.name ?? "", doc.code ?? "", "0",
-      fd.data_reuniao ? new Date(fd.data_reuniao).toLocaleDateString("pt-PT") : new Date(doc.created_at).toLocaleDateString("pt-PT"));
+      fd.data_reuniao ? new Date(fd.data_reuniao).toLocaleDateString(i18n.language?.startsWith("es") ? "es-ES" : "pt-PT") : new Date(doc.created_at).toLocaleDateString(i18n.language?.startsWith("es") ? "es-ES" : "pt-PT"));
 
     const html = `<!DOCTYPE html><html><head><meta charset="utf-8">
     <style>@page{size:A4;margin:18mm}body{font-family:'Segoe UI',sans-serif;font-size:11px;color:#1a1a1a;margin:0;padding:20px}
@@ -127,30 +127,30 @@ export function MeetingsTab() {
     </head><body>
     ${header}
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0;background:#f0f4f8;padding:10px;border-radius:6px;">
-      <div><b>N.º Ata:</b> ${fd.numero_ata ?? "—"}</div>
-      <div><b>Data:</b> ${fd.data_reuniao ? new Date(fd.data_reuniao).toLocaleDateString("pt-PT") : "—"}</div>
-      <div><b>Local:</b> ${fd.local ?? "—"}</div>
-      <div><b>Horário:</b> ${fd.hora_inicio ?? "—"} – ${fd.hora_fim ?? "—"}</div>
-      <div><b>Tipo:</b> ${fd.tipo_reuniao ?? "—"}</div>
-      <div><b>Convocada por:</b> ${fd.convocada_por ?? "—"}</div>
+      <div><b>${t("meetings.fields.ataNumber")}:</b> ${fd.numero_ata ?? "—"}</div>
+      <div><b>${t("meetings.fields.date")}:</b> ${fd.data_reuniao ? new Date(fd.data_reuniao).toLocaleDateString(i18n.language?.startsWith("es") ? "es-ES" : "pt-PT") : "—"}</div>
+      <div><b>${t("meetings.fields.location")}:</b> ${fd.local ?? "—"}</div>
+      <div><b>${t("meetings.fields.schedule")}:</b> ${fd.hora_inicio ?? "—"} – ${fd.hora_fim ?? "—"}</div>
+      <div><b>${t("meetings.fields.type")}:</b> ${fd.tipo_reuniao ?? "—"}</div>
+      <div><b>${t("meetings.fields.calledBy")}:</b> ${fd.convocada_por ?? "—"}</div>
     </div>
-    ${block("Participantes — Empreiteiro", fd.participantes_empreiteiro)}
-    ${block("Participantes — Fiscalização", fd.participantes_fiscalizacao)}
-    ${block("Participantes — Dono de Obra", fd.participantes_dono_obra)}
-    ${fd.participantes_outros ? block("Outros Participantes", fd.participantes_outros) : ""}
-    ${block("Ordem de Trabalhos", fd.ordem_trabalhos)}
-    ${block("Assuntos Tratados / Deliberações", fd.assuntos_tratados)}
+    ${block(t("meetings.fields.attendeesContractor"), fd.participantes_empreiteiro)}
+    ${block(t("meetings.fields.attendeesSupervisor"), fd.participantes_fiscalizacao)}
+    ${block(t("meetings.fields.attendeesOwner"), fd.participantes_dono_obra)}
+    ${fd.participantes_outros ? block(t("meetings.fields.attendeesOthers"), fd.participantes_outros) : ""}
+    ${block(t("meetings.fields.agenda"), fd.ordem_trabalhos)}
+    ${block(t("meetings.fields.discussions"), fd.assuntos_tratados)}
     ${decisoes.length ? `
       <div style="margin:10px 0;">
-        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#1e3a5f;margin-bottom:4px;">Decisões e Plano de Acção</div>
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#1e3a5f;margin-bottom:4px;">${t("meetings.fields.decisions")}</div>
         <table><tr><th>Decisão</th><th>Responsável</th><th>Prazo</th></tr>${decisoesHtml}</table>
       </div>` : ""}
-    ${block("Acções Pendentes de Reuniões Anteriores", fd.acoes_pendentes)}
+    ${block(t("meetings.fields.pendingActions", { defaultValue: "Acções Pendentes de Reuniões Anteriores" }), fd.acoes_pendentes)}
     ${block("Observações", fd.observacoes)}
-    ${fd.proxima_reuniao ? `<p style="font-size:10px;color:#6b7280;margin-top:12px;">Próxima reunião: <b>${new Date(fd.proxima_reuniao).toLocaleDateString("pt-PT")}</b></p>` : ""}
+    ${fd.proxima_reuniao ? `<p style="font-size:10px;color:#6b7280;margin-top:12px;">${t("meetings.fields.nextMeeting")}: <b>${new Date(fd.proxima_reuniao).toLocaleDateString(i18n.language?.startsWith("es") ? "es-ES" : "pt-PT")}</b></p>` : ""}
     ${sigHtml}
     <div style="text-align:center;font-size:8px;color:#999;margin-top:20px;">
-      Atlas QMS · ${doc.code} · Gerado em ${new Date().toLocaleString("pt-PT")}
+      Atlas QMS · ${doc.code} · Gerado em ${new Date().toLocaleString(i18n.language?.startsWith("es") ? "es-ES" : "pt-PT")}
     </div></body></html>`;
 
     printHtml(html, `${doc.code ?? "ATA-Q"}.pdf`);
@@ -180,8 +180,8 @@ export function MeetingsTab() {
       <div className="flex items-start gap-2 rounded-xl border border-blue-200 bg-blue-50/60 dark:bg-blue-950/20 dark:border-blue-800/40 p-3 text-xs text-blue-800 dark:text-blue-300">
         <CalendarDays className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
         <span>
-          As actas são criadas em <b>Documentos → ATA-Q</b> e aparecem aqui automaticamente.
-          {" "}<button className="underline font-medium" onClick={() => navigate("/documents")}>Ir para Documentos</button>
+          {t("meetings.sourceNotice")}
+          {" "}<button className="underline font-medium" onClick={() => navigate("/documents")}>{t("meetings.goToDocs")}</button>
         </span>
       </div>
 
@@ -189,11 +189,11 @@ export function MeetingsTab() {
       <div className="flex gap-2 items-center justify-between">
         <div className="relative flex-1 max-w-xs">
           <Search className="absolute left-2.5 top-2 h-3.5 w-3.5 text-muted-foreground" />
-          <Input className="pl-8 h-8 text-xs" placeholder="Pesquisar actas..."
+          <Input className="pl-8 h-8 text-xs" placeholder={t("meetings.searchPlaceholder")}
             value={search} onChange={e => setSearch(e.target.value)} />
         </div>
         <Button size="sm" className="h-8 text-xs gap-1" onClick={goToCreate}>
-          <Plus className="h-3.5 w-3.5" /> Nova Acta ATA-Q
+          <Plus className="h-3.5 w-3.5" />{t("meetings.newAta")}
         </Button>
       </div>
 
@@ -203,9 +203,9 @@ export function MeetingsTab() {
       ) : filtered.length === 0 ? (
         <div className="py-10 text-center text-sm text-muted-foreground">
           <CalendarDays className="h-8 w-8 mx-auto mb-2 opacity-40" />
-          <p>Sem actas de reunião — cria a primeira em Documentos → ATA-Q</p>
+          <p>{t("meetings.empty")}</p>
           <Button variant="outline" size="sm" className="mt-3 h-7 text-xs gap-1" onClick={goToCreate}>
-            <Plus className="h-3 w-3" /> Nova Acta ATA-Q
+            <Plus className="h-3 w-3" />{t("meetings.newAta")}
           </Button>
         </div>
       ) : (
@@ -213,11 +213,11 @@ export function MeetingsTab() {
           <Table>
             <TableHeader>
               <TableRow className="bg-muted/30">
-                <TableHead className="text-xs">N.º Ata</TableHead>
-                <TableHead className="text-xs">Tipo</TableHead>
+                <TableHead className="text-xs">{t("meetings.fields.ataNumber")}</TableHead>
+                <TableHead className="text-xs">{t("meetings.fields.type")}</TableHead>
                 <TableHead className="text-xs hidden sm:table-cell">Data</TableHead>
-                <TableHead className="text-xs hidden sm:table-cell">Local</TableHead>
-                <TableHead className="text-xs hidden md:table-cell">Decisões</TableHead>
+                <TableHead className="text-xs hidden sm:table-cell">{t("meetings.fields.location")}</TableHead>
+                <TableHead className="text-xs hidden md:table-cell">{t("meetings.fields.decisionsCount")}</TableHead>
                 <TableHead className="text-xs">Estado</TableHead>
                 <TableHead className="text-xs w-24"></TableHead>
               </TableRow>
@@ -235,7 +235,7 @@ export function MeetingsTab() {
                       {fd.tipo_reuniao || "—"}
                     </TableCell>
                     <TableCell className="text-xs hidden sm:table-cell">
-                      {fd.data_reuniao ? new Date(fd.data_reuniao).toLocaleDateString("pt-PT") : "—"}
+                      {fd.data_reuniao ? new Date(fd.data_reuniao).toLocaleDateString(i18n.language?.startsWith("es") ? "es-ES" : "pt-PT") : "—"}
                     </TableCell>
                     <TableCell className="text-xs hidden sm:table-cell text-muted-foreground">
                       {fd.local ? fd.local.slice(0, 30) + (fd.local.length > 30 ? "…" : "") : "—"}
@@ -288,9 +288,9 @@ export function MeetingsTab() {
 
                 <div className="space-y-3 text-sm">
                   <div className="grid grid-cols-2 gap-2 text-xs bg-muted/30 rounded-lg p-3">
-                    {[["Tipo", fd.tipo_reuniao], ["Data", fd.data_reuniao ? new Date(fd.data_reuniao).toLocaleDateString("pt-PT") : null],
-                      ["Local", fd.local], ["Horário", fd.hora_inicio ? `${fd.hora_inicio} – ${fd.hora_fim}` : null],
-                      ["Convocada por", fd.convocada_por]].map(([l, v]) => v ? (
+                    {[[t("meetings.fields.type"), fd.tipo_reuniao], [t("meetings.fields.date"), fd.data_reuniao ? new Date(fd.data_reuniao).toLocaleDateString(i18n.language?.startsWith("es") ? "es-ES" : "pt-PT") : null],
+                      [t("meetings.fields.location"), fd.local], [t("meetings.fields.schedule"), fd.hora_inicio ? `${fd.hora_inicio} – ${fd.hora_fim}` : null],
+                      [t("meetings.fields.calledBy"), fd.convocada_por]].map(([l, v]) => v ? (
                       <div key={String(l)}><span className="text-muted-foreground">{l}: </span><span className="font-medium">{String(v)}</span></div>
                     ) : null)}
                   </div>
@@ -299,14 +299,14 @@ export function MeetingsTab() {
                     <Separator />
                     <div>
                       <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1 flex items-center gap-1">
-                        <Users className="h-3 w-3" /> Participantes — Empreiteiro
+                        <Users className="h-3 w-3" />{t("meetings.fields.attendeesContractor")}
                       </p>
                       <p className="text-xs whitespace-pre-wrap text-muted-foreground">{fd.participantes_empreiteiro}</p>
                     </div>
                   </>)}
                   {fd.participantes_fiscalizacao && (
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">Fiscalização</p>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">{t("meetings.fields.attendeesSupervisor")}</p>
                       <p className="text-xs whitespace-pre-wrap text-muted-foreground">{fd.participantes_fiscalizacao}</p>
                     </div>
                   )}
@@ -314,7 +314,7 @@ export function MeetingsTab() {
                   {fd.ordem_trabalhos && (<>
                     <Separator />
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">Ordem de Trabalhos</p>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">{t("meetings.fields.agenda")}</p>
                       <p className="text-xs whitespace-pre-wrap">{fd.ordem_trabalhos}</p>
                     </div>
                   </>)}
@@ -322,7 +322,7 @@ export function MeetingsTab() {
                   {fd.assuntos_tratados && (<>
                     <Separator />
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">Assuntos Tratados</p>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">{t("meetings.fields.discussions")}</p>
                       <p className="text-xs whitespace-pre-wrap">{fd.assuntos_tratados}</p>
                     </div>
                   </>)}
@@ -330,7 +330,7 @@ export function MeetingsTab() {
                   {decisoes.length > 0 && (<>
                     <Separator />
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">Decisões / Plano de Acção</p>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">{t("meetings.fields.decisions")}</p>
                       <div className="space-y-1.5">
                         {decisoes.map((d, i) => (
                           <div key={i} className="flex items-start gap-2 text-xs p-2 rounded-lg bg-amber-50 dark:bg-amber-950/20 border border-amber-200/50">
@@ -354,7 +354,7 @@ export function MeetingsTab() {
                   <div className="flex gap-2 pt-2">
                     <Button size="sm" variant="outline" className="flex-1 h-7 text-xs gap-1"
                       onClick={() => { setViewing(null); goToDoc(viewing.id); }}>
-                      <ExternalLink className="h-3 w-3" /> Editar no documento
+                      <ExternalLink className="h-3 w-3" /> {t("meetings.editInDoc")}
                     </Button>
                     <Button size="sm" variant="outline" className="flex-1 h-7 text-xs gap-1"
                       onClick={() => exportPdf(viewing)}>
