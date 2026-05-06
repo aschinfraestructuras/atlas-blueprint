@@ -6211,6 +6211,12 @@
       "draft": "Rascunho",
       "approved": "Aprovada",
       "distributed": "Distribuída"
+    },
+    "actionPanel": {
+      "title": "Plano de Acção — Reuniões SGQ",
+      "open": "em aberto",
+      "empty": "Sem acções em aberto — tudo resolvido ✅",
+      "goToMeetings": "Ver todas as actas"
     }
   }
 }

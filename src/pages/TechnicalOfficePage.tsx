@@ -249,6 +249,12 @@ export default function TechnicalOfficePage() {
   // Hooks têm de estar antes de qualquer return condicional
   const [searchParams] = useSearchParams();
 
+  // Abrir tab via URL param — ex: /technical-office?tab=meetings
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab) setActiveTab(tab);
+  }, [searchParams]);
+
   // Abrir RFI pré-preenchido quando vem do HPNotificationPanel
   useEffect(() => {
     const type = searchParams.get("type");
