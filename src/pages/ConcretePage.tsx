@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Layers, Plus, FileDown, Trash2, Eye, CheckCircle2, XCircle, Clock,
-  FlaskConical, Loader2, X, Info, Package, Search,
+  FlaskConical, Loader2, X, Info, Package, Search, Pencil,
 } from "lucide-react";
 import { concreteService, computeBatchResult, type ConcreteBatchWithCounts, type ConcreteBatch, type ConcreteSpecimen } from "@/lib/services/concreteService";
 import { concreteLotService, type ConcreteLotConformity } from "@/lib/services/concreteLotService";
@@ -461,6 +461,7 @@ export default function ConcretePage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [detailId, setDetailId] = useState<string | null>(null);
   const [detailData, setDetailData] = useState<{ batch: ConcreteBatch; specimens: ConcreteSpecimen[] } | null>(null);
+  const [editingBatch, setEditingBatch] = useState(false);
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterWI, setFilterWI] = useState("all");
   const [filterClass, setFilterClass] = useState("all");
@@ -668,6 +669,26 @@ export default function ConcretePage() {
         notes: null,
       });
       concreteService.getById(detailData.batch.id).then(setDetailData);
+    } catch (err: any) {
+      toast({ title: "Erro", description: err.message, variant: "destructive" });
+    }
+  }
+
+  // Guardar edição dos campos principais da amassadura
+  async function handleSaveBatchEdit() {
+    if (!detailData || !activeProject) return;
+    const b = detailData.batch;
+    const slumpLimits: Record<string, [number, number]> = {
+      S1: [10,40], S2: [50,90], S3: [100,150], S4: [160,210], S5: [220,999]
+    };
+    const [min, max] = slumpLimits[b.consistency_class ?? ""] ?? [0, 999];
+    const slump_pass = b.slump_mm != null ? (Number(b.slump_mm) >= min && Number(b.slump_mm) <= max) : null;
+    const temp_pass  = b.temp_concrete != null ? (Number(b.temp_concrete) >= 5 && Number(b.temp_concrete) <= 35) : null;
+    try {
+      await concreteService.updateBatch(b.id, { ...b, slump_pass, temp_pass });
+      await concreteService.getById(b.id).then(setDetailData);
+      setEditingBatch(false);
+      toast({ title: "Guardado" });
     } catch (err: any) {
       toast({ title: "Erro", description: err.message, variant: "destructive" });
     }
@@ -1092,6 +1113,54 @@ export default function ConcretePage() {
               </DialogHeader>
 
               <div className="space-y-4">
+                {/* Painel de edição — aparece ao clicar Editar */}
+                {editingBatch && detailData && (
+                  <div className="rounded-xl border border-primary/30 bg-primary/5 p-4 space-y-3">
+                    <p className="text-xs font-bold uppercase tracking-widest text-primary">A editar amassadura</p>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <Label className="text-xs">Elemento betonado</Label>
+                        <Input className="h-8 text-xs" value={detailData.batch.element_betonado}
+                          onChange={e => setDetailData(d => d ? { ...d, batch: { ...d.batch, element_betonado: e.target.value } } : d)} />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">PK / Localização</Label>
+                        <Input className="h-8 text-xs" value={detailData.batch.pk_location ?? ""}
+                          onChange={e => setDetailData(d => d ? { ...d, batch: { ...d.batch, pk_location: e.target.value } } : d)} />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">Slump (mm) {detailData.batch.consistency_class === "S3" ? "(100–150mm)" : ""}</Label>
+                        <Input type="number" className="h-8 text-xs" value={detailData.batch.slump_mm ?? ""}
+                          onChange={e => setDetailData(d => d ? { ...d, batch: { ...d.batch, slump_mm: parseFloat(e.target.value) || null } } : d)} />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">Temperatura betão (°C) (5–35°C)</Label>
+                        <Input type="number" className="h-8 text-xs" value={detailData.batch.temp_concrete ?? ""}
+                          onChange={e => setDetailData(d => d ? { ...d, batch: { ...d.batch, temp_concrete: parseFloat(e.target.value) || null } } : d)} />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">Guia de remessa</Label>
+                        <Input className="h-8 text-xs" value={detailData.batch.delivery_note_ref ?? ""}
+                          onChange={e => setDetailData(d => d ? { ...d, batch: { ...d.batch, delivery_note_ref: e.target.value } } : d)} />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">Matrícula autobetoneira</Label>
+                        <Input className="h-8 text-xs" value={detailData.batch.truck_plate ?? ""}
+                          onChange={e => setDetailData(d => d ? { ...d, batch: { ...d.batch, truck_plate: e.target.value } } : d)} />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">Central / Lab</Label>
+                        <Input className="h-8 text-xs" value={detailData.batch.lab_name ?? ""}
+                          onChange={e => setDetailData(d => d ? { ...d, batch: { ...d.batch, lab_name: e.target.value } } : d)} />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">Observações</Label>
+                        <Input className="h-8 text-xs" value={detailData.batch.notes ?? ""}
+                          onChange={e => setDetailData(d => d ? { ...d, batch: { ...d.batch, notes: e.target.value } } : d)} />
+                      </div>
+                    </div>
+                  </div>
+                )}
                 <div className="grid grid-cols-2 gap-x-6 gap-y-1 text-sm">
                   <div><span className="text-muted-foreground text-xs font-semibold uppercase">Elemento</span><p>{detailData.batch.element_betonado}</p></div>
                   <div><span className="text-muted-foreground text-xs font-semibold uppercase">PK</span><p>{detailData.batch.pk_location ?? "—"}</p></div>
@@ -1174,12 +1243,18 @@ export default function ConcretePage() {
               />
 
               <DialogFooter>
+                <Button variant="outline" onClick={() => setEditingBatch(e => !e)}>
+                  <Pencil className="h-4 w-4 mr-1.5" />
+                  {editingBatch ? t("common.cancel") : t("common.edit", { defaultValue: "Editar" })}
+                </Button>
                 <Button variant="outline" onClick={() => {
                   if (detailData) concreteService.exportPdf(detailData.batch, detailData.specimens, activeProject?.name ?? "PF17A", logoBase64, signatureSlots);
                 }}>
                   <FileDown className="h-4 w-4 mr-1.5" /> {t("common.exportPdf")}
                 </Button>
-                <DialogClose asChild><Button>{t("common.close")}</Button></DialogClose>
+                {editingBatch
+                  ? <Button onClick={handleSaveBatchEdit}>{t("common.save")}</Button>
+                  : <DialogClose asChild><Button>{t("common.close")}</Button></DialogClose>}
               </DialogFooter>
             </>
           )}
