@@ -394,10 +394,10 @@ export const concreteService = {
         <tr><th>Parâmetro</th><th>Medido</th><th>Resultado</th></tr>
         <tr><td style="padding:6px 8px;border-bottom:1px solid ${ATLAS_PDF.colors.rule};">Abaixamento (mm)</td>
             <td style="padding:6px 8px;border-bottom:1px solid ${ATLAS_PDF.colors.rule};">${batch.slump_mm ?? "—"}</td>
-            <td style="padding:6px 8px;border-bottom:1px solid ${ATLAS_PDF.colors.rule};"><span class="badge ${batch.slump_pass ? "pass" : "fail"}">${batch.slump_pass ? "OK" : "NOK"}</span></td></tr>
+            <td style="padding:6px 8px;border-bottom:1px solid ${ATLAS_PDF.colors.rule};">${batch.slump_pass === true ? '<span class="badge pass">OK</span>' : batch.slump_pass === false ? '<span class="badge fail">NOK</span>' : "—"}</td></tr>
         <tr><td style="padding:6px 8px;border-bottom:1px solid ${ATLAS_PDF.colors.rule};">Temp. Betão (°C)</td>
             <td style="padding:6px 8px;border-bottom:1px solid ${ATLAS_PDF.colors.rule};">${batch.temp_concrete ?? "—"}</td>
-            <td style="padding:6px 8px;border-bottom:1px solid ${ATLAS_PDF.colors.rule};"><span class="badge ${batch.temp_pass ? "pass" : "fail"}">${batch.temp_pass ? "OK" : "NOK"}</span></td></tr>
+            <td style="padding:6px 8px;border-bottom:1px solid ${ATLAS_PDF.colors.rule};">${batch.temp_pass === true ? '<span class="badge pass">OK</span>' : batch.temp_pass === false ? '<span class="badge fail">NOK</span>' : "—"}</td></tr>
         <tr><td style="padding:6px 8px;border-bottom:1px solid ${ATLAS_PDF.colors.rule};">Temp. Ambiente (°C)</td>
             <td style="padding:6px 8px;border-bottom:1px solid ${ATLAS_PDF.colors.rule};">${batch.temp_ambient ?? "—"}</td>
             <td style="padding:6px 8px;border-bottom:1px solid ${ATLAS_PDF.colors.rule};">—</td></tr>

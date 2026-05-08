@@ -943,8 +943,50 @@ export default function ConcretePage() {
               <PameValidationBadge validation={pameValidation} />
 
               <div className="grid grid-cols-3 gap-3">
-                <div><Label>{t("concrete.form.slump")}</Label><Input type="number" value={form.slump_mm} onChange={(e) => setForm((f) => ({ ...f, slump_mm: e.target.value }))} /></div>
-                <div><Label>{t("concrete.form.tempConcrete")}</Label><Input type="number" value={form.temp_concrete} onChange={(e) => setForm((f) => ({ ...f, temp_concrete: e.target.value }))} /></div>
+                <div>
+                  <Label>{t("concrete.form.slump")}
+                    <span className="text-[10px] text-muted-foreground ml-1">
+                      {form.consistency_class === "S1" ? "(10–40mm)" :
+                       form.consistency_class === "S2" ? "(50–90mm)" :
+                       form.consistency_class === "S3" ? "(100–150mm)" :
+                       form.consistency_class === "S4" ? "(160–210mm)" :
+                       form.consistency_class === "S5" ? "(≥220mm)" : ""}
+                    </span>
+                  </Label>
+                  <Input type="number" value={form.slump_mm}
+                    onChange={(e) => {
+                      const slump = parseFloat(e.target.value);
+                      // Limites EN 12350-2 por classe de consistência
+                      const limits: Record<string, [number, number]> = {
+                        S1: [10, 40], S2: [50, 90], S3: [100, 150], S4: [160, 210], S5: [220, 999]
+                      };
+                      const [min, max] = limits[form.consistency_class] ?? [0, 999];
+                      const slump_pass = isNaN(slump) ? null : slump >= min && slump <= max;
+                      setForm((f) => ({ ...f, slump_mm: e.target.value, slump_pass }));
+                    }} />
+                  {form.slump_mm !== "" && form.slump_pass !== null && (
+                    <p className={`text-[10px] mt-0.5 font-medium ${form.slump_pass ? "text-emerald-600" : "text-destructive"}`}>
+                      {form.slump_pass ? "✅ OK — dentro dos limites" : "❌ NOK — fora dos limites"}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <Label>{t("concrete.form.tempConcrete")}
+                    <span className="text-[10px] text-muted-foreground ml-1">(5–35°C)</span>
+                  </Label>
+                  <Input type="number" value={form.temp_concrete}
+                    onChange={(e) => {
+                      const temp = parseFloat(e.target.value);
+                      // NP EN 206: temperatura do betão fresco entre 5°C e 35°C
+                      const temp_pass = isNaN(temp) ? null : temp >= 5 && temp <= 35;
+                      setForm((f) => ({ ...f, temp_concrete: e.target.value, temp_pass }));
+                    }} />
+                  {form.temp_concrete !== "" && form.temp_pass !== null && (
+                    <p className={`text-[10px] mt-0.5 font-medium ${form.temp_pass ? "text-emerald-600" : "text-destructive"}`}>
+                      {form.temp_pass ? "✅ OK" : "❌ NOK — fora dos limites (5–35°C)"}
+                    </p>
+                  )}
+                </div>
                 <div><Label>{t("concrete.form.tempAmbient")}</Label><Input type="number" value={form.temp_ambient} onChange={(e) => setForm((f) => ({ ...f, temp_ambient: e.target.value }))} /></div>
               </div>
               <div className="grid grid-cols-2 gap-3">
