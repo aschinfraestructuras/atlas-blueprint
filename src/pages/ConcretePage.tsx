@@ -13,6 +13,8 @@ import { useWorkItems } from "@/hooks/useWorkItems";
 import { usePPIInstances } from "@/hooks/usePPI";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { PageHeader } from "@/components/ui/page-header";
+import { usePameValidation } from "@/hooks/usePameValidation";
+import { PameValidationBadge } from "@/components/concrete/PameValidationBadge";
 import { FilterBar } from "@/components/ui/filter-bar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -497,6 +499,12 @@ export default function ConcretePage() {
     specimens: [makeDefaultSpecimen(1), makeDefaultSpecimen(2), makeDefaultSpecimen(3)],
   });
 
+  // Validação cruzada PAME — verifica se a classe e fornecedor estão aprovados
+  const pameValidation = usePameValidation(
+    form.concrete_class || null,
+    form.supplier_id || null
+  );
+
   const fetchBatches = useCallback(async () => {
     if (!activeProject) return;
     setLoading(true);
@@ -930,6 +938,10 @@ export default function ConcretePage() {
                   </Select>
                 </div>
               </div>
+
+              {/* Validação PAME — aparece assim que classe é seleccionada */}
+              <PameValidationBadge validation={pameValidation} />
+
               <div className="grid grid-cols-3 gap-3">
                 <div><Label>{t("concrete.form.slump")}</Label><Input type="number" value={form.slump_mm} onChange={(e) => setForm((f) => ({ ...f, slump_mm: e.target.value }))} /></div>
                 <div><Label>{t("concrete.form.tempConcrete")}</Label><Input type="number" value={form.temp_concrete} onChange={(e) => setForm((f) => ({ ...f, temp_concrete: e.target.value }))} /></div>
