@@ -105,6 +105,7 @@ function LotsTab({
   const [lots, setLots] = useState<ConcreteLotConformity[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingLotId, setEditingLotId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [unassigned, setUnassigned] = useState<{ id: string; code: string; element_betonado: string; concrete_class: string; batch_date: string }[]>([]);
   const [selectedBatches, setSelectedBatches] = useState<Set<string>>(new Set());
@@ -154,24 +155,42 @@ function LotsTab({
     if (!projectId || !lotForm.element_desc.trim()) return;
     setSaving(true);
     try {
-      const lot = await concreteLotService.create({
-        project_id: projectId,
-        element_desc: lotForm.element_desc,
-        concrete_class: lotForm.concrete_class,
-        exc_class: lotForm.exc_class,
-        volume_total_m3: lotForm.volume_total_m3 ? parseFloat(lotForm.volume_total_m3) : null,
-        date_start: lotForm.date_start || null,
-        date_end: lotForm.date_end || null,
-        work_item_id: lotForm.work_item_id || null,
-        notes: lotForm.notes || null,
-      });
+      if (editingLotId) {
+        // Modo edição — actualizar lote existente
+        await concreteLotService.update(editingLotId, {
+          element_desc: lotForm.element_desc,
+          concrete_class: lotForm.concrete_class,
+          exc_class: lotForm.exc_class,
+          volume_total_m3: lotForm.volume_total_m3 ? parseFloat(lotForm.volume_total_m3) : null,
+          date_start: lotForm.date_start || null,
+          date_end: lotForm.date_end || null,
+          work_item_id: lotForm.work_item_id || null,
+          notes: lotForm.notes || null,
+        });
+        toast({ title: t("common.saved") });
+        setEditingLotId(null);
+      } else {
+        // Modo criação — novo lote
+        const lot = await concreteLotService.create({
+          project_id: projectId,
+          element_desc: lotForm.element_desc,
+          concrete_class: lotForm.concrete_class,
+          exc_class: lotForm.exc_class,
+          volume_total_m3: lotForm.volume_total_m3 ? parseFloat(lotForm.volume_total_m3) : null,
+          date_start: lotForm.date_start || null,
+          date_end: lotForm.date_end || null,
+          work_item_id: lotForm.work_item_id || null,
+          notes: lotForm.notes || null,
+        });
 
-      // Assign selected batches
-      for (const batchId of selectedBatches) {
-        await concreteLotService.assignBatchToLot(batchId, lot.id);
-      }
+        // Assign selected batches
+        for (const batchId of selectedBatches) {
+          await concreteLotService.assignBatchToLot(batchId, lot.id);
+        }
 
-      toast({ title: t("common.save"), description: lot.lot_code });
+        toast({ title: t("common.save"), description: lot.lot_code });
+      } // fim else
+
       setDialogOpen(false);
       fetchLots();
       onRefreshBatches();
@@ -257,6 +276,22 @@ function LotsTab({
                     </TableCell>
                     <TableCell>
                       <RowActionMenu actions={[
+                        { key: "edit", label: t("common.edit", { defaultValue: "Editar" }), icon: Pencil, onClick: () => {
+                          setEditingLotId(lot.lot_id);
+                          concreteLotService.getById(lot.lot_id).then(l => {
+                            if (l) setLotForm({
+                              element_desc: l.element_desc,
+                              concrete_class: l.concrete_class,
+                              exc_class: l.exc_class ?? "EXC2",
+                              volume_total_m3: l.volume_total_m3?.toString() ?? "",
+                              date_start: l.date_start ?? "",
+                              date_end: l.date_end ?? "",
+                              work_item_id: l.work_item_id ?? "",
+                              notes: l.notes ?? "",
+                            });
+                            setDialogOpen(true);
+                          });
+                        }},
                         { key: "delete", label: t("common.delete"), icon: Trash2, onClick: () => setDeleteLotTarget(lot.lot_id), variant: "destructive" as const },
                       ]} />
                     </TableCell>
@@ -269,11 +304,11 @@ function LotsTab({
       </Card>
 
       {/* Create Lot Dialog */}
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) setEditingLotId(null); }}>
         <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Package className="h-5 w-5" /> Novo Lote de Betão
+              <Package className="h-5 w-5" /> {editingLotId ? t("common.edit", { defaultValue: "Editar" }) + " Lote" : "Novo Lote de Betão"}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
