@@ -1230,10 +1230,17 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
                     approved_entity: resultApprovedEntity.trim() || undefined,
                     registered_by: u?.id ?? "",
                   });
+                  // Actualização optimista imediata
                   setNotifications(prev => prev.map(n => n.id === resultTargetId ? { ...n, ...updated } : n));
-                  toast.success(`Resultado registado: ${resultValue === "approved" ? "Aprovado ✅" : resultValue === "rejected" ? "Reprovado ❌" : "Aprovado c/ Condições ⚠️"}`);
+                  // Fechar dialog antes do toast para feedback visual imediato
+                  const savedTarget = resultTargetId;
+                  const savedResult = resultValue;
                   setResultDialogOpen(false);
-                  if (resultValue === "rejected") {
+                  setResultTargetId(null);
+                  toast.success(`Resultado registado: ${savedResult === "approved" ? "Aprovado ✅" : savedResult === "rejected" ? "Reprovado ❌" : "Aprovado c/ Condições ⚠️"}`);
+                  // Refresh silencioso
+                  await load();
+                  if (savedResult === "rejected") {
                     setTimeout(() => navigate("/non-conformities?new=1"), 1500);
                   }
                 } catch (err: any) {
