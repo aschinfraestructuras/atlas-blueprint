@@ -1259,6 +1259,14 @@
         "manual": "Manual",
         "lot_complete": "Lote completo",
         "distance_reached": "Distancia alcanzada"
+      },
+      "reason": {
+        "distance_reached": "Distancia alcanzada",
+        "lot_received": "Lote recibido",
+        "event_trigger": "Evento de obra",
+        "manual_test": "Test manual",
+        "frequency": "Frecuencia",
+        "ppi_checkpoint": "Punto de control PPI"
       }
     },
     "schedule": {

@@ -364,7 +364,7 @@ export function DueTab() {
                           📦 {item.due_reason}
                         </span>
                       ) : (
-                        t(`tests.due.reasons.${item.due_reason}`, { defaultValue: item.due_reason })
+                        t(`tests.due.reason.${item.due_reason}`, { defaultValue: item.due_reason })
                       )}
                     </TableCell>
                     <TableCell className="text-xs font-mono text-muted-foreground">
@@ -375,7 +375,7 @@ export function DueTab() {
                     </TableCell>
                     <TableCell>
                       <Badge variant="secondary" className={cn("text-xs", DUE_STATUS_COLORS[item.status] ?? "")}>
-                        {t(`tests.due.status.${t(`tests.status.${item.status}`, { defaultValue: item.status })}`, { defaultValue: item.status })}
+                        {t(`tests.due.status.${item.status}`, { defaultValue: item.status })}
                       </Badge>
                     </TableCell>
                     <TableCell>
