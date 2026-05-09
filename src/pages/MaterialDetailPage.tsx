@@ -141,6 +141,7 @@ export default function MaterialDetailPage() {
   }, [id, navigate, t]);
 
   const [material, setMaterial] = useState<Material | null>(null);
+  const [activeTab, setActiveTab] = useState("summary");
   const [metrics, setMetrics] = useState<MaterialDetailMetrics | null>(null);
   const [docs, setDocs] = useState<MaterialDocument[]>([]);
   const [supplierLinks, setSupplierLinks] = useState<any[]>([]);
@@ -364,25 +365,38 @@ export default function MaterialDetailPage() {
         </div>
       )}
 
-      <Tabs defaultValue="summary" className="space-y-4">
-        <div style={{ overflowX: "auto", overflowY: "visible" }} className="scrollbar-none pb-1">
-          <TabsList
-            className="bg-muted/50 flex-nowrap justify-start gap-0.5 h-auto p-1"
-            style={{ display: "flex", width: "max-content", minWidth: "100%", overflow: "visible" }}
-          >
-            <TabsTrigger value="summary" className="flex-shrink-0 text-xs">{t("materials.detail.tabs.summary")}</TabsTrigger>
-            <TabsTrigger value="approval" className="flex-shrink-0 text-xs">{t("materials.detail.tabs.approval")}</TabsTrigger>
-            <TabsTrigger value="reception" className="flex-shrink-0 text-xs">{t("materials.detail.tabs.reception")}</TabsTrigger>
-            <TabsTrigger value="suppliers" className="flex-shrink-0 text-xs">{t("materials.detail.tabs.suppliers")}</TabsTrigger>
-            <TabsTrigger value="documents" className="flex-shrink-0 text-xs">{t("materials.detail.tabs.documents")}</TabsTrigger>
-            <TabsTrigger value="tests" className="flex-shrink-0 text-xs">{t("materials.detail.tabs.tests")}</TabsTrigger>
-            <TabsTrigger value="ncs" className="flex-shrink-0 text-xs">{t("materials.detail.tabs.ncs")}</TabsTrigger>
-            <TabsTrigger value="workItems" className="flex-shrink-0 text-xs">{t("materials.detail.tabs.workItems")}</TabsTrigger>
-            <TabsTrigger value="usage" className="flex-shrink-0 text-xs">{t("materials.usageTab")}</TabsTrigger>
-            <TabsTrigger value="recycled" className="flex-shrink-0 text-xs">{t("recycled.title", { defaultValue: "Reciclado" })}</TabsTrigger>
-            <TabsTrigger value="dossier" className="flex-shrink-0 text-xs">{t("materials.detail.tabs.dossier")}</TabsTrigger>
-            <TabsTrigger value="audit" className="flex-shrink-0 text-xs">{t("materials.detail.tabs.audit")}</TabsTrigger>
-          </TabsList>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+        {/* Barra de tabs — div simples com scroll garantido */}
+        <div style={{ overflowX: "auto", overflowY: "visible", WebkitOverflowScrolling: "touch" }} className="pb-1 scrollbar-none">
+          <div className="flex flex-nowrap gap-0.5 bg-muted/50 rounded-lg p-1" style={{ width: "max-content", minWidth: "100%" }}>
+            {([
+              { v: "summary",   l: t("materials.detail.tabs.summary") },
+              { v: "approval",  l: t("materials.detail.tabs.approval") },
+              { v: "reception", l: t("materials.detail.tabs.reception") },
+              { v: "suppliers", l: t("materials.detail.tabs.suppliers") },
+              { v: "documents", l: t("materials.detail.tabs.documents") },
+              { v: "tests",     l: t("materials.detail.tabs.tests") },
+              { v: "ncs",       l: t("materials.detail.tabs.ncs") },
+              { v: "workItems", l: t("materials.detail.tabs.workItems") },
+              { v: "usage",     l: t("materials.usageTab") },
+              { v: "recycled",  l: t("recycled.title", { defaultValue: "Reciclado" }) },
+              { v: "dossier",   l: t("materials.detail.tabs.dossier") },
+              { v: "audit",     l: t("materials.detail.tabs.audit") },
+            ] as { v: string; l: string }[]).map(tab => (
+              <button
+                key={tab.v}
+                onClick={() => setActiveTab(tab.v)}
+                className={cn(
+                  "flex-shrink-0 whitespace-nowrap rounded-md px-3 py-1.5 text-xs font-medium transition-all",
+                  activeTab === tab.v
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-background/50"
+                )}
+              >
+                {tab.l}
+              </button>
+            ))}
+          </div>
         </div>
 
         <TabsContent value="summary">
