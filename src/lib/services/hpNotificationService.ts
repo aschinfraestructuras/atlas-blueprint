@@ -27,6 +27,15 @@ export interface HpNotification {
   notes: string | null;
   rfi_ref: string | null;
   created_at: string;
+  // Soft delete (admin only — nunca enviada)
+  is_deleted?: boolean;
+  deleted_at?: string | null;
+  deleted_by?: string | null;
+  // Anulação (admin only — já enviada, preserva auditoria)
+  is_voided?: boolean;
+  voided_at?: string | null;
+  voided_by?: string | null;
+  void_reason?: string | null;
 }
 
 export interface HpNotificationInput {
@@ -116,6 +125,8 @@ export const hpNotificationService = {
       .from("hp_notifications")
       .select("*")
       .eq("instance_id", instanceId)
+      .is("is_deleted", null)
+      .is("is_voided", null)
       .order("planned_datetime", { ascending: true });
     if (error) throw error;
     return (data ?? []) as HpNotification[];
@@ -126,6 +137,8 @@ export const hpNotificationService = {
       .from("hp_notifications")
       .select("*")
       .eq("project_id", projectId)
+      .is("is_deleted", null)
+      .is("is_voided", null)
       .order("planned_datetime", { ascending: true });
     if (error) throw error;
     return (data ?? []) as HpNotification[];
@@ -190,6 +203,35 @@ export const hpNotificationService = {
     const { data, error } = await (supabase as any)
       .from("hp_notifications")
       .update({ status: "cancelled" })
+      .eq("id", id)
+      .select()
+      .single();
+    if (error) throw error;
+    return data as HpNotification;
+  },
+
+
+  /** Apaga fisicamente (soft) — só para notificações nunca enviadas (pending sem notified_at). Admin only. */
+  async softDelete(id: string, deletedBy: string): Promise<void> {
+    const { error } = await (supabase as any)
+      .from("hp_notifications")
+      .update({ is_deleted: true, deleted_at: new Date().toISOString(), deleted_by: deletedBy })
+      .eq("id", id)
+      .is("notified_at", null);
+    if (error) throw error;
+  },
+
+  /** Anula uma notificação já enviada — preserva auditoria, marca como void. Admin only. */
+  async void(id: string, voidedBy: string, reason: string): Promise<HpNotification> {
+    const { data, error } = await (supabase as any)
+      .from("hp_notifications")
+      .update({
+        is_voided: true,
+        voided_at: new Date().toISOString(),
+        voided_by: voidedBy,
+        void_reason: reason,
+        status: "cancelled",
+      })
       .eq("id", id)
       .select()
       .single();

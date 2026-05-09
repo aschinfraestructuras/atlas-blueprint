@@ -31,6 +31,8 @@ import { useNavigate } from "react-router-dom";
 import { useProject } from "@/contexts/ProjectContext";
 import { useReportMeta } from "@/hooks/useReportMeta";
 import { useSignatureSlots } from "@/hooks/useSignatureSlots";
+import { useProjectRole } from "@/hooks/useProjectRole";
+import { Trash2, Ban } from "lucide-react";
 import {
   AlertTriangle,
   Bell,
@@ -63,6 +65,13 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
   const { activeProject } = useProject();
   const reportMeta = useReportMeta();
   const hpSignatureSlots = useSignatureSlots("hp_notification");
+  const { isAdmin } = useProjectRole(projectId);
+  const [voidDialogOpen, setVoidDialogOpen] = useState(false);
+  const [voidTargetId, setVoidTargetId] = useState<string | null>(null);
+  const [voidTargetCode, setVoidTargetCode] = useState("");
+  const [voidReason, setVoidReason] = useState("");
+  const [voidIsSent, setVoidIsSent] = useState(false); // true=anular, false=apagar
+  const [voidLoading, setVoidLoading] = useState(false);
   const [notifications, setNotifications] = useState<HpNotification[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -573,6 +582,49 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
                   >
                     {t(`ppi.hpNotification.status_${n.status}`, { defaultValue: n.status })}
                   </Badge>
+                  {/* Botões admin: apagar (nunca enviada) ou anular (já enviada) */}
+                  {isAdmin && !(n as any).is_voided && (
+                    (n as any).notified_at
+                      ? (
+                        <Button
+                          size="sm" variant="ghost"
+                          className="gap-1 text-[10px] h-6 px-2 text-muted-foreground hover:text-destructive"
+                          title="Anular notificação (preserva auditoria)"
+                          onClick={() => {
+                            setVoidTargetId(n.id);
+                            setVoidTargetCode(n.code);
+                            setVoidIsSent(true);
+                            setVoidReason("");
+                            setVoidDialogOpen(true);
+                          }}
+                        >
+                          <Ban className="h-3 w-3" />
+                          Anular
+                        </Button>
+                      ) : (
+                        <Button
+                          size="sm" variant="ghost"
+                          className="gap-1 text-[10px] h-6 px-2 text-muted-foreground hover:text-destructive"
+                          title="Apagar notificação (não foi enviada)"
+                          onClick={() => {
+                            setVoidTargetId(n.id);
+                            setVoidTargetCode(n.code);
+                            setVoidIsSent(false);
+                            setVoidReason("");
+                            setVoidDialogOpen(true);
+                          }}
+                        >
+                          <Trash2 className="h-3 w-3" />
+                          Apagar
+                        </Button>
+                      )
+                  )}
+                  {/* Badge ANULADA */}
+                  {(n as any).is_voided && (
+                    <Badge variant="outline" className="text-[10px] line-through text-muted-foreground border-muted">
+                      ANULADA
+                    </Badge>
+                  )}
                 </div>
               </div>
             ))}
@@ -659,7 +711,17 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
             entityType="hp"
             entityId={instance.id}
             entityCode={instance.code}
-            defaultSubject={`NOT-HP — ${instance.code} — ${(instance as any).description ?? instance.code}`}
+            defaultSubject={(() => {
+              const latest = notifications.length > 0 ? notifications[notifications.length - 1] : null;
+              if (latest) {
+                const act = latest.activity.length > 40 ? latest.activity.slice(0, 40) + "…" : latest.activity;
+                const dt = latest.planned_datetime
+                  ? new Date(latest.planned_datetime).toLocaleDateString("pt-PT", { day: "2-digit", month: "2-digit", year: "numeric" })
+                  : "";
+                return `${latest.code} · ${instance.code} · ${act}${dt ? ` · ${dt}` : ""}`;
+              }
+              return `NOT-HP · ${instance.code} · Notificação Hold Point 48h`;
+            })()}
             defaultMessage={defaultBody}
             pdfBase64={notifHtmlAttachment?.base64}
             pdfFilename={notifHtmlAttachment?.filename}
@@ -667,6 +729,68 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
           />
         );
       })()}
+
+      {/* ── Void / Delete dialog (admin only) ────────────────────── */}
+      <Dialog open={voidDialogOpen} onOpenChange={(v) => { if (!v) { setVoidDialogOpen(false); setVoidTargetId(null); } }}>
+        <DialogContent className="max-w-sm px-6">
+          <DialogHeader className="-mx-6 px-6 pt-6">
+            <DialogTitle className="flex items-center gap-2 text-destructive">
+              {voidIsSent ? <Ban className="h-4 w-4" /> : <Trash2 className="h-4 w-4" />}
+              {voidIsSent ? "Anular Notificação HP" : "Apagar Notificação HP"}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 py-2">
+            <p className="text-xs text-muted-foreground">
+              {voidIsSent
+                ? <>A notificação <span className="font-mono font-bold">{voidTargetCode}</span> já foi enviada. Será marcada como <strong>ANULADA</strong> mas permanece no histórico para efeitos de auditoria.</>
+                : <>A notificação <span className="font-mono font-bold">{voidTargetCode}</span> ainda não foi enviada. Será eliminada permanentemente.</>
+              }
+            </p>
+            {voidIsSent && (
+              <div>
+                <Label className="text-xs">Motivo da anulação *</Label>
+                <Textarea
+                  className="text-xs mt-1"
+                  rows={3}
+                  placeholder="Descreve o motivo (obrigatório para auditoria)…"
+                  value={voidReason}
+                  onChange={(e) => setVoidReason(e.target.value)}
+                />
+              </div>
+            )}
+          </div>
+          <div className="-mx-6 px-6 pb-6 flex justify-end gap-2 border-t pt-4">
+            <Button size="sm" variant="outline" onClick={() => setVoidDialogOpen(false)}>Cancelar</Button>
+            <Button
+              size="sm"
+              variant="destructive"
+              disabled={voidLoading || (voidIsSent && !voidReason.trim())}
+              onClick={async () => {
+                if (!voidTargetId) return;
+                setVoidLoading(true);
+                try {
+                  const { data: { user } } = await (await import("@/integrations/supabase/client")).supabase.auth.getUser();
+                  if (voidIsSent) {
+                    await hpNotificationService.void(voidTargetId, user?.id ?? "", voidReason.trim());
+                    toast.success("Notificação anulada e registada no histórico.");
+                  } else {
+                    await hpNotificationService.softDelete(voidTargetId, user?.id ?? "");
+                    toast.success("Notificação eliminada.");
+                  }
+                  setVoidDialogOpen(false);
+                  load();
+                } catch (err: any) {
+                  toast.error(err?.message ?? "Erro ao processar operação.");
+                } finally {
+                  setVoidLoading(false);
+                }
+              }}
+            >
+              {voidLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : (voidIsSent ? "Anular" : "Apagar")}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* ── Create notification dialog ─────────────────────────────── */}
       <Dialog open={dialogOpen} onOpenChange={(v) => { if (!v) setDialogOpen(false); }}>
