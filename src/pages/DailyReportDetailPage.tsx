@@ -113,6 +113,7 @@ export default function DailyReportDetailPage() {
   const [loading, setLoading] = useState(true);
   const [approvedMaterials, setApprovedMaterials] = useState<ApprovedMaterial[]>([]);
   const [linkedWorkItem, setLinkedWorkItem] = useState<{ id: string; sector: string; disciplina: string; elemento: string | null; parte: string | null; readiness_status: string } | null>(null);
+  const [copyingPrev, setCopyingPrev] = useState(false);
 
   const reload = useCallback(async () => {
     if (!id) return;
@@ -141,6 +142,50 @@ export default function DailyReportDetailPage() {
     } catch { /* ignore */ }
     setLoading(false);
   }, [id]);
+
+  // Copiar MdO e Equipamento do dia anterior
+  const copyFromPrevious = useCallback(async () => {
+    if (!report || !activeProject) return;
+    setCopyingPrev(true);
+    try {
+      const prev = await dailyReportService.getPreviousReport(activeProject.id, report.report_date);
+      if (!prev) { toast.error("Não foi encontrada nenhuma Parte Diária anterior."); return; }
+      const [prevLabour, prevEquip] = await Promise.all([
+        dailyReportService.getLabour(prev.id),
+        dailyReportService.getEquipment(prev.id),
+      ]);
+      let copied = 0;
+      for (const r of prevLabour) {
+        await dailyReportService.addLabour({
+          daily_report_id: report.id,
+          category: r.category,
+          name: r.name,
+          time_start: null,
+          time_end: null,
+          hours_worked: null,
+        });
+        copied++;
+      }
+      for (const e of prevEquip) {
+        await dailyReportService.addEquipment({
+          daily_report_id: report.id,
+          designation: e.designation,
+          type: e.type,
+          serial_number: e.serial_number,
+          sound_power_db: e.sound_power_db,
+          hours_worked: null,
+        });
+        copied++;
+      }
+      await Promise.all([
+        dailyReportService.getLabour(report.id).then(setLabour),
+        dailyReportService.getEquipment(report.id).then(setEquipment),
+      ]);
+      toast.success(`${copied} linha(s) copiadas de ${prev.report_number}.`);
+    } catch (err: any) {
+      toast.error(err?.message ?? "Erro ao copiar do dia anterior.");
+    } finally { setCopyingPrev(false); }
+  }, [report, activeProject]);
 
   // Load approved PAME materials
   useEffect(() => {
@@ -459,10 +504,18 @@ export default function DailyReportDetailPage() {
         <CardHeader className="flex flex-row items-center justify-between py-3">
           <CardTitle className="text-sm">{t("dailyReports.sections.labour")}</CardTitle>
           {isEditable && (
-            <WorkerPickerPopover
-              onSelect={addLabourFromWorker}
-              onManual={addLabourRow}
-            />
+            <div className="flex items-center gap-2">
+              {labour.length === 0 && (
+                <Button variant="outline" size="sm" className="h-7 text-xs gap-1.5" onClick={copyFromPrevious} disabled={copyingPrev}>
+                  <RotateCcw className="h-3 w-3" />
+                  {copyingPrev ? "A copiar…" : "Copiar dia anterior"}
+                </Button>
+              )}
+              <WorkerPickerPopover
+                onSelect={addLabourFromWorker}
+                onManual={addLabourRow}
+              />
+            </div>
           )}
         </CardHeader>
         <CardContent className="p-0">

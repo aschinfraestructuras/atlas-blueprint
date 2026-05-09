@@ -184,6 +184,20 @@ export const dailyReportService = {
   },
 
   // ── Child table helpers ───────────────────────────────────────────────────
+
+  /** Busca o relatório mais recente anterior ao actual para copiar MdO e Equipamento */
+  async getPreviousReport(projectId: string, beforeDate: string): Promise<DailyReport | null> {
+    const { data } = await (supabase as any)
+      .from("daily_reports")
+      .select("*")
+      .eq("project_id", projectId)
+      .lt("report_date", beforeDate)
+      .order("report_date", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    return data ?? null;
+  },
+
   async getLabour(reportId: string): Promise<LabourRow[]> {
     const { data, error } = await supabase
       .from("daily_report_labour")
