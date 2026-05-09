@@ -52,6 +52,12 @@ import {
   Link2,
   Filter,
   TimerOff,
+  ClipboardCheck,
+  Upload,
+  Image,
+  X,
+  Copy,
+  CheckCheck,
 } from "lucide-react";
 import { NotificationModal } from "@/components/notifications/NotificationModal";
 import { notificationLogService, type NotificationLog, type NotificationRecipient } from "@/lib/services/notificationLogService";
@@ -114,6 +120,26 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
   const [ataEditId, setAtaEditId] = useState<string | null>(null);
   const [ataEditValue, setAtaEditValue] = useState("");
   const [ataSaving, setAtaSaving] = useState(false);
+
+  // Resultado HP (Secção 5)
+  const [resultDialogOpen, setResultDialogOpen] = useState(false);
+  const [resultTargetId, setResultTargetId] = useState<string | null>(null);
+  const [resultTargetCode, setResultTargetCode] = useState("");
+  const [resultValue, setResultValue] = useState<"approved"|"approved_conditions"|"rejected">("approved");
+  const [resultDatetime, setResultDatetime] = useState("");
+  const [resultObs, setResultObs] = useState("");
+  const [resultRnc, setResultRnc] = useState("");
+  const [resultAtaCode, setResultAtaCode] = useState("");
+  const [resultApprovedBy, setResultApprovedBy] = useState("");
+  const [resultApprovedEntity, setResultApprovedEntity] = useState("IP — Infraestruturas de Portugal, S.A.");
+  const [resultSaving, setResultSaving] = useState(false);
+
+  // Upload documentos assinados
+  const [uploadingId, setUploadingId] = useState<string | null>(null);
+  const [signedDocUrls, setSignedDocUrls] = useState<Record<string, string[]>>({});
+
+  // Link de confirmação copiado
+  const [copiedToken, setCopiedToken] = useState<string | null>(null);
   const [notifications, setNotifications] = useState<HpNotification[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -784,43 +810,181 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
                   </div>
                 </div>
 
-                {/* ATA-Q inline (confirmadas) */}
-                {n.status === "confirmed" && !isVoided && (
-                  <div className="px-3 pb-2 flex items-center gap-2 border-t border-emerald-100">
-                    <Link2 className="h-3 w-3 text-emerald-600 shrink-0 mt-0.5" />
-                    <span className="text-[10px] text-muted-foreground">ATA-Q:</span>
-                    {ataEditId === n.id ? (
-                      <>
-                        <input
-                          autoFocus
-                          className="text-[10px] font-mono border-b border-primary bg-transparent outline-none px-1 w-32"
-                          value={ataEditValue}
-                          onChange={e => setAtaEditValue(e.target.value)}
-                          placeholder="ATA-Q-PF17A-001"
-                          onKeyDown={async (e) => {
-                            if (e.key === "Enter") {
-                              setAtaSaving(true);
+                {/* Faixa inferior: ATA-Q + Resultado + Upload — só para activas */}
+                {!isVoided && (n.status === "confirmed" || n.status === "pending") && (
+                  <div className="border-t border-border/40 px-3 py-2 space-y-1.5">
+                    {/* ATA-Q inline */}
+                    <div className="flex items-center gap-2">
+                      <Link2 className="h-3 w-3 text-muted-foreground shrink-0" />
+                      <span className="text-[10px] text-muted-foreground w-10 shrink-0">ATA-Q</span>
+                      {ataEditId === n.id ? (
+                        <>
+                          <input
+                            autoFocus
+                            className="text-[10px] font-mono border-b border-primary bg-transparent outline-none px-1 w-36"
+                            value={ataEditValue}
+                            onChange={e => setAtaEditValue(e.target.value)}
+                            placeholder="ATA-Q-PF17A-001"
+                            onKeyDown={async (e) => {
+                              if (e.key === "Enter") {
+                                setAtaSaving(true);
+                                try {
+                                  const { supabase: sb } = await import("@/integrations/supabase/client");
+                                  await (sb as any).from("hp_notifications").update({ ata_code: ataEditValue.trim() || null }).eq("id", n.id);
+                                  setNotifications(prev => prev.map(x => x.id === n.id ? { ...x, ata_code: ataEditValue.trim() || null } as any : x));
+                                  setAtaEditId(null);
+                                } catch { /* silencioso */ } finally { setAtaSaving(false); }
+                              }
+                              if (e.key === "Escape") setAtaEditId(null);
+                            }}
+                          />
+                          {ataSaving && <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />}
+                          <span className="text-[10px] text-muted-foreground">Enter · Esc</span>
+                        </>
+                      ) : (
+                        <button
+                          className={`text-[10px] font-mono hover:underline cursor-pointer ${(n as any).ata_code ? "text-emerald-700 font-semibold" : "text-muted-foreground italic"}`}
+                          onClick={() => { setAtaEditId(n.id); setAtaEditValue((n as any).ata_code ?? ""); }}
+                        >
+                          {(n as any).ata_code ?? "Vincular ATA-Q…"}
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Resultado HP */}
+                    <div className="flex items-center gap-2">
+                      <ClipboardCheck className="h-3 w-3 text-muted-foreground shrink-0" />
+                      <span className="text-[10px] text-muted-foreground w-10 shrink-0">Result.</span>
+                      {(n as any).hp_result ? (
+                        <div className="flex items-center gap-1.5">
+                          <span className={`text-[10px] font-semibold ${(n as any).hp_result === "approved" ? "text-emerald-700" : (n as any).hp_result === "rejected" ? "text-destructive" : "text-amber-700"}`}>
+                            {(n as any).hp_result === "approved" ? "✅ Aprovado" : (n as any).hp_result === "rejected" ? "❌ Reprovado" : "⚠️ Aprovado c/ Condições"}
+                          </span>
+                          {(n as any).result_datetime && (
+                            <span className="text-[10px] text-muted-foreground">
+                              · {new Date((n as any).result_datetime).toLocaleDateString("pt-PT")}
+                            </span>
+                          )}
+                          <button
+                            className="text-[10px] text-muted-foreground hover:text-primary underline ml-1"
+                            onClick={() => {
+                              setResultTargetId(n.id);
+                              setResultTargetCode(n.code);
+                              setResultValue((n as any).hp_result ?? "approved");
+                              setResultDatetime((n as any).result_datetime?.slice(0,16) ?? "");
+                              setResultObs((n as any).result_observations ?? "");
+                              setResultRnc((n as any).rnc_ref ?? "");
+                              setResultAtaCode((n as any).ata_code ?? "");
+                              setResultApprovedBy((n as any).approved_by_name ?? "");
+                              setResultApprovedEntity((n as any).approved_entity ?? "IP — Infraestruturas de Portugal, S.A.");
+                              setResultDialogOpen(true);
+                            }}
+                          >editar</button>
+                        </div>
+                      ) : (
+                        <button
+                          className="text-[10px] text-primary hover:underline cursor-pointer font-medium flex items-center gap-1"
+                          onClick={() => {
+                            setResultTargetId(n.id);
+                            setResultTargetCode(n.code);
+                            setResultValue("approved");
+                            setResultDatetime(new Date().toISOString().slice(0,16));
+                            setResultObs(""); setResultRnc(""); setResultAtaCode((n as any).ata_code ?? "");
+                            setResultApprovedBy(""); setResultApprovedEntity("IP — Infraestruturas de Portugal, S.A.");
+                            setResultDialogOpen(true);
+                          }}
+                        >
+                          <ClipboardCheck className="h-3 w-3" />
+                          Registar resultado HP…
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Upload documentos assinados */}
+                    <div className="flex items-start gap-2">
+                      <Upload className="h-3 w-3 text-muted-foreground shrink-0 mt-0.5" />
+                      <span className="text-[10px] text-muted-foreground w-10 shrink-0">Docs</span>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        {((n as any).signed_doc_paths ?? []).map((path: string, idx: number) => (
+                          <div key={path} className="flex items-center gap-1 bg-muted/50 rounded px-1.5 py-0.5">
+                            <Image className="h-3 w-3 text-muted-foreground" />
+                            <button
+                              className="text-[10px] text-primary hover:underline"
+                              onClick={async () => {
+                                const url = await hpNotificationService.getSignedDocUrl(path);
+                                if (url) window.open(url, "_blank");
+                              }}
+                            >
+                              Doc {idx + 1}
+                            </button>
+                            {isAdmin && (
+                              <button
+                                className="text-[10px] text-muted-foreground hover:text-destructive"
+                                onClick={async () => {
+                                  await hpNotificationService.removeSignedDoc(n.id, path);
+                                  setNotifications(prev => prev.map(x => x.id === n.id
+                                    ? { ...x, signed_doc_paths: ((x as any).signed_doc_paths ?? []).filter((p: string) => p !== path) } as any
+                                    : x));
+                                }}
+                              ><X className="h-2.5 w-2.5" /></button>
+                            )}
+                          </div>
+                        ))}
+                        <label className="cursor-pointer flex items-center gap-1 text-[10px] text-muted-foreground hover:text-primary transition-colors">
+                          <Upload className="h-3 w-3" />
+                          {uploadingId === n.id ? <Loader2 className="h-3 w-3 animate-spin" /> : "Adicionar"}
+                          <input
+                            type="file"
+                            accept="image/*,.pdf"
+                            className="hidden"
+                            capture="environment"
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (!file) return;
+                              setUploadingId(n.id);
                               try {
                                 const { supabase: sb } = await import("@/integrations/supabase/client");
-                                await (sb as any).from("hp_notifications").update({ ata_code: ataEditValue.trim() || null }).eq("id", n.id);
-                                setNotifications(prev => prev.map(x => x.id === n.id ? { ...x, ata_code: ataEditValue.trim() || null } as any : x));
-                                setAtaEditId(null);
-                              } catch { /* silencioso */ } finally { setAtaSaving(false); }
-                            }
-                            if (e.key === "Escape") setAtaEditId(null);
+                                const ext = file.name.split(".").pop() ?? "jpg";
+                                const path = `hp-docs/${projectId}/${n.id}/${Date.now()}.${ext}`;
+                                const { error } = await sb.storage.from("qms-files").upload(path, file, { upsert: false });
+                                if (error) throw error;
+                                await hpNotificationService.addSignedDoc(n.id, path);
+                                setNotifications(prev => prev.map(x => x.id === n.id
+                                  ? { ...x, signed_doc_paths: [...((x as any).signed_doc_paths ?? []), path] } as any
+                                  : x));
+                                toast.success("Documento adicionado.");
+                              } catch (err: any) {
+                                toast.error(err?.message ?? "Erro no upload.");
+                              } finally {
+                                setUploadingId(null);
+                                e.target.value = "";
+                              }
+                            }}
+                          />
+                        </label>
+                      </div>
+                    </div>
+
+                    {/* Link de confirmação externa (para copiar e enviar à F/IP) */}
+                    {n.status === "pending" && !isVoided && (n as any).confirmation_token && (
+                      <div className="flex items-center gap-2">
+                        <CheckCheck className="h-3 w-3 text-muted-foreground shrink-0" />
+                        <span className="text-[10px] text-muted-foreground w-10 shrink-0">Link F/IP</span>
+                        <button
+                          className="text-[10px] text-primary hover:underline flex items-center gap-1"
+                          onClick={() => {
+                            const url = `${window.location.origin}/confirm-hp?token=${(n as any).confirmation_token}`;
+                            navigator.clipboard.writeText(url);
+                            setCopiedToken(n.id);
+                            setTimeout(() => setCopiedToken(null), 2000);
                           }}
-                        />
-                        {ataSaving && <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />}
-                        <span className="text-[10px] text-muted-foreground">Enter para guardar · Esc para cancelar</span>
-                      </>
-                    ) : (
-                      <button
-                        className="text-[10px] font-mono text-emerald-700 hover:underline cursor-pointer"
-                        onClick={() => { setAtaEditId(n.id); setAtaEditValue((n as any).ata_code ?? ""); }}
-                        title="Clica para vincular ATA-Q"
-                      >
-                        {(n as any).ata_code ?? <span className="text-muted-foreground italic">Vincular ATA-Q…</span>}
-                      </button>
+                        >
+                          {copiedToken === n.id
+                            ? <><CheckCheck className="h-3 w-3 text-emerald-600" /><span className="text-emerald-600">Copiado!</span></>
+                            : <><Copy className="h-3 w-3" />Copiar link de confirmação</>
+                          }
+                        </button>
+                      </div>
                     )}
                   </div>
                 )}
@@ -933,6 +1097,157 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
           />
         );
       })()}
+
+      {/* ── Resultado HP dialog ──────────────────────────────────────── */}
+      <Dialog open={resultDialogOpen} onOpenChange={(v) => { if (!v) setResultDialogOpen(false); }}>
+        <DialogContent className="max-w-md px-6">
+          <DialogHeader className="-mx-6 px-6 pt-6">
+            <DialogTitle className="flex items-center gap-2">
+              <ClipboardCheck className="h-4 w-4 text-primary" />
+              Resultado da Inspecção HP — {resultTargetCode}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            {/* Resultado */}
+            <div>
+              <Label className="text-xs font-semibold">Resultado *</Label>
+              <div className="flex gap-2 mt-2">
+                {([
+                  { v: "approved", label: "Aprovado", cls: "border-emerald-400 bg-emerald-50 text-emerald-800" },
+                  { v: "approved_conditions", label: "Aprovado c/ Condições", cls: "border-amber-400 bg-amber-50 text-amber-800" },
+                  { v: "rejected", label: "Reprovado", cls: "border-destructive bg-destructive/10 text-destructive" },
+                ] as const).map(({ v, label, cls }) => (
+                  <button
+                    key={v}
+                    type="button"
+                    onClick={() => setResultValue(v)}
+                    className={`flex-1 text-[11px] font-medium px-2 py-2 rounded border-2 transition-all ${resultValue === v ? cls : "border-border text-muted-foreground hover:border-muted-foreground"}`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Data/hora real */}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-xs">Data/hora real da inspecção</Label>
+                <input
+                  type="datetime-local"
+                  className="mt-1 w-full text-xs border rounded px-2 py-1.5 bg-background"
+                  value={resultDatetime}
+                  onChange={e => setResultDatetime(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label className="text-xs">ATA-Q emitida</Label>
+                <input
+                  type="text"
+                  className="mt-1 w-full text-xs font-mono border rounded px-2 py-1.5 bg-background"
+                  placeholder="ATA-Q-PF17A-001"
+                  value={resultAtaCode}
+                  onChange={e => setResultAtaCode(e.target.value)}
+                />
+              </div>
+            </div>
+
+            {/* Observações */}
+            {(resultValue === "approved_conditions" || resultValue === "rejected") && (
+              <div>
+                <Label className="text-xs">Condições / Observações *</Label>
+                <Textarea
+                  className="text-xs mt-1"
+                  rows={3}
+                  placeholder="Descreve as condições ou motivo de reprovação…"
+                  value={resultObs}
+                  onChange={e => setResultObs(e.target.value)}
+                />
+              </div>
+            )}
+
+            {/* RNC (se reprovado) */}
+            {resultValue === "rejected" && (
+              <div>
+                <Label className="text-xs">N.º RNC aberta</Label>
+                <input
+                  type="text"
+                  className="mt-1 w-full text-xs font-mono border rounded px-2 py-1.5 bg-background"
+                  placeholder="RNC-PF17A-001"
+                  value={resultRnc}
+                  onChange={e => setResultRnc(e.target.value)}
+                />
+              </div>
+            )}
+
+            {/* Aprovado por */}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-xs">Aprovado por (F/IP)</Label>
+                <input
+                  type="text"
+                  className="mt-1 w-full text-xs border rounded px-2 py-1.5 bg-background"
+                  placeholder="Nome do representante"
+                  value={resultApprovedBy}
+                  onChange={e => setResultApprovedBy(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label className="text-xs">Entidade</Label>
+                <input
+                  type="text"
+                  className="mt-1 w-full text-xs border rounded px-2 py-1.5 bg-background"
+                  value={resultApprovedEntity}
+                  onChange={e => setResultApprovedEntity(e.target.value)}
+                />
+              </div>
+            </div>
+
+            {resultValue === "rejected" && (
+              <div className="rounded-md bg-destructive/10 border border-destructive/30 px-3 py-2 text-xs text-destructive">
+                ⚠️ HP Reprovado — recomendado abrir RNC em <strong>Não Conformidades</strong> após guardar.
+              </div>
+            )}
+          </div>
+
+          <div className="-mx-6 px-6 pb-6 flex justify-end gap-2 border-t pt-4">
+            <Button size="sm" variant="outline" onClick={() => setResultDialogOpen(false)}>Cancelar</Button>
+            <Button
+              size="sm"
+              variant={resultValue === "rejected" ? "destructive" : "default"}
+              disabled={resultSaving || ((resultValue === "approved_conditions" || resultValue === "rejected") && !resultObs.trim())}
+              onClick={async () => {
+                if (!resultTargetId) return;
+                setResultSaving(true);
+                try {
+                  const { data: { user: u } } = await (await import("@/integrations/supabase/client")).supabase.auth.getUser();
+                  const updated = await hpNotificationService.registerResult(resultTargetId, resultValue, {
+                    result_datetime: resultDatetime || undefined,
+                    result_observations: resultObs.trim() || undefined,
+                    rnc_ref: resultRnc.trim() || undefined,
+                    ata_code: resultAtaCode.trim() || undefined,
+                    approved_by_name: resultApprovedBy.trim() || undefined,
+                    approved_entity: resultApprovedEntity.trim() || undefined,
+                    registered_by: u?.id ?? "",
+                  });
+                  setNotifications(prev => prev.map(n => n.id === resultTargetId ? { ...n, ...updated } : n));
+                  toast.success(`Resultado registado: ${resultValue === "approved" ? "Aprovado ✅" : resultValue === "rejected" ? "Reprovado ❌" : "Aprovado c/ Condições ⚠️"}`);
+                  setResultDialogOpen(false);
+                  if (resultValue === "rejected") {
+                    setTimeout(() => navigate("/non-conformities?new=1"), 1500);
+                  }
+                } catch (err: any) {
+                  toast.error(err?.message ?? "Erro ao registar resultado.");
+                } finally {
+                  setResultSaving(false);
+                }
+              }}
+            >
+              {resultSaving ? <Loader2 className="h-3 w-3 animate-spin" /> : "Guardar Resultado"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* ── Void / Delete dialog (admin only) ────────────────────── */}
       <Dialog open={voidDialogOpen} onOpenChange={(v) => { if (!v) { setVoidDialogOpen(false); setVoidTargetId(null); } }}>

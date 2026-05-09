@@ -90,6 +90,7 @@ const ActionPlanPage = lazy(() => import("./pages/ActionPlanPage"));
 const SubmittalsPage = lazy(() => import("./pages/SubmittalsPage"));
 const MyTasksPage = lazy(() => import("./pages/MyTasksPage"));
 const ConfirmReceiptPage = lazy(() => import("./pages/ConfirmReceiptPage"));
+const ConfirmHpPage = lazy(() => import("./pages/ConfirmHpPage"));
 const MqtPage = lazy(() => import("./pages/MqtPage"));
 const ProjectSelectorPage = lazy(() => import("./pages/ProjectSelectorPage"));
 const QualityAnalyticsPage = lazy(() => import("./pages/QualityAnalyticsPage"));
@@ -244,6 +245,7 @@ const App = () => (
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/reset-password" element={<ResetPasswordPage />} />
                 <Route path="/confirm-receipt" element={<ConfirmReceiptPage />} />
+                <Route path="/confirm-hp" element={<ConfirmHpPage />} />
                 <Route path="/select-project" element={<AuthOnlyRoute><ProjectSelectorPage /></AuthOnlyRoute>} />
                 <Route path="/invite/accept" element={<ProtectedLayout><AcceptInvitePage /></ProtectedLayout>} />
 

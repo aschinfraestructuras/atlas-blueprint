@@ -36,6 +36,19 @@ export interface HpNotification {
   voided_at?: string | null;
   voided_by?: string | null;
   void_reason?: string | null;
+  // Secção 5 — resultado da inspecção HP
+  hp_result?: "approved" | "approved_conditions" | "rejected" | null;
+  result_datetime?: string | null;
+  result_observations?: string | null;
+  rnc_ref?: string | null;
+  result_registered_at?: string | null;
+  result_registered_by?: string | null;
+  // Upload de documentos assinados
+  signed_doc_paths?: string[];
+  // Confirmação externa (F/IP sem login)
+  confirmation_token?: string | null;
+  confirmation_token_used_at?: string | null;
+  confirmation_token_email?: string | null;
 }
 
 export interface HpNotificationInput {
@@ -209,6 +222,86 @@ export const hpNotificationService = {
   },
 
 
+
+  /** Regista o resultado da inspecção HP (Secção 5) */
+  async registerResult(
+    id: string,
+    result: "approved" | "approved_conditions" | "rejected",
+    opts: {
+      result_datetime?: string;
+      result_observations?: string;
+      rnc_ref?: string;
+      ata_code?: string;
+      approved_by_name?: string;
+      approved_entity?: string;
+      registered_by: string;
+    }
+  ): Promise<HpNotification> {
+    const { data, error } = await (supabase as any)
+      .from("hp_notifications")
+      .update({
+        hp_result:              result,
+        result_datetime:        opts.result_datetime ?? null,
+        result_observations:    opts.result_observations ?? null,
+        rnc_ref:                opts.rnc_ref ?? null,
+        ata_code:               opts.ata_code ?? null,
+        approved_by_name:       opts.approved_by_name ?? null,
+        approved_entity:        opts.approved_entity ?? null,
+        result_registered_at:   new Date().toISOString(),
+        result_registered_by:   opts.registered_by,
+      })
+      .eq("id", id)
+      .select()
+      .single();
+    if (error) throw error;
+    return data as HpNotification;
+  },
+
+  /** Adiciona paths de documentos assinados (acumulativo) */
+  async addSignedDoc(id: string, path: string): Promise<void> {
+    // Usar array_append via RPC para evitar race condition
+    const { error } = await (supabase as any).rpc("fn_hp_append_signed_doc", {
+      p_id: id, p_path: path,
+    });
+    if (error) {
+      // Fallback: fetch + update se RPC não existir
+      const { data: current } = await (supabase as any)
+        .from("hp_notifications").select("signed_doc_paths").eq("id", id).single();
+      const paths = [...(current?.signed_doc_paths ?? []), path];
+      await (supabase as any).from("hp_notifications")
+        .update({ signed_doc_paths: paths }).eq("id", id);
+    }
+  },
+
+  /** Remove um path de documento assinado */
+  async removeSignedDoc(id: string, path: string): Promise<void> {
+    const { data: current } = await (supabase as any)
+      .from("hp_notifications").select("signed_doc_paths").eq("id", id).single();
+    const paths = (current?.signed_doc_paths ?? []).filter((p: string) => p !== path);
+    await (supabase as any).from("hp_notifications")
+      .update({ signed_doc_paths: paths }).eq("id", id);
+  },
+
+  /** Obtém URL assinada para visualizar documento (60 min) */
+  async getSignedDocUrl(path: string): Promise<string | null> {
+    const { data, error } = await supabase.storage
+      .from("qms-files")
+      .createSignedUrl(path, 3600);
+    if (error) return null;
+    return data.signedUrl;
+  },
+
+  /** Confirmação externa pela F/IP via token (sem login) */
+  async confirmByToken(token: string, name: string, entity: string): Promise<{
+    success: boolean; error?: string; code?: string; activity?: string; planned_at?: string;
+  }> {
+    const { data, error } = await (supabase as any).rpc("fn_confirm_hp_by_token", {
+      p_token: token, p_name: name, p_entity: entity,
+    });
+    if (error) return { success: false, error: error.message };
+    return data as { success: boolean; error?: string; code?: string; activity?: string; planned_at?: string; };
+  },
+
   /** Apaga fisicamente (soft) — só para notificações nunca enviadas (pending sem notified_at). Admin only. */
   async softDelete(id: string, deletedBy: string): Promise<void> {
     const { error } = await (supabase as any)
@@ -314,6 +407,12 @@ function buildHpNotificationHtml(
   signatureSlots: SignatureSlot[] = [],
   notifiedByName: string | null = null,
 ): string {
+  const hasResult = !!n.hp_result;
+  const resultLabel: Record<string, string> = {
+    approved: "✅ Aprovado",
+    approved_conditions: "⚠️ Aprovado com Condições",
+    rejected: "❌ Reprovado",
+  };
 
   const esc = (v?: string | null) => (v ?? "—").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
@@ -541,34 +640,43 @@ ${signatureBlockHtml(signatureSlots, fmtDate(n.notified_at ?? n.created_at))}
 <div class="page-break">
 ${header}
 
-<h3>5 — Resultado — Preenchido Após a Inspecção</h3>
+<h3>5 — Resultado — ${hasResult ? "Registado" : "Preenchido Após a Inspecção"}</h3>
 <div class="grid2" style="margin-bottom:12px">
   <div class="field">
     <span class="label">Data / Hora Real da Inspecção HP</span>
-    <span class="value">____/____/____ ______h</span>
+    <span class="value">${n.result_datetime ? fmtDateTime(n.result_datetime) : "____/____/____ ______h"}</span>
   </div>
   <div class="field">
     <span class="label">ATA-Q Emitida</span>
-    <span class="value">ATA-Q-PF17A- ____________</span>
+    <span class="value">${n.ata_code ? esc(n.ata_code) : "ATA-Q-PF17A- ____________"}</span>
   </div>
 </div>
 
-<div class="result-box">
+<div class="result-box" style="${hasResult && n.hp_result === "rejected" ? "border-color:#991b1b;" : hasResult && n.hp_result === "approved" ? "border-color:#065f46;" : ""}">
   <span class="label" style="margin-bottom:4px;display:block">Resultado do HP</span>
   <div class="result-choices">
-    <div class="choice">${checkbox()} Aprovado</div>
-    <div class="choice">${checkbox()} Aprovado c/ Condições</div>
-    <div class="choice">${checkbox()} Reprovado</div>
+    <div class="choice">${checkbox(hasResult && n.hp_result === "approved")} Aprovado</div>
+    <div class="choice">${checkbox(hasResult && n.hp_result === "approved_conditions")} Aprovado c/ Condições</div>
+    <div class="choice">${checkbox(hasResult && n.hp_result === "rejected")} Reprovado</div>
   </div>
+  ${hasResult && n.result_observations ? `
+  <div style="margin-top:8px">
+    <span class="label">Condições / Observações</span>
+    <span class="value">${esc(n.result_observations)}</span>
+  </div>` : `
   <div style="margin-top:8px">
     <span class="label">Condições / Observações (se aprovado c/ condições ou reprovado)</span>
     <span class="value" style="min-height:40px;">&nbsp;</span>
-  </div>
+  </div>`}
+  ${hasResult && n.approved_by_name ? `
+  <div style="margin-top:6px;font-size:9.5px;color:#374151;">
+    Registado por: <strong>${esc(n.approved_by_name)}</strong>${n.approved_entity ? ` · ${esc(n.approved_entity)}` : ""}
+  </div>` : ""}
 </div>
 
 <div style="margin-top:12px">
   <span class="label">RNC Aberta (se HP reprovado)</span>
-  <span class="value">RNC-PF17A- ____________ &nbsp;&nbsp; ${checkbox()} Não aplicável</span>
+  <span class="value">${n.rnc_ref ? `RNC-PF17A-${esc(n.rnc_ref)}` : "RNC-PF17A- ____________"} &nbsp;&nbsp; ${checkbox(!n.rnc_ref && hasResult && n.hp_result !== "rejected")} Não aplicável</span>
 </div>
 
 ${signatureBlockHtml(signatureSlots, fmtDate(n.confirmed_at ?? n.notified_at ?? n.created_at))}
