@@ -32,7 +32,7 @@ import { cn } from "@/lib/utils";
 import {
   Clock, Search, Filter, CalendarPlus, Play, Ban, RefreshCw,
   Loader2, AlertTriangle, CheckCircle2, XCircle, CalendarClock,
-  ListChecks, Timer, Trash2,
+  ListChecks, Timer, Trash2, Link2,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -73,6 +73,17 @@ export function DueTab() {
   const [scheduleDate, setScheduleDate] = useState("");
   const [scheduling, setScheduling] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+
+  // Vincular resultado a obrigação
+  const [linkDueId, setLinkDueId] = useState<string | null>(null);
+  const [linkDueWorkItemId, setLinkDueWorkItemId] = useState<string | null>(null);
+  const [availableResults, setAvailableResults] = useState<{
+    id: string; code: string | null; test_name: string; result: string | null;
+    status: string; tested_at: string | null; location: string | null;
+  }[]>([]);
+  const [loadingResults, setLoadingResults] = useState(false);
+  const [selectedResultId, setSelectedResultId] = useState<string>("");
+  const [linking, setLinking] = useState(false);
 
   const filters = filterStatus !== "all" ? { status: filterStatus } : undefined;
   const { data, loading, refetch } = useTestDueItems(filters);
@@ -124,7 +135,32 @@ export function DueTab() {
   const done30d = allItems.filter(d => d.status === "done" && d.related_test_result_id).length;
 
   // ── Actions ──────────────────────────────────────────────────────────────
-  const handleGenerate = async () => {
+  const openLinkDialog = async (dueId: string, workItemId: string | null) => {
+    setLinkDueId(dueId);
+    setLinkDueWorkItemId(workItemId);
+    setSelectedResultId("");
+    setLoadingResults(true);
+    try {
+      const results = await testDueService.getAvailableResults(activeProject!.id, workItemId);
+      setAvailableResults(results);
+    } catch { setAvailableResults([]); }
+    finally { setLoadingResults(false); }
+  };
+
+  const handleLink = async () => {
+    if (!linkDueId || !selectedResultId) return;
+    setLinking(true);
+    try {
+      await testDueService.fulfillWithResult(linkDueId, selectedResultId);
+      toast.success("Obrigação fechada — resultado vinculado com sucesso.");
+      setLinkDueId(null);
+      refresh();
+    } catch (err: any) {
+      toast.error(err?.message ?? "Erro ao vincular resultado.");
+    } finally { setLinking(false); }
+  };
+
+    const handleGenerate = async () => {
     if (!activeProject) return;
     setGenerating(true);
     try {
@@ -360,6 +396,11 @@ export function DueTab() {
                             onClick={() => { setWaiveId(item.id); setWaiveReason(""); }}>
                             <Ban className="h-3.5 w-3.5" />
                           </Button>
+                          <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-emerald-600"
+                            title="Vincular resultado de ensaio (fechar obrigação)"
+                            onClick={() => openLinkDialog(item.id, (item as any).work_item_id ?? null)}>
+                            <Link2 className="h-3.5 w-3.5" />
+                          </Button>
                           <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive"
                             title={t("common.delete")}
                             onClick={() => setDeleteTarget(item.id)}>
@@ -375,6 +416,76 @@ export function DueTab() {
           </Table>
         </div>
       )}
+
+      {/* Vincular Resultado Dialog */}
+      <Dialog open={!!linkDueId} onOpenChange={(o) => { if (!o) setLinkDueId(null); }}>
+        <DialogContent className="max-w-lg px-6">
+          <DialogHeader className="-mx-6 px-6 pt-6">
+            <DialogTitle className="flex items-center gap-2">
+              <Link2 className="h-4 w-4 text-emerald-600" />
+              Vincular Resultado — Fechar Obrigação
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 py-2">
+            <p className="text-xs text-muted-foreground">
+              Selecciona o resultado de ensaio que satisfaz esta obrigação. A obrigação passará a estado <strong>Concluída</strong>.
+            </p>
+            {loadingResults ? (
+              <div className="flex items-center gap-2 py-4 text-sm text-muted-foreground">
+                <Loader2 className="h-4 w-4 animate-spin" /> A carregar resultados disponíveis…
+              </div>
+            ) : availableResults.length === 0 ? (
+              <div className="rounded-lg bg-muted/50 px-4 py-6 text-center text-sm text-muted-foreground">
+                Sem resultados de ensaio registados para este work item.
+                <br />
+                <button className="text-primary underline mt-1 text-xs" onClick={() => { setLinkDueId(null); navigate("/tests?tab=results"); }}>
+                  Ir para Resultados →
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-1.5 max-h-64 overflow-y-auto">
+                {availableResults.map(r => (
+                  <button
+                    key={r.id}
+                    onClick={() => setSelectedResultId(r.id)}
+                    className={cn(
+                      "w-full text-left rounded-lg border px-3 py-2.5 text-sm transition-colors",
+                      selectedResultId === r.id
+                        ? "border-emerald-400 bg-emerald-50 text-emerald-900"
+                        : "border-border hover:border-muted-foreground bg-card"
+                    )}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-mono text-xs font-semibold">{r.code ?? "—"}</span>
+                      <span className={cn("text-[10px] px-1.5 py-0.5 rounded font-medium",
+                        r.result === "pass" ? "bg-emerald-100 text-emerald-700" :
+                        r.result === "fail" ? "bg-red-100 text-red-700" : "bg-muted text-muted-foreground"
+                      )}>
+                        {r.result === "pass" ? "Conforme" : r.result === "fail" ? "Não Conforme" : r.result ?? "Pendente"}
+                      </span>
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-0.5">{r.test_name}</div>
+                    {r.location && <div className="text-[10px] text-muted-foreground font-mono">{r.location}</div>}
+                    {r.tested_at && <div className="text-[10px] text-muted-foreground">{new Date(r.tested_at).toLocaleDateString("pt-PT")}</div>}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          <div className="-mx-6 px-6 pb-6 flex justify-end gap-2 border-t pt-4">
+            <Button size="sm" variant="outline" onClick={() => setLinkDueId(null)}>Cancelar</Button>
+            <Button
+              size="sm"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              disabled={!selectedResultId || linking}
+              onClick={handleLink}
+            >
+              {linking ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : <CheckCircle2 className="h-3.5 w-3.5 mr-1" />}
+              Vincular e Fechar Obrigação
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Waive Dialog */}
       <Dialog open={!!waiveId} onOpenChange={(o) => { if (!o) setWaiveId(null); }}>

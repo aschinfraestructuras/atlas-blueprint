@@ -176,6 +176,46 @@ export const testDueService = {
     if (error) throw error;
   },
 
+
+  /** Fecha uma obrigação de ensaio vinculando um resultado de ensaio */
+  async fulfillWithResult(dueItemId: string, testResultId: string): Promise<void> {
+    const { error } = await (supabase as any)
+      .from("test_due_items")
+      .update({
+        related_test_result_id: testResultId,
+        status: "done",
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", dueItemId);
+    if (error) throw error;
+  },
+
+  /** Lista test_results disponíveis para vincular a um due_item */
+  async getAvailableResults(projectId: string, workItemId?: string | null): Promise<{
+    id: string; code: string | null; test_name: string; result: string | null;
+    status: string; tested_at: string | null; location: string | null;
+  }[]> {
+    let q = (supabase as any)
+      .from("test_results")
+      .select("id, code, test_name, result, status, tested_at, location_pk")
+      .eq("project_id", projectId)
+      .is("is_deleted", null)
+      .order("tested_at", { ascending: false })
+      .limit(50);
+    if (workItemId) q = q.eq("work_item_id", workItemId);
+    const { data, error } = await q;
+    if (error) throw error;
+    return (data ?? []).map((r: any) => ({
+      id: r.id,
+      code: r.code,
+      test_name: r.test_name ?? "—",
+      result: r.result,
+      status: r.status,
+      tested_at: r.tested_at,
+      location: r.location_pk,
+    }));
+  },
+
   async softDelete(id: string, projectId: string): Promise<void> {
     const { data: { user } } = await supabase.auth.getUser();
     const { error } = await (supabase as any)
