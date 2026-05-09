@@ -48,6 +48,10 @@ import {
   ChevronDown,
   ChevronRight,
   Mail,
+  RefreshCw,
+  Link2,
+  Filter,
+  TimerOff,
 } from "lucide-react";
 import { NotificationModal } from "@/components/notifications/NotificationModal";
 import { notificationLogService, type NotificationLog, type NotificationRecipient } from "@/lib/services/notificationLogService";
@@ -101,6 +105,15 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
   const [voidReason, setVoidReason] = useState("");
   const [voidIsSent, setVoidIsSent] = useState(false); // true=anular, false=apagar
   const [voidLoading, setVoidLoading] = useState(false);
+
+  // Filtro do histórico de notificações
+  type NotifFilter = "active" | "all" | "voided";
+  const [notifFilter, setNotifFilter] = useState<NotifFilter>("active");
+
+  // ATA-Q inline edit
+  const [ataEditId, setAtaEditId] = useState<string | null>(null);
+  const [ataEditValue, setAtaEditValue] = useState("");
+  const [ataSaving, setAtaSaving] = useState(false);
   const [notifications, setNotifications] = useState<HpNotification[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -513,151 +526,312 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
       {notifications.length > 0 && (
         <TooltipProvider>
         <div className="space-y-2 mt-6">
-          <h3 className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
-            {t("ppi.hpNotification.history", { defaultValue: "Histórico de Notificações" })}
-          </h3>
-          <div className="space-y-2">
-            {notifications.map((n) => (
+          {/* Cabeçalho com contadores e filtro */}
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <h3 className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                {t("ppi.hpNotification.history", { defaultValue: "Histórico de Notificações" })}
+              </h3>
+              {/* Contadores por estado */}
+              {(() => {
+                const active = notifications.filter(n => !(n as any).is_voided);
+                const voided = notifications.filter(n => (n as any).is_voided);
+                const confirmed = active.filter(n => n.status === "confirmed");
+                const pending = active.filter(n => n.status === "pending");
+                const expired = active.filter(n => n.status === "expired");
+                return (
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    {pending.length > 0 && (
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200 font-medium">
+                        {pending.length} pendente{pending.length > 1 ? "s" : ""}
+                      </span>
+                    )}
+                    {confirmed.length > 0 && (
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium">
+                        {confirmed.length} confirmada{confirmed.length > 1 ? "s" : ""}
+                      </span>
+                    )}
+                    {expired.length > 0 && (
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-50 text-red-700 border border-red-200 font-medium">
+                        {expired.length} expirada{expired.length > 1 ? "s" : ""}
+                      </span>
+                    )}
+                    {voided.length > 0 && (
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground border font-medium">
+                        {voided.length} anulada{voided.length > 1 ? "s" : ""}
+                      </span>
+                    )}
+                  </div>
+                );
+              })()}
+            </div>
+            {/* Filtro */}
+            <div className="flex items-center gap-1 bg-muted/50 rounded-md p-0.5">
+              {(["active", "all", "voided"] as const).map((f) => (
+                <button
+                  key={f}
+                  onClick={() => setNotifFilter(f)}
+                  className={cn(
+                    "text-[10px] px-2 py-1 rounded transition-colors font-medium",
+                    notifFilter === f
+                      ? "bg-background shadow-sm text-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  {f === "active" ? "Activas" : f === "all" ? "Todas" : "Anuladas"}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Lista filtrada */}
+          <div className="space-y-1.5">
+            {notifications
+              .filter(n => {
+                if (notifFilter === "active") return !(n as any).is_voided;
+                if (notifFilter === "voided") return (n as any).is_voided;
+                return true;
+              })
+              .sort((a, b) => {
+                // Activas primeiro, depois por data planeada desc
+                const aVoid = (a as any).is_voided ? 1 : 0;
+                const bVoid = (b as any).is_voided ? 1 : 0;
+                if (aVoid !== bVoid) return aVoid - bVoid;
+                return new Date(b.planned_datetime).getTime() - new Date(a.planned_datetime).getTime();
+              })
+              .map((n) => {
+              // Cálculo de urgência: horas até à inspecção
+              const hoursUntil = n.planned_datetime
+                ? (new Date(n.planned_datetime).getTime() - Date.now()) / 3_600_000
+                : null;
+              const isUrgent = n.status === "pending" && hoursUntil !== null && hoursUntil > 0 && hoursUntil < 24;
+              const isOverdue = n.status === "pending" && hoursUntil !== null && hoursUntil < 0;
+              const isVoided = (n as any).is_voided;
+
+              const pdfOpts = {
+                notification: n,
+                instance: { code: instance.code, description: (instance as any).description },
+                projectName: activeProject?.name ?? "",
+                projectId,
+                projectMeta: activeProject ? {
+                  name: activeProject.name,
+                  code: activeProject.code,
+                  contractor: (activeProject as any).contractor ?? null,
+                  client: (activeProject as any).client ?? null,
+                  location: (activeProject as any).location ?? null,
+                  contract_number: (activeProject as any).contract_number ?? null,
+                } : null,
+                signatureSlots: hpSignatureSlots,
+                notifiedByName,
+              };
+
+              return (
               <div
                 key={n.id}
-                className="flex items-center justify-between gap-3 px-4 py-2.5 rounded-lg border border-border bg-card text-sm"
+                className={cn(
+                  "rounded-lg border text-sm transition-colors",
+                  isVoided
+                    ? "border-border/40 bg-muted/20 opacity-60"
+                    : isOverdue
+                      ? "border-destructive/40 bg-destructive/5"
+                      : isUrgent
+                        ? "border-amber-400/60 bg-amber-50/50"
+                        : n.status === "confirmed"
+                          ? "border-emerald-400/30 bg-emerald-50/30"
+                          : "border-border bg-card"
+                )}
               >
-                <div className="flex items-center gap-3">
-                  <Bell className="h-3.5 w-3.5 text-muted-foreground" />
-                  <div>
-                    <span className="font-mono text-xs font-bold text-foreground">{n.code}</span>
-                    <span className="mx-2 text-muted-foreground">·</span>
-                    <span className="text-muted-foreground text-xs">
-                      {n.point_no} — {n.activity.slice(0, 60)}
-                    </span>
+                {/* Linha principal */}
+                <div className="flex items-center justify-between gap-2 px-3 py-2">
+                  <div className="flex items-center gap-2 min-w-0">
+                    {/* Ícone de urgência */}
+                    {isOverdue && !isVoided && <TimerOff className="h-3.5 w-3.5 text-destructive shrink-0" />}
+                    {isUrgent && !isVoided && <Clock className="h-3.5 w-3.5 text-amber-600 shrink-0 animate-pulse" />}
+                    {!isUrgent && !isOverdue && <Bell className={cn("h-3.5 w-3.5 shrink-0", isVoided ? "text-muted-foreground/40" : "text-muted-foreground")} />}
+
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className={cn("font-mono text-xs font-bold", isVoided && "line-through text-muted-foreground")}>{n.code}</span>
+                        <span className="text-muted-foreground text-[10px]">·</span>
+                        <span className={cn("text-[10px]", isVoided ? "text-muted-foreground/60" : "text-muted-foreground")}>
+                          Ponto {n.point_no} — {n.activity.length > 50 ? n.activity.slice(0, 50) + "…" : n.activity}
+                        </span>
+                      </div>
+                      {/* Linha secundária: data + localização */}
+                      <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                        <span className={cn("text-[10px]", isUrgent ? "text-amber-700 font-semibold" : isOverdue ? "text-destructive font-semibold" : "text-muted-foreground")}>
+                          {n.planned_datetime
+                            ? new Date(n.planned_datetime).toLocaleString("pt-PT", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })
+                            : "—"}
+                          {isUrgent && hoursUntil !== null && ` · ⚡ ${Math.round(hoursUntil)}h restantes`}
+                          {isOverdue && ` · Prazo ultrapassado`}
+                        </span>
+                        {n.location_pk && (
+                          <span className="text-[10px] text-muted-foreground font-mono">{n.location_pk}</span>
+                        )}
+                        {(n as any).rfi_ref && (
+                          <span className="text-[10px] font-mono text-primary">RFI: {(n as any).rfi_ref}</span>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-center gap-2 flex-wrap">
-                  {(n as any).advance_notice_override && (
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Badge variant="outline" className="text-[10px] border-amber-400/40 bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400 gap-0.5">
-                          <AlertTriangle className="h-2.5 w-2.5" />
-                          {t("ppi.hpNotification.earlyBadge", { defaultValue: "Antecipado" })}
-                        </Badge>
-                      </TooltipTrigger>
-                      <TooltipContent side="top" className="max-w-xs text-xs">
-                        {(n as any).advance_notice_reason || "—"}
-                      </TooltipContent>
-                    </Tooltip>
-                  )}
-                  {(n as any).rfi_ref && (
-                    <span className="text-[10px] font-mono text-primary">RFI: {(n as any).rfi_ref}</span>
-                  )}
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="gap-1 text-[10px] h-6 px-2 text-muted-foreground"
-                    title={t("ppi.hpNotification.exportPdf", { defaultValue: "Exportar NOT-HP (PDF)" })}
-                    onClick={async () => {
-                      const opts = {
-                        notification: n,
-                        instance: { code: instance.code, description: (instance as any).description },
-                        projectName: activeProject?.name ?? "",
-                        projectId,
-                        projectMeta: activeProject ? {
-                          name: activeProject.name,
-                          code: activeProject.code,
-                          contractor: (activeProject as any).contractor ?? null,
-                          client: (activeProject as any).client ?? null,
-                          location: (activeProject as any).location ?? null,
-                          contract_number: (activeProject as any).contract_number ?? null,
-                        } : null,
-                        signatureSlots: hpSignatureSlots,
-                        notifiedByName,
-                      };
-                      // Abrir via Blob URL — funciona em tablet sem popup blocker
-                      exportHpNotificationPdf(opts);
-                      // Guardar HTML base64 para poder anexar ao próximo email
-                      try {
-                        const att = await generateHpNotificationHtmlBase64(opts);
-                        setNotifHtmlAttachment(att);
-                      } catch { /* não bloquear a visualização se falhar */ }
-                    }}
-                  >
-                    <FileDown className="h-3 w-3" />
-                    PDF
-                  </Button>
-                  {n.status === "pending" && (
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="gap-1 text-[10px] h-6 px-2 text-muted-foreground"
-                      onClick={() => navigate(`/technical-office?type=rfi&ppi_ref=${encodeURIComponent(n.code)}&subject=${encodeURIComponent(`HP ${n.point_no} ${n.activity.slice(0, 50)}`)}`)}
-                    >
-                      <ExternalLink className="h-3 w-3" />
-                      {t("ppi.hpNotification.createRfi", { defaultValue: "Criar RFI" })}
-                    </Button>
-                  )}
-                  <span className="text-[10px] text-muted-foreground">
-                    {new Date(n.planned_datetime).toLocaleString()}
-                  </span>
-                  <Badge
-                    variant="outline"
-                    className={cn(
-                      "text-[10px]",
-                      n.status === "confirmed"
-                        ? "border-emerald-400/40 bg-emerald-50 text-emerald-700"
-                        : n.status === "pending"
-                          ? "border-amber-400/40 bg-amber-50 text-amber-700"
-                          : n.status === "expired"
-                            ? "border-destructive/40 bg-destructive/10 text-destructive"
-                            : "border-border text-muted-foreground"
+
+                  {/* Badges e acções */}
+                  <div className="flex items-center gap-1.5 shrink-0 flex-wrap justify-end">
+                    {/* Badge antecipado */}
+                    {(n as any).advance_notice_override && !isVoided && (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Badge variant="outline" className="text-[10px] border-amber-400/40 bg-amber-50 text-amber-700 gap-0.5 cursor-help">
+                            <AlertTriangle className="h-2.5 w-2.5" />
+                            &lt;48h
+                          </Badge>
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="max-w-xs text-xs">
+                          <strong>Motivo justificação:</strong> {(n as any).advance_notice_reason || "—"}
+                        </TooltipContent>
+                      </Tooltip>
                     )}
-                  >
-                    {t(`ppi.hpNotification.status_${n.status}`, { defaultValue: n.status })}
-                  </Badge>
-                  {/* Botões admin: apagar (nunca enviada) ou anular (já enviada) */}
-                  {isAdmin && !(n as any).is_voided && (
-                    (n as any).notified_at
-                      ? (
+
+                    {/* Badge estado */}
+                    {!isVoided && (
+                      <Badge
+                        variant="outline"
+                        className={cn(
+                          "text-[10px]",
+                          n.status === "confirmed"
+                            ? "border-emerald-400/40 bg-emerald-50 text-emerald-700"
+                            : n.status === "pending"
+                              ? isOverdue ? "border-destructive/40 bg-destructive/10 text-destructive" : "border-amber-400/40 bg-amber-50 text-amber-700"
+                              : n.status === "expired"
+                                ? "border-destructive/40 bg-destructive/10 text-destructive"
+                                : "border-border text-muted-foreground"
+                        )}
+                      >
+                        {n.status === "confirmed" ? "Confirmada" : n.status === "pending" ? "Pendente" : n.status === "expired" ? "Expirada" : n.status}
+                      </Badge>
+                    )}
+                    {isVoided && (
+                      <Badge variant="outline" className="text-[10px] line-through text-muted-foreground/60 border-muted">
+                        ANULADA
+                      </Badge>
+                    )}
+
+                    {/* PDF */}
+                    <Button
+                      size="sm" variant="ghost"
+                      className="gap-1 text-[10px] h-6 px-2 text-muted-foreground"
+                      title="Exportar NOT-HP (PDF)"
+                      onClick={async () => {
+                        exportHpNotificationPdf(pdfOpts);
+                        try {
+                          const att = await generateHpNotificationHtmlBase64(pdfOpts);
+                          setNotifHtmlAttachment(att);
+                        } catch { /* silencioso */ }
+                      }}
+                    >
+                      <FileDown className="h-3 w-3" />
+                      PDF
+                    </Button>
+
+                    {/* Reenviar (só pendentes não anuladas) */}
+                    {n.status === "pending" && !isVoided && (
+                      <Button
+                        size="sm" variant="ghost"
+                        className="gap-1 text-[10px] h-6 px-2 text-muted-foreground hover:text-primary"
+                        title="Reenviar notificação à Fiscalização"
+                        onClick={() => setNotifyModalOpen(true)}
+                      >
+                        <RefreshCw className="h-3 w-3" />
+                        Reenviar
+                      </Button>
+                    )}
+
+                    {/* Criar RFI (pendentes) */}
+                    {n.status === "pending" && !isVoided && (
+                      <Button
+                        size="sm" variant="ghost"
+                        className="gap-1 text-[10px] h-6 px-2 text-muted-foreground hover:text-primary"
+                        onClick={() => navigate(`/technical-office?type=rfi&ppi_ref=${encodeURIComponent(n.code)}&subject=${encodeURIComponent(`HP ${n.point_no} ${n.activity.slice(0, 50)}`)}`)}
+                      >
+                        <ExternalLink className="h-3 w-3" />
+                        RFI
+                      </Button>
+                    )}
+
+                    {/* Admin: Anular / Apagar */}
+                    {isAdmin && !isVoided && (
+                      (n as any).notified_at ? (
                         <Button
                           size="sm" variant="ghost"
                           className="gap-1 text-[10px] h-6 px-2 text-muted-foreground hover:text-destructive"
-                          title="Anular notificação (preserva auditoria)"
-                          onClick={() => {
-                            setVoidTargetId(n.id);
-                            setVoidTargetCode(n.code);
-                            setVoidIsSent(true);
-                            setVoidReason("");
-                            setVoidDialogOpen(true);
-                          }}
+                          title="Anular notificação"
+                          onClick={() => { setVoidTargetId(n.id); setVoidTargetCode(n.code); setVoidIsSent(true); setVoidReason(""); setVoidDialogOpen(true); }}
                         >
                           <Ban className="h-3 w-3" />
-                          Anular
                         </Button>
                       ) : (
                         <Button
                           size="sm" variant="ghost"
                           className="gap-1 text-[10px] h-6 px-2 text-muted-foreground hover:text-destructive"
-                          title="Apagar notificação (não foi enviada)"
-                          onClick={() => {
-                            setVoidTargetId(n.id);
-                            setVoidTargetCode(n.code);
-                            setVoidIsSent(false);
-                            setVoidReason("");
-                            setVoidDialogOpen(true);
-                          }}
+                          title="Apagar notificação"
+                          onClick={() => { setVoidTargetId(n.id); setVoidTargetCode(n.code); setVoidIsSent(false); setVoidReason(""); setVoidDialogOpen(true); }}
                         >
                           <Trash2 className="h-3 w-3" />
-                          Apagar
                         </Button>
                       )
-                  )}
-                  {/* Badge ANULADA */}
-                  {(n as any).is_voided && (
-                    <Badge variant="outline" className="text-[10px] line-through text-muted-foreground border-muted">
-                      ANULADA
-                    </Badge>
-                  )}
+                    )}
+                  </div>
                 </div>
+
+                {/* ATA-Q inline (confirmadas) */}
+                {n.status === "confirmed" && !isVoided && (
+                  <div className="px-3 pb-2 flex items-center gap-2 border-t border-emerald-100">
+                    <Link2 className="h-3 w-3 text-emerald-600 shrink-0 mt-0.5" />
+                    <span className="text-[10px] text-muted-foreground">ATA-Q:</span>
+                    {ataEditId === n.id ? (
+                      <>
+                        <input
+                          autoFocus
+                          className="text-[10px] font-mono border-b border-primary bg-transparent outline-none px-1 w-32"
+                          value={ataEditValue}
+                          onChange={e => setAtaEditValue(e.target.value)}
+                          placeholder="ATA-Q-PF17A-001"
+                          onKeyDown={async (e) => {
+                            if (e.key === "Enter") {
+                              setAtaSaving(true);
+                              try {
+                                const { supabase: sb } = await import("@/integrations/supabase/client");
+                                await (sb as any).from("hp_notifications").update({ ata_code: ataEditValue.trim() || null }).eq("id", n.id);
+                                setNotifications(prev => prev.map(x => x.id === n.id ? { ...x, ata_code: ataEditValue.trim() || null } as any : x));
+                                setAtaEditId(null);
+                              } catch { /* silencioso */ } finally { setAtaSaving(false); }
+                            }
+                            if (e.key === "Escape") setAtaEditId(null);
+                          }}
+                        />
+                        {ataSaving && <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />}
+                        <span className="text-[10px] text-muted-foreground">Enter para guardar · Esc para cancelar</span>
+                      </>
+                    ) : (
+                      <button
+                        className="text-[10px] font-mono text-emerald-700 hover:underline cursor-pointer"
+                        onClick={() => { setAtaEditId(n.id); setAtaEditValue((n as any).ata_code ?? ""); }}
+                        title="Clica para vincular ATA-Q"
+                      >
+                        {(n as any).ata_code ?? <span className="text-muted-foreground italic">Vincular ATA-Q…</span>}
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
-            ))}
+              );
+            })}
+            {notifications.filter(n => notifFilter === "active" ? !(n as any).is_voided : notifFilter === "voided" ? (n as any).is_voided : true).length === 0 && (
+              <p className="text-xs text-muted-foreground italic py-2">
+                {notifFilter === "voided" ? "Sem notificações anuladas." : "Sem notificações activas."}
+              </p>
+            )}
           </div>
         </div>
         </TooltipProvider>
