@@ -135,9 +135,38 @@ async function renderNCHtml(nc: NonConformity, labels: NCExportLabels, signature
     nc.classification === "AC" ? "Ação Corretiva (AC)" :
     nc.classification ?? "—";
 
-  const correctionTypeLabel = nc.correction_type ?? "—";
+  const correctionTypeLabels: Record<string, string> = {
+    "repair": "Reparar",
+    "rework": "Demolir e refazer",
+    "accept": "Aceitar (derrogação F/IP)",
+    "reject": "Rejeitar/devolver",
+  };
+  const correctionTypeLabel = correctionTypeLabels[nc.correction_type ?? ""] ?? nc.correction_type ?? "—";
 
-  const rootCauseMethodLabel = nc.root_cause_method ?? "—";
+  const disciplineLabels: Record<string, string> = {
+    "terras": "Terraplenagens",
+    "betonagem": "Betão Estrutural",
+    "via": "Via-Férrea",
+    "catenaria": "Catenária / OFE",
+    "drenagem": "Drenagem",
+    "obras_arte": "Obras de Arte",
+    "psr": "PSR / Restabelecimento",
+    "st": "S&T / Sinalização",
+    "cc": "Construção Civil",
+    "cabos": "Caminho de Cabos",
+    "pn": "Passagens de Nível",
+    "rct": "RCT+TP",
+    "pame": "PAME / Material",
+    "docs": "Documentação",
+  };
+  const disciplineLabel = disciplineLabels[nc.discipline ?? ""] ?? nc.discipline ?? nc.discipline_outro ?? "—";
+
+  const rootCauseMethodLabels: Record<string, string> = {
+    "5whys": "5 Porquês",
+    "ishikawa": "Ishikawa",
+    "other": "Outro",
+  };
+  const rootCauseMethodLabel = rootCauseMethodLabels[nc.root_cause_method ?? ""] ?? nc.root_cause_method ?? "—";
 
   // 1. Identificação
   let html = `
@@ -159,15 +188,15 @@ async function renderNCHtml(nc: NonConformity, labels: NCExportLabels, signature
     [labels.detectedAt, dateStr(nc.detected_at)],
     [labels.dueDate, dateStr(nc.due_date)],
     [labels.responsible, nc.responsible ?? "—"],
-    [labels.assignedTo, nc.assigned_to ?? "—"],
+    [labels.assignedTo, (nc as any).assigned_to_name ?? ((nc.assigned_to && nc.assigned_to.includes('-') && nc.assigned_to.length > 30) ? "(utilizador registado)" : nc.assigned_to) ?? "—"],
   ]);
 
   // 2. Localização
   html += `<div class="nc-section">2. Localização</div>`;
   html += infoGridHtml([
     ["PK / Zona", nc.location_pk ?? "—"],
-    ["Disciplina", nc.discipline ?? nc.discipline_outro ?? "—"],
-    ["PPI Associado", nc.ppi_instance_id ? `PPI ${nc.ppi_instance_id.slice(0, 8)}` : "—"],
+    ["Disciplina", disciplineLabel],
+    ["PPI Associado", (nc as any).ppi_instance_code ?? (nc.ppi_instance_id ? `PPI ${nc.ppi_instance_id.slice(0, 8)}` : "—")],
     [labels.workItem, nc.work_item_id ? nc.work_item_id.slice(0, 8) : "—"],
   ]);
 

@@ -159,14 +159,14 @@ export const ncService = {
   ): Promise<{ data: NonConformity[]; truncated: boolean }> {
     let q = supabase
       .from("non_conformities")
-      .select("*")
+      .select("*, ppi_instances!ppi_instance_id(code)")
       .eq("project_id", projectId)
       .order("created_at", { ascending: false })
       .limit(limit + 1);
     if (!includeDeleted) q = q.eq("is_deleted", false);
     const { data, error } = await q;
     if (error) throw error;
-    const rows = (data ?? []) as unknown as NonConformity[];
+    const rows = ((data ?? []) as any[]).map(r => ({ ...r, ppi_instance_code: r.ppi_instances?.code ?? null })) as unknown as NonConformity[];
     const truncated = rows.length > limit;
     return { data: truncated ? rows.slice(0, limit) : rows, truncated };
   },
