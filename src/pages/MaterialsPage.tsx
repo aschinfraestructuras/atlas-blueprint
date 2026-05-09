@@ -296,10 +296,12 @@ export default function MaterialsPage() {
                     return (
                       <div
                         key={lot.id}
-                        className="flex items-center gap-3 px-4 py-3 bg-card hover:bg-muted/20 cursor-pointer transition-colors"
-                        onClick={() => navigate(`/materials/${lot.material_id}`)}
+                        className="flex items-center gap-3 px-4 py-3 bg-card hover:bg-muted/20 transition-colors"
                       >
-                        <div className="flex-1 min-w-0">
+                        <div
+                          className="flex-1 min-w-0 cursor-pointer"
+                          onClick={() => navigate(`/materials/${lot.material_id}`)}
+                        >
                           <div className="flex items-center gap-2 flex-wrap">
                             <span className="font-mono text-xs font-bold text-foreground">{lot.lot_code}</span>
                             <span className="text-xs text-muted-foreground truncate">{mat?.name ?? "—"}</span>
@@ -322,6 +324,29 @@ export default function MaterialsPage() {
                            lot.reception_status === "quarantine" ? "Quarentena" :
                            lot.reception_status === "rejected"   ? "Rejeitado" : "Pendente"}
                         </span>
+                        {(isAdmin || canDelete) && (
+                          <Button
+                            variant="ghost" size="icon"
+                            className="h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive"
+                            title="Apagar registo de recepção (soft-delete — admin)"
+                            onClick={async (e) => {
+                              e.stopPropagation();
+                              if (!confirm(`Apagar registo de recepção ${lot.lot_code}?\n\nEsta acção é irreversível e deve ser usada apenas para corrigir registos criados por engano.`)) return;
+                              await (supabase as any).from("material_lots").update({ is_deleted: true, deleted_at: new Date().toISOString() }).eq("id", lot.id);
+                              toast({ title: `Recepção ${lot.lot_code} apagada.` });
+                              // Refresh lots
+                              const { data } = await (supabase.from("material_lots") as any)
+                                .select("*, materials(code, name, category)")
+                                .eq("project_id", activeProject!.id)
+                                .eq("is_deleted", false)
+                                .order("reception_date", { ascending: false })
+                                .limit(500);
+                              setLots(data ?? []);
+                            }}
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </Button>
+                        )}
                       </div>
                     );
                   })}
