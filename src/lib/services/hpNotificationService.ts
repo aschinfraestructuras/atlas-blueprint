@@ -264,6 +264,7 @@ export interface HpNotificationPdfOptions {
   projectId: string;
   projectMeta?: PdfProjectInfo | null;
   signatureSlots?: SignatureSlot[];
+  notifiedByName?: string | null;
 }
 
 export async function exportHpNotificationPdf(opts: HpNotificationPdfOptions): Promise<void> {
@@ -271,7 +272,7 @@ export async function exportHpNotificationPdf(opts: HpNotificationPdfOptions): P
 
   // Resolver logo (pode ser null se não configurado)
   const logoBase64 = await resolveProjectLogoBase64(projectId);
-  const html = buildHpNotificationHtml(n, instance, projectName, projectMeta, logoBase64, signatureSlots ?? []);
+  const html = buildHpNotificationHtml(n, instance, projectName, projectMeta, logoBase64, signatureSlots ?? [], opts.notifiedByName ?? null);
 
   // Usar Blob URL em vez de window.open("") — funciona em tablets e evita popup blockers
   const blob = new Blob([html], { type: "text/html;charset=utf-8" });
@@ -296,7 +297,7 @@ export async function generateHpNotificationHtmlBase64(
 ): Promise<{ base64: string; filename: string; mimeType: string }> {
   const { notification: n, instance, projectName, projectId, projectMeta, signatureSlots } = opts;
   const logoBase64 = await resolveProjectLogoBase64(projectId);
-  const html = buildHpNotificationHtml(n, instance, projectName, projectMeta, logoBase64, signatureSlots ?? []);
+  const html = buildHpNotificationHtml(n, instance, projectName, projectMeta, logoBase64, signatureSlots ?? [], opts.notifiedByName ?? null);
   const base64 = btoa(unescape(encodeURIComponent(html)));
   return {
     base64,
@@ -313,6 +314,7 @@ function buildHpNotificationHtml(
   projectMeta: PdfProjectInfo | null | undefined,
   logoBase64: string | null,
   signatureSlots: SignatureSlot[] = [],
+  notifiedByName: string | null = null,
 ): string {
 
   const esc = (v?: string | null) => (v ?? "—").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -344,8 +346,6 @@ function buildHpNotificationHtml(
     projectMeta?.client,
     projectMeta,
   );
-
-  const infoStrip = projectInfoStripHtml(projectMeta);
 
   // ── Secção 3 — checkboxes condições prévias
   const checkbox = (checked = false) =>
@@ -404,7 +404,6 @@ function buildHpNotificationHtml(
 </head><body>
 
 ${header}
-${infoStrip}
 
 <div class="callout">
   <strong>Regra contratual:</strong> A Fiscalização/IP deve ser notificada com mínimo de <strong>48 horas de antecedência</strong> para cada HP
@@ -429,7 +428,7 @@ ${infoStrip}
 </div>
 <div class="field" style="margin-top:6px">
   <span class="label">Emitida Por — TQ / RMSGQ</span>
-  <span class="value">${esc((n as any).notified_by_name ?? n.notified_by ?? "")}</span>
+  <span class="value">${esc(notifiedByName ?? (n as any).notified_by_name ?? "")}</span>
 </div>
 
 <!-- SECÇÃO 2 -->
@@ -460,7 +459,7 @@ ${infoStrip}
   <span class="label">Localização — PK / Elemento / Zona</span>
   <span class="value">${esc(n.location_pk)}</span>
 </div>
-${n.notes ? `<div class="field" style="margin-top:6px"><span class="label">Notas / Observações</span><span class="value">${esc(n.notes)}</span></div>` : ""}
+${n.notes && n.notes.length < 300 ? `<div class="field" style="margin-top:6px"><span class="label">Notas / Observações</span><span class="value">${esc(n.notes)}</span></div>` : ""}
 
 <!-- SECÇÃO 3 -->
 <h3>3 — Data e Hora Previstas para a Inspecção</h3>
@@ -543,7 +542,6 @@ ${signatureBlockHtml(signatureSlots, fmtDate(n.notified_at ?? n.created_at))}
 <!-- ═══════════════════ PÁGINA 2 ═══════════════════ -->
 <div class="page-break">
 ${header}
-${infoStrip}
 
 <h3>5 — Resultado — Preenchido Após a Inspecção</h3>
 <div class="grid2" style="margin-bottom:12px">

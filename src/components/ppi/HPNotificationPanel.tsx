@@ -29,6 +29,7 @@ import { toast } from "@/lib/utils/toast";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import { useProject } from "@/contexts/ProjectContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { useReportMeta } from "@/hooks/useReportMeta";
 import { useSignatureSlots } from "@/hooks/useSignatureSlots";
 import { useProjectRole } from "@/hooks/useProjectRole";
@@ -63,9 +64,37 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { activeProject } = useProject();
+  const { user } = useAuth();
   const reportMeta = useReportMeta();
   const hpSignatureSlots = useSignatureSlots("hp_notification");
   const { isAdmin } = useProjectRole(projectId);
+  // Nome do emissor para o PDF — resolve de project_workers ou user metadata
+  const [notifiedByName, setNotifiedByName] = useState<string | null>(null);
+  useEffect(() => {
+    const resolveWorkerName = async () => {
+      try {
+        const { supabase } = await import("@/integrations/supabase/client");
+        const { data: { user: u } } = await supabase.auth.getUser();
+        if (!u) return;
+        // Tentar resolver de project_workers
+        const { data: worker } = await (supabase as any)
+          .from("project_workers")
+          .select("name")
+          .eq("project_id", projectId)
+          .or(`user_id.eq.${u.id},email.eq.${u.email}`)
+          .maybeSingle();
+        setNotifiedByName(
+          worker?.name ??
+          u.user_metadata?.full_name ??
+          u.email ??
+          null
+        );
+      } catch { /* silencioso */ }
+    };
+    resolveWorkerName();
+  }, [projectId]);
+
+
   const [voidDialogOpen, setVoidDialogOpen] = useState(false);
   const [voidTargetId, setVoidTargetId] = useState<string | null>(null);
   const [voidTargetCode, setVoidTargetCode] = useState("");
@@ -540,6 +569,7 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
                           contract_number: (activeProject as any).contract_number ?? null,
                         } : null,
                         signatureSlots: hpSignatureSlots,
+                        notifiedByName,
                       };
                       // Abrir via Blob URL — funciona em tablet sem popup blocker
                       exportHpNotificationPdf(opts);
