@@ -579,8 +579,8 @@ export default function NCDetailPage() {
               )}
               {nc.ppi_instance_id && (
                 <InfoRow label={t("nc.detail.ppiInstance")} value={
-                  <Link to={`/ppi/${nc.ppi_instance_id}`} className="text-primary underline underline-offset-2 text-sm">
-                    {t("nc.detail.viewPpi")}
+                  <Link to={`/ppi/${nc.ppi_instance_id}`} className="text-primary underline underline-offset-2 text-sm font-mono">
+                    {(nc as any).ppi_instance_code ?? t("nc.detail.viewPpi")} →
                   </Link>
                 } />
               )}

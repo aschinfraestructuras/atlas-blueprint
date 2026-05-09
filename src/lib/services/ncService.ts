@@ -202,11 +202,46 @@ export const ncService = {
   async getById(id: string): Promise<NonConformity | null> {
     const { data, error } = await supabase
       .from("non_conformities")
-      .select("*")
+      .select("*, ppi_instances!ppi_instance_id(code)")
       .eq("id", id)
       .maybeSingle();
     if (error) throw error;
-    return data as unknown as NonConformity | null;
+    if (!data) return null;
+
+    // Resolver nomes de UUIDs via project_workers
+    const uuidsToResolve = [data.assigned_to, data.owner, data.verified_by, data.created_by]
+      .filter((v): v is string => !!v && v.includes("-") && v.length > 30);
+
+    let workerMap: Record<string, string> = {};
+    if (uuidsToResolve.length > 0) {
+      const { data: workers } = await (supabase as any)
+        .from("project_workers")
+        .select("id, user_id, name")
+        .eq("project_id", data.project_id);
+      const { data: members } = await (supabase as any)
+        .from("project_members")
+        .select("user_id, profiles:user_id(email)")
+        .eq("project_id", data.project_id);
+      (workers ?? []).forEach((w: any) => {
+        if (w.user_id) workerMap[w.user_id] = w.name;
+        workerMap[w.id] = w.name;
+      });
+      (members ?? []).forEach((m: any) => {
+        if (!workerMap[m.user_id] && m.profiles?.email) {
+          workerMap[m.user_id] = m.profiles.email;
+        }
+      });
+    }
+
+    const resolve = (uuid: string | null) => uuid ? (workerMap[uuid] ?? uuid) : null;
+
+    return {
+      ...data,
+      ppi_instance_code: (data as any).ppi_instances?.code ?? null,
+      assigned_to:  resolve(data.assigned_to),
+      owner:        resolve(data.owner),
+      verified_by:  resolve(data.verified_by),
+    } as unknown as NonConformity;
   },
 
   /** Cria NC via RPC (gera código automático NC-<PROJ>-<YYYY>-<SEQ>) */
