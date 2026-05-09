@@ -13,6 +13,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useWorkItems } from "@/hooks/useWorkItems";
 import { dailyReportService } from "@/lib/services/dailyReportService";
 import { WorkItemSelect } from "@/components/ui/work-item-select";
+import { supabase } from "@/integrations/supabase/client";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface Props {
   open: boolean;
@@ -41,12 +43,34 @@ export const DailyReportFormDialog = React.forwardRef<HTMLDivElement, Props>(
     const [ipRep, setIpRep] = useState("");
     const [observations, setObservations] = useState("");
     const [saving, setSaving] = useState(false);
+    const [workers, setWorkers] = useState<{ id: string; name: string; role_function: string | null }[]>([]);
 
     useEffect(() => {
       if (open && activeProject) {
         dailyReportService.nextReportNumber(activeProject.id, reportDate).then(setReportNumber);
       }
     }, [open, activeProject, reportDate]);
+
+    useEffect(() => {
+      if (!open || !activeProject) return;
+      supabase
+        .from("project_workers")
+        .select("id, name, role_function")
+        .eq("project_id", activeProject.id)
+        .order("name")
+        .then(({ data }) => {
+          const ws = data ?? [];
+          setWorkers(ws);
+          // Auto-preencher Representante Empreiteiro com o utilizador logado
+          if (user && !contractorRep) {
+            const me = ws.find((w: any) => w.name?.toLowerCase().includes(
+              (user.name ?? user.email ?? "").split(" ")[0].toLowerCase()
+            ));
+            if (me) setContractorRep(me.name);
+          }
+        });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open, activeProject]);
 
     const handleSave = async () => {
       if (!activeProject || !user) return;
@@ -65,6 +89,7 @@ export const DailyReportFormDialog = React.forwardRef<HTMLDivElement, Props>(
           supervisor_rep: supervisorRep || null,
           ip_rep: ipRep || null,
           observations: observations || null,
+          responsible_name: user.name ?? user.email ?? null,
         }, user.id);
         toast({ title: t("dailyReports.toast.created") });
         onOpenChange(false);
@@ -124,7 +149,14 @@ export const DailyReportFormDialog = React.forwardRef<HTMLDivElement, Props>(
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label>{t("dailyReports.fields.foremanName")}</Label>
-                <Input value={foremanName} onChange={e => setForemanName(e.target.value)} />
+                <Select value={foremanName} onValueChange={setForemanName}>
+                  <SelectTrigger><SelectValue placeholder="Seleccionar encarregado…" /></SelectTrigger>
+                  <SelectContent>
+                    {workers.map(w => (
+                      <SelectItem key={w.id} value={w.name}>{w.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-1.5">
                 <Label>{t("dailyReports.fields.contractorRep")}</Label>
