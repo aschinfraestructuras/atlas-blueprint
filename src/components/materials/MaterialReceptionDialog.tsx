@@ -181,13 +181,18 @@ export function MaterialReceptionDialog({ open, onOpenChange, projectId, materia
       });
       if (codeError) throw codeError;
 
+      // Gerar código GR-PF17A-NNN para rastreabilidade
+      const { data: grCode } = await (supabase as any).rpc("fn_next_gr_code", {
+        p_project_id: projectId,
+      });
+
       const { data, error } = await (supabase.from("material_lots") as any)
         .insert({
           project_id: projectId,
           material_id: material.id,
           supplier_id: supplierId || null,
           work_item_id: workItemId === "__none__" ? null : workItemId,
-          lot_code: generatedCode,
+          lot_code: grCode ?? generatedCode,  // GR-PF17A-NNN como código principal
           reception_date: receptionDate,
           delivery_note_ref: deliveryNoteRef.trim(),
           lot_ref: lotRef.trim(),
