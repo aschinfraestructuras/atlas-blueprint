@@ -81,7 +81,7 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
   const [submitting, setSubmitting]       = useState(false);
   const [catalog, setCatalog]             = useState<TestCatalogEntry[]>([]);
   const [loadingCatalog, setLoadingCatalog] = useState(false);
-  const [workItems, setWorkItems]         = useState<{ id: string; sector: string }[]>([]);
+  const [workItems, setWorkItems]         = useState<{ id: string; sector: string; obra?: string; parte?: string; disciplina?: string }[]>([]);
   const [suppliers, setSuppliers]         = useState<{ id: string; name: string }[]>([]);
   const [newTestName, setNewTestName]     = useState("");
   const [newTestCode, setNewTestCode]     = useState("");
@@ -120,12 +120,12 @@ export function TestResultFormDialog({ open, onOpenChange, testResult, preselect
     setLoadingCatalog(true);
     Promise.all([
       testService.getCatalogByProject(activeProject.id),
-      supabase.from("work_items").select("id, sector").eq("project_id", activeProject.id).order("sector"),
+      supabase.from("work_items").select("id, sector, obra, parte, disciplina").eq("project_id", activeProject.id).order("sector"),
       supabase.from("suppliers").select("id, name").eq("project_id", activeProject.id).eq("status", "active").order("name"),
       supabase.from("equipment_calibrations").select("id, certificate_number, certifying_entity, valid_until, equipment_id, topography_equipment(id, serial_number)").eq("project_id", activeProject.id).eq("status", "active"),
     ]).then(([cats, wi, sup, cals]) => {
       setCatalog(cats);
-      setWorkItems((wi.data ?? []) as { id: string; sector: string }[]);
+      setWorkItems((wi.data ?? []) as { id: string; sector: string; obra?: string; parte?: string; disciplina?: string }[]);
       setSuppliers((sup.data ?? []) as { id: string; name: string }[]);
       setEquipmentCals((cals.data ?? []).map((c: any) => ({ ...c, equipment: c.topography_equipment })));
     }).catch((err) => console.error("[TestResultFormDialog] load error:", err))
