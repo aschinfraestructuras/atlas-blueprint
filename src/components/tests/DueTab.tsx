@@ -344,7 +344,8 @@ export function DueTab() {
                 const wi = item.work_items as any;
                 const act = item.planning_activities as any;
                 const lab = item.suppliers as any;
-                const canAct = ["due", "scheduled"].includes(item.status);
+                const canAct = ["due", "scheduled", "in_progress"].includes(item.status);
+                const canLink = ["due", "scheduled", "in_progress"].includes(item.status) && !(item as any).related_test_result_id;
 
                 return (
                   <TableRow key={item.id} className="hover:bg-muted/20 transition-colors">
@@ -396,11 +397,13 @@ export function DueTab() {
                             onClick={() => { setWaiveId(item.id); setWaiveReason(""); }}>
                             <Ban className="h-3.5 w-3.5" />
                           </Button>
+                          {canLink && (
                           <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-emerald-600"
                             title="Vincular resultado de ensaio (fechar obrigação)"
                             onClick={() => openLinkDialog(item.id, (item as any).work_item_id ?? null)}>
                             <Link2 className="h-3.5 w-3.5" />
                           </Button>
+                          )}
                           <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive"
                             title={t("common.delete")}
                             onClick={() => setDeleteTarget(item.id)}>
