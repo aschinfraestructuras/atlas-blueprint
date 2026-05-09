@@ -431,7 +431,7 @@ export const materialService = {
   // ── Work Item Materials ─────────────────────────────────────────
   async getWorkItemLinks(materialId: string): Promise<WorkItemMaterial[]> {
     const { data, error } = await db.from("work_item_materials")
-      .select("*")
+      .select("*, work_items!work_item_id(id, sector, elemento, parte, disciplina)")
       .eq("material_id", materialId)
       .order("created_at", { ascending: false });
     if (error) throw error;

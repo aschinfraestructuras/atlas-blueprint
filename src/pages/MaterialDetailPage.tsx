@@ -809,14 +809,18 @@ export default function MaterialDetailPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {workItemLinks.map(wl => (
+                  {workItemLinks.map(wl => {
+                      const wi = (wl as any).work_items;
+                      const wiLabel = wi ? [wi.sector, wi.elemento, wi.parte].filter(Boolean).join(" · ") : wl.work_item_id.substring(0, 8) + "…";
+                      return (
                       <TableRow key={wl.id} className="cursor-pointer hover:bg-muted/30" onClick={() => navigate(`/work-items/${wl.work_item_id}`)}>
-                        <TableCell className="font-mono text-xs">{wl.work_item_id.substring(0, 8)}…</TableCell>
+                        <TableCell className="text-xs font-medium">{wiLabel}</TableCell>
                         <TableCell className="text-sm">{wl.lot_ref ?? "—"}</TableCell>
                         <TableCell className="text-sm tabular-nums">{wl.quantity != null ? wl.quantity : "—"}</TableCell>
                         <TableCell className="text-sm">{wl.unit ?? "—"}</TableCell>
                       </TableRow>
-                    ))}
+                      );
+                  })}
                   </TableBody>
                 </Table>
               )}
@@ -956,7 +960,7 @@ function MaterialUsageTab({ materialId, projectId }: { materialId: string; proje
                     <TableCell className="text-sm font-medium">{r._report?.report_number ?? "—"}</TableCell>
                     <TableCell className="text-sm tabular-nums">{r.quantity != null ? `${r.quantity} ${r.unit ?? ""}` : "—"}</TableCell>
                     <TableCell className="text-sm">{r.lot_number ?? "—"}</TableCell>
-                    <TableCell className="text-xs text-muted-foreground">{r._report?.work_item_id ? r._report.work_item_id.substring(0, 8) + "…" : "—"}</TableCell>
+                    <TableCell className="text-xs text-muted-foreground">{r._report?.work_item_id ? (r._report?.work_item_sector ?? r._report.work_item_id.substring(0, 8) + "…") : "—"}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
