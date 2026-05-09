@@ -126,7 +126,6 @@ export const hpNotificationService = {
       .select("*")
       .eq("instance_id", instanceId)
       .neq("is_deleted", true)
-      .neq("is_voided", true)
       .order("planned_datetime", { ascending: true });
     if (error) throw error;
     return (data ?? []) as HpNotification[];
@@ -138,7 +137,6 @@ export const hpNotificationService = {
       .select("*")
       .eq("project_id", projectId)
       .neq("is_deleted", true)
-      .neq("is_voided", true)
       .order("planned_datetime", { ascending: true });
     if (error) throw error;
     return (data ?? []) as HpNotification[];

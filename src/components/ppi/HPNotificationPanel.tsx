@@ -799,16 +799,26 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
                 if (!voidTargetId) return;
                 setVoidLoading(true);
                 try {
-                  const { data: { user } } = await (await import("@/integrations/supabase/client")).supabase.auth.getUser();
+                  const { supabase: sb } = await import("@/integrations/supabase/client");
+                  const { data: { user: u } } = await sb.auth.getUser();
                   if (voidIsSent) {
-                    await hpNotificationService.void(voidTargetId, user?.id ?? "", voidReason.trim());
-                    toast.success("Notificação anulada e registada no histórico.");
+                    await hpNotificationService.void(voidTargetId, u?.id ?? "", voidReason.trim());
+                    // Atualização optimista: marcar como void no estado local imediatamente
+                    setNotifications(prev => prev.map(n =>
+                      n.id === voidTargetId ? { ...n, is_voided: true, status: "cancelled" as const } : n
+                    ));
+                    toast.success(`${voidTargetCode} anulada e registada no histórico.`);
                   } else {
-                    await hpNotificationService.softDelete(voidTargetId, user?.id ?? "");
-                    toast.success("Notificação eliminada.");
+                    await hpNotificationService.softDelete(voidTargetId, u?.id ?? "");
+                    // Remover do estado local imediatamente
+                    setNotifications(prev => prev.filter(n => n.id !== voidTargetId));
+                    toast.success(`${voidTargetCode} eliminada.`);
                   }
                   setVoidDialogOpen(false);
-                  load();
+                  setVoidTargetId(null);
+                  setVoidReason("");
+                  // Refresh completo para garantir consistência
+                  await load();
                 } catch (err: any) {
                   toast.error(err?.message ?? "Erro ao processar operação.");
                 } finally {
