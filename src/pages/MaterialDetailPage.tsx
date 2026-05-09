@@ -365,8 +365,8 @@ export default function MaterialDetailPage() {
       )}
 
       <Tabs defaultValue="summary" className="space-y-4">
-        <div className="relative">
-          <TabsList className="bg-muted/50 w-full overflow-x-auto flex-nowrap justify-start gap-0.5 h-auto p-1 scrollbar-none">
+        <div className="relative overflow-x-auto scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0">
+          <TabsList className="bg-muted/50 flex flex-nowrap justify-start gap-0.5 h-auto p-1 w-max min-w-full">
             <TabsTrigger value="summary" className="flex-shrink-0 text-xs">{t("materials.detail.tabs.summary")}</TabsTrigger>
             <TabsTrigger value="approval" className="flex-shrink-0 text-xs">{t("materials.detail.tabs.approval")}</TabsTrigger>
             <TabsTrigger value="reception" className="flex-shrink-0 text-xs">{t("materials.detail.tabs.reception")}</TabsTrigger>
