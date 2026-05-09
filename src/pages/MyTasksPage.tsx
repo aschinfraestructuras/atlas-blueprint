@@ -184,7 +184,7 @@ export default function MyTasksPage() {
       // 3. NCs
       const { data: ncData } = await (supabase as any)
         .from("non_conformities")
-        .select("id, code, title, severity, status, deadline")
+        .select("id, code, title, severity, status, due_date")
         .eq("project_id", activeProject.id)
         .eq("is_deleted", false)
         .not('status', 'in', '(closed,archived)');
@@ -195,8 +195,8 @@ export default function MyTasksPage() {
         title: nc.title,
         severity: nc.severity ?? "minor",
         status: nc.status,
-        deadline: nc.deadline,
-        is_overdue: nc.deadline ? nc.deadline < today : false,
+        deadline: nc.due_date,
+        is_overdue: nc.due_date ? nc.due_date < today : false,
       }));
       setNcs(ncResults);
     } catch {
