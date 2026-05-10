@@ -166,7 +166,7 @@ export default function MaterialDetailPage() {
       el.removeEventListener("scroll", updateTabsScroll);
       ro.disconnect();
     };
-  }, [updateTabsScroll]);
+  }, [updateTabsScroll, material]);
   const [metrics, setMetrics] = useState<MaterialDetailMetrics | null>(null);
   const [docs, setDocs] = useState<MaterialDocument[]>([]);
   const [supplierLinks, setSupplierLinks] = useState<any[]>([]);
