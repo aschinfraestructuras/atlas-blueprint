@@ -190,7 +190,7 @@
     "plans": "Planes",
     "planning": "Planificación",
     "survey": "Levantamientos",
-    "topography": "Mediciones & Equipos",
+    "topography": "Topografía & EMEs",
     "subcontractors": "Subcontratistas",
     "workItems": "Elementos de Obra",
     "ppi": "Inspecciones PPI",
@@ -4844,7 +4844,7 @@
   },
   "monthlyReport": {
     "title": "Informe Mensual SGC",
-    "subtitle": "CE Cláusula 35.ª §11 — Informe mensual de calidad",
+    "subtitle": "CE Cláusula 35.ª — Informe mensual de calidad del SGC",
     "create": "Nuevo Informe",
     "createTitle": "Crear Informe Mensual",
     "createReport": "Crear Informe",

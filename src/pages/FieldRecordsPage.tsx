@@ -636,6 +636,7 @@ export default function FieldRecordsPage() {
               <TableHead className="text-xs">{t("fieldRecords.col.activity", { defaultValue: "Actividade" })}</TableHead>
               <TableHead className="text-xs w-28">{t("fieldRecords.col.pk", { defaultValue: "PK" })}</TableHead>
               <TableHead className="text-xs w-28 hidden sm:table-cell">{t("fieldRecords.col.ppi", { defaultValue: "PPI" })}</TableHead>
+              <TableHead className="text-xs w-36 hidden lg:table-cell">{t("fieldRecords.col.disciplina", { defaultValue: "Disciplina" })}</TableHead>
               <TableHead className="text-xs w-28">{t("common.date")}</TableHead>
               <TableHead className="text-xs w-36">{t("fieldRecords.col.result", { defaultValue: "Resultado" })}</TableHead>
               <TableHead className="w-24" />
@@ -671,6 +672,29 @@ export default function FieldRecordsPage() {
                   <TableCell className="text-sm font-medium truncate max-w-[260px]">{r.activity}</TableCell>
                   <TableCell className="text-xs text-muted-foreground font-mono">{r.location_pk ?? "—"}</TableCell>
                   <TableCell className="text-xs text-muted-foreground hidden sm:table-cell">{r.ppi_code ?? "—"}</TableCell>
+                  <TableCell className="text-xs text-muted-foreground hidden lg:table-cell">
+                    {(r as any).disciplina
+                      ? (() => {
+                          const MAP: Record<string,string> = {
+                            terraplenagem: "Terraplenagem",
+                            drenagem: "Drenagem",
+                            via_ferrea: "Via Férrea",
+                            psr: "PSR / Restabelecimento",
+                            catenaria: "Catenária",
+                            rct: "RCT / Protecções",
+                            st: "S&T",
+                            obras_arte: "Obras de Arte",
+                            construcao_civil: "Construção Civil",
+                            passagens_nivel: "Passagens de Nível",
+                            betao_estrutural: "Betão Estrutural",
+                            caminhos_cabos: "Caminho de Cabos",
+                            topografia: "Topografia",
+                            outro: "Outro",
+                          };
+                          return MAP[(r as any).disciplina] ?? (r as any).disciplina;
+                        })()
+                      : "—"}
+                  </TableCell>
                   <TableCell className="text-xs text-muted-foreground">
                     {new Date(r.inspection_date).toLocaleDateString(t("common.locale", { defaultValue: "pt-PT" }))}
                   </TableCell>

@@ -190,7 +190,7 @@
     "plans": "Planos",
     "planning": "Planeamento",
     "survey": "Levantamentos",
-    "topography": "Medições & Equipamentos",
+    "topography": "Topografia & EMEs",
     "subcontractors": "Subempreiteiros",
     "workItems": "Elementos de Obra",
     "ppi": "Inspeções PPI",
@@ -4841,7 +4841,7 @@
   },
   "monthlyReport": {
     "title": "Relatório Mensal SGQ",
-    "subtitle": "CE Cláusula 35.ª §11 — Relatório mensal de qualidade",
+    "subtitle": "CE Cláusula 35.ª — Relatório mensal de qualidade do SGQ",
     "create": "Novo Relatório",
     "createTitle": "Criar Relatório Mensal",
     "createReport": "Criar Relatório",
