@@ -93,7 +93,23 @@
     "pkFrom": "PK Inicio",
     "pkTo": "PK Fin",
     "apply": "Aplicar",
-    "locale": "es-ES"
+    "locale": "es-ES",
+    "active": "Activo",
+    "allTypes": "Todos los tipos",
+    "clearFilters": "Limpiar filtros",
+    "inactive": "Inactivo",
+    "noResults": "Sin resultados",
+    "none": "Ninguno",
+    "openNewTab": "Abrir en nueva pestaña",
+    "page": "Página",
+    "preview": "Vista previa",
+    "previewExportPdf": "Vista previa / Exportar PDF",
+    "print": "Imprimir",
+    "refresh": "Actualizar",
+    "saveError": "Error al guardar",
+    "select": "Seleccionar",
+    "total": "Total",
+    "viewDetails": "Ver detalles"
   },
   "auth": {
     "signIn": "Iniciar sesión",
@@ -228,7 +244,8 @@
     "reports": "Informes",
     "indicators": "Indicadores SGQ",
     "team": "Equipo de Obra",
-    "trackGeometry": "Geometría de Vía"
+    "trackGeometry": "Geometría de Vía",
+    "more": "Más"
   },
   "topbar": {
     "language": "Idioma",
@@ -243,7 +260,10 @@
       "placeholder": "Seleccionar proyecto…",
       "noProjects": "Sin proyectos activos",
       "viewAll": "Ver todas las obras"
-    }
+    },
+    "create": "Crear",
+    "createNew": "Crear nuevo",
+    "screensaver": "Protector"
   },
   "projectSelector": {
     "eyebrow": "Atlas QMS · Selección de Obra",
@@ -567,7 +587,14 @@
       "tests": "Ensayos",
       "materials": "Materiales",
       "health": "Salud",
-      "avg": "Media"
+      "avg": "Media",
+      "attention": "Atención",
+      "conformity": "Conformidad",
+      "critical": "Crítico",
+      "globalScore": "Score Global",
+      "healthy": "Saludable",
+      "subtitle": "Visión integrada de calidad",
+      "title": "Radar de Calidad"
     },
     "rmsgqOverdue": "RMSGQ atrasado {{days}}d",
     "rmsgqDue": "RMSGQ plazo en {{days}}d",
@@ -579,6 +606,16 @@
     },
     "timeline": {
       "title": "Línea de Tiempo — NCs y PPIs (6 meses)"
+    },
+    "trend": {
+      "last6Months": "Últimos 6 meses",
+      "ncOpened": "NCs abiertas",
+      "ppiApproved": "PPIs aprobados",
+      "testsRun": "Ensayos realizados"
+    },
+    "trends": {
+      "last6Months": "Últimos 6 meses",
+      "monthly": "Evolución mensual"
     }
   },
   "emptyState": {
@@ -802,7 +839,8 @@
         "project": "Proyecto",
         "profile": "Perfil",
         "members": "Miembros",
-        "system": "Sistema"
+        "system": "Sistema",
+        "signatures": "Firmas"
       }
     },
     "technicalOffice": {
@@ -859,7 +897,10 @@
         "codeTooLong": "El código no puede tener más de 30 caracteres.",
         "codeFormat": "Solo se permiten letras, números, guiones y guiones bajos.",
         "codeNotUnique": "Ya existe un proyecto con este código. Elija otro."
-      }
+      },
+      "mapCenter": "Centro del mapa",
+      "mapHint": "Haga clic en el mapa para definir el centro de la obra",
+      "useMyLocation": "Usar mi ubicación"
     },
     "toast": {
       "created": "Proyecto creado con éxito.",
@@ -1053,7 +1094,19 @@
         "ackRef": "Referencia de acuse de recibo"
       },
       "empty": "Sin registros de distribución",
-      "emptyDesc": "Registre las copias controladas distribuidas físicamente o por correo formal."
+      "emptyDesc": "Registre las copias controladas distribuidas físicamente o por correo formal.",
+      "col": {
+        "ackRef": "Ref. Acuse",
+        "code": "Código",
+        "confirmed": "Confirmado",
+        "copy": "Copia",
+        "date": "Fecha",
+        "document": "Documento",
+        "entity": "Entidad",
+        "method": "Método",
+        "recipient": "Destinatario",
+        "revision": "Revisión"
+      }
     },
     "linkedPanel": {
       "title": "Documentos Vinculados",
@@ -1137,7 +1190,8 @@
     "forms": {
       "title": "Formularios SGQ",
       "subtitle": "Documentos con formulario rellenable directamente en Atlas"
-    }
+    },
+    "previewPdf": "Vista previa PDF"
   },
   "tests": {
     "openRnc": "Abrir RNC",
@@ -1267,7 +1321,9 @@
         "manual_test": "Test manual",
         "frequency": "Frecuencia",
         "ppi_checkpoint": "Punto de control PPI"
-      }
+      },
+      "originLot": "Origen: lote",
+      "originManual": "Origen: manual"
     },
     "schedule": {
       "title": "Programación Semanal de Ensayos",
@@ -1445,7 +1501,8 @@
         "created": "Resultado registrado",
         "updated": "Resultado actualizado"
       },
-      "empty": "Ningún ensayo registrado."
+      "empty": "Ningún ensayo registrado.",
+      "add": "Añadir resultado"
     },
     "stats": {
       "approved": "Aprobados",
@@ -1528,6 +1585,26 @@
       "importBtn": "Importar {count} resultados",
       "chooseOther": "Elegir otro fichero",
       "tryAgain": "Intentar de nuevo"
+    },
+    "ncPrompt": {
+      "body": "El ensayo no fue conforme. ¿Desea crear una NC ahora?",
+      "createNow": "Crear NC ahora",
+      "later": "Más tarde",
+      "title": "Ensayo no conforme"
+    },
+    "welding": {
+      "jointNumber": "N.º Junta",
+      "kitLot": "Lote del kit",
+      "kitRef": "Ref. kit END",
+      "sectionTitle": "Datos de Soldadura y END",
+      "usIndication": "Indicación US",
+      "usLevel": "Nivel US",
+      "usOperator": "Operador END",
+      "usResult": "Resultado US",
+      "visualNotes": "Observaciones visuales",
+      "visualResult": "Resultado visual",
+      "welderCert": "Cert. soldador",
+      "welderName": "Nombre soldador"
     }
   },
   "laboratories": {
@@ -1934,7 +2011,9 @@
         "disciplineOutroRequired": "Especifique la disciplina cuando selecciona «Otros»."
       },
       "rootCauseOptional": "Causa raíz (opcional)",
-      "rootCauseRequired": "Causa raíz (obligatorio)"
+      "rootCauseRequired": "Causa raíz (obligatorio)",
+      "captureGps": "Capturar GPS",
+      "gpsCoords": "Coordenadas GPS"
     },
     "toast": {
       "created": "No conformidad registrada con éxito.",
@@ -2029,6 +2108,12 @@
       "noDueDate": "Sin plazo",
       "allClosed": "Sin NCs abiertas",
       "allClosedSub": "Todas las no conformidades están cerradas o archivadas"
+    },
+    "confirmDelete": "¿Está seguro de que desea eliminar esta NC?",
+    "source": {
+      "fromPpi": "Generado por PPI",
+      "fromTest": "Generado por ensayo",
+      "fromWorkItem": "Generado por obra"
     }
   },
   "technicalOffice": {
@@ -2573,6 +2658,9 @@
       "contrato": "Contrato",
       "certificacao": "Certificación",
       "other": "Otro"
+    },
+    "preview": {
+      "title": "Subcontratista"
     }
   },
   "audit": {
@@ -2795,7 +2883,14 @@
         "disciplineRequired": "Disciplina obligatoria",
         "pkEndInvalid": "PK fin inválido",
         "sectorRequired": "Sector obligatorio"
-      }
+      },
+      "captureGps": "Capturar GPS",
+      "gpsCoords": "Coordenadas GPS",
+      "latitude": "Latitud",
+      "longitude": "Longitud",
+      "wbs": "WBS",
+      "wbsNone": "Sin WBS",
+      "wbsPlaceholder": "Seleccionar WBS"
     },
     "disciplines": {
       "geral": "General",
@@ -2880,7 +2975,8 @@
       "nao_conforme": "No Conforme",
       "nao_aplicavel": "N/A"
     },
-    "truncatedWarning": "Mostrando los primeros 500 elementos. Use los filtros para restringir la búsqueda."
+    "truncatedWarning": "Mostrando los primeros 500 elementos. Use los filtros para restringir la búsqueda.",
+    "singular": "Elemento de obra"
   },
   "ppi": {
     "title": "Planes de Puntos de Inspección (PPI)",
@@ -3259,7 +3355,8 @@
       "zone": "Zona / Ubicación",
       "elementRef": "Elemento"
     },
-    "deleteConfirm": "Esta acción elimina la instancia PPI y todos sus puntos de inspección. ¿Confirmar?"
+    "deleteConfirm": "Esta acción elimina la instancia PPI y todos sus puntos de inspección. ¿Confirmar?",
+    "progress": "Progreso"
   },
   "attachments": {
     "title": "Adjuntos / Evidencias",
@@ -3290,7 +3387,8 @@
     },
     "view": "Ver imagen",
     "openPdf": "Abrir PDF",
-    "previewPdf": "Previsualizar PDF"
+    "previewPdf": "Previsualizar PDF",
+    "photos": "Fotografías"
   },
   "report": {
     "generatedOn": "Generado el",
@@ -3636,7 +3734,8 @@
       "newReception": "Nueva Recepción",
       "catalogTab": "Catálogo PAME",
       "tabLabelShort": "Recepciones",
-      "catalogTabShort": "Catálogo"
+      "catalogTabShort": "Catálogo",
+      "pickMaterial": "Seleccionar material"
     }
   },
   "settings": {
@@ -3669,7 +3768,8 @@
       "notificationsDesc": "Configurar alertas y emails",
       "exportData": "Exportar datos",
       "exportDataDesc": "Exportar todos los datos del proyecto",
-      "startDate": "Fecha de Inicio de Obra"
+      "startDate": "Fecha de Inicio de Obra",
+      "projectLength": "Extensión de la Obra"
     },
     "members": {
       "title": "Gestión de Usuarios",
@@ -3758,6 +3858,10 @@
       "webhookUrl": "URL del Incoming Webhook",
       "active": "Notificaciones activas",
       "saved": "Configuración Teams guardada"
+    },
+    "multiProject": {
+      "subtitle": "Gestión de múltiples proyectos",
+      "title": "Multi-obra"
     }
   },
   "topography": {
@@ -3818,7 +3922,8 @@
       "equipment": "Equipo",
       "ftCode": "Cód. FT",
       "cotaProjeto": "Cota Proyecto",
-      "cotaExecutado": "Cota Ejecutado"
+      "cotaExecutado": "Cota Ejecutado",
+      "links": "Vínculos"
     },
     "filters": {
       "allCalStatuses": "Todas las calibraciones",
@@ -3849,7 +3954,8 @@
       "equipmentUpdated": "Equipo actualizado con éxito.",
       "error": "Error al guardar. Inténtelo de nuevo.",
       "requestCreated": "Solicitud registrada con éxito.",
-      "requestUpdated": "Solicitud actualizada con éxito."
+      "requestUpdated": "Solicitud actualizada con éxito.",
+      "calibrationDeleted": "Calibración eliminada"
     },
     "form": {
       "newControl": "Nuevo Control",
@@ -3881,7 +3987,8 @@
       "editCalibration": "Editar Calibración",
       "newCalibration": "Nueva Calibración",
       "validUntil": "Válido hasta",
-      "validUntilRequired": "Fecha de validez obligatoria."
+      "validUntilRequired": "Fecha de validez obligatoria.",
+      "ppiLinked": "PPI asociado"
     },
     "equipmentType": {
       "estacao_total": "Estación Total",
@@ -3937,7 +4044,8 @@
     "noLinked": "Sin registros asociados.",
     "newCalibration": "Nueva Calibración",
     "seedDocs": "Inicializar Documentos",
-    "seedSuccess": "Documentos inicializados con éxito."
+    "seedSuccess": "Documentos inicializados con éxito.",
+    "confirmDeleteCalibration": "¿Está seguro de que desea eliminar esta calibración?"
   },
   "planning": {
     "createWorkItem": "Crear elemento de obra",
@@ -3953,7 +4061,8 @@
       "singular": "Frente de Trabajo",
       "plural": "Frentes de Trabajo",
       "edit": "Editar Frente de Trabajo",
-      "delete": "Eliminar Frente de Trabajo"
+      "delete": "Eliminar Frente de Trabajo",
+      "list": "Lista de actividades"
     },
     "completion": {
       "blocked": "Bloqueada — requisitos no cumplidos",
@@ -3992,7 +4101,12 @@
       "requirements": "Requisitos",
       "subcontractor": "Subcontratista",
       "workItem": "Elemento de obra",
-      "zone": "Zona"
+      "zone": "Zona",
+      "end": "Fecha de fin",
+      "responsible": "Responsable",
+      "start": "Fecha de inicio",
+      "status": "Estado",
+      "wbs": "WBS"
     },
     "filters": {
       "allStatuses": "Todos los estados"
@@ -4042,7 +4156,12 @@
       "parent": "Nodo padre",
       "responsible": "Responsable",
       "zone": "Zona",
-      "filterBy": "Filtrando por:"
+      "filterBy": "Filtrando por:",
+      "detail": "Detalle WBS",
+      "filterActivities": "Filtrar actividades",
+      "noActivities": "Sin actividades en este WBS",
+      "openInTab": "Abrir en pestaña",
+      "viewDetail": "Ver detalle"
     },
     "form": {
       "sectionLinks": "Vínculos",
@@ -4061,7 +4180,21 @@
       "needsCheckCount": "Pendiente de verificación",
       "column": "Disponibilidad",
       "filterReady": "Listas"
-    }
+    },
+    "noWbs": "Sin estructura WBS",
+    "kpis": {
+      "activities": "Actividades",
+      "avgProgress": "Progreso medio",
+      "completed": "Completadas",
+      "delayed": "Atrasadas",
+      "inProgress": "En curso",
+      "notStarted": "Por iniciar",
+      "onTime": "A tiempo",
+      "totalWbs": "Total WBS",
+      "wbsItems": "Ítems WBS"
+    },
+    "noData": "Sin datos de planificación",
+    "noDataDesc": "Añada actividades para visualizar la planificación"
   },
   "mapMas": {
     "title": "Aprobación MAP/MAS",
@@ -4485,7 +4618,10 @@
     "ncOpen": "{{count}} NC(s) abiertas",
     "hpPending": "{{count}} HP(s) pendientes",
     "testsOverdue": "{{count}} ensayo(s) atrasados",
-    "linkedWorkItem": "Elemento de Obra asociado"
+    "linkedWorkItem": "Elemento de Obra asociado",
+    "preview": {
+      "title": "Parte Diaria"
+    }
   },
   "recycled": {
     "exportPpgrcd": "Exportar Ficha PPGRCD",
@@ -4547,6 +4683,9 @@
       "PAP": "PAP",
       "BAM": "BAM",
       "OUTRO": "Otro"
+    },
+    "attachments": {
+      "afterSaveHint": "Guarde primero para añadir documentos"
     }
   },
   "onboarding": {
@@ -4609,7 +4748,9 @@
     "placeholder": "Ej: Mis pendientes"
   },
   "shortcuts": {
-    "newRecord": "Nuevo registro (N)"
+    "newRecord": "Nuevo registro (N)",
+    "hint": "Pulse ? para ver atajos de teclado",
+    "title": "Atajos de Teclado"
   },
   "training": {
     "status": {
@@ -4660,7 +4801,8 @@
       "created": "Sesión creada con éxito",
       "deleted": "Sesión eliminada",
       "loadError": "Error al cargar sesiones",
-      "exportError": "Error al exportar"
+      "exportError": "Error al exportar",
+      "updated": "Sesión actualizada"
     },
     "tab": {
       "sessions": "Sesiones",
@@ -4668,7 +4810,16 @@
       "coverage": "Cobertura"
     },
     "attendeeGeneric": "Asistente {{n}}",
-    "attachments": "Documentos y Certificados"
+    "attachments": "Documentos y Certificados",
+    "editSession": "Editar Sesión",
+    "fields": {
+      "date": "Fecha",
+      "hours": "Horas",
+      "signed": "Firmado",
+      "title": "Título",
+      "trainer": "Formador",
+      "type": "Tipo de formación"
+    }
   },
   "audits": {
     "title": "Programa de Auditorías",
@@ -4900,7 +5051,12 @@
       "emesExpiring": "EMEs por expirar (30d)",
       "ncOverdue15d": "NC > 15 días",
       "rmOnTime": "RM en plazo",
-      "threshold": "Umbral"
+      "threshold": "Umbral",
+      "lotsApproved": "Lotes aprobados",
+      "lotsQuarantine": "Lotes en cuarentena",
+      "lotsReceived": "Lotes recibidos",
+      "pameApproved": "PAMEs aprobados",
+      "pamePending": "PAMEs pendientes"
     },
     "batches": "Amasadas",
     "compactionTests": "Ensayos de Compactación",
@@ -5362,7 +5518,8 @@
     },
     "deleteConfirm": "El registro será archivado y no aparecerá en la lista.",
     "toast": {
-      "created": "Registro de campo creado con éxito"
+      "created": "Registro de campo creado con éxito",
+      "updated": "Registro actualizado"
     },
     "kpi": {
       "conforme": "Conforme",
@@ -5375,7 +5532,8 @@
       "activity": "Actividad",
       "pk": "PK",
       "ppi": "PPI",
-      "result": "Resultado"
+      "result": "Resultado",
+      "disciplina": "Disciplina"
     },
     "form": {
       "title": "Nuevo Registro de Inspección de Campo",
@@ -5405,8 +5563,26 @@
       "measured": "Valor medido",
       "observationsPlaceholder": "Observaciones generales, NCs abiertas, referencias fotográficas…",
       "nextInspection": "Próxima Verificación Prevista",
-      "hasPhotos": "Registro fotográfico realizado"
-    }
+      "hasPhotos": "Registro fotográfico realizado",
+      "attachmentsHint": "Fotografías y documentos de campo",
+      "editTitle": "Editar Registro de Campo",
+      "section4": "Observaciones e Incidencias"
+    },
+    "activity": "Actividad",
+    "detail": {
+      "activity": "Actividad",
+      "checks": "Verificaciones",
+      "linkedPPI": "PPI Asociado",
+      "materials": "Materiales",
+      "observations": "Observaciones",
+      "specialist": "Responsable Especialidad",
+      "title": "Registro de Campo",
+      "type": "Tipo",
+      "weather": "Condiciones Meteorológicas"
+    },
+    "pointType": "Tipo de Punto",
+    "specialist": "Resp. Especialidad",
+    "weather": "Meteorología"
   },
   "fieldRecord": {
     "createNc": "Crear NC",
@@ -5622,7 +5798,17 @@
     },
     "title": "Organigrama de Obra",
     "subtitle": "Estructura organizativa del proyecto",
-    "pdfTitle": "ORGANIGRAMA DE OBRA"
+    "pdfTitle": "ORGANIGRAMA DE OBRA",
+    "empty": "Organigrama vacío",
+    "emptyDesc": "Añada miembros del equipo para construir el organigrama",
+    "form": {
+      "function": "Función",
+      "order": "Orden",
+      "reportsTo": "Reporta a"
+    },
+    "toast": {
+      "updated": "Organigrama actualizado"
+    }
   },
   "topographyFt": {
     "title": "Ficha Topográfica",
@@ -5772,7 +5958,8 @@
       "empty": "Ningún punto coincide con los filtros.",
       "focus": "Enfocar en el mapa",
       "open": "Abrir detalle"
-    }
+    },
+    "pointsCount": "puntos en el mapa"
   },
   "mqt": {
     "title": "Mapa de Cantidades y Trabajos",
@@ -5856,7 +6043,14 @@
         "uncovered": "Sin cobertura",
         "critical": "Crítico"
       }
-    }
+    },
+    "allUnits": "Todas las unidades",
+    "filterByUnit": "Filtrar por unidad",
+    "pkAll": "Todos los PKs",
+    "pkWith": "Con PK",
+    "pkWithout": "Sin PK",
+    "qtyMax": "Cant. máx.",
+    "qtyMin": "Cant. mín."
   },
   "team": {
     "title": "Equipo de Obra",
@@ -5949,7 +6143,9 @@
     "attachments": {
       "hide": "Ocultar documentos",
       "showCert": "Ver certificados / documentos",
-      "showTraining": "Ver documentos de la formación"
+      "showTraining": "Ver documentos de la formación",
+      "show": "Ver anexos",
+      "title": "Anexos del Miembro"
     },
     "detail": {
       "info": "Información",
@@ -5987,6 +6183,14 @@
       "workerDeleted": "Trabajador eliminado",
       "qualCreated": "Cualificación registrada",
       "error": "Error al guardar"
+    },
+    "noWorkersYet": "Sin trabajadores registrados",
+    "selectWorker": "Seleccionar trabajador",
+    "sheet": {
+      "print": "Imprimir ficha",
+      "signatureManager": "Firma Responsable",
+      "signatureWorker": "Firma Trabajador",
+      "title": "Ficha de Trabajador"
     }
   },
   "trackGeometry": {
@@ -6272,5 +6476,96 @@
       "empty": "Sin acciones pendientes de reuniones ✅",
       "goToMeetings": "Ver reuniones"
     }
+  },
+  "docActions": {
+    "attachments": "Anexos",
+    "delete": "Eliminar",
+    "downloadPdf": "Descargar PDF",
+    "edit": "Editar",
+    "preview": "Vista previa"
+  },
+  "insights": {
+    "basedOn": "Basado en datos de los últimos 90 días",
+    "ncImproving": "NCs en descenso",
+    "ncImprovingDetail": "Reducción de no conformidades — tendencia positiva",
+    "ncSpike": "Aumento de NCs",
+    "ncSpikeDetail": "Incremento de no conformidades — monitorizar",
+    "ncStable": "NCs estables",
+    "ncStableDetail": "Sin variación significativa en NCs",
+    "noData": "Sin datos suficientes",
+    "noDataDetail": "Datos insuficientes para generar previsiones",
+    "ppiHealthy": "PPIs al día",
+    "ppiHealthyDetail": "Tasa de aprobación de PPIs sobre el objetivo",
+    "ppiLag": "PPIs en retraso",
+    "ppiLagDetail": "Tasa de aprobación de PPIs bajo el objetivo",
+    "testsExcellent": "Ensayos excelentes",
+    "testsExcellentDetail": "Tasa de conformidad de ensayos muy buena",
+    "testsLow": "Ensayos insuficientes",
+    "testsLowDetail": "Tasa de realización de ensayos bajo el objetivo",
+    "title": "Insights Predictivos"
+  },
+  "leaflet": {
+    "heat": "Mapa de calor",
+    "markercluster": "Agrupar marcadores"
+  },
+  "members": {
+    "none": "Sin miembros"
+  },
+  "pdfPreview": {
+    "a11yDesc": "Documento PDF",
+    "downloadFailed": "Error al generar PDF",
+    "downloadFailedHint": "Inténtelo de nuevo o contacte soporte",
+    "generating": "Generando PDF…",
+    "openExternal": "Abrir externamente",
+    "downloadPdf": "Descargar PDF",
+    "noFile": "Sin archivo",
+    "untitled": "Sin título"
+  },
+  "qualityAnalytics": {
+    "basedOnVerified": "Basado en datos verificados",
+    "chart": {
+      "byDiscipline": "Por disciplina",
+      "byPointType": "Por tipo de punto",
+      "byRootCause": "Por causa raíz",
+      "bySeverity": "Por severidad",
+      "monthly": "Evolución mensual",
+      "mttr": "Tiempo medio de resolución",
+      "ppiByStatus": "PPIs por estado",
+      "testsMonthly": "Ensayos mensuales",
+      "testsStacked": "Ensayos por tipo",
+      "topNok": "Top NCs"
+    },
+    "daysAvg": "días de media",
+    "kpi": {
+      "avgClosure": "Tiempo medio cierre",
+      "conformityRate": "Tasa de conformidad",
+      "efficacy": "Eficacia AC",
+      "testsConformity": "Conformidad ensayos",
+      "testsPass": "Ensayos conformes",
+      "totalClosed": "NCs cerradas",
+      "totalNc": "Total NCs",
+      "totalTests": "Total ensayos"
+    },
+    "noNcData": "Sin datos de NCs",
+    "noNcDataDesc": "No hay no conformidades registradas para el período seleccionado",
+    "noPpiData": "Sin datos de PPIs",
+    "noPpiDataDesc": "No hay inspecciones PPI para el período seleccionado",
+    "noProject": "Sin proyecto activo",
+    "noProjectDesc": "Seleccione un proyecto para ver los indicadores",
+    "noTestsData": "Sin datos de ensayos",
+    "noTestsDataDesc": "No hay ensayos para el período seleccionado",
+    "subtitle": "Análisis estadístico de calidad — NCs, PPIs y Ensayos",
+    "tab": {
+      "nc": "No Conformidades",
+      "ppi": "Inspecciones PPI",
+      "tests": "Ensayos"
+    },
+    "title": "Indicadores de Calidad"
+  },
+  "topFrentes": {
+    "allClear": "Todas las frentes conformes",
+    "allClearDetail": "Sin NCs abiertas en las frentes activas",
+    "subtitle": "Frentes con más NCs activas",
+    "title": "Top Frentes Críticas"
   }
 }
