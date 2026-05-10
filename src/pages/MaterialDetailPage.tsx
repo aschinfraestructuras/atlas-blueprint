@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
@@ -15,7 +15,7 @@ import { exportMaterialPdf, exportFavPdf, buildMaterialDetailHtml } from "@/lib/
 import { printQuarantineLabel } from "@/components/materials/QuarantineLabelView";
 import { useProjectLogo } from "@/hooks/useProjectLogo";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, Package, Plus, History, CheckCircle2, XCircle, SendHorizontal, AlertTriangle, Clock, Loader2, Tag, FileDown, ShieldCheck, ShieldAlert, Ban, Eye } from "lucide-react";
+import { ArrowLeft, Package, Plus, History, CheckCircle2, XCircle, SendHorizontal, AlertTriangle, Clock, Loader2, Tag, FileDown, ShieldCheck, ShieldAlert, Ban, Eye, ChevronLeft, ChevronRight } from "lucide-react";
 import { PdfPreviewDialog } from "@/components/ui/pdf-preview-dialog";
 import { buildHtmlPreviewUrl, revokeHtmlPreviewUrl } from "@/lib/utils/htmlPreview";
 import { Button } from "@/components/ui/button";
@@ -142,6 +142,31 @@ export default function MaterialDetailPage() {
 
   const [material, setMaterial] = useState<Material | null>(null);
   const [activeTab, setActiveTab] = useState("summary");
+
+  // Tab bar scroll arrows
+  const tabsScrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const updateTabsScroll = useCallback(() => {
+    const el = tabsScrollRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 4);
+    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
+  }, []);
+
+  useEffect(() => {
+    const el = tabsScrollRef.current;
+    if (!el) return;
+    updateTabsScroll();
+    el.addEventListener("scroll", updateTabsScroll, { passive: true });
+    const ro = new ResizeObserver(updateTabsScroll);
+    ro.observe(el);
+    return () => {
+      el.removeEventListener("scroll", updateTabsScroll);
+      ro.disconnect();
+    };
+  }, [updateTabsScroll]);
   const [metrics, setMetrics] = useState<MaterialDetailMetrics | null>(null);
   const [docs, setDocs] = useState<MaterialDocument[]>([]);
   const [supplierLinks, setSupplierLinks] = useState<any[]>([]);
@@ -366,37 +391,61 @@ export default function MaterialDetailPage() {
       )}
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        {/* Barra de tabs — div simples com scroll garantido */}
-        <div style={{ overflowX: "auto", overflowY: "visible", WebkitOverflowScrolling: "touch" }} className="pb-1 scrollbar-none">
-          <div className="flex flex-nowrap gap-0.5 bg-muted/50 rounded-lg p-1" style={{ width: "max-content", minWidth: "100%" }}>
-            {([
-              { v: "summary",   l: t("materials.detail.tabs.summary") },
-              { v: "approval",  l: t("materials.detail.tabs.approval") },
-              { v: "reception", l: t("materials.detail.tabs.reception") },
-              { v: "suppliers", l: t("materials.detail.tabs.suppliers") },
-              { v: "documents", l: t("materials.detail.tabs.documents") },
-              { v: "tests",     l: t("materials.detail.tabs.tests") },
-              { v: "ncs",       l: t("materials.detail.tabs.ncs") },
-              { v: "workItems", l: t("materials.detail.tabs.workItems") },
-              { v: "usage",     l: t("materials.usageTab") },
-              { v: "recycled",  l: t("recycled.title", { defaultValue: "Reciclado" }) },
-              { v: "dossier",   l: t("materials.detail.tabs.dossier") },
-              { v: "audit",     l: t("materials.detail.tabs.audit") },
-            ] as { v: string; l: string }[]).map(tab => (
-              <button
-                key={tab.v}
-                onClick={() => setActiveTab(tab.v)}
-                className={cn(
-                  "flex-shrink-0 whitespace-nowrap rounded-md px-3 py-1.5 text-xs font-medium transition-all",
-                  activeTab === tab.v
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground hover:bg-background/50"
-                )}
-              >
-                {tab.l}
-              </button>
-            ))}
+        {/* Barra de tabs com setas de scroll */}
+        <div className="relative">
+          {canScrollLeft && (
+            <button
+              onClick={() => tabsScrollRef.current?.scrollBy({ left: -160, behavior: "smooth" })}
+              className="absolute left-0 top-0 bottom-1 z-10 flex items-center pl-1 pr-2 bg-gradient-to-r from-background via-background/90 to-transparent rounded-l-lg"
+              aria-label="Scroll esquerda"
+            >
+              <ChevronLeft className="h-3.5 w-3.5 text-muted-foreground" />
+            </button>
+          )}
+          <div
+            ref={tabsScrollRef}
+            style={{ overflowX: "auto", overflowY: "hidden", WebkitOverflowScrolling: "touch" }}
+            className="pb-1 scrollbar-none"
+          >
+            <div className="flex flex-nowrap gap-0.5 bg-muted/50 rounded-lg p-1" style={{ width: "max-content", minWidth: "100%" }}>
+              {([
+                { v: "summary",   l: t("materials.detail.tabs.summary") },
+                { v: "approval",  l: t("materials.detail.tabs.approval") },
+                { v: "reception", l: t("materials.detail.tabs.reception") },
+                { v: "suppliers", l: t("materials.detail.tabs.suppliers") },
+                { v: "documents", l: t("materials.detail.tabs.documents") },
+                { v: "tests",     l: t("materials.detail.tabs.tests") },
+                { v: "ncs",       l: t("materials.detail.tabs.ncs") },
+                { v: "workItems", l: t("materials.detail.tabs.workItems") },
+                { v: "usage",     l: t("materials.usageTab") },
+                { v: "recycled",  l: t("recycled.title", { defaultValue: "Reciclado" }) },
+                { v: "dossier",   l: t("materials.detail.tabs.dossier") },
+                { v: "audit",     l: t("materials.detail.tabs.audit") },
+              ] as { v: string; l: string }[]).map(tab => (
+                <button
+                  key={tab.v}
+                  onClick={() => setActiveTab(tab.v)}
+                  className={cn(
+                    "flex-shrink-0 whitespace-nowrap rounded-md px-3 py-1.5 text-xs font-medium transition-all",
+                    activeTab === tab.v
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground hover:bg-background/50"
+                  )}
+                >
+                  {tab.l}
+                </button>
+              ))}
+            </div>
           </div>
+          {canScrollRight && (
+            <button
+              onClick={() => tabsScrollRef.current?.scrollBy({ left: 160, behavior: "smooth" })}
+              className="absolute right-0 top-0 bottom-1 z-10 flex items-center pr-1 pl-2 bg-gradient-to-l from-background via-background/90 to-transparent rounded-r-lg"
+              aria-label="Scroll direita"
+            >
+              <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
+            </button>
+          )}
         </div>
 
         <TabsContent value="summary">
