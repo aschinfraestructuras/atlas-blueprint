@@ -721,7 +721,7 @@
     },
     "plans": {
       "title": "Planos Técnicos de Obra",
-      "subtitle": "Method Statements, programas de betonagens, montagem, tráfego e cronograma"
+      "subtitle": "Documentos do SGQ N1/N2 (PQO, PE, PAME, PGs) · Method Statements · Programas técnicos"
     },
     "survey": {
       "title": "Topografia",
@@ -2176,7 +2176,11 @@
       "PlanQual": "Plano de Qualidade",
       "Schedule": "Cronograma",
       "Drawing": "Desenho",
-      "Other": "Outro"
+      "Other": "Outro",
+      "PQO": "PQO — Plano de Qualidade de Obra",
+      "PE": "PE — Plano de Ensaios",
+      "PAME": "PAME — Plano de Aprovação de Materiais",
+      "PG": "PG — Procedimento Geral SGQ"
     },
     "status": {
       "draft": "Rascunho",

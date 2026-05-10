@@ -811,7 +811,7 @@
     },
     "plans": {
       "title": "Planes Técnicos de Obra",
-      "subtitle": "Method Statements, programas de hormigonados, montaje, tráfico y cronograma"
+      "subtitle": "Documentos del SGC N1/N2 (PQO, PE, PAME, PGs) · Method Statements · Programas técnicos"
     },
     "survey": {
       "title": "Topografía",
@@ -2266,7 +2266,11 @@
       "PlanQual": "Plan de Calidad",
       "Schedule": "Cronograma",
       "Drawing": "Dibujo",
-      "Other": "Otro"
+      "Other": "Otro",
+      "PQO": "PQO — Plan de Calidad de Obra",
+      "PE": "PE — Plan de Ensayos",
+      "PAME": "PAME — Plan de Aprobación de Materiales",
+      "PG": "PG — Procedimiento General SGC"
     },
     "status": {
       "draft": "Borrador",

@@ -53,7 +53,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 const PLAN_TYPES = [
-  "MS", "PlanEsc", "PlanBet", "PlanMont", "PlanTraf", "PlanSeg",
+  "PQO", "PE", "PAME", "PG", "MS", "PlanEsc", "PlanBet", "PlanMont", "PlanTraf", "PlanSeg",
   "PlanTopo", "PlanEns", "PlanInsp", "PlanAmb", "PlanQual",
   "Schedule", "Drawing", "Other",
 ];
