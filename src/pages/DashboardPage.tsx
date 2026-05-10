@@ -298,7 +298,7 @@ export default function DashboardPage() {
       {/* Keyboard shortcuts overlay (global '?') */}
       <KeyboardShortcutsOverlay />
 
-      {/* HERO HEADER — Executive Cockpit (pills PAME/HP integradas) */}
+      {/* HERO HEADER — Atlas Command Center (KPIs integrados) */}
       <DashboardHero
         displayName={displayName}
         projectName={activeProject.name}
@@ -310,10 +310,22 @@ export default function DashboardPage() {
         onPeriodChange={setPeriod}
         accentTone={heroAccent}
         liveUpdatedAgo={liveAgo}
-        pamePending={kpis.pamePending}
-        ncOpen={kpis.ncOpen}
         hpPending={hpCountForHero}
+        loading={kpiLoading}
+        kpis={{
+          ncOpen: kpis.ncOpen,
+          ppiApproved: kpis.ppiApproved,
+          ppiTotal: kpis.ppiTotal,
+          testsCompleted: kpis.testsCompleted,
+          testsTotal: kpis.testsTotal,
+          pamePending: kpis.pamePending,
+        }}
+        sparklines={{
+          nc:    filteredNcMonthly.slice(-8).map((m: any) => Number(m.opened ?? m.count ?? 0)),
+          tests: filteredTestsMonthly.slice(-8).map((m: any) => Number(m.completed ?? m.count ?? 0)),
+        }}
       />
+
 
       {/* ALERTAS — só críticos (NC vencidas, EMEs a expirar) e RMSGQ */}
       {hasAlerts && (
