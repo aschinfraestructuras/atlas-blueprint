@@ -130,6 +130,18 @@ function FieldRecordFormDialog({ open, onOpenChange, onSuccess, projectId, userI
       .eq("project_id", projectId).eq("is_deleted", false)
       .order("code").then(({ data }: any) => setPpiOptions(data ?? []));
 
+    // Auto-fill TQ name for new records from project_workers
+    if (!editId) {
+      (supabase as any).from("project_workers")
+        .select("name, role")
+        .eq("project_id", projectId)
+        .eq("user_id", userId)
+        .maybeSingle()
+        .then(({ data }: any) => {
+          if (data?.name) setF("tq_name", data.name);
+        });
+    }
+
     // Pre-load record when in edit mode
     if (editId) {
       fieldRecordService.getById(editId).then(rec => {
@@ -285,8 +297,26 @@ function FieldRecordFormDialog({ open, onOpenChange, onSuccess, projectId, userI
               {/* Disciplina */}
               <div>
                 <label className="text-xs font-medium text-muted-foreground">{t("fieldRecords.form.disciplina", { defaultValue: "Disciplina" })}</label>
-                <Input className="mt-1" value={form.disciplina} onChange={e => setF("disciplina", e.target.value)}
-                  placeholder="Ex: via_ferrea, betao, catenaria…" />
+                <Select value={form.disciplina || "__none__"} onValueChange={v => setF("disciplina", v === "__none__" ? "" : v)}>
+                  <SelectTrigger className="mt-1"><SelectValue placeholder={t("common.select", { defaultValue: "Seleccionar" })} /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">—</SelectItem>
+                    <SelectItem value="terraplenagem">Terraplenagem e Plataforma (PPI-01)</SelectItem>
+                    <SelectItem value="drenagem">Drenagem e Passagens Hidráulicas (PPI-02)</SelectItem>
+                    <SelectItem value="via_ferrea">Via Férrea, AMV e Soldadura (PPI-03)</SelectItem>
+                    <SelectItem value="psr">PSR Cachofarra e Restabelecimento R1 (PPI-04)</SelectItem>
+                    <SelectItem value="catenaria">Catenária e OFE — LP10/LCS (PPI-05)</SelectItem>
+                    <SelectItem value="rct">RCT, Terras e Protecções (PPI-06)</SelectItem>
+                    <SelectItem value="st">S&T — Supressão PN PK 31+670 (PPI-07)</SelectItem>
+                    <SelectItem value="obras_arte">Obras de Arte e PHs (PPI-08)</SelectItem>
+                    <SelectItem value="construcao_civil">Edificações e Construção Civil (PPI-09)</SelectItem>
+                    <SelectItem value="passagens_nivel">Passagens de Nível (PPI-10)</SelectItem>
+                    <SelectItem value="betao_estrutural">Betão Estrutural Transversal (PPI-11)</SelectItem>
+                    <SelectItem value="caminhos_cabos">Caminho de Cabos BT e Telecom (PPI-12)</SelectItem>
+                    <SelectItem value="topografia">Topografia</SelectItem>
+                    <SelectItem value="outro">Outro</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               {/* PK */}
               <div>
@@ -394,14 +424,14 @@ function FieldRecordFormDialog({ open, onOpenChange, onSuccess, projectId, userI
           <div className="grid grid-cols-2 gap-3">
             <div className="col-span-2">
               <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">
-                5 — {t("fieldRecords.form.section5", { defaultValue: "Observações e Ocorrências" })}
+                4 — {t("fieldRecords.form.section4", { defaultValue: "Observações e Ocorrências" })}
               </p>
               <Textarea rows={3} value={form.observations} onChange={e => setF("observations", e.target.value)}
                 placeholder={t("fieldRecords.form.observationsPlaceholder", { defaultValue: "Observações gerais, RNCs abertas, referências fotográficas…" })} />
             </div>
             <div>
               <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">
-                6 — {t("fieldRecords.form.section6", { defaultValue: "Resultado Global" })}
+                5 — {t("fieldRecords.form.section5", { defaultValue: "Resultado Global" })}
               </p>
               <Select value={form.result} onValueChange={v => setF("result", v)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
@@ -552,7 +582,7 @@ export default function FieldRecordsPage() {
             {t("fieldRecords.title", { defaultValue: "Grelhas de Registo de Campo" })}
           </h1>
           <p className="text-sm text-muted-foreground mt-0.5">
-            {t("fieldRecords.subtitle", { defaultValue: "Registo de RP · WP — verificações, materiais e ensaios in situ" })}
+            {t("fieldRecords.subtitle", { defaultValue: "Registo de campo: HP · RP · WP — verificações, materiais e ensaios in situ" })}
           </p>
         </div>
         {!isArchived && (
@@ -582,8 +612,9 @@ export default function FieldRecordsPage() {
           <SelectTrigger className="h-9 w-[130px] text-sm"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t("common.allTypes", { defaultValue: "Todos os tipos" })}</SelectItem>
-            <SelectItem value="rp">RP</SelectItem>
-            <SelectItem value="wp">WP</SelectItem>
+            <SelectItem value="hp">HP — Hold Point</SelectItem>
+            <SelectItem value="rp">RP — Review Point</SelectItem>
+            <SelectItem value="wp">WP — Witness Point</SelectItem>
           </SelectContent>
         </Select>
         <Select value={filterResult} onValueChange={setFilterResult}>
