@@ -277,10 +277,10 @@
    ══════════════════════════════════════════════════════════════════════ */
 :root {
   /* Atlas Command palette — extends primary navy with cyan/teal accent */
-  --atlas-navy-900:  220 55% 6%;
-  --atlas-navy-800:  218 50% 9%;
-  --atlas-navy-700:  216 48% 13%;
-  --atlas-navy-600:  215 45% 18%;
+  --atlas-navy-900:  215 60% 10%;
+  --atlas-navy-800:  215 62% 16%;
+  --atlas-navy-700:  215 64% 22%;
+  --atlas-navy-600:  215 65% 28%;
   --atlas-cyan:      188 92% 58%;   /* signature teal/cyan accent */
   --atlas-cyan-soft: 188 80% 70%;
   --atlas-ink-50:    210 30% 98%;
