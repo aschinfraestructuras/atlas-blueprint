@@ -1,8 +1,8 @@
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
-  Calendar, Building2, Briefcase, Clock, ShieldCheck,
-  Package, AlertTriangle, ChevronRight, Activity,
+  Calendar, Building2, Briefcase, Clock,
+  Package, AlertTriangle, ChevronRight, Activity, ShieldCheck,
 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -17,10 +17,8 @@ interface Props {
   startDate?: string | null;
   period: string;
   onPeriodChange: (v: string) => void;
-  /** Estado dinâmico: 'green' (saudável), 'amber' (atenção), 'red' (crítico) */
   accentTone?: "green" | "amber" | "red";
   liveUpdatedAgo?: string;
-  /** Pendências críticas integradas no header */
   pamePending?: number;
   hpPending?: number;
   ncOpen?: number;
@@ -37,25 +35,15 @@ function formatDateRange(startDate?: string | null) {
   };
 }
 
-const TONE_BG: Record<NonNullable<Props["accentTone"]>, string> = {
-  green: "from-emerald-500/[0.07] via-card/40 to-card",
-  amber: "from-amber-500/[0.09] via-card/40 to-card",
-  red:   "from-destructive/[0.08] via-card/40 to-card",
+const TONE_ACCENT: Record<NonNullable<Props["accentTone"]>, string> = {
+  green: "rgba(52,211,153,0.9)",
+  amber: "rgba(251,191,36,0.9)",
+  red:   "rgba(239,68,68,0.9)",
 };
-const TONE_BLOB: Record<NonNullable<Props["accentTone"]>, string> = {
-  green: "bg-emerald-500/10",
-  amber: "bg-amber-500/12",
-  red:   "bg-destructive/12",
-};
-const TONE_BAR: Record<NonNullable<Props["accentTone"]>, string> = {
-  green: "from-emerald-400 via-emerald-500 to-emerald-600",
-  amber: "from-amber-400 via-amber-500 to-orange-500",
-  red:   "from-rose-500 via-destructive to-red-700",
-};
-const TONE_DOT: Record<NonNullable<Props["accentTone"]>, string> = {
-  green: "bg-emerald-500",
-  amber: "bg-amber-500",
-  red:   "bg-destructive",
+const TONE_GLOW: Record<NonNullable<Props["accentTone"]>, string> = {
+  green: "rgba(52,211,153,0.12)",
+  amber: "rgba(251,191,36,0.10)",
+  red:   "rgba(239,68,68,0.12)",
 };
 const TONE_LABEL: Record<NonNullable<Props["accentTone"]>, { pt: string; es: string }> = {
   green: { pt: "Saudável", es: "Saludable" },
@@ -74,78 +62,104 @@ export function DashboardHero({
   const tone = accentTone;
   const isES = i18n.language === "es";
   const stateLabel = isES ? TONE_LABEL[tone].es : TONE_LABEL[tone].pt;
+  const accentColor = TONE_ACCENT[tone];
+  const glowColor = TONE_GLOW[tone];
 
-  // Pendências cliques rápidos
   const pills: Array<{ count: number; route: string; label: string; Icon: React.ElementType; tone: "amber" | "red" }> = [];
-  if (ncOpen > 0)      pills.push({ count: ncOpen,      route: "/non-conformities", label: t("dashboard.alerts.ncOpen", { defaultValue: "NCs abertas" }),       Icon: AlertTriangle, tone: ncOpen > 3 ? "red" : "amber" });
-  if (hpPending > 0)   pills.push({ count: hpPending,   route: "/deadlines",        label: t("dashboard.hpPending",      { defaultValue: "HP por confirmar" }), Icon: Clock,          tone: "amber" });
-  if (pamePending > 0) pills.push({ count: pamePending, route: "/materials",        label: t("dashboard.alerts.pamePending", { defaultValue: "PAME pendentes" }), Icon: Package,    tone: pamePending > 10 ? "red" : "amber" });
+  if (ncOpen > 0)      pills.push({ count: ncOpen,      route: "/non-conformities", label: t("dashboard.alerts.ncOpen", { defaultValue: "NCs abertas" }),          Icon: AlertTriangle, tone: ncOpen > 3 ? "red" : "amber" });
+  if (hpPending > 0)   pills.push({ count: hpPending,   route: "/deadlines",        label: t("dashboard.hpPending",     { defaultValue: "HP por confirmar" }),      Icon: Clock,         tone: "amber" });
+  if (pamePending > 0) pills.push({ count: pamePending, route: "/materials",        label: t("dashboard.alerts.pamePending", { defaultValue: "PAME pendentes" }), Icon: Package,       tone: pamePending > 10 ? "red" : "amber" });
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-white/[0.08] shadow-2xl animate-fade-in"
-      style={{ background: "linear-gradient(135deg, #0f1f3d 0%, #0d1b35 40%, #0a1628 100%)" }}>
-      {/* === Layered backgrounds === */}
-      <div className={cn("absolute inset-0 bg-gradient-to-br transition-colors duration-700 opacity-40", TONE_BG[tone])} />
-      <div className={cn("absolute -top-32 -right-24 w-80 h-80 rounded-full blur-3xl pointer-events-none opacity-30 transition-colors duration-700", TONE_BLOB[tone])} />
-      <div className="absolute -bottom-28 -left-20 w-72 h-72 rounded-full blur-3xl pointer-events-none" style={{ background: "radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 70%)" }} />
-      {/* Grid pattern (very subtle) */}
+    <div
+      className="relative overflow-hidden rounded-2xl shadow-2xl animate-fade-in"
+      style={{ background: "linear-gradient(135deg, #0c1a33 0%, #0e1f3d 35%, #091527 70%, #060f1e 100%)" }}
+    >
+      {/* ── Railway track SVG — fundo animado ── */}
+      <svg
+        className="absolute inset-0 w-full h-full pointer-events-none"
+        style={{ opacity: 0.06 }}
+        preserveAspectRatio="xMidYMid slice"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        {/* Carris horizontais */}
+        {[20, 35, 65, 80].map((y) => (
+          <line key={y} x1="0" y1={`${y}%`} x2="100%" y2={`${y}%`} stroke="white" strokeWidth="1.5" />
+        ))}
+        {/* Travessas verticais */}
+        {Array.from({ length: 22 }, (_, i) => (
+          <line key={i} x1={`${i * 5}%`} y1="10%" x2={`${i * 5}%`} y2="90%" stroke="white" strokeWidth="0.8" strokeDasharray="4 8" />
+        ))}
+        {/* Linha diagonal — perspectiva ferroviária */}
+        <line x1="0" y1="100%" x2="60%" y2="0" stroke="white" strokeWidth="1" strokeDasharray="6 12" />
+        <line x1="100%" y1="100%" x2="40%" y2="0" stroke="white" strokeWidth="1" strokeDasharray="6 12" />
+      </svg>
+
+      {/* ── Glow dinâmico conforme estado ── */}
       <div
-        className="absolute inset-0 opacity-[0.04] pointer-events-none"
+        className="absolute -top-20 -right-20 w-96 h-96 rounded-full pointer-events-none transition-all duration-1000"
+        style={{ background: `radial-gradient(circle, ${glowColor} 0%, transparent 70%)` }}
+      />
+      <div
+        className="absolute -bottom-24 -left-16 w-72 h-72 rounded-full pointer-events-none"
+        style={{ background: "radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%)" }}
+      />
+
+      {/* ── Barra de acento lateral ── */}
+      <div
+        className="absolute top-0 bottom-0 left-0 w-[3px]"
+        style={{ background: `linear-gradient(to bottom, transparent, ${accentColor}, transparent)` }}
+      />
+
+      {/* ── Noise/grain texture ── */}
+      <div
+        className="absolute inset-0 pointer-events-none opacity-[0.018]"
         style={{
-          backgroundImage:
-            "linear-gradient(rgba(255,255,255,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.6) 1px, transparent 1px)",
-          backgroundSize: "44px 44px",
+          backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
+          backgroundRepeat: "repeat",
+          backgroundSize: "128px",
         }}
       />
 
-      {/* === Lateral accent bar (left) — animated === */}
-      <div className="absolute top-0 bottom-0 left-0 w-[3px] overflow-hidden">
-        <div className={cn("absolute inset-0 bg-gradient-to-b animate-[shimmer_4s_ease-in-out_infinite]", TONE_BAR[tone])} />
-      </div>
-      <style>{`@keyframes shimmer { 0%,100% { opacity: .85 } 50% { opacity: 1 } }`}</style>
+      {/* ══════════════════════════════════ CONTENT ══════════════════════════════════ */}
+      <div className="relative z-10 px-5 sm:px-8 pt-5 sm:pt-6 pb-0">
 
-      {/* === Content === */}
-      <div className="relative z-10 px-5 sm:px-7 py-5 sm:py-6">
-        {/* TOP ROW — eyebrow + state + live + period */}
-        <div className="flex items-start justify-between gap-4 mb-3">
-          <div className="flex items-center gap-2 flex-wrap min-w-0">
-            {/* State chip */}
-            <div className={cn(
-              "inline-flex items-center gap-1.5 rounded-full pl-1.5 pr-2.5 py-0.5 border backdrop-blur-sm transition-colors",
-              tone === "green" && "border-emerald-500/30 bg-emerald-500/10",
-              tone === "amber" && "border-amber-500/30 bg-amber-500/10",
-              tone === "red"   && "border-destructive/30 bg-destructive/10",
-            )}>
+        {/* ── TOP ROW: estado + live + período ── */}
+        <div className="flex items-center justify-between gap-3 mb-5">
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* Pill de estado */}
+            <div
+              className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 border backdrop-blur-sm"
+              style={{
+                borderColor: `${accentColor}40`,
+                background: `${accentColor}18`,
+              }}
+            >
               <span className="relative flex h-2 w-2">
-                <span className={cn("absolute inline-flex h-full w-full rounded-full opacity-60 animate-ping", TONE_DOT[tone])} />
-                <span className={cn("relative inline-flex h-2 w-2 rounded-full", TONE_DOT[tone])} />
+                <span className="absolute inset-0 rounded-full animate-ping opacity-60" style={{ backgroundColor: accentColor }} />
+                <span className="relative inline-flex h-2 w-2 rounded-full" style={{ backgroundColor: accentColor }} />
               </span>
-              <span className={cn(
-                "text-[10px] font-extrabold uppercase tracking-[0.18em]",
-                tone === "green" && "text-emerald-700 dark:text-emerald-400",
-                tone === "amber" && "text-amber-700 dark:text-amber-400",
-                tone === "red"   && "text-destructive",
-              )}>
+              <span className="text-[10px] font-extrabold uppercase tracking-[0.2em]" style={{ color: accentColor }}>
                 {stateLabel}
               </span>
             </div>
 
-            {/* Live tick */}
+            {/* Live badge */}
             {liveUpdatedAgo && (
-              <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-white/50 bg-white/[0.06] backdrop-blur-sm border border-white/10 rounded-full px-2 py-0.5">
+              <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-white/40 bg-white/[0.05] border border-white/10 rounded-full px-2.5 py-1">
                 <Activity className="h-2.5 w-2.5" />
-                <span>{t("dashboard.live", { defaultValue: "Live" })}</span>
-                <span className="text-muted-foreground/50">·</span>
+                {t("dashboard.live", { defaultValue: "Live" })}
+                <span className="text-white/25">·</span>
                 <span className="tabular-nums">{liveUpdatedAgo}</span>
               </span>
             )}
           </div>
 
-          {/* Period selector */}
-          <div className="flex items-center gap-1.5 bg-white/[0.07] backdrop-blur-md border border-white/10 rounded-xl px-2 py-1 shadow-sm flex-shrink-0">
-            <Calendar className="h-3.5 w-3.5 text-white/40" />
+          {/* Período */}
+          <div className="flex items-center gap-1.5 bg-white/[0.06] backdrop-blur-md border border-white/10 rounded-xl px-2.5 py-1 flex-shrink-0">
+            <Calendar className="h-3.5 w-3.5 text-white/30" />
             <Select value={period} onValueChange={onPeriodChange}>
-              <SelectTrigger className="h-7 w-[130px] text-xs border-0 bg-transparent shadow-none focus:ring-0 focus:ring-offset-0 px-1">
+              <SelectTrigger className="h-7 w-[130px] text-xs border-0 bg-transparent shadow-none focus:ring-0 focus:ring-offset-0 px-1 text-white/70">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -159,108 +173,112 @@ export function DashboardHero({
           </div>
         </div>
 
-        {/* MAIN BLOCK — Project monogram + Title */}
-        <div className="flex items-start gap-4 sm:gap-5">
-          {/* Monogram tile (project initials) */}
+        {/* ── HERO PRINCIPAL: monograma + nome + projecto ── */}
+        <div className="flex items-center gap-4 sm:gap-6 mb-5">
+          {/* Monograma */}
           <div className="hidden sm:flex flex-shrink-0 relative">
-            <div className={cn(
-              "w-14 h-14 rounded-2xl flex items-center justify-center font-black text-lg tracking-tight shadow-md border",
-              "bg-gradient-to-br from-card to-muted/40 border-border/50 text-foreground",
-            )}>
+            <div
+              className="w-16 h-16 rounded-2xl flex items-center justify-center font-black text-xl tracking-tight border"
+              style={{
+                background: "linear-gradient(135deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.04) 100%)",
+                borderColor: "rgba(255,255,255,0.12)",
+                color: "white",
+                backdropFilter: "blur(8px)",
+              }}
+            >
               {(projectCode ?? projectName).slice(0, 3).toUpperCase()}
             </div>
-            <ShieldCheck className={cn(
-              "absolute -bottom-1 -right-1 h-4 w-4 rounded-full bg-card p-0.5 border border-border/50",
-              tone === "green" && "text-emerald-500",
-              tone === "amber" && "text-amber-500",
-              tone === "red"   && "text-destructive",
-            )} />
+            <ShieldCheck
+              className="absolute -bottom-1 -right-1 h-4.5 w-4.5 rounded-full p-0.5 border"
+              style={{ backgroundColor: "#060f1e", borderColor: `${accentColor}40`, color: accentColor }}
+            />
           </div>
 
-          {/* Titles */}
+          {/* Títulos */}
           <div className="min-w-0 flex-1">
-            <p className="text-[10px] font-extrabold uppercase tracking-[0.22em] text-white/40 mb-0.5">
+            <p className="text-[9px] font-extrabold uppercase tracking-[0.28em] text-white/30 mb-1">
               {t("dashboard.welcome", { defaultValue: "Bem-vindo" })}
             </p>
-            <h1 className="text-2xl sm:text-[1.85rem] lg:text-[2.05rem] font-black tracking-tight text-white leading-[1.1] truncate">
+            <h1 className="text-3xl sm:text-4xl lg:text-[2.6rem] font-black tracking-tight text-white leading-none mb-1.5">
               {displayName}
             </h1>
-            <p className="text-[12px] sm:text-[13px] text-white/60 mt-1 truncate">
-              <span className="font-semibold text-white/80">{projectName}</span>
+            <p className="text-[13px] text-white/50 truncate">
+              <span className="font-semibold text-white/70">{projectName}</span>
               {projectCode && (
                 <>
-                  <span className="text-white/30 mx-1.5">·</span>
-                  <span className="font-mono text-[11px] text-white/50">{projectCode}</span>
+                  <span className="text-white/20 mx-2">·</span>
+                  <span className="font-mono text-[11px] text-white/40">{projectCode}</span>
                 </>
               )}
             </p>
           </div>
         </div>
 
-        {/* DIVIDER */}
-        <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent my-4" />
-
-        {/* CONTRACT METADATA + PILLS — 2 columns on desktop */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-          {/* Contract chips */}
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
+        {/* ── BARRA INFERIOR: metadados + pills ── */}
+        <div
+          className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 py-3 px-1 border-t"
+          style={{ borderColor: "rgba(255,255,255,0.07)" }}
+        >
+          {/* Metadados do contrato */}
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5">
             {client && (
-              <div className="inline-flex items-center gap-1.5 text-[11px]">
-                <Building2 className="h-3 w-3 text-white/40" />
-                <span className="text-white/40 uppercase tracking-wider text-[9px] font-bold">
+              <div className="inline-flex items-center gap-1.5">
+                <Building2 className="h-3 w-3 text-white/30" />
+                <span className="text-[9px] font-bold uppercase tracking-widest text-white/30">
                   {t("dashboard.heroChip.client", { defaultValue: "Cliente" })}
                 </span>
-                <span className="font-semibold text-white/80 truncate max-w-[200px]">{client}</span>
+                <span className="text-[11px] font-semibold text-white/65 truncate max-w-[180px]">{client}</span>
               </div>
             )}
             {contractor && (
-              <div className="inline-flex items-center gap-1.5 text-[11px]">
-                <Briefcase className="h-3 w-3 text-white/40" />
-                <span className="text-white/40 uppercase tracking-wider text-[9px] font-bold">
+              <div className="inline-flex items-center gap-1.5">
+                <Briefcase className="h-3 w-3 text-white/30" />
+                <span className="text-[9px] font-bold uppercase tracking-widest text-white/30">
                   {t("dashboard.heroChip.contractor", { defaultValue: "Empreiteiro" })}
                 </span>
-                <span className="font-semibold text-white/80 truncate max-w-[200px]">{contractor}</span>
+                <span className="text-[11px] font-semibold text-white/65 truncate max-w-[180px]">{contractor}</span>
               </div>
             )}
             {range && (
-              <div className="inline-flex items-center gap-1.5 text-[11px]">
-                <Calendar className="h-3 w-3 text-white/40" />
-                <span className="text-white/40 uppercase tracking-wider text-[9px] font-bold">
+              <div className="inline-flex items-center gap-1.5">
+                <Calendar className="h-3 w-3 text-white/30" />
+                <span className="text-[9px] font-bold uppercase tracking-widest text-white/30">
                   {t("dashboard.heroChip.start", { defaultValue: "Início" })}
                 </span>
-                <span className="font-semibold text-white/80 tabular-nums">{range.startStr}</span>
-                <span className="text-white/40 tabular-nums">
+                <span className="text-[11px] font-semibold text-white/65 tabular-nums">{range.startStr}</span>
+                <span className="text-[11px] text-white/30 tabular-nums">
                   · {range.days}{t("dashboard.heroChip.daysAgo", { defaultValue: "d" })}
                 </span>
               </div>
             )}
           </div>
 
-          {/* Pendency pills (only if any) */}
+          {/* Pills de alertas */}
           {pills.length > 0 && (
             <TooltipProvider delayDuration={200}>
               <div className="flex flex-wrap items-center gap-1.5">
                 {pills.map((p) => {
                   const Icon = p.Icon;
+                  const isRed = p.tone === "red";
                   return (
                     <Tooltip key={p.route + p.label}>
                       <TooltipTrigger asChild>
                         <button
                           onClick={() => navigate(p.route)}
                           className={cn(
-                            "group inline-flex items-center gap-1.5 rounded-lg px-2 py-1 border backdrop-blur-sm transition-all hover:shadow-sm hover:-translate-y-0.5 active:translate-y-0",
-                            p.tone === "red"
-                              ? "bg-destructive/10 border-destructive/30 hover:bg-destructive/15 text-destructive"
-                              : "bg-amber-500/10 border-amber-500/30 hover:bg-amber-500/15 text-amber-700 dark:text-amber-400",
+                            "group inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 border backdrop-blur-sm transition-all hover:-translate-y-0.5 active:translate-y-0",
+                            isRed
+                              ? "bg-red-500/15 border-red-500/30 hover:bg-red-500/20 text-red-400"
+                              : "bg-amber-500/15 border-amber-500/30 hover:bg-amber-500/20 text-amber-400",
                           )}
                         >
                           <Icon className="h-3 w-3" />
                           <span className="text-[10px] font-semibold uppercase tracking-wider hidden md:inline">{p.label}</span>
                           <span className="text-xs font-black tabular-nums">{p.count}</span>
-                          <ChevronRight className="h-3 w-3 opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+                          <ChevronRight className="h-3 w-3 opacity-40 group-hover:opacity-80 group-hover:translate-x-0.5 transition-all" />
                         </button>
                       </TooltipTrigger>
-                      <TooltipContent side="bottom" className="text-[10px]">{p.label}</TooltipContent>
+                      <TooltipContent side="top" className="text-[10px]">{p.label}</TooltipContent>
                     </Tooltip>
                   );
                 })}
