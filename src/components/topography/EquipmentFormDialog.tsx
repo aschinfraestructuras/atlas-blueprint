@@ -37,12 +37,22 @@ export function EquipmentFormDialog({ open, onOpenChange, projectId, equipment, 
   const [deleteCalId, setDeleteCalId] = useState<string | null>(null);
 
   const equipmentTypes = [
-    { value: "estacao_total", label: t("topography.equipmentType.estacao_total") },
-    { value: "gnss", label: t("topography.equipmentType.gnss") },
-    { value: "nivel_otico", label: t("topography.equipmentType.nivel_otico") },
-    { value: "drone", label: t("topography.equipmentType.drone") },
-    { value: "scanner_3d", label: t("topography.equipmentType.scanner_3d") },
-    { value: "outros", label: t("topography.equipmentType.outros") },
+    { value: "estacao_total",       label: t("topography.equipmentType.estacao_total") },
+    { value: "gps_gnss",            label: t("topography.equipmentType.gps_gnss") },
+    { value: "nivel",               label: t("topography.equipmentType.nivel") },
+    { value: "gamma_densimetro",    label: t("topography.equipmentType.gamma_densimetro") },
+    { value: "cone_abrams",         label: t("topography.equipmentType.cone_abrams") },
+    { value: "aparelho_us",         label: t("topography.equipmentType.aparelho_us") },
+    { value: "placa_carga",         label: t("topography.equipmentType.placa_carga") },
+    { value: "chave_dinamometrica", label: t("topography.equipmentType.chave_dinamometrica") },
+    { value: "gabarit",             label: t("topography.equipmentType.gabarit") },
+    { value: "bitolimetro",         label: t("topography.equipmentType.bitolimetro") },
+    { value: "otdr",                label: t("topography.equipmentType.otdr") },
+    { value: "megaohmimetro",       label: t("topography.equipmentType.megaohmimetro") },
+    { value: "multimetro",          label: t("topography.equipmentType.multimetro") },
+    { value: "analisador_rede",     label: t("topography.equipmentType.analisador_rede") },
+    { value: "drone",               label: t("topography.equipmentType.drone") },
+    { value: "outro",               label: t("topography.equipmentType.outro") },
   ];
 
   const eqStatuses = [

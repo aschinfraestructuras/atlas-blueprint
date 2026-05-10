@@ -3795,7 +3795,21 @@
       "nivel_otico": "Nível Óptico",
       "drone": "Drone",
       "scanner_3d": "Scanner 3D",
-      "outros": "Outros"
+      "outros": "Outros",
+      "gps_gnss": "GPS / GNSS RTK",
+      "nivel": "Nível Óptico / Laser",
+      "gamma_densimetro": "Gammadensímetro Nuclear",
+      "cone_abrams": "Cono de Abrams (Slump)",
+      "aparelho_us": "Aparelho de Ultrassons",
+      "placa_carga": "Placa de Carga (Ev2/Ev1)",
+      "chave_dinamometrica": "Chave Dinamométrica",
+      "gabarit": "Gabarit (Via / Catenária)",
+      "bitolimetro": "Bitolímetro",
+      "otdr": "OTDR (Fibra Óptica)",
+      "megaohmimetro": "Megóhmetro",
+      "multimetro": "Multímetro + Pinça Amperimétrica",
+      "analisador_rede": "Analisador de Rede",
+      "outro": "Outro"
     },
     "requestType": {
       "implantacao": "Implantação",
