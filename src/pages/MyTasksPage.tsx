@@ -596,10 +596,15 @@ function Section({ title, icon: Icon, count, children }: {
 }
 
 function SeverityBadge({ severity }: { severity: string }) {
+  const { t } = useTranslation();
   const cls = severity === "critical"
     ? "bg-destructive/10 text-destructive border-destructive/30"
     : severity === "major"
       ? "bg-amber-500/10 text-amber-700 border-amber-400/30"
       : "bg-muted text-muted-foreground border-border";
-  return <Badge variant="outline" className={cn("text-[10px]", cls)}>{severity}</Badge>;
+  return (
+    <Badge variant="outline" className={cn("text-[10px]", cls)}>
+      {t(`nc.severity.${severity}`, { defaultValue: severity })}
+    </Badge>
+  );
 }

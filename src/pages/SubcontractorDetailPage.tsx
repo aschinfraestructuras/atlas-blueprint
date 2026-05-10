@@ -685,7 +685,7 @@ export default function SubcontractorDetailPage() {
                         <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">{nc.title ?? nc.description}</TableCell>
                         <TableCell>
                           <Badge variant="secondary" className={cn("text-xs", nc.severity === "critical" ? "bg-destructive/10 text-destructive" : nc.severity === "major" ? "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400" : "")}>
-                            {nc.severity}
+                            {t(`nc.severity.${nc.severity}`, { defaultValue: nc.severity })}
                           </Badge>
                         </TableCell>
                         <TableCell><Badge variant="secondary" className="text-xs">{nc.status}</Badge></TableCell>

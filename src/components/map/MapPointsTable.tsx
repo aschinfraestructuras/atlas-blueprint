@@ -334,7 +334,7 @@ export function MapPointsTable({ points, activeFilters, onFocusPoint, className 
                         )}
                         {p.severity && (
                           <Badge variant={severityVariant(p.severity)} className="h-4 text-[9px] px-1.5">
-                            {p.severity}
+                            {t(`nc.severity.${p.severity}`, { defaultValue: p.severity })}
                           </Badge>
                         )}
                         {p.disciplina && (

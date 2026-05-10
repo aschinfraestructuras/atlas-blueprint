@@ -613,7 +613,7 @@ export default function QCReportPage() {
                               <td className="p-3 max-w-[200px] truncate">{nc.title ?? "—"}</td>
                               <td className="p-3">
                                 <Badge variant="secondary" className={`text-xs ${nc.severity === "critical" || nc.severity === "high" ? "bg-destructive/10 text-destructive" : nc.severity === "major" || nc.severity === "medium" ? "bg-primary/10 text-primary" : ""}`}>
-                                  {nc.severity}
+                                  {t(`nc.severity.${nc.severity}`, { defaultValue: nc.severity })}
                                 </Badge>
                               </td>
                               <td className="p-3 text-xs">{nc.status}</td>
