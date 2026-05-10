@@ -39,6 +39,7 @@ export function MainLayout({ children }: MainLayoutProps) {
         client: (activeProject as any)?.client ?? null,
         location: (activeProject as any)?.location ?? null,
         contract_number: (activeProject as any)?.contract_number ?? null,
+        project_length: (activeProject as any)?.project_length ?? null,
       });
     } else {
       setCurrentProjectMeta(null);

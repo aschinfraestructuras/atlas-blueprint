@@ -262,6 +262,7 @@ function ProjectMetadataEditor({ projectId, project, onSaved }: {
   const [client, setClient] = useState((project as any)?.client ?? "");
   const [location, setLocation] = useState((project as any)?.location ?? "");
   const [contractNumber, setContractNumber] = useState((project as any)?.contract_number ?? "");
+  const [projectLength, setProjectLength] = useState((project as any)?.project_length ?? "");
   const [startDate, setStartDate] = useState((project as any)?.start_date ?? "");
   const [saving, setSaving] = useState(false);
 
@@ -273,6 +274,7 @@ function ProjectMetadataEditor({ projectId, project, onSaved }: {
         client: client || null,
         location: location || null,
         contract_number: contractNumber || null,
+        project_length: projectLength || null,
         start_date: startDate || null,
       } as any).eq("id", projectId);
       if (error) throw error;
@@ -304,6 +306,10 @@ function ProjectMetadataEditor({ projectId, project, onSaved }: {
         <div className="space-y-1">
           <Label className="text-xs">{t("settings.project.contractNumber")}</Label>
           <Input value={contractNumber} onChange={e => setContractNumber(e.target.value)} className="h-8 text-xs" placeholder={t("settings.project.contractNumber")} />
+        </div>
+        <div className="space-y-1">
+          <Label className="text-xs">{t("settings.project.projectLength", { defaultValue: "Extensão da Obra" })}</Label>
+          <Input value={projectLength} onChange={e => setProjectLength(e.target.value)} className="h-8 text-xs" placeholder="ex: 12,4 km" />
         </div>
         <div className="space-y-1">
           <Label className="text-xs">{t("settings.project.startDate", { defaultValue: "Data de Início da Obra" })}</Label>

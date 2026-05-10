@@ -8,6 +8,7 @@ export interface Project {
   location: string | null;
   contractor: string | null;
   contract_number: string | null;
+  project_length: string | null;
   start_date: string | null;
   status: string;
   tenant_id: string | null;

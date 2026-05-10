@@ -16,6 +16,7 @@ export interface PdfProjectInfo {
   client?: string | null;
   location?: string | null;
   contract_number?: string | null;
+  project_length?: string | null;
 }
 
 // ── Module-level registry ─────────────────────────────────────────────────────
@@ -40,7 +41,7 @@ export function projectInfoStripHtml(project?: PdfProjectInfo | null): string {
   </div>
   <div style="background:#f8fafc;border:1px solid #e2e8f0;border-top:0;padding:6px 20px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:10px;margin-bottom:16px;">
     <div><span style="color:#6b7280;font-weight:600;">LOCALIZAÇÃO</span><br>${val(p?.location)}</div>
-    <div><span style="color:#6b7280;font-weight:600;">EXTENSÃO</span><br>—</div>
+    <div><span style="color:#6b7280;font-weight:600;">EXTENSÃO</span><br>${val(p?.project_length)}</div>
     <div><span style="color:#6b7280;font-weight:600;">CONTRATO</span><br>${val(p?.contract_number)}</div>
   </div>`;
 }
