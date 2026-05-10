@@ -244,7 +244,7 @@ export const ncService = {
     } as unknown as NonConformity;
   },
 
-  /** Cria NC via RPC (gera código automático NC-<PROJ>-<YYYY>-<SEQ>) */
+  /** Cria NC via RPC (gera código automático RNC-<PROJ>-<SEQ 3 dígitos> — ex: RNC-PF17A-001) */
   async create(input: NCCreateInput): Promise<NonConformity> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data, error } = await (supabase as any).rpc("fn_create_nc", {
