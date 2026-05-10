@@ -5,7 +5,7 @@ import { signatureBlockHtml, type SignatureSlot } from "./signatureService";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export const POINT_TYPES = ["rp", "wp"] as const;
+export const POINT_TYPES = ["hp", "rp", "wp"] as const;
 export type PointType = typeof POINT_TYPES[number];
 
 export const WEATHER_OPTIONS = ["bom", "nublado", "chuva", "chuva_forte", "vento"] as const;

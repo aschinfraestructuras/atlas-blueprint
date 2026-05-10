@@ -71,13 +71,14 @@ const WEATHER_CFG: Record<string, { icon: string; label: string }> = {
 };
 
 const TYPE_CFG: Record<string, { cls: string }> = {
-  rp: { cls: "bg-blue-500/10 text-blue-700 dark:text-blue-400" },
-  wp: { cls: "bg-red-500/10  text-red-700  dark:text-red-400"  },
+  hp: { cls: "bg-amber-500/10 text-amber-700 dark:text-amber-400" },
+  rp: { cls: "bg-blue-500/10 text-blue-700 dark:text-blue-400"  },
+  wp: { cls: "bg-red-500/10  text-red-700  dark:text-red-400"   },
 };
 
 // ── Formulário inline (Dialog) ─────────────────────────────────────────────────
 interface FormState {
-  point_type: "rp" | "wp";
+  point_type: "hp" | "rp" | "wp";
   activity: string;
   disciplina: string;
   location_pk: string;
@@ -135,18 +136,18 @@ function FieldRecordFormDialog({ open, onOpenChange, onSuccess, projectId, userI
         setForm({
           point_type: rec.point_type,
           activity: rec.activity ?? "",
-          disciplina: "",
+          disciplina: (rec as any).disciplina ?? "",
           location_pk: rec.location_pk ?? "",
-          pk_fim: "",
-          elemento: "",
+          pk_fim: (rec as any).pk_fim ?? "",
+          elemento: (rec as any).elemento ?? "",
           inspection_date: rec.inspection_date ?? new Date().toISOString().split("T")[0],
           weather: (rec.weather ?? "bom") as string,
-          tq_name: "",
+          tq_name: (rec as any).tq_name ?? "",
           specialist_name: rec.specialist_name ?? "",
           ppi_instance_id: rec.ppi_instance_id ?? "",
           result: rec.result ?? "pendente",
           observations: rec.observations ?? "",
-          next_inspection: "",
+          next_inspection: (rec as any).next_inspection ?? "",
           has_photos: rec.has_photos ?? false,
           checks: (rec.checks ?? []).map(c => ({
             description: c.description, criteria: c.criteria ?? "",
@@ -253,6 +254,7 @@ function FieldRecordFormDialog({ open, onOpenChange, onSuccess, projectId, userI
                 <Select value={form.point_type} onValueChange={v => setF("point_type", v)}>
                   <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="hp">HP — Hold Point ⚠️</SelectItem>
                     <SelectItem value="rp">RP — Review Point</SelectItem>
                     <SelectItem value="wp">WP — Witness Point</SelectItem>
                   </SelectContent>
