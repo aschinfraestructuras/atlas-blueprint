@@ -82,17 +82,18 @@ export function DashboardHero({
   if (pamePending > 0) pills.push({ count: pamePending, route: "/materials",        label: t("dashboard.alerts.pamePending", { defaultValue: "PAME pendentes" }), Icon: Package,    tone: pamePending > 10 ? "red" : "amber" });
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-border/40 bg-card shadow-card animate-fade-in">
+    <div className="relative overflow-hidden rounded-2xl border border-white/[0.08] shadow-2xl animate-fade-in"
+      style={{ background: "linear-gradient(135deg, #0f1f3d 0%, #0d1b35 40%, #0a1628 100%)" }}>
       {/* === Layered backgrounds === */}
-      <div className={cn("absolute inset-0 bg-gradient-to-br transition-colors duration-700", TONE_BG[tone])} />
-      <div className={cn("absolute -top-32 -right-24 w-80 h-80 rounded-full blur-3xl pointer-events-none transition-colors duration-700", TONE_BLOB[tone])} />
-      <div className="absolute -bottom-28 -left-20 w-72 h-72 rounded-full bg-primary/[0.06] blur-3xl pointer-events-none" />
+      <div className={cn("absolute inset-0 bg-gradient-to-br transition-colors duration-700 opacity-40", TONE_BG[tone])} />
+      <div className={cn("absolute -top-32 -right-24 w-80 h-80 rounded-full blur-3xl pointer-events-none opacity-30 transition-colors duration-700", TONE_BLOB[tone])} />
+      <div className="absolute -bottom-28 -left-20 w-72 h-72 rounded-full blur-3xl pointer-events-none" style={{ background: "radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 70%)" }} />
       {/* Grid pattern (very subtle) */}
       <div
-        className="absolute inset-0 opacity-[0.025] pointer-events-none"
+        className="absolute inset-0 opacity-[0.04] pointer-events-none"
         style={{
           backgroundImage:
-            "linear-gradient(hsl(var(--foreground)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)",
+            "linear-gradient(rgba(255,255,255,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.6) 1px, transparent 1px)",
           backgroundSize: "44px 44px",
         }}
       />
@@ -131,7 +132,7 @@ export function DashboardHero({
 
             {/* Live tick */}
             {liveUpdatedAgo && (
-              <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70 bg-card/50 backdrop-blur-sm border border-border/40 rounded-full px-2 py-0.5">
+              <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-white/50 bg-white/[0.06] backdrop-blur-sm border border-white/10 rounded-full px-2 py-0.5">
                 <Activity className="h-2.5 w-2.5" />
                 <span>{t("dashboard.live", { defaultValue: "Live" })}</span>
                 <span className="text-muted-foreground/50">·</span>
@@ -141,8 +142,8 @@ export function DashboardHero({
           </div>
 
           {/* Period selector */}
-          <div className="flex items-center gap-1.5 bg-card/70 backdrop-blur-md border border-border/50 rounded-xl px-2 py-1 shadow-sm flex-shrink-0">
-            <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
+          <div className="flex items-center gap-1.5 bg-white/[0.07] backdrop-blur-md border border-white/10 rounded-xl px-2 py-1 shadow-sm flex-shrink-0">
+            <Calendar className="h-3.5 w-3.5 text-white/40" />
             <Select value={period} onValueChange={onPeriodChange}>
               <SelectTrigger className="h-7 w-[130px] text-xs border-0 bg-transparent shadow-none focus:ring-0 focus:ring-offset-0 px-1">
                 <SelectValue />
@@ -178,18 +179,18 @@ export function DashboardHero({
 
           {/* Titles */}
           <div className="min-w-0 flex-1">
-            <p className="text-[10px] font-extrabold uppercase tracking-[0.22em] text-muted-foreground/60 mb-0.5">
+            <p className="text-[10px] font-extrabold uppercase tracking-[0.22em] text-white/40 mb-0.5">
               {t("dashboard.welcome", { defaultValue: "Bem-vindo" })}
             </p>
-            <h1 className="text-2xl sm:text-[1.85rem] lg:text-[2.05rem] font-black tracking-tight text-foreground leading-[1.1] truncate">
+            <h1 className="text-2xl sm:text-[1.85rem] lg:text-[2.05rem] font-black tracking-tight text-white leading-[1.1] truncate">
               {displayName}
             </h1>
-            <p className="text-[12px] sm:text-[13px] text-muted-foreground/85 mt-1 truncate">
-              <span className="font-semibold text-foreground/85">{projectName}</span>
+            <p className="text-[12px] sm:text-[13px] text-white/60 mt-1 truncate">
+              <span className="font-semibold text-white/80">{projectName}</span>
               {projectCode && (
                 <>
-                  <span className="text-muted-foreground/40 mx-1.5">·</span>
-                  <span className="font-mono text-[11px] text-muted-foreground/70">{projectCode}</span>
+                  <span className="text-white/30 mx-1.5">·</span>
+                  <span className="font-mono text-[11px] text-white/50">{projectCode}</span>
                 </>
               )}
             </p>
@@ -197,7 +198,7 @@ export function DashboardHero({
         </div>
 
         {/* DIVIDER */}
-        <div className="h-px bg-gradient-to-r from-transparent via-border/60 to-transparent my-4" />
+        <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent my-4" />
 
         {/* CONTRACT METADATA + PILLS — 2 columns on desktop */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
@@ -205,30 +206,30 @@ export function DashboardHero({
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
             {client && (
               <div className="inline-flex items-center gap-1.5 text-[11px]">
-                <Building2 className="h-3 w-3 text-muted-foreground/60" />
-                <span className="text-muted-foreground/60 uppercase tracking-wider text-[9px] font-bold">
+                <Building2 className="h-3 w-3 text-white/40" />
+                <span className="text-white/40 uppercase tracking-wider text-[9px] font-bold">
                   {t("dashboard.heroChip.client", { defaultValue: "Cliente" })}
                 </span>
-                <span className="font-semibold text-foreground/90 truncate max-w-[200px]">{client}</span>
+                <span className="font-semibold text-white/80 truncate max-w-[200px]">{client}</span>
               </div>
             )}
             {contractor && (
               <div className="inline-flex items-center gap-1.5 text-[11px]">
-                <Briefcase className="h-3 w-3 text-muted-foreground/60" />
-                <span className="text-muted-foreground/60 uppercase tracking-wider text-[9px] font-bold">
+                <Briefcase className="h-3 w-3 text-white/40" />
+                <span className="text-white/40 uppercase tracking-wider text-[9px] font-bold">
                   {t("dashboard.heroChip.contractor", { defaultValue: "Empreiteiro" })}
                 </span>
-                <span className="font-semibold text-foreground/90 truncate max-w-[200px]">{contractor}</span>
+                <span className="font-semibold text-white/80 truncate max-w-[200px]">{contractor}</span>
               </div>
             )}
             {range && (
               <div className="inline-flex items-center gap-1.5 text-[11px]">
-                <Calendar className="h-3 w-3 text-muted-foreground/60" />
-                <span className="text-muted-foreground/60 uppercase tracking-wider text-[9px] font-bold">
+                <Calendar className="h-3 w-3 text-white/40" />
+                <span className="text-white/40 uppercase tracking-wider text-[9px] font-bold">
                   {t("dashboard.heroChip.start", { defaultValue: "Início" })}
                 </span>
-                <span className="font-semibold text-foreground/90 tabular-nums">{range.startStr}</span>
-                <span className="text-muted-foreground/50 tabular-nums">
+                <span className="font-semibold text-white/80 tabular-nums">{range.startStr}</span>
+                <span className="text-white/40 tabular-nums">
                   · {range.days}{t("dashboard.heroChip.daysAgo", { defaultValue: "d" })}
                 </span>
               </div>
