@@ -298,7 +298,7 @@ export default function DashboardPage() {
       {/* Keyboard shortcuts overlay (global '?') */}
       <KeyboardShortcutsOverlay />
 
-      {/* HERO HEADER — Executive Cockpit (pills PAME/HP integradas) */}
+      {/* HERO HEADER — Atlas Command Center (KPIs integrados) */}
       <DashboardHero
         displayName={displayName}
         projectName={activeProject.name}
@@ -310,10 +310,22 @@ export default function DashboardPage() {
         onPeriodChange={setPeriod}
         accentTone={heroAccent}
         liveUpdatedAgo={liveAgo}
-        pamePending={kpis.pamePending}
-        ncOpen={kpis.ncOpen}
         hpPending={hpCountForHero}
+        loading={kpiLoading}
+        kpis={{
+          ncOpen: kpis.ncOpen,
+          ppiApproved: kpis.ppiApproved,
+          ppiTotal: kpis.ppiTotal,
+          testsCompleted: kpis.testsCompleted,
+          testsTotal: kpis.testsTotal,
+          pamePending: kpis.pamePending,
+        }}
+        sparklines={{
+          nc:    filteredNcMonthly.slice(-8).map((m: any) => Number(m.opened ?? m.count ?? 0)),
+          tests: filteredTestsMonthly.slice(-8).map((m: any) => Number(m.completed ?? m.count ?? 0)),
+        }}
       />
+
 
       {/* ALERTAS — só críticos (NC vencidas, EMEs a expirar) e RMSGQ */}
       {hasAlerts && (
@@ -368,41 +380,7 @@ export default function DashboardPage() {
       </Card>
       <HealthScoreSheet open={healthSheetOpen} onOpenChange={setHealthSheetOpen} health={health} loading={healthLoading} />
 
-      {/* ── MODULE CARDS — 2x2 mobile, 4 cols desktop ── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3 animate-fade-in" style={{ animationDelay: "60ms", animationFillMode: "both" }}>
-        {modules.map((mod) => {
-          const color = colorMap[mod.status];
-          const Icon = mod.icon;
-          return (
-            <Card
-              key={mod.route}
-              className="border border-border/60 bg-card shadow-card cursor-pointer hover:shadow-lg hover:-translate-y-0.5 transition-all active:scale-[0.97] group relative overflow-hidden"
-              style={{ borderLeftWidth: 4, borderLeftColor: color }}
-              onClick={() => navigate(mod.route)}
-            >
-              <CardContent className="p-3 sm:p-4 flex flex-col gap-2 sm:gap-2.5">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-xl"
-                    style={{ background: `color-mix(in srgb, ${color} 9%, transparent)` }}>
-                    <Icon className="h-4 w-4 sm:h-5 sm:w-5" style={{ color }} />
-                  </div>
-                  <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full border-2 border-card" style={{ backgroundColor: color }} />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.10em] text-muted-foreground truncate">{mod.label}</p>
-                  {kpiLoading ? <Skeleton className="h-6 w-12 mt-0.5" /> :
-                    <div className="flex items-baseline gap-1 mt-0.5">
-                      <span className="text-xl sm:text-2xl font-black tabular-nums text-foreground leading-none">{mod.value}</span>
-                      {mod.total !== undefined && <span className="text-[10px] sm:text-xs text-muted-foreground">/ {mod.total}</span>}
-                    </div>}
-                  <p className="text-[9px] sm:text-[10px] text-muted-foreground/60 truncate mt-0.5">{mod.sub}</p>
-                </div>
-                <ArrowRight className="absolute bottom-2.5 right-2.5 h-3 w-3 sm:h-3.5 sm:w-3.5 text-muted-foreground/0 group-hover:text-muted-foreground/50 transition-all" />
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
+      {/* Module KPIs are now integrated inside DashboardHero (Atlas Command Center). */}
 
       {/* ── MAP QUICK ACCESS — card horizontal premium, integrado entre módulos e tabs ── */}
       <Card

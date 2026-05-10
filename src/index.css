@@ -269,6 +269,202 @@
   }
 }
 
+/* ══════════════════════════════════════════════════════════════════════
+   ATLAS COMMAND DESIGN SYSTEM
+   Reusable visual language for premium engineering surfaces.
+   Use across: dashboard hero, module headers, executive panels,
+   side panels, empty states. Coherent with login page identity.
+   ══════════════════════════════════════════════════════════════════════ */
+:root {
+  /* Atlas Command palette — extends primary navy with cyan/teal accent */
+  --atlas-navy-900:  220 55% 6%;
+  --atlas-navy-800:  218 50% 9%;
+  --atlas-navy-700:  216 48% 13%;
+  --atlas-navy-600:  215 45% 18%;
+  --atlas-cyan:      188 92% 58%;   /* signature teal/cyan accent */
+  --atlas-cyan-soft: 188 80% 70%;
+  --atlas-ink-50:    210 30% 98%;
+  --atlas-ink-300:   215 18% 72%;
+  --atlas-ink-500:   215 14% 50%;
+
+  /* Glass elevation tokens (for use ON dark command surfaces) */
+  --atlas-glass-bg:        255 255 255 / 0.04;
+  --atlas-glass-bg-hover:  255 255 255 / 0.07;
+  --atlas-glass-border:    255 255 255 / 0.10;
+
+  /* Cinematic shadows */
+  --atlas-glow-cyan: 0 0 40px hsl(var(--atlas-cyan) / 0.18);
+  --atlas-shadow-command:
+    0 30px 60px -20px hsl(var(--atlas-navy-900) / 0.6),
+    0 18px 36px -18px hsl(var(--atlas-navy-900) / 0.5),
+    inset 0 1px 0 hsl(0 0% 100% / 0.06);
+}
+
+/* ── Command Surface ─────────────────────────────────────────────────── */
+/* Deep navy gradient + blueprint grid + diagonal light beams + noise.   */
+/* Apply to any container that needs the cinematic Atlas identity.        */
+.atlas-command-surface {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: 24px;
+  background:
+    radial-gradient(120% 80% at 85% 0%, hsl(var(--atlas-cyan) / 0.10) 0%, transparent 55%),
+    radial-gradient(80% 60% at 0% 100%, hsl(220 70% 30% / 0.18) 0%, transparent 60%),
+    linear-gradient(135deg,
+      hsl(var(--atlas-navy-800)) 0%,
+      hsl(var(--atlas-navy-700)) 35%,
+      hsl(var(--atlas-navy-900)) 70%,
+      hsl(220 60% 4%) 100%);
+  box-shadow: var(--atlas-shadow-command);
+  color: hsl(var(--atlas-ink-50));
+}
+/* Blueprint grid overlay — engineering drawing aesthetic */
+.atlas-command-surface::before {
+  content: "";
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(hsl(var(--atlas-cyan) / 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--atlas-cyan) / 0.06) 1px, transparent 1px),
+    linear-gradient(hsl(255 255 255 / 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(255 255 255 / 0.03) 1px, transparent 1px);
+  background-size: 96px 96px, 96px 96px, 24px 24px, 24px 24px;
+  background-position: -1px -1px;
+  mask-image: radial-gradient(ellipse 100% 80% at 50% 50%, black 35%, transparent 90%);
+  pointer-events: none;
+  z-index: 0;
+}
+/* Subtle noise texture for cinematic realism */
+.atlas-command-surface::after {
+  content: "";
+  position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
+  background-size: 180px;
+  opacity: 0.025;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  z-index: 0;
+}
+.atlas-command-surface > * { position: relative; z-index: 1; }
+
+/* Compact variant for module page headers (smaller height/radius) */
+.atlas-command-surface--compact { border-radius: 18px; }
+.atlas-command-surface--compact::before { background-size: 64px 64px, 64px 64px, 16px 16px, 16px 16px; }
+
+/* ── Light Beams ─────────────────────────────────────────────────────── */
+/* Animated diagonal cyan light streaks, inspired by login page hero.    */
+.atlas-light-beams {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+.atlas-light-beams::before,
+.atlas-light-beams::after {
+  content: "";
+  position: absolute;
+  width: 200%; height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    hsl(var(--atlas-cyan) / 0.0) 20%,
+    hsl(var(--atlas-cyan) / 0.55) 50%,
+    hsl(var(--atlas-cyan-soft) / 0.0) 80%,
+    transparent 100%);
+  filter: blur(1.2px);
+  transform-origin: center;
+}
+.atlas-light-beams::before {
+  top: 38%; left: -50%;
+  transform: rotate(-14deg);
+  box-shadow: 0 0 24px 1px hsl(var(--atlas-cyan) / 0.35);
+  animation: atlasBeamDrift 14s ease-in-out infinite;
+}
+.atlas-light-beams::after {
+  top: 62%; left: -50%;
+  transform: rotate(-14deg);
+  opacity: 0.5;
+  box-shadow: 0 0 20px 1px hsl(var(--atlas-cyan) / 0.25);
+  animation: atlasBeamDrift 18s ease-in-out -6s infinite reverse;
+}
+@keyframes atlasBeamDrift {
+  0%, 100% { transform: rotate(-14deg) translateX(-2%); opacity: 0.55; }
+  50%      { transform: rotate(-13deg) translateX(2%);  opacity: 0.85; }
+}
+
+/* ── Glass Panel ─────────────────────────────────────────────────────── */
+/* Translucent dark card for use ON .atlas-command-surface.              */
+.atlas-glass {
+  position: relative;
+  background: rgb(var(--atlas-glass-bg));
+  border: 1px solid rgb(var(--atlas-glass-border));
+  border-radius: 14px;
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  transition: background 220ms ease, border-color 220ms ease, transform 220ms ease, box-shadow 220ms ease;
+}
+.atlas-glass:hover {
+  background: rgb(var(--atlas-glass-bg-hover));
+  border-color: hsl(var(--atlas-cyan) / 0.35);
+  box-shadow: var(--atlas-glow-cyan);
+}
+.atlas-glass--interactive {
+  cursor: pointer;
+}
+.atlas-glass--interactive:hover {
+  transform: translateY(-2px);
+}
+.atlas-glass--interactive:active {
+  transform: translateY(0);
+}
+/* Tone variants for KPI accents (border-left + soft halo) */
+.atlas-glass--tone-cyan   { border-left: 2px solid hsl(var(--atlas-cyan) / 0.7); }
+.atlas-glass--tone-amber  { border-left: 2px solid hsl(38 90% 60% / 0.8); }
+.atlas-glass--tone-red    { border-left: 2px solid hsl(0 75% 62% / 0.85); }
+.atlas-glass--tone-green  { border-left: 2px solid hsl(150 60% 55% / 0.85); }
+
+/* ── Atlas typography helpers (white-on-navy hierarchy) ──────────────── */
+.atlas-eyebrow {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: hsl(var(--atlas-ink-50) / 0.45);
+}
+.atlas-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: hsl(var(--atlas-ink-300));
+}
+.atlas-meta { color: hsl(var(--atlas-ink-50) / 0.55); }
+
+/* ── Live status indicator (reusable) ────────────────────────────────── */
+.atlas-live-dot {
+  position: relative;
+  display: inline-flex;
+  width: 8px; height: 8px;
+}
+.atlas-live-dot::before {
+  content: "";
+  position: absolute; inset: 0;
+  border-radius: 9999px;
+  background: hsl(var(--atlas-cyan));
+  animation: atlasPulse 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  opacity: 0.6;
+}
+.atlas-live-dot::after {
+  content: "";
+  position: absolute; inset: 0;
+  border-radius: 9999px;
+  background: hsl(var(--atlas-cyan));
+}
+@keyframes atlasPulse {
+  0%   { transform: scale(1);   opacity: 0.6; }
+  70%  { transform: scale(2.4); opacity: 0;   }
+  100% { transform: scale(2.4); opacity: 0;   }
+}
+
 /* ── Safe area for mobile bottom nav ─────────────────────────────────── */
 .safe-area-bottom {
   padding-bottom: env(safe-area-inset-bottom, 0px);
