@@ -336,8 +336,9 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* ── HEALTH SCORE — proeminente ── */}
+      {/* ── HEALTH SCORE + MAPA — lado a lado ── */}
       <style>{`@keyframes healthPulse { 0%,100%{box-shadow:0 0 0 0 hsl(145 55% 42%/0.15)} 50%{box-shadow:0 0 0 12px hsl(145 55% 42%/0)} }`}</style>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 animate-fade-in" style={{ animationDelay: "50ms", animationFillMode: "both" }}>
       <Card
         className={cn(
           "border border-border/60 bg-card shadow-card cursor-pointer hover:shadow-card-hover transition-all active:scale-[0.98] relative overflow-hidden",
@@ -380,12 +381,10 @@ export default function DashboardPage() {
       </Card>
       <HealthScoreSheet open={healthSheetOpen} onOpenChange={setHealthSheetOpen} health={health} loading={healthLoading} />
 
-      {/* Module KPIs are now integrated inside DashboardHero (Atlas Command Center). */}
-
-      {/* ── MAP QUICK ACCESS — card horizontal premium, integrado entre módulos e tabs ── */}
+      {/* ── MAP QUICK ACCESS — ao lado do Health Score ── */}
       <Card
         className="relative overflow-hidden border border-border/60 bg-card shadow-card cursor-pointer hover:shadow-card-hover hover:border-primary/30 hover:-translate-y-0.5 transition-all active:scale-[0.99] group animate-fade-in"
-        style={{ animationDelay: "80ms", animationFillMode: "both" }}
+
         onClick={() => navigate("/map")}
         role="link"
         aria-label={t("dashboard.mapCta.aria", { defaultValue: "Abrir Mapa da Obra" })}
@@ -443,6 +442,8 @@ export default function DashboardPage() {
           <ArrowRight className="sm:hidden h-4 w-4 text-muted-foreground/50 group-hover:text-primary group-hover:translate-x-0.5 transition-all flex-shrink-0" />
         </CardContent>
       </Card>
+
+      </div>{/* end grid health+map */}
 
       {/* TABS */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="animate-fade-in" style={{ animationDelay: "100ms", animationFillMode: "both" }}>
