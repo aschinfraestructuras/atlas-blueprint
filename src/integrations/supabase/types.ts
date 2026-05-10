@@ -2651,6 +2651,445 @@ export type Database = {
           },
         ]
       }
+      fleet_co2_factors: {
+        Row: {
+          co2_kg_per_liter: number
+          fuel_type: string
+          label_es: string
+          label_pt: string
+        }
+        Insert: {
+          co2_kg_per_liter: number
+          fuel_type: string
+          label_es: string
+          label_pt: string
+        }
+        Update: {
+          co2_kg_per_liter?: number
+          fuel_type?: string
+          label_es?: string
+          label_pt?: string
+        }
+        Relationships: []
+      }
+      fleet_monthly_alerts: {
+        Row: {
+          id: string
+          reference_month: string
+          reminded_at: string | null
+          submitted_at: string | null
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          reference_month: string
+          reminded_at?: string | null
+          submitted_at?: string | null
+          user_id: string
+        }
+        Update: {
+          id?: string
+          reference_month?: string
+          reminded_at?: string | null
+          submitted_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fleet_monthly_alerts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "fleet_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fleet_monthly_alerts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fleet_current_month_status"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fleet_monthly_alerts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fleet_monthly_summary"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fleet_monthly_alerts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fleet_report_full"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      fleet_profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          department: string | null
+          email: string | null
+          full_name: string
+          id: string
+          is_active: boolean
+          language: string
+          phone: string | null
+          role: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          department?: string | null
+          email?: string | null
+          full_name: string
+          id: string
+          is_active?: boolean
+          language?: string
+          phone?: string | null
+          role?: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          department?: string | null
+          email?: string | null
+          full_name?: string
+          id?: string
+          is_active?: boolean
+          language?: string
+          phone?: string | null
+          role?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      fleet_refuels: {
+        Row: {
+          created_at: string
+          id: string
+          km_at_refuel: number | null
+          liters: number
+          notes: string | null
+          price_per_liter: number | null
+          receipt_url: string | null
+          refuel_date: string
+          station: string | null
+          submission_id: string | null
+          total_cost: number | null
+          user_id: string
+          vehicle_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          km_at_refuel?: number | null
+          liters: number
+          notes?: string | null
+          price_per_liter?: number | null
+          receipt_url?: string | null
+          refuel_date: string
+          station?: string | null
+          submission_id?: string | null
+          total_cost?: number | null
+          user_id: string
+          vehicle_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          km_at_refuel?: number | null
+          liters?: number
+          notes?: string | null
+          price_per_liter?: number | null
+          receipt_url?: string | null
+          refuel_date?: string
+          station?: string | null
+          submission_id?: string | null
+          total_cost?: number | null
+          user_id?: string
+          vehicle_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fleet_refuels_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "fleet_submissions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fleet_refuels_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fleet_current_month_status"
+            referencedColumns: ["submission_id"]
+          },
+          {
+            foreignKeyName: "fleet_refuels_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fleet_report_full"
+            referencedColumns: ["submission_id"]
+          },
+          {
+            foreignKeyName: "fleet_refuels_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "fleet_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fleet_refuels_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fleet_current_month_status"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fleet_refuels_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fleet_monthly_summary"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fleet_refuels_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fleet_report_full"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fleet_refuels_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "fleet_vehicles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fleet_refuels_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fleet_report_full"
+            referencedColumns: ["vehicle_id"]
+          },
+        ]
+      }
+      fleet_submissions: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          avg_consumption: number | null
+          co2_kg: number | null
+          cost_eur: number | null
+          cost_per_km: number | null
+          created_at: string
+          id: string
+          km_end: number
+          km_start: number
+          km_total: number | null
+          liters: number | null
+          notes: string | null
+          reference_month: string
+          status: string
+          updated_at: string
+          user_id: string
+          vehicle_id: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          avg_consumption?: number | null
+          co2_kg?: number | null
+          cost_eur?: number | null
+          cost_per_km?: number | null
+          created_at?: string
+          id?: string
+          km_end: number
+          km_start: number
+          km_total?: number | null
+          liters?: number | null
+          notes?: string | null
+          reference_month: string
+          status?: string
+          updated_at?: string
+          user_id: string
+          vehicle_id: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          avg_consumption?: number | null
+          co2_kg?: number | null
+          cost_eur?: number | null
+          cost_per_km?: number | null
+          created_at?: string
+          id?: string
+          km_end?: number
+          km_start?: number
+          km_total?: number | null
+          liters?: number | null
+          notes?: string | null
+          reference_month?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+          vehicle_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fleet_submissions_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "fleet_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fleet_submissions_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "vw_fleet_current_month_status"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fleet_submissions_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "vw_fleet_monthly_summary"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fleet_submissions_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "vw_fleet_report_full"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fleet_submissions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "fleet_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fleet_submissions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fleet_current_month_status"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fleet_submissions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fleet_monthly_summary"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fleet_submissions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fleet_report_full"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fleet_submissions_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "fleet_vehicles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fleet_submissions_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fleet_report_full"
+            referencedColumns: ["vehicle_id"]
+          },
+        ]
+      }
+      fleet_vehicles: {
+        Row: {
+          assigned_to: string | null
+          brand: string
+          co2_factor: number
+          created_at: string
+          fuel_type: string
+          id: string
+          is_active: boolean
+          km_initial: number | null
+          model: string
+          notes: string | null
+          plate: string
+          updated_at: string
+          year: number | null
+        }
+        Insert: {
+          assigned_to?: string | null
+          brand: string
+          co2_factor?: number
+          created_at?: string
+          fuel_type?: string
+          id?: string
+          is_active?: boolean
+          km_initial?: number | null
+          model: string
+          notes?: string | null
+          plate: string
+          updated_at?: string
+          year?: number | null
+        }
+        Update: {
+          assigned_to?: string | null
+          brand?: string
+          co2_factor?: number
+          created_at?: string
+          fuel_type?: string
+          id?: string
+          is_active?: boolean
+          km_initial?: number | null
+          model?: string
+          notes?: string | null
+          plate?: string
+          updated_at?: string
+          year?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fleet_vehicles_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "fleet_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fleet_vehicles_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_fleet_current_month_status"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fleet_vehicles_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_fleet_monthly_summary"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fleet_vehicles_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_fleet_report_full"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       hp_notifications: {
         Row: {
           activity: string
@@ -2660,11 +3099,19 @@ export type Database = {
           approved_entity: string | null
           ata_code: string | null
           code: string
+          confirmation_token: string | null
+          confirmation_token_email: string | null
+          confirmation_token_used_at: string | null
           confirmed_at: string | null
           confirmed_by: string | null
           created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
+          hp_result: string | null
           id: string
           instance_id: string
+          is_deleted: boolean | null
+          is_voided: boolean | null
           item_id: string | null
           location_pk: string | null
           notes: string | null
@@ -2674,8 +3121,17 @@ export type Database = {
           point_no: string
           ppi_ref: string
           project_id: string
+          result_datetime: string | null
+          result_observations: string | null
+          result_registered_at: string | null
+          result_registered_by: string | null
           rfi_ref: string | null
+          rnc_ref: string | null
+          signed_doc_paths: string[] | null
           status: string
+          void_reason: string | null
+          voided_at: string | null
+          voided_by: string | null
         }
         Insert: {
           activity: string
@@ -2685,11 +3141,19 @@ export type Database = {
           approved_entity?: string | null
           ata_code?: string | null
           code: string
+          confirmation_token?: string | null
+          confirmation_token_email?: string | null
+          confirmation_token_used_at?: string | null
           confirmed_at?: string | null
           confirmed_by?: string | null
           created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          hp_result?: string | null
           id?: string
           instance_id: string
+          is_deleted?: boolean | null
+          is_voided?: boolean | null
           item_id?: string | null
           location_pk?: string | null
           notes?: string | null
@@ -2699,8 +3163,17 @@ export type Database = {
           point_no: string
           ppi_ref: string
           project_id: string
+          result_datetime?: string | null
+          result_observations?: string | null
+          result_registered_at?: string | null
+          result_registered_by?: string | null
           rfi_ref?: string | null
+          rnc_ref?: string | null
+          signed_doc_paths?: string[] | null
           status?: string
+          void_reason?: string | null
+          voided_at?: string | null
+          voided_by?: string | null
         }
         Update: {
           activity?: string
@@ -2710,11 +3183,19 @@ export type Database = {
           approved_entity?: string | null
           ata_code?: string | null
           code?: string
+          confirmation_token?: string | null
+          confirmation_token_email?: string | null
+          confirmation_token_used_at?: string | null
           confirmed_at?: string | null
           confirmed_by?: string | null
           created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          hp_result?: string | null
           id?: string
           instance_id?: string
+          is_deleted?: boolean | null
+          is_voided?: boolean | null
           item_id?: string | null
           location_pk?: string | null
           notes?: string | null
@@ -2724,8 +3205,17 @@ export type Database = {
           point_no?: string
           ppi_ref?: string
           project_id?: string
+          result_datetime?: string | null
+          result_observations?: string | null
+          result_registered_at?: string | null
+          result_registered_by?: string | null
           rfi_ref?: string | null
+          rnc_ref?: string | null
+          signed_doc_paths?: string[] | null
           status?: string
+          void_reason?: string | null
+          voided_at?: string | null
+          voided_by?: string | null
         }
         Relationships: [
           {
@@ -2942,6 +3432,170 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_traceability_matrix"
             referencedColumns: ["supplier_id"]
+          },
+        ]
+      }
+      machinery_log: {
+        Row: {
+          breakdown_desc: string | null
+          created_at: string
+          created_by: string | null
+          fuel_liters: number | null
+          hours_end: number | null
+          hours_start: number | null
+          hours_worked: number | null
+          id: string
+          is_deleted: boolean
+          location_zone: string | null
+          log_date: string
+          machinery_id: string | null
+          notes: string | null
+          operator_name: string | null
+          project_id: string
+          repair_desc: string | null
+          repair_hours: number | null
+          status: string
+          updated_at: string
+          work_item_id: string | null
+          work_type: string | null
+        }
+        Insert: {
+          breakdown_desc?: string | null
+          created_at?: string
+          created_by?: string | null
+          fuel_liters?: number | null
+          hours_end?: number | null
+          hours_start?: number | null
+          hours_worked?: number | null
+          id?: string
+          is_deleted?: boolean
+          location_zone?: string | null
+          log_date: string
+          machinery_id?: string | null
+          notes?: string | null
+          operator_name?: string | null
+          project_id: string
+          repair_desc?: string | null
+          repair_hours?: number | null
+          status?: string
+          updated_at?: string
+          work_item_id?: string | null
+          work_type?: string | null
+        }
+        Update: {
+          breakdown_desc?: string | null
+          created_at?: string
+          created_by?: string | null
+          fuel_liters?: number | null
+          hours_end?: number | null
+          hours_start?: number | null
+          hours_worked?: number | null
+          id?: string
+          is_deleted?: boolean
+          location_zone?: string | null
+          log_date?: string
+          machinery_id?: string | null
+          notes?: string | null
+          operator_name?: string | null
+          project_id?: string
+          repair_desc?: string | null
+          repair_hours?: number | null
+          status?: string
+          updated_at?: string
+          work_item_id?: string | null
+          work_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "machinery_log_machinery_id_fkey"
+            columns: ["machinery_id"]
+            isOneToOne: false
+            referencedRelation: "project_machinery"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "machinery_log_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "machinery_log_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "machinery_log_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "machinery_log_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "machinery_log_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "machinery_log_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_rm_kpis"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "machinery_log_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_sgq_matrix_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "machinery_log_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_hp_calendar"
+            referencedColumns: ["work_item_id"]
+          },
+          {
+            foreignKeyName: "machinery_log_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_traceability_matrix"
+            referencedColumns: ["work_item_id"]
+          },
+          {
+            foreignKeyName: "machinery_log_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_work_item_quality_summary"
+            referencedColumns: ["work_item_id"]
+          },
+          {
+            foreignKeyName: "machinery_log_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_work_item_readiness_detail"
+            referencedColumns: ["work_item_id"]
+          },
+          {
+            foreignKeyName: "machinery_log_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -3548,12 +4202,18 @@ export type Database = {
           kpi_hp_approved: number | null
           kpi_hp_rate_pct: number | null
           kpi_hp_total: number | null
+          kpi_lots_approved: number | null
+          kpi_lots_quarantine: number | null
+          kpi_lots_received: number | null
+          kpi_lots_rejected: number | null
           kpi_mat_approved: number | null
           kpi_mat_pending: number | null
           kpi_nc_closed_month: number | null
           kpi_nc_open: number | null
           kpi_nc_overdue_15d: number | null
+          kpi_pame_approved: number | null
           kpi_pame_rate_pct: number | null
+          kpi_pame_total: number | null
           kpi_ppi_completed: number | null
           kpi_rm_on_time: boolean | null
           kpi_tests_pass_rate: number | null
@@ -3584,12 +4244,18 @@ export type Database = {
           kpi_hp_approved?: number | null
           kpi_hp_rate_pct?: number | null
           kpi_hp_total?: number | null
+          kpi_lots_approved?: number | null
+          kpi_lots_quarantine?: number | null
+          kpi_lots_received?: number | null
+          kpi_lots_rejected?: number | null
           kpi_mat_approved?: number | null
           kpi_mat_pending?: number | null
           kpi_nc_closed_month?: number | null
           kpi_nc_open?: number | null
           kpi_nc_overdue_15d?: number | null
+          kpi_pame_approved?: number | null
           kpi_pame_rate_pct?: number | null
+          kpi_pame_total?: number | null
           kpi_ppi_completed?: number | null
           kpi_rm_on_time?: boolean | null
           kpi_tests_pass_rate?: number | null
@@ -3620,12 +4286,18 @@ export type Database = {
           kpi_hp_approved?: number | null
           kpi_hp_rate_pct?: number | null
           kpi_hp_total?: number | null
+          kpi_lots_approved?: number | null
+          kpi_lots_quarantine?: number | null
+          kpi_lots_received?: number | null
+          kpi_lots_rejected?: number | null
           kpi_mat_approved?: number | null
           kpi_mat_pending?: number | null
           kpi_nc_closed_month?: number | null
           kpi_nc_open?: number | null
           kpi_nc_overdue_15d?: number | null
+          kpi_pame_approved?: number | null
           kpi_pame_rate_pct?: number | null
+          kpi_pame_total?: number | null
           kpi_ppi_completed?: number | null
           kpi_rm_on_time?: boolean | null
           kpi_tests_pass_rate?: number | null
@@ -6228,6 +6900,7 @@ export type Database = {
           map_center_lng: number | null
           map_default_zoom: number | null
           name: string
+          project_length: string | null
           start_date: string | null
           status: string
           tenant_id: string | null
@@ -6247,6 +6920,7 @@ export type Database = {
           map_center_lng?: number | null
           map_default_zoom?: number | null
           name: string
+          project_length?: string | null
           start_date?: string | null
           status?: string
           tenant_id?: string | null
@@ -6266,6 +6940,7 @@ export type Database = {
           map_center_lng?: number | null
           map_default_zoom?: number | null
           name?: string
+          project_length?: string | null
           start_date?: string | null
           status?: string
           tenant_id?: string | null
@@ -6994,6 +7669,128 @@ export type Database = {
           name?: string
         }
         Relationships: []
+      }
+      sgq_meetings: {
+        Row: {
+          action_points: Json | null
+          agenda: string | null
+          approved_at: string | null
+          approved_by: string | null
+          attendees: Json | null
+          chairman: string | null
+          code: string
+          created_at: string
+          created_by: string | null
+          decisions: string | null
+          duration_min: number | null
+          id: string
+          is_deleted: boolean
+          location: string | null
+          meeting_date: string
+          meeting_type: string
+          next_meeting: string | null
+          notes: string | null
+          project_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          action_points?: Json | null
+          agenda?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          attendees?: Json | null
+          chairman?: string | null
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          decisions?: string | null
+          duration_min?: number | null
+          id?: string
+          is_deleted?: boolean
+          location?: string | null
+          meeting_date: string
+          meeting_type?: string
+          next_meeting?: string | null
+          notes?: string | null
+          project_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          action_points?: Json | null
+          agenda?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          attendees?: Json | null
+          chairman?: string | null
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          decisions?: string | null
+          duration_min?: number | null
+          id?: string
+          is_deleted?: boolean
+          location?: string | null
+          meeting_date?: string
+          meeting_type?: string
+          next_meeting?: string | null
+          notes?: string | null
+          project_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sgq_meetings_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sgq_meetings_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "sgq_meetings_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "sgq_meetings_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "sgq_meetings_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "sgq_meetings_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_rm_kpis"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "sgq_meetings_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_sgq_matrix_summary"
+            referencedColumns: ["project_id"]
+          },
+        ]
       }
       soil_samples: {
         Row: {
@@ -12792,6 +13589,189 @@ export type Database = {
           },
         ]
       }
+      vw_fleet_annual_by_worker: {
+        Row: {
+          avg_consumption: number | null
+          avg_cost_per_km: number | null
+          cost_per_100km: number | null
+          department: string | null
+          full_name: string | null
+          months_submitted: number | null
+          plate: string | null
+          total_co2_kg: number | null
+          total_cost_eur: number | null
+          total_km: number | null
+          total_liters: number | null
+          user_id: string | null
+          vehicle_name: string | null
+          year: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fleet_submissions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "fleet_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fleet_submissions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fleet_current_month_status"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fleet_submissions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fleet_monthly_summary"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fleet_submissions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fleet_report_full"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      vw_fleet_by_department: {
+        Row: {
+          avg_consumption: number | null
+          department: string | null
+          reference_month: string | null
+          total_co2_kg: number | null
+          total_cost_eur: number | null
+          total_km: number | null
+          total_liters: number | null
+          workers: number | null
+        }
+        Relationships: []
+      }
+      vw_fleet_current_month_status: {
+        Row: {
+          co2_kg: number | null
+          cost_eur: number | null
+          department: string | null
+          email: string | null
+          full_name: string | null
+          km_total: number | null
+          liters: number | null
+          reference_month: string | null
+          status: string | null
+          submission_id: string | null
+          submitted: boolean | null
+          submitted_at: string | null
+          user_id: string | null
+          vehicle_name: string | null
+          vehicle_plate: string | null
+        }
+        Relationships: []
+      }
+      vw_fleet_kpis_by_month: {
+        Row: {
+          avg_consumption_l100km: number | null
+          avg_cost_per_km: number | null
+          reference_month: string | null
+          total_co2_kg: number | null
+          total_cost_eur: number | null
+          total_km: number | null
+          total_liters: number | null
+          total_submissions: number | null
+        }
+        Relationships: []
+      }
+      vw_fleet_monthly_comparison: {
+        Row: {
+          avg_consumption: number | null
+          co2_kg: number | null
+          cost_eur: number | null
+          cost_per_km: number | null
+          department: string | null
+          fuel_type: string | null
+          full_name: string | null
+          km_total: number | null
+          liters: number | null
+          pct_total_km: number | null
+          plate: string | null
+          rank_km: number | null
+          reference_month: string | null
+          status: string | null
+        }
+        Relationships: []
+      }
+      vw_fleet_monthly_summary: {
+        Row: {
+          avg_consumption: number | null
+          brand: string | null
+          co2_kg: number | null
+          cost_eur: number | null
+          cost_per_km: number | null
+          department: string | null
+          fuel_type: string | null
+          full_name: string | null
+          km_total: number | null
+          liters: number | null
+          model: string | null
+          plate: string | null
+          reference_month: string | null
+          status: string | null
+          submitted_at: string | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
+      vw_fleet_report_full: {
+        Row: {
+          approved_at: string | null
+          approved_by_name: string | null
+          avg_consumption: number | null
+          brand: string | null
+          co2_kg: number | null
+          cost_eur: number | null
+          cost_per_km: number | null
+          department: string | null
+          email: string | null
+          fuel_type: string | null
+          full_name: string | null
+          km_end: number | null
+          km_start: number | null
+          km_total: number | null
+          liters: number | null
+          model: string | null
+          month_label: string | null
+          month_num: number | null
+          notes: string | null
+          plate: string | null
+          price_per_liter: number | null
+          reference_month: string | null
+          status: string | null
+          submission_id: string | null
+          submitted_at: string | null
+          user_id: string | null
+          vehicle_id: string | null
+          vehicle_label: string | null
+          year: number | null
+        }
+        Relationships: []
+      }
+      vw_fleet_ytd_evolution: {
+        Row: {
+          month_num: number | null
+          monthly_co2: number | null
+          monthly_cost: number | null
+          monthly_km: number | null
+          monthly_liters: number | null
+          reference_month: string | null
+          year: number | null
+          ytd_co2: number | null
+          ytd_cost: number | null
+          ytd_km: number | null
+        }
+        Relationships: []
+      }
       vw_hp_calendar: {
         Row: {
           activity: string | null
@@ -14432,6 +15412,7 @@ export type Database = {
       }
     }
     Functions: {
+      fleet_is_manager: { Args: never; Returns: boolean }
       fn_accept_project_invite: { Args: { p_token: string }; Returns: Json }
       fn_bulk_export_tests: {
         Args: { p_ids?: string[]; p_project_id: string }
@@ -14478,6 +15459,10 @@ export type Database = {
           p_work_item_id?: string
         }
         Returns: number
+      }
+      fn_confirm_hp_by_token: {
+        Args: { p_entity: string; p_name: string; p_token: string }
+        Returns: Json
       }
       fn_create_document: {
         Args: {
@@ -15138,6 +16123,22 @@ export type Database = {
         Args: { p_months?: number; p_project_id: string }
         Returns: Json
       }
+      fn_fleet_dashboard_manager: { Args: { p_months?: number }; Returns: Json }
+      fn_fleet_dashboard_worker: {
+        Args: { p_months?: number; p_user_id: string }
+        Returns: Json
+      }
+      fn_fleet_global_report: {
+        Args: {
+          p_department?: string
+          p_fuel_type?: string
+          p_month?: number
+          p_status?: string
+          p_user_id?: string
+          p_year?: number
+        }
+        Returns: Json
+      }
       fn_generate_deadline_notifications: {
         Args: { p_days_ahead?: number; p_project_id: string }
         Returns: number
@@ -15145,6 +16146,10 @@ export type Database = {
       fn_generate_due_tests: {
         Args: { p_date_from?: string; p_date_to?: string; p_project_id: string }
         Returns: number
+      }
+      fn_hp_append_signed_doc: {
+        Args: { p_id: string; p_path: string }
+        Returns: undefined
       }
       fn_invite_project_member: {
         Args: { p_email: string; p_project_id: string; p_role?: string }
@@ -15170,6 +16175,7 @@ export type Database = {
           map_center_lng: number | null
           map_default_zoom: number | null
           name: string
+          project_length: string | null
           start_date: string | null
           status: string
           tenant_id: string | null
@@ -15341,6 +16347,7 @@ export type Database = {
               isSetofReturn: false
             }
           }
+      fn_preview_hp_by_token: { Args: { p_token: string }; Returns: Json }
       fn_project_health_kpis: { Args: { p_project_id: string }; Returns: Json }
       fn_qc_report_summary: {
         Args: { p_end_date: string; p_project_id: string; p_start_date: string }
