@@ -142,6 +142,29 @@ export const ProjectMap = forwardRef<ProjectMapHandle, Props>(function ProjectMa
     new Set(["work_item", "non_conformity", "ppi", "test_result"])
   );
 
+  // Custom KMZ/KML/GeoJSON layers per project (Atlas Map Layers system)
+  const { layers: customLayers } = useProjectMapLayers();
+  const [hiddenLayerIds, setHiddenLayerIds] = useState<Set<string>>(new Set());
+  const visibleCustomLayers = useMemo(
+    () => customLayers.filter((l) => l.visible_default && !hiddenLayerIds.has(l.id))
+                       .concat(customLayers.filter((l) => !l.visible_default && !hiddenLayerIds.has(l.id))),
+    [customLayers, hiddenLayerIds],
+  );
+  // Sync: when a layer is updated to visible_default=false in storage, hide it unless user explicitly enabled
+  useEffect(() => {
+    setHiddenLayerIds((prev) => {
+      const next = new Set(prev);
+      // remove ids that no longer exist
+      const validIds = new Set(customLayers.map((l) => l.id));
+      Array.from(next).forEach((id) => { if (!validIds.has(id)) next.delete(id); });
+      // Add ids that became hidden by default (only if user hadn't explicitly toggled)
+      customLayers.forEach((l) => {
+        if (!l.visible_default && !next.has(l.id)) next.add(l.id);
+      });
+      return next;
+    });
+  }, [customLayers]);
+
   // Project-specific alignment file (only PF17A has one shipped)
   const isPF17A = activeProject?.code?.toUpperCase() === "PF17A";
 
