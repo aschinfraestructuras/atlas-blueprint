@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback, useImperativeHandle, forwardRef } from "react";
+import { useEffect, useRef, useState, useCallback, useImperativeHandle, forwardRef, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,10 +9,12 @@ import { cn } from "@/lib/utils";
 import {
   AlertTriangle, ClipboardCheck, FlaskConical,
   Construction, Layers, RefreshCw, Navigation,
-  Train, Locate, Boxes, Flame,
+  Train, Locate, Boxes, Flame, MapPinned,
 } from "lucide-react";
 import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
+import { useProjectMapLayers } from "@/hooks/useProjectMapLayers";
+import type { ProjectMapLayer } from "@/lib/services/mapLayerService";
 
 
 export interface MapPoint {
