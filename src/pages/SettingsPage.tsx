@@ -9,8 +9,9 @@ import {
   Building2, Mail, UserCheck, Key, Database, ChevronRight, Pen,
   Plus, Trash2, UserMinus, Loader2, Sun, Moon, Monitor,
   ImageIcon, Upload, X, ClipboardList, HardDrive, Check, Eye, EyeOff, Pencil, ShieldAlert, Rocket, Wrench,
-  BarChart3, GitBranch, ExternalLink, MessageSquare, Save,
+  BarChart3, GitBranch, ExternalLink, MessageSquare, Save, Map as MapIcon,
 } from "lucide-react";
+import { MapLayersSection } from "@/components/settings/MapLayersSection";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -669,7 +670,20 @@ ${usageStats ? `
         </SettingsSection>
       )}
 
+      {/* ── 7d. Map Layers (KMZ / KML / GeoJSON) ─────────────────────── */}
+      {(isAdmin || myRole === "project_manager" || myRole === "quality_manager") && activeProject && (
+        <SettingsSection
+          icon={MapIcon}
+          title={t("settings.mapLayers.title", { defaultValue: "Camadas do Mapa" })}
+          subtitle={t("settings.mapLayers.subtitle", { defaultValue: "Carregar traçado, frentes de obra, expropriações e outras camadas geográficas (KMZ / KML / GeoJSON)" })}
+          color={MOD.plans}
+        >
+          <MapLayersSection />
+        </SettingsSection>
+      )}
+
         </TabsContent>
+
 
         {/* ═══ TAB 2 — PERFIL ══════════════════════════════════════════════ */}
         <TabsContent value="profile" className="space-y-6 mt-2">

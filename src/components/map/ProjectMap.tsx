@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback, useImperativeHandle, forwardRef } from "react";
+import { useEffect, useRef, useState, useCallback, useImperativeHandle, forwardRef, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useProject } from "@/contexts/ProjectContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,10 +9,12 @@ import { cn } from "@/lib/utils";
 import {
   AlertTriangle, ClipboardCheck, FlaskConical,
   Construction, Layers, RefreshCw, Navigation,
-  Train, Locate, Boxes, Flame,
+  Train, Locate, Boxes, Flame, MapPinned,
 } from "lucide-react";
 import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
+import { useProjectMapLayers } from "@/hooks/useProjectMapLayers";
+import type { ProjectMapLayer } from "@/lib/services/mapLayerService";
 
 
 export interface MapPoint {
@@ -139,6 +141,29 @@ export const ProjectMap = forwardRef<ProjectMapHandle, Props>(function ProjectMa
   const [activeFilters, setActiveFilters] = useState<Set<MapPoint["entity_type"]>>(
     new Set(["work_item", "non_conformity", "ppi", "test_result"])
   );
+
+  // Custom KMZ/KML/GeoJSON layers per project (Atlas Map Layers system)
+  const { layers: customLayers } = useProjectMapLayers();
+  const [hiddenLayerIds, setHiddenLayerIds] = useState<Set<string>>(new Set());
+  const visibleCustomLayers = useMemo(
+    () => customLayers.filter((l) => l.visible_default && !hiddenLayerIds.has(l.id))
+                       .concat(customLayers.filter((l) => !l.visible_default && !hiddenLayerIds.has(l.id))),
+    [customLayers, hiddenLayerIds],
+  );
+  // Sync: when a layer is updated to visible_default=false in storage, hide it unless user explicitly enabled
+  useEffect(() => {
+    setHiddenLayerIds((prev) => {
+      const next = new Set(prev);
+      // remove ids that no longer exist
+      const validIds = new Set(customLayers.map((l) => l.id));
+      Array.from(next).forEach((id) => { if (!validIds.has(id)) next.delete(id); });
+      // Add ids that became hidden by default (only if user hadn't explicitly toggled)
+      customLayers.forEach((l) => {
+        if (!l.visible_default && !next.has(l.id)) next.add(l.id);
+      });
+      return next;
+    });
+  }, [customLayers]);
 
   // Project-specific alignment file (only PF17A has one shipped)
   const isPF17A = activeProject?.code?.toUpperCase() === "PF17A";
@@ -363,6 +388,68 @@ export const ProjectMap = forwardRef<ProjectMapHandle, Props>(function ProjectMa
       sectorLayersRef.current.push(m);
     });
   }, [mapReady, showAlignment, showPKs]);
+
+  // ──────────────────────────────────────────────────────────────────
+  // Custom KMZ/KML/GeoJSON layers (Atlas Map Layers System)
+  // ──────────────────────────────────────────────────────────────────
+  const customLayerObjsRef = useRef<Map<string, any>>(new Map());
+  useEffect(() => {
+    if (!mapReady || !mapRef.current) return;
+    const { map, L } = mapRef.current;
+
+    const visibleIds = new Set(visibleCustomLayers.map((l) => l.id));
+
+    // Remove layers no longer visible
+    Array.from(customLayerObjsRef.current.entries()).forEach(([id, obj]) => {
+      if (!visibleIds.has(id)) {
+        map.removeLayer(obj);
+        customLayerObjsRef.current.delete(id);
+      }
+    });
+
+    // Add or refresh visible layers
+    visibleCustomLayers.forEach((layer) => {
+      const existing = customLayerObjsRef.current.get(layer.id);
+      // If style changed, recreate
+      const styleSig = `${layer.style.color}|${layer.style.weight}|${layer.style.opacity}|${layer.style.fillOpacity}`;
+      if (existing && existing.__atlasStyleSig === styleSig) return;
+      if (existing) { map.removeLayer(existing); customLayerObjsRef.current.delete(layer.id); }
+      if (!layer.geojson_cache) return;
+
+      const geoLayer = L.geoJSON(layer.geojson_cache, {
+        style: () => ({
+          color: layer.style.color,
+          weight: layer.style.weight,
+          opacity: layer.style.opacity,
+          fillOpacity: layer.style.fillOpacity,
+          fillColor: layer.style.color,
+        }),
+        pointToLayer: (_feature: any, latlng: any) =>
+          L.circleMarker(latlng, {
+            radius: 5,
+            color: layer.style.color,
+            weight: 2,
+            opacity: layer.style.opacity,
+            fillColor: layer.style.color,
+            fillOpacity: 0.65,
+          }),
+        onEachFeature: (feature: any, lyr: any) => {
+          const props = feature.properties ?? {};
+          const title = props.name ?? props.Name ?? props.title ?? layer.name;
+          const desc  = props.description ?? props.Description ?? "";
+          lyr.bindPopup(`<div style="padding:8px 10px;font-family:system-ui;min-width:180px;max-width:260px">
+            <p style="font-size:9px;font-weight:700;text-transform:uppercase;color:${layer.style.color};margin:0 0 4px;letter-spacing:.08em">${layer.name}</p>
+            <p style="font-size:12px;font-weight:700;color:#111;margin:0 0 4px">${String(title).slice(0, 80)}</p>
+            ${desc ? `<p style="font-size:10.5px;color:#666;margin:0;max-height:120px;overflow:auto">${String(desc).slice(0, 400)}</p>` : ""}
+          </div>`);
+        },
+      });
+      geoLayer.__atlasStyleSig = styleSig;
+      geoLayer.addTo(map);
+      customLayerObjsRef.current.set(layer.id, geoLayer);
+    });
+  }, [mapReady, visibleCustomLayers]);
+
 
   // Marcadores de dados reais (com suporte a cluster e heatmap)
   const clusterLayerRef = useRef<any>(null);
@@ -597,6 +684,40 @@ export const ProjectMap = forwardRef<ProjectMapHandle, Props>(function ProjectMa
               </button>
             );
           })}
+
+          {/* Custom KMZ/KML/GeoJSON layers — Atlas Map Layers System */}
+          {customLayers.length > 0 && (
+            <>
+              <div className="w-px h-4 bg-border/60 mx-0.5" />
+              <MapPinned className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+              {customLayers.map((layer) => {
+                const hidden = hiddenLayerIds.has(layer.id);
+                return (
+                  <button
+                    key={layer.id}
+                    onClick={() => setHiddenLayerIds((prev) => {
+                      const next = new Set(prev);
+                      if (next.has(layer.id)) next.delete(layer.id); else next.add(layer.id);
+                      return next;
+                    })}
+                    title={layer.description ?? layer.name}
+                    className={cn(
+                      "flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold border transition-all max-w-[160px]",
+                      !hidden ? "text-white border-transparent" : "bg-transparent border-border text-muted-foreground opacity-40 hover:opacity-70"
+                    )}
+                    style={!hidden ? { backgroundColor: layer.style.color, borderColor: layer.style.color } : {}}
+                  >
+                    <span
+                      className="w-2 h-2 rounded-sm flex-shrink-0"
+                      style={{ backgroundColor: hidden ? layer.style.color : "rgba(255,255,255,0.85)" }}
+                    />
+                    <span className="truncate">{layer.name}</span>
+                  </button>
+                );
+              })}
+            </>
+          )}
+
 
           <div className="ml-auto flex items-center gap-1.5">
             <button
