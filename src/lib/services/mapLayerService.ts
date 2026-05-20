@@ -95,18 +95,49 @@ export async function fileToGeoJSON(file: File, format: MapLayerFormat): Promise
   let kmlText: string;
   if (format === "kmz") {
     const zip = await JSZip.loadAsync(await file.arrayBuffer());
-    // Procurar primeiro .kml dentro do zip (normalmente doc.kml)
-    const kmlEntry = Object.values(zip.files).find((f) => !f.dir && f.name.toLowerCase().endsWith(".kml"));
+    const kmlEntry =
+      Object.values(zip.files).find((f) => !f.dir && /(^|\/)doc\.kml$/i.test(f.name)) ??
+      Object.values(zip.files).find((f) => !f.dir && f.name.toLowerCase().endsWith(".kml"));
     if (!kmlEntry) throw new Error("KMZ sem ficheiro KML interno");
-    kmlText = await kmlEntry.async("string");
+    const bytes = await kmlEntry.async("uint8array");
+    kmlText = decodeKmlBytes(bytes);
   } else {
-    kmlText = await file.text();
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    kmlText = decodeKmlBytes(bytes);
   }
+
+  // Limpar BOM + caracteres de controlo que partem o DOMParser
+  kmlText = kmlText.replace(/^\uFEFF/, "").replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, "");
 
   const dom = new DOMParser().parseFromString(kmlText, "text/xml");
   const parseError = dom.querySelector("parsererror");
-  if (parseError) throw new Error("KML inválido: " + parseError.textContent);
+  if (parseError) throw new Error("KML inválido: " + (parseError.textContent ?? "").slice(0, 240));
   return kml(dom) as GeoJSON.FeatureCollection;
+}
+
+/**
+ * Decode KML bytes respeitando o encoding declarado no prolog XML.
+ * Suporta UTF-8, UTF-16 LE/BE, Windows-1252/ISO-8859-1 (comum em PT).
+ */
+function decodeKmlBytes(bytes: Uint8Array): string {
+  if (bytes.length >= 2 && bytes[0] === 0xff && bytes[1] === 0xfe) {
+    return new TextDecoder("utf-16le").decode(bytes).replace(/encoding=["'][^"']+["']/i, 'encoding="UTF-8"');
+  }
+  if (bytes.length >= 2 && bytes[0] === 0xfe && bytes[1] === 0xff) {
+    return new TextDecoder("utf-16be").decode(bytes).replace(/encoding=["'][^"']+["']/i, 'encoding="UTF-8"');
+  }
+  const sniff = new TextDecoder("utf-8", { fatal: false }).decode(bytes.slice(0, 256)).toLowerCase();
+  const declared = sniff.match(/encoding=["']([^"']+)["']/)?.[1];
+  const tryDecode = (label: string): string | null => {
+    try { return new TextDecoder(label, { fatal: true }).decode(bytes); } catch { return null; }
+  };
+  const normalize = (s: string) => s.replace(/encoding=["'][^"']+["']/i, 'encoding="UTF-8"');
+  if (declared) {
+    const r = tryDecode(declared);
+    if (r) return normalize(r);
+  }
+  const r = tryDecode("utf-8") ?? tryDecode("windows-1252") ?? new TextDecoder("utf-8").decode(bytes);
+  return normalize(r);
 }
 
 /** List all (non-deleted) layers for a project */
