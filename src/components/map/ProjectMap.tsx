@@ -685,6 +685,40 @@ export const ProjectMap = forwardRef<ProjectMapHandle, Props>(function ProjectMa
             );
           })}
 
+          {/* Custom KMZ/KML/GeoJSON layers — Atlas Map Layers System */}
+          {customLayers.length > 0 && (
+            <>
+              <div className="w-px h-4 bg-border/60 mx-0.5" />
+              <MapPinned className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+              {customLayers.map((layer) => {
+                const hidden = hiddenLayerIds.has(layer.id);
+                return (
+                  <button
+                    key={layer.id}
+                    onClick={() => setHiddenLayerIds((prev) => {
+                      const next = new Set(prev);
+                      if (next.has(layer.id)) next.delete(layer.id); else next.add(layer.id);
+                      return next;
+                    })}
+                    title={layer.description ?? layer.name}
+                    className={cn(
+                      "flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold border transition-all max-w-[160px]",
+                      !hidden ? "text-white border-transparent" : "bg-transparent border-border text-muted-foreground opacity-40 hover:opacity-70"
+                    )}
+                    style={!hidden ? { backgroundColor: layer.style.color, borderColor: layer.style.color } : {}}
+                  >
+                    <span
+                      className="w-2 h-2 rounded-sm flex-shrink-0"
+                      style={{ backgroundColor: hidden ? layer.style.color : "rgba(255,255,255,0.85)" }}
+                    />
+                    <span className="truncate">{layer.name}</span>
+                  </button>
+                );
+              })}
+            </>
+          )}
+
+
           <div className="ml-auto flex items-center gap-1.5">
             <button
               onClick={() => setUseCluster((v) => !v)}
