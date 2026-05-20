@@ -669,7 +669,20 @@ ${usageStats ? `
         </SettingsSection>
       )}
 
+      {/* ── 7d. Map Layers (KMZ / KML / GeoJSON) ─────────────────────── */}
+      {(isAdmin || myRole === "project_manager" || myRole === "quality_manager") && activeProject && (
+        <SettingsSection
+          icon={MapIcon}
+          title={t("settings.mapLayers.title", { defaultValue: "Camadas do Mapa" })}
+          subtitle={t("settings.mapLayers.subtitle", { defaultValue: "Carregar traçado, frentes de obra, expropriações e outras camadas geográficas (KMZ / KML / GeoJSON)" })}
+          color={MOD.plans}
+        >
+          <MapLayersSection />
+        </SettingsSection>
+      )}
+
         </TabsContent>
+
 
         {/* ═══ TAB 2 — PERFIL ══════════════════════════════════════════════ */}
         <TabsContent value="profile" className="space-y-6 mt-2">
