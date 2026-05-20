@@ -9,8 +9,9 @@ import {
   Building2, Mail, UserCheck, Key, Database, ChevronRight, Pen,
   Plus, Trash2, UserMinus, Loader2, Sun, Moon, Monitor,
   ImageIcon, Upload, X, ClipboardList, HardDrive, Check, Eye, EyeOff, Pencil, ShieldAlert, Rocket, Wrench,
-  BarChart3, GitBranch, ExternalLink, MessageSquare, Save,
+  BarChart3, GitBranch, ExternalLink, MessageSquare, Save, Map as MapIcon,
 } from "lucide-react";
+import { MapLayersSection } from "@/components/settings/MapLayersSection";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
