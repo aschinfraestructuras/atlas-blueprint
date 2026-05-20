@@ -389,6 +389,68 @@ export const ProjectMap = forwardRef<ProjectMapHandle, Props>(function ProjectMa
     });
   }, [mapReady, showAlignment, showPKs]);
 
+  // ──────────────────────────────────────────────────────────────────
+  // Custom KMZ/KML/GeoJSON layers (Atlas Map Layers System)
+  // ──────────────────────────────────────────────────────────────────
+  const customLayerObjsRef = useRef<Map<string, any>>(new Map());
+  useEffect(() => {
+    if (!mapReady || !mapRef.current) return;
+    const { map, L } = mapRef.current;
+
+    const visibleIds = new Set(visibleCustomLayers.map((l) => l.id));
+
+    // Remove layers no longer visible
+    Array.from(customLayerObjsRef.current.entries()).forEach(([id, obj]) => {
+      if (!visibleIds.has(id)) {
+        map.removeLayer(obj);
+        customLayerObjsRef.current.delete(id);
+      }
+    });
+
+    // Add or refresh visible layers
+    visibleCustomLayers.forEach((layer) => {
+      const existing = customLayerObjsRef.current.get(layer.id);
+      // If style changed, recreate
+      const styleSig = `${layer.style.color}|${layer.style.weight}|${layer.style.opacity}|${layer.style.fillOpacity}`;
+      if (existing && existing.__atlasStyleSig === styleSig) return;
+      if (existing) { map.removeLayer(existing); customLayerObjsRef.current.delete(layer.id); }
+      if (!layer.geojson_cache) return;
+
+      const geoLayer = L.geoJSON(layer.geojson_cache, {
+        style: () => ({
+          color: layer.style.color,
+          weight: layer.style.weight,
+          opacity: layer.style.opacity,
+          fillOpacity: layer.style.fillOpacity,
+          fillColor: layer.style.color,
+        }),
+        pointToLayer: (_feature: any, latlng: any) =>
+          L.circleMarker(latlng, {
+            radius: 5,
+            color: layer.style.color,
+            weight: 2,
+            opacity: layer.style.opacity,
+            fillColor: layer.style.color,
+            fillOpacity: 0.65,
+          }),
+        onEachFeature: (feature: any, lyr: any) => {
+          const props = feature.properties ?? {};
+          const title = props.name ?? props.Name ?? props.title ?? layer.name;
+          const desc  = props.description ?? props.Description ?? "";
+          lyr.bindPopup(`<div style="padding:8px 10px;font-family:system-ui;min-width:180px;max-width:260px">
+            <p style="font-size:9px;font-weight:700;text-transform:uppercase;color:${layer.style.color};margin:0 0 4px;letter-spacing:.08em">${layer.name}</p>
+            <p style="font-size:12px;font-weight:700;color:#111;margin:0 0 4px">${String(title).slice(0, 80)}</p>
+            ${desc ? `<p style="font-size:10.5px;color:#666;margin:0;max-height:120px;overflow:auto">${String(desc).slice(0, 400)}</p>` : ""}
+          </div>`);
+        },
+      });
+      geoLayer.__atlasStyleSig = styleSig;
+      geoLayer.addTo(map);
+      customLayerObjsRef.current.set(layer.id, geoLayer);
+    });
+  }, [mapReady, visibleCustomLayers]);
+
+
   // Marcadores de dados reais (com suporte a cluster e heatmap)
   const clusterLayerRef = useRef<any>(null);
   const heatLayerRef = useRef<any>(null);
