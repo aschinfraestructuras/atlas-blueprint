@@ -6642,6 +6642,119 @@ export type Database = {
           },
         ]
       }
+      project_map_layers: {
+        Row: {
+          bounds: Json | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          display_order: number
+          feature_count: number | null
+          file_format: string
+          file_path: string
+          file_size_bytes: number | null
+          geojson_cache: Json | null
+          id: string
+          is_deleted: boolean
+          name: string
+          project_id: string
+          style: Json
+          type: string
+          updated_at: string
+          visible_default: boolean
+        }
+        Insert: {
+          bounds?: Json | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          display_order?: number
+          feature_count?: number | null
+          file_format: string
+          file_path: string
+          file_size_bytes?: number | null
+          geojson_cache?: Json | null
+          id?: string
+          is_deleted?: boolean
+          name: string
+          project_id: string
+          style?: Json
+          type?: string
+          updated_at?: string
+          visible_default?: boolean
+        }
+        Update: {
+          bounds?: Json | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          display_order?: number
+          feature_count?: number | null
+          file_format?: string
+          file_path?: string
+          file_size_bytes?: number | null
+          geojson_cache?: Json | null
+          id?: string
+          is_deleted?: boolean
+          name?: string
+          project_id?: string
+          style?: Json
+          type?: string
+          updated_at?: string
+          visible_default?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_map_layers_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_map_layers_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_dashboard_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_map_layers_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "view_quality_dashboard"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_map_layers_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_monthly_quality_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_map_layers_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_health"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_map_layers_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_rm_kpis"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_map_layers_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_sgq_matrix_summary"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
       project_members: {
         Row: {
           created_at: string
