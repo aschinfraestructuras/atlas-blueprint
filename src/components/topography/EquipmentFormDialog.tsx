@@ -280,7 +280,7 @@ export function EquipmentFormDialog({ open, onOpenChange, projectId, equipment, 
               <AlertDialogTitle>{t("common.confirmDelete", { defaultValue: "Confirmar eliminação" })}</AlertDialogTitle>
               <AlertDialogDescription>
                 {t("topography.confirmDeleteCalibration", {
-                  defaultValue: "Esta acção elimina permanentemente o certificado de calibração. Não pode ser revertida.",
+                  defaultValue: "Esta ação elimina permanentemente o certificado de calibração. Não pode ser revertida.",
                 })}
               </AlertDialogDescription>
             </AlertDialogHeader>

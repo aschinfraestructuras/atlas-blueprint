@@ -436,7 +436,7 @@ export function MaterialReceptionDialog({ open, onOpenChange, projectId, materia
                   <Input value={pkInstallEnd} onChange={e => setPkInstallEnd(e.target.value)} placeholder="Ex: 31+200" />
                 </div>
                 <div className="grid gap-1.5 md:col-span-2">
-                  <Label>{t("materials.reception.form.inspectionReportRef", { defaultValue: "Ref. relatório inspecção recepção" })}</Label>
+                  <Label>{t("materials.reception.form.inspectionReportRef", { defaultValue: "Ref. relatório inspeção receção" })}</Label>
                   <Input value={inspectionReportRef} onChange={e => setInspectionReportRef(e.target.value)} placeholder="Ex: RIR-2024-001" />
                 </div>
               </div>
@@ -461,7 +461,7 @@ export function MaterialReceptionDialog({ open, onOpenChange, projectId, materia
             <div className="md:col-span-2 space-y-2">
               <Label className="flex items-center gap-1.5">
                 <Camera className="h-3.5 w-3.5" />
-                {t("attachments.photos", { defaultValue: "Fotos da recepção" })}
+                {t("attachments.photos", { defaultValue: "Fotos da receção" })}
                 <span className="text-xs text-muted-foreground">(GPS automático)</span>
               </Label>
 

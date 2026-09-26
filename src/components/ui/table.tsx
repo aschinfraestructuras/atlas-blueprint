@@ -58,7 +58,7 @@ const TableFooter = React.forwardRef<
 ));
 TableFooter.displayName = "TableFooter";
 
-// ── TableRow — hover e selecção mais limpos
+// ── TableRow — hover e seleção mais limpos
 const TableRow = React.forwardRef<
   HTMLTableRowElement,
   React.HTMLAttributes<HTMLTableRowElement>

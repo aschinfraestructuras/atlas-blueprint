@@ -1,6 +1,6 @@
 /**
  * SupplierEvaluationTab — avaliação periódica de fornecedores/subcontratados
- * 4 critérios objectivos de 0-25 pontos, calculados a partir dos dados do Atlas
+ * 4 critérios objetivos de 0-25 pontos, calculados a partir dos dados do Atlas
  * Total 0-100: Aprovado ≥75 | Condicional 50-74 | Suspenso <50
  */
 import { useState, useEffect, useCallback } from "react";

@@ -113,7 +113,7 @@ function buildBody(data: WorkItemReportData): string {
     </div>`;
 
   // 1. PPIs
-  let ppiBlock = sectionTitle("1. Plano de Inspecção (PPI)");
+  let ppiBlock = sectionTitle("1. Plano de Inspeção (PPI)");
   if (!data.ppi_instances?.length) {
     ppiBlock += emptyHint("Sem PPI associados a este elemento.");
   } else {

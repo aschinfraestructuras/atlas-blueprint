@@ -1,5 +1,5 @@
 /**
- * MeetingActionsPanel — acções pendentes das reuniões SGQ
+ * MeetingActionsPanel — ações pendentes das reuniões SGQ
  * Lê dos documentos ATA-Q (form_data.decisoes) — fonte única de verdade.
  * Aparece no fundo da DocumentsPage e complementa o MeetingsTab do ET.
  */
@@ -59,7 +59,7 @@ export function MeetingActionsPanel() {
         <div className="flex items-center gap-2">
           <CalendarClock className="h-4 w-4 text-primary" />
           <span className="text-sm font-semibold">
-            {t("meetings.actionPanel.title", { defaultValue: "Plano de Acção — Reuniões SGQ" })}
+            {t("meetings.actionPanel.title", { defaultValue: "Plano de Ação — Reuniões SGQ" })}
           </span>
         </div>
         <Button variant="outline" size="sm" className="h-7 text-xs gap-1"
@@ -70,7 +70,7 @@ export function MeetingActionsPanel() {
       </div>
       <div className="py-5 text-center text-sm text-muted-foreground">
         <CheckCircle2 className="h-6 w-6 mx-auto mb-1.5 text-emerald-500 opacity-70" />
-        <p>{t("meetings.actionPanel.empty", { defaultValue: "Sem acções pendentes das reuniões ✅" })}</p>
+        <p>{t("meetings.actionPanel.empty", { defaultValue: "Sem ações pendentes das reuniões ✅" })}</p>
       </div>
     </div>
   );
@@ -82,7 +82,7 @@ export function MeetingActionsPanel() {
         <div className="flex items-center gap-2">
           <CalendarClock className="h-4 w-4 text-primary" />
           <span className="text-sm font-semibold">
-            {t("meetings.actionPanel.title", { defaultValue: "Plano de Acção — Reuniões SGQ" })}
+            {t("meetings.actionPanel.title", { defaultValue: "Plano de Ação — Reuniões SGQ" })}
           </span>
           <Badge variant="outline" className="text-[10px] bg-amber-500/10 text-amber-700 border-amber-500/30">
             {actions.length} {t("meetings.actionPanel.open", { defaultValue: "em aberto" })}
@@ -100,7 +100,7 @@ export function MeetingActionsPanel() {
           <TableHeader>
             <TableRow className="bg-muted/30">
               <TableHead className="text-xs">Acta</TableHead>
-              <TableHead className="text-xs">Acção / Decisão</TableHead>
+              <TableHead className="text-xs">Ação / Decisão</TableHead>
               <TableHead className="text-xs hidden sm:table-cell">Responsável</TableHead>
               <TableHead className="text-xs hidden sm:table-cell">Prazo</TableHead>
               <TableHead className="text-xs w-28"></TableHead>

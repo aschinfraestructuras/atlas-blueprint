@@ -1,15 +1,15 @@
 import { cn } from "@/lib/utils";
 
 interface PageHeaderProps {
-  /** Texto acima do título — ex: "INSPECÇÕES PPI" */
+  /** Texto acima do título — ex: "INSPEÇÕES PPI" */
   eyebrow?: string;
   /** Título principal da página */
   title: string;
-  /** Subtítulo / contexto — ex: "Linha do Sul — PF17A · 1 inspecção" */
+  /** Subtítulo / contexto — ex: "Linha do Sul — PF17A · 1 inspeção" */
   subtitle?: string;
   /** Ícone ou elemento à esquerda do título */
   icon?: React.ElementType;
-  /** Acções à direita (botões, filtros, etc.) */
+  /** Ações à direita (botões, filtros, etc.) */
   actions?: React.ReactNode;
   /** Classes adicionais */
   className?: string;
@@ -57,7 +57,7 @@ export function PageHeader({
         )}
       </div>
 
-      {/* Lado direito — acções */}
+      {/* Lado direito — ações */}
       {actions && (
         <div className="flex items-center gap-2 flex-shrink-0">
           {actions}

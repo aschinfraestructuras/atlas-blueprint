@@ -89,6 +89,10 @@ export function HealthScoreSheet({ open, onOpenChange, health, loading }: Props)
     return `${row.value}%`;
   }
 
+  const penalties = Object.entries(health.score_breakdown ?? {})
+    .filter(([, pts]) => Number(pts) > 0)
+    .sort((a, b) => Number(b[1]) - Number(a[1]));
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="w-full sm:max-w-md overflow-y-auto">
@@ -107,6 +111,27 @@ export function HealthScoreSheet({ open, onOpenChange, health, loading }: Props)
             {t(`health.${health.health_status}`)}
           </Badge>
         </SheetHeader>
+
+        {/* Como o índice foi calculado: pontos descontados por componente */}
+        <div className="rounded-lg border border-border bg-muted/30 p-3 mb-4">
+          <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground mb-2">
+            {t("health.breakdownTitle", { defaultValue: "Pontos descontados" })}
+          </p>
+          {penalties.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              {t("health.breakdownNone", { defaultValue: "Sem alertas: nenhum ponto descontado." })}
+            </p>
+          ) : (
+            <ul className="space-y-1">
+              {penalties.map(([key, pts]) => (
+                <li key={key} className="flex items-center justify-between text-sm">
+                  <span className="text-foreground">{t(`health.penalty.${key}`, { defaultValue: key })}</span>
+                  <span className="font-bold tabular-nums text-destructive">−{pts}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
 
         <div className="space-y-1.5 mt-2">
           {rows.map((row) => {

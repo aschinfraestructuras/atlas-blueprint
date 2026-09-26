@@ -279,7 +279,7 @@ function FieldRecordFormDialog({ open, onOpenChange, onSuccess, projectId, userI
               </div>
               {/* Actividade */}
               <div className="col-span-2">
-                <label className="text-xs font-medium text-muted-foreground">{t("fieldRecords.form.activity", { defaultValue: "Actividade / Trabalho Inspeccionado" })} *</label>
+                <label className="text-xs font-medium text-muted-foreground">{t("fieldRecords.form.activity", { defaultValue: "Actividade / Trabalho Inspecionado" })} *</label>
                 <Input className="mt-1" value={form.activity} onChange={e => setF("activity", e.target.value)}
                   placeholder={t("fieldRecords.form.activityPlaceholder", { defaultValue: "Ex: Compactação de aterro — camada 3" })} />
               </div>
@@ -306,7 +306,7 @@ function FieldRecordFormDialog({ open, onOpenChange, onSuccess, projectId, userI
                     <SelectItem value="via_ferrea">Via Férrea, AMV e Soldadura (PPI-03)</SelectItem>
                     <SelectItem value="psr">PSR Cachofarra e Restabelecimento R1 (PPI-04)</SelectItem>
                     <SelectItem value="catenaria">Catenária e OFE — LP10/LCS (PPI-05)</SelectItem>
-                    <SelectItem value="rct">RCT, Terras e Protecções (PPI-06)</SelectItem>
+                    <SelectItem value="rct">RCT, Terras e Proteções (PPI-06)</SelectItem>
                     <SelectItem value="st">S&T — Supressão PN PK 31+670 (PPI-07)</SelectItem>
                     <SelectItem value="obras_arte">Obras de Arte e PHs (PPI-08)</SelectItem>
                     <SelectItem value="construcao_civil">Edificações e Construção Civil (PPI-09)</SelectItem>
@@ -575,7 +575,7 @@ export default function FieldRecordsPage() {
           <div className="flex items-center gap-2 mb-1">
             <ClipboardCheck className="h-4 w-4 text-muted-foreground" />
             <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
-              {t("fieldRecords.category", { defaultValue: "Inspecção de Campo" })}
+              {t("fieldRecords.category", { defaultValue: "Inspeção de Campo" })}
             </p>
           </div>
           <h1 className="text-2xl font-extrabold tracking-tight text-foreground">
@@ -681,7 +681,7 @@ export default function FieldRecordsPage() {
                             via_ferrea: "Via Férrea",
                             psr: "PSR / Restabelecimento",
                             catenaria: "Catenária",
-                            rct: "RCT / Protecções",
+                            rct: "RCT / Proteções",
                             st: "S&T",
                             obras_arte: "Obras de Arte",
                             construcao_civil: "Construção Civil",

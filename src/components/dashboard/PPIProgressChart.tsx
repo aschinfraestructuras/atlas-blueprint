@@ -69,10 +69,10 @@ export function PPIProgressChart() {
     >
       <CardHeader className="pb-1 pt-4 px-5">
         <CardTitle className="text-[11px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
-          {t("dashboard.charts.ppiProgress", { defaultValue: "Inspecções PPI" })}
+          {t("dashboard.charts.ppiProgress", { defaultValue: "Inspeções PPI" })}
         </CardTitle>
         <p className="text-[9px] text-muted-foreground/60">
-          {t("dashboard.charts.ppiProgressSub", { defaultValue: "Estado geral das inspecções" })}
+          {t("dashboard.charts.ppiProgressSub", { defaultValue: "Estado geral das inspeções" })}
         </p>
       </CardHeader>
       <CardContent className="px-5 pb-4">
@@ -92,7 +92,7 @@ export function PPIProgressChart() {
               />
             </div>
             <p className="text-[10px] text-muted-foreground mt-1.5">
-              {kpis.approved_count} / {kpis.total} {t("dashboard.charts.inspCompleted", { defaultValue: "inspecções concluídas" })}
+              {kpis.approved_count} / {kpis.total} {t("dashboard.charts.inspCompleted", { defaultValue: "inspeções concluídas" })}
             </p>
           </>
         )}

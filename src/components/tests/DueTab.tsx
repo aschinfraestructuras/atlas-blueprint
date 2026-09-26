@@ -101,8 +101,8 @@ export function DueTab() {
       if (disc !== filterDisciplina) return false;
     }
     // Filtro por origem (lote automático vs manual)
-    if (filterOrigin === "lot" && !(d.due_reason ?? "").startsWith("Recepção lote")) return false;
-    if (filterOrigin === "manual" && (d.due_reason ?? "").startsWith("Recepção lote")) return false;
+    if (filterOrigin === "lot" && !/^Recep?ção lote/.test(d.due_reason ?? "")) return false;
+    if (filterOrigin === "manual" && /^Recep?ção lote/.test(d.due_reason ?? "")) return false;
     // Pesquisa livre
     if (!search) return true;
     const q = search.toLowerCase();
@@ -359,7 +359,7 @@ export function DueTab() {
                       {!wi && !act && "—"}
                     </TableCell>
                     <TableCell className="text-xs text-muted-foreground">
-                      {(item.due_reason ?? "").startsWith("Recepção lote") ? (
+                      {/^Recep?ção lote/.test(item.due_reason ?? "") ? (
                         <span className="inline-flex items-center gap-1 rounded-full bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800 px-1.5 py-0.5 text-[10px] font-medium">
                           📦 {item.due_reason}
                         </span>

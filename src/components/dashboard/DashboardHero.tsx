@@ -91,7 +91,7 @@ export function DashboardHero({
     },
     {
       icon: ClipboardCheck,
-      label: t("dashboard.module.ppi", { defaultValue: "Inspecções PPI" }),
+      label: t("dashboard.module.ppi", { defaultValue: "Inspeções PPI" }),
       value: kpis.ppiApproved,
       ratio: kpis.ppiTotal > 0 ? `/ ${kpis.ppiTotal}` : undefined,
       hint: `${ppiPct}% ${t("dashboard.moduleSub.approved", { defaultValue: "aprovados" })}`,

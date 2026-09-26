@@ -1,6 +1,6 @@
 /**
  * MAP LAYER SERVICE
- * CRUD para camadas geográficas (KMZ/KML/GeoJSON) por projecto.
+ * CRUD para camadas geográficas (KMZ/KML/GeoJSON) por projeto.
  *
  * Estratégia de conversão:
  *  - Ficheiro original é guardado no bucket `map-layers` em `{project_id}/{layer_id}.{ext}`

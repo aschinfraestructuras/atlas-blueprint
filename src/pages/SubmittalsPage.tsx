@@ -589,7 +589,7 @@ export default function SubmittalsPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>{t("common.deleteConfirmTitle", { defaultValue: "Confirmar eliminação" })}</AlertDialogTitle>
             <AlertDialogDescription>
-              {t("submittals.deleteConfirm", { defaultValue: "Esta acção elimina o submittal. Confirmar?" })}
+              {t("submittals.deleteConfirm", { defaultValue: "Esta ação elimina o submittal. Confirmar?" })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

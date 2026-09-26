@@ -57,7 +57,7 @@ function PpiSeedSection({ projectId }: { projectId: string }) {
     try {
       const result = await ppiSeedService.seedAllTemplates(projectId, user.id);
       if (result.created === 0 && result.skipped > 0) {
-        toast.info(t("settings.ppiAlreadyImported", { defaultValue: "Templates PPI já existem neste projecto." }));
+        toast.info(t("settings.ppiAlreadyImported", { defaultValue: "Templates PPI já existem neste projeto." }));
       } else {
         toast.success(t("settings.ppiImportSuccess", { defaultValue: `${result.created} templates importados com ${result.itemsCreated} itens.` }));
       }
@@ -290,7 +290,7 @@ function ProjectMetadataEditor({ projectId, project, onSaved }: {
 
   return (
     <div className="space-y-3 py-3 border-b border-border/50">
-      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{t("settings.project.metadata", { defaultValue: "Dados do Projecto (PDF)" })}</p>
+      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{t("settings.project.metadata", { defaultValue: "Dados do Projeto (PDF)" })}</p>
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1">
           <Label className="text-xs">{t("settings.project.contractor")}</Label>
@@ -445,7 +445,7 @@ export default function SettingsPage() {
         }
         const result = await memberService.createMember(activeProject.id, inviteEmail.trim(), invitePassword, inviteRole);
         if (result.status === "added_existing") {
-          toast.success(t("settings.members.addedDirectly", { defaultValue: "Utilizador existente adicionado ao projecto." }));
+          toast.success(t("settings.members.addedDirectly", { defaultValue: "Utilizador existente adicionado ao projeto." }));
         } else {
           toast.success(t("settings.members.accountCreated", { defaultValue: "Conta criada com sucesso. O membro pode agora aceder com o email e senha definidos." }));
         }
@@ -453,7 +453,7 @@ export default function SettingsPage() {
         // Email invite via Supabase built-in invite system
         const result = await memberService.inviteByEmail(activeProject.id, inviteEmail.trim(), inviteRole);
         if (result.status === "added_existing") {
-          toast.success(t("settings.members.addedDirectly", { defaultValue: "Utilizador existente adicionado ao projecto." }));
+          toast.success(t("settings.members.addedDirectly", { defaultValue: "Utilizador existente adicionado ao projeto." }));
         } else {
           toast.success(t("settings.members.inviteEmailSent", { defaultValue: "Convite enviado por email. O utilizador receberá um link para configurar a sua conta." }));
         }
@@ -466,7 +466,7 @@ export default function SettingsPage() {
     } catch (err: any) {
       const msg = err?.message || err?.toString() || "";
       if (msg.includes("already an active member")) {
-        toast.error(t("settings.members.alreadyMember", { defaultValue: "Este utilizador já é membro activo deste projecto." }));
+        toast.error(t("settings.members.alreadyMember", { defaultValue: "Este utilizador já é membro activo deste projeto." }));
       } else {
         const classified = classifySupabaseError(err, t);
         toast.error(classified.title, { description: classified.description ?? classified.raw });
@@ -568,14 +568,14 @@ export default function SettingsPage() {
       {/* ── Navegação por tabs ─────────────────────────────────────────── */}
       <Tabs defaultValue="project" className="space-y-4">
         <TabsList className="grid w-full grid-cols-5 h-10">
-          <TabsTrigger value="project"    className="gap-1.5 text-xs"><Building2   className="h-3.5 w-3.5 flex-shrink-0 hidden sm:block" /><span>{t("pages.settings.tabs.project",  { defaultValue: "Projecto" })}</span></TabsTrigger>
+          <TabsTrigger value="project"    className="gap-1.5 text-xs"><Building2   className="h-3.5 w-3.5 flex-shrink-0 hidden sm:block" /><span>{t("pages.settings.tabs.project",  { defaultValue: "Projeto" })}</span></TabsTrigger>
           <TabsTrigger value="profile"    className="gap-1.5 text-xs"><UserCheck   className="h-3.5 w-3.5 flex-shrink-0 hidden sm:block" /><span>{t("pages.settings.tabs.profile",  { defaultValue: "Perfil" })}</span></TabsTrigger>
           <TabsTrigger value="members"    className="gap-1.5 text-xs"><Users       className="h-3.5 w-3.5 flex-shrink-0 hidden sm:block" /><span>{t("pages.settings.tabs.members",  { defaultValue: "Membros" })}</span></TabsTrigger>
           <TabsTrigger value="signatures" className="gap-1.5 text-xs"><Pen         className="h-3.5 w-3.5 flex-shrink-0 hidden sm:block" /><span>{t("pages.settings.tabs.signatures", { defaultValue: "Assinaturas" })}</span></TabsTrigger>
           <TabsTrigger value="system"     className="gap-1.5 text-xs"><ShieldCheck className="h-3.5 w-3.5 flex-shrink-0 hidden sm:block" /><span>{t("pages.settings.tabs.system",   { defaultValue: "Sistema" })}</span></TabsTrigger>
         </TabsList>
 
-        {/* ═══ TAB 1 — PROJECTO ════════════════════════════════════════════ */}
+        {/* ═══ TAB 1 — PROJETO ════════════════════════════════════════════ */}
         <TabsContent value="project" className="space-y-6 mt-2">
       {/* ── 1. Project Settings ──────────────────────────────────────── */}
       <SettingsSection icon={Building2} title={s("project.title")} subtitle={s("project.subtitle")} color={MOD.projects} badge={activeProject ? s("project.badgeActive") : undefined}>
@@ -592,7 +592,7 @@ export default function SettingsPage() {
             const ap = activeProject as any;
             const date = new Date().toLocaleDateString("pt-PT");
             const html = `<!DOCTYPE html><html><head><meta charset="utf-8">
-<title>Ficha do Projecto — ${activeProject.code}</title>
+<title>Ficha do Projeto — ${activeProject.code}</title>
 <style>
   @media print { body { margin: 0; } }
   body { margin: 0; font-family: Arial, Helvetica, sans-serif; font-size: 12px; padding: 20px; }
@@ -608,12 +608,12 @@ export default function SettingsPage() {
     <div style="font-size: 10px; color: #6b7280;">Código: ${activeProject.code}</div>
   </div>
   <div style="text-align: right; font-size: 10px; color: #6b7280;">
-    <div>Ficha do Projecto</div>
+    <div>Ficha do Projeto</div>
     <div>${date}</div>
     <div>Gerado por: ${user?.email ?? "—"}</div>
   </div>
 </div>
-<div class="section">Dados do Projecto</div>
+<div class="section">Dados do Projeto</div>
 <table>
   <tr><th style="width:180px;">Campo</th><th>Valor</th></tr>
   <tr><td>Nome</td><td>${activeProject.name ?? "—"}</td></tr>
@@ -665,7 +665,7 @@ ${usageStats ? `
 
       {/* ── 7c. Contacts & Notifications ─────────────────────────────── */}
       {(isAdmin || myRole === "quality_manager") && activeProject && (
-        <SettingsSection icon={Mail} title={t("settings.contactsTab", { defaultValue: "Contactos & Notificações" })} subtitle={t("settings.contactsTabDesc", { defaultValue: "Gerir contactos do projecto e listas de distribuição para notificações" })} color="hsl(252, 55%, 45%)">
+        <SettingsSection icon={Mail} title={t("settings.contactsTab", { defaultValue: "Contactos & Notificações" })} subtitle={t("settings.contactsTabDesc", { defaultValue: "Gerir contactos do projeto e listas de distribuição para notificações" })} color="hsl(252, 55%, 45%)">
           <ContactsNotificationsSection projectId={activeProject.id} />
         </SettingsSection>
       )}
@@ -1255,8 +1255,8 @@ ${usageStats ? `
       {(isAdmin || myRole === "project_manager") && (
         <SettingsSection
           icon={Building2}
-          title={t("settings.multiProject.title", { defaultValue: "Visão Multi-Projecto" })}
-          subtitle={t("settings.multiProject.subtitle", { defaultValue: "Indicadores executivos comparativos entre todas as obras (apenas projectos activos e arquivados)" })}
+          title={t("settings.multiProject.title", { defaultValue: "Visão Multi-Projeto" })}
+          subtitle={t("settings.multiProject.subtitle", { defaultValue: "Indicadores executivos comparativos entre todas as obras (apenas projetos activos e arquivados)" })}
           color={MOD.projects}
         >
           <MultiProjectOverview />

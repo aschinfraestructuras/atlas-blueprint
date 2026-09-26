@@ -49,7 +49,7 @@ export function teamsHpCreated(opts: {
     event_type: "hp_created",
     urgency: "high",
     title: `NOT-HP criada — ${opts.hpCode}`,
-    summary: `Nova notificação de Hold Point registada no Atlas QMS. A Fiscalização/IP deve confirmar até 48h antes da inspecção.`,
+    summary: `Nova notificação de Hold Point registada no Atlas QMS. A Fiscalização/IP deve confirmar até 48h antes da inspeção.`,
     details: {
       "Referência":    opts.hpCode,
       "PPI":           opts.ppiRef,

@@ -40,7 +40,7 @@ const DOC_TYPE_LABELS: Record<string, string> = {
   nc:           "Não Conformidades (RNC)",
   hp_notification: "Notificação Hold Point",
   weld:         "Ficha de Soldadura",
-  ppi:          "Plano de Pontos de Inspecção (PPI)",
+  ppi:          "Plano de Pontos de Inspeção (PPI)",
   field_record: "Boletim de Ensaio de Campo",
   compaction:   "Ensaio de Compactação",
   soil:         "Ensaio de Solo / Proctor",

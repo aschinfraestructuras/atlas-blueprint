@@ -410,7 +410,7 @@ export default function NonConformitiesPage() {
         </div>
       )}
 
-      {/* ── Tabs: Lista / Análise / Plano de Acções ─────────────────── */}
+      {/* ── Tabs: Lista / Análise / Plano de Ações ─────────────────── */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="h-9 p-1 bg-muted/50 rounded-xl border border-border/40 gap-0.5">
           <TabsTrigger value="list" className="gap-1.5 text-xs font-semibold rounded-lg data-[state=active]:shadow-sm">
@@ -421,7 +421,7 @@ export default function NonConformitiesPage() {
             <BarChart3 className="h-3 w-3" />{t("nc.tab.analysis", { defaultValue: "Análise" })}
           </TabsTrigger>
           <TabsTrigger value="action_plan" className="gap-1.5 text-xs font-semibold rounded-lg data-[state=active]:shadow-sm">
-            <ClipboardList className="h-3 w-3" />{t("nc.tab.actionPlan", { defaultValue: "Plano de Acções" })}
+            <ClipboardList className="h-3 w-3" />{t("nc.tab.actionPlan", { defaultValue: "Plano de Ações" })}
             {overdueNcs.length > 0 && <span className="ml-1 text-[9px] bg-destructive/20 text-destructive px-1.5 py-0 rounded-full font-bold">{overdueNcs.length}</span>}
           </TabsTrigger>
         </TabsList>
@@ -980,7 +980,7 @@ export default function NonConformitiesPage() {
         </TabsContent>
 
         <TabsContent value="action_plan" className="mt-4">
-      {/* ── Tab: Plano de Acções ─────────────────────────────────────── */}
+      {/* ── Tab: Plano de Ações ─────────────────────────────────────── */}
       {!loading && (
         <div className="space-y-3">
           {overdueNcs.length > 0 && (

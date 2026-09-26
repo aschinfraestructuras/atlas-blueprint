@@ -215,7 +215,7 @@ export const PF17A_PLAN_SEED: PlanSeedEntry[] = [
   // Tomo 7.1 – Catenária
   { code: "PF17A_PE_07_01_MDJ_03", title: "Memória Descritiva e Justificativa - Catenária", plan_type: "MS", discipline: "catenaria", doc_reference: "10004078642", revision: "03", notes: "Vol.07 Tomo 7.1 – Catenária", piece_type: "PE" },
   { code: "PF17A_PE_07_01_CT_03", title: "Caderno de Encargos e Cláusulas Técnicas - Catenária", plan_type: "Other", discipline: "catenaria", doc_reference: "10004078645", revision: "03", notes: "Vol.07 Tomo 7.1 – Catenária", piece_type: "PE" },
-  { code: "PF17A_PE_07_01_001_02", title: "Esquema Eléctrico - Catenária", plan_type: "Drawing", discipline: "catenaria", doc_reference: "10004078646", revision: "02", notes: "Vol.07 Tomo 7.1 – Catenária", piece_type: "PD" },
+  { code: "PF17A_PE_07_01_001_02", title: "Esquema Elétrico - Catenária", plan_type: "Drawing", discipline: "catenaria", doc_reference: "10004078646", revision: "02", notes: "Vol.07 Tomo 7.1 – Catenária", piece_type: "PD" },
   { code: "PF17A_PE_07_01_101_04", title: "Planta de Piquetagem - Poste 30-33 a Poste 32-12 - Linha do Sul", plan_type: "Drawing", discipline: "catenaria", doc_reference: "10004078647", revision: "04", notes: "Vol.07 Tomo 7.1 – Catenária", piece_type: "PD" },
 
   // Tomo 7.3 – RCT + TP

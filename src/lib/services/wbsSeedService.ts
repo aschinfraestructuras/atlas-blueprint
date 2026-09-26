@@ -60,7 +60,7 @@ const WBS_PF17A: WbsSeedNode[] = [
       {
         wbs_code: "7", description: "Retorno de Corrente e Terra", children: [
           { wbs_code: "7.1", description: "RCT — Cabos de Retorno" },
-          { wbs_code: "7.2", description: "TP — Terra de Protecção" },
+          { wbs_code: "7.2", description: "TP — Terra de Proteção" },
         ],
       },
       {
@@ -86,7 +86,7 @@ const WBS_PF17A: WbsSeedNode[] = [
       },
       {
         wbs_code: "11", description: "Acabamentos e Ensaios Finais", children: [
-          { wbs_code: "11.1", description: "Limpeza e Inspecção Final" },
+          { wbs_code: "11.1", description: "Limpeza e Inspeção Final" },
           { wbs_code: "11.2", description: "Ensaios de Interoperabilidade" },
           { wbs_code: "11.3", description: "Levantamento Topográfico Final" },
         ],

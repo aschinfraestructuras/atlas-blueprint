@@ -224,7 +224,7 @@ export default function DashboardPage() {
     return () => { cancelled = true; };
   }, [activeProject]);
 
-  // Viewers são redirecionados automaticamente para o Portal Direcção de Obra
+  // Viewers são redirecionados automaticamente para o Portal Direção de Obra
   useEffect(() => {
     if (role === "viewer") {
       navigate("/direction-portal", { replace: true });
@@ -270,7 +270,7 @@ export default function DashboardPage() {
 
   const modules = [
     { icon: AlertTriangle,  label: t("dashboard.module.nc",        { defaultValue: "Não Conformidades" }), value: kpis.ncOpen,        total: undefined,         status: ncStatus,    sub: kpis.ncOpen > 0 ? `${kpis.ncOpen} ${t("dashboard.moduleSub.ncOpen", { defaultValue: "em aberto" })}` : t("dashboard.moduleSub.noAlerts", { defaultValue: "Sem alertas" }),         route: "/non-conformities" },
-    { icon: ClipboardCheck, label: t("dashboard.module.ppi",       { defaultValue: "Inspecções PPI" }),    value: kpis.ppiApproved,   total: kpis.ppiTotal,     status: ppiStatus,   sub: `${ppiPct}% ${t("dashboard.moduleSub.approved", { defaultValue: "aprovados" })}`,                                                route: "/ppi" },
+    { icon: ClipboardCheck, label: t("dashboard.module.ppi",       { defaultValue: "Inspeções PPI" }),    value: kpis.ppiApproved,   total: kpis.ppiTotal,     status: ppiStatus,   sub: `${ppiPct}% ${t("dashboard.moduleSub.approved", { defaultValue: "aprovados" })}`,                                                route: "/ppi" },
     { icon: FlaskConical,   label: t("dashboard.module.tests",     { defaultValue: "Ensaios" }),           value: kpis.testsCompleted,total: kpis.testsTotal,   status: testsStatus, sub: `${testsPct}% ${t("dashboard.moduleSub.completed", { defaultValue: "realizados" })}`,                                             route: "/tests" },
     { icon: Package,        label: t("dashboard.module.materials", { defaultValue: "Materiais PAME" }),    value: kpis.pamePending,   total: undefined,         status: matStatus,   sub: kpis.pamePending === 0 ? t("dashboard.moduleSub.allApproved", { defaultValue: "Tudo aprovado" }) : `${kpis.pamePending} ${t("dashboard.moduleSub.pending", { defaultValue: "pend." })}`, route: "/materials" },
   ];
@@ -363,7 +363,7 @@ export default function DashboardPage() {
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">
               {t("health.score", { defaultValue: "Health Score" })}
             </p>
-            <p className="text-[11px] text-muted-foreground/60 max-w-[280px] leading-relaxed">
+            <p className="text-xs text-muted-foreground max-w-[300px] leading-relaxed">
               {t("health.explanation", { defaultValue: "Score calculado com base em NCs, PPIs, ensaios e materiais" })}
             </p>
             <Button
@@ -413,10 +413,10 @@ export default function DashboardPage() {
 
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5 mb-0.5">
-              <p className="text-[9px] font-extrabold uppercase tracking-[0.22em] text-muted-foreground/70">
+              <p className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-muted-foreground">
                 {t("dashboard.mapCta.eyebrow", { defaultValue: "Georreferenciação" })}
               </p>
-              <Badge variant="outline" className="h-4 px-1.5 text-[8px] font-bold uppercase tracking-wider border-emerald-500/30 text-emerald-600 bg-emerald-500/5">
+              <Badge variant="outline" className="h-4 px-1.5 text-[10px] font-bold uppercase tracking-wider border-emerald-500/30 text-emerald-600 bg-emerald-500/5">
                 {t("dashboard.mapCta.live", { defaultValue: "Live" })}
               </Badge>
             </div>
@@ -489,21 +489,20 @@ export default function DashboardPage() {
           {/* Linha 2 — Visão Integrada de Qualidade (radar + breakdown) */}
           <QualityOverviewChart
             ncOpen={kpis.ncOpen}
-            ncTotal={kpis.ncOpen + (kpis.testsCompleted > 0 ? kpis.testsCompleted : 1)}
+            ncOverdue={kpis.ncOverdue15d}
             ppiApproved={kpis.ppiApproved}
             ppiTotal={kpis.ppiTotal}
             testsCompleted={kpis.testsCompleted}
             testsTotal={kpis.testsTotal}
             matApproved={kpis.matApproved}
             matTotal={kpis.matTotal}
-            healthScore={health.health_score}
             loading={kpiLoading || healthLoading}
           />
 
           {/* Linha 3 — KPIs SGQ + Quality Checklist (visual, inspirado no Apple-tier mockup) */}
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-4">
             <div>
-              <p className="text-[9px] font-extrabold uppercase tracking-[0.22em] text-muted-foreground/50 mb-2.5 flex items-center gap-1.5">
+              <p className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-muted-foreground mb-2.5 flex items-center gap-1.5">
                 <ShieldCheck className="h-3 w-3" />{t("dashboard.sgqKpi.title", { defaultValue: "KPIs do SGQ — Anx. D" })}
               </p>
               <SgqKpiCards projectId={activeProject.id} />
@@ -511,7 +510,6 @@ export default function DashboardPage() {
 
             <QualityChecklistCard
               loading={kpiLoading || healthLoading}
-              globalPct={health.health_score}
               items={[
                 {
                   key: "nc",
@@ -554,14 +552,14 @@ export default function DashboardPage() {
         <TabsContent value="trends" className="space-y-5 mt-4">
           {/* Sparklines mensais reais — substitui os 3 ProgressCircle estáticos */}
           <div>
-            <p className="text-[9px] font-extrabold uppercase tracking-[0.22em] text-muted-foreground/50 mb-3 flex items-center gap-1.5">
+            <p className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-muted-foreground mb-3 flex items-center gap-1.5">
               <TrendingUp className="h-3 w-3" />{t("dashboard.trends.last6Months", { defaultValue: "Tendência — Últimos 6 meses" })}
             </p>
             <MonthlyTrendCards />
           </div>
 
           <div>
-            <p className="text-[9px] font-extrabold uppercase tracking-[0.22em] text-muted-foreground/50 mb-3 flex items-center gap-1.5">
+            <p className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-muted-foreground mb-3 flex items-center gap-1.5">
               <BarChart3 className="h-3 w-3" />{t("dashboard.trends.monthly", { defaultValue: "Tendência Mensal" })}
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
@@ -601,7 +599,7 @@ export default function DashboardPage() {
                   </div>
                   <div className="min-w-0">
                     <p className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-muted-foreground">{label}</p>
-                    <p className="text-[9px] sm:text-[10px] text-muted-foreground/60 mt-0.5">{sub}</p>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">{sub}</p>
                   </div>
                   {badge && <Badge variant={danger ? "destructive" : "secondary"} className="text-[10px] sm:text-[11px] font-black px-2">{badge}</Badge>}
                   <ArrowRight className="h-3.5 w-3.5 text-muted-foreground/0 group-hover:text-muted-foreground/50 transition-all" />
@@ -610,7 +608,7 @@ export default function DashboardPage() {
             ))}
           </div>
           <div>
-            <p className="text-[9px] font-extrabold uppercase tracking-[0.25em] text-muted-foreground/50 mb-3">{t("dashboard.modules", { defaultValue: "Acesso a Módulos" })}</p>
+            <p className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-muted-foreground mb-3">{t("dashboard.modules", { defaultValue: "Acesso a Módulos" })}</p>
             <ModuleShortcuts />
           </div>
         </TabsContent>

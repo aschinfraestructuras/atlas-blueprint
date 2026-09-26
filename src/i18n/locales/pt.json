@@ -83,7 +83,7 @@
     "pendingStatus": "Pendente",
     "allActivities": "Todas as atividades",
     "searchPlaceholder": "Pesquisar...",
-    "deleteWarning": "Atenção: esta acção é irreversível.",
+    "deleteWarning": "Atenção: esta ação é irreversível.",
     "end": "Fim",
     "import": "Importar",
     "start": "Início",
@@ -94,10 +94,10 @@
     "pkTo": "PK Fim",
     "apply": "Aplicar",
     "locale": "pt-PT",
-    "active": "Activo",
+    "active": "Ativo",
     "allTypes": "Todos os tipos",
     "clearFilters": "Limpar filtros",
-    "inactive": "Inactivo",
+    "inactive": "Inativo",
     "noResults": "Sem resultados",
     "none": "Nenhum",
     "openNewTab": "Abrir em novo separador",
@@ -105,9 +105,9 @@
     "preview": "Pré-visualizar",
     "previewExportPdf": "Pré-visualizar / Exportar PDF",
     "print": "Imprimir",
-    "refresh": "Actualizar",
+    "refresh": "Atualizar",
     "saveError": "Erro ao guardar",
-    "select": "Seleccionar",
+    "select": "Selecionar",
     "total": "Total",
     "viewDetails": "Ver detalhes"
   },
@@ -191,8 +191,8 @@
       "configuration": "Configuração"
     },
     "dashboard": "Painel Geral",
-    "directionPortal": "Portal Direcção de Obra",
-    "projects": "Projectos",
+    "directionPortal": "Portal Direção de Obra",
+    "projects": "Projetos",
     "documents": "Documentos",
     "suppliers": "Fornecedores",
     "materials": "Materiais",
@@ -266,14 +266,14 @@
     "screensaver": "Protector"
   },
   "projectSelector": {
-    "eyebrow": "Atlas QMS · Selecção de Obra",
+    "eyebrow": "Atlas QMS · Seleção de Obra",
     "qmsLabel": "Quality Management",
     "greetingMorning": "Bom dia",
     "greetingAfternoon": "Boa tarde",
     "greetingEvening": "Boa noite",
-    "subtitle": "Seleccione a obra em que pretende trabalhar. Cada projecto mantém o seu próprio painel de qualidade, conformidade e rastreabilidade.",
+    "subtitle": "Selecione a obra em que pretende trabalhar. Cada projeto mantém o seu próprio painel de qualidade, conformidade e rastreabilidade.",
     "searchPlaceholder": "Pesquisar por nome, código, cliente…",
-    "filterActive": "Activos",
+    "filterActive": "Ativos",
     "filterArchived": "Arquivados",
     "lastAccess": "Último acesso",
     "neverOpened": "Ainda não aberto",
@@ -302,7 +302,7 @@
   "dashboard": {
     "live": "live",
     "justNow": "agora",
-    "quickActionsLabel": "Acções rápidas",
+    "quickActionsLabel": "Ações rápidas",
     "heroChip": {
       "client": "Cliente",
       "contractor": "Empreiteiro",
@@ -382,7 +382,7 @@
       "ppiTotal": "PPIs Registados",
       "ppiApproved": "{count} aprovados",
       "weldsPendingUtShort": "Soldaduras s/ US",
-      "pendingInspection": "Pendentes de inspecção",
+      "pendingInspection": "Pendentes de inspeção",
       "testsCompleted": "Ensaios Feitos"
     },
     "period": {
@@ -398,8 +398,8 @@
       "materials": "Materiais Aprovados (PAME)"
     },
     "recent": {
-      "title": "Actividade Recente",
-      "empty": "Sem actividade recente"
+      "title": "Atividade Recente",
+      "empty": "Sem atividade recente"
     },
     "modules": "Módulos",
     "sgqKpi": {
@@ -436,7 +436,7 @@
       "workProgress": "Progresso de Obra",
       "workProgressSub": "Elementos por estado",
       "ppiProgress": "Progresso PPIs",
-      "ppiProgressSub": "Estado das inspecções",
+      "ppiProgressSub": "Estado das inspeções",
       "total": "Total",
       "completed": "Concluídas",
       "inProgress": "Em curso",
@@ -447,8 +447,8 @@
       "onTime": "No prazo",
       "pastDue": "Em atraso",
       "hpPending": "HP pendentes",
-      "inspCompleted": "Inspecções concluídas",
-      "actionPlan": "Plano de Acções",
+      "inspCompleted": "Inspeções concluídas",
+      "actionPlan": "Plano de Ações",
       "documentMetrics": "Métricas de Documentos",
       "docDraft": "Rascunho",
       "docReview": "Em revisão",
@@ -488,29 +488,31 @@
     "kpiSub": {
       "validated": "validadas",
       "conform": "conf.",
-      "allInspected": "Tudo inspeccionado",
+      "allInspected": "Tudo inspecionado",
       "pendingItems": "Pendentes"
     },
     "radar": {
-      "nc": "NCs",
-      "ppi": "PPIs",
-      "tests": "Ensaios",
-      "materials": "Materiais",
+      "nc": "NCs no prazo",
+      "ppi": "PPIs aprovados",
+      "tests": "Ensaios realizados",
+      "materials": "Materiais aprovados",
       "health": "Saúde",
       "avg": "Média",
       "attention": "Atenção",
       "conformity": "Conformidade",
       "critical": "Crítico",
-      "globalScore": "Score Global",
-      "healthy": "Saudável",
-      "subtitle": "Visão integrada de qualidade",
-      "title": "Radar de Qualidade"
+      "globalScore": "Conformidade global",
+      "healthy": "Bom",
+      "subtitle": "Taxas de concretização por dimensão",
+      "title": "Índice de Conformidade",
+      "insufficient": "Dados insuficientes (< {{count}} registos)",
+      "noData": "Sem dados suficientes"
     },
     "rmsgqOverdue": "RMSGQ em atraso {{days}}d",
     "rmsgqDue": "RMSGQ prazo em {{days}}d",
     "module": {
       "nc": "Não Conformidades",
-      "ppi": "Inspecções PPI",
+      "ppi": "Inspeções PPI",
       "tests": "Ensaios",
       "materials": "Materiais PAME"
     },
@@ -695,7 +697,7 @@
         "branding": {
           "title": "Imagem Corporativa",
           "subtitle": "Logótipo da empresa para sidebar e exportações PDF",
-          "currentLogo": "Logótipo actual",
+          "currentLogo": "Logótipo atual",
           "upload": "Carregar logótipo",
           "uploadDesc": "Imagem PNG ou JPG, até 2 MB. Recomendado: fundo transparente, 200×200 px.",
           "remove": "Remover logótipo",
@@ -746,7 +748,7 @@
         "viewer": "Visualizador"
       },
       "tabs": {
-        "project": "Projecto",
+        "project": "Projeto",
         "profile": "Perfil",
         "members": "Membros",
         "system": "Sistema",
@@ -997,8 +999,8 @@
       "autoEmpty": "Sem envios registados",
       "autoEmptyDesc": "Os emails enviados a partir do Atlas aparecem aqui automaticamente.",
       "noPlan": "Plano não encontrado",
-      "noPlanDesc": "Introduza o código exacto de um plano registado no sistema.",
-      "confirmedLabel": "Recepção confirmada pelo destinatário",
+      "noPlanDesc": "Introduza o código exato de um plano registado no sistema.",
+      "confirmedLabel": "Receção confirmada pelo destinatário",
       "placeholders": {
         "docCode": "ex: PEPF17A001",
         "ackRef": "Referência de acuse de recibo"
@@ -1198,7 +1200,7 @@
       "empty": "Sem ensaios agendados",
       "goToPlans": "Ir para Planos",
       "howToSchedule": "Como agendar ensaios",
-      "step1": "Passo 1: Configure o Plano de Ensaios (tab Planos → seleccione um plano → adicione regras de ensaio com frequência e disciplina)",
+      "step1": "Passo 1: Configure o Plano de Ensaios (tab Planos → selecione um plano → adicione regras de ensaio com frequência e disciplina)",
       "step2": "Passo 2: Clique em \"Gerar agendamentos\" para criar os ensaios obrigatórios com base nas regras configuradas",
       "status": {
         "due": "A vencer",
@@ -1349,7 +1351,7 @@
       "concrete": "Betão",
       "empty": "Sem ensaios associados",
       "conform": "Conforme",
-      "emptyHint": "Sem dados de inspecção associados.",
+      "emptyHint": "Sem dados de inspeção associados.",
       "nonConform": "Não Conforme",
       "soils": "Solos",
       "tests": "Ensaios",
@@ -1489,7 +1491,7 @@
     "import": {
       "title": "Importar Resultados de Laboratório",
       "btn": "Importar CSV",
-      "dropHere": "Arraste um ficheiro CSV aqui ou clique para seleccionar",
+      "dropHere": "Arraste um ficheiro CSV aqui ou clique para selecionar",
       "formatTitle": "Formato esperado do CSV",
       "downloadTemplate": "Descarregar modelo CSV",
       "importBtn": "Importar {count} resultados",
@@ -1898,9 +1900,9 @@
       "tabs": {
         "identification": "Identificação",
         "description": "Descrição",
-        "correction": "Correcção",
+        "correction": "Correção",
         "rootCause": "Causa Raiz",
-        "capa": "Acção Corretiva",
+        "capa": "Ação Corretiva",
         "closure": "Fecho",
         "attachments": "Anexos"
       },
@@ -1914,7 +1916,7 @@
       "origin": "Origem",
       "referencePlaceholder": "ex: REF-2024-001",
       "responsiblePlaceholder": "ex: João Silva",
-      "responsibleDetected": "Detectada por",
+      "responsibleDetected": "Detetada por",
       "detectedAt": "Data de Deteção",
       "locationPk": "PK / Zona de obra",
       "discipline": "Disciplina",
@@ -1928,12 +1930,12 @@
       "classificationBannerMenor": "Prazo: ≤ 1 dia útil",
       "classificationBannerObs": "Sem prazo de validação",
       "violatedRequirement": "Requisito violado (norma/CE/PPI)",
-      "correctionType": "Tipo de correcção",
-      "correctionTypePlaceholder": "Selecionar tipo de correcção",
+      "correctionType": "Tipo de correção",
+      "correctionTypePlaceholder": "Selecionar tipo de correção",
       "capaHint": "Preencha os campos CAPA quando a análise estiver concluída. Podem ser preenchidos gradualmente.",
       "correction": "Correção Imediata",
       "correctionPlaceholder": "Ação imediata tomada para conter o problema…",
-      "correctionDueDate": "Data prevista de correcção",
+      "correctionDueDate": "Data prevista de correção",
       "rootCauseMethod": "Método de análise",
       "rootCauseMethodHint": "Secção obrigatória apenas para NC MAIOR. Pode preencher opcionalmente.",
       "rootCause5whys": "5 Porquês",
@@ -1943,8 +1945,8 @@
       "rootCausePlaceholder": "Análise 5W / Ishikawa — descreva a causa raiz…",
       "correctiveAction": "Ação Corretiva",
       "correctiveActionPlaceholder": "Ação(ões) para eliminar a causa raiz…",
-      "assignedTo": "Responsável pela acção",
-      "actionDeadline": "Prazo acção",
+      "assignedTo": "Responsável pela ação",
+      "actionDeadline": "Prazo ação",
       "efficacyIndicator": "Indicador de eficácia",
       "efficacyIndicatorPlaceholder": "Ex: 0 reincidências em 30 dias",
       "preventiveAction": "Ação Preventiva",
@@ -2009,7 +2011,7 @@
     "tab": {
       "list": "Lista",
       "analysis": "Análise",
-      "actionPlan": "Plano de Acções"
+      "actionPlan": "Plano de Ações"
     },
     "actionPlan": {
       "overdue": "Em Atraso",
@@ -2293,7 +2295,7 @@
     },
     "deleteConfirm": {
       "title": "Eliminar plano",
-      "description": "Tem a certeza que deseja eliminar o plano \"{{name}}\"? Esta acção não pode ser desfeita."
+      "description": "Tem a certeza que deseja eliminar o plano \"{{name}}\"? Esta ação não pode ser desfeita."
     },
     "toast": {
       "deleted": "Plano eliminado com sucesso",
@@ -2301,7 +2303,7 @@
       "downloadError": "Erro ao descarregar ficheiro.",
       "error": "Erro ao guardar o desenho.",
       "fileUploaded": "Ficheiro carregado com sucesso.",
-      "updated": "Desenho actualizado com sucesso.",
+      "updated": "Desenho atualizado com sucesso.",
       "uploadError": "Erro ao carregar o ficheiro."
     },
     "externalApproval": {
@@ -2326,7 +2328,7 @@
       "observations": "Observações"
     },
     "controlledCopies": {
-      "confirmReceipt": "Confirmar Recepção",
+      "confirmReceipt": "Confirmar Receção",
       "confirmed": "Confirmado",
       "delivery": "Entrega",
       "entity": "Entidade",
@@ -2342,15 +2344,15 @@
       "breadcrumb": "Detalhe do Desenho",
       "changeDescPlaceholder": "Descrição das alterações desta revisão...",
       "createdAt": "Criado em",
-      "current": "Actual",
-      "currentFile": "Ficheiro actual",
+      "current": "Atual",
+      "currentFile": "Ficheiro atual",
       "downloadDwg": "Descarregar DWG",
       "info": "Informação",
       "noVersions": "Sem versões registadas.",
       "openPdf": "Abrir PDF",
       "pdfPreview": "Pré-visualização PDF",
       "pdfPreviewError": "Erro ao carregar PDF",
-      "updatedAt": "Actualizado em",
+      "updatedAt": "Atualizado em",
       "uploadBtn": "Carregar Ficheiro",
       "uploadTitle": "Carregar nova versão",
       "versionsTitle": "Histórico de Revisões",
@@ -2800,7 +2802,7 @@
       "longitude": "Longitude",
       "wbs": "WBS",
       "wbsNone": "Sem WBS",
-      "wbsPlaceholder": "Seleccionar WBS"
+      "wbsPlaceholder": "Selecionar WBS"
     },
     "disciplines": {
       "geral": "Geral",
@@ -2996,7 +2998,7 @@
       }
     },
     "instances": {
-      "title": "Inspecções PPI",
+      "title": "Inspeções PPI",
       "subtitle": "Registos de inspeção ativos",
       "new": "Nova Inspeção",
       "newFromTemplate": "Nova Inspeção (de Template)",
@@ -3474,7 +3476,7 @@
         "countryOfOrigin": "País de fabrico",
         "pkStart": "PK início instalação",
         "pkEnd": "PK fim instalação",
-        "inspectionReportRef": "Ref. relatório inspecção recepção"
+        "inspectionReportRef": "Ref. relatório inspeção receção"
       },
       "status": {
         "pending": "Pendente",
@@ -3638,14 +3640,14 @@
       "reportTitle": "Ficha de Material"
     },
     "reception_tab": {
-      "tabLabel": "Recepções de Obra",
-      "sectionTitle": "Recepções de material em obra",
-      "sectionSubtitle": "Lotes recepcionados — registos reais de entrega e controlo",
-      "newReception": "Nova Recepção",
+      "tabLabel": "Receções de Obra",
+      "sectionTitle": "Receções de material em obra",
+      "sectionSubtitle": "Lotes rececionados — registos reais de entrega e controlo",
+      "newReception": "Nova Receção",
       "catalogTab": "Catálogo PAME",
-      "tabLabelShort": "Recepções",
+      "tabLabelShort": "Receções",
       "catalogTabShort": "Catálogo",
-      "pickMaterial": "Seleccionar material"
+      "pickMaterial": "Selecionar material"
     }
   },
   "settings": {
@@ -3670,7 +3672,7 @@
       "client": "Dono de Obra",
       "location": "Localização",
       "contractNumber": "N.º Contrato",
-      "metadata": "Dados do Projecto (PDF)",
+      "metadata": "Dados do Projeto (PDF)",
       "activeProject": "Projeto ativo",
       "noProject": "Nenhum projeto selecionado",
       "badgeActive": "Ativo",
@@ -3707,18 +3709,18 @@
       "passwordLabel": "Senha de acesso",
       "passwordPlaceholder": "Mínimo 6 caracteres",
       "passwordTooShort": "A senha deve ter pelo menos 6 caracteres.",
-      "addedDirectly": "Utilizador existente adicionado ao projecto.",
+      "addedDirectly": "Utilizador existente adicionado ao projeto.",
       "accountCreated": "Conta criada com sucesso. O membro pode agora aceder com o email e senha definidos.",
       "inviteEmailSent": "Convite enviado por email. O utilizador receberá um link para configurar a sua conta.",
-      "alreadyMember": "Este utilizador já é membro activo deste projecto.",
+      "alreadyMember": "Este utilizador já é membro ativo deste projeto.",
       "acceptInviteLoading": "A processar convite...",
       "createBtn": "Criar Conta",
       "invalidInviteToken": "Convite inválido ou expirado.",
       "inviteAccepted": "Convite aceite com sucesso!",
-      "noProjectsEmpty": "Sem projectos atribuídos",
-      "noProjectsEmptySub": "Contacte o administrador para obter acesso a um projecto.",
+      "noProjectsEmpty": "Sem projetos atribuídos",
+      "noProjectsEmptySub": "Contacte o administrador para obter acesso a um projeto.",
       "passwordHint": "Mínimo 6 caracteres",
-      "removeDesc": "O utilizador perderá o acesso a este projecto.",
+      "removeDesc": "O utilizador perderá o acesso a este projeto.",
       "requestAccess": "Solicitar Acesso"
     },
     "roles": {
@@ -3753,24 +3755,24 @@
       "module": "Módulo"
     },
     "contactsTab": "Contactos & Notificações",
-    "contactsTabDesc": "Gerir contactos do projecto e listas de distribuição para notificações",
+    "contactsTabDesc": "Gerir contactos do projeto e listas de distribuição para notificações",
     "usageMembers": "Membros",
-    "usagePpis": "PPIs activos",
+    "usagePpis": "PPIs ativos",
     "usageNcs": "NCs abertas",
     "usageTests": "Ensaios pendentes",
-    "importPpiDesc": "Importar templates PPI do projecto modelo PF17A",
+    "importPpiDesc": "Importar templates PPI do projeto modelo PF17A",
     "importPpiTemplates": "Importar Templates PPI",
-    "ppiAlreadyImported": "Os templates PPI já foram importados para este projecto.",
+    "ppiAlreadyImported": "Os templates PPI já foram importados para este projeto.",
     "ppiImportSuccess": "Templates PPI importados com sucesso.",
     "ppiImported": "PPI Importados",
     "teams": {
       "desc": "Recebe alertas de Hold Points e Não Conformidades directamente no Teams. Cria um Incoming Webhook no canal desejado e cola o URL aqui.",
       "webhookUrl": "URL do Incoming Webhook",
-      "active": "Notificações activas",
+      "active": "Notificações ativas",
       "saved": "Configuração Teams guardada"
     },
     "multiProject": {
-      "subtitle": "Gestão de múltiplos projectos",
+      "subtitle": "Gestão de múltiplos projetos",
       "title": "Multi-obra"
     }
   },
@@ -3857,14 +3859,14 @@
       "deleted": "Eliminado com sucesso",
       "deleteError": "Erro ao eliminar",
       "calibrationCreated": "Calibração registada com sucesso.",
-      "calibrationUpdated": "Calibração actualizada com sucesso.",
+      "calibrationUpdated": "Calibração atualizada com sucesso.",
       "controlCreated": "Controlo topográfico registado.",
-      "controlUpdated": "Controlo topográfico actualizado.",
+      "controlUpdated": "Controlo topográfico atualizado.",
       "equipmentCreated": "Equipamento registado com sucesso.",
-      "equipmentUpdated": "Equipamento actualizado com sucesso.",
+      "equipmentUpdated": "Equipamento atualizado com sucesso.",
       "error": "Erro ao guardar. Tente novamente.",
       "requestCreated": "Pedido registado com sucesso.",
-      "requestUpdated": "Pedido actualizado com sucesso.",
+      "requestUpdated": "Pedido atualizado com sucesso.",
       "calibrationDeleted": "Calibração eliminada"
     },
     "form": {
@@ -3935,8 +3937,8 @@
       "urgent": "Urgente"
     },
     "eqStatus": {
-      "active": "Activo",
-      "inactive": "Inactivo",
+      "active": "Ativo",
+      "inactive": "Inativo",
       "archived": "Arquivado"
     },
     "expiresIn": "Expira em {{days}} dias",
@@ -3972,7 +3974,7 @@
       "plural": "Frentes de Trabalho",
       "edit": "Editar Frente de Trabalho",
       "delete": "Eliminar Frente de Trabalho",
-      "list": "Lista de actividades"
+      "list": "Lista de atividades"
     },
     "completion": {
       "blocked": "Bloqueada — requisitos não cumpridos",
@@ -4068,8 +4070,8 @@
       "zone": "Zona",
       "filterBy": "A filtrar por:",
       "detail": "Detalhe WBS",
-      "filterActivities": "Filtrar actividades",
-      "noActivities": "Sem actividades neste WBS",
+      "filterActivities": "Filtrar atividades",
+      "noActivities": "Sem atividades neste WBS",
       "openInTab": "Abrir em separador",
       "viewDetail": "Ver detalhe"
     },
@@ -4093,7 +4095,7 @@
     },
     "noWbs": "Sem estrutura WBS",
     "kpis": {
-      "activities": "Actividades",
+      "activities": "Atividades",
       "avgProgress": "Progresso médio",
       "completed": "Concluídas",
       "delayed": "Atrasadas",
@@ -4104,7 +4106,7 @@
       "wbsItems": "Itens WBS"
     },
     "noData": "Sem dados de planeamento",
-    "noDataDesc": "Adicione actividades para visualizar o planeamento"
+    "noDataDesc": "Adicione atividades para visualizar o planeamento"
   },
   "mapMas": {
     "title": "Aprovação MAP/MAS",
@@ -4357,7 +4359,7 @@
     "healthy": "Saudável",
     "attention": "Atenção",
     "critical": "Crítico",
-    "score": "Health Score",
+    "score": "Índice de Alertas",
     "ncOpen": "NC Abertas",
     "ncOverdue": "NC em Atraso",
     "testsPending": "Ensaios Pendentes",
@@ -4386,7 +4388,7 @@
       "failures": "Falhas",
       "memberConfirmed": "Membro confirmado",
       "noRole": "Sem papel atribuído",
-      "notMember": "Não é membro do projecto activo",
+      "notMember": "Não é membro do projeto ativo",
       "warnings": "Avisos"
     },
     "sheetTitle": "Estado Geral da Obra",
@@ -4403,9 +4405,22 @@
     "viewPpis": "Ver PPIs pendentes",
     "viewTests": "Ver ensaios em atraso",
     "systemTab": "Sistema",
-    "sidebarScore": "Score",
-    "explanation": "Score calculado com base em NCs, PPIs, ensaios e materiais",
-    "seeDetails": "Ver detalhes"
+    "sidebarScore": "Alertas",
+    "explanation": "Parte de 100 e desconta alertas: NCs e HPs vencidos, ensaios reprovados, RMSGQ em atraso, PAME pendente, documentos e calibrações caducados.",
+    "seeDetails": "Ver detalhes",
+    "breakdownTitle": "Pontos descontados",
+    "breakdownNone": "Sem alertas: nenhum ponto descontado.",
+    "penalty": {
+      "nc_overdue": "NCs com prazo ultrapassado (−20 cada)",
+      "tests_fail": "Ensaios reprovados nos últimos 30 dias (−10 cada)",
+      "docs_expired": "Documentos caducados (−5 cada)",
+      "calibrations_expired": "Calibrações caducadas (−5 cada)",
+      "activities_blocked": "Atividades bloqueadas (−3 cada)",
+      "readiness": "Prontidão dos elementos < 60%",
+      "hp_overdue": "HPs vencidos por confirmar (−10 cada, máx. −20)",
+      "rmsgq_overdue": "RMSGQ do mês anterior em atraso",
+      "pame_pending": "PAME pendente > 30 dias (−1 cada, máx. −10)"
+    }
   },
   "moduleKpi": {
     "total": "Total",
@@ -4451,7 +4466,7 @@
     "send": "Notificar",
     "sent": "Enviado",
     "recipients": "Destinatários",
-    "selectList": "Seleccionar lista",
+    "selectList": "Selecionar lista",
     "addRecipient": "Adicionar destinatário",
     "subject": "Assunto",
     "message": "Mensagem",
@@ -4470,9 +4485,9 @@
       "auto": "Auto",
       "totalSize": "Tamanho total"
     },
-    "confirmTitle": "Recepção Confirmada",
-    "confirmMsg": "A sua recepção foi registada. Pode fechar esta janela.",
-    "confirmError": "Não foi possível confirmar a recepção. O link pode ser inválido.",
+    "confirmTitle": "Receção Confirmada",
+    "confirmMsg": "A sua receção foi registada. Pode fechar esta janela.",
+    "confirmError": "Não foi possível confirmar a receção. O link pode ser inválido.",
     "awaitingConfirm": "Aguarda confirmação",
     "confirmedAt": "Confirmado {{date}}",
     "resend": "Reenviar",
@@ -4486,7 +4501,7 @@
     "centerTitle": "Centro de Notificações",
     "category": "Alertas e Notificações",
     "system": "Sistema",
-    "emptySubtitle": "Não há alertas activos de momento",
+    "emptySubtitle": "Não há alertas ativos de momento",
     "tabs": {
       "all": "Todos",
       "hp": "Hold Points",
@@ -4561,7 +4576,7 @@
       "unit": "Unidade",
       "lot": "Lote / Nº Série",
       "pameRef": "Ref. PAME",
-      "selectMaterial": "Seleccionar material aprovado (PAME)",
+      "selectMaterial": "Selecionar material aprovado (PAME)",
       "noApproved": "Nenhum material aprovado disponível.",
       "goToPame": "Submeter Ficha PAME",
       "warningNoPame": "material(s) sem referência PAME",
@@ -4590,7 +4605,7 @@
     "reopen": "Reabrir",
     "toast": {
       "created": "Parte diária criada.",
-      "updated": "Parte diária actualizada.",
+      "updated": "Parte diária atualizada.",
       "submitted": "Parte diária submetida.",
       "validated": "Parte diária validada.",
       "reopened": "Parte diária reaberta para edição."
@@ -4602,11 +4617,11 @@
       "allStatuses": "Todos os estados"
     },
     "picker": {
-      "selectCompany": "Seleccionar empresa",
-      "selectWorker": "Seleccionar trabalhador",
-      "selectEquipment": "Seleccionar equipamento",
+      "selectCompany": "Selecionar empresa",
+      "selectWorker": "Selecionar trabalhador",
+      "selectEquipment": "Selecionar equipamento",
       "manualEntry": "Introdução manual",
-      "activeWorkers": "trabalhadores activos",
+      "activeWorkers": "trabalhadores ativos",
       "onSiteEquipment": "equipamentos em obra",
       "safetyOk": "Formação OK",
       "noSafety": "Sem formação"
@@ -4799,7 +4814,7 @@
       "deleted": "Sessão eliminada",
       "loadError": "Erro ao carregar sessões",
       "exportError": "Erro ao exportar",
-      "updated": "Sessão actualizada"
+      "updated": "Sessão atualizada"
     },
     "tab": {
       "sessions": "Sessões",
@@ -4840,7 +4855,7 @@
       "closing": "Encerramento"
     },
     "statuses": {
-      "transitionSuccess": "Estado actualizado para {{status}}"
+      "transitionSuccess": "Estado atualizado para {{status}}"
     },
     "status": {
       "planned": "Planeada",
@@ -4862,7 +4877,7 @@
     },
     "toast": {
       "created": "Auditoria criada",
-      "updated": "Auditoria actualizada",
+      "updated": "Auditoria atualizada",
       "deleted": "Auditoria cancelada",
       "loadError": "Erro ao carregar auditorias"
     },
@@ -4963,7 +4978,7 @@
       "e3": "Solos e Compactação — Caracterização e Controlo In-Situ"
     },
     "det": {
-      "ch1": "Membros do projeto com papéis (Admin, Engenheiro, Inspector, Viewer). Gestão na página de Definições.",
+      "ch1": "Membros do projeto com papéis (Admin, Engenheiro, Inspetor, Viewer). Gestão na página de Definições.",
       "ch2": "Workflow draft→review→approved. Versões sequenciais, LinkedDocumentsPanel, exportação PDF com capa.",
       "ch2_1": "Repositório auditável com tipos: MS, PlanEsc, PlanBet, PlanMont, PlanTraf, PlanSeg, PlanTopo, PlanEns, PlanInsp, PlanAmb, PlanQual.",
       "ch3": "WBS hierárquico, atividades ligadas a Work Items e Subempreiteiros. Motor de prontidão com bloqueios automáticos.",
@@ -5020,7 +5035,7 @@
     "emptyTitle": "Sem relatórios mensais",
     "emptySubtitle": "Crie o primeiro relatório mensal de qualidade.",
     "productionExecuted": "Produção executada no mês",
-    "productionExecutedPlaceholder": "Descreva as actividades executadas…",
+    "productionExecutedPlaceholder": "Descreva as atividades executadas…",
     "testsPerformed": "Ensaios realizados no mês",
     "testsPerformedPlaceholder": "ex: 12 compactação, 4 betão, 2 solos",
     "trainingSessions": "Formações realizadas",
@@ -5192,7 +5207,7 @@
       "materialRef": "Ref. PAME",
       "proctorCriteria": "Proctor / Critérios",
       "gammaDryMax": "γd máx (kN/m³)",
-      "wOptimum": "w óptimo (%)",
+      "wOptimum": "w ótimo (%)",
       "gcCriteria": "Critério GC (%)",
       "ev2Min": "Ev2 mín. (MPa)",
       "ev2Ev1Max": "Ev2/Ev1 máx.",
@@ -5233,7 +5248,7 @@
       "sand": "Solo arenoso",
       "toutVenant": "Tout-venant",
       "gravel": "Brita",
-      "fill": "Aterro seleccionado",
+      "fill": "Aterro selecionado",
       "other": "Outro"
     },
     "table": {
@@ -5247,7 +5262,7 @@
   },
   "welding": {
     "title": "Controlo de Soldadura Aluminotérmica",
-    "subtitle": "Inspecção e ensaios de soldaduras EN 14730",
+    "subtitle": "Inspeção e ensaios de soldaduras EN 14730",
     "empty": "Nenhuma soldadura registada",
     "emptySubtitle": "Crie o primeiro registo de soldadura.",
     "kpi": {
@@ -5271,7 +5286,7 @@
       "portionBrand": "Marca porção",
       "portionLot": "Lote porção",
       "preheat": "Pré-aquecimento",
-      "visual": "Inspecção visual",
+      "visual": "Inspeção visual",
       "alignment": "Desalinhamento (mm)",
       "ut": "Ensaio Ultrassónico (UT)",
       "hardness": "Dureza (HV)"
@@ -5299,7 +5314,7 @@
     "tabs": {
       "identification": "Identificação",
       "materials": "Materiais",
-      "inspection": "Inspecção",
+      "inspection": "Inspeção",
       "utHv": "UT e Dureza"
     },
     "form": {
@@ -5505,7 +5520,7 @@
     "deleteConfirm": "Tem a certeza que deseja eliminar este submittal?"
   },
   "fieldRecords": {
-    "category": "Inspecção de Campo",
+    "category": "Inspeção de Campo",
     "title": "Grelhas de Registo de Campo",
     "subtitle": "Registo de RP · WP — verificações, materiais e ensaios in situ",
     "new": "Nova Grelha GR",
@@ -5516,7 +5531,7 @@
     "deleteConfirm": "A grelha será arquivada e não aparecerá na lista.",
     "toast": {
       "created": "Grelha de Registo criada com sucesso",
-      "updated": "Grelha actualizada"
+      "updated": "Grelha atualizada"
     },
     "kpi": {
       "conforme": "Conforme",
@@ -5526,7 +5541,7 @@
     },
     "col": {
       "type": "Tipo",
-      "activity": "Actividade",
+      "activity": "Atividade",
       "pk": "PK",
       "ppi": "PPI",
       "result": "Resultado",
@@ -5540,9 +5555,9 @@
       "section5": "Observações e Ocorrências",
       "section6": "Resultado Global",
       "pointType": "Tipo de Ponto",
-      "activity": "Actividade / Trabalho Inspeccionado",
+      "activity": "Atividade / Trabalho Inspecionado",
       "activityPlaceholder": "Ex: Compactação de aterro — camada 3",
-      "activityRequired": "A actividade é obrigatória",
+      "activityRequired": "A atividade é obrigatória",
       "ppiRef": "PPI de Referência (opcional)",
       "disciplina": "Disciplina",
       "pk": "PK Início",
@@ -5560,14 +5575,14 @@
       "measured": "Valor medido",
       "observationsPlaceholder": "Observações gerais, RNCs abertas, referências fotográficas…",
       "nextInspection": "Próxima Verificação Prevista",
-      "hasPhotos": "Registo fotográfico efectuado",
+      "hasPhotos": "Registo fotográfico efetuado",
       "attachmentsHint": "Fotografias e documentos de campo",
       "editTitle": "Editar Grelha de Campo",
       "section4": "Observações e Ocorrências"
     },
-    "activity": "Actividade",
+    "activity": "Atividade",
     "detail": {
-      "activity": "Actividade",
+      "activity": "Atividade",
       "checks": "Verificações",
       "linkedPPI": "PPI Associado",
       "materials": "Materiais",
@@ -5677,10 +5692,10 @@
     "function": "Função",
     "workerNumber": "Nº Trabalhador",
     "safetyTraining": "Formação Segurança",
-    "deactivate": "Desactivar",
+    "deactivate": "Desativar",
     "status": {
-      "active": "Activo",
-      "inactive": "Inactivo",
+      "active": "Ativo",
+      "inactive": "Inativo",
       "left": "Saiu"
     }
   },
@@ -5696,8 +5711,8 @@
       "on_site": "Em Obra",
       "off_site": "Fora de Obra",
       "maintenance": "Em Manutenção",
-      "active": "Activo",
-      "inactive": "Inactivo",
+      "active": "Ativo",
+      "inactive": "Inativo",
       "rented": "Alugado"
     },
     "sectionCerts": "Certificações e Manutenção",
@@ -5712,7 +5727,7 @@
     "log": "Diário"
   },
   "contacts": {
-    "title": "Contactos do Projecto",
+    "title": "Contactos do Projeto",
     "add": "Novo Contacto",
     "name": "Nome",
     "email": "Email",
@@ -5720,7 +5735,7 @@
     "roleTitle": "Função",
     "roleType": {
       "fiscalizacao": "Fiscalização",
-      "direccao_obra": "Direcção de Obra",
+      "direccao_obra": "Direção de Obra",
       "projectista": "Projectista",
       "cliente": "Cliente",
       "outro": "Outro"
@@ -5761,7 +5776,7 @@
     "volumeComplete": "{{complete}} de {{total}} itens",
     "status": {
       "received": "Recebido",
-      "auto_complete": "Detectado",
+      "auto_complete": "Detetado",
       "pending": "Pendente"
     },
     "tooltip": {
@@ -5770,9 +5785,9 @@
   },
   "pwa": {
     "install": "Instalar como App",
-    "update": "Actualizar App",
-    "updateAvailable": "Nova versão disponível — clique para actualizar",
-    "updateNow": "Actualizar agora"
+    "update": "Atualizar App",
+    "updateAvailable": "Nova versão disponível — clique para atualizar",
+    "updateNow": "Atualizar agora"
   },
   "orgChart": {
     "roles": {
@@ -5804,7 +5819,7 @@
       "reportsTo": "Reporta a"
     },
     "toast": {
-      "updated": "Organograma actualizado"
+      "updated": "Organograma atualizado"
     }
   },
   "topographyFt": {
@@ -5860,7 +5875,7 @@
     "testsEvolution": "Evolução de Ensaios (12 meses)",
     "ncAging": "NCs Abertas por Disciplina",
     "testsByType": "Conformidade por Tipo de Ensaio",
-    "target": "Objectivo",
+    "target": "Objetivo",
     "conform": "Conformes",
     "nonConform": "Não Conformes",
     "conformes": "conformes",
@@ -5880,8 +5895,8 @@
     }
   },
   "portal": {
-    "title": "Portal Direcção de Obra",
-    "updatedAt": "Actualizado",
+    "title": "Portal Direção de Obra",
+    "updatedAt": "Atualizado",
     "nc": "Não Conformidades",
     "ncOpen": "{{count}} em aberto",
     "ncNone": "Sem alertas",
@@ -5895,21 +5910,21 @@
     "progressTitle": "Progresso de qualidade",
     "progressTests": "Ensaios realizados",
     "progressMaterials": "Materiais PAME aprovados",
-    "progressPpi": "Inspecções PPI aprovadas",
+    "progressPpi": "Inspeções PPI aprovadas",
     "alertsTitle": "Alertas e pendências",
     "ncAlert": "{{count}} NC(s) em aberto",
     "testsAlert": "{{count}} ensaio(s) em atraso",
-    "noAlerts": "Sem alertas activos",
+    "noAlerts": "Sem alertas ativos",
     "reportsTitle": "Relatórios e documentos",
     "ppiLabel": "PPIs aprovadas",
     "ncLabel": "Não Conformidades",
     "materialsLabel": "Materiais PAME",
     "emesAlert": "{{count}} expirações nos próximos 30 dias",
-    "multiProjectTitle": "Visão Multi-Projecto",
+    "multiProjectTitle": "Visão Multi-Projeto",
     "totalProjects": "Total",
     "avgHealth": "saúde média",
     "critical": "críticos",
-    "seeAllProjects": "Ver todos os projectos"
+    "seeAllProjects": "Ver todos os projetos"
   },
   "timeline": {
     "months": "meses",
@@ -6059,7 +6074,7 @@
     },
     "kpi": {
       "total": "Total pessoal",
-      "active": "Activos",
+      "active": "Ativos",
       "safetyTrained": "Formação seg.",
       "companies": "Empresas",
       "expiringCerts": "Cert. a expirar"
@@ -6069,8 +6084,8 @@
       "presence": "Presença em Obra"
     },
     "status": {
-      "active": "Activo",
-      "inactive": "Inactivo",
+      "active": "Ativo",
+      "inactive": "Inativo",
       "suspended": "Suspenso"
     },
     "ipStatus": {
@@ -6123,7 +6138,7 @@
       "search": "Pesquisar por trabalhador, certificado...",
       "empty": "Nenhuma qualificação registada",
       "worker": "Trabalhador",
-      "selectWorker": "Seleccionar trabalhador...",
+      "selectWorker": "Selecionar trabalhador...",
       "externalWorker": "Trabalhador externo (sem ficha)",
       "workerNamePlaceholder": "Nome do trabalhador...",
       "type": "Tipo de qualificação",
@@ -6176,13 +6191,13 @@
     },
     "toast": {
       "workerCreated": "Trabalhador criado com sucesso",
-      "workerUpdated": "Trabalhador actualizado",
+      "workerUpdated": "Trabalhador atualizado",
       "workerDeleted": "Trabalhador removido",
       "qualCreated": "Qualificação registada",
       "error": "Erro ao guardar"
     },
     "noWorkersYet": "Sem trabalhadores registados",
-    "selectWorker": "Seleccionar trabalhador",
+    "selectWorker": "Selecionar trabalhador",
     "sheet": {
       "print": "Imprimir ficha",
       "signatureManager": "Assinatura Responsável",
@@ -6245,7 +6260,7 @@
     },
     "toast": {
       "created": "Campanha criada com sucesso",
-      "updated": "Campanha actualizada",
+      "updated": "Campanha atualizada",
       "deleted": "Campanha eliminada",
       "readingAdded": "Leitura adicionada"
     }
@@ -6292,7 +6307,7 @@
       "workItem": "Frente de obra"
     },
     "types": {
-      "design_change": "Alteração de Projecto",
+      "design_change": "Alteração de Projeto",
       "site_instruction": "Instrução de Fiscalização",
       "rfi_decision": "RFI → Decisão",
       "alternative_solution": "Solução Alternativa",
@@ -6322,7 +6337,7 @@
     },
     "toast": {
       "created": "Alteração registada com sucesso",
-      "updated": "Alteração actualizada",
+      "updated": "Alteração atualizada",
       "deleted": "Alteração eliminada"
     },
     "pdf": {
@@ -6416,7 +6431,7 @@
     },
     "toast": {
       "created": "Risco registado com sucesso",
-      "updated": "Risco actualizado",
+      "updated": "Risco atualizado",
       "deleted": "Risco eliminado"
     },
     "pdf": {
@@ -6448,11 +6463,11 @@
       "attendeesOthers": "Outros Participantes",
       "agenda": "Ordem de Trabalhos",
       "discussions": "Assuntos Tratados / Deliberações",
-      "decisions": "Decisões / Plano de Acção",
+      "decisions": "Decisões / Plano de Ação",
       "nextMeeting": "Próxima reunião",
       "elaboratedBy": "Elaborado por",
       "verifiedBy": "Verificado / Aprovado por",
-      "pendingActions": "Acções Pendentes de Reuniões Anteriores"
+      "pendingActions": "Ações Pendentes de Reuniões Anteriores"
     },
     "type": {
       "kickoff": "Kick-off",
@@ -6468,9 +6483,9 @@
       "distributed": "Distribuída"
     },
     "actionPanel": {
-      "title": "Plano de Acção — Reuniões SGQ",
+      "title": "Plano de Ação — Reuniões SGQ",
       "open": "em aberto",
-      "empty": "Sem acções pendentes das reuniões ✅",
+      "empty": "Sem ações pendentes das reuniões ✅",
       "goToMeetings": "Ver reuniões"
     }
   },
@@ -6492,13 +6507,13 @@
     "noData": "Sem dados suficientes",
     "noDataDetail": "Dados insuficientes para gerar previsões",
     "ppiHealthy": "PPIs em dia",
-    "ppiHealthyDetail": "Taxa de aprovação de PPIs acima do objectivo",
+    "ppiHealthyDetail": "Taxa de aprovação de PPIs acima do objetivo",
     "ppiLag": "PPIs em atraso",
-    "ppiLagDetail": "Taxa de aprovação de PPIs abaixo do objectivo",
+    "ppiLagDetail": "Taxa de aprovação de PPIs abaixo do objetivo",
     "testsExcellent": "Ensaios excelentes",
     "testsExcellentDetail": "Taxa de conformidade de ensaios muito boa",
     "testsLow": "Ensaios em falta",
-    "testsLowDetail": "Taxa de realização de ensaios abaixo do objectivo",
+    "testsLowDetail": "Taxa de realização de ensaios abaixo do objetivo",
     "title": "Insights Preditivos"
   },
   "leaflet": {
@@ -6544,25 +6559,25 @@
       "totalTests": "Total ensaios"
     },
     "noNcData": "Sem dados de NCs",
-    "noNcDataDesc": "Não existem não conformidades registadas para o período seleccionado",
+    "noNcDataDesc": "Não existem não conformidades registadas para o período selecionado",
     "noPpiData": "Sem dados de PPIs",
-    "noPpiDataDesc": "Não existem inspecções PPI para o período seleccionado",
-    "noProject": "Sem projecto activo",
-    "noProjectDesc": "Seleccione um projecto para ver os indicadores",
+    "noPpiDataDesc": "Não existem inspeções PPI para o período selecionado",
+    "noProject": "Sem projeto ativo",
+    "noProjectDesc": "Selecione um projeto para ver os indicadores",
     "noTestsData": "Sem dados de ensaios",
-    "noTestsDataDesc": "Não existem ensaios para o período seleccionado",
+    "noTestsDataDesc": "Não existem ensaios para o período selecionado",
     "subtitle": "Análise estatística de qualidade — NCs, PPIs e Ensaios",
     "tab": {
       "nc": "Não Conformidades",
-      "ppi": "Inspecções PPI",
+      "ppi": "Inspeções PPI",
       "tests": "Ensaios"
     },
     "title": "Indicadores de Qualidade"
   },
   "topFrentes": {
     "allClear": "Todas as frentes conformes",
-    "allClearDetail": "Sem NCs abertas nas frentes activas",
-    "subtitle": "Frentes com mais NCs activas",
+    "allClearDetail": "Sem NCs abertas nas frentes ativas",
+    "subtitle": "Frentes com mais NCs ativas",
     "title": "Top Frentes Críticas"
   }
 }

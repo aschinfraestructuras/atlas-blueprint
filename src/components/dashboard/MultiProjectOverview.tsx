@@ -205,7 +205,7 @@ export function MultiProjectOverview() {
         {sorted.length > 6 && (
           <Link to="/projects">
             <Button variant="outline" size="sm" className="w-full mt-2">
-              {t("portal.seeAllProjects", { defaultValue: "Ver todos os projectos" })} ({sorted.length})
+              {t("portal.seeAllProjects", { defaultValue: "Ver todos os projetos" })} ({sorted.length})
             </Button>
           </Link>
         )}

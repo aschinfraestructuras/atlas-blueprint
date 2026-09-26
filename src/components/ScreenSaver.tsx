@@ -3,7 +3,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 interface Props {
   /** Minutos de inactividade antes de activar. Default: 3 */
   idleMinutes?: number;
-  /** Texto secundário opcional (ex: nome do projecto activo) */
+  /** Texto secundário opcional (ex: nome do projeto activo) */
   projectLabel?: string;
 }
 
@@ -23,7 +23,7 @@ const SIGNALS = [
   { pt: "EME Calibrado",       en: "Equipment Calibrated", col: "#60a5fa", icon: "spark" },
   { pt: "Documento Aprovado",  en: "Document Approved",   col: "#fbbf24", icon: "check" },
   { pt: "Auditoria OK",        en: "Audit Cleared",       col: "#34d399", icon: "shield" },
-  { pt: "Material Recepcionado", en: "Material Received", col: "#a78bfa", icon: "spark" },
+  { pt: "Material Rececionado", en: "Material Received", col: "#a78bfa", icon: "spark" },
   { pt: "RFI Respondido",      en: "RFI Answered",        col: "#60a5fa", icon: "check" },
   { pt: "Soldadura Conforme",  en: "Weld Conforming",     col: "#34d399", icon: "spark" },
   { pt: "Compactação OK",      en: "Compaction Pass",     col: "#34d399", icon: "check" },
@@ -41,7 +41,7 @@ const ORBS = [
 // Tagline rotation (PT · EN)
 const TAGLINES = [
   { pt: "Sistema de Gestão da Qualidade",   en: "Quality Management System" },
-  { pt: "Inspecção · Conformidade · Rastreabilidade", en: "Inspection · Compliance · Traceability" },
+  { pt: "Inspeção · Conformidade · Rastreabilidade", en: "Inspection · Compliance · Traceability" },
   { pt: "Construção monitorizada em tempo real", en: "Construction monitored in real time" },
   { pt: "Cada ponto crítico, sob controlo",  en: "Every critical point, under control" },
 ];

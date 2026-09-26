@@ -386,7 +386,7 @@ export default function QualityAnalyticsPage() {
       <div className="p-6">
         <EmptyState
           icon={Activity}
-          title={t("qualityAnalytics.noProject", { defaultValue: "Sem projecto activo" })}
+          title={t("qualityAnalytics.noProject", { defaultValue: "Sem projeto activo" })}
           subtitle={t("qualityAnalytics.noProjectDesc", { defaultValue: "Seleccione uma obra para analisar." })}
         />
       </div>
@@ -412,7 +412,7 @@ export default function QualityAnalyticsPage() {
           </TabsTrigger>
           <TabsTrigger value="ppi" className="gap-1.5">
             <ClipboardCheck className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">{t("qualityAnalytics.tab.ppi", { defaultValue: "Inspecções" })}</span>
+            <span className="hidden sm:inline">{t("qualityAnalytics.tab.ppi", { defaultValue: "Inspeções" })}</span>
             <span className="sm:hidden">PPIs</span>
           </TabsTrigger>
           <TabsTrigger value="tests" className="gap-1.5">
@@ -444,7 +444,7 @@ export default function QualityAnalyticsPage() {
                 />
                 <KpiCard
                   icon={Target}
-                  label={t("qualityAnalytics.kpi.efficacy", { defaultValue: "Eficácia de acções correctivas" })}
+                  label={t("qualityAnalytics.kpi.efficacy", { defaultValue: "Eficácia de ações correctivas" })}
                   value={`${nc.efficacyRate}%`}
                   color={nc.efficacyRate >= 70 ? CHART_COLORS.success : CHART_COLORS.warning}
                 />
@@ -546,7 +546,7 @@ export default function QualityAnalyticsPage() {
             <EmptyState
               icon={ClipboardCheck}
               title={t("qualityAnalytics.noPpiData", { defaultValue: "Sem dados de PPI" })}
-              subtitle={t("qualityAnalytics.noPpiDataDesc", { defaultValue: "Não há inspecções suficientes para análise." })}
+              subtitle={t("qualityAnalytics.noPpiDataDesc", { defaultValue: "Não há inspeções suficientes para análise." })}
             />
           ) : (
             <>

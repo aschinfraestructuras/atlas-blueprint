@@ -431,7 +431,7 @@ export default function ControlledDistributionPage() {
             </div>
             <div className="flex items-center gap-2">
               <Checkbox id="confirmed" checked={form.received_confirmed} onCheckedChange={v => setForm(f => ({ ...f, received_confirmed: !!v }))} />
-              <label htmlFor="confirmed" className="text-xs cursor-pointer">{t("documents.rdc.confirmedLabel", { defaultValue: "Recepção confirmada pelo destinatário" })}</label>
+              <label htmlFor="confirmed" className="text-xs cursor-pointer">{t("documents.rdc.confirmedLabel", { defaultValue: "Receção confirmada pelo destinatário" })}</label>
             </div>
           </div>
           <DialogFooter>
