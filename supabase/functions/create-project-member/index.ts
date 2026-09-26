@@ -133,10 +133,16 @@ Deno.serve(async (req) => {
 
       // New user — invite via Supabase built-in email
       // Whitelist allowed origins to prevent open redirect attacks
+      // Configurável via secret APP_ALLOWED_ORIGINS (lista separada por vírgulas)
+      const configuredOrigins = (Deno.env.get("APP_ALLOWED_ORIGINS") ?? "")
+        .split(",")
+        .map((o) => o.trim())
+        .filter(Boolean);
       const allowedOrigins = [
         supabaseUrl,
-        "https://atlasquality.lovable.app",
-        "https://id-preview--6f0172f0-0e65-408d-8e26-8a8bcb9437cf.lovable.app",
+        "https://aschquality.com",
+        "https://atlasquality.vercel.app",
+        ...configuredOrigins,
       ];
       const requestOrigin = req.headers.get("origin") || "";
       const safeOrigin = allowedOrigins.includes(requestOrigin) ? requestOrigin : supabaseUrl;
