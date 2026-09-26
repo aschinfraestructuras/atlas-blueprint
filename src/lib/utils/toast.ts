@@ -17,7 +17,7 @@ interface ToastOptions {
   action?: React.ReactNode;
 }
 
-export function toast(options: ToastOptions | string) {
+function baseToast(options: ToastOptions | string) {
   if (typeof options === "string") {
     sonnerToast(options);
     return;
@@ -32,6 +32,12 @@ export function toast(options: ToastOptions | string) {
     sonnerToast.success(message, opts);
   }
 }
+
+// Atalhos toast.success(msg) / toast.error(msg), com a API nativa do sonner
+export const toast = Object.assign(baseToast, {
+  success: sonnerToast.success,
+  error: sonnerToast.error,
+});
 
 // Re-exportar sonnerToast para quem precisar de API nativa
 export { sonnerToast };

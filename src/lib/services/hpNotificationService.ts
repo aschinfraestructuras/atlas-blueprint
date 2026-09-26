@@ -40,6 +40,9 @@ export interface HpNotification {
   hp_result?: "approved" | "approved_conditions" | "rejected" | null;
   result_datetime?: string | null;
   result_observations?: string | null;
+  approved_by_name?: string | null;
+  approved_entity?: string | null;
+  ata_code?: string | null;
   rnc_ref?: string | null;
   result_registered_at?: string | null;
   result_registered_by?: string | null;

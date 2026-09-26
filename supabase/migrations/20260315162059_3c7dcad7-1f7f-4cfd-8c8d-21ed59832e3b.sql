@@ -1,1 +1,0 @@
-ALTER FUNCTION public.fn_validate_session_type() SET search_path TO 'public';

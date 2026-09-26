@@ -95,8 +95,8 @@ cd atlas-blueprint
 npm install
 
 # 2. Configurar variáveis de ambiente
-cp .env.example .env
-# Preencher .env com as credenciais do projeto Supabase
+cp .env.example .env.local
+# Preencher .env.local com as credenciais do projeto Supabase
 
 # 3. Desenvolvimento
 npm run dev          # Servidor local (Vite)
@@ -115,6 +115,13 @@ npm run build        # Build de produção
 | `VITE_SUPABASE_URL` | URL da API Supabase |
 
 Ver `.env.example` para referência completa.
+
+### Deploy
+
+- **Frontend (Vercel):** build `npm run build`, saída `dist/` (ver `vercel.json`, que inclui o rewrite SPA). Definir as variáveis `VITE_*` no painel do Vercel.
+- **Supabase (migrações + Edge Functions):** workflow manual `Supabase deploy` em GitHub Actions. Requer os secrets `SUPABASE_ACCESS_TOKEN` e `SUPABASE_DB_PASSWORD`. Localmente: `supabase link --project-ref <ref>`, `supabase db push`, `supabase functions deploy`.
+- **Secrets das Edge Functions:** `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD` (send-notification) e, opcionalmente, `APP_ALLOWED_ORIGINS` (create-project-member; lista de origens separadas por vírgulas para o redirect dos convites).
+- **CI:** `.github/workflows/ci.yml` corre typecheck, testes e build em cada PR.
 
 ---
 

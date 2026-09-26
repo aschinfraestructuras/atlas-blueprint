@@ -1,0 +1,2 @@
+ALTER TABLE public.projects ADD COLUMN IF NOT EXISTS logo_url text DEFAULT NULL;
+COMMENT ON COLUMN public.projects.logo_url IS 'URL or storage path of the project/company logo for sidebar and PDF exports';
