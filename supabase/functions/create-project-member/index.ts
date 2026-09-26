@@ -141,6 +141,7 @@ Deno.serve(async (req) => {
       const allowedOrigins = [
         supabaseUrl,
         "https://aschquality.com",
+        "https://www.aschquality.com",
         "https://atlasquality.vercel.app",
         ...configuredOrigins,
       ];
