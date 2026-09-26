@@ -14,7 +14,6 @@ import { useWorkItems } from "@/hooks/useWorkItems";
 import { dailyReportService } from "@/lib/services/dailyReportService";
 import { WorkItemSelect } from "@/components/ui/work-item-select";
 import { supabase } from "@/integrations/supabase/client";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface Props {
   open: boolean;
@@ -64,7 +63,7 @@ export const DailyReportFormDialog = React.forwardRef<HTMLDivElement, Props>(
           // Auto-preencher Representante Empreiteiro com o utilizador logado
           if (user && !contractorRep) {
             const me = ws.find((w: any) => w.name?.toLowerCase().includes(
-              (user.name ?? user.email ?? "").split(" ")[0].toLowerCase()
+              (user.user_metadata?.full_name ?? user.email ?? "").split(" ")[0].toLowerCase()
             ));
             if (me) setContractorRep(me.name);
           }
@@ -89,7 +88,7 @@ export const DailyReportFormDialog = React.forwardRef<HTMLDivElement, Props>(
           supervisor_rep: supervisorRep || null,
           ip_rep: ipRep || null,
           observations: observations || null,
-          responsible_name: user.name ?? user.email ?? null,
+          responsible_name: user.user_metadata?.full_name ?? user.email ?? null,
         }, user.id);
         toast({ title: t("dailyReports.toast.created") });
         onOpenChange(false);

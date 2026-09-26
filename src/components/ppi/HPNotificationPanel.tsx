@@ -77,7 +77,7 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
   const { user } = useAuth();
   const reportMeta = useReportMeta();
   const hpSignatureSlots = useSignatureSlots("hp_notification");
-  const { isAdmin } = useProjectRole(projectId);
+  const { isAdmin } = useProjectRole();
   // Nome do emissor para o PDF — resolve de project_workers ou user metadata
   const [notifiedByName, setNotifiedByName] = useState<string | null>(null);
   useEffect(() => {

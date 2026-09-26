@@ -50,6 +50,7 @@ export interface DailyReportInput {
   contractor_rep?: string | null;
   supervisor_rep?: string | null;
   ip_rep?: string | null;
+  responsible_name?: string | null;
 }
 
 export interface LabourRow {

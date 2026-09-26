@@ -79,7 +79,7 @@ export function MeetingsTab() {
       .order("created_at", { ascending: false });
 
     // Filtrar só os que têm campos de reunião
-    const atas = ((data ?? []) as AtaDoc[]).filter(d =>
+    const atas = ((data ?? []) as unknown as AtaDoc[]).filter(d =>
       d.form_data?.numero_ata || d.form_data?.data_reuniao
     );
     setDocs(atas);

@@ -91,7 +91,7 @@ export function MachineryLogTab({ machineryId }: MachineryLogTabProps) {
       .select("id, designation, plate, type")
       .eq("project_id", activeProject.id)
       .eq("status", "active");
-    setMachines((machs ?? []) as MachineryItem[]);
+    setMachines((machs ?? []) as unknown as MachineryItem[]);
 
     // Carregar registos
     let query = supabase
@@ -105,7 +105,7 @@ export function MachineryLogTab({ machineryId }: MachineryLogTabProps) {
     if (machineryId) query = query.eq("machinery_id", machineryId);
 
     const { data } = await query;
-    setEntries((data ?? []) as LogEntry[]);
+    setEntries((data ?? []) as unknown as LogEntry[]);
     setLoading(false);
   }, [activeProject, machineryId]);
 

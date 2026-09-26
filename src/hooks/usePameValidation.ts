@@ -101,9 +101,10 @@ export function usePameValidation(
         // Verificar também em material_lots (pode ter lotes de fornecedores diferentes)
         const { data: lots } = await supabase
           .from("material_lots")
-          .select("id, lot_number, status, supplier_id")
+          .select("id, lot_code, reception_status, supplier_id")
           .eq("material_id", material.id)
-          .neq("status", "rejected");
+          .eq("is_deleted", false)
+          .neq("reception_status", "rejected");
 
         const supplierLots = (lots ?? []).filter(l => l.supplier_id === supplierId || supplierMatchesMaterial);
         supplierApproved = supplierMatchesMaterial || supplierLots.length > 0;
@@ -114,7 +115,7 @@ export function usePameValidation(
 
         // 3. Verificar lotes aprovados
         const approvedLots = (lots ?? []).filter(l =>
-          (l.supplier_id === supplierId || supplierMatchesMaterial) && l.status === "approved"
+          (l.supplier_id === supplierId || supplierMatchesMaterial) && l.reception_status === "approved"
         );
 
         const lotAvailable = approvedLots.length > 0;
@@ -132,7 +133,7 @@ export function usePameValidation(
           materialName: material.name,
           materialId: material.id,
           lotId: bestLot?.id ?? null,
-          lotRef: bestLot?.lot_number ?? null,
+          lotRef: bestLot?.lot_code ?? null,
           warnings,
           errors,
         });

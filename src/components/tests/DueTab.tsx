@@ -154,7 +154,7 @@ export function DueTab() {
       await testDueService.fulfillWithResult(linkDueId, selectedResultId);
       toast.success("Obrigação fechada — resultado vinculado com sucesso.");
       setLinkDueId(null);
-      refresh();
+      refetch();
     } catch (err: any) {
       toast.error(err?.message ?? "Erro ao vincular resultado.");
     } finally { setLinking(false); }

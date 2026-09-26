@@ -40,7 +40,7 @@ export function MeetingActionsPanel() {
     if (!activeProject || createdIds.has(action.id)) return;
     setCreatingId(action.id);
     try {
-      await meetingActionsService.createDeadline(action, activeProject.id);
+      await meetingActionsService.createDeadlineFromAction(activeProject.id, action);
       setCreatedIds(prev => new Set([...prev, action.id]));
     } catch { /* silencioso */ } finally { setCreatingId(null); }
   };
