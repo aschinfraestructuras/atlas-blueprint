@@ -16,7 +16,7 @@ interface EmptyStateProps {
   /** Texto directo (alternativa às keys i18n) */
   title?: string;
   subtitle?: string;
-  /** Acção com label directo */
+  /** Ação com label directo */
   action?: { label: string; onClick: () => void };
   compact?: boolean;
   className?: string;

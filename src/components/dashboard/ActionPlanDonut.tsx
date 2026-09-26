@@ -23,7 +23,7 @@ export function ActionPlanDonut({ onTime, pastDue, loading }: ActionPlanDonutPro
     <Card className="border border-border bg-card shadow-card">
       <CardHeader className="pb-0 pt-4 px-5">
         <CardTitle className="text-[11px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
-          {t("dashboard.charts.actionPlan", { defaultValue: "Plano de Acção" })}
+          {t("dashboard.charts.actionPlan", { defaultValue: "Plano de Ação" })}
         </CardTitle>
       </CardHeader>
       <CardContent className="px-3 pb-3 pt-1">

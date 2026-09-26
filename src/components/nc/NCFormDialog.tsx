@@ -306,13 +306,13 @@ export function NCFormDialog({
                   {form.watch("description") ? "✓" : "○"} 2. {t("nc.form.tabs.description", { defaultValue: "Descrição" })}
                 </TabsTrigger>
                 <TabsTrigger value="correction" className="text-xs gap-1">
-                  {form.watch("correction_type") ? "✓" : "○"} 3. {t("nc.form.tabs.correction", { defaultValue: "Correcção" })}
+                  {form.watch("correction_type") ? "✓" : "○"} 3. {t("nc.form.tabs.correction", { defaultValue: "Correção" })}
                 </TabsTrigger>
                 <TabsTrigger value="rootcause" className="text-xs gap-1">
                   {form.watch("root_cause") ? "✓" : isMaior ? "⚠" : "○"} 4. {t("nc.form.tabs.rootCause", { defaultValue: "Causa Raiz" })}
                 </TabsTrigger>
                 <TabsTrigger value="capa" className="text-xs gap-1">
-                  {form.watch("corrective_action") ? "✓" : "○"} 5. {t("nc.form.tabs.capa", { defaultValue: "Acção Corretiva" })}
+                  {form.watch("corrective_action") ? "✓" : "○"} 5. {t("nc.form.tabs.capa", { defaultValue: "Ação Corretiva" })}
                 </TabsTrigger>
                 {showClosure && (
                   <TabsTrigger value="closure" className="text-xs gap-1">
@@ -599,11 +599,11 @@ export function NCFormDialog({
                 )} />
               </TabsContent>
 
-              {/* ── SECÇÃO 3: CORRECÇÃO IMEDIATA ────────────────────────── */}
+              {/* ── SECÇÃO 3: CORREÇÃO IMEDIATA ────────────────────────── */}
               <TabsContent value="correction" className="space-y-4 mt-0">
                 <FormField control={form.control} name="correction_type" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t("nc.form.correctionType", { defaultValue: "Tipo de correcção" })}</FormLabel>
+                    <FormLabel>{t("nc.form.correctionType", { defaultValue: "Tipo de correção" })}</FormLabel>
                     <FormControl>
                       <RadioGroup onValueChange={field.onChange} value={field.value || ""} className="space-y-2">
                         {CORRECTION_TYPES.map(ct => (
@@ -676,7 +676,7 @@ export function NCFormDialog({
                 )} />
               </TabsContent>
 
-              {/* ── SECÇÃO 5: ACÇÃO CORRETIVA ──────────────────────────── */}
+              {/* ── SECÇÃO 5: AÇÃO CORRETIVA ──────────────────────────── */}
               <TabsContent value="capa" className="space-y-4 mt-0">
                 <FormField control={form.control} name="corrective_action" render={({ field }) => (
                   <FormItem>
@@ -691,7 +691,7 @@ export function NCFormDialog({
                 <div className="grid grid-cols-2 gap-3">
                   <FormField control={form.control} name="assigned_to" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t("nc.form.assignedTo", { defaultValue: "Responsável pela acção" })}</FormLabel>
+                      <FormLabel>{t("nc.form.assignedTo", { defaultValue: "Responsável pela ação" })}</FormLabel>
                       <FormControl>
                         <MemberPicker
                           value={field.value}
@@ -703,7 +703,7 @@ export function NCFormDialog({
                   )} />
                   <FormField control={form.control} name="due_date" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t("nc.form.actionDeadline", { defaultValue: "Prazo acção" })}</FormLabel>
+                      <FormLabel>{t("nc.form.actionDeadline", { defaultValue: "Prazo ação" })}</FormLabel>
                       <FormControl><Input type="date" {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>

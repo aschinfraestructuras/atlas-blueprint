@@ -45,7 +45,7 @@ const buttonVariants = cva(
           "active:scale-[0.97]",
         ].join(" "),
 
-        // Secondary — neutro, discreto, para acções secundárias
+        // Secondary — neutro, discreto, para ações secundárias
         secondary: [
           "bg-secondary text-secondary-foreground",
           "shadow-[0_1px_2px_hsl(215_30%_18%/0.04)]",
@@ -54,7 +54,7 @@ const buttonVariants = cva(
           "active:scale-[0.97]",
         ].join(" "),
 
-        // Ghost — mínimo, para toolbar e acções terciárias
+        // Ghost — mínimo, para toolbar e ações terciárias
         ghost: [
           "hover:bg-muted/70 hover:text-foreground",
           "active:bg-muted active:scale-[0.97]",

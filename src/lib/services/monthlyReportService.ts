@@ -547,7 +547,7 @@ export const monthlyReportService = {
     })()}
 
     ${textSection("7 — Observações", report.observations)}
-    ${textSection("8 — Acções Correctivas", report.corrective_actions)}
+    ${textSection("8 — Ações Correctivas", report.corrective_actions)}
     ${textSection("9 — Plano para o Próximo Mês", report.next_month_plan)}
 
   ${signatureSlots && signatureSlots.length > 0

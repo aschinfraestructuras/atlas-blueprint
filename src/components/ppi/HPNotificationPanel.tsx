@@ -351,7 +351,7 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
       await hpNotificationService.confirm(confirmingId, confirmName.trim());
       toast({
         title: t("ppi.hpNotification.confirmed", {
-          defaultValue: "Recepção confirmada.",
+          defaultValue: "Receção confirmada.",
         }),
       });
       // Notificar Teams (melhor-esforço, silencioso)
@@ -369,7 +369,7 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
     } catch {
       toast({
         title: t("ppi.hpNotification.confirmError", {
-          defaultValue: "Erro ao confirmar recepção.",
+          defaultValue: "Erro ao confirmar receção.",
         }),
         variant: "destructive",
       });
@@ -626,7 +626,7 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
                 return new Date(b.planned_datetime).getTime() - new Date(a.planned_datetime).getTime();
               })
               .map((n) => {
-              // Cálculo de urgência: horas até à inspecção
+              // Cálculo de urgência: horas até à inspeção
               const hoursUntil = n.planned_datetime
                 ? (new Date(n.planned_datetime).getTime() - Date.now()) / 3_600_000
                 : null;
@@ -702,7 +702,7 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
                     </div>
                   </div>
 
-                  {/* Badges e acções */}
+                  {/* Badges e ações */}
                   <div className="flex items-center gap-1.5 shrink-0 flex-wrap justify-end">
                     {/* Badge antecipado */}
                     {(n as any).advance_notice_override && !isVoided && (
@@ -1104,7 +1104,7 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
           <DialogHeader className="-mx-6 px-6 pt-6">
             <DialogTitle className="flex items-center gap-2">
               <ClipboardCheck className="h-4 w-4 text-primary" />
-              Resultado da Inspecção HP — {resultTargetCode}
+              Resultado da Inspeção HP — {resultTargetCode}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
@@ -1132,7 +1132,7 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
             {/* Data/hora real */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label className="text-xs">Data/hora real da inspecção</Label>
+                <Label className="text-xs">Data/hora real da inspeção</Label>
                 <input
                   type="datetime-local"
                   className="mt-1 w-full text-xs border rounded px-2 py-1.5 bg-background"
@@ -1230,7 +1230,7 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
                     approved_entity: resultApprovedEntity.trim() || undefined,
                     registered_by: u?.id ?? "",
                   });
-                  // Actualização optimista imediata
+                  // Atualização optimista imediata
                   setNotifications(prev => prev.map(n => n.id === resultTargetId ? { ...n, ...updated } : n));
                   // Fechar dialog antes do toast para feedback visual imediato
                   const savedTarget = resultTargetId;
@@ -1487,13 +1487,13 @@ export function HPNotificationPanel({ instance, items, projectId }: Props) {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-              {t("ppi.hpNotification.confirmTitle", { defaultValue: "Confirmar Recepção" })}
+              {t("ppi.hpNotification.confirmTitle", { defaultValue: "Confirmar Receção" })}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground">
               {t("ppi.hpNotification.confirmDesc", {
-                defaultValue: "Confirme a recepção da notificação HP. Indique o nome do responsável F/IP.",
+                defaultValue: "Confirme a receção da notificação HP. Indique o nome do responsável F/IP.",
               })}
             </p>
             <div>

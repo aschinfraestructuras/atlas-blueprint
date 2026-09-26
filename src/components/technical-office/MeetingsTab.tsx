@@ -145,7 +145,7 @@ export function MeetingsTab() {
         <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#1e3a5f;margin-bottom:4px;">${t("meetings.fields.decisions")}</div>
         <table><tr><th>Decisão</th><th>Responsável</th><th>Prazo</th></tr>${decisoesHtml}</table>
       </div>` : ""}
-    ${block(t("meetings.fields.pendingActions", { defaultValue: "Acções Pendentes de Reuniões Anteriores" }), fd.acoes_pendentes)}
+    ${block(t("meetings.fields.pendingActions", { defaultValue: "Ações Pendentes de Reuniões Anteriores" }), fd.acoes_pendentes)}
     ${block("Observações", fd.observacoes)}
     ${fd.proxima_reuniao ? `<p style="font-size:10px;color:#6b7280;margin-top:12px;">${t("meetings.fields.nextMeeting")}: <b>${new Date(fd.proxima_reuniao).toLocaleDateString(i18n.language?.startsWith("es") ? "es-ES" : "pt-PT")}</b></p>` : ""}
     ${sigHtml}

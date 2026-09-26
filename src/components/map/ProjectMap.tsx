@@ -277,6 +277,7 @@ export const ProjectMap = forwardRef<ProjectMapHandle, Props>(function ProjectMa
   // Camadas do traçado + PKs (só PF17A para já)
   const alignmentLayerRef = useRef<any>(null);
   const pkLayersRef = useRef<any[]>([]);
+  const pkDeclutterRef = useRef<(() => void) | null>(null);
   const sectorLayersRef = useRef<any[]>([]);
 
   useEffect(() => {
@@ -285,6 +286,7 @@ export const ProjectMap = forwardRef<ProjectMapHandle, Props>(function ProjectMa
 
     if (alignmentLayerRef.current) { alignmentLayerRef.current.remove(); alignmentLayerRef.current = null; }
     pkLayersRef.current.forEach((l) => l.remove()); pkLayersRef.current = [];
+    if (pkDeclutterRef.current) { map.off("zoomend", pkDeclutterRef.current); pkDeclutterRef.current = null; }
     sectorLayersRef.current.forEach((l) => l.remove()); sectorLayersRef.current = [];
 
     const features = (geoData as any)?.features ?? [];
@@ -346,6 +348,12 @@ export const ProjectMap = forwardRef<ProjectMapHandle, Props>(function ProjectMa
 
     if (showPKs) {
       // Suporte a 'vertex' (vértices topográficos oficiais) e 'pk_marker' (legacy)
+      const dotIcon = (key: boolean) => L.divIcon({
+        html: `<div style="width:${key ? 10 : 8}px;height:${key ? 10 : 8}px;border-radius:50%;background:${key ? "#DC2626" : "#192F48"};border:2px solid white;box-shadow:0 1px 3px rgba(0,0,0,.4)"></div>`,
+        className: "",
+        iconSize: [key ? 14 : 12, key ? 14 : 12],
+        iconAnchor: [key ? 7 : 6, key ? 7 : 6],
+      });
       features.filter((f: any) => f.properties?.type === "vertex" || f.properties?.type === "pk_marker").forEach((f: any) => {
         const [lon, lat] = f.geometry.coordinates;
         const pk = f.properties.pk;
@@ -354,20 +362,43 @@ export const ProjectMap = forwardRef<ProjectMapHandle, Props>(function ProjectMa
         const labelText = isVertex
           ? `V ${f.properties.vertex_id} · ${f.properties.pk_label}`
           : `PK ${f.properties.name.replace("PK ","")}`;
-        const icon = L.divIcon({
-          html: `<div style="background:${isKey ? "#DC2626" : "#192F48"};color:white;font-size:${isKey ? "9.5" : "8.5"}px;font-weight:700;padding:2px 6px;border-radius:3px;white-space:nowrap;border:1px solid ${isKey ? "#ef4444" : "#2a4a6b"};box-shadow:0 1px 4px rgba(0,0,0,.3);font-family:system-ui,monospace">${labelText}</div>`,
+        const width = Math.round(labelText.length * 6 + 14);
+        const labelIcon = L.divIcon({
+          html: `<div style="background:${isKey ? "#DC2626" : "#192F48"};color:white;font-size:${isKey ? "11" : "10"}px;font-weight:700;padding:2px 6px;border-radius:3px;white-space:nowrap;border:1px solid ${isKey ? "#ef4444" : "#2a4a6b"};box-shadow:0 1px 4px rgba(0,0,0,.3);font-family:system-ui,monospace">${labelText}</div>`,
           className: "",
-          iconSize: [labelText.length * 5.5 + 12, 20],
-          iconAnchor: [(labelText.length * 5.5 + 12) / 2, 10],
+          iconSize: [width, 20],
+          iconAnchor: [width / 2, 10],
         });
         const tooltipHtml = isVertex
           ? `<b>Vértice ${f.properties.vertex_id}</b> — PK ${f.properties.pk_label}<br><span style="font-size:10px">${f.properties.local ?? ""}</span><br><span style="font-size:10px;color:#666">Cota ${f.properties.elevation_m}m · ETRS89/PT-TM06</span>`
           : `<b>${f.properties.name}</b><br>${f.properties.local ?? ""}`;
-        const m = L.marker([lat, lon], { icon })
+        const m = L.marker([lat, lon], { icon: labelIcon, zIndexOffset: isKey ? 500 : 0 })
           .bindTooltip(tooltipHtml, { direction: "top", offset: [0, -14] })
           .addTo(map);
+        (m as any)._pk = { labelIcon, dotIcon: dotIcon(isKey), width, isKey, shown: true };
         pkLayersRef.current.push(m);
       });
+
+      // Evitar etiquetas sobrepostas: as âncoras têm prioridade; as restantes que
+      // colidem com uma etiqueta já colocada passam a ponto (tooltip mantém o PK)
+      const declutter = () => {
+        const placed: { x1: number; y1: number; x2: number; y2: number }[] = [];
+        const ordered = [...pkLayersRef.current].sort((a, b) => Number(b._pk.isKey) - Number(a._pk.isKey));
+        ordered.forEach((m: any) => {
+          const pt = map.latLngToContainerPoint(m.getLatLng());
+          const r = { x1: pt.x - m._pk.width / 2 - 2, y1: pt.y - 12, x2: pt.x + m._pk.width / 2 + 2, y2: pt.y + 12 };
+          const hit = placed.some((q) => r.x1 < q.x2 && r.x2 > q.x1 && r.y1 < q.y2 && r.y2 > q.y1);
+          if (hit) {
+            if (m._pk.shown) { m.setIcon(m._pk.dotIcon); m._pk.shown = false; }
+          } else {
+            placed.push(r);
+            if (!m._pk.shown) { m.setIcon(m._pk.labelIcon); m._pk.shown = true; }
+          }
+        });
+      };
+      declutter();
+      map.on("zoomend", declutter);
+      pkDeclutterRef.current = declutter;
     }
 
     features.filter((f: any) => f.properties?.type === "sector").forEach((f: any) => {
@@ -575,7 +606,7 @@ export const ProjectMap = forwardRef<ProjectMapHandle, Props>(function ProjectMa
       return;
     }
 
-    // Prioridade 2: centro configurado no projecto
+    // Prioridade 2: centro configurado no projeto
     if (activeProject.map_center_lat != null && activeProject.map_center_lng != null) {
       map.setView(
         [Number(activeProject.map_center_lat), Number(activeProject.map_center_lng)],

@@ -14,6 +14,14 @@ export interface ProjectHealth {
   readiness_ratio: number;
   health_score: number;
   health_status: "healthy" | "attention" | "critical";
+  /** HPs pendentes com data prevista ultrapassada */
+  hp_overdue: number;
+  /** RMSGQ do mês anterior por emitir após o dia 5 */
+  rmsgq_overdue: boolean;
+  /** Materiais com PAME pendente/submetido há mais de 30 dias */
+  pame_pending_30d: number;
+  /** Pontos descontados por componente (vw_project_health.score_breakdown) */
+  score_breakdown: Record<string, number>;
 }
 
 const EMPTY: ProjectHealth = {
@@ -23,6 +31,7 @@ const EMPTY: ProjectHealth = {
   total_ppi_pending: 0, total_documents_expired: 0,
   total_calibrations_expired: 0, activities_blocked: 0,
   readiness_ratio: 100, health_score: 100, health_status: "healthy",
+  hp_overdue: 0, rmsgq_overdue: false, pame_pending_30d: 0, score_breakdown: {},
 };
 
 export function useProjectHealth(projectId?: string) {
@@ -69,6 +78,10 @@ export function useProjectHealth(projectId?: string) {
           readiness_ratio: Number(row.readiness_ratio) || 0,
           health_score: Number(row.health_score) || 0,
           health_status: row.health_status ?? "healthy",
+          hp_overdue: Number(row.hp_overdue) || 0,
+          rmsgq_overdue: Boolean(row.rmsgq_overdue),
+          pame_pending_30d: Number(row.pame_pending_30d) || 0,
+          score_breakdown: row.score_breakdown ?? {},
         });
       } else {
         setData({
@@ -118,6 +131,10 @@ export function useAllProjectsHealth() {
           readiness_ratio: Number(r.readiness_ratio) || 0,
           health_score: Number(r.health_score) || 0,
           health_status: r.health_status ?? "healthy",
+          hp_overdue: Number(r.hp_overdue) || 0,
+          rmsgq_overdue: Boolean(r.rmsgq_overdue),
+          pame_pending_30d: Number(r.pame_pending_30d) || 0,
+          score_breakdown: r.score_breakdown ?? {},
         })));
       }
     } catch (err) {

@@ -104,7 +104,7 @@ export default function ConfirmReceiptPage() {
           <div className="space-y-4 py-6">
             <CheckCircle className="h-16 w-16 text-emerald-500 mx-auto" />
             <h1 className="text-2xl font-bold text-foreground">
-              {t("notifications.confirmTitle", { defaultValue: "Recepção Confirmada" })}
+              {t("notifications.confirmTitle", { defaultValue: "Receção Confirmada" })}
             </h1>
             {subject && (
               <p className="text-sm text-muted-foreground">
@@ -115,7 +115,7 @@ export default function ConfirmReceiptPage() {
               <p className="text-xs text-muted-foreground">{confirmedAt}</p>
             )}
             <p className="text-sm text-muted-foreground mt-4">
-              {t("notifications.confirmMsg", { defaultValue: "A sua recepção foi registada. Pode fechar esta janela." })}
+              {t("notifications.confirmMsg", { defaultValue: "A sua receção foi registada. Pode fechar esta janela." })}
             </p>
           </div>
         )}
@@ -127,7 +127,7 @@ export default function ConfirmReceiptPage() {
               {t("common.error", { defaultValue: "Erro" })}
             </h1>
             <p className="text-sm text-muted-foreground">
-              {t("notifications.confirmError", { defaultValue: "Não foi possível confirmar a recepção. O link pode ser inválido." })}
+              {t("notifications.confirmError", { defaultValue: "Não foi possível confirmar a receção. O link pode ser inválido." })}
             </p>
           </div>
         )}

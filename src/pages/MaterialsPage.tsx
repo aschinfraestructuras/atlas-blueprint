@@ -75,7 +75,7 @@ export default function MaterialsPage() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewMeta, setPreviewMeta] = useState<{ title: string; subtitle: string; filename: string } | null>(null);
 
-  // Carregar todos os lotes do projecto com joins
+  // Carregar todos os lotes do projeto com joins
   useEffect(() => {
     if (!activeProject) return;
     setLotsLoading(true);
@@ -210,14 +210,14 @@ export default function MaterialsPage() {
           <TabsTrigger value="receptions" className="gap-1.5">
             <Truck className="h-3.5 w-3.5" />
             <span className="hidden sm:inline">3. {t("materials.reception_tab.tabLabel")}</span>
-            <span className="sm:hidden">{t("materials.reception_tab.tabLabelShort", { defaultValue: "Recepções" })}</span>
+            <span className="sm:hidden">{t("materials.reception_tab.tabLabelShort", { defaultValue: "Receções" })}</span>
             {lots.length > 0 && (
               <span className="ml-1 rounded-full bg-primary/15 text-primary text-[10px] font-bold px-1.5 py-0.5">{lots.length}</span>
             )}
           </TabsTrigger>
         </TabsList>
 
-        {/* ── TAB: RECEPÇÕES DE OBRA ── */}
+        {/* ── TAB: RECEÇÕES DE OBRA ── */}
         <TabsContent value="receptions" className="space-y-4 mt-4">
           <div className="flex items-center justify-between gap-3">
             <div>
@@ -237,11 +237,11 @@ export default function MaterialsPage() {
               >
                 <SelectTrigger className="h-9 w-[220px] text-sm gap-1.5">
                   <Plus className="h-3.5 w-3.5 text-primary" />
-                  <SelectValue placeholder={t("materials.reception_tab.newReception", { defaultValue: "+ Nova Recepção…" })} />
+                  <SelectValue placeholder={t("materials.reception_tab.newReception", { defaultValue: "+ Nova Receção…" })} />
                 </SelectTrigger>
                 <SelectContent>
                   <div className="px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground border-b">
-                    {t("materials.reception_tab.pickMaterial", { defaultValue: "Escolher material para registar recepção" })}
+                    {t("materials.reception_tab.pickMaterial", { defaultValue: "Escolher material para registar receção" })}
                   </div>
                   {materials.filter(m => m.status !== "archived").map(m => (
                     <SelectItem key={m.id} value={m.id}>
@@ -258,8 +258,8 @@ export default function MaterialsPage() {
           ) : lots.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 gap-3 text-muted-foreground">
               <Truck className="h-10 w-10 opacity-20" />
-              <p className="text-sm font-medium">Sem recepções registadas</p>
-              <p className="text-xs">Quando receber material em obra, registe aqui a recepção.</p>
+              <p className="text-sm font-medium">Sem receções registadas</p>
+              <p className="text-xs">Quando receber material em obra, registe aqui a receção.</p>
             </div>
           ) : (
             <>
@@ -328,12 +328,12 @@ export default function MaterialsPage() {
                           <Button
                             variant="ghost" size="icon"
                             className="h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive"
-                            title="Apagar registo de recepção (soft-delete — admin)"
+                            title="Apagar registo de receção (soft-delete — admin)"
                             onClick={async (e) => {
                               e.stopPropagation();
-                              if (!confirm(`Apagar registo de recepção ${lot.lot_code}?\n\nEsta acção é irreversível e deve ser usada apenas para corrigir registos criados por engano.`)) return;
+                              if (!confirm(`Apagar registo de receção ${lot.lot_code}?\n\nEsta ação é irreversível e deve ser usada apenas para corrigir registos criados por engano.`)) return;
                               await (supabase as any).from("material_lots").update({ is_deleted: true, deleted_at: new Date().toISOString() }).eq("id", lot.id);
-                              toast({ title: `Recepção ${lot.lot_code} apagada.` });
+                              toast({ title: `Receção ${lot.lot_code} apagada.` });
                               // Refresh lots
                               const { data } = await (supabase.from("material_lots") as any)
                                 .select("*, materials(code, name, category)")
@@ -587,7 +587,7 @@ export default function MaterialsPage() {
             </div>
           )}
 
-          {/* FAB — Registar Recepção (mobile) */}
+          {/* FAB — Registar Receção (mobile) */}
           {canCreate && (
             <button
               onClick={handleNew}

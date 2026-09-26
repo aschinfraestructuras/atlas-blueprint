@@ -546,7 +546,7 @@ function FilterPill({
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
-   Hero Project Card — refinamento #2 (último projecto destacado)
+   Hero Project Card — refinamento #2 (último projeto destacado)
    ───────────────────────────────────────────────────────────────────────── */
 
 function HeroProjectCard({
@@ -801,14 +801,14 @@ function ProjectCard({
         </div>
 
         {/* Mini-KPIs (count-up — refinamento #7/8a) */}
-        <div className="grid grid-cols-3 gap-2 border-t border-white/[0.05] pt-4">
+        <div className="grid grid-cols-3 gap-2 border-t border-white/[0.05] py-5">
           <Kpi icon={AlertTriangle} value={ncOpen} label={t("projectSelector.kpi.nc")} tone={ncOpen > 0 ? "warn" : "neutral"} delay={150} />
           <Kpi icon={ClipboardCheck} value={ppiPending} label={t("projectSelector.kpi.ppi")} tone={ppiPending > 0 ? "info" : "neutral"} delay={250} />
           <Kpi icon={FlaskConical} value={testsPending} label={t("projectSelector.kpi.tests")} tone={testsPending > 0 ? "info" : "neutral"} delay={350} />
         </div>
 
         {/* Footer row */}
-        <div className="mt-auto flex items-center justify-between border-t border-white/[0.05] pt-4 text-[11px] text-white/40">
+        <div className="mt-auto flex items-center justify-between border-t border-white/[0.05] pt-4 text-xs text-white/55">
           <span className="inline-flex items-center gap-1.5">
             {lastAccess ? (
               <>
@@ -869,14 +869,14 @@ function Kpi({
     tone === "info" ? "text-white" :
     "text-white/40";
   return (
-    <div className="flex flex-col gap-0.5">
+    <div className="flex flex-col gap-1.5">
       <div className="flex items-baseline gap-1.5">
-        <Icon className={cn("h-3 w-3", tone === "neutral" ? "text-white/30" : "text-white/55")} />
-        <span className={cn("text-base font-semibold tabular-nums leading-none", valueColour)}>
+        <Icon className={cn("h-3.5 w-3.5", tone === "neutral" ? "text-white/45" : "text-white/65")} />
+        <span className={cn("text-2xl font-semibold tabular-nums leading-none", valueColour)}>
           {animated}
         </span>
       </div>
-      <span className="text-[9px] font-medium uppercase tracking-wider text-white/35">
+      <span className="text-[10px] font-medium uppercase tracking-wider text-white/55">
         {label}
       </span>
     </div>

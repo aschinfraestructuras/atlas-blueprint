@@ -287,9 +287,16 @@ export function MapPointsTable({ points, activeFilters, onFocusPoint, className 
       {/* Rich card list */}
       <ScrollArea className="flex-1">
         {filtered.length === 0 ? (
-          <div className="p-6 text-center text-xs text-muted-foreground">
+          <div className="p-6 text-center text-sm text-muted-foreground">
             <MapPin className="h-6 w-6 mx-auto mb-2 opacity-40" />
-            {t("map.table.empty", { defaultValue: "Nenhum ponto corresponde aos filtros." })}
+            {points.length === 0 ? (
+              <>
+                <p className="font-medium text-foreground">{t("map.noPoints", { defaultValue: "Sem pontos georreferenciados" })}</p>
+                <p className="mt-1 text-xs">{t("map.noPointsHint", { defaultValue: "Adicione coordenadas GPS nos formulários de Work Items, NCs, PPIs e Ensaios." })}</p>
+              </>
+            ) : (
+              t("map.table.empty", { defaultValue: "Nenhum ponto corresponde aos filtros." })
+            )}
           </div>
         ) : (
           <ul className="divide-y divide-border/30">

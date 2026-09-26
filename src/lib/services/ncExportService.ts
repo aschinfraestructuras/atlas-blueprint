@@ -211,8 +211,8 @@ async function renderNCHtml(nc: NonConformity, labels: NCExportLabels, signature
     html += `<div class="nc-field-lbl">Referência</div><div class="nc-field-val">${esc(nc.reference)}</div>`;
   }
 
-  // 5. CAPA — Correcção imediata
-  html += `<div class="nc-section">5. Correcção Imediata (CAPA)</div>`;
+  // 5. CAPA — Correção imediata
+  html += `<div class="nc-section">5. Correção Imediata (CAPA)</div>`;
   html += `<div class="nc-grid">
     <div><div class="nc-field-lbl">Tipo de disposição</div><div class="nc-field-val">${esc(correctionTypeLabel)}</div></div>
     <div><div class="nc-field-lbl">Prazo conclusão</div><div class="nc-field-val">${dateStr(nc.actual_completion_date)}</div></div>
@@ -224,15 +224,15 @@ async function renderNCHtml(nc: NonConformity, labels: NCExportLabels, signature
   html += `<div class="nc-field-lbl">Método</div><div class="nc-field-val">${esc(rootCauseMethodLabel)}</div>`;
   html += `<div class="nc-field-lbl">${labels.rootCause}</div><div class="nc-field-val">${esc(nc.root_cause)}</div>`;
 
-  // 7. CAPA — Acção correctiva
-  html += `<div class="nc-section">7. Acção Correctiva</div>`;
+  // 7. CAPA — Ação correctiva
+  html += `<div class="nc-section">7. Ação Correctiva</div>`;
   html += `<div class="nc-field-val">${esc(nc.corrective_action)}</div>`;
   if (nc.ac_efficacy_indicator) {
     html += `<div class="nc-field-lbl">Indicador de eficácia</div><div class="nc-field-val">${esc(nc.ac_efficacy_indicator)}</div>`;
   }
 
-  // 8. CAPA — Acção preventiva
-  html += `<div class="nc-section">8. Acção Preventiva</div>`;
+  // 8. CAPA — Ação preventiva
+  html += `<div class="nc-section">8. Ação Preventiva</div>`;
   html += `<div class="nc-field-val">${esc(nc.preventive_action)}</div>`;
   if (nc.efficacy_analysis) {
     html += `<div class="nc-field-lbl">Análise de eficácia</div><div class="nc-field-val">${esc(nc.efficacy_analysis)}</div>`;

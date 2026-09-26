@@ -333,7 +333,7 @@ export const fieldRecordService = {
 
       <h3>1. Identificação</h3>
       <div class="info-grid">
-        <div><span class="label">Data Inspecção</span><br/><span class="value">${record.inspection_date}</span></div>
+        <div><span class="label">Data Inspeção</span><br/><span class="value">${record.inspection_date}</span></div>
         <div><span class="label">Tipo Ponto</span><br/>${pointBadge(record.point_type)}</div>
         <div><span class="label">Ref. PPI</span><br/><span class="value">${record.ppi_code ?? "—"}</span></div>
         <div><span class="label">Actividade</span><br/><span class="value">${record.activity}</span></div>

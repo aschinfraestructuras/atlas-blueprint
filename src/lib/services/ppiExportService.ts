@@ -610,7 +610,7 @@ export function exportNotHpPdf(
   </div>
 
   <div class="confirm-block">
-    <div class="confirm-title">Confirmação de Recepção — Fiscalização / IP</div>
+    <div class="confirm-title">Confirmação de Receção — Fiscalização / IP</div>
     <div class="sig-line">
       <div class="sig-field">Recebido por: ____________________________________</div>
       <div class="sig-field">Data: _______________</div>

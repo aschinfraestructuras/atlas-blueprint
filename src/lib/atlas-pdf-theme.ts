@@ -14,7 +14,7 @@ export const ATLAS_PDF = {
     rule:     "#C4CBD4",   // linhas de tabela e separadores
     tint:     "#F1F3F5",   // fundo de linhas alternadas
     white:    "#FFFFFF",
-    // badges de inspecção
+    // badges de inspeção
     hp_bg:    "#F3EAEA", hp_fg: "#6A1414", hp_bd: "#BC8C8C",
     rp_bg:    "#F4F0E0", rp_fg: "#594200", rp_bd: "#BEA640",
     wp_bg:    "#E7F2E7", wp_fg: "#194819", wp_bd: "#86B886",

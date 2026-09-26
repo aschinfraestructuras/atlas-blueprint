@@ -233,7 +233,7 @@ export const weldService = {
       <table>
         <tr><th>Temperatura (°C)</th><td>${record.preheat_temp_c ?? "—"}</td><th>Duração (min)</th><td>${record.preheat_duration_min ?? "—"}</td><th>Resultado</th><td>${passBadge(record.preheat_pass)}</td></tr>
       </table>
-      <h2>4. Inspecção Visual e Dimensional</h2>
+      <h2>4. Inspeção Visual e Dimensional</h2>
       <table>
         <tr><th>Visual</th><td>${passBadge(record.visual_pass)}</td><th>Excesso material</th><td>${passBadge(record.excess_material_ok)}</td></tr>
         <tr><th>Desalinhamento (mm)</th><td>${record.alignment_mm ?? "—"}</td><th>Critério ≤</th><td>${record.alignment_criteria} mm</td><th>Resultado</th><td>${passBadge(record.alignment_pass)}</td></tr>

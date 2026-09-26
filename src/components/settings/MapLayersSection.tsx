@@ -121,7 +121,7 @@ export function MapLayersSection() {
         <Layers className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
         <p className="text-[11.5px] text-muted-foreground leading-relaxed">
           {t("mapLayers.intro", {
-            defaultValue: "Carregue ficheiros KMZ, KML ou GeoJSON com o traçado, zonas de obra, estruturas, expropriações ou outras camadas geográficas. Estas camadas ficam sobrepostas ao Mapa da Obra para todos os membros do projecto.",
+            defaultValue: "Carregue ficheiros KMZ, KML ou GeoJSON com o traçado, zonas de obra, estruturas, expropriações ou outras camadas geográficas. Estas camadas ficam sobrepostas ao Mapa da Obra para todos os membros do projeto.",
           })}
         </p>
       </div>

@@ -164,7 +164,7 @@ export default function MyTasksPage() {
           distance_reached:  "Distância atingida",
           quantity_reached:  "Quantidade atingida",
           area_reached:      "Área atingida",
-          lot_received:      "Lote recepcionado",
+          lot_received:      "Lote rececionado",
           time_elapsed:      "Prazo atingido",
           manual:            "Manual",
         };

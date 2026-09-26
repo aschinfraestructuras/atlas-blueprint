@@ -219,7 +219,7 @@ export function ContactsNotificationsSection({ projectId }: Props) {
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <Users className="h-4 w-4 text-muted-foreground" />
-            <h3 className="text-sm font-bold">{t("contacts.title", { defaultValue: "Contactos do Projecto" })}</h3>
+            <h3 className="text-sm font-bold">{t("contacts.title", { defaultValue: "Contactos do Projeto" })}</h3>
             <Badge variant="secondary" className="text-[10px]">{contacts.length}</Badge>
           </div>
           <Button size="sm" className="gap-1.5 h-7 text-xs" onClick={() => openContactDialog()}>

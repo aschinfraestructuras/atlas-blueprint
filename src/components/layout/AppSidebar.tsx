@@ -178,7 +178,7 @@ function SectionHeader({
         collapsible && "cursor-pointer",
         hasActive
           ? "text-sidebar-primary"
-          : "text-sidebar-foreground/45 hover:text-sidebar-foreground/75",
+          : "text-sidebar-foreground/70 hover:text-sidebar-foreground",
       )}
     >
       <Icon className={cn(
@@ -189,15 +189,15 @@ function SectionHeader({
       {!collapsed && (
         <>
           <span className={cn(
-            "text-[10px] font-bold uppercase tracking-[0.14em] whitespace-nowrap select-none leading-none",
-            hasActive ? "text-sidebar-primary" : "text-sidebar-foreground/40 group-hover/header:text-sidebar-foreground/60"
+            "text-[11px] font-bold uppercase tracking-[0.12em] whitespace-nowrap select-none leading-none",
+            hasActive ? "text-sidebar-primary" : "text-sidebar-foreground/65 group-hover/header:text-sidebar-foreground/85"
           )}>
             {label}
           </span>
           <div className="flex-1" />
           {collapsible && (
             <ChevronDown className={cn(
-              "h-2.5 w-2.5 text-sidebar-foreground/25 transition-transform duration-200 flex-shrink-0",
+              "h-2.5 w-2.5 text-sidebar-foreground/50 transition-transform duration-200 flex-shrink-0",
               !open && "-rotate-90"
             )} />
           )}
@@ -241,7 +241,7 @@ function NavItem({ item, active, collapsed, onClose }: {
               "bg-sidebar-accent text-sidebar-accent-foreground font-semibold",
               "shadow-[0_1px_3px_hsl(0_0%_0%/0.15),inset_0_1px_0_hsl(0_0%_100%/0.06)]",
             ].join(" ")
-          : "font-medium text-sidebar-foreground/55 hover:text-sidebar-foreground/90 hover:bg-sidebar-accent/40"
+          : "font-medium text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent/40"
       )}
     >
       {active && (
@@ -254,7 +254,7 @@ function NavItem({ item, active, collapsed, onClose }: {
       )} />
       {!collapsed && (
         <span className={cn(
-          "truncate leading-none text-[12px] tracking-[0.015em]",
+          "truncate leading-none text-[13px] tracking-[0.01em]",
           active ? "text-sidebar-primary font-bold" : "font-medium"
         )}>{t(item.labelKey)}</span>
       )}
@@ -353,7 +353,7 @@ function SidebarContent({ collapsed, onClose }: { collapsed: boolean; onClose?: 
             <span className="text-[12px] font-black tracking-[0.28em] uppercase leading-none text-sidebar-foreground">
               ATLAS
             </span>
-            <span className="text-[8px] font-medium tracking-[0.16em] uppercase leading-none mt-[3px] text-sidebar-foreground/35">
+            <span className="text-[9px] font-medium tracking-[0.16em] uppercase leading-none mt-[3px] text-sidebar-foreground/60">
               Quality Platform
             </span>
           </div>
@@ -426,7 +426,7 @@ function SidebarContent({ collapsed, onClose }: { collapsed: boolean; onClose?: 
                         {isFirstLibrary && !collapsed && (
                           <div className="flex items-center gap-1.5 px-3 mt-2 mb-1">
                             <div className="h-px flex-1 bg-sidebar-border/25" />
-                            <span className="text-[9px] font-bold uppercase tracking-[0.15em] text-sidebar-foreground/30">
+                            <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-sidebar-foreground/55">
                               {t("nav.sections.configuration")}
                             </span>
                             <div className="h-px flex-1 bg-sidebar-border/25" />
@@ -475,7 +475,7 @@ function SidebarContent({ collapsed, onClose }: { collapsed: boolean; onClose?: 
               health.health_status === "critical" && "bg-destructive",
             )} />
             {!collapsed && (
-              <span className="text-[10px] font-bold tracking-wider text-sidebar-foreground/50">
+              <span className="text-[11px] font-bold tracking-wider text-sidebar-foreground/75">
                 {t("health.sidebarScore", { defaultValue: "Score" })}: {healthLoading ? "…" : health.health_score}
               </span>
             )}
@@ -487,7 +487,7 @@ function SidebarContent({ collapsed, onClose }: { collapsed: boolean; onClose?: 
       {!onClose && (
         <div className="flex-shrink-0 py-3 px-3 border-t border-sidebar-border/40">
           {!collapsed && (
-            <p className="text-[8px] uppercase tracking-widest text-sidebar-foreground/25">
+            <p className="text-[9px] uppercase tracking-widest text-sidebar-foreground/45">
               © {new Date().getFullYear()} Atlas QMS
             </p>
           )}

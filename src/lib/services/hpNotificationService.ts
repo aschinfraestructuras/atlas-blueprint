@@ -36,7 +36,7 @@ export interface HpNotification {
   voided_at?: string | null;
   voided_by?: string | null;
   void_reason?: string | null;
-  // Secção 5 — resultado da inspecção HP
+  // Secção 5 — resultado da inspeção HP
   hp_result?: "approved" | "approved_conditions" | "rejected" | null;
   result_datetime?: string | null;
   result_observations?: string | null;
@@ -226,7 +226,7 @@ export const hpNotificationService = {
 
 
 
-  /** Regista o resultado da inspecção HP (Secção 5) */
+  /** Regista o resultado da inspeção HP (Secção 5) */
   async registerResult(
     id: string,
     result: "approved" | "approved_conditions" | "rejected",
@@ -463,7 +463,7 @@ function buildHpNotificationHtml(
     `PPI-PF17A-__ (secção relevante)`,
     "FAV / PAME aprovada",
     "BE-CAMPO / BE-LAB anteriores",
-    "Peças do projecto",
+    "Peças do projeto",
     "ATA-Q de HPs anteriores desta fase",
   ];
 
@@ -562,10 +562,10 @@ ${header}
 ${n.notes && n.notes.length < 300 ? `<div class="field" style="margin-top:6px"><span class="label">Notas / Observações</span><span class="value">${esc(n.notes)}</span></div>` : ""}
 
 <!-- SECÇÃO 3 -->
-<h3>3 — Data e Hora Previstas para a Inspecção</h3>
+<h3>3 — Data e Hora Previstas para a Inspeção</h3>
 <div class="grid3">
   <div class="field">
-    <span class="label">Data Prevista da Inspecção HP</span>
+    <span class="label">Data Prevista da Inspeção HP</span>
     <span class="value">${fmtDate(n.planned_datetime)}</span>
   </div>
   <div class="field">
@@ -587,7 +587,7 @@ ${n.notes && n.notes.length < 300 ? `<div class="field" style="margin-top:6px"><
 </div>
 
 <div style="margin-top:8px">
-  <span class="label" style="margin-bottom:4px;display:block">Documentos a Ter Disponíveis na Inspecção</span>
+  <span class="label" style="margin-bottom:4px;display:block">Documentos a Ter Disponíveis na Inspeção</span>
   <div class="prereq-grid">
     ${docsNeeded.map(d => `<div class="prereq-item">${checkbox()} ${d}</div>`).join("")}
     <div class="prereq-item">${checkbox()} Outro: ___________________________</div>
@@ -595,7 +595,7 @@ ${n.notes && n.notes.length < 300 ? `<div class="field" style="margin-top:6px"><
 </div>
 
 <!-- SECÇÃO 4 -->
-<h3>4 — Destinatário e Confirmação de Recepção</h3>
+<h3>4 — Destinatário e Confirmação de Receção</h3>
 <div class="grid2">
   <div class="field">
     <span class="label">Destinatário — Fiscalização / IP</span>
@@ -610,7 +610,7 @@ ${n.notes && n.notes.length < 300 ? `<div class="field" style="margin-top:6px"><
     </span>
   </div>
   <div class="field">
-    <span class="label">Confirmação de Recepção pela Fiscalização</span>
+    <span class="label">Confirmação de Receção pela Fiscalização</span>
     <span class="value">
       ${n.status === "confirmed" && n.confirmed_at
         ? `Confirmada em: ${fmtDateTime(n.confirmed_at)}`
@@ -643,10 +643,10 @@ ${signatureBlockHtml(signatureSlots, fmtDate(n.notified_at ?? n.created_at))}
 <div class="page-break">
 ${header}
 
-<h3>5 — Resultado — ${hasResult ? "Registado" : "Preenchido Após a Inspecção"}</h3>
+<h3>5 — Resultado — ${hasResult ? "Registado" : "Preenchido Após a Inspeção"}</h3>
 <div class="grid2" style="margin-bottom:12px">
   <div class="field">
-    <span class="label">Data / Hora Real da Inspecção HP</span>
+    <span class="label">Data / Hora Real da Inspeção HP</span>
     <span class="value">${n.result_datetime ? fmtDateTime(n.result_datetime) : "____/____/____ ______h"}</span>
   </div>
   <div class="field">
@@ -687,14 +687,14 @@ ${signatureBlockHtml(signatureSlots, fmtDate(n.confirmed_at ?? n.notified_at ?? 
   <div class="sig-block" style="flex:1">
     <div class="role">Recebida Pela Fiscalização / IP</div>
     <div>Nome: ______________________________</div>
-    <div style="margin-top:4px">Data/Hora de recepção: ____/____/________</div>
+    <div style="margin-top:4px">Data/Hora de receção: ____/____/________</div>
     <div class="sig-line">Assinatura</div>
   </div>
 </div>
 
 <div style="margin-top:36px;padding:8px 12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:4px;font-size:9px;color:#6b7280;">
   <strong style="color:#192F48;">Instruções de envio:</strong>
-  Enviar por e-mail com confirmação de leitura (ou entregar fisicamente com acuse de recepção).
+  Enviar por e-mail com confirmação de leitura (ou entregar fisicamente com acuse de receção).
   O original fica arquivado no Dossier de Campo. Uma cópia é entregue à F/IP.
   Registar no Atlas QMS após confirmação. Código de arquivo: <strong>${esc(n.code)}</strong>.
 </div>

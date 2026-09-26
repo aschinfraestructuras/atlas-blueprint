@@ -83,7 +83,7 @@ export function FieldRecordDetailDialog({ open, onOpenChange, recordId }: Props)
             {/* Cabeçalho — actividade */}
             <div className="rounded-lg border border-border/60 bg-muted/20 p-4">
               <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground mb-1.5">
-                {t("fieldRecords.detail.activity", { defaultValue: "Actividade inspeccionada" })}
+                {t("fieldRecords.detail.activity", { defaultValue: "Actividade inspecionada" })}
               </p>
               <p className="text-sm font-semibold text-foreground">{record.activity}</p>
               {record.ppi_code && (

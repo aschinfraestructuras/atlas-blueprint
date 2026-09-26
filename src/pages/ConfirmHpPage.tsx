@@ -98,7 +98,7 @@ export default function ConfirmHpPage() {
       <div className="flex items-start gap-3">
         <Calendar className={`h-4 w-4 mt-0.5 shrink-0 ${dim ? "text-gray-400" : "text-blue-500"}`} />
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">Data e Hora Previstas da Inspecção</p>
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">Data e Hora Previstas da Inspeção</p>
           <p className={`text-sm font-semibold ${dim ? "text-gray-500" : "text-[#192F48]"}`}>{fmtDate(preview.planned_at)}</p>
         </div>
       </div>

@@ -1,3 +1,4 @@
+import { useId } from "react";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 
@@ -14,47 +15,37 @@ const STATUS = {
   critical:  { color: "hsl(0 68% 48%)",   label: "Crítico",   glow: "hsl(0 68% 48% / 0.3)"    },
 };
 
-// Arco SVG puro — muito mais limpo que PieChart
-const SIZE   = 160;
-const CX     = SIZE / 2;
-const CY     = SIZE / 2 + 10;  // Ligeiramente abaixo do centro para o semicírculo
-const R      = 62;
-const STROKE = 11;
-// Semicírculo: de 180° a 0° (da esquerda para a direita, em cima)
-const ARC_START_ANGLE = 210; // 210° — ligeiramente abaixo do horizontal esquerdo
-const ARC_END_ANGLE   = -30; // -30° — ligeiramente abaixo do horizontal direito
-const TOTAL_DEG = ARC_START_ANGLE - ARC_END_ANGLE; // 240°
+// Arco SVG de 240°, aberto em baixo (−120° → +120°, 0° = topo)
+const SIZE     = 160;
+const STROKE   = 11;
+const R        = 62;
+const CX       = SIZE / 2;
+const CY       = R + STROKE / 2 + 4;
+const HEIGHT   = Math.ceil(CY + R * 0.5 + STROKE / 2 + 2);
+const START    = -120;
+const END      = 120;
 
-function polarToCartesian(cx: number, cy: number, r: number, angleDeg: number) {
-  const rad = ((angleDeg - 90) * Math.PI) / 180;
-  return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+function polar(angleDeg: number) {
+  const rad = (angleDeg * Math.PI) / 180;
+  return { x: CX + R * Math.sin(rad), y: CY - R * Math.cos(rad) };
 }
 
-function describeArc(cx: number, cy: number, r: number, startAngle: number, endAngle: number) {
-  const s = polarToCartesian(cx, cy, r, endAngle);
-  const e = polarToCartesian(cx, cy, r, startAngle);
-  const large = startAngle - endAngle > 180 ? 1 : 0;
-  return `M ${s.x} ${s.y} A ${r} ${r} 0 ${large} 0 ${e.x} ${e.y}`;
-}
+const s0 = polar(START);
+const s1 = polar(END);
+const ARC_PATH = `M ${s0.x} ${s0.y} A ${R} ${R} 0 1 1 ${s1.x} ${s1.y}`;
 
 export function HealthGauge({ score, status, loading }: HealthGaugeProps) {
   const { t } = useTranslation();
+  // Id único por instância: com ids repetidos todos os medidores usavam o gradiente do primeiro
+  const uid = useId().replace(/:/g, "");
   const st = STATUS[status];
   const clamped = Math.max(0, Math.min(100, score));
-
-  // Calcular o ângulo de fim do arco de progresso
-  const progressAngle = ARC_START_ANGLE - (clamped / 100) * TOTAL_DEG;
-
-  const trackPath    = describeArc(CX, CY, R, ARC_START_ANGLE, ARC_END_ANGLE);
-  const progressPath = describeArc(CX, CY, R, ARC_START_ANGLE, progressAngle);
-
-  // Comprimento total do arco (para animação)
-  const arcLength = (TOTAL_DEG / 360) * 2 * Math.PI * R;
+  const tip = polar(START + (clamped / 100) * (END - START));
 
   if (loading) {
     return (
       <div className="flex flex-col items-center gap-2">
-        <div className="w-[160px] h-[110px] rounded-lg bg-muted animate-pulse" />
+        <div className="rounded-lg bg-muted animate-pulse" style={{ width: SIZE, height: HEIGHT }} />
         <div className="w-16 h-5 rounded-full bg-muted animate-pulse" />
       </div>
     );
@@ -62,75 +53,49 @@ export function HealthGauge({ score, status, loading }: HealthGaugeProps) {
 
   return (
     <div className="flex flex-col items-center">
-      <div className="relative" style={{ width: SIZE, height: 110 }}>
-        <svg width={SIZE} height={SIZE} className="absolute top-0 left-0 overflow-visible">
+      <div className="relative" style={{ width: SIZE, height: HEIGHT }}>
+        <svg width={SIZE} height={HEIGHT} viewBox={`0 0 ${SIZE} ${HEIGHT}`} className="absolute inset-0">
           <defs>
-            {/* Gradiente do arco de progresso — da cor mais clara para mais escura */}
-            <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <linearGradient id={`gauge-grad-${uid}`} x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%"   stopColor={st.color} stopOpacity={0.65} />
               <stop offset="100%" stopColor={st.color} stopOpacity={1}    />
             </linearGradient>
-            {/* Filtro de glow */}
-            <filter id="gaugeGlow" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="3" result="blur" />
-              <feMerge>
-                <feMergeNode in="blur" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
           </defs>
 
-          {/* Track — fundo do arco */}
-          <path
-            d={trackPath}
-            fill="none"
-            stroke="hsl(var(--muted))"
-            strokeWidth={STROKE}
-            strokeLinecap="round"
-            opacity={0.6}
-          />
+          {/* Fundo do arco */}
+          <path d={ARC_PATH} fill="none" stroke="hsl(var(--muted))" strokeWidth={STROKE} strokeLinecap="round" />
 
-          {/* Progresso — arco colorido com animação */}
+          {/* Progresso: o mesmo arco, revelado com dasharray normalizado a 100 */}
           {clamped > 0 && (
             <path
-              d={progressPath}
+              d={ARC_PATH}
+              pathLength={100}
               fill="none"
-              stroke="url(#gaugeGradient)"
+              stroke={`url(#gauge-grad-${uid})`}
               strokeWidth={STROKE}
               strokeLinecap="round"
-              filter={clamped >= 80 ? "url(#gaugeGlow)" : undefined}
               style={{
-                strokeDasharray: arcLength,
-                strokeDashoffset: arcLength * (1 - clamped / 100),
+                strokeDasharray: 100,
+                strokeDashoffset: 100 - clamped,
                 transition: "stroke-dashoffset 1.2s cubic-bezier(0.16, 1, 0.3, 1)",
               }}
             />
           )}
 
-          {/* Ponto final do progresso — pequeno círculo */}
-          {clamped > 2 && clamped < 99 && (() => {
-            const pt = polarToCartesian(CX, CY, R, progressAngle);
-            return (
-              <circle
-                cx={pt.x}
-                cy={pt.y}
-                r={STROKE / 2 + 1}
-                fill={st.color}
-                opacity={0.9}
-              />
-            );
-          })()}
+          {clamped > 2 && clamped < 99 && (
+            <circle cx={tip.x} cy={tip.y} r={STROKE / 2 + 1} fill={st.color} />
+          )}
         </svg>
 
         {/* Número central */}
-        <div className="absolute inset-0 flex flex-col items-center justify-end pb-3">
+        <div className="absolute left-0 right-0 flex flex-col items-center" style={{ top: CY - 26 }}>
           <span
             className="text-[40px] font-black tabular-nums leading-none tracking-tight"
             style={{ color: st.color }}
           >
             {clamped}
           </span>
-          <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-muted-foreground/60 mt-0.5">
+          <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground mt-0.5">
             / 100
           </span>
         </div>
@@ -140,8 +105,8 @@ export function HealthGauge({ score, status, loading }: HealthGaugeProps) {
       <div
         className={cn(
           "flex items-center gap-1.5",
-          "px-3 py-1 rounded-full mt-1",
-          "text-[10px] font-bold uppercase tracking-[0.14em]",
+          "px-3 py-1 rounded-full mt-2",
+          "text-[11px] font-bold uppercase tracking-[0.14em]",
         )}
         style={{
           backgroundColor: st.color.replace(")", " / 0.10)").replace("hsl(", "hsl("),

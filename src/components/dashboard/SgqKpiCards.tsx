@@ -131,7 +131,7 @@ export function SgqKpiCards({ projectId }: { projectId: string }) {
             <div className="flex items-center justify-between gap-1">
               <m.icon className="h-4 w-4 opacity-60 flex-shrink-0" />
               <Badge variant="outline" className={cn(
-                "text-[9px] px-1.5 py-0 font-semibold border-current/30 flex-shrink-0",
+                "text-[10px] px-1.5 py-0 font-semibold border-current/30 flex-shrink-0",
                 m.status === "ok"      ? "text-emerald-700 dark:text-emerald-400" :
                 m.status === "alerta"  ? "text-amber-700 dark:text-amber-400" :
                 m.status === "critico" ? "text-destructive" : "text-muted-foreground"
@@ -141,9 +141,9 @@ export function SgqKpiCards({ projectId }: { projectId: string }) {
                  m.status === "critico" ? t("dashboard.sgqKpi.critical") : "—"}
               </Badge>
             </div>
-            <p className="text-[9px] font-bold uppercase tracking-wider opacity-70 leading-tight min-h-[2.2em]">{m.label}</p>
+            <p className="text-[11px] font-bold uppercase tracking-wide opacity-80 leading-tight min-h-[2.2em]">{m.label}</p>
             <p className="text-2xl font-black tabular-nums leading-none">{m.value}</p>
-            <p className="text-[9px] opacity-50 leading-snug">
+            <p className="text-[11px] opacity-70 leading-snug">
               {m.status === "sem_dados"
                 ? t("dashboard.sgqKpi.noData", { defaultValue: "Sem dados ainda" })
                 : `${t("dashboard.sgqKpi.target", { defaultValue: "Meta" })}: ${m.meta}`}

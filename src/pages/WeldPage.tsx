@@ -302,7 +302,7 @@ export default function WeldPage() {
             <TabsList className="w-full">
               <TabsTrigger value="id">{t("weld.tabs.identification", { defaultValue: "Identificação" })}</TabsTrigger>
               <TabsTrigger value="materials">{t("weld.tabs.materials", { defaultValue: "Materiais" })}</TabsTrigger>
-              <TabsTrigger value="inspection">{t("weld.tabs.inspection", { defaultValue: "Inspecção" })}</TabsTrigger>
+              <TabsTrigger value="inspection">{t("weld.tabs.inspection", { defaultValue: "Inspeção" })}</TabsTrigger>
               <TabsTrigger value="ut_hv">{t("weld.tabs.utHv", { defaultValue: "UT e Dureza" })}</TabsTrigger>
             </TabsList>
 
@@ -564,9 +564,9 @@ export default function WeldPage() {
 
                 <Separator />
 
-                {/* Inspecção */}
+                {/* Inspeção */}
                 <div className="space-y-2">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Inspecção Visual</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Inspeção Visual</p>
                   <div className="flex items-center gap-2">
                     {viewingWeld.visual_pass === true
                       ? <><CheckCircle2 className="h-4 w-4 text-emerald-600" /><span className="font-medium text-emerald-700">Conforme</span></>

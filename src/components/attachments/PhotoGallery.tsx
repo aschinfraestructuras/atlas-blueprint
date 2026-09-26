@@ -30,7 +30,7 @@ interface PhotoItem {
 }
 
 /**
- * Galeria visual de fotos do projecto/entidade com lightbox.
+ * Galeria visual de fotos do projeto/entidade com lightbox.
  * Filtra automaticamente apenas imagens dos anexos fornecidos.
  */
 export function PhotoGallery({ attachments, loading, emptyLabel }: PhotoGalleryProps) {
