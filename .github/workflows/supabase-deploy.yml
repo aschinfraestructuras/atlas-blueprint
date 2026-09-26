@@ -1,0 +1,42 @@
+name: Supabase deploy
+
+# Execução manual: aplica migrações pendentes e publica as Edge Functions.
+# Secrets necessários no repositório:
+#   SUPABASE_ACCESS_TOKEN  — token pessoal (supabase.com/dashboard/account/tokens)
+#   SUPABASE_DB_PASSWORD   — password da base de dados do projeto
+on:
+  workflow_dispatch:
+    inputs:
+      migrations:
+        description: "Aplicar migrações pendentes (supabase db push)"
+        type: boolean
+        default: true
+      functions:
+        description: "Publicar Edge Functions"
+        type: boolean
+        default: true
+
+env:
+  SUPABASE_PROJECT_ID: qrsdpsugfjmrdeychxzf
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - run: supabase link --project-ref "$SUPABASE_PROJECT_ID" --password "$SUPABASE_DB_PASSWORD"
+      - name: Migrações pendentes (dry run)
+        if: inputs.migrations
+        run: supabase db push --dry-run --password "$SUPABASE_DB_PASSWORD"
+      - name: Aplicar migrações
+        if: inputs.migrations
+        run: supabase db push --password "$SUPABASE_DB_PASSWORD"
+      - name: Publicar Edge Functions
+        if: inputs.functions
+        run: supabase functions deploy --project-ref "$SUPABASE_PROJECT_ID"
