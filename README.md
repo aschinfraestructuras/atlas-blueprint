@@ -118,7 +118,7 @@ Ver `.env.example` para referência completa.
 
 ### Deploy
 
-- **Frontend (Vercel):** build `npm run build`, saída `dist/` (ver `vercel.json`, que inclui o rewrite SPA). Definir as variáveis `VITE_*` no painel do Vercel.
+- **Frontend (Cloudflare Pages, projeto `atlas-qms-pages`):** deploy automático a cada push para `main` (`npm run build`, saída `dist/`). Domínios `aschquality.com` e `www.aschquality.com`; DNS gerido na Cloudflare, email na IONOS. As rotas SPA funcionam sem configuração extra (sem `404.html`, o Pages serve `index.html`).
 - **Supabase (migrações + Edge Functions):** workflow manual `Supabase deploy` em GitHub Actions. Requer os secrets `SUPABASE_ACCESS_TOKEN` e `SUPABASE_DB_PASSWORD`. Localmente: `supabase link --project-ref <ref>`, `supabase db push`, `supabase functions deploy`.
 - **Secrets das Edge Functions:** `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD` (send-notification) e, opcionalmente, `APP_ALLOWED_ORIGINS` (create-project-member; lista de origens separadas por vírgulas para o redirect dos convites).
 - **CI:** `.github/workflows/ci.yml` corre typecheck, testes e build em cada PR.
