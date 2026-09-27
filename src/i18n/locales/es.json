@@ -407,7 +407,8 @@
       "client": "Cliente",
       "contractor": "Contratista",
       "start": "Inicio",
-      "daysAgo": "d"
+      "daysAgo": "d",
+      "days": "días"
     },
     "quick": {
       "nc": "Nueva NC",
@@ -633,7 +634,9 @@
       "monthly": "Evolución mensual"
     },
     "rmsgqOverdueChip": "RMSGQ atrasado",
-    "rmsgqDueChip": "RMSGQ vence en"
+    "rmsgqDueChip": "RMSGQ vence en",
+    "greeting": "Hola, {{name}}",
+    "updated": "Actualizado"
   },
   "emptyState": {
     "title": "Aún sin datos",

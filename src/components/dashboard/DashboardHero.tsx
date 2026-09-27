@@ -1,12 +1,12 @@
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
-  Calendar, Building2, Briefcase, Activity, ShieldCheck,
+  Calendar, Building2, Briefcase, Activity, ChevronRight,
   AlertTriangle, ClipboardCheck, FlaskConical, Package,
   type LucideIcon,
 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CommandSurface, GlassKPI, GlassPanel } from "@/components/atlas";
+import { cn } from "@/lib/utils";
 
 interface KpiInput {
   ncOpen: number;
@@ -48,11 +48,22 @@ function formatDateRange(startDate?: string | null) {
   };
 }
 
-const TONE_HSL = {
-  green: "150 60% 55%",
-  amber: "38 90% 60%",
-  red:   "0 75% 62%",
+const TONE_CHIP = {
+  green: "text-emerald-700 bg-emerald-500/10 border-emerald-500/30 dark:text-emerald-400",
+  amber: "text-amber-700 bg-amber-500/10 border-amber-500/30 dark:text-amber-400",
+  red:   "text-red-700 bg-red-500/10 border-red-500/30 dark:text-red-400",
 } as const;
+
+const TONE_DOT = { green: "bg-emerald-500", amber: "bg-amber-500", red: "bg-red-500" } as const;
+
+const KPI_ICON = {
+  green: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+  amber: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
+  red:   "bg-red-500/10 text-red-600 dark:text-red-400",
+  cyan:  "bg-sky-500/10 text-sky-600 dark:text-sky-400",
+} as const;
+
+const KPI_SPARK = { green: "text-emerald-500", amber: "text-amber-500", red: "text-red-500", cyan: "text-sky-500" } as const;
 
 const TONE_LABEL = {
   green: { pt: "Saudável", es: "Saludable" },
@@ -70,7 +81,6 @@ export function DashboardHero({
   const range = formatDateRange(startDate);
   const isES = i18n.language === "es";
   const stateLabel = isES ? TONE_LABEL[accentTone].es : TONE_LABEL[accentTone].pt;
-  const accentColor = TONE_HSL[accentTone];
 
   // KPI tone derivation
   const ppiPct   = kpis.ppiTotal   > 0 ? Math.round((kpis.ppiApproved    / kpis.ppiTotal)   * 100) : 0;
@@ -124,67 +134,54 @@ export function DashboardHero({
     },
   ];
 
+  const chip = "inline-flex items-center gap-1.5 h-7 min-h-0 text-[11px] font-bold uppercase tracking-wide rounded-full px-2.5 border transition-colors whitespace-nowrap";
+
   return (
-    <CommandSurface className="animate-fade-in">
-      {/* ── TOP META ROW ─────────────────────────────────────────────── */}
-      <div className="flex items-center justify-between gap-3 px-5 sm:px-7 pt-5">
-        <div className="flex items-center gap-2 flex-wrap">
-          {/* Status pill */}
-          <div
-            className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 border"
-            style={{ borderColor: `hsl(${accentColor} / 0.35)`, background: `hsl(${accentColor} / 0.12)` }}
-          >
-            <span className="atlas-live-dot" style={{ filter: `drop-shadow(0 0 6px hsl(${accentColor}))` }}>
-              <span style={{ background: `hsl(${accentColor})` }} />
-            </span>
-            <span className="text-[10px] font-extrabold uppercase tracking-[0.22em]" style={{ color: `hsl(${accentColor})` }}>
-              {stateLabel}
-            </span>
+    <section className="animate-fade-in rounded-2xl border border-border/60 bg-card shadow-card">
+      {/* ── Identidade da obra + período ─────────────────────────────── */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between px-5 sm:px-6 pt-5">
+        <div className="min-w-0">
+          <p className="text-xs text-muted-foreground mb-1">
+            {t("dashboard.greeting", { name: displayName, defaultValue: `Olá, ${displayName}` })}
+          </p>
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground truncate">{projectName}</h1>
+            {projectCode && !projectName.includes(projectCode) && (
+              <span className="font-mono text-[11px] font-semibold text-muted-foreground bg-muted rounded-md px-1.5 py-0.5">
+                {projectCode}
+              </span>
+            )}
           </div>
-
-          {liveUpdatedAgo && (
-            <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-white/45 bg-white/[0.04] border border-white/10 rounded-full px-2.5 py-1">
-              <Activity className="h-2.5 w-2.5" />
-              {t("dashboard.live", { defaultValue: "Live" })}
-              <span className="text-white/25">·</span>
-              <span className="tabular-nums">{liveUpdatedAgo}</span>
-            </span>
-          )}
-
-          {hpPending > 0 && (
-            <button
-              onClick={() => navigate("/deadlines")}
-              className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-amber-300 bg-amber-400/10 border border-amber-400/30 rounded-full px-2.5 py-1 hover:bg-amber-400/15 transition-colors"
-            >
-              <span className="h-1.5 w-1.5 rounded-full bg-amber-300 animate-pulse" />
-              {t("dashboard.hpPending", { defaultValue: "HP por confirmar" })}
-              <span className="tabular-nums text-white">{hpPending}</span>
-            </button>
-          )}
-
-          {rmsgq && (
-            <button
-              onClick={() => navigate("/reports?tab=monthly")}
-              className={
-                rmsgq.overdue
-                  ? "inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-red-300 bg-red-500/10 border border-red-400/30 rounded-full px-2.5 py-1 hover:bg-red-500/15 transition-colors"
-                  : "inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-amber-300 bg-amber-400/10 border border-amber-400/30 rounded-full px-2.5 py-1 hover:bg-amber-400/15 transition-colors"
-              }
-            >
-              <span className={rmsgq.overdue ? "h-1.5 w-1.5 rounded-full bg-red-400 animate-pulse" : "h-1.5 w-1.5 rounded-full bg-amber-300"} />
-              {rmsgq.overdue
-                ? t("dashboard.rmsgqOverdueChip", { defaultValue: "RMSGQ em atraso" })
-                : t("dashboard.rmsgqDueChip", { defaultValue: "RMSGQ vence em" })}
-              <span className="tabular-nums text-white">{rmsgq.days}d</span>
-            </button>
-          )}
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-xs text-muted-foreground">
+            {client && (
+              <span className="inline-flex items-center gap-1.5 min-w-0">
+                <Building2 className="h-3.5 w-3.5 flex-shrink-0" />
+                <span>{t("dashboard.heroChip.client", { defaultValue: "Cliente" })}:</span>
+                <span className="font-medium text-foreground truncate max-w-[220px]">{client}</span>
+              </span>
+            )}
+            {contractor && (
+              <span className="inline-flex items-center gap-1.5 min-w-0">
+                <Briefcase className="h-3.5 w-3.5 flex-shrink-0" />
+                <span>{t("dashboard.heroChip.contractor", { defaultValue: "Empreiteiro" })}:</span>
+                <span className="font-medium text-foreground truncate max-w-[220px]">{contractor}</span>
+              </span>
+            )}
+            {range && (
+              <span className="inline-flex items-center gap-1.5">
+                <Calendar className="h-3.5 w-3.5 flex-shrink-0" />
+                <span>{t("dashboard.heroChip.start", { defaultValue: "Início" })}:</span>
+                <span className="font-medium text-foreground tabular-nums">{range.startStr}</span>
+                <span className="tabular-nums">({range.days} {t("dashboard.heroChip.days", { defaultValue: "dias" })})</span>
+              </span>
+            )}
+          </div>
         </div>
 
-        {/* Period selector */}
-        <div className="flex items-center gap-1.5 bg-white/[0.05] backdrop-blur-md border border-white/10 rounded-xl px-2.5 py-1 flex-shrink-0">
-          <Calendar className="h-3.5 w-3.5 text-white/40" />
+        <div className="flex items-center gap-1.5 border border-border rounded-lg px-2.5 py-0.5 flex-shrink-0 self-start">
+          <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
           <Select value={period} onValueChange={onPeriodChange}>
-            <SelectTrigger className="h-7 w-[130px] text-xs border-0 bg-transparent shadow-none focus:ring-0 focus:ring-offset-0 px-1 text-white/75">
+            <SelectTrigger className="h-8 w-[140px] text-xs border-0 bg-transparent shadow-none focus:ring-0 focus:ring-offset-0 px-1">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -198,95 +195,85 @@ export function DashboardHero({
         </div>
       </div>
 
-      {/* ── IDENTITY + KPIs GRID ──────────────────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] gap-5 lg:gap-7 px-5 sm:px-7 pt-5 pb-5 sm:pb-6">
+      {/* ── Estado e alertas ─────────────────────────────────────────── */}
+      <div className="flex items-center gap-2 flex-wrap px-5 sm:px-6 pt-4">
+        <span className={cn(chip, TONE_CHIP[accentTone])}>
+          <span className={cn("h-1.5 w-1.5 rounded-full", TONE_DOT[accentTone])} />
+          {stateLabel}
+        </span>
 
-        {/* LEFT — Project identity */}
-        <div className="flex flex-col justify-center min-w-0">
-          <div className="flex items-center gap-4 sm:gap-5 mb-4">
-            <div className="hidden sm:flex flex-shrink-0 relative">
-              <div
-                className="w-[68px] h-[68px] rounded-2xl flex items-center justify-center font-black text-xl tracking-tight border text-white"
-                style={{
-                  background: "linear-gradient(135deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.03) 100%)",
-                  borderColor: "rgba(255,255,255,0.14)",
-                  backdropFilter: "blur(8px)",
-                }}
-              >
-                {(projectCode ?? projectName).slice(0, 3).toUpperCase()}
-              </div>
-              <ShieldCheck
-                className="absolute -bottom-1 -right-1 h-5 w-5 rounded-full p-0.5 border"
-                style={{ backgroundColor: "hsl(220 60% 4%)", borderColor: `hsl(${accentColor} / 0.45)`, color: `hsl(${accentColor})` }}
-              />
-            </div>
+        {hpPending > 0 && (
+          <button onClick={() => navigate("/deadlines")} className={cn(chip, TONE_CHIP.amber, "hover:bg-amber-500/15")}>
+            <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
+            {t("dashboard.hpPending", { defaultValue: "HP por confirmar" })}
+            <span className="tabular-nums">{hpPending}</span>
+          </button>
+        )}
 
-            <div className="min-w-0 flex-1">
-              <p className="atlas-eyebrow mb-1">
-                {t("dashboard.welcome", { defaultValue: "Bem-vindo" })}
-              </p>
-              <h1 className="text-3xl sm:text-[2.4rem] lg:text-[2.6rem] font-black tracking-tight text-white leading-none mb-1.5">
-                {displayName}
-              </h1>
-              <p className="text-[13px] text-white/55 truncate">
-                <span className="font-semibold text-white/75">{projectName}</span>
-                {projectCode && (
-                  <>
-                    <span className="text-white/20 mx-2">·</span>
-                    <span className="font-mono text-[11px] text-white/45">{projectCode}</span>
-                  </>
-                )}
-              </p>
-            </div>
-          </div>
+        {rmsgq && (
+          <button
+            onClick={() => navigate("/reports?tab=monthly")}
+            className={cn(chip, rmsgq.overdue ? TONE_CHIP.red : TONE_CHIP.amber, rmsgq.overdue ? "hover:bg-red-500/15" : "hover:bg-amber-500/15")}
+          >
+            <span className={cn("h-1.5 w-1.5 rounded-full", rmsgq.overdue ? "bg-red-500 animate-pulse" : "bg-amber-500")} />
+            {rmsgq.overdue
+              ? t("dashboard.rmsgqOverdueChip", { defaultValue: "RMSGQ em atraso" })
+              : t("dashboard.rmsgqDueChip", { defaultValue: "RMSGQ vence em" })}
+            <span className="tabular-nums normal-case">{rmsgq.days}d</span>
+          </button>
+        )}
 
-          {/* Contract metadata row */}
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 pt-3 border-t border-white/[0.07]">
-            {client && (
-              <div className="inline-flex items-center gap-1.5 min-w-0">
-                <Building2 className="h-3 w-3 text-white/35 flex-shrink-0" />
-                <span className="atlas-label">{t("dashboard.heroChip.client", { defaultValue: "Cliente" })}</span>
-                <span className="text-[11px] font-semibold text-white/70 truncate max-w-[180px]">{client}</span>
-              </div>
-            )}
-            {contractor && (
-              <div className="inline-flex items-center gap-1.5 min-w-0">
-                <Briefcase className="h-3 w-3 text-white/35 flex-shrink-0" />
-                <span className="atlas-label">{t("dashboard.heroChip.contractor", { defaultValue: "Empreiteiro" })}</span>
-                <span className="text-[11px] font-semibold text-white/70 truncate max-w-[180px]">{contractor}</span>
-              </div>
-            )}
-            {range && (
-              <div className="inline-flex items-center gap-1.5">
-                <Calendar className="h-3 w-3 text-white/35 flex-shrink-0" />
-                <span className="atlas-label">{t("dashboard.heroChip.start", { defaultValue: "Início" })}</span>
-                <span className="text-[11px] font-semibold text-white/70 tabular-nums">{range.startStr}</span>
-                <span className="text-[11px] text-white/35 tabular-nums">
-                  · {range.days}{t("dashboard.heroChip.daysAgo", { defaultValue: "d" })}
-                </span>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* RIGHT — Floating KPI cluster */}
-        <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
-          {heroKpis.map((k) => (
-            <GlassKPI
-              key={k.route}
-              icon={k.icon}
-              label={k.label}
-              value={k.value}
-              ratio={k.ratio}
-              hint={k.hint}
-              tone={k.tone}
-              sparkline={k.spark}
-              loading={loading}
-              onClick={() => navigate(k.route)}
-            />
-          ))}
-        </div>
+        {liveUpdatedAgo && (
+          <span className="inline-flex items-center gap-1.5 text-[11px] text-muted-foreground ml-auto">
+            <Activity className="h-3 w-3" />
+            {t("dashboard.updated", { defaultValue: "Atualizado" })} {liveUpdatedAgo}
+          </span>
+        )}
       </div>
-    </CommandSurface>
+
+      {/* ── Indicadores ──────────────────────────────────────────────── */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 p-5 sm:p-6 pt-4 sm:pt-4">
+        {heroKpis.map((k) => {
+          const Icon = k.icon;
+          return (
+            <button
+              key={k.route}
+              onClick={() => navigate(k.route)}
+              className="group text-left rounded-xl border border-border/70 bg-background/60 p-3.5 hover:border-border hover:shadow-sm transition-all min-w-0"
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <span className={cn("flex items-center justify-center w-7 h-7 rounded-lg", KPI_ICON[k.tone])}>
+                  <Icon className="h-4 w-4" />
+                </span>
+                <span className="text-xs font-semibold text-muted-foreground leading-tight">{k.label}</span>
+                <ChevronRight className="hidden sm:block h-3.5 w-3.5 ml-auto text-muted-foreground/40 group-hover:text-muted-foreground transition-colors flex-shrink-0" />
+              </div>
+              <div className="flex items-end justify-between gap-2">
+                <div className="flex items-baseline gap-1">
+                  <span className="text-2xl font-bold tabular-nums text-foreground leading-none">{loading ? "—" : k.value}</span>
+                  {k.ratio && <span className="text-sm text-muted-foreground tabular-nums">{k.ratio}</span>}
+                </div>
+                {k.spark && k.spark.length > 1 && <MiniSpark data={k.spark} className={KPI_SPARK[k.tone]} />}
+              </div>
+              {k.hint && <p className="text-xs text-muted-foreground truncate mt-1.5">{k.hint}</p>}
+            </button>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function MiniSpark({ data, className }: { data: number[]; className?: string }) {
+  const w = 56, h = 18;
+  const max = Math.max(...data, 1);
+  const min = Math.min(...data, 0);
+  const span = Math.max(max - min, 1);
+  const step = w / (data.length - 1);
+  const points = data.map((v, i) => `${i * step},${h - ((v - min) / span) * h}`).join(" ");
+  return (
+    <svg width={w} height={h} className={cn("overflow-visible flex-shrink-0", className)}>
+      <polyline fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" points={points} />
+    </svg>
   );
 }

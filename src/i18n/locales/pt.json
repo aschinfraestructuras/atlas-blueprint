@@ -307,7 +307,8 @@
       "client": "Cliente",
       "contractor": "Empreiteiro",
       "start": "Início",
-      "daysAgo": "d"
+      "daysAgo": "d",
+      "days": "dias"
     },
     "quick": {
       "nc": "Nova NC",
@@ -530,7 +531,9 @@
       "monthly": "Evolução mensal"
     },
     "rmsgqOverdueChip": "RMSGQ em atraso",
-    "rmsgqDueChip": "RMSGQ vence em"
+    "rmsgqDueChip": "RMSGQ vence em",
+    "greeting": "Olá, {{name}}",
+    "updated": "Atualizado"
   },
   "emptyState": {
     "title": "Ainda sem dados",
