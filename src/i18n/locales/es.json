@@ -631,7 +631,9 @@
     "trends": {
       "last6Months": "Últimos 6 meses",
       "monthly": "Evolución mensual"
-    }
+    },
+    "rmsgqOverdueChip": "RMSGQ atrasado",
+    "rmsgqDueChip": "RMSGQ vence en"
   },
   "emptyState": {
     "title": "Aún sin datos",

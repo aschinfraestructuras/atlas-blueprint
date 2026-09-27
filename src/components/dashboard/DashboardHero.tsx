@@ -29,6 +29,8 @@ interface Props {
   accentTone?: "green" | "amber" | "red";
   liveUpdatedAgo?: string;
   hpPending?: number;
+  /** RMSGQ do mês anterior: em atraso (overdue) ou a vencer, com dias */
+  rmsgq?: { overdue: boolean; days: number } | null;
   kpis: KpiInput;
   loading?: boolean;
   /** Optional sparkline series per KPI (last 8-12 values). */
@@ -61,7 +63,7 @@ const TONE_LABEL = {
 export function DashboardHero({
   displayName, projectName, projectCode, client, contractor, startDate,
   period, onPeriodChange, accentTone = "green", liveUpdatedAgo,
-  hpPending = 0, kpis, loading = false, sparklines = {},
+  hpPending = 0, rmsgq = null, kpis, loading = false, sparklines = {},
 }: Props) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
@@ -157,6 +159,23 @@ export function DashboardHero({
               <span className="h-1.5 w-1.5 rounded-full bg-amber-300 animate-pulse" />
               {t("dashboard.hpPending", { defaultValue: "HP por confirmar" })}
               <span className="tabular-nums text-white">{hpPending}</span>
+            </button>
+          )}
+
+          {rmsgq && (
+            <button
+              onClick={() => navigate("/reports?tab=monthly")}
+              className={
+                rmsgq.overdue
+                  ? "inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-red-300 bg-red-500/10 border border-red-400/30 rounded-full px-2.5 py-1 hover:bg-red-500/15 transition-colors"
+                  : "inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-amber-300 bg-amber-400/10 border border-amber-400/30 rounded-full px-2.5 py-1 hover:bg-amber-400/15 transition-colors"
+              }
+            >
+              <span className={rmsgq.overdue ? "h-1.5 w-1.5 rounded-full bg-red-400 animate-pulse" : "h-1.5 w-1.5 rounded-full bg-amber-300"} />
+              {rmsgq.overdue
+                ? t("dashboard.rmsgqOverdueChip", { defaultValue: "RMSGQ em atraso" })
+                : t("dashboard.rmsgqDueChip", { defaultValue: "RMSGQ vence em" })}
+              <span className="tabular-nums text-white">{rmsgq.days}d</span>
             </button>
           )}
         </div>
