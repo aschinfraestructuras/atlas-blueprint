@@ -61,11 +61,11 @@ function useHpPendingCount(projectId: string | undefined): number {
   return count;
 }
 
-function MonthlyReportAlert({ projectId }: { projectId: string }) {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
+// Estado do RMSGQ do mês anterior (mostrado como etiqueta no cabeçalho do painel)
+function useRmsgqStatus(projectId: string | undefined): { overdue: boolean; days: number } | null {
   const [show, setShow] = useState<{ overdue: boolean; days: number } | null>(null);
   useEffect(() => {
+    if (!projectId) { setShow(null); return; }
     (async () => {
       const now = new Date();
       // Não mostrar alerta se a obra ainda não começou (verificar project.start_date)
@@ -88,26 +88,7 @@ function MonthlyReportAlert({ projectId }: { projectId: string }) {
       setShow({ overdue: daysUntil < 0, days: Math.abs(daysUntil) });
     })();
   }, [projectId]);
-  if (!show) return null;
-  return (
-    <div
-      className={cn(
-        "flex items-center gap-3 px-4 py-3 rounded-xl border cursor-pointer transition-colors animate-fade-in",
-        show.overdue
-          ? "bg-destructive/5 border-destructive/25 text-destructive hover:bg-destructive/8"
-          : "bg-amber-500/5 border-amber-500/25 text-amber-700 hover:bg-amber-500/10"
-      )}
-      onClick={() => navigate("/reports?tab=monthly")}
-    >
-      <div className={cn("w-2 h-2 rounded-full flex-shrink-0 animate-pulse", show.overdue ? "bg-destructive" : "bg-amber-500")} />
-      <span className="text-sm flex-1">
-        {show.overdue
-          ? t("dashboard.rmsgqOverdue", { days: show.days, defaultValue: `RMSGQ em atraso ${show.days}d` })
-          : t("dashboard.rmsgqDue", { days: show.days, defaultValue: `RMSGQ prazo em ${show.days}d` })}
-      </span>
-      <ArrowRight className="h-3 w-3 opacity-50" />
-    </div>
-  );
+  return show;
 }
 
 function ProgressCircle({ icon: Icon, label, approved, total, route, colorVar, loading }:
@@ -168,6 +149,7 @@ export default function DashboardPage() {
   const [lastUpdated, setLastUpdated] = useState<number>(Date.now());
   const [, forceTick] = useState(0);
   const hpCountForHero = useHpPendingCount(activeProject?.id);
+  const rmsgqStatus = useRmsgqStatus(activeProject?.id);
   useEffect(() => { if (!kpiLoading) setLastUpdated(Date.now()); }, [kpiLoading, kpis]);
   useEffect(() => { const id = setInterval(() => forceTick((v) => v + 1), 30_000); return () => clearInterval(id); }, []);
 
@@ -311,6 +293,7 @@ export default function DashboardPage() {
         accentTone={heroAccent}
         liveUpdatedAgo={liveAgo}
         hpPending={hpCountForHero}
+        rmsgq={rmsgqStatus}
         loading={kpiLoading}
         kpis={{
           ncOpen: kpis.ncOpen,
@@ -332,7 +315,6 @@ export default function DashboardPage() {
         <div className="space-y-2 animate-fade-in">
           <CriticalAlertsBanner ncOpen={kpis.ncOpen} ncOverdue={health.total_nc_overdue}
             emesExpiring={kpis.emesExpiring30d} pamePending={0} />
-          <MonthlyReportAlert projectId={activeProject.id} />
         </div>
       )}
 
